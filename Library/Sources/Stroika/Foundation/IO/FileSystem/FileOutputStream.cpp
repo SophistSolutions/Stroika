@@ -203,6 +203,45 @@ auto FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, 
     return make_shared<Rep_> (fd, adoptFDPolicy, seekableFlag, flushFlag);
 }
 
+auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (fileName, AppendFlag::eDEFAULT, flushFlag);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (fileName, AppendFlag::eDEFAULT, flushFlag);
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
+}
+
+auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (fileName, appendFlag, flushFlag);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (fileName, appendFlag, flushFlag);
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
+}
+
+auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (fd, adoptFDPolicy, seekableFlag, flushFlag);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
+}
+
 /*
  ********************************************************************************
  ******************** IO::FileSystem::FileOutputStream::Ptr *********************

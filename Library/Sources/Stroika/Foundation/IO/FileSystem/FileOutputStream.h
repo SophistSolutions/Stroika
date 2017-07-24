@@ -7,6 +7,7 @@
 #include "../../StroikaPreComp.h"
 
 #include "../../Characters/String.h"
+#include "../../Streams/InternallySyncrhonizedOutputStream.h"
 #include "../../Streams/OutputStream.h"
 
 #include "../FileAccessMode.h"
@@ -131,14 +132,17 @@ namespace Stroika {
                     static Ptr New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
                     static Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
                     static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
                     static OutputStream<Memory::Byte>::Ptr New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
                     static OutputStream<Memory::Byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
                     static OutputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
 
                 public:
                     /**
-                    * @see FileOutputStream constructor
-                    */
+                     * @see FileOutputStream constructor
+                     */
                     _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
                     {
                         return New (fileName, flushFlag, bufferedFlag);
@@ -154,6 +158,11 @@ namespace Stroika {
 
                 private:
                     class Rep_;
+
+                private:
+                    template <typename X>
+                    using BLAH_            = FileOutputStream;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, BLAH_, FileOutputStream::Rep_>;
                 };
 
                 /**
@@ -170,10 +179,10 @@ namespace Stroika {
                     *          
                     *      \endcode
                     */
-                    Ptr ()                = default;
+                    Ptr ()                = delete;
                     Ptr (const Ptr& from) = default;
 
-                private:
+                protected:
                     Ptr (const shared_ptr<Rep_>& from);
 
                 public:

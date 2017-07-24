@@ -232,6 +232,32 @@ auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, S
     return make_shared<Rep_> (fd, adoptFDPolicy, seekable);
 }
 
+auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (fileName, seekable);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (fileName, seekable);
+        default:
+            RequireNotReached ();
+            return nullptr;
+    }
+}
+
+auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
+{
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            return InternalSyncRep_::New (fd, adoptFDPolicy, seekable);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (fd, adoptFDPolicy, seekable);
+        default:
+            RequireNotReached ();
+            return New (fd, adoptFDPolicy, seekable);
+    }
+}
+
 InputStream<Byte>::Ptr FileInputStream::New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -244,7 +270,7 @@ InputStream<Byte>::Ptr FileInputStream::New (const String& fileName, SeekableFla
         case eUnbuffered:
             return in;
         default:
-            AssertNotReached ();
+            RequireNotReached ();
             return in;
     }
 }

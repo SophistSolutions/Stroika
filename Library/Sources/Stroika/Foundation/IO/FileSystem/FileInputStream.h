@@ -8,6 +8,7 @@
 
 #include "../../Characters/String.h"
 #include "../../Streams/InputStream.h"
+#include "../../Streams/InternallySyncrhonizedInputStream.h"
 
 #include "FileStreamCommon.h"
 
@@ -81,6 +82,8 @@ namespace Stroika {
                      */
                     static Ptr New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
                     static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
                     static InputStream<Memory::Byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
                     static InputStream<Memory::Byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
                     static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
@@ -106,6 +109,11 @@ namespace Stroika {
 
                 private:
                     class Rep_;
+
+                private:
+                    template <typename X>
+                    using BLAH_            = FileInputStream;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, BLAH_, FileInputStream::Rep_>;
                 };
 
                 /**
@@ -122,10 +130,10 @@ namespace Stroika {
                      *          Memory::BLOB b = IO::FileSystem::FileInputStream::Ptr{ IO::FileSystem::FileInputStream (fileName) }.ReadAll ();
                      *      \endcode
                      */
-                    Ptr ()                = default;
+                    Ptr ()                = delete;
                     Ptr (const Ptr& from) = default;
 
-                private:
+                protected:
                     Ptr (const shared_ptr<Rep_>& from);
 
                 public:
