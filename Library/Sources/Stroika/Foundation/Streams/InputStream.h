@@ -221,7 +221,8 @@ namespace Stroika {
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
-                nonvirtual Ptr Synchronized () const;
+                _Deprecated_ ("as of v2.0a211 - USE New (Execution::InternallySyncrhonized)")
+                    nonvirtual Ptr Synchronized () const;
 
             public:
                 /**
