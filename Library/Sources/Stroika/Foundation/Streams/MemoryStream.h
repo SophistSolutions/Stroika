@@ -72,8 +72,6 @@ namespace Stroika {
 
             public:
                 /**
-                 *  To copy a MemoryStream, use MemoryStream<T>::Ptr
-                 *
                  *  \par Example Usage
                  *      \code
                  *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
@@ -110,8 +108,6 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \note Ptr () creates a null stream, not an empty memory stream.
-                 *
                  *  \par Example Usage
                  *      \code
                  *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
