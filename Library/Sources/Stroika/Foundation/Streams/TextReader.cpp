@@ -455,89 +455,86 @@ auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
     return p;
 }
 
-
-
-
 auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Character>::Ptr& src) -> Ptr
 {
-	switch (internallySyncrhonized) {
-	case Execution::eInternallySynchronized:
-		AssertNotImplemented ();
-		//return InternalSyncRep_::New ();
-		return src;
-	case Execution::eNotKnwonInternallySynchronized:
-		return src;
-	default:
-		RequireNotReached ();
-	}
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            AssertNotImplemented ();
+            //return InternalSyncRep_::New ();
+            return src;
+        case Execution::eNotKnwonInternallySynchronized:
+            return src;
+        default:
+            RequireNotReached ();
+    }
 }
 
 auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const Optional<Characters::String>& charset) -> Ptr
 {
-	switch (internallySyncrhonized) {
-	case Execution::eInternallySynchronized:
-		AssertNotImplemented ();
-		//return InternalSyncRep_::New ();
-		return New (src, charset);
-	case Execution::eNotKnwonInternallySynchronized:
-		return New (src, charset);
-	default:
-		RequireNotReached ();
-	}
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            AssertNotImplemented ();
+            //return InternalSyncRep_::New ();
+            return New (src, charset);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (src, charset);
+        default:
+            RequireNotReached ();
+    }
 }
 
 auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, bool seekable) -> Ptr
 {
-	switch (internallySyncrhonized) {
-	case Execution::eInternallySynchronized:
-		AssertNotImplemented ();
-		//return InternalSyncRep_::New ();
-		return New (src, seekable);
-	case Execution::eNotKnwonInternallySynchronized:
-		return New (src, seekable);
-	default:
-		RequireNotReached ();
-	}
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            AssertNotImplemented ();
+            //return InternalSyncRep_::New ();
+            return New (src, seekable);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (src, seekable);
+        default:
+            RequireNotReached ();
+    }
 }
 
 auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, const Optional<Characters::String>& charset, bool seekable) -> Ptr
 {
-	switch (internallySyncrhonized) {
-	case Execution::eInternallySynchronized:
-		AssertNotImplemented ();
-		//return InternalSyncRep_::New ();
-		return New (src, charset, seekable);
-	case Execution::eNotKnwonInternallySynchronized:
-		return New (src, charset, seekable);
-	default:
-		RequireNotReached ();
-	}
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            AssertNotImplemented ();
+            //return InternalSyncRep_::New ();
+            return New (src, charset, seekable);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (src, charset, seekable);
+        default:
+            RequireNotReached ();
+    }
 }
 
 auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
 {
-	switch (internallySyncrhonized) {
-	case Execution::eInternallySynchronized:
-		AssertNotImplemented ();
-		//return InternalSyncRep_::New ();
-		return New (src, codeConverter, seekable);
-	case Execution::eNotKnwonInternallySynchronized:
-		return New (src, codeConverter, seekable);
-	default:
-		RequireNotReached ();
-	}
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            AssertNotImplemented ();
+            //return InternalSyncRep_::New ();
+            return New (src, codeConverter, seekable);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (src, codeConverter, seekable);
+        default:
+            RequireNotReached ();
+    }
 }
 
 auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const Traversal::Iterable<Character>& src) -> Ptr
 {
-	switch (internallySyncrhonized) {
-	case Execution::eInternallySynchronized:
-		AssertNotImplemented ();
-		//return InternalSyncRep_::New ();
-		return New (src);
-	case Execution::eNotKnwonInternallySynchronized:
-		return New (src);
-	default:
-		RequireNotReached ();
-	}
+    switch (internallySyncrhonized) {
+        case Execution::eInternallySynchronized:
+            AssertNotImplemented ();
+            //return InternalSyncRep_::New ();
+            return New (src);
+        case Execution::eNotKnwonInternallySynchronized:
+            return New (src);
+        default:
+            RequireNotReached ();
+    }
 }
