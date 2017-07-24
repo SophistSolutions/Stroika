@@ -232,6 +232,7 @@ namespace Stroika {
                         return make_shared<Rep_> ();
                     default:
                         RequireNotReached ();
+                        return make_shared<Rep_> ();
                 }
             }
             template <typename ELEMENT_TYPE>
@@ -249,7 +250,7 @@ namespace Stroika {
                         return New (start, end);
                     default:
                         RequireNotReached ();
-                        return nullptr;
+                        return New (start, end);
                 }
             }
             template <typename ELEMENT_TYPE>

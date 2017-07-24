@@ -34,7 +34,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-using Execution::make_unique_lock;
 using Streams::InputStream;
 using Streams::SeekOffsetType;
 
@@ -241,6 +240,7 @@ auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhoni
             return New (fileName, seekable);
         default:
             RequireNotReached ();
+            return New (fileName, seekable);
     }
 }
 

@@ -29,8 +29,6 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
-//using Execution::make_unique_lock;
-
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
@@ -212,6 +210,7 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
             return New (fileName, AppendFlag::eDEFAULT, flushFlag);
         default:
             RequireNotReached ();
+            return New (fileName, AppendFlag::eDEFAULT, flushFlag);
     }
 }
 
@@ -224,6 +223,7 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
             return New (fileName, appendFlag, flushFlag);
         default:
             RequireNotReached ();
+            return New (fileName, appendFlag, flushFlag);
     }
 }
 
@@ -236,6 +236,7 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
             return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
         default:
             RequireNotReached ();
+            return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
     }
 }
 
