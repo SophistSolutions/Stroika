@@ -1190,10 +1190,10 @@ namespace {
             Streams::MemoryStream<Byte>::Ptr useStdOut = Streams::MemoryStream<Byte>::New ();
             pr.SetStdOut (useStdOut);
             pr.Run ();
-            String              out;
-            Streams::TextReader stdOut{useStdOut};
-            bool                skippedHeader = false;
-            size_t              headerLen     = 0;
+            String                   out;
+            Streams::TextReader::Ptr stdOut        = Streams::TextReader::New (useStdOut);
+            bool                     skippedHeader = false;
+            size_t                   headerLen     = 0;
             for (String i = stdOut.ReadLine (); not i.empty (); i = stdOut.ReadLine ()) {
                 if (not skippedHeader) {
                     skippedHeader = true;
