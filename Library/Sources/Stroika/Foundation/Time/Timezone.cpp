@@ -51,7 +51,7 @@ TimeZoneInformationType Time::GetTimezoneInfo ()
     TimeZoneInformationType result;
 #if qPlatform_POSIX
     try {
-        result.fID = Streams::TextReader{IO::FileSystem::FileInputStream::New (String_Constant{L"/etc/timezone"})}.ReadAll ().Trim ();
+        result.fID = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (String_Constant{L"/etc/timezone"})).ReadAll ().Trim ();
     }
     catch (...) {
         DbgTrace ("Ignoring missing ID from /etc/timezone");

@@ -443,14 +443,14 @@ auto TextReader::New (const InputStream<Byte>::Ptr& src, const Optional<Characte
 
 auto TextReader::New (const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
 {
-    Ptr p = seekable ? static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)) : static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<UnseekableBinaryStreamRep_> (src, codeConverter));
+    Ptr p = seekable ? Ptr{make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)} : Ptr{make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)};
     Ensure (p.IsSeekable () == seekable);
     return p;
 }
 
 auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
 {
-	Ptr p{ make_shared<IterableAdapterStreamRep_> (src) };
+    Ptr p{make_shared<IterableAdapterStreamRep_> (src)};
     Ensure (p.IsSeekable ());
     return p;
 }
