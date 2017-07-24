@@ -256,7 +256,7 @@ public:
     }
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>::Ptr& out) override
     {
-        TextWriter textOut (out, TextWriter::Format::eUTF8WithoutBOM);
+        TextWriter::Ptr textOut = TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM);
         PrettyPrint_ (fOptions_, v, textOut, 0);
         if (fOptions_.fJSONPrettyPrint) {
             textOut.Write (L"\n"); // a single elt not LF terminated, but the entire doc should be.

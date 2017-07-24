@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include "InternallySyncrhonizedOutputStream.h"
 #include "OutputStream.h"
 
 /**
@@ -59,9 +60,10 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
-            class TextWriter : public OutputStream<Characters::Character>::Ptr {
-            private:
-                using inherited = OutputStream<Characters::Character>::Ptr;
+            class TextWriter : public OutputStream<Characters::Character> {
+            public:
+                TextWriter ()                  = delete;
+                TextWriter (const TextWriter&) = delete;
 
             public:
                 enum class Format : uint8_t {
@@ -75,14 +77,16 @@ namespace Stroika {
                 };
 
             public:
+                class Ptr;
+
+            public:
                 /**
                  * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
                  * If handled an OutputStream<Character> - it just passes through characters.
                  */
-                TextWriter () = delete;
-                TextWriter (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
-                TextWriter (const OutputStream<Characters::Character>::Ptr& src);
-                TextWriter (const TextWriter&) = delete;
+                static Ptr New (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
+                static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
+                static Ptr New (const TextWriter&) = delete;
 
             public:
                 /**
@@ -97,6 +101,40 @@ namespace Stroika {
 
             private:
                 static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<Memory::Byte>::Ptr& src, Format format);
+            };
+
+            /**
+             *  Ptr is a copyable smart pointer to a TextWriter stream.
+             */
+            class TextWriter::Ptr : public OutputStream<Characters::Character>::Ptr {
+            private:
+                using inherited = typename OutputStream<Characters::Character>::Ptr;
+
+            public:
+                /**
+                &&&&&
+                *  \par Example Usage
+                *      \code
+                *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead);
+                *      \endcode
+                *
+                *  \par Example Usage
+                *      \code
+                *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead))
+                *      \endcode
+                */
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (const OutputStream<Characters::Character>::Ptr& from);
+
+            protected:
+                Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+
+            private:
+                friend class TextWriter;
             };
         }
     }

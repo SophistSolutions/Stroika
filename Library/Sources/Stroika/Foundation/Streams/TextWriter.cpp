@@ -207,9 +207,9 @@ private:
  ****************************** Streams::TextWriter *****************************
  ********************************************************************************
  */
-TextWriter::TextWriter (const OutputStream<Byte>::Ptr& src, Format format)
-    : OutputStream<Character>::Ptr (mk_ (src, format))
+auto TextWriter::New (const OutputStream<Byte>::Ptr& src, Format format) -> Ptr
 {
+    return Ptr{mk_ (src, format)};
 }
 
 shared_ptr<OutputStream<Characters::Character>::_IRep> TextWriter::mk_ (const OutputStream<Byte>::Ptr& src, Format format)

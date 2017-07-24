@@ -434,12 +434,10 @@ void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
  ********************************************************************************
  */
 struct Logger::StreamAppender::Rep_ {
-    using TextWriter = Streams::TextWriter;
-
 public:
     template <typename T>
     Rep_ (const T& out)
-        : fWriter_ (out)
+        : fWriter_ (Streams::TextWriter::New (out))
     {
     }
     void Log (Priority logLevel, const String& message)
@@ -449,7 +447,7 @@ public:
     }
 
 private:
-    Synchronized<TextWriter> fWriter_; // All Stroika-provided appenders must be internally synchronized
+    Synchronized<Streams::OutputStream<Characters::Character>::Ptr> fWriter_; // All Stroika-provided appenders must be internally synchronized - https://stroika.atlassian.net/browse/STK-610
 };
 
 Logger::StreamAppender::StreamAppender (const Streams::OutputStream<Byte>::Ptr& out)

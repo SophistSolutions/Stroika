@@ -106,6 +106,7 @@ namespace Stroika {
 
             public:
                 /**
+                &&&&&
                 *  \par Example Usage
                 *      \code
                 *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead);

@@ -487,7 +487,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
         // @todo - decide if we should use Streams::TextWriter::Format::eUTF8WithoutBOM
         if (not cmdStdInValue.empty ()) {
             // for now while we write BOM, dont write empty string as just a BOM!
-            Streams::TextWriter (useStdIn).Write (cmdStdInValue.c_str ());
+            Streams::TextWriter::New (useStdIn).Write (cmdStdInValue.c_str ());
         }
         Assert (useStdIn.GetReadOffset () == 0);
 

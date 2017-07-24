@@ -9,20 +9,32 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Debug/Assertions.h"
-
 namespace Stroika {
     namespace Foundation {
         namespace Streams {
 
             /*
              ********************************************************************************
+             *********************************** TextWriter::Ptr ****************************
+             ********************************************************************************
+             */
+            inline TextWriter::Ptr::Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from)
+                : inherited (from)
+            {
+            }
+            inline TextWriter::Ptr::Ptr (const OutputStream<Characters::Character>::Ptr& from)
+                : inherited (from)
+            {
+            }
+
+            /*
+             ********************************************************************************
              *********************************** TextWriter *********************************
              ********************************************************************************
              */
-            inline TextWriter::TextWriter (const OutputStream<Characters::Character>::Ptr& src)
-                : inherited (src)
+            inline auto TextWriter::New (const OutputStream<Characters::Character>::Ptr& src) -> Ptr
             {
+                return src;
             }
         }
     }
