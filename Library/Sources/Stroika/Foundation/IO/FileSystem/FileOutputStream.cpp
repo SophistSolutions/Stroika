@@ -212,7 +212,6 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
             return New (fileName, AppendFlag::eDEFAULT, flushFlag);
         default:
             RequireNotReached ();
-            return nullptr;
     }
 }
 
@@ -225,7 +224,6 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
             return New (fileName, appendFlag, flushFlag);
         default:
             RequireNotReached ();
-            return nullptr;
     }
 }
 
@@ -238,7 +236,6 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
             return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
         default:
             RequireNotReached ();
-            return nullptr;
     }
 }
 

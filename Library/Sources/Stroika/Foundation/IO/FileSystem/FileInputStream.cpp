@@ -241,7 +241,6 @@ auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhoni
             return New (fileName, seekable);
         default:
             RequireNotReached ();
-            return nullptr;
     }
 }
 
