@@ -249,8 +249,10 @@ namespace {
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
                 constexpr Time::DurationSecondsType kMargingOfError = 3.5; // larger margin of error cuz sometimes fails on raspberrypi
-                constexpr Time::DurationSecondsType kWaitOnAbortFor = 2.0; // use such a long timeout cuz we run this on 'debug' builds, with asan, valgrind, and on small arm devices
-                Time::DurationSecondsType           startTestAt     = Time::GetTickCount ();
+                constexpr Time::DurationSecondsType kWaitOnAbortFor = 2.5; // use such a long timeout cuz we run this on 'debug' builds,
+                                                                           // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
+                                                                           // due to timeout on raspberrypi (rare even there)
+                Time::DurationSecondsType startTestAt = Time::GetTickCount ();
                 try {
                     thread1.AbortAndWaitForDone (kWaitOnAbortFor);
                 }
