@@ -22,42 +22,40 @@ namespace Stroika {
             template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
             class InternallySyncrhonizedOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
             public:
-                Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
-                    : BASE_REP_TYPE ()
-                    , fRealOut_ (realOut)
+                template <typename... ARGS>
+                Rep_ (ARGS&&... args)
+                    : BASE_REP_TYPE (forward<ARGS> (args)...)
                 {
                 }
-                Rep_ ()            = delete;
                 Rep_ (const Rep_&) = delete;
                 virtual bool IsSeekable () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealOut_.IsSeekable ();
+                    return BASE_REP_TYPE::IsSeekable ();
                 }
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealOut_.GetWriteOffset ();
+                    return BASE_REP_TYPE::GetWriteOffset ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealOut_.SeekWrite (whence, offset);
+                    return BASE_REP_TYPE::SeekWrite (whence, offset);
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    fRealOut_.Write (start, end);
+                    BASE_REP_TYPE::Write (start, end);
                 }
                 virtual void Flush () override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    fRealOut_.Flush ();
+                    BASE_REP_TYPE::Flush ();
                 }
 
             private:
-                mutable mutex                            fCriticalSection_;
-                typename OutputStream<ELEMENT_TYPE>::Ptr fRealOut_;
+                mutable mutex fCriticalSection_;
             };
 
             /*
@@ -66,9 +64,10 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
-            inline auto InternallySyncrhonizedOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (const typename OutputStream<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
+            template <typename... ARGS>
+            inline auto InternallySyncrhonizedOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (ARGS&&... args) -> Ptr
             {
-                return Ptr{make_shared<Rep_> (stream2Wrap)};
+                return Ptr{make_shared<Rep_> (forward<ARGS> (args)...)};
             }
 
             /*

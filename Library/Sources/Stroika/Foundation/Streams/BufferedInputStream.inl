@@ -74,9 +74,9 @@ namespace Stroika {
             {
                 switch (internallySyncrhonized) {
                     case Execution::eInternallySynchronized:
-                        return InternalSyncRep_::New (make_shared<Rep_> (realIn));
+                        return InternalSyncRep_::New (realIn);
                     case Execution::eNotKnwonInternallySynchronized:
-                        return make_shared<Rep_> (realIn);
+                        return New (realIn);
                     default:
                         RequireNotReached ();
                         return nullptr;

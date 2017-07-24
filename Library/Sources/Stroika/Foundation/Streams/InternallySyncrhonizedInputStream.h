@@ -49,7 +49,8 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
                  */
-                static Ptr New (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& stream2Wrap);
+                template <typename... ARGS>
+                static Ptr New (ARGS&&... args);
 
             private:
                 class Rep_;

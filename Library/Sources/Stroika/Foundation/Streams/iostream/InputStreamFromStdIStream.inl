@@ -136,7 +136,7 @@ namespace Stroika {
                 {
                     switch (internallySyncrhonized) {
                         case Execution::eInternallySynchronized:
-                            return InternalSyncRep_::New (New (originalStream));
+                            return InternalSyncRep_::New (originalStream);
                         case Execution::eNotKnwonInternallySynchronized:
                             return New (originalStream);
                         default:
@@ -149,7 +149,7 @@ namespace Stroika {
                 {
                     switch (internallySyncrhonized) {
                         case Execution::eInternallySynchronized:
-                            return InternalSyncRep_::New (New (originalStream, seekable));
+                            return InternalSyncRep_::New (originalStream, seekable);
                         case Execution::eNotKnwonInternallySynchronized:
                             return New (originalStream, seekable);
                         default:
