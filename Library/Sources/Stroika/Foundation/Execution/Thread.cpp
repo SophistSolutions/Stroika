@@ -988,22 +988,29 @@ void Thread::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) cons
         tries++;
         Time::DurationSecondsType timeLeft = timeoutAt - Time::GetTickCount ();
         if (timeLeft <= kAbortAndWaitForDoneUntil_TimeBetweenAborts_) {
-            WaitForDone (timeLeft); // throws if we should throw
+            WaitForDoneUntil (timeoutAt); // throws if we should throw
             return;
         }
         else {
-            // If timeLeft BIG - ignore timeout exception and go through loop again
+// If timeLeft BIG - ignore timeout exception and go through loop again
+#if 1
+            if (WaitForDoneUntilQuietly (Time::GetTickCount () + kAbortAndWaitForDoneUntil_TimeBetweenAborts_) == WaitableEvent::kWaitQuietlySetResult) {
+                return;
+            }
+// timeout just continue to loop
+#else
             try {
                 WaitForDone (kAbortAndWaitForDoneUntil_TimeBetweenAborts_);
                 return;
             }
             catch (const TimeOutException&) {
             }
+#endif
         }
         if (tries <= 1) {
             // this COULD happen due to a lucky race - OR - the code could just be BUSY for a while (not calling CheckForAborted). But even then - it COULD make
             // a blocking call which needs interruption.
-            DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt.");
+            DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt: tries: %d.", tries);
         }
         else {
             DbgTrace ("OK - maybe the target thread is ingoring abort exceptions? try/catch/ignore?");
