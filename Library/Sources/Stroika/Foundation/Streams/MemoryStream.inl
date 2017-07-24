@@ -285,12 +285,6 @@ namespace Stroika {
             {
             }
             template <typename ELEMENT_TYPE>
-            inline typename MemoryStream<ELEMENT_TYPE>::Ptr& MemoryStream<ELEMENT_TYPE>::Ptr::operator= (const MemoryStream<ELEMENT_TYPE>& rhs)
-            {
-                inherited::Ptr::operator= (rhs);
-                return *this;
-            }
-            template <typename ELEMENT_TYPE>
             template <typename T>
             T MemoryStream<ELEMENT_TYPE>::Ptr::As () const
             {
