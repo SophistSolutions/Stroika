@@ -232,7 +232,6 @@ namespace Stroika {
                         return make_shared<Rep_> ();
                     default:
                         RequireNotReached ();
-                        return nullptr;
                 }
             }
             template <typename ELEMENT_TYPE>

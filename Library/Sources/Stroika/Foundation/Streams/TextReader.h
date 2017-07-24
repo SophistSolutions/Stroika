@@ -24,6 +24,8 @@
  *      @todo   DOCUMENT why we put ReadLine etc in InputStreamPtr, instead of here. Gist of why - though more
  *              logical here - requires no state - and so more flexible there. May reconsider.
  *              -- LGP 2015-07-06
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySyncrhonized are AssertNotImplemented on TextReader and TextWriter
  */
 
 namespace Stroika {
@@ -81,6 +83,14 @@ namespace Stroika {
                  *
                  *  \note Depending on the underlying source (e.g. binary stream) - maintaining seekability may be expensive in terms
                  *        of memory usage.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+                 *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
+                 *          }
+                 *      \endcode
+                 *
                  */
                 static Ptr New (const Memory::BLOB& src, const Memory::Optional<Characters::String>& charset = {});
                 static Ptr New (const InputStream<Memory::Byte>::Ptr& src, bool seekable = true);
@@ -88,6 +98,12 @@ namespace Stroika {
                 static Ptr New (const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
                 static Ptr New (const InputStream<Character>::Ptr& src);
                 static Ptr New (const Traversal::Iterable<Character>& src);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const Memory::Optional<Characters::String>& charset = {});
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Memory::Byte>::Ptr& src, bool seekable = true);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Memory::Byte>::Ptr& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Character>::Ptr& src);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Traversal::Iterable<Character>& src);
 
             private:
                 class FromBinaryStreamBaseRep_;
@@ -95,6 +111,11 @@ namespace Stroika {
                 class BaseSeekingBinaryStreamRep_;
                 class CachingSeekableBinaryStreamRep_;
                 class IterableAdapterStreamRep_;
+
+            private:
+                template <typename X>
+                using BLAH_            = TextReader;
+                using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Character, BLAH_, InputStream<Character>::_IRep>;
             };
 
             /**
@@ -106,17 +127,14 @@ namespace Stroika {
 
             public:
                 /**
-                &&&&&
-                *  \par Example Usage
-                *      \code
-                *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead);
-                *      \endcode
-                *
-                *  \par Example Usage
-                *      \code
-                *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead))
-                *      \endcode
-                */
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+                 *              DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
+                 *          }
+                 *      \endcode
+                 */
                 Ptr ()                = default;
                 Ptr (const Ptr& from) = default;
                 Ptr (const InputStream<Character>::Ptr& from);

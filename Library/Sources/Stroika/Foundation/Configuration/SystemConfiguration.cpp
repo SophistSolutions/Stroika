@@ -373,7 +373,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         Optional<unsigned int> currentSocketID;
         for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
+            DbgTrace (L"in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
             static const String_Constant kOldProcessorLabel_{L"Processor"};
             static const String_Constant kProcessorIDLabel_{L"processor"};

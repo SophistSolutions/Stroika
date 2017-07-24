@@ -212,6 +212,33 @@ auto TextWriter::New (const OutputStream<Byte>::Ptr& src, Format format) -> Ptr
     return Ptr{mk_ (src, format)};
 }
 
+ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Characters::Character>::Ptr& src) -> Ptr
+{
+	 switch (internallySyncrhonized) {
+	 case Execution::eInternallySynchronized:
+		 AssertNotImplemented ();
+		 //return InternalSyncRep_::New ();
+		 return src;
+	 case Execution::eNotKnwonInternallySynchronized:
+		 return src;
+	 default:
+		 RequireNotReached ();
+	 }
+ }
+ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Byte>::Ptr& src, Format format) -> Ptr
+ {
+	 switch (internallySyncrhonized) {
+	 case Execution::eInternallySynchronized:
+		 AssertNotImplemented ();
+		 //return InternalSyncRep_::New ();
+		 return Ptr{ mk_ (src, format) };
+	 case Execution::eNotKnwonInternallySynchronized:
+		 return Ptr{ mk_ (src, format) };
+	 default:
+		 RequireNotReached ();
+	 }
+ }
+
 shared_ptr<OutputStream<Characters::Character>::_IRep> TextWriter::mk_ (const OutputStream<Byte>::Ptr& src, Format format)
 {
     bool newOneSeekable = src.IsSeekable ();

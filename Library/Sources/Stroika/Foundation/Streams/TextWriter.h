@@ -42,6 +42,7 @@
  *              locale. If none, use global locale? Could use codepage instead of locale, but propba
  *              best to have one notion and extract that codepage from the given (or global) locale.(ONLY FOR STREAM OF CHARCTETSD?? Maybe just in WRITER)
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySyncrhonized are AssertNotImplemented on TextReader and TextWriter
  */
 
 namespace Stroika {
@@ -83,10 +84,24 @@ namespace Stroika {
                 /**
                  * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
                  * If handled an OutputStream<Character> - it just passes through characters.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
+                 *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
+                 *          ...
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
+                 *          textOut.Write (L"Hello World\n");
+                 *      \endcode
                  */
                 static Ptr New (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
                 static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
-                static Ptr New (const TextWriter&) = delete;
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Characters::Character>::Ptr& src);
 
             public:
                 /**
@@ -101,6 +116,11 @@ namespace Stroika {
 
             private:
                 static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<Memory::Byte>::Ptr& src, Format format);
+
+            private:
+                template <typename X>
+                using BLAH_            = TextWriter;
+                using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Characters::Character, BLAH_, OutputStream<Characters::Character>::_IRep>;
             };
 
             /**
@@ -112,17 +132,19 @@ namespace Stroika {
 
             public:
                 /**
-                &&&&&
-                *  \par Example Usage
-                *      \code
-                *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead);
-                *      \endcode
-                *
-                *  \par Example Usage
-                *      \code
-                *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead))
-                *      \endcode
-                */
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
+                 *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
+                 *          ...
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
+                 *          textOut.Write (L"Hello World\n");
+                 *      \endcode
+                 */
                 Ptr ()                = default;
                 Ptr (const Ptr& from) = default;
                 Ptr (const OutputStream<Characters::Character>::Ptr& from);
