@@ -39,5 +39,5 @@ Memory::BLOB Variant::Writer::WriteAsBLOB (const VariantValue& v)
 
 String Variant::Writer::WriteAsString (const VariantValue& v)
 {
-    return Streams::TextReader (WriteAsBLOB (v)).ReadAll ();
+    return Streams::TextReader::New (WriteAsBLOB (v)).ReadAll ();
 }

@@ -48,7 +48,7 @@ public:
     }
     virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
     {
-        return Read (Streams::TextReader (in));
+        return Read (Streams::TextReader::New (in));
     }
     virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
     {
@@ -88,7 +88,7 @@ Variant::CharacterDelimitedLines::Reader::Reader (const Set<Character>& columnDe
 
 Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Byte>::Ptr& in) const
 {
-    return ReadMatrix (Streams::TextReader (in));
+    return ReadMatrix (Streams::TextReader::New (in));
 }
 
 Iterable<Sequence<String>> Variant::CharacterDelimitedLines::Reader::ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const

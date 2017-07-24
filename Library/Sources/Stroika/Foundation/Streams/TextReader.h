@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "InputStream.h"
+#include "InternallySyncrhonizedInputStream.h"
 
 /**
  *  \file
@@ -47,7 +48,7 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *      for (String line : TextReader (FileInputStream::New (L"/tmp/foo")).ReadLines ()) {
+             *      for (String line : TextReader::New (FileInputStream::New (L"/tmp/foo")).ReadLines ()) {
              *      }
              *      \endcode
              *
@@ -58,9 +59,13 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
-            class TextReader : public InputStream<Character>::Ptr {
-            private:
-                using inherited = InputStream<Character>::Ptr;
+            class TextReader : public InputStream<Character> {
+            public:
+                TextReader ()                  = delete;
+                TextReader (const TextReader&) = delete;
+
+            public:
+                class Ptr;
 
             public:
                 /**
@@ -77,18 +82,12 @@ namespace Stroika {
                  *  \note Depending on the underlying source (e.g. binary stream) - maintaining seekability may be expensive in terms
                  *        of memory usage.
                  */
-                TextReader (const Memory::BLOB& src, const Memory::Optional<Characters::String>& charset = {});
-                TextReader (const InputStream<Memory::Byte>::Ptr& src, bool seekable = true);
-                TextReader (const InputStream<Memory::Byte>::Ptr& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
-                TextReader (const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
-                TextReader (const InputStream<Character>::Ptr& src);
-                TextReader (const Traversal::Iterable<Character>& src);
-                TextReader (const TextReader&) = delete;
-
-            public:
-                /**
-                 */
-                nonvirtual TextReader& operator= (const TextReader&) = delete;
+                static Ptr New (const Memory::BLOB& src, const Memory::Optional<Characters::String>& charset = {});
+                static Ptr New (const InputStream<Memory::Byte>::Ptr& src, bool seekable = true);
+                static Ptr New (const InputStream<Memory::Byte>::Ptr& src, const Memory::Optional<Characters::String>& charset, bool seekable = true);
+                static Ptr New (const InputStream<Memory::Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable = true);
+                static Ptr New (const InputStream<Character>::Ptr& src);
+                static Ptr New (const Traversal::Iterable<Character>& src);
 
             private:
                 class FromBinaryStreamBaseRep_;
@@ -96,6 +95,39 @@ namespace Stroika {
                 class BaseSeekingBinaryStreamRep_;
                 class CachingSeekableBinaryStreamRep_;
                 class IterableAdapterStreamRep_;
+            };
+
+            /**
+             *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
+             */
+            class TextReader::Ptr : public InputStream<Character>::Ptr {
+            private:
+                using inherited = typename InputStream<Character>::Ptr;
+
+            public:
+                /**
+                *  \par Example Usage
+                *      \code
+                *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead);
+                *      \endcode
+                *
+                *  \par Example Usage
+                *      \code
+                *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead))
+                *      \endcode
+                */
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (const InputStream<Character>::Ptr& from);
+
+            protected:
+                Ptr (const shared_ptr<InputStream<Character>::_IRep>& from);
+
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+
+            private:
+                friend class TextReader;
             };
         }
     }

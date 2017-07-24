@@ -226,7 +226,7 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
             using Streams::TextReader;
             using IO::FileSystem::FileInputStream;
             using Characters::String2Int;
-            for (String line : TextReader (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+            for (String line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
                 Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
                     result.fBootedAt = DateTime::Now ().AddSeconds (-Characters::String2Float<double> (t[0]));
@@ -371,7 +371,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         Optional<unsigned int> currentProcessorID;
         Optional<String>       currentModelName;
         Optional<unsigned int> currentSocketID;
-        for (String line : TextReader (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
+        for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"***in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());
 #endif
@@ -834,7 +834,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader (IO::FileSystem::FileInputStream::New (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (String_Constant (L"/etc/centos-release"))).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = L"Centos";
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();
@@ -848,7 +848,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         }
         if (tmp.fShortPrettyName.empty ()) {
             try {
-                String n                        = Streams::TextReader (IO::FileSystem::FileInputStream::New (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
+                String n                        = Streams::TextReader::New (IO::FileSystem::FileInputStream::New (String_Constant (L"/etc/redhat-release"))).ReadAll ().Trim ();
                 tmp.fShortPrettyName            = L"RedHat";
                 tmp.fPrettyNameWithMajorVersion = n;
                 Sequence<String> tokens         = n.Tokenize ();

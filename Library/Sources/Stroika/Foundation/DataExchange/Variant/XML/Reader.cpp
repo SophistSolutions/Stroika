@@ -44,7 +44,7 @@ public:
     virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
-        return Read (Streams::TextReader (in));
+        return Read (Streams::TextReader::New (in));
     }
     virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
     {

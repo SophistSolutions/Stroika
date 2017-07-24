@@ -420,32 +420,37 @@ namespace {
     }
 }
 
-TextReader::TextReader (const Memory::BLOB& src, const Optional<Characters::String>& charset)
-    : TextReader (src.As<InputStream<Byte>::Ptr> (), charset, true)
+auto TextReader::New (const Memory::BLOB& src, const Optional<Characters::String>& charset) -> Ptr
 {
-    Ensure (this->IsSeekable ());
+    Ptr p = TextReader::New (src.As<InputStream<Byte>::Ptr> (), charset, true);
+    Ensure (p.IsSeekable ());
+    return p;
 }
 
-TextReader::TextReader (const InputStream<Byte>::Ptr& src, bool seekable)
-    : TextReader (src, kUTF8Converter_, seekable)
+auto TextReader::New (const InputStream<Byte>::Ptr& src, bool seekable) -> Ptr
 {
-    Ensure (this->IsSeekable () == seekable);
+    Ptr p = TextReader::New (src, kUTF8Converter_, seekable);
+    Ensure (p.IsSeekable () == seekable);
+    return p;
 }
 
-TextReader::TextReader (const InputStream<Byte>::Ptr& src, const Optional<Characters::String>& charset, bool seekable)
-    : TextReader (src, LookupCharsetConverter_ (charset), seekable)
+auto TextReader::New (const InputStream<Byte>::Ptr& src, const Optional<Characters::String>& charset, bool seekable) -> Ptr
 {
-    Ensure (this->IsSeekable () == seekable);
+    Ptr p = TextReader::New (src, LookupCharsetConverter_ (charset), seekable);
+    Ensure (p.IsSeekable () == seekable);
+    return p;
 }
 
-TextReader::TextReader (const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable)
-    : InputStream<Character>::Ptr (seekable ? static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)) : static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<UnseekableBinaryStreamRep_> (src, codeConverter)))
+auto TextReader::New (const InputStream<Byte>::Ptr& src, const codecvt<wchar_t, char, mbstate_t>& codeConverter, bool seekable) -> Ptr
 {
-    Ensure (this->IsSeekable () == seekable);
+    Ptr p = seekable ? static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<CachingSeekableBinaryStreamRep_> (src, codeConverter)) : static_cast<InputStream<Character>::Ptr::_SharedIRep> (make_shared<UnseekableBinaryStreamRep_> (src, codeConverter));
+    Ensure (p.IsSeekable () == seekable);
+    return p;
 }
 
-TextReader::TextReader (const Traversal::Iterable<Character>& src)
-    : InputStream<Character>::Ptr (make_shared<IterableAdapterStreamRep_> (src))
+auto TextReader::New (const Traversal::Iterable<Character>& src) -> Ptr
 {
-    Ensure (this->IsSeekable ());
+    Ptr p = make_shared<IterableAdapterStreamRep_> (src);
+    Ensure (p.IsSeekable ());
+    return p;
 }

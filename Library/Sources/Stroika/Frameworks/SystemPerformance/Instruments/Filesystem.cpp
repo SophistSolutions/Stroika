@@ -445,7 +445,7 @@ namespace {
                 if (blockDeviceInfoPath) {
                     String fn = *blockDeviceInfoPath + L"queue/hw_sector_size";
                     try {
-                        o = String2Int<uint32_t> (TextReader (FileInputStream::New (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
+                        o = String2Int<uint32_t> (TextReader::New (FileInputStream::New (fn, FileInputStream::eNotSeekable)).ReadAll ().Trim ());
                         fDeviceName2SectorSizeMap_.Add (deviceName, *o);
                     }
                     catch (...) {

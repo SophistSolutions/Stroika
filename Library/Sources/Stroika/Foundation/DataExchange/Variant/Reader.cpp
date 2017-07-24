@@ -21,7 +21,7 @@ using Streams::iostream::InputStreamFromStdIStream;
  */
 VariantValue Variant::Reader::Read (const Traversal::Iterable<Characters::Character>& in)
 {
-    return Read (Streams::TextReader (in));
+    return Read (Streams::TextReader::New (in));
 }
 
 VariantValue Variant::Reader::Read (const Memory::BLOB& in)
@@ -31,7 +31,7 @@ VariantValue Variant::Reader::Read (const Memory::BLOB& in)
 
 VariantValue Variant::Reader::Read (istream& in)
 {
-    return Read (Streams::TextReader (InputStreamFromStdIStream<Memory::Byte>::New (in), true));
+    return Read (Streams::TextReader::New (InputStreamFromStdIStream<Memory::Byte>::New (in), true));
 }
 
 VariantValue Variant::Reader::Read (wistream& in)

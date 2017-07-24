@@ -189,12 +189,12 @@ namespace {
             using Characters::Character;
             using Characters::String;
             {
-                Traversal::Iterable<Character> s = String (L"This");
-                TextReader                     tr{s};
+                Traversal::Iterable<Character> s  = String (L"This");
+                TextReader::Ptr                tr = TextReader::New (s);
                 VerifyTestResult (tr.ReadAll () == L"This");
             }
             {
-                VerifyTestResult ((TextReader{String (L"hello world")}.ReadAll () == L"hello world"));
+                VerifyTestResult ((TextReader::New (String{L"hello world"}).ReadAll () == L"hello world"));
             }
         }
 
@@ -213,8 +213,8 @@ namespace {
             using Characters::Character;
             using Characters::String;
             {
-                Memory::BLOB s = Memory::BLOB::Raw (u8"Testing 1, 2, 3");
-                TextReader   tr{s};
+                Memory::BLOB    s  = Memory::BLOB::Raw (u8"Testing 1, 2, 3");
+                TextReader::Ptr tr = TextReader::New (s);
                 VerifyTestResult (tr.ReadAll () == L"Testing 1, 2, 3");
             }
         }

@@ -516,7 +516,7 @@ namespace {
                         }
 
                         if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
-                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [](const Streams::InputStream<Byte>::Ptr& in) { return TextReader (in).ReadAll ().Trim (); });
+                            processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [](const Streams::InputStream<Byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
                         /*
@@ -1067,7 +1067,7 @@ namespace {
             }
             ProcessType::TCPStats stats;
             bool                  didSkip = false;
-            for (String i : TextReader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
+            for (String i : TextReader::New (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)).ReadLines ()) { // @todo redo using .Skip(1) but crashes --LGP 2016-05-17
                 if (not didSkip) {
                     didSkip = true;
                     continue;

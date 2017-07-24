@@ -62,7 +62,7 @@ InputStream<Byte>::Ptr Response::GetDataBinaryInputStream () const
 InputStream<Character>::Ptr Response::GetDataTextInputStream () const
 {
     if (fDataTextInputStream_.IsMissing ()) {
-        fDataTextInputStream_ = Streams::TextReader{GetDataBinaryInputStream (), GetCharset ()};
+        fDataTextInputStream_ = Streams::TextReader::New (GetDataBinaryInputStream (), GetCharset ());
     }
     return *fDataTextInputStream_;
 }

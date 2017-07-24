@@ -42,7 +42,7 @@ public:
     }
     virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
     {
-        return Read (Streams::TextReader (in));
+        return Read (Streams::TextReader::New (in));
     }
     virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
     {

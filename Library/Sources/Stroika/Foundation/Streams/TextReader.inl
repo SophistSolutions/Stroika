@@ -16,12 +16,26 @@ namespace Stroika {
 
             /*
              ********************************************************************************
+             *********************************** TextReader::Ptr ****************************
+             ********************************************************************************
+             */
+            inline TextReader::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
+                : inherited (from)
+            {
+            }
+            inline TextReader::Ptr::Ptr (const InputStream<Character>::Ptr& from)
+                : inherited (from)
+            {
+            }
+
+            /*
+             ********************************************************************************
              *********************************** TextReader *********************************
              ********************************************************************************
              */
-            inline TextReader::TextReader (const InputStream<Character>::Ptr& src)
-                : inherited (src)
+            inline auto TextReader::New (const InputStream<Character>::Ptr& src) -> Ptr
             {
+                return src;
             }
         }
     }

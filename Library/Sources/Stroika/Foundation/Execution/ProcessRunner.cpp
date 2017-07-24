@@ -501,7 +501,7 @@ Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, 
 
         // get from 'useStdOut'
         Assert (useStdOut.GetReadOffset () == 0);
-        return Streams::TextReader (useStdOut).ReadAll ();
+        return Streams::TextReader::New (useStdOut).ReadAll ();
     }
     catch (...) {
         SetStdIn (oldStdIn);

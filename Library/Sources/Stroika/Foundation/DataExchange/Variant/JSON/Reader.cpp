@@ -396,7 +396,7 @@ public:
     virtual VariantValue Read (const Streams::InputStream<Byte>::Ptr& in) override
     {
         constexpr bool kSeekable_{true};
-        return Read (Streams::TextReader (in, kSeekable_));
+        return Read (Streams::TextReader::New (in, kSeekable_));
     }
     virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) override
     {
