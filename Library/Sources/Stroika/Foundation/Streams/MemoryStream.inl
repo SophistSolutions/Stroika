@@ -227,7 +227,7 @@ namespace Stroika {
             {
                 switch (internallySyncrhonized) {
                     case Execution::eInternallySynchronized:
-                        return InternalSyncRep_::New (make_shared<Rep_> ());
+                        return InternalSyncRep_::New ();
                     case Execution::eNotKnwonInternallySynchronized:
                         return make_shared<Rep_> ();
                     default:
@@ -245,7 +245,7 @@ namespace Stroika {
             {
                 switch (internallySyncrhonized) {
                     case Execution::eInternallySynchronized:
-                        return InternalSyncRep_::New (New (start, end));
+                        return InternalSyncRep_::New (start, end);
                     case Execution::eNotKnwonInternallySynchronized:
                         return New (start, end);
                     default:

@@ -22,62 +22,60 @@ namespace Stroika {
             template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
             class InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
             public:
-                Rep_ (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& realInOut)
-                    : BASE_REP_TYPE ()
-                    , fRealInOut_ (realInOut)
+                template <typename... ARGS>
+                Rep_ (ARGS&&... args)
+                    : BASE_REP_TYPE (forward<ARGS> (args)...)
                 {
                 }
-                Rep_ ()            = delete;
                 Rep_ (const Rep_&) = delete;
                 virtual bool IsSeekable () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealInOut_.IsSeekable ();
+                    return BASE_REP_TYPE::IsSeekable ();
                 }
                 virtual SeekOffsetType GetReadOffset () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealInOut_.GetReadOffset ();
+                    return BASE_REP_TYPE::GetReadOffset ();
                 }
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealInOut_.SeekRead (whence, offset);
+                    return BASE_REP_TYPE::SeekRead (whence, offset);
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealInOut_.Read (intoStart, intoEnd);
+                    return BASE_REP_TYPE::Read (intoStart, intoEnd);
                 }
                 virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealInOut_.ReadNonBlocking (intoStart, intoEnd);
+                    return BASE_REP_TYPE::ReadNonBlocking (intoStart, intoEnd);
                 }
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealInOut_.GetWriteOffset ();
+                    return BASE_REP_TYPE::GetWriteOffset ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    return fRealInOut_.SeekWrite (whence, offset);
+                    return BASE_REP_TYPE::SeekWrite (whence, offset);
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    fRealInOut_.Write (start, end);
+                    BASE_REP_TYPE::Write (start, end);
                 }
                 virtual void Flush () override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
-                    fRealInOut_.Flush ();
+                    BASE_REP_TYPE::Flush ();
                 }
 
             private:
-                mutable mutex                          fCriticalSection_;
-                typename BASE_CLASS<ELEMENT_TYPE>::Ptr fRealInOut_;
+                mutable mutex fCriticalSection_;
             };
 
             /*
@@ -86,9 +84,10 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
-            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (const typename BASE_CLASS<ELEMENT_TYPE>::Ptr& stream2Wrap) -> Ptr
+            template <typename... ARGS>
+            inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (ARGS&&... args) -> Ptr
             {
-                return Ptr{make_shared<Rep_> (stream2Wrap)};
+                return Ptr{make_shared<Rep_> (forward<ARGS> (args)...)};
             }
 
             /*
