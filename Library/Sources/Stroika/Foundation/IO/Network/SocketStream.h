@@ -60,7 +60,7 @@ namespace Stroika {
                 private:
                     template <typename X>
                     using BLAH_            = SocketStream;
-                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, BLAH_, Network::SocketStream::Rep_>;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, BLAH_, SocketStream::Rep_>;
                 };
 
                 /**
@@ -78,7 +78,7 @@ namespace Stroika {
                      *            SocketStream::Ptr             inOut = SocketStream::New (connectionSocket);
                      *      \endcode
                      */
-                    Ptr ()                = default;
+                    Ptr ()                = delete;
                     Ptr (const Ptr& from) = default;
                     Ptr (nullptr_t);
 
