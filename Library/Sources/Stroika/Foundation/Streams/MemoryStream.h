@@ -79,7 +79,7 @@ namespace Stroika {
                  *          string xxx = out.As<string> ();
                  *      \endcode
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-By-Externally-Syncrhonized">Rep-Inside-Ptr-Must-By-Externally-Syncrhonized/a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized">Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized</a>
                  */
                 static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnwonInternallySynchronized);
                 static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);

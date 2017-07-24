@@ -84,7 +84,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Is-Internally-Syncrhonized">Rep-Inside-Ptr-Is-Internally-Syncrhonized/a>
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Is-Internally-Syncrhonized">Rep-Inside-Ptr-Is-Internally-Syncrhonized</a>
                  */
                 static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eInternallySynchronized);
                 static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
