@@ -21,17 +21,23 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
+ *
+ *      @todo   https://stroika.atlassian.net/browse/STK-612
+ *              Probably rename class IO::FileSystem::FileSystem to IO::FileSystem::Ptr (or FileSystemPtr)
+ *
+ *              OLD TODOS this subsumes:
+ *                  >   Terrible name - class FileSystem inside namesapce FileSystem!
+ *
+ *                  >    Bad names. Unwise to have CLASS (singlton mgr) as same name as namespace. Not sure how to fix however.
+ *
+ *                  >   Add virtual interface and subdir for each concrete one. Tons more code to be factored in here.
+ *                      (leave open but this woudl be a second step - once we have this in 'Ptr' doing rep a natural next step
+ *
+ *                  >   Great IDEA FROM KDJ. I USED TO support abstractfilesystem in stroika. Maybe in old code base. Used for Win32 FS versus UNIX versus MacOS FS.
+ *                      KDJ's point is this idea should be resurected cuz its useful for stuff like TARFILEs and ZIPFILES or ISO files which act like a FS, and can be treated
+ *                      that way.
+ *
  *      @todo   Consider relationship between windows GetLongPathName() and our CanonicalizePathName...
- *
- *      @todo   Terrible name - class FileSystem inside namesapce FileSystem!
- *
- *      @todo   Great IDEA FROM KDJ. I USED TO support abstractfilesystem in stroika. Maybe in old code base. Used for Win32 FS versus UNIX versus MacOS FS.
- *              KDJ's point is this idea should be resurected cuz its useful for stuff like TARFILEs and ZIPFILES or ISO files which act like a FS, and can be treated
- *              that way.
- *
- *      @todo   Bad names. Unwise to have CLASS (singlton mgr) as same name as namespace. Not sure how to fix however.
- *
- *      @todo   Add virtual interface and subdir for each concrete one. Tons more code to be factored in here.
  *
  */
 
@@ -42,17 +48,38 @@ namespace Stroika {
 
 //tmphack - just while we have _Deprecated_ ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211")
 #if 1
-                class FileSystem;
-                FileSystem Default ();
+                class Ptr;
+                Ptr Default ();
 #endif
+
+                /**
+                */
+                enum class RemoveDirectoryPolicy {
+                    eFailIfNotEmpty,
+                    eRemoveAnyContainedFiles, // note - this includes the case of included folders which include more files - fully recursive
+
+                    eDEFAULT = eFailIfNotEmpty,
+
+                    Stroika_Define_Enum_Bounds (eFailIfNotEmpty, eRemoveAnyContainedFiles)
+                };
 
                 /**
                  *  SUPER ROUGH DRAFT .... Move much code from Directory and FileUtils as methods here. See KDJ comment above. Do other filesystems.
                  *  POSIX, WINDOWS, and MacOS, and ZIPFILE, etc...
+                 *
+                 *  \note SOON TODO REP class and shared_ptr here- https://stroika.atlassian.net/browse/STK-612 - 
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          if (IO::FileSystem::Default ().Access (kProcUptimeFileName_)) {
+                 *              // do stuff
+                 *          }
+                 *      \endcode
+                 *
                  */
-                class FileSystem {
+                class Ptr {
                 public:
-                    _Deprecated_ ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211") static FileSystem Default ()
+                    _Deprecated_ ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211") static Ptr Default ()
                     {
                         return IO::FileSystem::Default ();
                     }
@@ -66,7 +93,7 @@ namespace Stroika {
                      *
                      *  \par Example Usage
                      *      \code
-                     *          if (IO::FileSystem::FileSystem::Default ().Access (kProcUptimeFileName_)) {
+                     *          if (IO::FileSystem::Default ().Access (kProcUptimeFileName_)) {
                      *              // do stuff
                      *          }
                      *      \endcode
@@ -90,7 +117,7 @@ namespace Stroika {
                      *      \code
                      *          void CopyFile (String srcPath, String desPath)
                      *          {
-                     *              IO::FileSystem::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
+                     *              IO::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
                      *              CreateDirectoryForFile (destPath);
                      *              .. do actual copy ..
                      *          }
@@ -171,7 +198,6 @@ namespace Stroika {
                         //struct {
                         Memory::Optional<String>         fDriveLetter; // this string incldues the colon, so example "C:"
                         Memory::Optional<ServerAndShare> fServerAndShare;
-//};
 #endif
                         Containers::Sequence<String> fPath;
                     };
@@ -212,18 +238,6 @@ namespace Stroika {
                      *  @see RemoveFile
                      */
                     nonvirtual bool RemoveFileIf (const String& fileName);
-
-                public:
-                    /**
-                     */
-                    enum RemoveDirectoryPolicy {
-                        eFailIfNotEmpty,
-                        eRemoveAnyContainedFiles, // note - this includes the case of included folders which include more files - fully recursive
-
-                        eDEFAULT = eFailIfNotEmpty,
-
-                        Stroika_Define_Enum_Bounds (eFailIfNotEmpty, eRemoveAnyContainedFiles)
-                    };
 
                 public:
                     /**
@@ -277,12 +291,14 @@ namespace Stroika {
                     nonvirtual void SetCurrentDirectory (const String& newDir);
                 };
 
+                _Deprecated_ ("USE IO::FileSystem::Ptr- deprecated v2.0a211") typedef Ptr FileSystem;
+
                 /**
                  *  \note   Design Note: why method 'Default ()' instead of just sThe, or something like that?
                  *          There is one special interesting filesystem, but the intention was to someday allow differnt filesystems
                  *          to be accessed. For example, treating a zipfile as a filesystem.
                  */
-                FileSystem Default ();
+                Ptr Default ();
             }
         }
     }

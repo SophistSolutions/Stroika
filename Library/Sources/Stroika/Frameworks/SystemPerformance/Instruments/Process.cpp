@@ -660,7 +660,7 @@ namespace {
         template <typename T>
         Optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T (const Streams::InputStream<Byte>::Ptr&)>& reader)
         {
-            if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
             }
             return Optional<T> ();
@@ -720,7 +720,7 @@ namespace {
                     return sb.As<String> ();
                 }
             };
-            if (IO::FileSystem::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
+            if (IO::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (FileInputStream::New (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
             }
             return Optional<String> ();
@@ -728,14 +728,14 @@ namespace {
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
         Optional<String> OptionallyResolveShortcut_ (const String& shortcutPath)
         {
-            if (IO::FileSystem::FileSystem::Default ().Access (shortcutPath)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return IO::FileSystem::FileSystem::Default ().ResolveShortcut (shortcutPath));
+            if (IO::FileSystem::Default ().Access (shortcutPath)) {
+                IgnoreExceptionsExceptThreadAbortForCall (return IO::FileSystem::Default ().ResolveShortcut (shortcutPath));
             }
             return Optional<String> ();
         }
         Optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const String& fullPath)
         {
-            if (IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            if (IO::FileSystem::Default ().Access (fullPath)) {
                 IgnoreExceptionsExceptThreadAbortForCall (return ReadFileStringsMap_ (fullPath));
             }
             return Optional<Mapping<String, String>> ();
@@ -1022,7 +1022,7 @@ namespace {
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::Readproc_io_data_", L"fullPath=%s", fullPath.c_str ());
 #endif
 
-            if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            if (not IO::FileSystem::Default ().Access (fullPath)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Skipping read cuz no access");
 #endif
@@ -1059,7 +1059,7 @@ namespace {
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadTCPStats_", L"fullPath=%s", fullPath.c_str ());
 #endif
 
-            if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            if (not IO::FileSystem::Default ().Access (fullPath)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Skipping read cuz no access");
 #endif
@@ -1097,7 +1097,7 @@ namespace {
             Debug::TraceContextBumper ctx (L"Stroika::Frameworks::SystemPerformance::Instruments::Process::{}::ReadPrivateBytes_", L"fullPath=%s", fullPath.c_str ());
 #endif
 
-            if (not IO::FileSystem::FileSystem::Default ().Access (fullPath)) {
+            if (not IO::FileSystem::Default ().Access (fullPath)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"Skipping read cuz no access");
 #endif

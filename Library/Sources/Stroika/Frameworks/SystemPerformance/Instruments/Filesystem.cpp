@@ -425,12 +425,12 @@ namespace {
             // I dont understand this well yet, but this appears to temporarily allow us to limp along --LGP 2015-07-10
             //tmphack
             String tmp{L"/sys/block/" + deviceName + L"/"};
-            if (IO::FileSystem::FileSystem::Default ().Access (tmp)) {
+            if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
             //tmphack - try using one char less
             tmp = L"/sys/block/" + deviceName.SubString (0, -1) + L"/";
-            if (IO::FileSystem::FileSystem::Default ().Access (tmp)) {
+            if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
             return Optional<String> ();

@@ -166,7 +166,7 @@ AppTempFileManager::~AppTempFileManager ()
 {
     DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", fTmpDir.c_str ());
     try {
-        IO::FileSystem::Default ().RemoveDirectory (fTmpDir, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
+        IO::FileSystem::Default ().RemoveDirectory (fTmpDir, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
     }
     catch (...) {
         WeakAssert (false); // not reached
@@ -362,7 +362,7 @@ ScopedTmpDir::~ScopedTmpDir ()
     try {
         String dirName = fTmpDir.As<String> ();
         DbgTrace (L"ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'", dirName.c_str ());
-        IO::FileSystem::Default ().RemoveDirectory (dirName, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
+        IO::FileSystem::Default ().RemoveDirectory (dirName, RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
     }
     catch (...) {
         WeakAssert (false); // not reached

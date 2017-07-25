@@ -64,7 +64,7 @@ void Directory::AssureExists (bool createParentComponentsIfNeeded) const
 
 void Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
 {
-    IO::FileSystem::Default ().RemoveDirectoryIf (fFileFullPath_, autoDeleteContentsAsNeeded ? FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles : FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty);
+    IO::FileSystem::Default ().RemoveDirectoryIf (fFileFullPath_, autoDeleteContentsAsNeeded ? IO::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles : IO::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty);
 }
 
 bool Directory::Exists () const

@@ -21,15 +21,15 @@ namespace Stroika {
     namespace Foundation {
         namespace Configuration {
             template <>
-            struct DefaultNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy> : EnumNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy> {
-                static constexpr EnumNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy> k{
-                    EnumNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy>::BasicArrayInitializer{
+            struct DefaultNames<IO::FileSystem::RemoveDirectoryPolicy> : EnumNames<IO::FileSystem::RemoveDirectoryPolicy> {
+                static constexpr EnumNames<IO::FileSystem::RemoveDirectoryPolicy> k{
+                    EnumNames<IO::FileSystem::RemoveDirectoryPolicy>::BasicArrayInitializer{
                         {
-                            {IO::FileSystem::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty, L"Fail-If-Not-Empty"},
-                            {IO::FileSystem::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles, L"Remove-Any-Contained-Files"},
+                            {IO::FileSystem::RemoveDirectoryPolicy::eFailIfNotEmpty, L"Fail-If-Not-Empty"},
+                            {IO::FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles, L"Remove-Any-Contained-Files"},
                         }}};
                 DefaultNames ()
-                    : EnumNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy> (k)
+                    : EnumNames<IO::FileSystem::RemoveDirectoryPolicy> (k)
                 {
                 }
             };

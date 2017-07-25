@@ -63,17 +63,17 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 namespace Stroika {
     namespace Foundation {
         namespace Configuration {
-            constexpr EnumNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy> DefaultNames<IO::FileSystem::FileSystem::RemoveDirectoryPolicy>::k;
+            constexpr EnumNames<IO::FileSystem::RemoveDirectoryPolicy> DefaultNames<IO::FileSystem::RemoveDirectoryPolicy>::k;
         }
     }
 }
 
 /*
  ********************************************************************************
- **************************** FileSystem::FileSystem ****************************
+ ********************************** FileSystem::Ptr *****************************
  ********************************************************************************
  */
-bool IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessMode accessMode) const noexcept
+bool IO::FileSystem::Ptr::Access (const String& fileFullPath, FileAccessMode accessMode) const noexcept
 {
 // @todo FIX to only do ONE system call, not two!!!
 #if qPlatform_Windows
@@ -110,7 +110,7 @@ bool IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessM
 #endif
 }
 
-void IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, FileAccessMode accessMode)
+void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, FileAccessMode accessMode)
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
 
@@ -119,7 +119,7 @@ void IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, FileAc
     }
 }
 
-void IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
+void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
 {
     if (checkCanRead and checkCanWrite) {
         CheckAccess (fileFullPath, IO::FileAccessMode::eReadWrite);
@@ -132,7 +132,7 @@ void IO::FileSystem::FileSystem::CheckAccess (const String& fileFullPath, bool c
     }
 }
 
-Memory::Optional<String> IO::FileSystem::FileSystem::FindExecutableInPath (const String& filename) const
+Memory::Optional<String> IO::FileSystem::Ptr::FindExecutableInPath (const String& filename) const
 {
     // @TODO A
     //   const char* pPath = ::getenv ("PATH");
@@ -142,7 +142,7 @@ Memory::Optional<String> IO::FileSystem::FileSystem::FindExecutableInPath (const
     return Memory::Optional<String>{};
 }
 
-String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrShortcut)
+String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
 {
     try {
 #if qPlatform_POSIX
@@ -240,7 +240,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
 }
 
-String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound)
+String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound)
 {
     try {
 #if qPlatform_POSIX
@@ -303,13 +303,13 @@ String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrSh
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
 }
 
-String IO::FileSystem::FileSystem::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound)
+String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound)
 {
     AssertNotImplemented ();
     return path2FileOrShortcut;
 }
 
-String IO::FileSystem::FileSystem::GetFullPathName (const String& pathName)
+String IO::FileSystem::Ptr::GetFullPathName (const String& pathName)
 {
 #if qPlatform_POSIX
     if (pathName.empty ()) {
@@ -333,7 +333,7 @@ String IO::FileSystem::FileSystem::GetFullPathName (const String& pathName)
 #endif
 }
 
-IO::FileSystem::FileSystem::Components IO::FileSystem::FileSystem::GetPathComponents (const String& fileName)
+IO::FileSystem::Ptr::Components IO::FileSystem::Ptr::GetPathComponents (const String& fileName)
 {
 // @todo LARGELY UNSTED ROUGH DRAFT - 2015-05-11
 // See http://en.wikipedia.org/wiki/Path_%28computing%29 to write this
@@ -358,7 +358,7 @@ C:
     .. / .. / greatgrandparent
     ~ / .rcinfo
 #endif
-    IO::FileSystem::FileSystem::Components result;
+    IO::FileSystem::Ptr::Components result;
     using Traversal::Iterator;
     using Characters::Character;
 
@@ -386,7 +386,7 @@ C:
     return result;
 }
 
-FileOffset_t IO::FileSystem::FileSystem::GetFileSize (const String& fileName)
+FileOffset_t IO::FileSystem::Ptr::GetFileSize (const String& fileName)
 {
     try {
 #if qPlatform_POSIX
@@ -406,7 +406,7 @@ FileOffset_t IO::FileSystem::FileSystem::GetFileSize (const String& fileName)
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eRead);
 }
 
-DateTime IO::FileSystem::FileSystem::GetFileLastModificationDate (const String& fileName)
+DateTime IO::FileSystem::Ptr::GetFileLastModificationDate (const String& fileName)
 {
     try {
 #if qPlatform_POSIX
@@ -426,7 +426,7 @@ DateTime IO::FileSystem::FileSystem::GetFileLastModificationDate (const String& 
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eRead);
 }
 
-DateTime IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fileName)
+DateTime IO::FileSystem::Ptr::GetFileLastAccessDate (const String& fileName)
 {
     try {
 #if qPlatform_POSIX
@@ -446,10 +446,10 @@ DateTime IO::FileSystem::FileSystem::GetFileLastAccessDate (const String& fileNa
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eRead);
 }
 
-void IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
+void IO::FileSystem::Ptr::RemoveFile (const String& fileName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::FileSystem::RemoveFile", L"fileName='%s'", fileName.c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveFile", L"fileName='%s'", fileName.c_str ());
 #endif
     try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
@@ -461,10 +461,10 @@ void IO::FileSystem::FileSystem::RemoveFile (const String& fileName)
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eWrite);
 }
 
-bool IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
+bool IO::FileSystem::Ptr::RemoveFileIf (const String& fileName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx (L"IO::FileSystem::FileSystem::RemoveFileIf", L"fileName='%s'", fileName.c_str ());
+    Debug::TraceContextBumper ctx (L"IO::FileSystem::Ptr::RemoveFileIf", L"fileName='%s'", fileName.c_str ());
 #endif
     try {
 #if qPlatform_Windows && qTargetPlatformSDKUseswchar_t
@@ -482,10 +482,10 @@ bool IO::FileSystem::FileSystem::RemoveFileIf (const String& fileName)
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fileName, FileAccessMode::eWrite);
 }
 
-void IO::FileSystem::FileSystem::RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy)
+void IO::FileSystem::Ptr::RemoveDirectory (const String& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectory", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx ("IO::FileSystem::Ptr::RemoveDirectory", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
 #endif
     bool triedRMRF{false};
 Again:
@@ -516,10 +516,10 @@ Again:
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (directory, FileAccessMode::eWrite);
 }
 
-bool IO::FileSystem::FileSystem::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
+bool IO::FileSystem::Ptr::RemoveDirectoryIf (const String& directory, RemoveDirectoryPolicy policy)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("IO::FileSystem::FileSystem::RemoveDirectoryIf", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
+    Debug::TraceContextBumper ctx ("IO::FileSystem::Ptr::RemoveDirectoryIf", L"directory='%s', policy=%s", directory.c_str (), Characters::ToString (policy).c_str ());
 #endif
     bool triedRMRF{false};
 Again:
@@ -553,7 +553,7 @@ Again:
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (directory, FileAccessMode::eWrite);
 }
 
-void IO::FileSystem::FileSystem::CreateSymbolicLink (const String& linkName, const String& target)
+void IO::FileSystem::Ptr::CreateSymbolicLink (const String& linkName, const String& target)
 {
 #if qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (::symlink (target.AsNarrowSDKString ().c_str (), linkName.AsNarrowSDKString ().c_str ()));
@@ -562,7 +562,7 @@ void IO::FileSystem::FileSystem::CreateSymbolicLink (const String& linkName, con
 #endif
 }
 
-String IO::FileSystem::FileSystem::GetCurrentDirectory () const
+String IO::FileSystem::Ptr::GetCurrentDirectory () const
 {
 #if qPlatform_POSIX
     SDKChar buf[PATH_MAX];
@@ -577,9 +577,9 @@ String IO::FileSystem::FileSystem::GetCurrentDirectory () const
 #endif
 }
 
-void IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
+void IO::FileSystem::Ptr::SetCurrentDirectory (const String& newDir)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::FileSystem::FileSystem::SetCurrentDirectory", L"directory='%s'", newDir.c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::FileSystem::Ptr::SetCurrentDirectory", L"directory='%s'", newDir.c_str ())};
 #if qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (::chdir (newDir.AsNarrowSDKString ().c_str ()));
 #elif qPlatform_Windows
@@ -594,8 +594,8 @@ void IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
  **************************** FileSystem::Default *******************************
  ********************************************************************************
  */
-IO::FileSystem::FileSystem IO::FileSystem::Default ()
+IO::FileSystem::Ptr IO::FileSystem::Default ()
 {
-    static IO::FileSystem::FileSystem sThe_;
+    static IO::FileSystem::Ptr sThe_;
     return sThe_;
 }
