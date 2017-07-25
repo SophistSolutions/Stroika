@@ -58,6 +58,7 @@ namespace Stroika {
              *  \note   ***Not Cancelation Point***
              *
              *  \note   methods all noexcept (just asserts out on problems) - noexcept so debug semantics same as release semantics
+             *          Since the DEBUG version will allocate memory, which may fail, those failures trigger assertion failure and abort.
              *
              *  Use this as a BASECLASS instead of directly aggregating, due to C++'s queer
              *  rules about sizeof() and members (all at least sizeof byte), but that does not apply
@@ -88,14 +89,14 @@ namespace Stroika {
              */
             class AssertExternallySynchronizedLock {
             public:
-				/**
+/**
                  *  \note   Copy/Move constructor checks for existing locks while copying.
                  *          Must be able to readlock source on copy, and have zero existing locks on src for move.
                  */
 #if !qDebug
                 constexpr
 #endif
-                AssertExternallySynchronizedLock () noexcept;
+                    AssertExternallySynchronizedLock () noexcept;
                 AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept;
                 AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept;
 
