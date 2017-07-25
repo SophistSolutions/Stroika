@@ -63,6 +63,9 @@ namespace Stroika {
                     Stroika_Define_Enum_Bounds (eFailIfNotEmpty, eRemoveAnyContainedFiles)
                 };
 
+                static constexpr RemoveDirectoryPolicy eFailIfNotEmpty          = RemoveDirectoryPolicy::eFailIfNotEmpty;
+                static constexpr RemoveDirectoryPolicy eRemoveAnyContainedFiles = RemoveDirectoryPolicy::eRemoveAnyContainedFiles;
+
                 /**
                  *  SUPER ROUGH DRAFT .... Move much code from Directory and FileUtils as methods here. See KDJ comment above. Do other filesystems.
                  *  POSIX, WINDOWS, and MacOS, and ZIPFILE, etc...
