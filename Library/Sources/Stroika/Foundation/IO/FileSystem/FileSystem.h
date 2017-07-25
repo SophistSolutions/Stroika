@@ -55,6 +55,16 @@ namespace Stroika {
                      *  This works for a file or directory.
                      *
                      *  @see CheckAccess to avoid test, and just throw if missing
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *          if (IO::FileSystem::FileSystem::Default ().Access (kProcUptimeFileName_)) {
+                     *              // do stuff
+                     *          }
+                     *      \endcode
+                     *
+                     *  \note   Similar to IO.File.Exists () in .net https://msdn.microsoft.com/en-us/library/system.io.file.exists(v=vs.110).aspx
+                     *  \note   Similar to POSIX access () - https://linux.die.net/man/2/access
                      */
                     nonvirtual bool Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const;
 
@@ -67,6 +77,16 @@ namespace Stroika {
                      *  This works for a file or directory.
                      *
                      *  @see Access to avoid throw
+					 *
+                     *  \par Example Usage
+                     *      \code
+                     *          void CopyFile (String srcPath, String desPath)
+                     *          {
+                     *              IO::FileSystem::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
+                     *              CreateDirectoryForFile (destPath);
+                     *              .. do actual copy ..
+                     *          }
+                     *      \endcode
                      */
                     nonvirtual void CheckAccess (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead);
                     nonvirtual void CheckAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite);
