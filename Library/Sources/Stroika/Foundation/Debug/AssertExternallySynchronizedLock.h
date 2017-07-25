@@ -55,6 +55,10 @@ namespace Stroika {
              *  \note   This may 'catch' a race by having its internal data structures (multiset) corrupted. Interpret
              *          corrupt multiset as a likely race indicator
              *
+             *  \note   ***Not Cancelation Point***
+             *
+             *  \note   methods all noexcept (just asserts out on problems) - noexcept so debug semantics same as release semantics
+             *
              *  Use this as a BASECLASS instead of directly aggregating, due to C++'s queer
              *  rules about sizeof() and members (all at least sizeof byte), but that does not apply
              *  to base classes:
@@ -84,24 +88,24 @@ namespace Stroika {
              */
             class AssertExternallySynchronizedLock {
             public:
-/**
+				/**
                  *  \note   Copy/Move constructor checks for existing locks while copying.
                  *          Must be able to readlock source on copy, and have zero existing locks on src for move.
                  */
 #if !qDebug
                 constexpr
 #endif
-                    AssertExternallySynchronizedLock () = default;
-                AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src);
-                AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src);
+                AssertExternallySynchronizedLock () noexcept;
+                AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept;
+                AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept;
 
             public:
                 /**
                  *  \note   operator= checks for existing locks while copying.
                  *          Must be able to readlock source on copy, and have zero existing locks on target or move.
                  */
-                nonvirtual AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock&& rhs);
-                nonvirtual AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs);
+                nonvirtual AssertExternallySynchronizedLock& operator= (AssertExternallySynchronizedLock&& rhs) noexcept;
+                nonvirtual AssertExternallySynchronizedLock& operator= (const AssertExternallySynchronizedLock& rhs) noexcept;
 
             public:
                 /**
@@ -111,7 +115,7 @@ namespace Stroika {
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
                  */
-                nonvirtual void lock () const;
+                nonvirtual void lock () const noexcept;
 
             public:
                 /**
@@ -122,7 +126,7 @@ namespace Stroika {
                  *
                  *  \req    still running on the same locking thread and locks not unbalanced
                  */
-                nonvirtual void unlock () const;
+                nonvirtual void unlock () const noexcept;
 
             public:
                 /**
@@ -132,7 +136,7 @@ namespace Stroika {
                  *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
                  *          methods without casts.
                  */
-                nonvirtual void lock_shared () const;
+                nonvirtual void lock_shared () const noexcept;
 
             public:
                 /**
@@ -143,14 +147,14 @@ namespace Stroika {
                  *
                  *  \req    still running on the same locking thread and locks not unbalanced
                  */
-                nonvirtual void unlock_shared () const;
+                nonvirtual void unlock_shared () const noexcept;
 
 #if qDebug
             private:
-                nonvirtual void lock_ () const;
-                nonvirtual void unlock_ () const;
-                nonvirtual void lock_shared_ () const;
-                nonvirtual void unlock_shared_ () const;
+                nonvirtual void lock_ () const noexcept;
+                nonvirtual void unlock_ () const noexcept;
+                nonvirtual void lock_shared_ () const noexcept;
+                nonvirtual void unlock_shared_ () const noexcept;
 
             private:
                 mutable atomic_uint_fast32_t               fLocks_{0};

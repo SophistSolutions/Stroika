@@ -14,61 +14,90 @@ namespace Stroika {
     namespace Foundation {
         namespace Debug {
 
-            /*
+/*
              ********************************************************************************
              *************** Debug::AssertExternallySynchronizedLock ************************
              ********************************************************************************
              */
-            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src)
+#if qDebug
+            DISABLE_COMPILER_MSC_WARNING_START (4297)
+            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept try : fSharedLockThreads_ (),
+                                                                                                        fSharedLockThreadsMutex_ () {
+            }
+            catch (...) {
+                AssertNotReached ();
+            }
+            DISABLE_COMPILER_MSC_WARNING_END (4297)
+#else
+            inline constexpr AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept
+            {
+            }
+#endif
+            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (const AssertExternallySynchronizedLock& src) noexcept
                 : AssertExternallySynchronizedLock ()
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec1{src}; // to copy, the src can have shared_locks, but no (write) locks
             }
-            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src)
+            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept
                 : AssertExternallySynchronizedLock ()
             {
 #if qDebug
-                lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_.Get ()};
-                Require (src.fLocks_ == 0 and src.fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
+                try {
+                    lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_.Get ()};
+                    Require (src.fLocks_ == 0 and src.fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
+                }
+                catch (...) {
+                    AssertNotReached ();
+                }
 #endif
             }
-            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= (const AssertExternallySynchronizedLock& rhs)
+            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= (const AssertExternallySynchronizedLock& rhs) noexcept
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
 #if qDebug
-                lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_.Get ()};
-                Require (fLocks_ == 0 and fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
+                try {
+                    lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
+                    lock_guard<mutex>                                  sharedLockProtect{fSharedLockThreadsMutex_.Get ()};
+                    Require (fLocks_ == 0 and fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
+                }
+                catch (...) {
+                    AssertNotReached ();
+                }
 #endif
                 return *this;
             }
-            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock&& rhs)
+            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock&& rhs) noexcept
             {
 #if qDebug
-                lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_.Get ()};
-                Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
-                Require (fLocks_ == 0 and fSharedLockThreads_.empty ());         // ditto for thing being assigned to
+                try {
+                    lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_.Get ()};
+                    Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
+                    Require (fLocks_ == 0 and fSharedLockThreads_.empty ());         // ditto for thing being assigned to
+                }
+                catch (...) {
+                    AssertNotReached ();
+                }
 #endif
                 return *this;
             }
-            inline void AssertExternallySynchronizedLock::lock () const
+            inline void AssertExternallySynchronizedLock::lock () const noexcept
             {
 #if qDebug
                 lock_ ();
 #endif
             }
-            inline void AssertExternallySynchronizedLock::unlock () const
+            inline void AssertExternallySynchronizedLock::unlock () const noexcept
             {
 #if qDebug
                 unlock_ ();
 #endif
             }
-            inline void AssertExternallySynchronizedLock::lock_shared () const
+            inline void AssertExternallySynchronizedLock::lock_shared () const noexcept
             {
 #if qDebug
                 lock_shared_ ();
 #endif
             }
-            inline void AssertExternallySynchronizedLock::unlock_shared () const
+            inline void AssertExternallySynchronizedLock::unlock_shared () const noexcept
             {
 #if qDebug
                 unlock_shared_ ();
