@@ -1059,34 +1059,32 @@ namespace Stroika {
                  *  As with STL, the return value of the data () function should NOT be assumed to be
                  *  NUL-terminated
                  *
-                 *  The lifetime of the pointer returned is guarantied until the next call to this String
+                 *  The lifetime of the pointer returned is guarantied until the next non-const call to this String
                  *  envelope class (that is if other reps change, or are acceessed this data will not
                  *  be modified)
                  *
-                 *  \note THREAD-SAFETY! - NOT THREADSAFE
+                 *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
                  */
                 nonvirtual const wchar_t* data () const;
 
             public:
                 /**
-                 *  This will always return a value which is NUL-terminated. Note that Stroika generally
-                 *  does NOT keep strings in NUL-terminated form, so this could be a costly function,
-                 *  requiring a copy of the data.
+                 *  This will always return a value which is NUL-terminated.
                  *
-                 *  The lifetime of the pointer returned is guarantied until the next call to this String
+                 *  The lifetime of the pointer returned is guarantied until the next non-const call to this String
                  *  envelope class (that is if other reps change, or are acceessed this data will not be modified)
                  *  Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
                  *  class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing
                  *  confusion elsewhere.
                  *
-                 *  Lifetime is ONLY up until next method access to String, so this API is intrinsically not threadsafe.
+                 *  Lifetime is ONLY up until next non-const method access to String, so this API is intrinsically not threadsafe.
                  *  That is - if you call this on a String, you better not be updating the string at the same time!
                  *
-                 *  \note THREAD-SAFETY! - NOT threadsafe
+                 *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
                  *
                  *  @see GetData ()
                  */
-                nonvirtual const wchar_t* c_str () const;
+                nonvirtual const wchar_t* c_str () const noexcept;
 
             public:
                 /**
@@ -1240,7 +1238,7 @@ namespace Stroika {
                  *  It is only 'mostly' standard because it is allowed to have nul-chars embedded in it. But it will
                  *  always have str[len] == 0;
                  *
-                 *  \note before Stroika v2.0a148 - return nullptr if its not already NUL-terminated
+                 *  \ensure returnResult[len] == '\0';
                  */
                 virtual const wchar_t* c_str_peek () const noexcept = 0;
 

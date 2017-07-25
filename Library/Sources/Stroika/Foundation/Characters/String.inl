@@ -512,7 +512,7 @@ namespace Stroika {
             {
                 return As<const wchar_t*> ();
             }
-            inline const wchar_t* String::c_str () const
+            inline const wchar_t* String::c_str () const noexcept
             {
                 const wchar_t* result = _SafeReadRepAccessor{this}._ConstGetRep ().c_str_peek ();
                 EnsureNotNull (result);
