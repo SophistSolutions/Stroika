@@ -198,7 +198,7 @@ namespace Stroika {
                  *
                  *  This defaults to no parameters.
                  */
-                nonvirtual const element_type* get () const;
+                nonvirtual const element_type* get () const noexcept;
                 template <typename... COPY_ARGS>
                 nonvirtual element_type* get (COPY_ARGS&&... copyArgs);
 
@@ -209,7 +209,7 @@ namespace Stroika {
                  *
                  *  \em Note: cget () will never invoke BreakReferences/Clone.
                  */
-                nonvirtual const element_type* cget () const;
+                nonvirtual const element_type* cget () const noexcept;
 
             public:
                 /**

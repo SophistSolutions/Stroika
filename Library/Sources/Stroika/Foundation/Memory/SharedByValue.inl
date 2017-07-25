@@ -173,7 +173,7 @@ namespace Stroika {
                 return *this;
             }
             template <typename TRAITS>
-            inline const typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get () const
+            inline const typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::get () const noexcept
             {
                 return fSharedImpl_.get ();
             }
@@ -196,7 +196,7 @@ namespace Stroika {
                 return ptr;
             }
             template <typename TRAITS>
-            inline const typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::cget () const
+            inline const typename SharedByValue<TRAITS>::element_type* SharedByValue<TRAITS>::cget () const noexcept
             {
                 return get ();
             }
