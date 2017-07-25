@@ -74,7 +74,7 @@ namespace Stroika {
                      *  \note   Similar to IO.File.Exists () in .net https://msdn.microsoft.com/en-us/library/system.io.file.exists(v=vs.110).aspx
                      *  \note   Similar to POSIX access () - https://linux.die.net/man/2/access
                      */
-                    nonvirtual bool Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const;
+                    nonvirtual bool Access (const String& fileFullPath, FileAccessMode accessMode = FileAccessMode::eRead) const noexcept;
 
                 public:
                     /**

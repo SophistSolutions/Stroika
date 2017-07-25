@@ -73,7 +73,7 @@ namespace Stroika {
  **************************** FileSystem::FileSystem ****************************
  ********************************************************************************
  */
-bool IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessMode accessMode) const
+bool IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessMode accessMode) const noexcept
 {
 // @todo FIX to only do ONE system call, not two!!!
 #if qPlatform_Windows
