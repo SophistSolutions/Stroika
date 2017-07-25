@@ -213,7 +213,7 @@ namespace {
             {
                 // re-open the file several times and assure right number of records present
                 String dbFileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"foo.db";
-                IO::FileSystem::FileSystem::Default ().RemoveFileIf (dbFileName);
+                IO::FileSystem::Default ().RemoveFileIf (dbFileName);
                 for (unsigned int i = 0; i < 5; ++i) {
                     PRIVATE_::DB db{dbFileName};
                     test (db, i);

@@ -166,7 +166,7 @@ AppTempFileManager::~AppTempFileManager ()
 {
     DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", fTmpDir.c_str ());
     try {
-        FileSystem::Default ().RemoveDirectory (fTmpDir, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
+        IO::FileSystem::Default ().RemoveDirectory (fTmpDir, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
     }
     catch (...) {
         WeakAssert (false); // not reached
@@ -190,7 +190,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
         s.insert (suffixStart, NarrowSDKStringToWide (buf));
-        if (not IO::FileSystem::FileSystem::Default ().Access (s.c_str ())) {
+        if (not IO::FileSystem::Default ().Access (s.c_str ())) {
             HANDLE f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 ::CloseHandle (f);
@@ -362,7 +362,7 @@ ScopedTmpDir::~ScopedTmpDir ()
     try {
         String dirName = fTmpDir.As<String> ();
         DbgTrace (L"ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'", dirName.c_str ());
-        FileSystem::Default ().RemoveDirectory (dirName, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
+        IO::FileSystem::Default ().RemoveDirectory (dirName, FileSystem::RemoveDirectoryPolicy::eRemoveAnyContainedFiles);
     }
     catch (...) {
         WeakAssert (false); // not reached

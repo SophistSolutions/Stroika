@@ -1180,7 +1180,7 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
 
     //@todo CONSIDER USING new Filesystem::...FindExecutableInPath - to check the right location, but dont bother for
     // now...
-    //IO::FileSystem::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.
+    //IO::FileSystem::Default ().CheckAccess (RESULT OF FINEXUTABLEINPATH, true, false); - or something like that.
 
     Sequence<String> useArgs;
     if (args.empty ()) {

@@ -21,7 +21,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *
  *      @todo   Consider relationship between windows GetLongPathName() and our CanonicalizePathName...
  *
  *      @todo   Terrible name - class FileSystem inside namesapce FileSystem!
@@ -41,13 +40,22 @@ namespace Stroika {
         namespace IO {
             namespace FileSystem {
 
+//tmphack - just while we have _Deprecated_ ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211")
+#if 1
+                class FileSystem;
+                FileSystem Default ();
+#endif
+
                 /**
                  *  SUPER ROUGH DRAFT .... Move much code from Directory and FileUtils as methods here. See KDJ comment above. Do other filesystems.
                  *  POSIX, WINDOWS, and MacOS, and ZIPFILE, etc...
                  */
                 class FileSystem {
                 public:
-                    static FileSystem Default ();
+                    _Deprecated_ ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211") static FileSystem Default ()
+                    {
+                        return IO::FileSystem::Default ();
+                    }
 
                 public:
                     /**
@@ -77,7 +85,7 @@ namespace Stroika {
                      *  This works for a file or directory.
                      *
                      *  @see Access to avoid throw
-					 *
+                     *
                      *  \par Example Usage
                      *      \code
                      *          void CopyFile (String srcPath, String desPath)
@@ -268,6 +276,13 @@ namespace Stroika {
                      */
                     nonvirtual void SetCurrentDirectory (const String& newDir);
                 };
+
+                /**
+                 *  \note   Design Note: why method 'Default ()' instead of just sThe, or something like that?
+                 *          There is one special interesting filesystem, but the intention was to someday allow differnt filesystems
+                 *          to be accessed. For example, treating a zipfile as a filesystem.
+                 */
+                FileSystem Default ();
             }
         }
     }

@@ -257,7 +257,7 @@ private:
             case IteratorReturnType::eDirPlusFilename:
                 return AssureDirectoryPathSlashTerminated (dirName);
             case IteratorReturnType::eFullPathName:
-                return AssureDirectoryPathSlashTerminated (IO::FileSystem::FileSystem::Default ().GetFullPathName (dirName));
+                return AssureDirectoryPathSlashTerminated (IO::FileSystem::Default ().GetFullPathName (dirName));
             default:
                 AssertNotReached ();
                 return String{};

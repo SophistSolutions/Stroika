@@ -268,7 +268,7 @@ void IO::FileSystem::CreateDirectoryForFile (const String& filePath)
         // NOT sure this is the best exception to throw here?
         Execution::Throw (IO::FileAccessException ());
     }
-    if (IO::FileSystem::FileSystem::Default ().Access (filePath)) {
+    if (IO::FileSystem::Default ().Access (filePath)) {
         // were done
         return;
     }
@@ -318,7 +318,7 @@ void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
     // see if can be/should be rewritten to use Win32 API of same name!!!
     //
     // If I DONT do that remapping to Win32 API, then redo this at least to copy / rename through tmpfile
-    IO::FileSystem::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
+    IO::FileSystem::Default ().CheckAccess (srcFile, IO::FileAccessMode::eRead);
     CreateDirectoryForFile (destPath);
     ThrowIfFalseGetLastError (::CopyFile (destPath.AsSDKString ().c_str (), srcFile.AsSDKString ().c_str (), false));
 #else

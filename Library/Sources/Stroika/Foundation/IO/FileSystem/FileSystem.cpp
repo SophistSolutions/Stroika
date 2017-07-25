@@ -73,12 +73,6 @@ namespace Stroika {
  **************************** FileSystem::FileSystem ****************************
  ********************************************************************************
  */
-IO::FileSystem::FileSystem IO::FileSystem::FileSystem::Default ()
-{
-    static IO::FileSystem::FileSystem sThe_;
-    return sThe_;
-}
-
 bool IO::FileSystem::FileSystem::Access (const String& fileFullPath, FileAccessMode accessMode) const
 {
 // @todo FIX to only do ONE system call, not two!!!
@@ -593,4 +587,15 @@ void IO::FileSystem::FileSystem::SetCurrentDirectory (const String& newDir)
 #else
     AssertNotReached ();
 #endif
+}
+
+/*
+ ********************************************************************************
+ **************************** FileSystem::Default *******************************
+ ********************************************************************************
+ */
+IO::FileSystem::FileSystem IO::FileSystem::Default ()
+{
+    static IO::FileSystem::FileSystem sThe_;
+    return sThe_;
 }
