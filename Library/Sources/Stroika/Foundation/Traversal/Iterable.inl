@@ -116,6 +116,17 @@ namespace Stroika {
             }
             template <typename T>
             template <typename REP_SUB_TYPE>
+            inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>& Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept
+            {
+                shared_lock<const Debug::AssertExternallySynchronizedLock>::operator= (rhs);
+                fConstRef_                                                          = rhs.fConstRef_;
+#if qDebug
+                fIterableEnvelope_ = rhs.fIterableEnvelope_;
+#endif
+                return *this;
+            }
+            template <typename T>
+            template <typename REP_SUB_TYPE>
             inline const REP_SUB_TYPE& Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const noexcept
             {
                 EnsureMember (fConstRef_, REP_SUB_TYPE);

@@ -1041,7 +1041,7 @@ namespace Stroika {
                 _SafeReadRepAccessor (const Iterable<T>* it) noexcept;
 
             public:
-                nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) noexcept = default;
+                nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor& rhs) noexcept;
 
             public:
                 nonvirtual const REP_SUB_TYPE& _ConstGetRep () const noexcept;
