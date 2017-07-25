@@ -1036,12 +1036,12 @@ namespace Stroika {
             class Iterable<T>::_SafeReadRepAccessor : private shared_lock<const Debug::AssertExternallySynchronizedLock> {
             public:
                 _SafeReadRepAccessor () = delete;
-                _SafeReadRepAccessor (const _SafeReadRepAccessor& src);
-                _SafeReadRepAccessor (_SafeReadRepAccessor&& src);
-                _SafeReadRepAccessor (const Iterable<T>* it);
+                _SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept;
+                _SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept;
+                _SafeReadRepAccessor (const Iterable<T>* it) noexcept;
 
             public:
-                nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = default;
+                nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) noexcept = default;
 
             public:
                 nonvirtual const REP_SUB_TYPE& _ConstGetRep () const noexcept;

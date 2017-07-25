@@ -75,7 +75,7 @@ namespace Stroika {
              */
             template <typename T>
             template <typename REP_SUB_TYPE>
-            inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it)
+            inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (*it)
                 , fConstRef_ (static_cast<const REP_SUB_TYPE*> (it->_fRep.cget ()))
 #if qDebug
@@ -87,7 +87,7 @@ namespace Stroika {
             }
             template <typename T>
             template <typename REP_SUB_TYPE>
-            inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src)
+            inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const _SafeReadRepAccessor& src) noexcept
 #if qDebug
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (*src.fIterableEnvelope_)
 #else
@@ -103,7 +103,7 @@ namespace Stroika {
             }
             template <typename T>
             template <typename REP_SUB_TYPE>
-            inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src)
+            inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (_SafeReadRepAccessor&& src) noexcept
                 : shared_lock<const Debug::AssertExternallySynchronizedLock> (move<const Debug::AssertExternallySynchronizedLock> (src))
                 , fConstRef_ (src.fConstRef_)
 #if qDebug
