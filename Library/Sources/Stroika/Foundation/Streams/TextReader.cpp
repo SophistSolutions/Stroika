@@ -466,6 +466,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return src;
         default:
             RequireNotReached ();
+            return src;
     }
 }
 
@@ -480,6 +481,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return New (src, charset);
         default:
             RequireNotReached ();
+            return New (src, charset);
     }
 }
 
@@ -494,6 +496,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return New (src, seekable);
         default:
             RequireNotReached ();
+            return New (src, seekable);
     }
 }
 
@@ -508,6 +511,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return New (src, charset, seekable);
         default:
             RequireNotReached ();
+            return New (src, charset, seekable);
     }
 }
 
@@ -522,6 +526,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return New (src, codeConverter, seekable);
         default:
             RequireNotReached ();
+            return New (src, codeConverter, seekable);
     }
 }
 
@@ -536,5 +541,6 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return New (src);
         default:
             RequireNotReached ();
+            return New (src);
     }
 }

@@ -223,6 +223,7 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return src;
         default:
             RequireNotReached ();
+            return src;
     }
 }
 auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Byte>::Ptr& src, Format format) -> Ptr
@@ -236,6 +237,7 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return Ptr{mk_ (src, format)};
         default:
             RequireNotReached ();
+            return Ptr{mk_ (src, format)};
     }
 }
 
