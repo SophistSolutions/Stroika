@@ -116,7 +116,7 @@ namespace Stroika {
             }
             template <typename T>
             template <typename REP_SUB_TYPE>
-            inline const REP_SUB_TYPE& Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const
+            inline const REP_SUB_TYPE& Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const noexcept
             {
                 EnsureMember (fConstRef_, REP_SUB_TYPE);
                 return *fConstRef_;

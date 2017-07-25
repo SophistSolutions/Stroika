@@ -1044,7 +1044,7 @@ namespace Stroika {
                 nonvirtual _SafeReadRepAccessor& operator= (const _SafeReadRepAccessor&) = default;
 
             public:
-                nonvirtual const REP_SUB_TYPE& _ConstGetRep () const;
+                nonvirtual const REP_SUB_TYPE& _ConstGetRep () const noexcept;
 
             private:
                 const REP_SUB_TYPE* fConstRef_;
