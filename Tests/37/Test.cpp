@@ -29,6 +29,7 @@ using Execution::Thread;
 using Execution::Finally;
 using Execution::SpinLock;
 using Execution::Synchronized;
+using Execution::RWSynchronized;
 using Execution::ThreadPool;
 using Execution::WaitableEvent;
 
@@ -835,6 +836,34 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest18_RWSynchronized_ {
+        namespace Private_ {
+            void Test1_MultipleConcurrentReaders ()
+            {
+                /**
+                 *  Note - this code can EASILY (but not definitely) deadlock if t1 is BETWEEN its two locks when t2 is BETWEEN its two locks (so more likely with longer sleep)
+                 *  if using a regular Syncrhonized() lock. But using RWSyncrhonized allows multiple read locks (which is what we are doing) - so no deadlock.
+                 */
+                RWSynchronized<int>    sharedData{0};
+                unsigned int           sum1{};
+                unsigned int           sum2{};
+                constexpr unsigned int kRepeatCount_{10000};
+                mutex                  forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
+                Thread::Ptr            t1 = Thread{[&]() {for (int i = 1; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } }};
+                Thread::Ptr            t2 = Thread{[&]() {for (int i = 1; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } }};
+                Thread::Start ({t1, t2});
+                Thread::WaitForDone ({t1, t2});
+            }
+        }
+        void DoIt ()
+        {
+            Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
+            Private_::Test1_MultipleConcurrentReaders ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -865,6 +894,7 @@ namespace {
         RegressionTest15_ThreadPoolStarvationBug_ ();
         RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
         RegressionTest17_ThreadInterruption_::RunTests ();
+        RegressionTest18_RWSynchronized_::DoIt ();
     }
 }
 

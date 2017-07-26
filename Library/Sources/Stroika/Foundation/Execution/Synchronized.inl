@@ -163,29 +163,43 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T, typename TRAITS>
+            inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const T* t, nullptr_t)
+                : fT (t)
+            {
+                RequireNotNull (t);
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"ReadableReference::CTOR -- locks (nullptr_t)");
+#endif
+            }
+            template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const T* t, MutexType* m)
                 : fT (t)
-                , l (*m)
+                , fSharedLock_ (m)
             {
                 RequireNotNull (t);
                 RequireNotNull (m);
+                TRAITS::LOCK_SHARED (*m);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"ReadableReference::CTOR -- locks (&fLock_=%p)", &m);
+                DbgTrace (L"ReadableReference::CTOR -- locks (fSharedLock_ mutex_=%p)", m);
 #endif
             }
             template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (ReadableReference&& src)
                 : fT (src.fT)
-                , l{move (src.l)}
+                , fSharedLock_{move (src.fSharedLock_)}
             {
-                src.fT = nullptr;
+                src.fT           = nullptr;
+                src.fSharedLock_ = nullptr;
             }
             template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::ReadableReference::~ReadableReference ()
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                DbgTrace (L"ReadableReference::DTOR -- locks (&fLock_=%p)", l.mutex ());
+                DbgTrace (L"ReadableReference::DTOR -- locks (fSharedLock_ mutex_=%p)", fSharedLock_);
 #endif
+                if (fSharedLock_ != nullptr) {
+                    TRAITS::UNLOCK_SHARED (*fSharedLock_);
+                }
             }
             template <typename T, typename TRAITS>
             inline const T* Synchronized<T, TRAITS>::ReadableReference::operator-> () const
@@ -219,12 +233,14 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, MutexType* m)
-                : ReadableReference (t, m)
+                : ReadableReference (t, nullptr)
+                , fUniqueLock_ (*m)
             {
             }
             template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::WritableReference::WritableReference (WritableReference&& src)
                 : ReadableReference (move (src))
+                      fUniqueLock_ (move (src.fUniqueLock_))
             {
             }
             template <typename T, typename TRAITS>
