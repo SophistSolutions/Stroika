@@ -32,7 +32,7 @@ namespace Stroika {
              *      #define LOCK_GUARD_CONTEXT(theMutex)\
              *          std::lock_guard<decltype(theMutex)> critSec { theMutex };
              *
-             *  Hopefully this will be fixed and obsoleted by C++17.
+             *  This will be fixed and obsoleted by C++17 (http://en.cppreference.com/w/cpp/language/class_template_argument_deduction)
              *
              *  BUT CONTINUE EXPLAIN - ONLY COST OF THIS IS CHECK IN DTOR WHICH COMPILER CAN PROBABLY OPTIMIZE AWAY
              *
@@ -73,8 +73,13 @@ namespace Stroika {
              *  Note that the utility of this macro is that you dont need to redundantly specify the type as is normal practice
              *  with lock_guard<>.
              */
+#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17
+#define MACRO_LOCK_GUARD_CONTEXT(theMutex) \
+    auto critSec = std::lock_guard{theMutex};
+#else
 #define MACRO_LOCK_GUARD_CONTEXT(theMutex) \
     std::lock_guard<decltype (theMutex)> critSec{theMutex};
+#endif
         }
     }
 }
