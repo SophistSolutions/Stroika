@@ -730,11 +730,24 @@ namespace {
             auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 Byte buf[10 * 1024];
                 int  nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                int skipedThisMany{};
+#endif
                 while ((nBytesRead = ::read (fd, buf, sizeof (buf))) > 0) {
                     if (stream != nullptr) {
                         stream.Write (buf, buf + nBytesRead);
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    if (errno == EAGAIN) {
+                        // If we get lots of EAGAINS, just skip logging them to avoid spamming the tracelog
+                        if (skipedThisMany++ < 100) {
+                            continue;
+                        }
+                        else {
+                            DbgTrace (L"skipped %d spamming EAGAINs", skipedThisMany);
+                            skipedThisMany = 0;
+                        }
+                    }
                     buf[(nBytesRead == NEltsOf (buf)) ? (NEltsOf (buf) - 1) : nBytesRead] = '\0';
                     DbgTrace ("read from process (fd=%d) nBytesRead = %d: %s", fd, nBytesRead, buf);
 #endif
