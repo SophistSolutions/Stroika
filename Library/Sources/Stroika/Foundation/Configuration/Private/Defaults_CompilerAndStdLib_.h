@@ -1139,10 +1139,20 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  */
 
 // When MSFT fixes qCompilerAndStdLib_cplusplus_macro_value_Buggy move back to the top of the file
-#if !qCompilerAndStdLib_cplusplus_macro_value_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_11
+//#if !qCompilerAndStdLib_cplusplus_macro_value_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_11
+//
+//#pragma message("Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)")
+//
+//#endif
 
-#pragma message("Stroika requires at least C++ ISO/IEC 14882:2011 supported by the compiler (informally known as C++ 11)")
-
+#if qCompilerAndStdLib_cplusplus_macro_value_Buggy
+#if _MSVC_LANG < kStrokia_Foundation_Configuration_cplusplus_14
+#pragma message("Stroika requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14)")
+#endif
+#else
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
+#pragma message("Stroika requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14)")
+#endif
 #endif
 
 #if qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
