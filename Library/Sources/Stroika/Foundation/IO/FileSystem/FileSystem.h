@@ -46,7 +46,7 @@ namespace Stroika {
         namespace IO {
             namespace FileSystem {
 
-//tmphack - just while we have _Deprecated_ ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211")
+//tmphack - just while we have [[deprecated ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211")]]
 #if 1
                 class Ptr;
                 Ptr Default ();
@@ -82,7 +82,7 @@ namespace Stroika {
                  */
                 class Ptr {
                 public:
-                    _Deprecated_ ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211") static Ptr Default ()
+                    [[deprecated ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211")]] static Ptr Default ()
                     {
                         return IO::FileSystem::Default ();
                     }
@@ -294,7 +294,7 @@ namespace Stroika {
                     nonvirtual void SetCurrentDirectory (const String& newDir);
                 };
 
-                _Deprecated_ ("USE IO::FileSystem::Ptr- deprecated v2.0a211") typedef Ptr FileSystem;
+                [[deprecated ("USE IO::FileSystem::Ptr- deprecated v2.0a211")]] typedef Ptr FileSystem;
 
                 /**
                  *  \note   Design Note: why method 'Default ()' instead of just sThe, or something like that?

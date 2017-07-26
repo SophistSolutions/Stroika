@@ -85,7 +85,7 @@ namespace Stroika {
                 using _SortedSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                _Deprecated_ ("USE _SortedSetRepSharedPtr - deprecated v2.0a211") typedef _SortedSetRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _SortedSetRepSharedPtr - deprecated v2.0a211")]] typedef _SortedSetRepSharedPtr _SharedPtrIRep;
 
             public:
                 SortedSet ();

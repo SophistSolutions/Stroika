@@ -145,7 +145,7 @@ namespace Stroika {
                 using _MultiSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                _Deprecated_ ("USE _MultiSetRepSharedPtr - deprecated v2.0a211") typedef _MultiSetRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _MultiSetRepSharedPtr - deprecated v2.0a211")]] typedef _MultiSetRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**

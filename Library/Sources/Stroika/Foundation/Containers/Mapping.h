@@ -111,7 +111,7 @@ namespace Stroika {
                 using _MappingRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                _Deprecated_ ("USE _MappingRepSharedPtr - deprecated v2.0a211") typedef _MappingRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _MappingRepSharedPtr - deprecated v2.0a211")]] typedef _MappingRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**

@@ -41,7 +41,6 @@ namespace Stroika {
 #endif
                 m.unlock ();
             }
-#if !qCompilerAndStdLib_shared_mutex_module_Buggy
             template <>
             inline void Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED (shared_timed_mutex& m)
             {
@@ -58,7 +57,6 @@ namespace Stroika {
 #endif
                 m.unlock_shared ();
             }
-#endif
 
             /*
              ********************************************************************************

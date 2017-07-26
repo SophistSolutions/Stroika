@@ -7,9 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <mutex>
-#if !qCompilerAndStdLib_shared_mutex_module_Buggy
 #include <shared_mutex>
-#endif
 
 #if qCompilerAndStdLib_Supports_stdoptional
 #include <optional>
@@ -520,8 +518,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                _Deprecated_ ("USE has_value - deprecated v2.0a211")
-                    nonvirtual constexpr bool engaged () const noexcept
+                [[deprecated ("USE has_value - deprecated v2.0a211")]] nonvirtual constexpr bool engaged () const noexcept
                 {
                     return has_value ();
                 }

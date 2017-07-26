@@ -94,7 +94,7 @@ namespace Stroika {
                 using _BijectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                _Deprecated_ ("USE _BijectionRepSharedPtr - deprecated v2.0a211") typedef _BijectionRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _BijectionRepSharedPtr - deprecated v2.0a211")]] typedef _BijectionRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**

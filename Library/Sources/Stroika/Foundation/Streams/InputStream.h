@@ -221,8 +221,7 @@ namespace Stroika {
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
                  *  underlying stream.
                  */
-                _Deprecated_ ("as of v2.0a211 - USE New (Execution::InternallySyncrhonized)")
-                    nonvirtual Ptr Synchronized () const;
+                [[deprecated ("as of v2.0a211 - USE New (Execution::InternallySyncrhonized)")]] nonvirtual Ptr Synchronized () const;
 
             public:
                 /**
@@ -401,7 +400,7 @@ namespace Stroika {
                  *  \note   Only defined on Binary Streams (InputStream<Byte>::Ptr), but POD_TYPE can be any (is_pod) type.
                  */
                 template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                _Deprecated_ ("USE ReadRaw - deprected in 2.0a208") inline POD_TYPE ReadPOD () const
+                [[deprecated ("USE ReadRaw - deprected in 2.0a208")]] inline POD_TYPE ReadPOD () const
                 {
                     return ReadRaw<POD_TYPE> ();
                 }

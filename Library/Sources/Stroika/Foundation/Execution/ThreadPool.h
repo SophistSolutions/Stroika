@@ -211,8 +211,7 @@ namespace Stroika {
                  *
                  *  \req 'aborted'
                  */
-                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
-                    nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const
+                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const
                 {
                     DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                     DISABLE_COMPILER_MSC_WARNING_START (4996)
@@ -227,8 +226,7 @@ namespace Stroika {
                  *
                  *  \req 'aborted'
                  */
-                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
-                    nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
+                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
             public:
                 /**
@@ -239,8 +237,7 @@ namespace Stroika {
                  *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
                  *          or it cancels before starting that process
                  */
-                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
-                    nonvirtual void Abort ();
+                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void Abort ();
 
             private:
                 nonvirtual void Abort_ ();
@@ -254,8 +251,7 @@ namespace Stroika {
                  *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
                  *          or it cancels before starting that process
                  */
-                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
-                    nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
+                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
             private:
                 nonvirtual void AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt);
@@ -269,8 +265,7 @@ namespace Stroika {
                  *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
                  *          or it cancels before starting that process
                  */
-                _Deprecated_ ("as of v2.0a209 - just destroy ThreadPool")
-                    nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
+                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
 
             public:
                 /**

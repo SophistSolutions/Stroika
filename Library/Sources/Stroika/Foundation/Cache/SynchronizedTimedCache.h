@@ -7,9 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <mutex>
-#if !qCompilerAndStdLib_shared_mutex_module_Buggy
 #include <shared_mutex>
-#endif
 
 #include "TimedCache.h"
 
@@ -45,21 +43,15 @@ namespace Stroika {
             public:
                 nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller)
                 {
-#if qCompilerAndStdLib_shared_mutex_module_Buggy
-                    lock_guard<mutex> lock (this->fMutex_);
-#else
                     shared_lock<shared_timed_mutex> lock (this->fMutex_);
-#endif
                     if (Memory::Optional<VALUE> o = inherited::Lookup (key)) {
                         return *o;
                     }
                     else {
                         VALUE v = cacheFiller (key);
                         {
-#if !qCompilerAndStdLib_shared_mutex_module_Buggy
                             lock.unlock ();
                             unique_lock<shared_timed_mutex> newRWLock (this->fMutex_);
-#endif
                             this->Add (key, v);
                         }
                         return move (v);
@@ -71,11 +63,7 @@ namespace Stroika {
                 nonvirtual SynchronizedTimedCache& operator= (const SynchronizedTimedCache&) = delete;
 
             private:
-#if qCompilerAndStdLib_shared_mutex_module_Buggy
-                mutable mutex fMutex_;
-#else
-                mutable shared_timed_mutex          fMutex_;
-#endif
+                mutable shared_timed_mutex fMutex_;
             };
         }
     }

@@ -60,7 +60,7 @@ namespace Stroika {
                 using _SortedMappingRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                _Deprecated_ ("USE _SortedMappingRepSharedPtr - deprecated v2.0a211") typedef _SortedMappingRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _SortedMappingRepSharedPtr - deprecated v2.0a211")]] typedef _SortedMappingRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**

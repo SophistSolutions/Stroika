@@ -74,7 +74,7 @@ namespace Stroika {
                 using _DequeRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                _Deprecated_ ("USE _DequeRepSharedPtr - deprecated v2.0a211") typedef _DequeRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _DequeRepSharedPtr - deprecated v2.0a211")]] typedef _DequeRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**

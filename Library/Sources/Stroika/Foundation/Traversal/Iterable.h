@@ -7,9 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <functional>
-#if !qCompilerAndStdLib_shared_mutex_module_Buggy
 #include <shared_mutex>
-#endif
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
@@ -260,10 +258,10 @@ namespace Stroika {
                 using _IterableRepSharedPtr = SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                _Deprecated_ ("USE _IterableRepSharedPtr - deprecated v2.0a211") typedef _IterableRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _IterableRepSharedPtr - deprecated v2.0a211")]] typedef _IterableRepSharedPtr _SharedPtrIRep;
 
             protected:
-                _Deprecated_ ("USE _IterableRepSharedPtr - deprecated v2.0a211") typedef _IterableRepSharedPtr _IterableSharedPtr;
+                [[deprecated ("USE _IterableRepSharedPtr - deprecated v2.0a211")]] typedef _IterableRepSharedPtr _IterableSharedPtr;
 
             protected:
                 /**
@@ -1112,7 +1110,7 @@ namespace Stroika {
                 using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
 
             protected:
-                _Deprecated_ ("USE _IterableRepSharedPtr - deprecated v2.0a211") typedef _IterableRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _IterableRepSharedPtr - deprecated v2.0a211")]] typedef _IterableRepSharedPtr _SharedPtrIRep;
 
             public:
                 using _APPLY_ARGTYPE      = const function<void(ArgByValueType<T> item)>&;

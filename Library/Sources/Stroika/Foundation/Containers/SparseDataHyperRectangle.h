@@ -40,7 +40,7 @@ namespace Stroika {
                 using _DataHyperRectangleRepSharedPtr = typename inherited::_DataHyperRectangleRepSharedPtr;
 
             protected:
-                _Deprecated_ ("USE _DataHyperRectangleRepSharedPtr - deprecated v2.0a211") typedef _DataHyperRectangleRepSharedPtr _SharedPtrIRep;
+                [[deprecated ("USE _DataHyperRectangleRepSharedPtr - deprecated v2.0a211")]] typedef _DataHyperRectangleRepSharedPtr _SharedPtrIRep;
 
             public:
                 /**

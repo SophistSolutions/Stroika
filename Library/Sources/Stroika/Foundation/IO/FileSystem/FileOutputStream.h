@@ -143,15 +143,15 @@ namespace Stroika {
                     /**
                      * @see FileOutputStream constructor
                      */
-                    _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
+                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
                     {
                         return New (fileName, flushFlag, bufferedFlag);
                     }
-                    _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
+                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
                     {
                         return New (fileName, appendFlag, flushFlag, bufferedFlag);
                     }
-                    _Deprecated_ ("USE New - deprecated v2.0a211") static Streams::OutputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
+                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::OutputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
                     {
                         return New (fd, adoptFDPolicy, seekableFlag, flushFlag, bufferedFlag);
                     }

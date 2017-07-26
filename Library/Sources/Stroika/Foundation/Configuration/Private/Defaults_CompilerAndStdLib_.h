@@ -523,9 +523,7 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 */
 #ifndef qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 
-#if !qCompilerAndStdLib_cplusplus_macro_value_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
-#define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy 1
-#elif !defined(__clang__) && defined(__GNUC__)
+#if !defined(__clang__) && defined(__GNUC__)
 // this is still broken even if you say -std=+14 in gcc49
 // this is still broken even if you say -std=+14 in gcc51
 #define qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy (__GNUC__ <= 5)
@@ -573,36 +571,12 @@ const ConnectionManager::Options ConnectionManager::kDefaultOptions;
 
 /**
  */
-#ifndef qCompilerAndStdLib_deprecated_attribute_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_deprecated_attribute_Buggy 0
-#else
-#define qCompilerAndStdLib_deprecated_attribute_Buggy __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
-#endif
-
-#endif
-
-/**
- */
 #ifndef qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
 #define qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy (__GNUC__ <= 5)
 #else
 #define qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy 0
-#endif
-
-#endif
-
-/*
-*/
-#ifndef qCompilerAndStdLib_shared_mutex_module_Buggy
-
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_shared_mutex_module_Buggy 0
-#else
-#define qCompilerAndStdLib_shared_mutex_module_Buggy (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_14)
 #endif
 
 #endif
@@ -1238,13 +1212,11 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
  *      void     CheckFileAccess(int);
  *
  *      _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
+
+ &&&& NOTE - _Deprecated_ macro is deprecated as of Stroika v2.0a211 - just use [[deprecated (MESSAGE)]] directly
  */
 #if !defined(_Deprecated_)
-#if qCompilerAndStdLib_deprecated_attribute_Buggy
-#define _Deprecated_(MESSAGE)
-#else
 #define _Deprecated_(MESSAGE) [[deprecated (MESSAGE)]]
-#endif
 #endif
 
 /*
@@ -1280,30 +1252,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __pragma (pack (push, 1)) __VA_ARGS__ __pragma (pack (pop))
 #elif defined(__GNUC__) || defined(__clang__)
 #define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
-#endif
-
-#if qCompilerAndStdLib_shared_mutex_module_Buggy
-namespace std {
-    template <typename MUTEX>
-    class shared_lock {
-    public:
-        using mutex_type = MUTEX;
-
-    private:
-        mutex_type& fMutex_;
-
-    public:
-        explicit shared_lock (mutex_type& m)
-            : fMutex_ (m)
-        {
-            fMutex_.lock_shared ();
-        }
-        ~shared_lock ()
-        {
-            fMutex_.unlock_shared ();
-        }
-    };
-}
 #endif
 
 #if qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER) && qDecoratedNameLengthExceeded_Buggy

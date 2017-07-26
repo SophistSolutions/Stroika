@@ -7,9 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <mutex>
-#if !qCompilerAndStdLib_shared_mutex_module_Buggy
 #include <shared_mutex>
-#endif
 
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
@@ -498,17 +496,12 @@ namespace Stroika {
             template <typename T>
             using QuickSynchronized = Synchronized<T, Synchronized_Traits<mutex>>;
 
-/**
+            /**
              * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer. Typically, using shared_timed_mutex,
              * but possibly shared_mutex if available (and more efficeint).
              */
-#if qCompilerAndStdLib_shared_mutex_module_Buggy
-            template <typename T>
-            using RWSynchronized = Synchronized<T, Synchronized_Traits<recursive_mutex>>;
-#else
             template <typename T>
             using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
-#endif
         }
     }
 }
