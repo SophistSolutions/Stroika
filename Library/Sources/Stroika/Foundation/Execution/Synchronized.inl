@@ -240,7 +240,7 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::WritableReference::WritableReference (WritableReference&& src)
                 : ReadableReference (move (src))
-                      fUniqueLock_ (move (src.fUniqueLock_))
+                , fUniqueLock_ (move (src.fUniqueLock_))
             {
             }
             template <typename T, typename TRAITS>
