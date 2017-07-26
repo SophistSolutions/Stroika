@@ -201,8 +201,13 @@ fi
 TOTALCONFIGS_=`./ScriptsLib/GetConfigurations.sh  | wc -w`
 TOTAL_WARNINGS_EXPECTED=$(($TOTALCONFIGS_ - 2))
 
-echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
-echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
+	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
+	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+else
+	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
+	echo "   $X1 items succeeded (expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)">>$TEST_OUT_FILE 2>&1
+fi
 echo "   $XF items failed (expected 0)"
 echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
 echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)"
