@@ -148,12 +148,6 @@ namespace Stroika {
                 fRep_ = move (rhs.fRep_);
                 return *this;
             }
-#if qPlatform_POSIX
-            inline SignalID Thread::GetSignalUsedForThreadInterrupt ()
-            {
-                return sSignalUsedForThreadInterrupt_;
-            }
-#endif
             inline Thread::IDType Thread::Ptr::GetID () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -251,6 +245,12 @@ namespace Stroika {
             {
                 WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
             }
+#if qPlatform_POSIX
+            inline SignalID Thread::GetSignalUsedForThreadInterrupt ()
+            {
+                return sSignalUsedForThreadInterrupt_;
+            }
+#endif
 
             /*
              ********************************************************************************

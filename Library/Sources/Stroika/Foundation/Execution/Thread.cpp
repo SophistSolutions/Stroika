@@ -788,23 +788,6 @@ void Thread::Ptr::SetThreadPriority (Priority priority) const
     }
 }
 
-#if qPlatform_POSIX
-void Thread::Ptr::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
-{
-    auto critSec{make_unique_lock (sHandlerInstalled_)};
-    if (sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
-        sHandlerInstalled_ = false;
-    }
-    sSignalUsedForThreadInterrupt_ = signalNumber;
-    // install new handler
-    if (not sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
-        sHandlerInstalled_ = true;
-    }
-}
-#endif
-
 String Thread::Ptr::GetThreadName () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -1124,8 +1107,8 @@ void Thread::AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& t
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
-    threads.Apply ([](Thread::Ptr t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
-#if 1                                                  /*qDefaultTracingOn*/
+    threads.Apply ([](const Thread::Ptr& t) { t.Abort (); }); // preflight not needed, but encourages less wait time if each given a short at abort first
+#if 1                                                         /*qDefaultTracingOn*/
     {
         constexpr Time::DurationSecondsType kTimeBetweenDbgTraceWarnings_{5.0};
         Time::DurationSecondsType           timeOfLastWarning = Time::GetTickCount ();
@@ -1158,8 +1141,25 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntil", L"threads=%s, timeoutAt=%f", Characters::ToString (threads).c_str (), timeoutAt)};
 #endif
     CheckForThreadInterruption (); // always a cancelation point (even if empty list)
-    threads.Apply ([timeoutAt](Thread::Ptr t) { t.WaitForDoneUntil (timeoutAt); });
+    threads.Apply ([timeoutAt](const Thread::Ptr& t) { t.WaitForDoneUntil (timeoutAt); });
 }
+
+#if qPlatform_POSIX
+void Thread::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
+{
+    auto critSec{make_unique_lock (sHandlerInstalled_)};
+    if (sHandlerInstalled_) {
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+        sHandlerInstalled_ = false;
+    }
+    sSignalUsedForThreadInterrupt_ = signalNumber;
+    // install new handler
+    if (not sHandlerInstalled_) {
+        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
+        sHandlerInstalled_ = true;
+    }
+}
+#endif
 
 /*
  ********************************************************************************

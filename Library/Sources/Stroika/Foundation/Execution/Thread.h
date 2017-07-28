@@ -445,6 +445,22 @@ namespace Stroika {
 
                     Stroika_Define_Enum_Bounds (eLowest, eHighest)
                 };
+
+#if qPlatform_POSIX
+            public:
+                /**
+                */
+                static SignalID GetSignalUsedForThreadInterrupt ();
+
+            public:
+                /**
+                *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
+                */
+                static void SetSignalUsedForThreadInterrupt (SignalID signalNumber);
+
+            private:
+                static SignalID sSignalUsedForThreadInterrupt_;
+#endif
             };
 
             /**
@@ -677,22 +693,6 @@ namespace Stroika {
                  *  APIs. You can always directly call low-level native APIs using GetNativeHandle().
                  */
                 nonvirtual void SetThreadPriority (Priority priority = Priority::eNormal) const;
-
-#if qPlatform_POSIX
-            public:
-                /**
-                 */
-                static SignalID GetSignalUsedForThreadInterrupt ();
-
-            public:
-                /**
-                 *  Unsafe to change this while threads running - at least if you could be interupting threads during this time.
-                 */
-                static void SetSignalUsedForThreadInterrupt (SignalID signalNumber);
-
-            private:
-                static SignalID sSignalUsedForThreadInterrupt_;
-#endif
 
             public:
                 /**
