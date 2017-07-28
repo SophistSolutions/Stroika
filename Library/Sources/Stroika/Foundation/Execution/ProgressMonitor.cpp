@@ -18,7 +18,7 @@ ProgressMonitor::ProgressMonitor ()
 {
 }
 
-ProgressMonitor::ProgressMonitor (Thread workThread)
+ProgressMonitor::ProgressMonitor (Thread::Ptr workThread)
     : fRep_ (make_shared<IRep_> ())
 {
 }

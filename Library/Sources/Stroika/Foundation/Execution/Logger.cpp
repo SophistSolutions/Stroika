@@ -130,7 +130,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         {
             auto bktLck = fBookkeepingThread_.rwget ();
             bktLck->AbortAndWaitForDone ();
-            bktLck.store (Thread ()); // so null
+            bktLck.store (Thread::Ptr{});
         }
 
         Time::DurationSecondsType    suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->Value (0);
@@ -140,7 +140,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             Thread::Ptr      newBookKeepThread;
             shared_ptr<Rep_> useRepInThread = shared_from_this (); // capture by value the shared_ptr
             if (suppressDuplicates) {
-                newBookKeepThread = Thread (
+                newBookKeepThread = Thread::New (
                     [suppressDuplicatesThreshold, useRepInThread]() {
                         Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/1");
                         while (true) {
@@ -162,7 +162,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
                     kThreadName_);
             }
             else {
-                newBookKeepThread = Thread (
+                newBookKeepThread = Thread::New (
                     [useRepInThread]() {
                         Debug::TraceContextBumper ctx1 ("Logger::Rep_::UpdateBookkeepingThread_... internal thread/2");
                         while (true) {

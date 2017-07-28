@@ -55,7 +55,7 @@ namespace Stroika {
                         // thread as needed, does responses etc.
 #endif
                     private:
-                        Execution::Thread fListenThread_;
+                        Execution::Thread::Ptr fListenThread_;
                     };
                 }
             }

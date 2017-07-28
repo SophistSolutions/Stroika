@@ -46,7 +46,7 @@ namespace Stroika {
                 std::atomic<bool>                         fCanceled_;
                 std::atomic<ProgressRangeType>            fCurrentProgress_;
                 CurrentTaskInfo                           fCurrentTaskInfo_;
-                Thread                                    fWorkThread_; // optional - ignore if empty
+                Thread::Ptr                               fWorkThread_; // optional - ignore if empty
             };
 
             /*

@@ -86,7 +86,7 @@ namespace Stroika {
              *
              *      Verify (q.GetLength () == 0);
              *
-             *      Thread  producerThread {
+             *      Thread::Ptr  producerThread = Thread::New (
              *          [&q, &counter] () {
              *              for (int incBy = START; incBy <= END; ++incBy) {
              *                  q.AddTail ([&counter, incBy] () { counter += incBy; });
@@ -95,8 +95,8 @@ namespace Stroika {
              *          },
              *          Thread::eAutoStart,
              *          String { L"Producer" }
-             *      };
-             *      Thread  consumerThread {
+             *      );
+             *      Thread::Ptr  consumerThread = Thread::New (
              *          [&q] () {
              *              while (true) {
              *                  function<void()>    f   =   q.RemoveHead ();
@@ -105,7 +105,7 @@ namespace Stroika {
              *          },
              *          Thread::eAutoStart,
              *          String { L"Consumer" }
-             *      };
+             *      );
              *      Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
              *      while (counter != expectedValue and Time::GetTickCount () < killAt) {
              *          Execution::Sleep (.5);

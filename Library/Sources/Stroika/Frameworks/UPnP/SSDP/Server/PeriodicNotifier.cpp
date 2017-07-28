@@ -54,7 +54,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
     }
 #endif
     static const String kThreadName_{String_Constant{L"SSDP Periodic Notifier"}};
-    fListenThread_ = Execution::Thread{
+    fListenThread_ = Execution::Thread::New (
         [advertisements, fi]() {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), Socket::BindFlags{true});
@@ -107,6 +107,6 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
                 Execution::Sleep (fi.fRepeatInterval);
             }
         },
-        Execution::Thread::eAutoStart, kThreadName_};
+        Execution::Thread::eAutoStart, kThreadName_);
     fListenThread_.WaitForDone ();
 }

@@ -47,10 +47,10 @@ namespace Stroika {
              *                      Execution::SharedStaticData<SharedData_>    fSharedData_;
              *              };
              *              struct  AuditLogSink::SharedData_ {
-             *                  Execution::Thread                   fCleanupThread;
+             *                  Execution::Thread::Ptr                   fCleanupThread;
              *
              *                  SharedData_ ()
-             *                      : fCleanupThread (Thread (&AuditLogSink::SimpleCleanupThread_))
+             *                      : fCleanupThread (Thread::New (&AuditLogSink::SimpleCleanupThread_))
              *                  {
              *                      fCleanupThread.SetThreadPriority (Thread::Priority::eLowest);
              *                      fCleanupThread.SetThreadName (L"AuditTrailCleanupThread");

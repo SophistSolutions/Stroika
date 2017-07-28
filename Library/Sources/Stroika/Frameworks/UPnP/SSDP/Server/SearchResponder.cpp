@@ -141,7 +141,7 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
     }
 #endif
     static const String kThreadName_{String_Constant{L"SSDP Search Responder"}};
-    fListenThread_ = Execution::Thread{
+    fListenThread_ = Execution::Thread::New (
         [advertisements]() {
             Debug::TraceContextBumper ctx ("SSDP SearchResponder thread loop");
             ConnectionlessSocket::Ptr s         = ConnectionlessSocket (SocketAddress::INET, Socket::DGRAM);
@@ -190,6 +190,6 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
                 }
             }
         },
-        Execution::Thread::eAutoStart, kThreadName_};
+        Execution::Thread::eAutoStart, kThreadName_);
     fListenThread_.WaitForDone ();
 }

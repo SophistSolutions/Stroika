@@ -67,10 +67,10 @@ namespace {
 namespace {
 
     template <typename ITERABLE_TYPE, typename LOCK_TYPE>
-    Thread mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
+    Thread::Ptr mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
     {
         using value_type = typename ITERABLE_TYPE::value_type;
-        return Thread ([iterable, lock, repeatCount]() {
+        return Thread::New ([iterable, lock, repeatCount]() {
             Debug::TraceContextBumper traceCtx ("{}IterateOverThread::MAIN...");
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 //DbgTrace ("Iterate thread loop %d", i);
@@ -86,9 +86,9 @@ namespace {
 namespace {
 
     template <typename ITERABLE_TYPE, typename ITERABLE_TYPE2, typename LOCK_TYPE>
-    Thread mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
+    Thread::Ptr mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
     {
-        return Thread ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2]() {
+        return Thread::New ([oneToKeepOverwriting, lock, repeatCount, elt1, elt2]() {
             Debug::TraceContextBumper traceCtx ("{}OverwriteThread::MAIN...");
             for (unsigned int i = 0; i < repeatCount; ++i) {
                 for (int ii = 0; ii <= 100; ++ii) {
@@ -162,8 +162,8 @@ namespace {
                     baseMutateFunction (&oneToKeepOverwriting);
                 }
             };
-            Thread iterateThread{move (mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount))};
-            Thread mutateThread{mutateFunction};
+            Thread::Ptr iterateThread{move (mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount))};
+            Thread::Ptr mutateThread{Thread::New (mutateFunction)};
             RunThreads_ ({iterateThread, mutateThread});
         }
         void DoIt ()
@@ -248,18 +248,18 @@ namespace {
             try {
                 Synchronized<Optional<int>> sharedValue{0};
                 static constexpr int        kMaxVal_ = qStroika_FeatureSupported_Valgrind ? 10000 : 100000;
-                Thread                      reader{[&sharedValue]() {
+                Thread::Ptr                 reader   = Thread::New ([&sharedValue]() {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
-                }};
-                Thread adder{[&sharedValue]() {
+                });
+                Thread::Ptr adder = Thread::New ([&sharedValue]() {
                     while (sharedValue.load () < kMaxVal_) {
                         sharedValue.store (*sharedValue.load () + 1);
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
-                }};
+                });
                 reader.Start ();
                 adder.Start ();
                 auto&& cleanup = Execution::Finally ([&reader, &adder]() {
@@ -385,14 +385,14 @@ namespace {
             void DoInterlocktest_ (function<void(INTISH_TYPE*)> increment, function<void(INTISH_TYPE*)> decrement)
             {
                 using namespace Execution;
-                constexpr int kMaxTimes_ = 100 * 1000;
-                INTISH_TYPE   s          = 0;
-                Thread        incrementer ([&s, increment, kMaxTimes_]() {
+                constexpr int kMaxTimes_  = 100 * 1000;
+                INTISH_TYPE   s           = 0;
+                Thread::Ptr   incrementer = Thread::New ([&s, increment, kMaxTimes_]() {
                     for (int i = 0; i < kMaxTimes_; ++i) {
                         increment (&s);
                     }
                 });
-                Thread decrementer ([&s, decrement, kMaxTimes_]() {
+                Thread::Ptr decrementer = Thread::New ([&s, decrement, kMaxTimes_]() {
                     for (int i = 0; i < kMaxTimes_; ++i) {
                         decrement (&s);
                     }
@@ -494,23 +494,23 @@ namespace {
             {
                 static constexpr size_t kIOverallRepeatCount_{(qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000}; // tweak count cuz too slow
                 Sequence<int>           tmp = Traversal::DiscreteRange<int>{1, 1000};
-                Thread                  t1{
+                Thread::Ptr             t1  = Thread::New (
                     [&tmp]() {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : tmp) {
                                 VerifyTestResult (1 <= j and j <= 1000);
                             }
                         }
-                    }};
-                Thread t2{
+                    });
+                Thread::Ptr t2 = Thread::New (
                     [&tmp]() {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : tmp) {
                                 VerifyTestResult (1 <= j and j <= 1000);
                             }
                         }
-                    }};
-                Thread t3{
+                    });
+                Thread::Ptr t3 = Thread::New (
                     [&tmp]() {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             if (tmp.GetLength () == 1000) {
@@ -519,7 +519,7 @@ namespace {
                                 VerifyTestResult (*tmp.Last () == 1000);
                             }
                         }
-                    }};
+                    });
                 Thread::Start ({t1, t2, t3});
                 Thread::WaitForDone ({t1, t2, t3});
             }
@@ -541,7 +541,7 @@ namespace {
                 static constexpr size_t kIOverallRepeatCount_{(qDebug and qStroika_FeatureSupported_Valgrind) ? 50 : ((qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000)};
                 static constexpr int    kInnterConstantForHowMuchStuffTodo_{(qDebug and qStroika_FeatureSupported_Valgrind) ? 100 : ((qDebug or qStroika_FeatureSupported_Valgrind) ? 250 : 1000)};
                 Synchronized<CONTAINER> syncObj;
-                Thread                  adderThread{
+                Thread::Ptr             adderThread = Thread::New (
                     [&syncObj, &addF]() {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
@@ -549,8 +549,8 @@ namespace {
                             }
                         }
                     },
-                    String{L"adderThread"}};
-                Thread removerThread{
+                    String{L"adderThread"});
+                Thread::Ptr removerThread = Thread::New (
                     [&syncObj, &remF]() {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
@@ -558,16 +558,16 @@ namespace {
                             }
                         }
                     },
-                    String{L"removerThread"}};
-                Thread examineThread{
+                    String{L"removerThread"});
+                Thread::Ptr examineThread = Thread::New (
                     [&syncObj, &examineF]() {
                         constexpr int kMultiplierCuzThisTooFast_{10};
                         for (int i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
                             examineF (&syncObj.cget ().cref ());
                         }
                     },
-                    String{L"examineThread"}};
-                Thread walkerThread{
+                    String{L"examineThread"});
+                Thread::Ptr walkerThread = Thread::New (
                     [&syncObj, &iterF]() {
                         constexpr int kMultiplierCuzThisTooFast_{7};
                         for (int i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
@@ -679,7 +679,7 @@ namespace {
                             }
                         }
                     },
-                    String{L"walkerThread"}};
+                    String{L"walkerThread"});
                 Thread::Start ({adderThread, removerThread, examineThread, walkerThread});
                 Thread::WaitForDone ({adderThread, removerThread, examineThread, walkerThread});
             }

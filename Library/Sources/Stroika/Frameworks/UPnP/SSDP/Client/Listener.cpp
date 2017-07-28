@@ -77,8 +77,8 @@ public:
     void Start ()
     {
         static const String kThreadName_ = String_Constant{L"SSDP Listener"};
-        fThread_                         = Execution::Thread{
-            [this]() { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_};
+        fThread_                         = Execution::Thread::New (
+            [this]() { DoRun_ (); }, Execution::Thread::eAutoStart, kThreadName_);
     }
     void Stop ()
     {
@@ -177,7 +177,7 @@ private:
     recursive_mutex fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                fSockets_;
-    Execution::Thread                                    fThread_;
+    Execution::Thread::Ptr                               fThread_;
 };
 
 /*

@@ -272,7 +272,7 @@ struct LinkMonitor::Rep_ {
     }
     Containers::Collection<Callback> fCallbacks_;
 #if qPlatform_POSIX
-    Execution::Thread fMonitorThread_;
+    Execution::Thread::Ptr fMonitorThread_;
 #endif
 #if qPlatform_Windows
     HANDLE fMonitorHandler_ = INVALID_HANDLE_VALUE;
@@ -307,7 +307,7 @@ struct LinkMonitor::Rep_ {
 #if qPlatform_Linux
         if (fMonitorThread_ == nullptr) {
             // very slight race starting this but not worth worrying about
-            fMonitorThread_ = Execution::Thread ([this]() {
+            fMonitorThread_ = Execution::Thread::New ([this]() {
 
                 // for now - only handle adds, but removes SB easy too...
 

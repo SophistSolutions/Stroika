@@ -102,16 +102,16 @@ String IO::FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
 }
 
 /*
-     ********************************************************************************
-     ************************ FileSystem::SetFileAccessWideOpened *******************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ************************ FileSystem::SetFileAccessWideOpened *******************
+ ********************************************************************************
+ */
 /*
-     * Sets permissions for users on a given folder to full control
-     *
-     *      Add 'Everyone' to have FULL ACCESS to the given argument file
-     *
-     */
+ * Sets permissions for users on a given folder to full control
+ *
+ *      Add 'Everyone' to have FULL ACCESS to the given argument file
+ *
+ */
 void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
 {
     try {
@@ -181,16 +181,16 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
 }
 
 /*
-     ********************************************************************************
-     ************************ FileSystem::CreateDirectory ***************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ************************ FileSystem::CreateDirectory ***************************
+ ********************************************************************************
+ */
 void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded)
 {
     /*
-         * TODO:
-         *      (o)     This implementation is HORRIBLE!!!! Major cleanup required!
-         */
+     * TODO:
+     *      (o)     This implementation is HORRIBLE!!!! Major cleanup required!
+     */
     try {
 #if qPlatform_Windows
         if (createParentComponentsIfNeeded) {
@@ -258,10 +258,10 @@ void IO::FileSystem::CreateDirectory (const String& directoryPath, bool createPa
 }
 
 /*
-     ********************************************************************************
-     ******************* FileSystem::CreateDirectoryForFile *************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ******************* FileSystem::CreateDirectoryForFile *************************
+ ********************************************************************************
+ */
 void IO::FileSystem::CreateDirectoryForFile (const String& filePath)
 {
     if (filePath.empty ()) {
@@ -276,10 +276,10 @@ void IO::FileSystem::CreateDirectoryForFile (const String& filePath)
 }
 
 /*
-     ********************************************************************************
-     ************************** FileSystem::GetVolumeName ***************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ************************** FileSystem::GetVolumeName ***************************
+ ********************************************************************************
+ */
 String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
 {
 #if qPlatform_Windows
@@ -308,10 +308,10 @@ String IO::FileSystem::GetVolumeName (const String& driveLetterAbsPath)
 }
 
 /*
-     ********************************************************************************
-     ******************************* FileSystem::CopyFile ***************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ******************************* FileSystem::CopyFile ***************************
+ ********************************************************************************
+ */
 void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
 {
 #if qPlatform_Windows
@@ -327,10 +327,10 @@ void IO::FileSystem::CopyFile (const String& srcFile, const String& destPath)
 }
 
 /*
-     ********************************************************************************
-     ***************************** FileSystem::FindFiles ****************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ***************************** FileSystem::FindFiles ****************************
+ ********************************************************************************
+ */
 vector<String> IO::FileSystem::FindFiles (const String& path, const String& fileNameToMatch)
 {
     vector<String> result;
@@ -364,10 +364,10 @@ vector<String> IO::FileSystem::FindFiles (const String& path, const String& file
 }
 
 /*
-     ********************************************************************************
-     ************************* FileSystem::FindFilesOneDirUnder *********************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ************************* FileSystem::FindFilesOneDirUnder *********************
+ ********************************************************************************
+ */
 vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const String& fileNameToMatch)
 {
     if (path.empty ()) {
@@ -402,10 +402,10 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const S
 
 #if qPlatform_Windows
 /*
-     ********************************************************************************
-     ********************* FileSystem::DirectoryChangeWatcher ***********************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ********************* FileSystem::DirectoryChangeWatcher ***********************
+ ********************************************************************************
+ */
 IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& directoryName, bool watchSubTree, DWORD notifyFilter)
     : fDirectory (directoryName)
     , fWatchSubTree (watchSubTree)
@@ -414,8 +414,7 @@ IO::FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& di
     , fWatchEvent (::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter))
     , fQuitting (false)
 {
-    fThread = Execution::Thread{
-        [this]() { ThreadProc (this); }, Execution::Thread::eAutoStart, String{L"DirectoryChangeWatcher"}};
+    fThread = Execution::Thread::New ([this]() { ThreadProc (this); }, Execution::Thread::eAutoStart, String{L"DirectoryChangeWatcher"});
 }
 
 IO::FileSystem::DirectoryChangeWatcher::~DirectoryChangeWatcher ()
@@ -457,10 +456,10 @@ void IO::FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
 
 #if qPlatform_Windows
 /*
-     ********************************************************************************
-     ********************** FileSystem::AdjustSysErrorMode **************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ********************** FileSystem::AdjustSysErrorMode **************************
+ ********************************************************************************
+ */
 UINT AdjustSysErrorMode::GetErrorMode ()
 {
     UINT good = ::SetErrorMode (0);

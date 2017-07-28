@@ -68,7 +68,7 @@ public:
     void Start (const String& serviceType)
     {
         fThread_.AbortAndWaitForDone ();
-        fThread_ = Execution::Thread ([this, serviceType]() { DoRun_ (serviceType); });
+        fThread_ = Execution::Thread::New ([this, serviceType]() { DoRun_ (serviceType); });
         fThread_.SetThreadName (L"SSDP Searcher");
         fThread_.Start ();
     }
@@ -186,7 +186,7 @@ private:
     recursive_mutex fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                fSockets_;
-    Execution::Thread                                    fThread_;
+    Execution::Thread::Ptr                               fThread_;
 };
 
 /*

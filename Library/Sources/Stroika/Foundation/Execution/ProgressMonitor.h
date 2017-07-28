@@ -13,6 +13,7 @@
 #include "../Containers/Sequence.h"
 #include "../DataExchange/VariantValue.h"
 #include "../Execution/Function.h"
+#include "Thread.h"
 
 /**
  * TODO:
@@ -99,7 +100,7 @@ namespace Stroika {
                  */
                 ProgressMonitor ();
                 ProgressMonitor (const ProgressMonitor&) = delete;
-                ProgressMonitor (Thread workThread);
+                ProgressMonitor (Thread::Ptr workThread);
 
             private:
                 ProgressMonitor (const shared_ptr<IRep_>& rep);

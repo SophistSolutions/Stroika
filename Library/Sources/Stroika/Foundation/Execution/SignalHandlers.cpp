@@ -143,7 +143,7 @@ public:
     {
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fIncomingSignalCounts_);
         Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLastSignalRecieved_);
-        fBlockingQueuePusherThread_ = Thread{
+        fBlockingQueuePusherThread_ = Thread::New (
             [this]() {
                 // This is a safe context
                 Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
@@ -185,7 +185,7 @@ public:
                 }
             },
             Thread::eAutoStart,
-            String_Constant{L"Signal Handler Safe Execution Thread"}};
+            String_Constant{L"Signal Handler Safe Execution Thread"});
     }
 
 public:

@@ -46,7 +46,7 @@ namespace {
             }
         };
 
-        Thread thread (bind (&FRED::DoIt, const_cast<char*> ("foo")));
+        Thread::Ptr thread = Thread::New (bind (&FRED::DoIt, const_cast<char*> ("foo")));
         thread.Start ();
         thread.WaitForDone ();
     }
@@ -73,9 +73,9 @@ namespace {
             }
         };
 
-        int    updaterValue = 0;
-        Thread thread1 (bind (&FRED::DoIt, &updaterValue));
-        Thread thread2 (bind (&FRED::DoIt, &updaterValue));
+        int         updaterValue = 0;
+        Thread::Ptr thread1      = Thread::New (bind (&FRED::DoIt, &updaterValue));
+        Thread::Ptr thread2      = Thread::New (bind (&FRED::DoIt, &updaterValue));
         thread1.Start ();
         thread2.Start ();
         thread1.WaitForDone ();
@@ -125,9 +125,9 @@ namespace {
 
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
-            int    updaterValue = 0;
-            Thread thread1 (bind (&FRED1::DoIt, &updaterValue));
-            Thread thread2 (bind (&FRED2::DoIt, &updaterValue));
+            int         updaterValue = 0;
+            Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+            Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
             thread1.Start ();
             thread2.Start ();
             // Both threads start out waiting - until we get things rolling telling one to start.
@@ -176,9 +176,9 @@ namespace {
 
             sRegTest3Event_T1_.Reset ();
             sRegTest3Event_T2_.Reset ();
-            int    updaterValue = 0;
-            Thread thread1 (bind (&FRED1::DoIt, &updaterValue));
-            Thread thread2 (bind (&FRED2::DoIt, &updaterValue));
+            int         updaterValue = 0;
+            Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
+            Thread::Ptr thread2      = Thread::New (bind (&FRED2::DoIt, &updaterValue));
             thread1.Start ();
             thread2.Start ();
             // Both threads start out waiting - until we get things rolling telling one to start.
@@ -217,8 +217,8 @@ namespace {
             };
 
             sRegTest3Event_T1_.Reset ();
-            int    updaterValue = 0;
-            Thread thread1 (bind (&FRED1::DoIt, &updaterValue));
+            int         updaterValue = 0;
+            Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
             thread1.Start ();
 
             // At this point the thread SHOULD block and wait 60.0 seconds
@@ -329,9 +329,9 @@ namespace {
                             }
                         }
                     };
-                    syncofint updaterValue = 0;
-                    Thread    thread1 (bind (&FRED::DoIt, &updaterValue));
-                    Thread    thread2 (bind (&FRED::DoIt, &updaterValue));
+                    syncofint   updaterValue = 0;
+                    Thread::Ptr thread1      = Thread::New (bind (&FRED::DoIt, &updaterValue));
+                    Thread::Ptr thread2      = Thread::New (bind (&FRED::DoIt, &updaterValue));
                     thread1.Start ();
                     thread2.Start ();
                     thread1.WaitForDone ();
@@ -345,15 +345,15 @@ namespace {
                 static constexpr int                       kBaseRepititionCount_ = 500;
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.02;
                 Synchronized<int>                          syncData{0};
-                Thread                                     readerThread{[&]() {
+                Thread::Ptr                                readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
                         VerifyTestResult (syncData.load () % 2 == 0);
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
                     }
-                }};
-                Thread writerThread{[&]() {
+                });
+                Thread::Ptr writerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
@@ -363,7 +363,7 @@ namespace {
                         rwLock.store (rwLock.load () + 1); // set to a safe value
                     }
                     VerifyTestResult (syncData.load () == kBaseRepititionCount_ * 2);
-                }};
+                });
                 Thread::Start ({readerThread, writerThread});
                 Thread::WaitForDone ({readerThread, writerThread});
             }
@@ -390,7 +390,7 @@ namespace {
                     }
                 }
             };
-            Thread thread (&FRED::DoIt);
+            Thread::Ptr thread = Thread::New (&FRED::DoIt);
             thread.Start ();
             try {
                 thread.WaitForDone (0.3); // should timeout
@@ -407,7 +407,7 @@ namespace {
         }
 #if qPlatform_Windows
         {
-            Thread thread ([]() {
+            Thread::Ptr thread = Thread::New ([]() {
                 while (true) {
                     // test alertable 'throw'
                     ::SleepEx (0, true);
@@ -462,20 +462,20 @@ namespace {
 
         // Normal usage
         {
-            Thread thread (&FRED::DoIt);
+            Thread::Ptr thread = Thread::New (&FRED::DoIt);
             thread.Start ();
             thread.WaitForDone ();
         }
 
         // OK to never wait
         for (int i = 0; i < 100; ++i) {
-            Thread thread (&FRED::DoIt);
+            Thread::Ptr thread = Thread::New (&FRED::DoIt);
             thread.Start ();
         }
 
         // OK to wait and wait
         {
-            Thread thread (&FRED::DoIt);
+            Thread::Ptr thread = Thread::New (&FRED::DoIt);
             thread.Start ();
             thread.WaitForDone ();
             thread.WaitForDone (1.0); // doesn't matter how long cuz its already DONE
@@ -549,13 +549,13 @@ namespace {
         };
         auto DoOuterThread = [DoItInnerThread, &innerThreads]() {
             while (true) {
-                Thread t (DoItInnerThread);
+                Thread::Ptr t = Thread::New (DoItInnerThread);
                 innerThreads.Add (t);
                 Execution::Sleep (.02);
                 t.Start ();
             }
         };
-        Thread thread (DoOuterThread);
+        Thread::Ptr thread = Thread::New (DoOuterThread);
         thread.Start ();
         Execution::Sleep (.5);
         thread.AbortAndWaitForDone ();
@@ -577,7 +577,7 @@ namespace {
 
         Verify (q.GetLength () == 0);
 
-        Thread producerThread{
+        Thread::Ptr producerThread = Thread::New (
             [&q, &counter]() {
                 for (int incBy = START; incBy <= END; ++incBy) {
                     q.AddTail ([&counter, incBy]() { counter += incBy; });
@@ -585,8 +585,8 @@ namespace {
                 q.EndOfInput ();
             },
             Thread::eAutoStart,
-            String{L"Producer"}};
-        Thread consumerThread{
+            String{L"Producer"});
+        Thread::Ptr consumerThread = Thread::New (
             [&q]() {
                 while (true) {
                     function<void()> f = q.RemoveHead ();
@@ -594,7 +594,7 @@ namespace {
                 }
             },
             Thread::eAutoStart,
-            String{L"Consumer"}};
+            String{L"Consumer"});
         Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (counter);
         while (counter != expectedValue and Time::GetTickCount () < killAt) {
@@ -611,15 +611,15 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest11_AbortSubAbort_"};
         auto                      testFailToProperlyAbort = []() {
-            Thread innerThread{[]() {
+            Thread::Ptr innerThread = Thread::New ([]() {
                 Execution::Sleep (1000);
-            }};
+            });
             innerThread.SetThreadName (L"innerThread");
-            Thread testThread{[&innerThread]() {
+            Thread::Ptr testThread = Thread::New ([&innerThread]() {
                 innerThread.Start ();
                 Execution::Sleep (1000);
                 innerThread.AbortAndWaitForDone ();
-            }};
+            });
             testThread.SetThreadName (L"testThread");
             testThread.Start ();
             Execution::Sleep (1); // wait til both threads running and blocked in sleeps
@@ -629,11 +629,11 @@ namespace {
             innerThread.AbortAndWaitForDone ();
         };
         auto testInnerThreadProperlyShutDownByOuterThread = []() {
-            Thread innerThread{[]() {
+            Thread::Ptr innerThread = Thread::New ([]() {
                 Execution::Sleep (1000);
-            }};
+            });
             innerThread.SetThreadName (L"innerThread");
-            Thread testThread{[&innerThread]() {
+            Thread::Ptr testThread = Thread::New ([&innerThread]() {
                 innerThread.Start ();
                 auto&& cleanup = Finally (
                     [&innerThread]() noexcept {
@@ -641,7 +641,7 @@ namespace {
                         innerThread.AbortAndWaitForDone ();
                     });
                 Execution::Sleep (1000);
-            }};
+            });
             testThread.SetThreadName (L"testThread");
             testThread.Start ();
             Execution::Sleep (1); // wait til both threads running and blocked in sleeps
@@ -662,14 +662,14 @@ namespace {
         WaitableEvent                              we1 (WaitableEvent::eAutoReset);
         WaitableEvent                              we2 (WaitableEvent::eAutoReset);
         static constexpr Time::DurationSecondsType kMaxWaitTime_{5.0};
-        Thread                                     t1{[&we1]() {
+        Thread::Ptr                                t1 = Thread::New ([&we1]() {
             Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
             we1.Set ();
-        }};
-        Thread t2{[&we2]() {
+        });
+        Thread::Ptr t2 = Thread::New ([&we2]() {
             Execution::Sleep (0.1);
             we2.Set ();
-        }};
+        });
         Time::DurationSecondsType startAt = Time::GetTickCount ();
         t1.Start ();
         t2.Start ();
@@ -691,16 +691,16 @@ namespace {
         WaitableEvent we2 (WaitableEvent::eAutoReset);
         bool          w1Fired = false;
         bool          w2Fired = false;
-        Thread        t1{[&we1, &w1Fired]() {
+        Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired]() {
             Execution::Sleep (0.5);
             w1Fired = true;
             we1.Set ();
-        }};
-        Thread t2{[&we2, &w2Fired]() {
+        });
+        Thread::Ptr t2 = Thread::New ([&we2, &w2Fired]() {
             Execution::Sleep (0.1);
             w2Fired = true;
             we2.Set ();
-        }};
+        });
         Time::DurationSecondsType startAt = Time::GetTickCount ();
         t2.Start ();
         t1.Start ();
@@ -720,20 +720,20 @@ namespace {
         Debug::TraceContextBumper ctx{"RegressionTest14_SpinLock_"};
         SpinLock                  lock;
         int                       sum = 0;
-        Thread                    t1{[&lock, &sum]() {
+        Thread::Ptr               t1  = Thread::New ([&lock, &sum]() {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
                 sum += i;
             }
-        }};
-        Thread t2{[&lock, &sum]() {
+        });
+        Thread::Ptr t2 = Thread::New ([&lock, &sum]() {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
                 sum -= i;
             }
-        }};
+        });
         t1.Start ();
         t2.Start ();
         t1.WaitForDone ();
@@ -792,7 +792,10 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests"};
             // This test doesn't do a lot by itself, but we run this test under valgrind to look for leaks
             {
-                Thread t;
+                Thread::Ptr t;
+            }
+            {
+                Thread::Ptr t = Thread::New ([]() {});
             }
         }
     }
@@ -805,7 +808,7 @@ namespace {
             Debug::TraceContextBumper ctx{"RegressionTest17_ThreadInterruption_::RunTests"};
             atomic<unsigned>          interruptCnt{};
             WaitableEvent             we{WaitableEvent::eManualReset};
-            Thread                    t{
+            Thread::Ptr               t = Thread::New (
                 [&]() {
                     while (true) {
                         try {
@@ -820,7 +823,7 @@ namespace {
                         we.Set ();
                     }
                 },
-                Thread::eAutoStart};
+                Thread::eAutoStart);
             constexpr unsigned int kInteruptCnt_{10};
             for (int i = 0; i < kInteruptCnt_; ++i) {
                 Execution::Sleep (0.1); // if we interrupt too fast, the thread may only get one or two
@@ -849,8 +852,8 @@ namespace {
                 unsigned int           sum2{};
                 constexpr unsigned int kRepeatCount_{10000};
                 mutex                  forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
-                Thread::Ptr            t1 = Thread{[&]() {for (int i = 1; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } }};
-                Thread::Ptr            t2 = Thread{[&]() {for (int i = 1; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } }};
+                Thread::Ptr            t1 = Thread::New ([&]() {for (int i = 1; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } });
+                Thread::Ptr            t2 = Thread::New ([&]() {for (int i = 1; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } });
                 Thread::Start ({t1, t2});
                 Thread::WaitForDone ({t1, t2});
             }

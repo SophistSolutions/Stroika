@@ -410,7 +410,7 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
     auto onModbusConnection = [serviceHandler, options, usingThreadPool](const ConnectionOrientedSocket::Ptr& s) {
         usingThreadPool->AddTask ([serviceHandler, options, s]() { ConnectionHandler_ (s, serviceHandler, options); });
     };
-    return Thread{
+    return Thread::New (
         [onModbusConnection, options]() {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx ("Modbus-Listener");
@@ -421,5 +421,5 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
             }
             WaitableEvent{WaitableEvent::eAutoReset}.Wait (); // forever (til thread abort)
         },
-        String_Constant{L"Modbus-Listener"}};
+        String_Constant{L"Modbus-Listener"});
 }

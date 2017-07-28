@@ -492,7 +492,7 @@ void Main::RunTilIdleService::_Attach (const shared_ptr<IApplicationRep>& appRep
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
              (fAppRep_ == nullptr and fAppRep_ != appRep));
     fRunThread_.Abort ();
-    fRunThread_ = Execution::Thread ();
+    fRunThread_ = Execution::Thread::Ptr{};
     fAppRep_    = appRep;
 }
 
@@ -530,11 +530,11 @@ void Main::RunTilIdleService::_RunAsService ()
 {
     RequireNotNull (fAppRep_); // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread{
+    fRunThread_                        = Execution::Thread::New (
         [appRep]() {
             appRep->MainLoop ([]() {});
         },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_};
+        Execution::Thread::eAutoStart, kServiceRunThreadName_);
     float timeTilIdleHack = 3.0;
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone (timeTilIdleHack)); //tmphack - as
 }
@@ -543,11 +543,11 @@ void Main::RunTilIdleService::_RunDirectly ()
 {
     RequireNotNull (fAppRep_); // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread{
+    fRunThread_                        = Execution::Thread::New (
         [appRep]() {
             appRep->MainLoop ([]() {});
         },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_};
+        Execution::Thread::eAutoStart, kServiceRunThreadName_);
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
 }
 
@@ -555,11 +555,11 @@ void Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
     RequireNotNull (fAppRep_); // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread{
+    fRunThread_                        = Execution::Thread::New (
         [appRep]() {
             appRep->MainLoop ([]() {});
         },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_};
+        Execution::Thread::eAutoStart, kServiceRunThreadName_);
 }
 
 void Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
@@ -614,7 +614,7 @@ void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& app
     Require ((appRep == nullptr and fAppRep_.load () != nullptr) or
              (fAppRep_.load () == nullptr and fAppRep_.load () != appRep));
     fRunThread_.load ().AbortAndWaitForDone ();
-    fRunThread_.store (Execution::Thread ());
+    fRunThread_.store (Execution::Thread::Ptr{});
     fAppRep_ = appRep;
 }
 
@@ -709,7 +709,7 @@ void Main::BasicUNIXServiceImpl::_RunDirectly ()
             appRep->MainLoop ([]() {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_});
-    Thread t = fRunThread_.load ();
+    Thread::Ptr t = fRunThread_.load ();
     t.WaitForDone ();
     t.ThrowIfDoneWithException ();
 }
@@ -1001,11 +1001,11 @@ void Main::WindowsService::_RunAsService ()
 void Main::WindowsService::_RunDirectly ()
 {
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread{
+    fRunThread_                        = Execution::Thread::New (
         [appRep]() {
             appRep->MainLoop ([]() {});
         },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_};
+        Execution::Thread::eAutoStart, kServiceRunThreadName_);
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
     fRunThread_.ThrowIfDoneWithException ();
 }
@@ -1154,11 +1154,11 @@ void Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcep
     // When the Run function returns, the service has stopped.
     // about like this - FIX - KEEP SOMETHING SIMIALR
     shared_ptr<IApplicationRep> appRep = fAppRep_;
-    fRunThread_                        = Execution::Thread{
+    fRunThread_                        = Execution::Thread::New (
         [appRep]() {
             appRep->MainLoop ([]() {});
         },
-        Execution::Thread::eAutoStart, kServiceRunThreadName_};
+        Execution::Thread::eAutoStart, kServiceRunThreadName_);
     //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);
 

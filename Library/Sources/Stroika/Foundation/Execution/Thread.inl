@@ -34,7 +34,7 @@ namespace Stroika {
              ********************************************************************************
              */
             /**
-            &^^^^INTERALLY SYNCRHONZIED
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              */
             class Thread::Rep_ {
             public:
@@ -116,127 +116,22 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ************************************* Thread ***********************************
-             ********************************************************************************
-             */
-            template <typename FUNCTION>
-            inline Thread::Thread (FUNCTION f, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
-                : Thread (Function<void()> (f), name, configuration)
-            {
-            }
-            template <typename FUNCTION>
-            inline Thread::Thread (FUNCTION f, AutoStartFlag flag, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
-                : Thread (Function<void()> (f), flag, name, configuration)
-            {
-            }
-            inline Thread::Thread (const shared_ptr<Rep_>& rep)
-                : fRep_ (rep)
-            {
-            }
-#if qPlatform_POSIX
-            inline SignalID Thread::GetSignalUsedForThreadInterrupt ()
-            {
-                return sSignalUsedForThreadInterrupt_;
-            }
-#endif
-            inline Thread::IDType Thread::GetID () const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                if (fRep_ == nullptr) {
-                    return Thread::IDType{};
-                }
-                return fRep_->GetID ();
-            }
-            inline Thread::NativeHandleType Thread::GetNativeHandle () const noexcept
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                if (fRep_ == nullptr) {
-                    return Thread::NativeHandleType{};
-                }
-                return fRep_->GetNativeHandle ();
-            }
-            inline Function<void()> Thread::GetFunction () const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                if (fRep_ == nullptr) {
-                    return nullptr;
-                }
-                return fRep_->fRunnable_;
-            }
-            inline bool Thread::operator< (const Thread& rhs) const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                return fRep_ < rhs.fRep_;
-            }
-            inline bool Thread::operator== (const Thread& rhs) const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
-                shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
-                return fRep_ == rhs.fRep_;
-            }
-            inline bool Thread::operator== (nullptr_t) const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
-                return fRep_ == nullptr;
-            }
-
-            inline bool Thread::operator!= (const Thread& rhs) const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
-                shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
-                return fRep_ != rhs.fRep_;
-            }
-            inline bool Thread::operator!= (nullptr_t) const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
-                return fRep_ != nullptr;
-            }
-            inline Thread::Status Thread::GetStatus () const noexcept
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                if (fRep_ == nullptr) {
-                    return Status::eNull;
-                }
-                return GetStatus_ ();
-            }
-            inline void Thread::Start (const Traversal::Iterable<Thread::Ptr>& threads)
-            {
-                threads.Apply ([](const Thread::Ptr& p) { p.Start (); });
-            }
-            inline void Thread::WaitForDone (Time::DurationSecondsType timeout) const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                WaitForDoneUntil (timeout + Time::GetTickCount ());
-            }
-            inline void Thread::WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
-            {
-                WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
-            }
-            inline void Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout) const
-            {
-                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
-            }
-            inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
-            {
-                AbortAndWaitForDoneUntil (threads, timeout + Time::GetTickCount ());
-            }
-
-            /*
-             ********************************************************************************
              ******************************** Thread::Ptr ***********************************
              ********************************************************************************
              */
-            inline Thread::Ptr::Ptr (const Thread& src)
-                : Thread (src.fRep_)
+            inline Thread::Ptr::Ptr (nullptr_t)
+            {
+            }
+            inline Thread::Ptr::Ptr (const shared_ptr<Rep_>& rep)
+                : fRep_ (rep)
             {
             }
             inline Thread::Ptr::Ptr (const Ptr& src)
-                : Thread (src.fRep_)
+                : fRep_ (src.fRep_)
             {
             }
             inline Thread::Ptr::Ptr (Ptr&& src)
-                : Thread (move (src.fRep_))
+                : fRep_ (move (src.fRep_))
             {
             }
             inline Thread::Ptr& Thread::Ptr::operator= (const Ptr& rhs)
@@ -253,19 +148,108 @@ namespace Stroika {
                 fRep_ = move (rhs.fRep_);
                 return *this;
             }
-            inline Thread::Ptr& Thread::Ptr::operator= (const Thread& rhs)
+#if qPlatform_POSIX
+            inline SignalID Thread::GetSignalUsedForThreadInterrupt ()
             {
-                shared_lock<const AssertExternallySynchronizedLock> critSec1{rhs};
-                lock_guard<const AssertExternallySynchronizedLock>  critSec{*this};
-                fRep_ = rhs.fRep_;
-                return *this;
+                return sSignalUsedForThreadInterrupt_;
             }
-            inline Thread::Ptr& Thread::Ptr::operator= (Thread&& rhs)
+#endif
+            inline Thread::IDType Thread::Ptr::GetID () const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs};
-                lock_guard<const AssertExternallySynchronizedLock> critSec2{*this};
-                fRep_ = move (rhs.fRep_);
-                return *this;
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                if (fRep_ == nullptr) {
+                    return Thread::IDType{};
+                }
+                return fRep_->GetID ();
+            }
+            inline Thread::NativeHandleType Thread::Ptr::GetNativeHandle () const noexcept
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                if (fRep_ == nullptr) {
+                    return Thread::NativeHandleType{};
+                }
+                return fRep_->GetNativeHandle ();
+            }
+            inline Function<void()> Thread::Ptr::GetFunction () const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                if (fRep_ == nullptr) {
+                    return nullptr;
+                }
+                return fRep_->fRunnable_;
+            }
+            inline bool Thread::Ptr::operator< (const Ptr& rhs) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                return fRep_ < rhs.fRep_;
+            }
+            inline bool Thread::Ptr::operator== (const Ptr& rhs) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+                return fRep_ == rhs.fRep_;
+            }
+            inline bool Thread::Ptr::operator== (nullptr_t) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                return fRep_ == nullptr;
+            }
+            inline bool Thread::Ptr::operator!= (const Ptr& rhs) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec2{rhs};
+                return fRep_ != rhs.fRep_;
+            }
+            inline bool Thread::Ptr::operator!= (nullptr_t) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec1{*this};
+                return fRep_ != nullptr;
+            }
+            inline Thread::Status Thread::Ptr::GetStatus () const noexcept
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                if (fRep_ == nullptr) {
+                    return Status::eNull;
+                }
+                return GetStatus_ ();
+            }
+            inline void Thread::Ptr::WaitForDone (Time::DurationSecondsType timeout) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                WaitForDoneUntil (timeout + Time::GetTickCount ());
+            }
+            inline void Thread::Ptr::AbortAndWaitForDone (Time::DurationSecondsType timeout) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
+            }
+
+            /*
+             ********************************************************************************
+             ************************************* Thread ***********************************
+             ********************************************************************************
+             */
+            template <typename FUNCTION>
+            inline Thread::Ptr Thread::New (FUNCTION f, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
+            {
+                return New (Function<void()> (f), name, configuration);
+            }
+            template <typename FUNCTION>
+            inline Thread::Ptr Thread::New (FUNCTION f, AutoStartFlag flag, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
+            {
+                return New (Function<void()> (f), flag, name, configuration);
+            }
+            inline void Thread::AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
+            {
+                AbortAndWaitForDoneUntil (threads, timeout + Time::GetTickCount ());
+            }
+            inline void Thread::Start (const Traversal::Iterable<Thread::Ptr>& threads)
+            {
+                threads.Apply ([](const Thread::Ptr& p) { p.Start (); });
+            }
+            inline void Thread::WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout)
+            {
+                WaitForDoneUntil (threads, timeout + Time::GetTickCount ());
             }
 
             /*

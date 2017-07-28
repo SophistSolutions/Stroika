@@ -107,7 +107,7 @@ namespace Stroika {
                  *
                  *  If ever run, PIDLoop DTOR automatically terminates Run loop and waits for thread to terminate.
                  */
-                nonvirtual Thread RunInThread ();
+                nonvirtual Thread::Ptr RunInThread ();
 
             public:
                 /**

@@ -106,7 +106,7 @@ namespace Stroika {
               */
             template <typename ELEMENT_TYPE>
             class Stream {
-            protected:
+            public:
                 /**
                  *  'Stream' is a quasi-namespace.
                  */

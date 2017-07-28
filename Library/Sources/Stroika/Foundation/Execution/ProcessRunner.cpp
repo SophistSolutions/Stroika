@@ -460,14 +460,14 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
     else {
         // @todo warning: https://stroika.atlassian.net/browse/STK-585 - lots broken here - must shutdown threads on timeout!
         if (processResult == nullptr) {
-            Thread t{CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread"};
+            Thread::Ptr t = Thread::New (CreateRunnable_ (nullptr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
             t.WaitForDone (timeout);
             t.ThrowIfDoneWithException ();
         }
         else {
             Synchronized<Memory::Optional<ProcessResultType>> pr;
             auto&&                                            cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
-            Thread                                            t{CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread"};
+            Thread::Ptr                                       t = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
             t.WaitForDone (timeout);
             t.ThrowIfDoneWithException ();
         }
@@ -514,7 +514,7 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 {
     TraceContextBumper ctx{"ProcessRunner::RunInBackground"};
     BackgroundProcess  result;
-    result.fRep_->fProcessRunner = Thread{CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, L"ProcessRunner background thread"};
+    result.fRep_->fProcessRunner = Thread::New (CreateRunnable_ (&result.fRep_->fResult, nullptr, progress), Thread::eAutoStart, L"ProcessRunner background thread");
     return result;
 }
 

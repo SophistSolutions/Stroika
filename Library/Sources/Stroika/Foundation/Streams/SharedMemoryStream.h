@@ -52,19 +52,19 @@ namespace Stroika {
              *           unsigned                              sum{};
              *           static constexpr unsigned int         kStartWith{1};
              *           static constexpr unsigned int         kUpToInclusive_{1000};
-             *           Thread                                consumer{[&]() {
+             *           Thread::Ptr                           consumer = Thread::New ([&]() {
              *                  while (auto o = pipe.Read ()) {
              *                      sum += *o;
              *                  }
              *              },
-             *              Thread::eAutoStart};
-             *           Thread producer{[&]() {
+             *              Thread::eAutoStart);
+             *           Thread::Ptr producer = Thread::New ([&]() {
              *                  for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
              *                      pipe.Write (i);
              *                  };
              *                  pipe.CloseForWrites ();    // critical or consumer hangs on final read
              *              },
-             *              Thread::eAutoStart};
+             *              Thread::eAutoStart);
              *           Thread::WaitForDone ({consumer, producer});
              *           Assert (sum == (1 + kUpToInclusive_) * (kUpToInclusive_ - 1 + 1) / 2); // not a race
              *      \endcode

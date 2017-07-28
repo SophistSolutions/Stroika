@@ -111,21 +111,21 @@ public:
     }
     void StartNotifier_ ()
     {
-        fNotifierThread_ = Thread{
+        fNotifierThread_ = Thread::New (
             [this]() {
                 PeriodicNotifier l;
                 l.Run (GetAdjustedAdvertisements_ (), PeriodicNotifier::FrequencyInfo ());
             },
-            Thread::eAutoStart, String{L"SSDP Notifier"}};
+            Thread::eAutoStart, String{L"SSDP Notifier"});
     }
     void StartResponder_ ()
     {
-        fSearchResponderThread_ = Thread{
+        fSearchResponderThread_ = Thread::New (
             [this]() {
                 SearchResponder sr;
                 sr.Run (GetAdjustedAdvertisements_ ());
             },
-            Thread::eAutoStart, String{L"SSDP Search Responder"}};
+            Thread::eAutoStart, String{L"SSDP Search Responder"});
     }
     void Restart_ ()
     {
@@ -138,8 +138,8 @@ public:
         StartNotifier_ ();
         StartResponder_ ();
     }
-    Execution::Thread                  fNotifierThread_;
-    Execution::Thread                  fSearchResponderThread_;
+    Execution::Thread::Ptr             fNotifierThread_;
+    Execution::Thread::Ptr             fSearchResponderThread_;
     Optional<IO::Network::LinkMonitor> fLinkMonitor_; // optional so we can delete it first on shutdown (so no restart while stopping stuff)
 };
 
