@@ -48,11 +48,11 @@ namespace {
     struct SomeModuleALikeWebServer_ {
         // initialize that service//module here, including starting any threads
         SomeModuleALikeWebServer_ ()
-            : fSomeOtherTaskDoingRealWork_{
+            : fSomeOtherTaskDoingRealWork_ (Thread::New (
                   []() {
                       Execution::Sleep (1 * 24 * 60 * 60); // wait 1 day ... simple test....
                   },
-                  Thread::eAutoStart}
+                  Thread::eAutoStart))
         {
         }
         ~SomeModuleALikeWebServer_ ()
@@ -61,7 +61,7 @@ namespace {
             Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to probibit this thread from interuption until its killed owned threads
             fSomeOtherTaskDoingRealWork_.AbortAndWaitForDone ();
         }
-        Thread fSomeOtherTaskDoingRealWork_;
+        Thread::Ptr fSomeOtherTaskDoingRealWork_;
     };
 }
 
