@@ -16,55 +16,20 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ Foundation::IO::Network::ConnectionOrientedSocket *****************
-                 ********************************************************************************
-                 */
-                inline shared_ptr<ConnectionOrientedSocket::Ptr::_IRep> ConnectionOrientedSocket::_GetSharedRep () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return dynamic_pointer_cast<ConnectionOrientedSocket::_IRep> (inherited::_GetSharedRep ());
-                }
-                inline ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_ref () const
-                {
-                    AssertMember (&inherited::_ref (), _IRep);
-                    return *reinterpret_cast<_IRep*> (&inherited::_ref ());
-                }
-                inline const ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::_cref () const
-                {
-                    AssertMember (&inherited::_cref (), _IRep);
-                    return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
-                }
-
-                /*
-                 ********************************************************************************
                  ************ Foundation::IO::Network::ConnectionOrientedSocket::Ptr ************
                  ********************************************************************************
                  */
                 inline ConnectionOrientedSocket::Ptr::Ptr (nullptr_t)
-                    : inherited (shared_ptr<inherited::_IRep>{})
+                    : inherited (nullptr)
                 {
                 }
-                inline ConnectionOrientedSocket::Ptr::Ptr (const ConnectionOrientedSocket& src)
-                    : inherited (src._GetSharedRep ())
+                inline ConnectionOrientedSocket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
+                    : inherited (move (rep))
                 {
                 }
-                inline ConnectionOrientedSocket::Ptr::Ptr (const Ptr& src)
-                    : inherited (src._GetSharedRep ())
+                inline ConnectionOrientedSocket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
+                    : inherited (rep)
                 {
-                }
-                inline ConnectionOrientedSocket::Ptr::Ptr (Ptr&& src)
-                    : inherited (src._GetSharedRep ())
-                {
-                }
-                inline ConnectionOrientedSocket::Ptr& ConnectionOrientedSocket::Ptr::operator= (const Ptr& rhs)
-                {
-                    Socket::Ptr::operator= (rhs);
-                    return *this;
-                }
-                inline ConnectionOrientedSocket::Ptr& ConnectionOrientedSocket::Ptr::operator= (Ptr&& rhs)
-                {
-                    Socket::Ptr::operator= (move (rhs));
-                    return *this;
                 }
                 inline void ConnectionOrientedSocket::Ptr::Close () const
                 {
@@ -115,6 +80,21 @@ namespace Stroika {
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetKeepAlives (keepAliveOptions);
+                }
+                inline shared_ptr<ConnectionOrientedSocket::_IRep> ConnectionOrientedSocket::Ptr::_GetSharedRep () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return dynamic_pointer_cast<ConnectionOrientedSocket::_IRep> (inherited::_GetSharedRep ());
+                }
+                inline ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::Ptr::_ref () const
+                {
+                    AssertMember (&inherited::_ref (), _IRep);
+                    return *reinterpret_cast<_IRep*> (&inherited::_ref ());
+                }
+                inline const ConnectionOrientedSocket::_IRep& ConnectionOrientedSocket::Ptr::_cref () const
+                {
+                    AssertMember (&inherited::_cref (), _IRep);
+                    return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
                 }
             }
         }

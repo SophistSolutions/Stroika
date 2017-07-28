@@ -32,9 +32,9 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class ConnectionOrientedSocket : public Socket::Ptr {
+                class ConnectionOrientedSocket : public Socket {
                 private:
-                    using inherited = Socket::Ptr;
+                    using inherited = Socket;
 
                 protected:
                     class _IRep;
@@ -58,10 +58,9 @@ namespace Stroika {
                     ConnectionOrientedSocket ()                                  = delete;
                     ConnectionOrientedSocket (const ConnectionOrientedSocket& s) = delete;
                     ConnectionOrientedSocket (ConnectionOrientedSocket&& s)      = delete;
-                    ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
 
-                private:
-                    ConnectionOrientedSocket (const shared_ptr<_IRep>& rep);
+                public:
+                    static Ptr New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
 
                 public:
                     /**
@@ -80,7 +79,7 @@ namespace Stroika {
                      *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
                      *  the associated Socket object.
                      */
-                    static ConnectionOrientedSocket::Ptr Attach (PlatformNativeHandle sd);
+                    static Ptr Attach (PlatformNativeHandle sd);
 
                 public:
                     /**
@@ -97,23 +96,6 @@ namespace Stroika {
                          */
                         nonvirtual Characters::String ToString () const;
                     };
-
-                protected:
-                    /**
-                     */
-                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual _IRep& _ref () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual const _IRep& _cref () const;
                 };
 
                 /**
@@ -130,9 +112,9 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class ConnectionOrientedSocket::Ptr : public ConnectionOrientedSocket {
+                class ConnectionOrientedSocket::Ptr : public Socket::Ptr {
                 private:
-                    using inherited = ConnectionOrientedSocket;
+                    using inherited = Socket::Ptr;
 
                 public:
                     /**
@@ -140,15 +122,18 @@ namespace Stroika {
                      */
                     Ptr () = default;
                     Ptr (nullptr_t);
-                    Ptr (const Ptr& src);
-                    Ptr (Ptr&& src);
-                    Ptr (const ConnectionOrientedSocket& src);
+                    Ptr (const Ptr& src) = default;
+                    Ptr (Ptr&& src)      = default;
+
+                protected:
+                    Ptr (shared_ptr<_IRep>&& rep);
+                    Ptr (const shared_ptr<_IRep>& rep);
 
                 public:
                     /**
                      */
-                    nonvirtual Ptr& operator= (const Ptr& rhs);
-                    nonvirtual Ptr& operator= (Ptr&& rhs);
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator= (Ptr&& rhs) = default;
 
                 public:
                     /**
@@ -251,11 +236,31 @@ namespace Stroika {
                      *  @see KeepAliveOptions
                      */
                     nonvirtual void SetKeepAlives (const KeepAliveOptions& keepalive) const;
+
+                protected:
+                    /**
+                    */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
+                    * \req fRep_ != nullptr
+                    */
+                    nonvirtual _IRep& _ref () const;
+
+                protected:
+                    /**
+                    * \req fRep_ != nullptr
+                    */
+                    nonvirtual const _IRep& _cref () const;
+
+                private:
+                    friend class ConnectionOrientedSocket;
                 };
 
                 /**
                  */
-                class ConnectionOrientedSocket::_IRep : public Socket::Ptr::_IRep {
+                class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
                 public:
                     virtual ~_IRep ()                                    = default;
                     virtual void Connect (const SocketAddress& sockAddr) = 0;

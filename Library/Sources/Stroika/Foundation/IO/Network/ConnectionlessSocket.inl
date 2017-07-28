@@ -16,55 +16,20 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************** Foundation::IO::Network::ConnectionlessSocket *******************
-                 ********************************************************************************
-                 */
-                inline shared_ptr<ConnectionlessSocket::Ptr::_IRep> ConnectionlessSocket::_GetSharedRep () const
-                {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return dynamic_pointer_cast<ConnectionlessSocket::_IRep> (inherited::_GetSharedRep ());
-                }
-                inline ConnectionlessSocket::_IRep& ConnectionlessSocket::_ref () const
-                {
-                    AssertMember (&inherited::_ref (), _IRep);
-                    return *reinterpret_cast<_IRep*> (&inherited::_ref ());
-                }
-                inline const ConnectionlessSocket::_IRep& ConnectionlessSocket::_cref () const
-                {
-                    AssertMember (&inherited::_cref (), _IRep);
-                    return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
-                }
-
-                /*
-                 ********************************************************************************
                  ************ Foundation::IO::Network::ConnectionlessSocket::Ptr ****************
                  ********************************************************************************
                  */
                 inline ConnectionlessSocket::Ptr::Ptr (nullptr_t)
-                    : inherited (shared_ptr<inherited::_IRep>{})
+                    : Socket::Ptr (nullptr)
                 {
                 }
-                inline ConnectionlessSocket::Ptr::Ptr (const ConnectionlessSocket& src)
-                    : inherited (src._GetSharedRep ())
+                inline ConnectionlessSocket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
+                    : Socket::Ptr (rep)
                 {
                 }
-                inline ConnectionlessSocket::Ptr::Ptr (const Ptr& src)
-                    : inherited (src._GetSharedRep ())
+                inline ConnectionlessSocket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
+                    : Socket::Ptr (move (rep))
                 {
-                }
-                inline ConnectionlessSocket::Ptr::Ptr (Ptr&& src)
-                    : inherited (src._GetSharedRep ())
-                {
-                }
-                inline ConnectionlessSocket::Ptr& ConnectionlessSocket::Ptr::operator= (const Ptr& rhs)
-                {
-                    Socket::Ptr::operator= (rhs);
-                    return *this;
-                }
-                inline ConnectionlessSocket::Ptr& ConnectionlessSocket::Ptr::operator= (Ptr&& rhs)
-                {
-                    Socket::Ptr::operator= (move (rhs));
-                    return *this;
                 }
                 inline uint8_t ConnectionlessSocket::Ptr::GetMulticastTTL () const
                 {
@@ -105,6 +70,21 @@ namespace Stroika {
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().ReceiveFrom (intoStart, intoEnd, flag, fromAddress, timeout);
+                }
+                inline shared_ptr<ConnectionlessSocket::_IRep> ConnectionlessSocket::Ptr::_GetSharedRep () const
+                {
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                    return dynamic_pointer_cast<ConnectionlessSocket::_IRep> (inherited::_GetSharedRep ());
+                }
+                inline ConnectionlessSocket::_IRep& ConnectionlessSocket::Ptr::_ref () const
+                {
+                    AssertMember (&inherited::_ref (), _IRep);
+                    return *reinterpret_cast<_IRep*> (&inherited::_ref ());
+                }
+                inline const ConnectionlessSocket::_IRep& ConnectionlessSocket::Ptr::_cref () const
+                {
+                    AssertMember (&inherited::_cref (), _IRep);
+                    return *reinterpret_cast<const _IRep*> (&inherited::_cref ());
                 }
             }
         }

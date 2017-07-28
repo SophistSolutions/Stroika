@@ -18,9 +18,9 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class ConnectionlessSocket : public Socket::Ptr {
+                class ConnectionlessSocket : public Socket {
                 private:
-                    using inherited = Socket::Ptr;
+                    using inherited = Socket;
 
                 protected:
                     class _IRep;
@@ -29,10 +29,22 @@ namespace Stroika {
                     class Ptr;
 
                 public:
+                    ConnectionlessSocket ()                              = delete;
+                    ConnectionlessSocket (ConnectionlessSocket&& s)      = delete;
+                    ConnectionlessSocket (const ConnectionlessSocket& s) = delete;
+
+                public:
+                    /**
+                     *  For copyability, use ConnectionlessSocket::Ptr for assigned-to type.
+                     */
+                    nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s) = delete;
+                    nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = delete;
+
+                public:
                     /**
                      *  \par Example Usage
                      *      \code
-                     *          ConnectionlessSocket      s  { Socket::INET, Socket::DGRAM };
+                     *          ConnectionlessSocket::Ptr   s  = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
                      *      \endcode
                      *
                      *  \req socketKind != SOCK_STREAM
@@ -41,23 +53,8 @@ namespace Stroika {
                      *
                      *  \note ConnectionlessSocket is not copyable, but it can be copied into a ConnectionlessSocket::Ptr or
                      *        Socket::Ptr.  This is critical to save them in a container, for example.
-                     *
-                     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                      */
-                    ConnectionlessSocket ()                              = delete;
-                    ConnectionlessSocket (ConnectionlessSocket&& s)      = delete;
-                    ConnectionlessSocket (const ConnectionlessSocket& s) = delete;
-                    ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
-
-                private:
-                    ConnectionlessSocket (const shared_ptr<_IRep>& rep);
-
-                public:
-                    /**
-                     *  For copyability, use ConnectionlessSocket::Ptr for assigned-to type.
-                     */
-                    nonvirtual ConnectionlessSocket& operator= (ConnectionlessSocket&& s) = delete;
-                    nonvirtual ConnectionlessSocket& operator= (const ConnectionlessSocket& s) = delete;
+                    static ConnectionlessSocket::Ptr New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
 
                 public:
                     /**
@@ -69,24 +66,7 @@ namespace Stroika {
                      *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
                      *  the associated Socket object.
                      */
-                    static ConnectionlessSocket::Ptr Attach (PlatformNativeHandle sd);
-
-                protected:
-                    /**
-                     */
-                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual _IRep& _ref () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual const _IRep& _cref () const;
+                    static Ptr Attach (PlatformNativeHandle sd);
                 };
 
                 /**
@@ -102,9 +82,9 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class ConnectionlessSocket::Ptr : public ConnectionlessSocket {
+                class ConnectionlessSocket::Ptr : public Socket::Ptr {
                 private:
-                    using inherited = ConnectionlessSocket;
+                    using inherited = Socket::Ptr;
 
                 public:
                     /**
@@ -112,15 +92,18 @@ namespace Stroika {
                      */
                     Ptr () = default;
                     Ptr (nullptr_t);
-                    Ptr (const Ptr& src);
-                    Ptr (Ptr&& src);
-                    Ptr (const ConnectionlessSocket& src);
+                    Ptr (const Ptr& src) = default;
+                    Ptr (Ptr&& src)      = default;
+
+                protected:
+                    Ptr (shared_ptr<_IRep>&& rep);
+                    Ptr (const shared_ptr<_IRep>& rep);
 
                 public:
                     /**
                     */
-                    nonvirtual Ptr& operator= (const Ptr& rhs);
-                    nonvirtual Ptr& operator= (Ptr&& rhs);
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator= (Ptr&& rhs) = default;
 
                 public:
                     /**
@@ -177,11 +160,31 @@ namespace Stroika {
                      *  \note ***Cancelation Point***
                      */
                     nonvirtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout = Time::kInfinite) const;
+
+                protected:
+                    /**
+                     */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
+
+                private:
+                    friend class ConnectionlessSocket;
                 };
 
                 /**
                  */
-                class ConnectionlessSocket::_IRep : public Socket::Ptr::_IRep {
+                class ConnectionlessSocket::_IRep : public Socket::_IRep {
                 public:
                     virtual ~_IRep () = default;
 

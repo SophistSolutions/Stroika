@@ -93,7 +93,7 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
     , fOptions_ (options)
     , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
-    , fSocket_{IO::Network::ConnectionlessSocket{SocketAddress::INET, Socket::RAW, IPPROTO_ICMP}}
+    , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}
     , fNextSequenceNumber_{static_cast<uint16_t> (skAllUInt16Distribution_ (sRng_))}
     , fPingTimeout{options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
 {

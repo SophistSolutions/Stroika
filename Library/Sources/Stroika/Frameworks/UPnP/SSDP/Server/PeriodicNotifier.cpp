@@ -29,15 +29,10 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
 /*
-********************************************************************************
-******************************** PeriodicNotifier ******************************
-********************************************************************************
-*/
-PeriodicNotifier::PeriodicNotifier ()
-    : fListenThread_ ()
-{
-}
-
+ ********************************************************************************
+ ******************************** PeriodicNotifier ******************************
+ ********************************************************************************
+ */
 PeriodicNotifier::~PeriodicNotifier ()
 {
     // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
@@ -56,7 +51,7 @@ void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const
     static const String kThreadName_{String_Constant{L"SSDP Periodic Notifier"}};
     fListenThread_ = Execution::Thread::New (
         [advertisements, fi]() {
-            ConnectionlessSocket::Ptr s = ConnectionlessSocket (SocketAddress::INET, Socket::DGRAM);
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), Socket::BindFlags{true});
 //s.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), Socket::BindFlags{true});
 #if qDefaultTracingOn

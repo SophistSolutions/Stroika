@@ -19,9 +19,9 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class ConnectionOrientedMasterSocket : public Socket::Ptr {
+                class ConnectionOrientedMasterSocket : public Socket {
                 private:
-                    using inherited = Socket::Ptr;
+                    using inherited = Socket;
 
                 protected:
                     class _IRep;
@@ -31,9 +31,16 @@ namespace Stroika {
 
                 public:
                     /**
+                     */
+                    ConnectionOrientedMasterSocket ()                                        = delete;
+                    ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = delete;
+                    ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = delete;
+
+                public:
+                    /**
                      *  \par Example Usage
                      *      \code
-                     *          ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket { Socket::INET, Socket::STREAM };
+                     *          ConnectionOrientedMasterSocket::Ptr ms = ConnectionOrientedMasterSocket::New (Socket::INET, Socket::STREAM);
                      *          ms.Bind (addr);
                      *          ms.Listen (backlog);
                      *      \endcode
@@ -43,13 +50,7 @@ namespace Stroika {
                      *  \note ConnectionOrientedMasterSocket is not copyable, but it can be copied into a ConnectionOrientedMasterSocket::Ptr or
                      *        Socket::Ptr.  This is critical to save them in a container, for example.
                      */
-                    ConnectionOrientedMasterSocket ()                                        = delete;
-                    ConnectionOrientedMasterSocket (ConnectionOrientedMasterSocket&& s)      = delete;
-                    ConnectionOrientedMasterSocket (const ConnectionOrientedMasterSocket& s) = delete;
-                    ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
-
-                private:
-                    ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep);
+                    static Ptr New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
 
                 public:
                     /**
@@ -68,30 +69,13 @@ namespace Stroika {
                      *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
                      *  the associated Socket object.
                      */
-                    static ConnectionOrientedMasterSocket::Ptr Attach (PlatformNativeHandle sd);
-
-                protected:
-                    /**
-                     */
-                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual _IRep& _ref () const;
-
-                protected:
-                    /**
-                     * \req fRep_ != nullptr
-                     */
-                    nonvirtual const _IRep& _cref () const;
+                    static Ptr Attach (PlatformNativeHandle sd);
                 };
 
                 /**
                  *  \par Example Usage
                  *      \code
-                 *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket (Socket::INET, Socket::STREAM);
+                 *          ConnectionOrientedMasterSocket::Ptr ms  = ConnectionOrientedMasterSocket::New (Socket::INET, Socket::STREAM);
                  *          ms.Bind (addr);
                  *          ms.Listen (backlog);
                  *          Sequence<ConnectionOrientedMasterSocket::Ptr>   l;  // cannot do Sequence<ConnectionOrientedMasterSocket> cuz not copyable
@@ -103,9 +87,9 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class ConnectionOrientedMasterSocket::Ptr : public ConnectionOrientedMasterSocket {
+                class ConnectionOrientedMasterSocket::Ptr : public Socket::Ptr {
                 private:
-                    using inherited = ConnectionOrientedMasterSocket;
+                    using inherited = Socket::Ptr;
 
                 public:
                     /**
@@ -113,15 +97,18 @@ namespace Stroika {
                      */
                     Ptr () = default;
                     Ptr (nullptr_t);
-                    Ptr (const Ptr& src);
-                    Ptr (Ptr&& src);
-                    Ptr (const ConnectionOrientedMasterSocket& src);
+                    Ptr (const Ptr& src) = default;
+                    Ptr (Ptr&& src)      = default;
+
+                protected:
+                    Ptr (shared_ptr<_IRep>&& rep);
+                    Ptr (const shared_ptr<_IRep>& rep);
 
                 public:
                     /**
-                    */
-                    nonvirtual Ptr& operator= (const Ptr& rhs);
-                    nonvirtual Ptr& operator= (Ptr&& rhs);
+                     */
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+                    nonvirtual Ptr& operator= (Ptr&& rhs) = default;
 
                 public:
                     /**
@@ -141,11 +128,31 @@ namespace Stroika {
                      *  \note ***Cancelation Point***
                      */
                     nonvirtual ConnectionOrientedSocket::Ptr Accept () const;
+
+                protected:
+                    /**
+                     */
+                    nonvirtual shared_ptr<_IRep> _GetSharedRep () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual _IRep& _ref () const;
+
+                protected:
+                    /**
+                     * \req fRep_ != nullptr
+                     */
+                    nonvirtual const _IRep& _cref () const;
+
+                private:
+                    friend class ConnectionOrientedMasterSocket;
                 };
 
                 /**
                  */
-                class ConnectionOrientedMasterSocket::_IRep : public Socket::Ptr::_IRep {
+                class ConnectionOrientedMasterSocket::_IRep : public Socket::_IRep {
                 public:
                     virtual ~_IRep ()                               = default;
                     virtual void Listen (unsigned int backlog)      = 0;

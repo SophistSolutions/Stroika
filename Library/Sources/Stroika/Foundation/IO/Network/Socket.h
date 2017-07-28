@@ -95,6 +95,13 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  Only Stream::Ptr objects are constructible. 'Stream' is a quasi-namespace.
+                     */
+                    Socket ()              = delete;
+                    Socket (const Socket&) = delete;
+
+                public:
+                    /**
                      * 'second arg' to ::socket() call - socket type
                      */
                     enum class Type : int {
@@ -129,12 +136,6 @@ namespace Stroika {
                     static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
                 protected:
-                    /**
-                     *  Only Stream::Ptr objects are constructible. 'Stream' is a quasi-namespace.
-                     */
-                    Socket () = default;
-
-                protected:
                     static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol);
                 };
 
@@ -159,7 +160,7 @@ namespace Stroika {
                  *      \code
                  *          Socket::Ptr      s;
                  *          if (s == nullptr) {
-                 *              s = ConnectionlessSocket { Socket::INET, Socket::DGRAM };
+                 *              s = ConnectionlessSocket::New (Socket::INET, Socket::DGRAM);
                  *          }
                  *      \endcode
                  *
@@ -182,22 +183,19 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
-                class Socket::Ptr : public Socket, protected Debug::AssertExternallySynchronizedLock {
-                private:
-                    using inherited = Socket;
-
+                class Socket::Ptr : protected Debug::AssertExternallySynchronizedLock {
                 protected:
                     /**
-                     *  Socket is now an abstract class. Use an explicit subclass like
-                     *      o   ConnectionlessSocket
-                     *      o   ConnectionOrientedSocket
-                     *      o   ConnectionOrientedMasterSocket
+                     *  Socket::Ptr maybe initialized with
+                     *      o   ConnectionlessSocket::New ()
+                     *      o   ConnectionOrientedSocket::New ()
+                     *      o   ConnectionOrientedMasterSocket::New ()
                      *
                      * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away
                      */
                 public:
-                    Ptr (const Ptr& s);
-                    Ptr (Ptr&& s);
+                    Ptr (const Ptr& s) = default;
+                    Ptr (Ptr&& s)      = default;
                     Ptr (nullptr_t);
 
                 protected:

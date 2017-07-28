@@ -269,19 +269,14 @@ Characters::String Network::ConnectionOrientedSocket::KeepAliveOptions::ToString
  ************************ ConnectionOrientedSocket ******************************
  ********************************************************************************
  */
-ConnectionOrientedSocket::ConnectionOrientedSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
-    : inherited (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
+ConnectionOrientedSocket::Ptr ConnectionOrientedSocket::New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
 {
-}
-
-ConnectionOrientedSocket::ConnectionOrientedSocket (const shared_ptr<_IRep>& rep)
-    : inherited (rep)
-{
+    return Ptr{make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
 ConnectionOrientedSocket::Ptr ConnectionOrientedSocket::Attach (PlatformNativeHandle sd)
 {
-    return ConnectionOrientedSocket (make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (sd));
+    return Ptr{make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (sd)};
 }
 
 /*

@@ -43,11 +43,11 @@ public:
         , fThread_ ()
     {
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
-            ConnectionlessSocket::Ptr s = ConnectionlessSocket{SocketAddress::INET, Socket::DGRAM};
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             fSockets_.Add (s);
         }
         if (InternetProtocol::IP::SupportIPV6 (ipVersion)) {
-            ConnectionlessSocket::Ptr s = ConnectionlessSocket{SocketAddress::INET6, Socket::DGRAM};
+            ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET6, Socket::DGRAM);
             fSockets_.Add (s);
         }
         for (ConnectionlessSocket::Ptr cs : fSockets_) {

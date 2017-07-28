@@ -42,7 +42,7 @@ namespace Stroika {
                      */
                     class PeriodicNotifier {
                     public:
-                        PeriodicNotifier ();
+                        PeriodicNotifier ()                        = default;
                         PeriodicNotifier (const PeriodicNotifier&) = delete;
                         const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
                         ~PeriodicNotifier ();

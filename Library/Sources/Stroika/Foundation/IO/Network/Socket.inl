@@ -29,6 +29,9 @@ namespace Stroika {
                  ********************* Foundation::IO::Network::Socket::Ptr *********************
                  ********************************************************************************
                  */
+                inline Socket::Ptr::Ptr (nullptr_t)
+                {
+                }
                 inline Socket::Ptr::Ptr (const shared_ptr<_IRep>& rep)
                     : fRep_ (rep)
                 {
@@ -37,26 +40,14 @@ namespace Stroika {
                     : fRep_ (std::move (rep))
                 {
                 }
-                inline Socket::Ptr::Ptr (const Ptr& s)
-                    : fRep_ (s.fRep_)
+                inline Socket::Ptr& Socket::Ptr::operator= (Ptr&& s)
                 {
-                }
-                inline Socket::Ptr::Ptr (Ptr&& s)
-                    : fRep_ (std::move (s.fRep_))
-                {
+                    fRep_ = move (s.fRep_);
+                    return *this;
                 }
                 inline Socket::Ptr& Socket::Ptr::operator= (const Ptr& s)
                 {
-                    if (fRep_ != s.fRep_) {
-                        fRep_ = s.fRep_;
-                    }
-                    return *this;
-                }
-                inline Socket::Ptr& Socket::Ptr::operator= (Ptr&& s)
-                {
-                    if (fRep_ != s.fRep_) {
-                        fRep_ = std::move (s.fRep_);
-                    }
+                    fRep_ = s.fRep_;
                     return *this;
                 }
                 inline shared_ptr<Socket::_IRep> Socket::Ptr::_GetSharedRep () const

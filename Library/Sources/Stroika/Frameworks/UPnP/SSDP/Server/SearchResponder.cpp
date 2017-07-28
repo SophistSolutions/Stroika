@@ -143,14 +143,14 @@ void SearchResponder::Run (const Iterable<Advertisement>& advertisements)
     static const String kThreadName_{String_Constant{L"SSDP Search Responder"}};
     fListenThread_ = Execution::Thread::New (
         [advertisements]() {
-            Debug::TraceContextBumper ctx ("SSDP SearchResponder thread loop");
-            ConnectionlessSocket::Ptr s         = ConnectionlessSocket (SocketAddress::INET, Socket::DGRAM);
+            Debug::TraceContextBumper ctx{"SSDP SearchResponder thread loop"};
+            ConnectionlessSocket::Ptr s         = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);
             Socket::BindFlags         bindFlags = Socket::BindFlags ();
             bindFlags.fReUseAddr                = true;
             s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
             //s.Bind (SocketAddress (Network::V6::kAddrAny, UPnP::SSDP::V6::kSocketAddress.GetPort ()), bindFlags);
             s.SetMulticastLoopMode (true); // probably should make this configurable
-            const unsigned int kMaxHops_ = 4;
+            constexpr unsigned int kMaxHops_ = 4;
             s.SetMulticastTTL (kMaxHops_);
             {
             Again:

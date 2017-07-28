@@ -213,18 +213,13 @@ namespace {
  ************************** ConnectionlessSocket ********************************
  ********************************************************************************
  */
-ConnectionlessSocket::ConnectionlessSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
-    : inherited (make_shared<ConnectionlessSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
+ConnectionlessSocket::Ptr ConnectionlessSocket::New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
 {
     Require (socketKind != Type::STREAM); // use ConnectionOrientedSocket or ConnectionOrientedMasterSocket
-}
-
-ConnectionlessSocket::ConnectionlessSocket (const shared_ptr<_IRep>& rep)
-    : inherited (rep)
-{
+    return Ptr{make_shared<ConnectionlessSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
 ConnectionlessSocket::Ptr ConnectionlessSocket::Attach (PlatformNativeHandle sd)
 {
-    return ConnectionlessSocket (make_shared<ConnectionlessSocket_IMPL_::Rep_> (sd));
+    return Ptr{make_shared<ConnectionlessSocket_IMPL_::Rep_> (sd)};
 }

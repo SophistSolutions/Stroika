@@ -63,17 +63,12 @@ namespace {
  ************************ ConnectionOrientedMasterSocket ************************
  ********************************************************************************
  */
-ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
-    : inherited (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol)))
+ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
 {
-}
-
-ConnectionOrientedMasterSocket::ConnectionOrientedMasterSocket (const shared_ptr<_IRep>& rep)
-    : inherited (rep)
-{
+    return Ptr{make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
 ConnectionOrientedMasterSocket::Ptr ConnectionOrientedMasterSocket::Attach (PlatformNativeHandle sd)
 {
-    return ConnectionOrientedMasterSocket (make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (sd));
+    return Ptr{make_shared<ConnectionOrientedMasterSocket_IMPL_::Rep_> (sd)};
 }
