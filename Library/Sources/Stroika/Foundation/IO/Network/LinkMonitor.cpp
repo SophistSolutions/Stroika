@@ -222,7 +222,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 #if qPlatform_Linux
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
     for (SocketAddress::FamilyType family : initializer_list<SocketAddress::FamilyType>{SocketAddress::INET, SocketAddress::INET6}) {
-        ConnectionlessSocket::Ptr s = ConnectionlessSocket{family, Socket::DGRAM};
+        ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (family, Socket::DGRAM);
 
         char   buf[10 * 1024];
         ifconf ifc;
@@ -311,7 +311,7 @@ struct LinkMonitor::Rep_ {
 
                 // for now - only handle adds, but removes SB easy too...
 
-                ConnectionlessSocket::Ptr sock = ConnectionlessSocket{static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE};
+                ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);
 
                 {
                     sockaddr_nl addr;
