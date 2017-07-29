@@ -52,4 +52,4 @@ $(TARGETEXE):	$(ObjDir) $(Objs)
 
 installers installer-deb installer-rpm installer-wix:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Installers:"
-	@$(MAKE) --no-print-directory --directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) Installers $@
+	@$(MAKE) --no-print-directory --directory Installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $@
