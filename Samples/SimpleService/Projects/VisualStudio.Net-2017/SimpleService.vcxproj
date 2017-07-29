@@ -504,10 +504,10 @@
   <ItemGroup>
     <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\Installers\Makefile" />
     <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Sources\Service.inl" />
-    <None Include="..\..\stroika-simpleservice.service" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Service.h" />

@@ -47,3 +47,9 @@ $(TARGETEXE):	$(ObjDir) $(Objs)
 	    $(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)";\
 	fi
 	@$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
+
+
+
+installers installer-deb installer-rpm installer-wix:
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Installers:"
+	@$(MAKE) --no-print-directory --directory MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) Installers $@
