@@ -8,6 +8,8 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 SHELL=/bin/bash
 
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SimpleService
+
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
@@ -54,7 +56,7 @@ installer-deb:
 	@echo "(service $(BASIC_NAME_LC) stop) || true" > $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
 
 	@#List files to actually install and where
-	@install -m 755 --strip $(ObjDir)Samples_SimpleService $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
+	@install -m 755 --strip $(TARGETEXE) $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 	@install -m 644 $(BASIC_NAME_LC).service $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/etc/systemd/system/$(BASIC_NAME_LC).service
 
 	@dpkg --build $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION) 2>&1 > $(BUILD_OUT)
