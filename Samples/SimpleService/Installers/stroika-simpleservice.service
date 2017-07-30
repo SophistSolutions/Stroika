@@ -12,9 +12,9 @@ PIDFile=/run/Test-Service.pid
 #EnvironmentFile=-/etc/sysconfig/network
 #ExecStartPre=-/usr/libexec/postfix/aliasesdb
 #ExecStartPre=-/usr/libexec/postfix/chroot-update
-ExecStart=/opt/Stroika-SimpleService/SimpleService --start
-ExecReload=/opt/Stroika-SimpleService/SimpleService --restart
-ExecStop=/opt/Stroika-SimpleService/SimpleService --stop
+ExecStart=/opt/Stroika-SimpleService/Stroika-SimpleService --start
+ExecReload=/opt/Stroika-SimpleService/Stroika-SimpleService --restart
+ExecStop=/opt/Stroika-SimpleService/Stroika-SimpleService --stop
 
 [Install]
 WantedBy=multi-user.target

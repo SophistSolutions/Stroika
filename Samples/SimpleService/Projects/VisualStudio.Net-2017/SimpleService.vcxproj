@@ -505,6 +505,8 @@
     <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Installers\Makefile" />
+    <None Include="..\..\Installers\stroika-simpleservice.control" />
+    <None Include="..\..\Installers\stroika-simpleservice.service" />
     <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Sources\Service.inl" />

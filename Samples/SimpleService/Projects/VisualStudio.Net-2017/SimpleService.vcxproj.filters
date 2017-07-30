@@ -35,6 +35,12 @@
     <None Include="..\..\Installers\Makefile">
       <Filter>Installers</Filter>
     </None>
+    <None Include="..\..\Installers\stroika-simpleservice.control">
+      <Filter>Installers</Filter>
+    </None>
+    <None Include="..\..\Installers\stroika-simpleservice.service">
+      <Filter>Installers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Service.h">
