@@ -28,6 +28,7 @@ MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformat
 INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(StroikaRoot)STROIKA_VERSION DecoratedStageInfo)
 DEBVERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 INSTALLER_PLATFORM_TAG?=$(shell uname --machine)
+INSTALLER_OS_TAG?=$(shell uname --kernel-name)
 
 
 installers:	installer-deb
