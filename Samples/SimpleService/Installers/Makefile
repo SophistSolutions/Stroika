@@ -46,7 +46,7 @@ installer-deb:
 	@#Make directories to be created by the installer
 	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN
 	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/
-	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/etc/systemd/system
+	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/usr/lib/systemd/system
 	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/var/opt/$(BASIC_NAME)/
 	
 	@echo "Version: $(DEBVERSION)" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/control
@@ -62,7 +62,7 @@ installer-deb:
 
 	@#List files to actually install and where
 	@install -m 755 --strip $(TARGET_OUT_DIR)Samples_SimpleService $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
-	@install -m 644 $(BASIC_NAME_LC).service $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/etc/systemd/system/$(BASIC_NAME_LC).service
+	@install -m 644 $(BASIC_NAME_LC).service $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 
 	@dpkg --build $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION) 2>&1 > $(BUILD_OUT)
 	@cp $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION).deb $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
