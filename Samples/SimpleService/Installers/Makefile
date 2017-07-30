@@ -59,7 +59,7 @@ installer-deb:
 
 	@#??? should  I use servicectl?
 	@echo "(service $(BASIC_NAME_LC) stop) || true" > $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
-	@echo "(service $(BASIC_NAME_LC) disable) || true" > $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
+	@echo "(service $(BASIC_NAME_LC) disable) || true" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
 	@chmod 755 $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
 
 	@#List files to actually install and where
