@@ -8,7 +8,7 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 SHELL=/bin/bash
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SimpleService
+TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -28,6 +28,7 @@ MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformat
 INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(StroikaRoot)STROIKA_VERSION DecoratedStageInfo)
 DEBVERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 INSTALLER_PLATFORM_TAG?=$(shell uname --machine)
+
 
 installers:	installer-deb
 #installers:	installer-deb installer-rpm installer-wix
@@ -59,10 +60,10 @@ installer-deb:
 	@chmod 755 $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
 
 	@#List files to actually install and where
-	@install -m 755 --strip $(TARGETEXE) $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
+	@install -m 755 --strip $(TARGET_OUT_DIR)Samples_SimpleService $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
 	@install -m 644 $(BASIC_NAME_LC).service $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/etc/systemd/system/$(BASIC_NAME_LC).service
 
 	@dpkg --build $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION) 2>&1 > $(BUILD_OUT)
-	@cp $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION).deb $(ObjDir)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
+	@cp $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION).deb $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
 	
 	@$(ECHO) "done"
