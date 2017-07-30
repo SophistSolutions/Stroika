@@ -53,11 +53,13 @@ installer-deb:
 	@cat $(BASIC_NAME_LC).control >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/control
 
 	@#??? should  I use servicectl?
+	@echo "service $(BASIC_NAME_LC) enable" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
 	@echo "service $(BASIC_NAME_LC) start" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
 	@chmod 755 $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
 
 	@#??? should  I use servicectl?
 	@echo "(service $(BASIC_NAME_LC) stop) || true" > $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
+	@echo "(service $(BASIC_NAME_LC) disable) || true" > $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
 	@chmod 755 $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
 
 	@#List files to actually install and where
