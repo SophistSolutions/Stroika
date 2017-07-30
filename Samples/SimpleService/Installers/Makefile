@@ -44,6 +44,7 @@ installer-deb:
 	@#Make directories to be created by the installer
 	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN
 	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/
+	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/etc/systemd/system
 	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/var/opt/$(BASIC_NAME)/
 	
 	@echo "Version: $(DEBVERSION)" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/control
