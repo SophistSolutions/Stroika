@@ -1,5 +1,7 @@
 -include ../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
+StroikaRoot ?= ../../
+
 SrcDir				=	$(StroikaRoot)Samples/SimpleService/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SimpleService/
 
