@@ -31,40 +31,72 @@ INSTALLER_PLATFORM_TAG?=$(shell uname --machine)
 INSTALLER_OS_TAG?=$(shell uname --kernel-name)
 
 
-installers:	installer-deb
-#installers:	installer-deb installer-rpm installer-wix
+installers:	
+	@if [ -x "$$(command -v dpkg)" ] ; then \
+		$(MAKE) --no-print-directory installer-deb CONFIGURATION=$(CONFIGURATION);\
+	fi
+	@if [ -x "$$(command -v rpmbuild)" ] ; then \
+		$(MAKE) --no-print-directory installer-rpm CONFIGURATION=$(CONFIGURATION);\
+	fi
+
 
 BASIC_NAME_LC=stroika-simpleservice
 BASIC_NAME=Stroika-SimpleService
 
-WORKDIR=$(ObjDir)/DEB_TMP/
+DEB_WORKDIR=$(ObjDir)/DEB_TMP/
 
 installer-deb:
-	@###NB: This omits the init.d stuff, update-init.d etc - which I dont think is needed anymore (pre-systemd) --LGP 2017-07-29
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building DEB installer (temp files in $(WORKDIR)); output to $(BUILD_OUT)..."
-	@rm -rf $(WORKDIR)
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building DEB installer: $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb; temp files in $(DEB_WORKDIR); logging to $(BUILD_OUT)..."
+	@#NB: This installs control scripts for systemd, so assumes ubuntu 15 or later --LGP 2017-07-29
+	@rm -rf $(DEB_WORKDIR)
 	@#Make directories to be created by the installer
-	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN
-	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/
-	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/usr/lib/systemd/system
-	@mkdir -p $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/var/opt/$(BASIC_NAME)/
+	@mkdir -p $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN
+	@mkdir -p $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/
+	@mkdir -p $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/usr/lib/systemd/system
+	@mkdir -p $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/var/opt/$(BASIC_NAME)/
 	
-	@echo "Version: $(DEBVERSION)" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/control
-	@cat $(BASIC_NAME_LC).control >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/control
+	@echo "Version: $(DEBVERSION)" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/control
+	@cat $(BASIC_NAME_LC).control >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/control
 
-	@echo "systemctl enable $(BASIC_NAME_LC)" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
-	@echo "systemctl start $(BASIC_NAME_LC)" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
-	@chmod 755 $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
+	@echo "systemctl enable $(BASIC_NAME_LC)" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
+	@echo "systemctl start $(BASIC_NAME_LC)" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
+	@chmod 755 $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/postinst
 
-	@echo "(systemctl stop $(BASIC_NAME_LC)) || true" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
-	@echo "(systemctl disable $(BASIC_NAME_LC)) || true" >> $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
-	@chmod 755 $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
+	@echo "(systemctl stop $(BASIC_NAME_LC)) || true" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
+	@echo "(systemctl disable $(BASIC_NAME_LC)) || true" >> $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
+	@chmod 755 $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/DEBIAN/prerm
 
 	@#List files to actually install and where
-	@install -m 755 --strip $(TARGET_OUT_DIR)Samples_SimpleService $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
-	@install -m 644 $(BASIC_NAME_LC).service $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
+	@install -m 755 --strip $(TARGET_OUT_DIR)Samples_SimpleService $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
+	@install -m 644 $(BASIC_NAME_LC).service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 
-	@dpkg --build $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION) 2>&1 > $(BUILD_OUT)
-	@cp $(WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION).deb $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
+	@dpkg --build $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION) 2>&1 > $(BUILD_OUT)
+	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION).deb $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
 	
 	@$(ECHO) "done"
+
+
+RPM_WORKDIR=$(ObjDir)/RPM_TMP/
+installer-rpm:
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building RPM installer: $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb; temp files in $(RPM_WORKDIR); logging to $(BUILD_OUT)..."
+	@#
+	@rm -rf $(RPM_WORKDIR)
+	@#Make directories to be created by the installer
+	@mkdir -p $(RPM_WORKDIR)RPMS $(RPM_WORKDIR)SRPMS $(RPM_WORKDIR)BUILD $(RPM_WORKDIR)SOURCES $(RPM_WORKDIR)SPECS $(RPM_WORKDIR)tmp
+	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/
+	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/usr/lib/systemd/system
+	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/var/opt/$(BASIC_NAME)/
+
+	@install -m 644 $(BASIC_NAME_LC).service $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME_LC).service
+	@install -m 755 --strip $(TARGET_OUT_DIR)Samples_SimpleService $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME);\
+	
+	@cd $(RPM_WORKDIR) && tar -zcf $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/
+	@cd $(RPM_WORKDIR) && cp $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz SOURCES/
+	@echo "%define _topdir "$(RPM_WORKDIR)/RPM_TMP > $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
+	@echo "Version: $(MAJOR_DOT_MINOR_VERSION)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
+	@echo "Release: $(RPM_RELEASE_TAG)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
+	@cat $(BASIC_NAME_LC).rpm-spec >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
+	@cd $(RPM_WORKDIR) && rpmbuild -ba --quiet SPECS/$(BASIC_NAME_LC).spec
+
+	cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)$(CONFIGURATION)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
+	@echo "done; created $(TARGET_OUT_DIR)$(CONFIGURATION)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm"
