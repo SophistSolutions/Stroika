@@ -1,3 +1,7 @@
+###
+### @todo https://stroika.atlassian.net/browse/STK-614 -  Add WIX support to Sample SimpleService installers
+###
+
 -include ../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 StroikaRoot ?= ../../../
