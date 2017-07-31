@@ -34,6 +34,9 @@ INSTALLER_OS_TAG?=$(shell uname --kernel-name)
 
 
 installers:	
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installers without a configuration argument)
+endif
 	@if [ -x "$$(command -v dpkg)" ] ; then \
 		$(MAKE) --no-print-directory installer-deb CONFIGURATION=$(CONFIGURATION);\
 	fi
@@ -49,6 +52,9 @@ DEB_WORKDIR=$(ObjDir)DEB_TMP/
 
 installer-deb:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building DEB installer: $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb; temp files in $(DEB_WORKDIR); logging to $(BUILD_OUT)..."
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installer-deb without a configuration argument)
+endif
 	@#NB: This installs control scripts for systemd, so assumes ubuntu 15 or later --LGP 2017-07-29
 	@rm -rf $(DEB_WORKDIR)
 	@#Make directories to be created by the installer
@@ -81,6 +87,9 @@ installer-deb:
 RPM_WORKDIR=$(ObjDir)RPM_TMP/
 installer-rpm:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building RPM installer:  $(TARGET_OUT_DIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm; temp files in $(RPM_WORKDIR); logging to $(BUILD_OUT)..."
+ifeq ($(CONFIGURATION),)
+	$(error Cannot make installer-rpm without a configuration argument)
+endif
 	@#
 	@rm -rf $(RPM_WORKDIR)
 	@#Make directories to be created by the installer
