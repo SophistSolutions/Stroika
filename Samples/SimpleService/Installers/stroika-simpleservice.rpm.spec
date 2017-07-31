@@ -55,5 +55,4 @@ fi
 
 %files
 /opt/Stroika-SimpleService/Stroika-SimpleService
-/opt/Stroika-SimpleService/stroika-simpleservice.service
 %config(noreplace) /var/opt/Stroika-SimpleService/
