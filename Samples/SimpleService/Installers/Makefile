@@ -95,7 +95,7 @@ installer-rpm:
 	@echo "%define _topdir "$(RPM_WORKDIR)/RPM_TMP > $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
 	@echo "Version: $(MAJOR_DOT_MINOR_VERSION)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
 	@echo "Release: $(RPM_RELEASE_TAG)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
-	@cat $(BASIC_NAME_LC).rpm-spec >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
+	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
 	@cd $(RPM_WORKDIR) && rpmbuild -ba --quiet SPECS/$(BASIC_NAME_LC).spec
 
 	cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)$(CONFIGURATION)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
