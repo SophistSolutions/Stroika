@@ -41,6 +41,9 @@
     <None Include="..\..\Installers\stroika-simpleservice.service">
       <Filter>Installers</Filter>
     </None>
+    <None Include="..\..\Installers\stroika-simpleservice.rpm.spec">
+      <Filter>Installers</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Service.h">

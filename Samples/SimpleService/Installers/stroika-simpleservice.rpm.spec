@@ -1,4 +1,4 @@
-﻿# Don't try fancy stuff like debuginfo, which is useless on binary-only
+# Don't try fancy stuff like debuginfo, which is useless on binary-only
 # packages. Don't strip binary too
 # Be sure buildpolicy set to do nothing
 %define         _tmppath %{_topdir}/tmp

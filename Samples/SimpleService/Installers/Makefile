@@ -24,8 +24,10 @@ VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_Simple
 all:	installers
 
 
-MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(StroikaRoot)STROIKA_VERSION Major.Minor)
-INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(StroikaRoot)STROIKA_VERSION DecoratedStageInfo)
+
+MAJOR_DOT_MINOR_VERSION=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) Major.Minor)
+INSTALLER_RELEASE_TAG=$(shell $(StroikaRoot)/ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) DecoratedStageInfo)
+RPM_RELEASE_TAG=$(shell $(StroikaRoot)ScriptsLib/ExtractVersionInformation.sh $(VERSION_FILE_IN) DecoratedStageInfo)
 DEBVERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 INSTALLER_PLATFORM_TAG?=$(shell uname --machine)
 INSTALLER_OS_TAG?=$(shell uname --kernel-name)
@@ -78,7 +80,7 @@ installer-deb:
 
 RPM_WORKDIR=$(ObjDir)/RPM_TMP/
 installer-rpm:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building RPM installer: $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb; temp files in $(RPM_WORKDIR); logging to $(BUILD_OUT)..."
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building RPM installer: $(TARGET_OUT_DIR)$(CONFIGURATION)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm; temp files in $(RPM_WORKDIR); logging to $(BUILD_OUT)..."
 	@#
 	@rm -rf $(RPM_WORKDIR)
 	@#Make directories to be created by the installer
