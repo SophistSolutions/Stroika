@@ -849,11 +849,6 @@ Date:   Tue Jul 18 11:43:06 2017 -0400
 
     slight build docs improvement
 
-commit 678c8ef925dc9a294f60a8b856c50d578488d174
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:35:34 2017 -0400
-
-    comments
 
 commit 9ad440d52e17de5ffc347d528bed9a5f809a64a1
 Author: Lewis Pringle <lewis@sophists.com>
@@ -861,23 +856,6 @@ Date:   Tue Jul 18 11:35:11 2017 -0400
 
     CPPSTD_VERSION_FLAG defaults to --std=c++14 instead of --std=c++11
 
-commit a06f33449a38077449a0df79a6553a5150de2aab
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:31:13 2017 -0400
-
-    fixed small syntax error where clang more picky
-
-commit 14ed57e4a1dbddb1b943b29e75a4ab9f765eb4b5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:29:58 2017 -0400
-
-    cosmetic
-
-commit 3f1bcbcfb37ca0067f6c43a90eb37cba7e7162ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:20:54 2017 -0400
-
-    another typo fixed in tarfile changes
 
 commit f9a873d6de790d0a0d889231f2f894956426492d
 Author: Lewis Pringle <lewis@sophists.com>
@@ -909,11 +887,6 @@ Date:   Tue Jul 18 11:09:51 2017 -0400
 
     include realpath.cpp in top level sln, and make format-code, and fix to support extra arg used by curl (sort of - hopefully enough)
 
-commit 8b9f46eb615cf21dde7fb3d026730d99660f4b9f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 10:49:04 2017 -0400
-
-    typo
 
 commit a49c619bc9b0846180bcc67c59b37aa7bb208f9b
 Author: Lewis Pringle <lewis@sophists.com>
@@ -933,17 +906,7 @@ Date:   Tue Jul 18 10:26:49 2017 -0400
 
     We had openssl disabled by default on darwin, but seems no obvious reason, so re-enabled
 
-commit 28210b00fa06b5e1714045066a3502981dc1d2df
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 17 20:41:46 2017 -0400
 
-    comments
-
-commit de5b58a76d24e11144f23e23116f12b98d59a7da
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 17 20:41:25 2017 -0400
-
-    https://stroika.atlassian.net/browse/STK-66 - some progress on systemd .service file in simpleservice sample
 
 commit fb6ac4f42793e76b150f21351ed595821252b24f
 Author: Lewis Pringle <lewis@sophists.com>
@@ -951,159 +914,11 @@ Date:   Fri Jul 14 13:10:38 2017 -0400
 
     Replace mk () pattern with static 'New ()'. Use this throughtout Stroika. In most cases it was never used so no need to deprecate - just changed names. BUt for FileInputStream and FileOutputStream it was widely used so mark the old names as deprecated
 
-commit bd7286c34a0f1f4bfbe9dd33acc6d44f34d3a2fd
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 13 23:22:26 2017 -0400
-
-    make format
-
-commit 17d43d39975295686d2b90b7b471dcecbfe4b8c4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jul 13 23:16:39 2017 -0400
-
-    fix small regressions in recent changes
-
-commit 095d0ec1a9551dd93bd59f1d808f2ad1983749ad
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 13 22:50:04 2017 -0400
-
-    Major restructuring for:
-    ?       OpenSSLInputStream
-    ?       OpenSSLOutputStream
-    ?       FileOutputStream
-    ?       FileInputStream
-    ?       SocketStream=
-    ?       InputStreamFromStdIStream
-    ?       OutputStreamFromStdOStream-
-    ?       BufferedIbnputStream
-    ?       BufferedOutputStream
-    ?       ExternallyOwnedMemoryInputStream
-    ?       SharedMEmeoryStream
-    ?       MemoryStream
-    
-    Lose CTOR - not contructible - but instead have static New () method.
-    
-    Wroteup next steps.
-
-commit 78833f054958f5b793fd71f9ce9307350cb5a9a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 13 15:43:08 2017 -0400
-
-    minor makefile cleanup on tests
-
-commit ceea83d68659889bb2081727aadbd9b09d9921e6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 13 15:42:12 2017 -0400
-
-    fixed windows error message (like unix) on Bind() failure to mention the bind: added bug https://stroika.atlassian.net/browse/STK-604 to track generalizing how we report these 'while' messages
-
-commit d15cf4bac5654284e434a449b36a1186b3e3242c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 13 15:34:39 2017 -0400
-
-    fixed bug with ConnectionlessSocket::RecvFrom - must use sockaddr_storagesockaddr_storage not sockaddr for returned sockaddr (not sure how this bug lasted so long - generated error on WTF on windows)
-
-commit d973b3fe97a8176481fab32e3a95d5f561c7b54c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 12 13:38:31 2017 -0400
-
-    fixed another small regression with recent Streams changes
-
-commit 8722903ea18ba7507b104c86e63918bb3e1956b2
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Jul 12 13:31:55 2017 -0400
-
-    small fixes to recent Streams cahnges for g++ compat
-
-commit 1e5deb629e88e915228614ae459df9bdd8ba4cbe
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 12 12:48:20 2017 -0400
-
-    cosmetic
-
-commit c2f6ae85f4207f80593e25a6f1bf19246fc4b40b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 12 12:40:17 2017 -0400
-
-    Another round of refactoring of the Streams related classes - braking ALL the
-    subclasses down into quasi-namespace and 'Ptr' class.
-            ?       OpenSSLInputStream
-            ?       OpenSSLOutputStream
-            ?       FileOutputStream
-            ?       FileInputStream
-            ?       SocketStream
-            ?       InputStreamFromStdIStream
-            ?       OutputStreamFromStdOStream
-            ?       BufferedIbnputStream
-            ?       BufferedOutputStream
-            ?       ExternallyOwnedMemoryInputStream
-            ?       SharedMEmeoryStream
-            ?       MemoryStream
-    
-    NOT BACKWARD COMPATIBLE, and probably NOT the last related change (New coming):
-    
-    In calling code to adapt, you may need to change:
-    
-            MemoryStream<X> x;
-    To
-            MemoryStream<X>::Ptr x = MemoryStream<X> {};
-    
-    And Change:
-            return InputStreamFromStdIStream<Memory::Byte> (tmpStrm).ReadAll ();
-    to:
-            return InputStream<Memory::Byte>::Ptr{ InputStreamFromStdIStream<Memory::Byte> (tmpStrm) }.ReadAll ();
-    
-    Passes regtests on windoze, but still must test unix (before trying next stage)...
-
-commit 0f0fdbc795fe02a022f26ccfaa2cb6b285fecc24
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 9 22:14:50 2017 -0400
-
-    Comments
-
-commit a64d338d66ab5bbae624c21a0f70e898a55b6368
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 8 23:39:27 2017 -0400
-
-    small cleanups to recent changes
-
-commit 50bc7246433cd42deddc69489f90b8d3a10a1414
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 8 23:25:44 2017 -0400
-
-    more cleanups of recent changes
-
-commit a42d11488fbdc8aa444e03e7b4d86f67785d8dc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 8 23:20:24 2017 -0400
-
-    Simplfy alot of calls to cast  to typename Iterator<T>::SharedIRepPtr;  renamed Iterator<>::SharedIRepPtr -> Iterator<>::IteratorRepSharedPtr
-
-commit 2f9c1728e33a0cc5ba00402464a68ccb2d7e6b5d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 8 22:40:05 2017 -0400
-
-    in containers - use the name _MultiSetRepSharedPtr, _QueueRepSharedPtr, etc instead of _SharedPtrIRep - deprecating the old names
-
-commit e5e7ad78cecc72a660458d8d0470cb358929cf9e
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Jul 8 20:37:05 2017 -0400
-
-    fixed last checkin
-
-commit 1d1a9b2a637bbd15489a35a1014878f7215390bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 8 18:53:05 2017 -0400
-
-    Refactoring - Iterable<T>: _IterableRepSharedPtr replaces _SharedPtrIRep and _IterableSharedPtr - the former being deprecated
 
     
 
-commit 6e23b6aed082d1a5ed1e27bde24cfd1813032c6d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 8 15:02:35 2017 -0400
 
-    design overview docs - changes about const/logical const on Ptr objects
+
 
 
    
@@ -1112,42 +927,51 @@ Date:   Sat Jul 8 15:02:35 2017 -0400
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a210...v2.0a211</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
 		<li>Deprecation and Incompatible changes
 			<ul>
 				<li>lose deprecated code from v2.0a206 and v2.0a207</li>
-				<li>xxxx</li>
+				<li>Thread now quasi-namespace, and use Thread::Ptr x = Thread::New (args) instead of Thread x (args);</li>
+				<li>XXXStream now quasi-namespace, and use XXXStream::Ptr x = XXXStream::New (args) instead of XXXStream x (args);</li>
 				<li>xxxx</li>
 			</ul>
 		</li>
-		<li>xxx
+		<li>Major structural changes - docs, threadsafety notes etc, for Ptr objects
 			<ul>
-				<li>xxxx</li>
+				<li>design overview docs - changes about const/logical const on Ptr objects</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
 			</ul>
 		</li>
-		<li>xxx
+
+
+		<li>Minor deprecation changes
 			<ul>
+				<li>Refactoring - Iterable<T>: _IterableRepSharedPtr replaces _SharedPtrIRep and _IterableSharedPtr - the former being deprecated</li>
+				<li>in containers - use the name _MultiSetRepSharedPtr, _QueueRepSharedPtr, etc instead of _SharedPtrIRep - deprecating the old names</li>
+				<li>Simplfy alot of calls to cast  to typename Iterator<T>::SharedIRepPtr;  renamed Iterator<>::SharedIRepPtr -> Iterator<>::IteratorRepSharedPtr</li>
+				<li>xxxx</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
 			</ul>
 		</li>
-		<li>xxx
+
+		<li>https://stroika.atlassian.net/browse/STK-66 - we now have shipped a sample .service file with the sample service,a and an installer that autoinstalls and starts etc the service.</li>
+		<li>xxxxx</li>
+		<li>xxxxx</li>
+		<li>xxxxx</li>
+
+		<li>IO::Network
 			<ul>
+				<li>fixed windows error message (like unix) on Bind() failure to mention the bind: added bug https://stroika.atlassian.net/browse/STK-604 to track generalizing how we report these 'while' messages</li>
+				<li>fixed bug with ConnectionlessSocket::RecvFrom - must use sockaddr_storagesockaddr_storage not sockaddr for returned sockaddr (not sure how this bug lasted so long - generated error on WTF on windows)</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
 				<li>xxxx</li>
 			</ul>
 		</li>
+
+
 		<li>xxx
 			<ul>
 				<li>xxxx</li>
