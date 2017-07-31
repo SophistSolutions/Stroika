@@ -94,7 +94,7 @@ installer-rpm:
 	
 	@cd $(RPM_WORKDIR) && tar -zcf $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/
 	@cd $(RPM_WORKDIR) && cp $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz SOURCES/
-	@echo "%define _topdir "$(RPM_WORKDIR)/RPM_TMP > $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
+	@echo "%define _topdir "$(RPM_WORKDIR) > $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
 	@echo "Version: $(MAJOR_DOT_MINOR_VERSION)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
 	@echo "Release: $(RPM_RELEASE_TAG)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
 	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
