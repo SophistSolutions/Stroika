@@ -90,14 +90,14 @@ installer-rpm:
 	@mkdir -p $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/var/opt/$(BASIC_NAME)/
 
 	@install -m 755 --strip $(TARGET_OUT_DIR)Samples_SimpleService $(RPM_WORKDIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/opt/$(BASIC_NAME)/$(BASIC_NAME)
-	@install -m 644 $(BASIC_NAME_LC).service $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEBVERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
+	@install -m 644 $(BASIC_NAME_LC).service $(RPM_WORKDIR)$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/usr/lib/systemd/system/$(BASIC_NAME_LC).service
 	
 	@cd $(RPM_WORKDIR) && tar -zcf $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)/
 	@cd $(RPM_WORKDIR) && cp $(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION).tar.gz SOURCES/
 	@echo "%define _topdir "$(RPM_WORKDIR) > $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
-	@echo "Version: $(MAJOR_DOT_MINOR_VERSION)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
-	@echo "Release: $(RPM_RELEASE_TAG)" >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
-	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
+	@echo "Version: $(MAJOR_DOT_MINOR_VERSION)" >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
+	@echo "Release: $(RPM_RELEASE_TAG)" >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
+	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)SPECS/$(BASIC_NAME_LC).spec
 	@cd $(RPM_WORKDIR) && rpmbuild -ba --quiet SPECS/$(BASIC_NAME_LC).spec
 
 	@cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
