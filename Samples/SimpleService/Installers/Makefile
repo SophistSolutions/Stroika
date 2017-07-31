@@ -45,7 +45,7 @@ installers:
 BASIC_NAME_LC=stroika-simpleservice
 BASIC_NAME=Stroika-SimpleService
 
-DEB_WORKDIR=$(ObjDir)/DEB_TMP/
+DEB_WORKDIR=$(ObjDir)DEB_TMP/
 
 installer-deb:
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building DEB installer: $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEBVERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb; temp files in $(DEB_WORKDIR); logging to $(BUILD_OUT)..."
@@ -78,9 +78,9 @@ installer-deb:
 	@$(ECHO) "done"
 
 
-RPM_WORKDIR=$(ObjDir)/RPM_TMP/
+RPM_WORKDIR=$(ObjDir)RPM_TMP/
 installer-rpm:
-	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building RPM installer: $(TARGET_OUT_DIR)$(CONFIGURATION)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm; temp files in $(RPM_WORKDIR); logging to $(BUILD_OUT)..."
+	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Building RPM installer:  $(TARGET_OUT_DIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm; temp files in $(RPM_WORKDIR); logging to $(BUILD_OUT)..."
 	@#
 	@rm -rf $(RPM_WORKDIR)
 	@#Make directories to be created by the installer
@@ -100,5 +100,5 @@ installer-rpm:
 	@cat $(BASIC_NAME_LC).rpm.spec >> $(RPM_WORKDIR)/SPECS/$(BASIC_NAME_LC).spec
 	@cd $(RPM_WORKDIR) && rpmbuild -ba --quiet SPECS/$(BASIC_NAME_LC).spec
 
-	cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)$(CONFIGURATION)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
+	cp $(RPM_WORKDIR)RPMS/*/*.rpm $(TARGET_OUT_DIR)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm
 	@echo "done; created $(TARGET_OUT_DIR)$(CONFIGURATION)/$(BASIC_NAME_LC)-$(MAJOR_DOT_MINOR_VERSION)$(RPM_RELEASE_TAG).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm"
