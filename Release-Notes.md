@@ -20,21 +20,18 @@ History
 
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a210">v2.0a211xxxx</a><br/>2017-08-01</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a210">v2.0a211</a><br/>2017-08-01</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a210...v2.0a211</li>
 		<li>***Deprecation and Incompatible changes***
 			<ul>
 				<li>IO::FileSystem::FileSystem::Default () deprecated - use new IO::FileSystem::Default () instead</li>
-				<li>Thread now quasi-namespace, and use Thread::Ptr x = Thread::New (args) instead of Thread x (args);</li>
+				<li>Thread now quasi-namespace. Replace Thread {x} with Thread::Ptr a = Thread::New (x);</li>
 				<li>XXXStream now quasi-namespace, and use XXXStream::Ptr x = XXXStream::New (args) instead of XXXStream x (args);</li>
 				<li>Replace mk () pattern with static 'New ()'. Use this throughtout Stroika. In most cases it was never used so no need to deprecate - just changed names. BUt for FileInputStream and FileOutputStream it was widely used so mark the old names as deprecated</li>
 				<li>TextStream now uses Ptr/New changes made elsewhere wtih Streams - NOT backward compatible - change TextStream (as CTOR) to TextStream::New</li>
 				<li>Convert TextWriter to use 'quasi-namespace pattern, and New and Ptr; so now places(INCOMPTIBLE CHANGE) which used TextWriter as a contructor must change to TextWriter::Ptr x = TextWriter::New (.args)</li>
-				<li>Thread now quasi-namespace.
-						Replace Thread {x} with
-            Thread::Ptr a = Thread::New (x);</li>
 				<li>Refactored Socket (and related ConnectionOrientedMasterSocket, ConnectionOrientedSocket,
     ConnectionlessSocket classes to use new New () and quasi-namespace and Ptr pattern.</li>
 				<li>lose deprecated code from v2.0a206 and v2.0a207</li>
@@ -120,6 +117,8 @@ History
 				<li>change install-realpath line to use g++ so it gets stdc++ libs</li>
 			</ul>
 		</li>
+		<li>Build error/failure ignored for this release - build targetting raspberrypi, the installer builds failed. Will correct for next release</li>
+		<li>***Important*** Helgrind Regression: Will correct for next release; see test output</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a211-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
