@@ -15,989 +15,109 @@ History
   </thead>
 
 
-  commit 6d7a0d7672126130cad4ba3ec650e19f86a1834a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 31 11:24:41 2017 -0400
-
-    more installer makefile tweaks
-
-commit 8e887afd507c6518f07bb2f96f5ab82bc5d32817
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 31 11:22:46 2017 -0400
-
-    Added todo item for WIX installer
-
-commit a8fd663ed832c5a033256dd48c0108c63fd13fed
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 31 11:20:09 2017 -0400
-
-    more makefile cleanups for installer makefile (simpleservice sample)
-
-commit fef4e6424e470dcf6bfc942a482fa710dd2213be
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jul 31 11:05:16 2017 -0400
-
-    makefile tweaks for simpleservice sample
-
-commit 6c59e0f9303413e6e977b685f17232857f4481be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 31 11:02:18 2017 -0400
-
-    Makefile tweaks
-
-commit 7f1e9ce109d3dc843ad309b60c1a71f5a2fd2dc3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 31 11:01:17 2017 -0400
-
-    Makefile tweaks
-
-commit d8682dcdf57cf07fc79cb443e87e95ae6dff2429
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:57:38 2017 -0400
-
-    more rpm installer fixes
-
-commit dec1384872cfaf2a1d8bb654c0faa2e6c0bd9490
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:56:41 2017 -0400
-
-    more rpm installer fixes
-
-commit f2e90c43c7d0dcf52e4446e57ba6dc18bcbfeae6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:53:16 2017 -0400
-
-    maybe working rpm installer (but need to find centos system to test)
-
-commit 10886c4e68ec21efbbb0c1504dac334ad456830c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:51:26 2017 -0400
-
-    more progress on RPM
-
-commit 9ae1312565af5c7064c4bc9172ab03c3aa5de9fb
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jul 30 22:47:50 2017 -0400
-
-    more progress on rpm installer
-
-commit 861fe771ee0d63791dd960d606e78030475754c0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:42:06 2017 -0400
-
-    more progress on rpm installer for sample simpleservice
-
-commit 49726a29d57096bef80f634950541e988d53c3b7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:39:21 2017 -0400
-
-    progress on rpm installers for simpleservice sample
-
-commit b1e3c288b3b6419ce1ce181039d5b1342794611f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:37:31 2017 -0400
-
-    progress on rpm installers for simpleservice sample
-
-commit 85dd117537af1dc3d03b46ee45eec5fbbcf608cd
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sun Jul 30 22:09:22 2017 -0400
-
-    typo
-
-commit cd9ebabd7460a7ee1200190ebca5d20f7444f76d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 22:04:24 2017 -0400
-
-    better automatic check for which installers to build with make installers (on sample service); and draft of rpm installer
-
-commit 79d3e9cc3c77b9d7d4b8c84faf004cb9feb33786
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 18:26:34 2017 -0400
-
-    use systemcl instead of service to control the service
-
-commit 49e5a0e12c393011f0f387936105347d6dbe905e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 18:17:21 2017 -0400
-
-    fix typo in deb installer
-
-commit 997f8701503099e594fe139d0579f30c33d64a53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 17:47:29 2017 -0400
-
-    more tweaks to dpkg service install
-
-commit cb4a1704ea55bf068d922e143668ec355946a0a7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 17:26:01 2017 -0400
-
-    it appears systemd unit files shoudl go into /usr/lib/systemd/system/ not /etc/systemd/system/
-
-commit 435ce3e095489a2be5bf89f89d9ddf2829f736b4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 30 16:54:45 2017 -0400
-
-    small fixes to DEB installer
-
-commit 3c8d3cb7498efc874c40073a994f3024393afc3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 20:59:27 2017 -0400
-
-    minor fix to simpleservice DEB installer
-
-commit e16d78783a25f650cedc28ff4b89f12114f8f0ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 20:56:31 2017 -0400
-
-    minor fix to simpleservice DEB installer
-
-commit 184ea93dbb9af8950e12842fea9981458a716183
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 20:52:40 2017 -0400
-
-    minor fix to simpleservice DEB installer
-
-commit 95f3c06468caef5b177f8d9e5453703866ceea58
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 20:50:49 2017 -0400
-
-    minor fix to simpleservice DEB installer
-
-commit f0b93feeb314a5b8fcf1404367e2f87e0eb84d4b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 20:49:20 2017 -0400
-
-    minor fix to simpleservice DEB installer
-
-commit af8b8db4709be2806be810fa93aaae20460d09b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 20:47:38 2017 -0400
-
-    minor fix to simpleservice DEB installer
-
-commit 061a18e503a31949326b400fc2ae1e8c6d670af4
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Sat Jul 29 11:18:25 2017 -0400
-
-    more deb installer progress
-
-commit 620ca7dc5f5bc0095da007e5c217800a634f9f94
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 10:55:28 2017 -0400
-
-    More progress on deb installer
-
-commit b6f57d852cbec7e9f7cd3f5ee8d55ae4b4acc860
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 10:27:31 2017 -0400
-
-    start support for deb installer (very prelim)
-
-commit 84e7fc69d2ff844c6a828f84d50086f0cc73f64d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 29 09:55:25 2017 -0400
-
-    doc comments
-
-commit eb5409d9b596dc09c822cb64bf9958a96f056cf5
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Fri Jul 28 14:39:36 2017 -0400
-
-    More socket fixes for unix
-
-commit 05bda5c94325bc820fe71a56b67485d54734447d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 28 14:24:22 2017 -0400
-
-    Refactored Socket (and related ConnectionOrientedMasterSocket, ConnectionOrientedSocket,
-    ConnectionlessSocket classes to use new New () and quasi-namespace and Ptr pattern.
-
-commit d58cef7dbb7134641304650c7cc9027826053826
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 27 22:49:54 2017 -0400
-
-    small fixecs for recent thread code
-
-commit 1157f261b120239a2856a4f391ddf7953255f749
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 27 22:37:47 2017 -0400
-
-    Minor Thread fixes
-
-commit f6cd267bb295acf37408b2daae479b00bc9858b0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 27 22:11:45 2017 -0400
-
-    Refactored Thread code - NOT BACKWARD COMPATIBLE
-    
-    Thread now quasi-namespace.
-    
-            Replace Thread {x} with
-    
-            Thread::Ptr a = Thread::New (x);
-
-commit 2cddb34e12df5b83010d8fb1cb0f276dcae91301
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 14:42:54 2017 -0400
-
-    Since losing support for C++ PRE c++14, we can lose bug wrokaround defines:
-            qCompilerAndStdLib_deprecated_attribute_Buggy
-            qCompilerAndStdLib_shared_mutex_module_Buggy
-    
-    and prepare to lose #define _Deprecated_(MESSAGE) and use [[deprecated]] directly (but leave
-    macro around breifly, in case still used elsewhere.
-
-commit a311747cd7bcf77cd615b5b96e2d6821737340e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 14:19:17 2017 -0400
-
-    doc require C++14 or later
-
-commit 112f96b45afc98c3bd3328daa22badab88af1caf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 12:40:59 2017 -0400
-
-    Tweak RegressionTests.sh script output
-
-commit 9ecaea496231f22d3f914644f3e6ce6571063dc9
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Jul 26 12:33:37 2017 -0400
-
-    type in recnet WriteableReference changes
-
-commit c41821457211d0ce2fb202668ecc450e48e23cf4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 12:07:25 2017 -0400
-
-    Stroika now requires C++14 - not just C++11 - check in Private/Defaults_CompilerAndStdLib_.h
-
-commit c97d76ae1f71b160c5140d1564179ec3987bb591
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 12:06:52 2017 -0400
-
-    tweaked USE_NOISY_TRACE_IN_THIS_MODULE_ dbgtrace reporting in Execution/ProcessRunner.cpp for POSIX - lose a few (too many) message
-
-commit d9e687efea584e63fe3211e8de9ef3c394702df5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 12:05:56 2017 -0400
-
-    revised MACRO_LOCK_GUARD_CONTEXT() for C++17, in preps for deprecating the macro (if/when we can lose c++14 support)
-
-commit b0f943e39eebf7690e69aaed7dbe51daa8b83b98
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 11:48:16 2017 -0400
-
-    todo comments
-
-commit 9924b3987540f838f56fab8deb0eded945b1c83c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 26 11:33:19 2017 -0400
-
-    resolved https://stroika.atlassian.net/browse/STK-491: RWSyncrhonized<> should now support multiple readers at the same time. More todo to polish, but also improved docs on this scoore a  bit, and added RegressionTest18_RWSynchronized_
-
-commit 54897031fac71e5cbac0bcf3f2c5f8c6ee8ac2ff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 15:04:46 2017 -0400
-
-    needed explicit Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= to make it noexcept (not =default due to shared_lock)
-
-commit 462812f07852cde637e4a26a05d933d35f4daca1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 14:51:40 2017 -0400
-
-    Minor fixes for recent FileSystem::FileSystem refactoring
-
-commit 2e57c8ca1000c56c314e04eb5e8b0214b040b121
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 11:54:33 2017 -0400
-
-    As part of https://stroika.atlassian.net/browse/STK-612 - renamed FileSYstem::FileSystem to FileSYstem::Ptr (soon redo a bunch of this to use actual shared_ptr and rep so primary FS stuff is just that rep and we can do other reps, like tarfile or other archives
-
-commit ab7449866963d959302e39c0088cd979a260f05c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 11:22:37 2017 -0400
-
-    IO::FileSystem::FileSystem::Access () is now marked noexcept
-
-commit 3b5f9fdbfd1564bad02704edad5dbab607f81d69
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 11:16:51 2017 -0400
-
-    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor marked noexcpt - stuff calls now noexcept and its used by String::c_str () which we want to be noexcept
-
-commit e619bb970bf1e6756f7af473ff911d111afb7022
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 11:12:20 2017 -0400
-
-    SharedByValue<TRAITS>::cget () const and SharedByValue<TRAITS>::get () const now both marked noexcept
-
-commit ad38180aef72912132ca33bff29478d7e79d4554
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 11:11:53 2017 -0400
-
-    cosmetic/docs
-
-commit 2ef0b47c8baec75ad673566e767cb8ecc14c118c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 11:01:24 2017 -0400
-
-    Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const is now marked: noexcept
-
-commit f50647dd6c7c493e1396a7bdb95b6a0364c9e5be
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 11:00:45 2017 -0400
-
-    AssertExternallySynchronizedLock now clearly marked as not a cancelation point (containing none) - and all methods noexcept. Caused some problems on default CTOR - not sure I got right but I hope so ;-)
-
-commit 3b30c675be62aa7162ce1d9e0704b00296cd8b71
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 10:52:57 2017 -0400
-
-    silence some notreached compiler warnings
-
-commit e5198f2a6282563cc5d1b492d4f356ed00021beb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 10:18:16 2017 -0400
-
-    String docs - and make String::c_str () be noexcept
-
-commit 971f78ae2e263ecb10222ceb205c166154444846
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 09:51:50 2017 -0400
-
-    IO::FileSystem::FileSystem::Default () deprecated - use new IO::FileSystem::Default () instead
-
-commit 23fcea686a971635b8fe3b68eabe99f91972791d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 25 09:30:49 2017 -0400
-
-    docs on IO::FileSystem::FileSYstem::Access and CheckAccess
-
-commit 63511f0d8672598974ffcc2573e04777a3a630e8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 18:35:31 2017 -0400
-
-    Silence a few warnings (after assertnotreached)
-
-commit fc5d9c97943f6c3df71cc6057db719927c43bd82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 17:39:44 2017 -0400
-
-    placeholder - incomplete - support for Execution::InternallySyncrhonized on new TextReader/TextWriter
-
-commit f24a0dcf337fa638f1298f950631c5713728c6f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 17:39:26 2017 -0400
-
-    placeholder - incomplete - support for Execution::InternallySyncrhonized on new TextReader/TextWriter
-
-commit 560df6ec40ea3eb5a6ae0a2b4896cf5277ce6fe5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 17:16:14 2017 -0400
-
-    react to recent TextReader / TextWriter changes
-
-commit e3b43ea0882b32838292e936d3d0907363435ffd
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jul 24 17:12:02 2017 -0400
-
-    updated qtceator files
-
-commit cad85b64371d94e909e2885e385ac89ced70a356
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jul 24 17:11:44 2017 -0400
-
-    react to TestReader changes
-
-commit 2429423a245efd70c47b53689c7769350ad06a01
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 17:06:40 2017 -0400
-
-    Convert TextWriter to use 'quasi-namespace pattern, and New and Ptr; so now places(INCOMPTIBLE CHANGE) which used TextWriter as a contructor must change to TextWriter::Ptr x = TextWriter::New (.args)
-
-commit 61e2f1f5e54442d91654beb130f679d5718c35a0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 16:48:00 2017 -0400
-
-    cleanup recent Streams TextReader changs
-
-commit 972f7a8d325048597d41184e89e97126d14f8125
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 16:45:18 2017 -0400
-
-    typo
-
-commit 5940fcc64c37c8103cde053a7dea9c3782f85386
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 16:43:23 2017 -0400
-
-    fixed typo in thread safety policy names
-
-commit d4e8754f24d53026f34b4aebf7189068ac415d4d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 16:37:47 2017 -0400
-
-    cosmetic/docs
-
-commit 91db999b544a3c8ee7689b8f29867d29fa43c6f5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 16:34:08 2017 -0400
-
-    TextStream now uses Ptr/New changes made elsewhere wtih Streams - NOT backward compatible - change TextStream (as CTOR) to TextStream::New
-
-commit fcad5abe9ecc3df14b25b02234b8e5646afee518
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Mon Jul 24 16:33:03 2017 -0400
-
-    cleanup recent FileInputOuputStream changes
-
-commit d527a276a48e5a98b61c129fcda7082aedd0af6f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 15:51:30 2017 -0400
-
-    Deprecated InputStream<>/OutputStream<> Synchronized () methods - using new sync param to ::New is mcuh better because it forces all ptrs reps used to be syncronized or none - no point in just a few people accessing through sync pointer!
-
-commit 6d1538427f6d03c8bd5e70fd92d4b359f038c224
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 15:40:28 2017 -0400
-
-    lose  MemoryStream<ELEMENT_TYPE>::Ptr::operator= (const MemoryStream<ELEMENT_TYPE>& rhs)
-
-commit 3b1bfa5f644d94a4201bd3258a10e21b2ef213c6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 15:38:25 2017 -0400
-
-    comments and lose a couple obsolete asisgnment operators
-
-commit bb9afa809e833ef099454d11f03f44d338209103
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 15:21:19 2017 -0400
-
-    document https://stroika.atlassian.net/browse/STK-609  - that compression reader stuff should be restructured like rest of stream useing code using sanem New static methods intead of reader COmpress?? Not sure - must think through. But do support InternallySyncrhonized
-
-commit 5adf28f6ce2655e6a597723b108a32e7818adc15
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 15:20:19 2017 -0400
-
-    openssl input/output streams now handle Execution::InternallySyncrhonized arg
-
-commit f854755281c83fc8952d2e1566e52bbf2e3edd92
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 15:10:15 2017 -0400
-
-    renamed FileStreamCommon to FileStream (not backward compatible but shouldnt be really used explciitly so should require no changes
-
-commit 3ec875ffe9d8f8349f4e309d7e94906b8478c96f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 14:56:55 2017 -0400
-
-    FileInputStream and FIleOutputStream now support Execution::InternallySyncrhonized
-
-commit 39fea5bcacd23201d4fa04e347f24f9c9c0e6454
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 14:56:05 2017 -0400
-
-    lose default CTOR for SocketStream::Ptr (not sure good idea make so easy to be null? - maybe silly)
-
-commit 6e634e54db7ba7e5f6ab4c385f5b0d4883a8f1f7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 12:17:55 2017 -0400
-
-    Allow SocketStream CTOR nullptr
-
-commit 4948569e4783403e573c09b9f6bc497f07d5e2a2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 11:50:23 2017 -0400
-
-    https://stroika.atlassian.net/browse/STK-608 -  InternallySyncrhonizedOutputStream etc - now use base class instead of aggregation - more efficent and fixes possible bugs with constructing extra object and not really using it (ctor mismatch)
-
-commit 412be3c0207184ed0918049dc3d35beb8eb88967
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 11:36:25 2017 -0400
-
-    docs and support Execution::InternallySyncrhonized internallySyncrhonized param in SocketStream::New
-
-commit c0ea9d0a396720f80917a9ed5aadfd899f51c709
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 11:30:21 2017 -0400
-
-    https://stroika.atlassian.net/browse/STK-608 - small progress on InternallySyncrhonizedInputOutputStream - base class instead of aggregate
-
-commit 9f89ca621e70fa23e6f2eed9b3c68f4cae7f7999
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 10:25:31 2017 -0400
-
-    further lengthen timeout for thread abort call - cuz failed once on raspberrypi
-
-commit 80f6be2f1f49875a82bf20a34e7a338727329c3f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Mon Jul 24 10:25:04 2017 -0400
-
-    minor cleanup to Thread::AbortAndWaitForDoneUntil )_
-
-commit 6d8531e7e7fd5ce010e0b9fcc5ebc2a0220841d9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sun Jul 23 11:09:17 2017 -0400
-
-    todo comments
-
-commit 50a8957c2b7f993a2422e76bb7362756dca715a4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 23:53:39 2017 -0400
-
-    typo
-
-commit 7c7efc80893dc1e144ce4b045489dee158169231
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 23:52:20 2017 -0400
-
-    comments
-
-commit de1db4fa2c62c771a5ee6187093d86e781fcb738
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 21:50:50 2017 -0400
-
-    ExternallyOwnedMemoryInputStream supports  Execution::InternallySyncrhonized
-
-commit 8d10037ee7634dae8705955006a4d5f028fa86c2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 21:45:17 2017 -0400
-
-    Comments
-
-commit b29c4d828e783d566ea1a9c4ffed4f8de8c4e601
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 21:36:55 2017 -0400
-
-    InputStreamFromStdIStream and OutputStreamFromStdOStream support Execution::InternallySyncrhonized
-
-commit bfd4093bf6bcef521caf99b9f2f8f180f86b48b6
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 21:17:02 2017 -0400
-
-    seekable falg cleanup on Streams/iostream/InputStreamFromStdIStream
-
-commit 6843d19d0ef6faa9a4fcd1446a42085ebefb6e8c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 21:11:16 2017 -0400
-
-    BufferedInput and Output Stream now support optional Execution::InternallySyncrhonized parameter
-
-commit 9445a44c96e177a465f3938fa105455ea7e1241e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 20:00:39 2017 -0400
-
-    updated InternallySyncrhonizedInputStream and InternallySyncrhonizedOutputStream<> to match template param changes made for InternallySyncrhonizedInputOutputStream
-
-commit 95750f52d3324fcf2291f24f63516abb3ba4bc18
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 17:14:33 2017 -0400
-
-    use class for template template param for C++14 compat
-
-commit 379952c28c22ff709a9b1a767d0af67259059d82
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 17:01:44 2017 -0400
-
-    more support for Execution::InternallySyncrhonized in MemoryStream
-
-commit 7193e5f13b156f0cb3eb204172e4223d58ab9ae3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 16:50:35 2017 -0400
-
-    fixed one more issue with Foundation/Streams/MemoryStream; Execution::eInternallySynchronized support
-
-commit 9b669bea0a2b06cef3062c9fcafb4b49e6f4fa91
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 16:41:34 2017 -0400
-
-    use class for template template param for C++14 compat
-
-commit 3360dc3fbfde89a923d0ba2588a01aeeaabf8ab2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 16:06:26 2017 -0400
-
-    a little more progress on getting InternallySyncrhonizedInputOutputStream<> working
-
-commit 54adac54e439ab647f4bd0094e10a792dbb49bb5
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 16:01:43 2017 -0400
-
-    more tweaks to InternallySyncrhonizedInputOutputStream<> template, but still not working
-
-commit d999eaf18049bf646adc62e1e2a2347ef2da43c1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:52:37 2017 -0400
-
-    another fix to templating  InternallySyncrhonizedInputOutputStream
-
-commit 7f85730b3dbce5cd234cf22d91349fe26a2209ee
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:49:49 2017 -0400
-
-    we still support C++14 so use more restrictive syntax for tmeplate template arg
-
-commit 4c8dbfb220e572215e4243ff0a67dbae8dc67d7e
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:48:54 2017 -0400
-
-    small fix to template param to template InternallySyncrhonizedInputOutputStream
-
-commit 51ddf4bd184c041a2e9efeb13e23bf1c8bc291d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:35:32 2017 -0400
-
-    more tweaks to InternallySyncrhonized*Stream to get compiling
-
-commit 83b0699b33246b51450ecea4d5769404bd1e9b4f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:30:58 2017 -0400
-
-    mutable critsection on InternallySyncrhonized*Stream:
-
-commit 23c573faa5cfa4a0c607584ee5e1bf09e6487a93
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:23:35 2017 -0400
-
-    make format-code
-
-commit 348d92a606b9db787f3970aff4315b39dcccd923
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:12:20 2017 -0400
-
-    typo
-
-commit fff86b4952ef28ee51646c33db0ad0007f951e53
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 12:10:55 2017 -0400
-
-    fixed typo; tried using InternallySyncrhonizedInputOutputStream<> but so far unsuccessfully
-
-commit b88bb4d82eae8b370b216b4e09f227de5bfa0380
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:58:58 2017 -0400
-
-    fixed typo
-
-commit 5ad3fae774805330f03c756a5fda96fd8c09642b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:56:49 2017 -0400
-
-    make format-code
-
-commit 22e378a860cd54a913918dad7f3a490ff694be23
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:56:36 2017 -0400
-
-    generatalize InternallySyncrhonizedInputOutputStream to take template parameter
-
-commit 798cc7e9494e33ef98284067cebf28eaabc25c8a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:44:41 2017 -0400
-
-    typos
-
-commit ce2620a765107888e564a04ce0f3a5634abd2fd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:43:34 2017 -0400
-
-    typos
-
-commit 44bae0c28460e394852da376649c4a4b1abe697a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:42:40 2017 -0400
-
-    typos
-
-commit 6eb92c2426eb0b15b0ed9a81783f9f818bbb4aa4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:40:38 2017 -0400
-
-    code cleanups on new Streams sync changes, and started using Execution::InternallySyncrhonized for SharedMemoryStream<ELEMENT_TYPE>
-
-commit 91c03318c88d91c0a03c300a62cd91b9ca7c129c
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:39:43 2017 -0400
-
-    docs comments
-
-commit de24868d40346ef7ce7ba09ea5a492653b8bd19f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:26:31 2017 -0400
-
-    todo documentation
-
-commit 1c54002d32e09f800b473dc8f33ae71cc2d3f8ba
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:26:18 2017 -0400
-
-    make format-code
-
-commit 33f4f013c99fe99f0cee73c4bc8c0082c8a5ebd3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 11:17:37 2017 -0400
-
-    first draft of InternallySyncrhonizedInputOutputStream, InternallySyncrhonizedOutputStream, and InternallySyncrhonizedInputStream
-
-commit 1b5429c336ac174bc88db4f86797e00502d5014d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 10:24:40 2017 -0400
-
-    todo items
-
-commit 473824730bc634c45cd25e6745639f89b399463a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 10:24:19 2017 -0400
-
-    docs cleanups
-
-commit c8da667bec408d4092f7cf1f3a380bea29f54b85
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 10:24:06 2017 -0400
-
-    docs cleanups
-
-commit dfe4ad5f75184fb3fdae042aabf5e800a8b32e54
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Sat Jul 22 10:23:36 2017 -0400
-
-    Added InternallySyncrhonized type
-
-commit e8e887330a4636f447885892b9322c9ace318af8
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 20 14:01:32 2017 -0400
-
-    fixed typo in recent checkins
-
-commit 22fa4de16a95986460ce968a9ccec2f9d39a617d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 20 11:17:52 2017 -0400
-
-    mostly cleanups of threadsafety docs - again mostly for new Streams code - and ohter similar cleanups
-
-commit 3f961697d1a021b73c7a97762bb5a966808e9da8
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Thu Jul 20 10:01:00 2017 -0400
-
-    change install-realpath line to use g++ so it gets stdc++ libs
-
-commit 62eadae9a86b338a05615705535e5cad1c4483bf
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Thu Jul 20 09:47:17 2017 -0400
-
-    fixed macos-specific realpath override implementation so works with --canonicalize-missing - enough
-
-commit 4388751d70edf6805f65c58843aac2956fb02619
-Author: Lewis G. Pringle, Jr <lewis@sophists.com>
-Date:   Wed Jul 19 18:35:41 2017 -0400
-
-    use const T& and T&& as overload args for Synchronized<T, TRAITS>::store
-
-commit 02f1e89dd88bbf18a472f57fd5d7c29f02814cff
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 19 16:36:01 2017 -0400
-
-    missing #includ
-
-commit eedbaf25cf56cc633cb6aa6ccba341ce237a2920
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 19 15:59:11 2017 -0400
-
-    Fixed optional assignment of rvalue references to move() right subelemenent; and added regression tests to capture/verify this
-
-commit cd862f0fc6c895634f4748b145106f0229a4cbb9
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 19 15:27:12 2017 -0400
-
-    Added regression tests to assure Syncrhonized<NotCopyable> works  with store (tried optional but thats not working yet)
-
-commit 22cd8749a252ec44110dce3167aecb00f30720d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Wed Jul 19 15:26:26 2017 -0400
-
-    added move () overload for Synchronized::store ()
-
-commit 87eac62d4e049ab6ddbc2e2e75d1b07ec7745619
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 22:08:46 2017 -0400
-
-    cleanup exsting tests for Optional<NotCopyable>
-
-commit 1b5a5ee9fefb0f452c3c138c1e711764967c18d2
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 22:01:03 2017 -0400
-
-    deprecated Optional<>::engaged () and replaced it with Optional<>::has_value () matching the name on cppreference (not sure where I got engaged from?)
-
-commit 3d47e82ea01f5e9ed7577c9994727631e121b6f1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 21:49:42 2017 -0400
-
-    cosmetic
-
-commit 26fc9e806ecd83499ac545719c5041deb2cb4cbb
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 21:49:26 2017 -0400
-
-    Added TestHarness::not_copyable
-
-commit 01598c3e320013588b90005a5baa3c85b79d3a4a
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:43:06 2017 -0400
-
-    slight build docs improvement
-
-
-commit 9ad440d52e17de5ffc347d528bed9a5f809a64a1
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:35:11 2017 -0400
-
-    CPPSTD_VERSION_FLAG defaults to --std=c++14 instead of --std=c++11
-
-
-commit f9a873d6de790d0a0d889231f2f894956426492d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:19:52 2017 -0400
-
-    fixed regrressions in realpath.cpp
-
-commit c6a6ddffb4feffb5cd3986ccb8e28c59689e1f5d
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:17:14 2017 -0400
-
-    regression in curl mkaefile (tar changes)
-
-commit 917586c4cf28184cdbd20b4654c6011f514405f4
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:11:28 2017 -0400
-
-    fixed issue with recent Stream code changes and clang
-
-commit 05314dc8bfc120f69403454c816a74c835bc3ba7
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:10:19 2017 -0400
-
-    fixed macos quirk for new tar code
-
-commit 992ed80b94ffab4210d87776fc51954de8c57ab0
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 11:09:51 2017 -0400
-
-    include realpath.cpp in top level sln, and make format-code, and fix to support extra arg used by curl (sort of - hopefully enough)
-
-
-commit a49c619bc9b0846180bcc67c59b37aa7bb208f9b
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 10:47:33 2017 -0400
-
-    small (hopefully fix) for clang compat on recent Stream base class changes
-
-commit 2c65a315d82ba733204696ab56e6dba248767251
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 10:47:06 2017 -0400
-
-    use  --directory CURRENT --strip-components=1 for tar instead of extract and then move (sadly must do slightly differntly for macos)
-
-commit a9208b356fac40e2b058b2a3d2947df6dd7944e3
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Tue Jul 18 10:26:49 2017 -0400
-
-    We had openssl disabled by default on darwin, but seems no obvious reason, so re-enabled
-
-
-
-commit fb6ac4f42793e76b150f21351ed595821252b24f
-Author: Lewis Pringle <lewis@sophists.com>
-Date:   Fri Jul 14 13:10:38 2017 -0400
-
-    Replace mk () pattern with static 'New ()'. Use this throughtout Stroika. In most cases it was never used so no need to deprecate - just changed names. BUt for FileInputStream and FileOutputStream it was widely used so mark the old names as deprecated
-
-
-    
-
-
 
 
 
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a210">v2.0a211xxxx</a><br/>2017-07-31</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a210">v2.0a211xxxx</a><br/>2017-08-01</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a210...v2.0a211</li>
-		<li>Deprecation and Incompatible changes
+		<li>***Deprecation and Incompatible changes***
 			<ul>
-				<li>lose deprecated code from v2.0a206 and v2.0a207</li>
+				<li>IO::FileSystem::FileSystem::Default () deprecated - use new IO::FileSystem::Default () instead</li>
 				<li>Thread now quasi-namespace, and use Thread::Ptr x = Thread::New (args) instead of Thread x (args);</li>
 				<li>XXXStream now quasi-namespace, and use XXXStream::Ptr x = XXXStream::New (args) instead of XXXStream x (args);</li>
-				<li>xxxx</li>
+				<li>Replace mk () pattern with static 'New ()'. Use this throughtout Stroika. In most cases it was never used so no need to deprecate - just changed names. BUt for FileInputStream and FileOutputStream it was widely used so mark the old names as deprecated</li>
+				<li>TextStream now uses Ptr/New changes made elsewhere wtih Streams - NOT backward compatible - change TextStream (as CTOR) to TextStream::New</li>
+				<li>Convert TextWriter to use 'quasi-namespace pattern, and New and Ptr; so now places(INCOMPTIBLE CHANGE) which used TextWriter as a contructor must change to TextWriter::Ptr x = TextWriter::New (.args)</li>
+				<li>Thread now quasi-namespace.
+						Replace Thread {x} with
+            Thread::Ptr a = Thread::New (x);</li>
+				<li>Refactored Socket (and related ConnectionOrientedMasterSocket, ConnectionOrientedSocket,
+    ConnectionlessSocket classes to use new New () and quasi-namespace and Ptr pattern.</li>
+				<li>lose deprecated code from v2.0a206 and v2.0a207</li>
+			</ul>
+		</li>
+		<li>Now require C++14 or later
+			<ul>
+				<li>CPPSTD_VERSION_FLAG defaults to --std=c++14 instead of --std=c++11</li>
+				<li>Since losing support for C++ PRE c++14, we can lose bug wrokaround defines:
+            qCompilerAndStdLib_deprecated_attribute_Buggy
+            qCompilerAndStdLib_shared_mutex_module_Buggy
+    and prepare to lose #define _Deprecated_(MESSAGE) and use [[deprecated]] directly (but leave
+    macro around breifly, in case still used elsewhere.</li>
 			</ul>
 		</li>
 		<li>Major structural changes - docs, threadsafety notes etc, for Ptr objects
 			<ul>
-				<li>design overview docs - changes about const/logical const on Ptr objects</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>design overview docs - changes about const/logical const on Ptr objects, and how this affeects thread safety (no real change to behavior - just docs and more safety support)</li>
 			</ul>
 		</li>
-
-
+		<li>resolved https://stroika.atlassian.net/browse/STK-491: RWSyncrhonized<> should now support multiple readers at the same time. More todo to polish, but also improved docs on this scoore a  bit, and added RegressionTest18_RWSynchronized_</li>
+		<li>noexcept and improved cancelation point respect and docs
+			<ul>
+				<li>String docs - and make String::c_str () be noexcept</li>
+				<li>AssertExternallySynchronizedLock now clearly marked as not a cancelation point (containing none) - and all methods noexcept. Caused some problems on default CTOR - not sure I got right but I hope so ;-)</li>
+				<li>Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_ConstGetRep () const is now marked: noexcept</li>
+				<li>SharedByValue<TRAITS>::cget () const and SharedByValue<TRAITS>::get () const now both marked noexcept</li>
+				<li>Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor marked noexcpt - stuff calls now noexcept and its used by String::c_str () which we want to be noexcept</li>
+				<li>IO::FileSystem::FileSystem::Access () is now marked noexcept</li>
+			</ul>
+		</li>
+		<li>IO::FileSystem FileSystem
+			<ul>
+				<li>IO::FileSystem::FileSystem::Default () deprecated - use new IO::FileSystem::Default () instead</li>
+				<li>As part of https://stroika.atlassian.net/browse/STK-612 - renamed FileSYstem::FileSystem to FileSYstem::Ptr (soon redo a bunch of this to use actual shared_ptr and rep so primary FS stuff is just that rep and we can do other reps, like tarfile or other archives</li>
+			</ul>
+		</li>
 		<li>Minor deprecation changes
 			<ul>
 				<li>Refactoring - Iterable<T>: _IterableRepSharedPtr replaces _SharedPtrIRep and _IterableSharedPtr - the former being deprecated</li>
 				<li>in containers - use the name _MultiSetRepSharedPtr, _QueueRepSharedPtr, etc instead of _SharedPtrIRep - deprecating the old names</li>
 				<li>Simplfy alot of calls to cast  to typename Iterator<T>::SharedIRepPtr;  renamed Iterator<>::SharedIRepPtr -> Iterator<>::IteratorRepSharedPtr</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>deprecated Optional<>::engaged () and replaced it with Optional<>::has_value () matching the name on cppreference (not sure where I got engaged from?)</li>
 			</ul>
 		</li>
-
 		<li>https://stroika.atlassian.net/browse/STK-66 - we now have shipped a sample .service file with the sample service,a and an installer that autoinstalls and starts etc the service.</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-
+		<li>We had openssl disabled by default on darwin, but seems no obvious reason, so re-enabled</li>
+		<li>https://stroika.atlassian.net/browse/STK-608 -  InternallySyncrhonizedOutputStream etc - now use base class instead of aggregation - more efficent and fixes possible bugs with constructing extra object and not really using it (ctor mismatch)</li>
+		<li>Deprecated InputStream<>/OutputStream<> Synchronized () methods - using new sync param to ::New is mcuh better because it forces all ptrs reps used to be syncronized or none - no point in just a few people accessing through sync pointer!</li>
+		<li>docs on IO::FileSystem::FileSYstem::Access and CheckAccess</li>
+		<li>revised MACRO_LOCK_GUARD_CONTEXT() for C++17, in preps for deprecating the macro (if/when we can lose c++14 support)</li>
+		<li>tweaked USE_NOISY_TRACE_IN_THIS_MODULE_ dbgtrace reporting in Execution/ProcessRunner.cpp for POSIX - lose a few (too many) message</li>
+		<li>Sample SimpleService now includes direct support for building installers: .deb, .rpm, and placeholder (jira ticket) for WIX support</li>
 		<li>IO::Network
 			<ul>
 				<li>fixed windows error message (like unix) on Bind() failure to mention the bind: added bug https://stroika.atlassian.net/browse/STK-604 to track generalizing how we report these 'while' messages</li>
 				<li>fixed bug with ConnectionlessSocket::RecvFrom - must use sockaddr_storagesockaddr_storage not sockaddr for returned sockaddr (not sure how this bug lasted so long - generated error on WTF on windows)</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>socket fixes for unix</li>
 			</ul>
 		</li>
-
-
-		<li>xxx
+		<li>Optional and Syncrhonized factoring/changes for move semantics
 			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>Added TestHarness::not_copyable</li>
+				<li>Support and add tests for Optional<NotCopyable></li>
+				<li>added move () overload for Synchronized::store ()</li>
+				<li>Added regression tests to assure Syncrhonized<NotCopyable> works  with store (tried optional but thats not working yet)</li>
+				<li>Fixed optional assignment of rvalue references to move() right subelemenent; and added regression tests to capture/verify this</li>
+				<li>use const T& and T&& as overload args for Synchronized<T, TRAITS>::store</li>
 			</ul>
 		</li>
-		<li>xxx
+		<li>InternallySyncrhonized arg to static New () - and major improvmenet to docs/clarify how we track synchronize of rep (letter) versus envelope (smart_ptr)
 			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>Now all streams support optional param on construction (New) to make the rep internally synchronized</li>
+				<li>mostly cleanups of threadsafety docs - again mostly for new Streams code - and ohter similar cleanups</li>
+				<li>Added InternallySyncrhonized type - use new use InternallySyncrhonizedInputOutputStream, InternallySyncrhonizedOutputStream, and InternallySyncrhonizedInputStream to impement for all concrete Stream classes</li>
 			</ul>
 		</li>
-		<li>xxx
+		<li>Build System
 			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
-			</ul>
-		</li>
-		<li>xxx
-			<ul>
-				<li>xxxx</li>
-				<li>xxxx</li>
-				<li>xxxx</li>
+				<li>use  --directory CURRENT --strip-components=1 for tar instead of extract and then move (sadly must do slightly differntly for macos)</li>
+				<li>include realpath.cpp in top level sln, and make format-code, and fix to support extra arg used by curl (sort of - hopefully enough)</li>
+				<li>fixed macos-specific realpath override implementation so works with --canonicalize-missing - enough</li>
+				<li>change install-realpath line to use g++ so it gets stdc++ libs</li>
 			</ul>
 		</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a211-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
