@@ -5,16 +5,16 @@
 -include ../../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 StroikaRoot ?= ../../../
+TOP_ROOT=$(shell realpath ../../..)/
 
-SrcDir				=	$(StroikaRoot)Samples/SimpleService/
-ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SimpleService/
+ObjDir				=	$(TOP_ROOT)IntermediateFiles/$(CONFIGURATION)/Samples_SimpleService/
 
 include $(StroikaRoot)/Library/Projects/Unix/SharedBuildRules-Default.mk
 include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 
 SHELL=/bin/bash
 
-TARGET_OUT_DIR=			$(StroikaRoot)Builds/$(CONFIGURATION)/
+TARGET_OUT_DIR=			$(TOP_ROOT)Builds/$(CONFIGURATION)/
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -24,7 +24,6 @@ ECHO_BUILD_LINES?=0
 
 
 VERSION_FILE_IN=$(StroikaRoot)STROIKA_VERSION
-VERSION_FILE_OUT=$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SimpleService/AppVersion.h
 
 all:	installers
 
