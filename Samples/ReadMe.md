@@ -43,6 +43,9 @@
    is a simple demonstration of how to use the Stroika System Performance framework. This shows how to capture
    system performance data like CPU usage, network usage, filesystem usage, process information etc, portably.
 
+ * Traceroute
+   is networking example, implementing both the 'ping' application and 'traceroute' - based on Stroika-layer networking
+
  * WebServer
    is an example of how to use the web server framework, including routers, interceptors, etc.
 

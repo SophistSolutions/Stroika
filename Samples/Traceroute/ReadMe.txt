@@ -1,1 +1,2 @@
-SSDPClient shows how to user the Stroika UPnP framework to search (SSDP) for UPnP devices.
+ * Traceroute
+   is networking example, implementing both the 'ping' application and 'traceroute' - based on Stroika-layer networking
