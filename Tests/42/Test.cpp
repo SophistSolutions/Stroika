@@ -262,7 +262,7 @@ namespace {
                 InternetMediaType contentType  = r.GetContentType ().Value ();
                 String            responseText = r.GetDataTextInputStream ().ReadAll ();
                 DbgTrace (L"responseText = %s", responseText.c_str ());
-                VerifyTestResult (responseText.Contains (L"google"));
+                VerifyTestResult (responseText.Contains (L"google", Characters::CompareOptions::eCaseInsensitive));
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
             {
