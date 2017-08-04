@@ -55,6 +55,8 @@ elif [ $TOOL == "realpath" ] ; then
 	elif [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install coreutils"
 	fi
+elif [ $TOOL == "node" ] ; then
+	echo -n ": try apt-get install nodejs-legacy"
 else
 	if [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install $TOOL"
