@@ -20,7 +20,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  */
 
-
 namespace Stroika {
     namespace Foundation {
         namespace Cryptography {
