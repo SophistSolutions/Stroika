@@ -855,8 +855,8 @@ namespace {
                 unsigned int           sum2{};
                 constexpr unsigned int kRepeatCount_{10000};
                 mutex                  forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
-                Thread::Ptr            t1 = Thread::New ([&]() {for (int i = 1; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } });
-                Thread::Ptr            t2 = Thread::New ([&]() {for (int i = 1; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } });
+                Thread::Ptr            t1 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } });
+                Thread::Ptr            t2 = Thread::New ([&]() {for (unsigned int i = 0; 0 < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } });
                 Thread::Start ({t1, t2});
                 Thread::WaitForDone ({t1, t2});
             }
