@@ -315,10 +315,10 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
         1>DataExchange-XML-WriterUtils.obj : warning LNK4006: "public: static class Stroika::Foundation::Memory::Optional<class Stroika::Foundation::Time::Timezone,struct Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<class Stroika::Foundation::Time::Timezone> > const Stroika::Foundation::Time::Timezone::kUnknown" (?kUnknown@Timezone@Time@Foundation@Stroika@@2V?$Optional@VTimezone@Time@Foundation@Stroika@@U?$Optional_Traits_Inplace_Storage@VTimezone@Time@Foundation@Stroika@@@Memory@34@@Memory@34@B) already defined in IO-FileSystem-Common.obj; second definition ignored
 
 Or on MacOS Clang
-	duplicate symbol __ZN7Stroika10Foundation4Time8DateTime4kMaxE in:
-	/Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Trace.o)
-	/Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Timezone.o)
-	duplicate symbol __ZN7Stroika10Foundation4Time8Timezone8kUnknownE in:
+    duplicate symbol __ZN7Stroika10Foundation4Time8DateTime4kMaxE in:
+    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Trace.o)
+    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Timezone.o)
+    duplicate symbol __ZN7Stroika10Foundation4Time8Timezone8kUnknownE in:
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 
@@ -649,33 +649,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 #define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8))
 #else
 #define qCompilerAndStdLib_SFINAE_SharedPtr_Buggy 0
-#endif
-
-#endif
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-
-#if     qDebug && !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-                : fLock_ (ATOMIC_FLAG_INIT)
-#endif
-
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\spinlock.inl(29): error C2280: 'std::atomic_flag::atomic_flag(const std::atomic_flag &)' : attempting to reference a deleted function
-1>          c:\program files (x86)\microsoft visual studio 12.0\vc\include\atomic(191) : see declaration of 'std::atomic_flag::atomic_flag'
-
-*/
-#ifndef qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-
-#if defined(_MSC_VER)
-// still broken in _MS_VS_2k17_FULLVER_
-// still broken in _MS_VS_2k17_15Pt1_
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
-#elif defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 8) && (__clang_minor__ <= 1))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (((__clang_major__ == 3) && (7 <= __clang_minor__ || __clang_minor__ <= 8) || (__clang_major__ == 4 and __clang_minor__ <= 0)))
-#else
-#define qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy 0
 #endif
 
 #endif

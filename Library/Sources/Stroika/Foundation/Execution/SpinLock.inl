@@ -23,16 +23,10 @@ namespace Stroika {
              */
             inline SpinLock::SpinLock (BarrierFlag barrier)
                 : fBarrierFlag_ (barrier)
-#if !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-                , fLock_ (ATOMIC_FLAG_INIT)
-#endif
             {
 #if qStroika_FeatureSupported_Valgrind
                 Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (fLock_);
                 VALGRIND_HG_MUTEX_INIT_POST (&fLock_, true);
-#endif
-#if qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy
-                fLock_.clear (std::memory_order_release); // docs indicate no, but looking at MSFT impl, seems yes (to avoid issue with flag_init not working?
 #endif
             }
 #if qStroika_FeatureSupported_Valgrind
