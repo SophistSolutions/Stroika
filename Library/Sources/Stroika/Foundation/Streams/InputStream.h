@@ -391,22 +391,6 @@ namespace Stroika {
 
             public:
                 /**
-                 * shorthand for declaring
-                 *      POD_TYPE    tmp;
-                 *      size_n = ReadAll ((Byte*)&tmp, (Byte*)(&tmp+1));
-                 *      if (n==sizeof(tmp)) {  return tmp; } else throw EOFException (...);
-                 *
-                 *  \note   If not enough bytes are available to return a POD_TYPE, EOFException will be thrown.
-                 *  \note   Only defined on Binary Streams (InputStream<Byte>::Ptr), but POD_TYPE can be any (is_pod) type.
-                 */
-                template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                [[deprecated ("USE ReadRaw - deprected in 2.0a208")]] inline POD_TYPE ReadPOD () const
-                {
-                    return ReadRaw<POD_TYPE> ();
-                }
-
-            public:
-                /**
                  * Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator
                  * it encounters as part of the read line.
                  *
