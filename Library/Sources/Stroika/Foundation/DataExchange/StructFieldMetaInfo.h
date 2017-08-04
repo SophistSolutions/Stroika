@@ -71,15 +71,13 @@ namespace Stroika {
              *      \endcode
              */
 #if defined(__clang__)
-#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER)                                                 \
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Winvalid-offsetof\"")                               \
-    Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) } \
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Winvalid-offsetof\"")
+#define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER)                   \
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Winvalid-offsetof\"") \
+    Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Winvalid-offsetof\"")
 #elif defined(__GNUC__) && 0
             // sadly, this macro stuff breaks with gcc 48..62 - not sure why...
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
-            Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
+            Stroika::Foundation::DataExchange::StructFieldMetaInfo{offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER))} DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"")
 #else
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }
