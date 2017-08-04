@@ -30,3 +30,19 @@
    fun:_ZN7Stroika11TestHarness15PrintPassOrFailEPFvvE
    fun:main
 }
+{
+   RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part1
+   Helgrind:LockOrder
+   ...
+   fun:_ZNSt17_Function_handlerIFvvEZN12_GLOBAL__N_132RegressionTest18_RWSynchronized_8Private_31Test1_MultipleConcurrentReadersEvEUlvE_E9_M_invokeERKSt9_Any_data
+   ...
+   fun:start_thread
+}
+{
+   RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part2
+   Helgrind:LockOrder
+   ...
+   fun:_ZNSt17_Function_handlerIFvvEZN12_GLOBAL__N_132RegressionTest18_RWSynchronized_8Private_31Test1_MultipleConcurrentReadersEvEUlvE0_E9_M_invokeERKSt9_Any_data
+   ...
+   fun:start_thread
+}

@@ -846,6 +846,9 @@ namespace {
                 /**
                  *  Note - this code can EASILY (but not definitely) deadlock if t1 is BETWEEN its two locks when t2 is BETWEEN its two locks (so more likely with longer sleep)
                  *  if using a regular Syncrhonized() lock. But using RWSyncrhonized allows multiple read locks (which is what we are doing) - so no deadlock.
+                 *
+                 *  NOTE - had to add VALGRIND SUPRESSION - RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part1
+                 *  and RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part2 because of the reversed lock order.
                  */
                 RWSynchronized<int>    sharedData{0};
                 unsigned int           sum1{};
