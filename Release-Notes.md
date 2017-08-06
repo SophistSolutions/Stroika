@@ -18,9 +18,51 @@ History
 
 
 
+
+
    
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a210">v2.0a211</a><br/>2017-08-01</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a212">v2.0a212</a><br/>2017-08-05</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a211...v2.0a212</li>
+		<li>changed vs2k17 project files from WindowsTargetPlatformVersion>10.0.14393.0 to 10.0.15063.0 (default in lastest VS)</li>
+		<li>Support clang 8.1 on MacOS</li>
+		<li>lose bug define !qCompilerAndStdLib_atomic_flag_atomic_flag_init_Buggy - I THINK I've found a portable way to do this correctly</li>
+		<li>Adjust regression test to accomodate change in text on googles website</li>
+		<li>better warning for node missing - nodejs-legacy (at least on debian)</li>
+		<li>Lose deprecated ReadPOD () - was deprecated 2.0a208</li>
+		<li>added helgrind suppressions to address what appeared on the surface a regression in the last release: it was not - just an intentionally reversed lock order to test a new promise made in RWSyncrhonized() template</li>
+		<li>Small docs/cleanups</li>
+		<li>*Build error/failure ignored for this release - build targetting raspberrypi, the installer builds failed. Will correct for next release*</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a212-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k17}-2.0a212-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 8.3.3 (apple clang 8.1)</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.3</li>
+				<li>gcc 7.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+   
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a211">v2.0a211</a><br/>2017-08-01</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a210...v2.0a211</li>
