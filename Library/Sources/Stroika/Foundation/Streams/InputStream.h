@@ -173,6 +173,9 @@ namespace Stroika {
                 using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
 
             protected:
+                using AssertExternallySynchronizedLock = typename inherited::AssertExternallySynchronizedLock;
+
+            protected:
                 using _SharedIRep = shared_ptr<_IRep>;
 
             public:

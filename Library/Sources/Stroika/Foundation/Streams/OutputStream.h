@@ -125,6 +125,9 @@ namespace Stroika {
             private:
                 using inherited = typename Stream<ELEMENT_TYPE>::Ptr;
 
+            protected:
+                using AssertExternallySynchronizedLock = typename inherited::AssertExternallySynchronizedLock;
+
             public:
                 /**
                  *  defaults to null (empty ())
