@@ -122,19 +122,19 @@ endif
 samples:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory samples CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
+		$(MAKE) --no-print-directory samples CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)) || exit $$?;\
 	done
 else
 	@$(StroikaRoot)/ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)/ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Samples:"
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $$SUBPROJ && perl buildall_vs.pl);\
+		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $$SUBPROJ && perl buildall_vs.pl) || exit $$?;\
     done
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory $$SUBPROJ --silent all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1));\
+		$(MAKE) --directory $$SUBPROJ --silent all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)) || exit $$?;\
     done
 endif
 endif

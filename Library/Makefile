@@ -25,7 +25,7 @@ endif
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory CONFIGURATION=$$i check;\
+		$(MAKE) --no-print-directory CONFIGURATION=$$i check || exit $$?;\
 	done
 else
 	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Stroika {$(CONFIGURATION)} Library:"
