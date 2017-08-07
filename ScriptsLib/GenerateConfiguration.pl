@@ -260,10 +260,6 @@ sub	SetInitialDefaults_
 	if ("$^O" eq "cygwin") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
 	}
-	if ($PROJECTPLATFORMSUBDIR eq "Unix") {
-		$STRIP = "strip";
-	}
-
 	if ("$^O" eq "darwin") {
 		# hacks so can do initial port/compile
 		#$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
@@ -438,11 +434,19 @@ sub	SetDefaultForCompilerDriver_
 		$ccLessArgs  =~ s/\ .*//;
 		$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
 	}
+	if (!(defined $STRIP) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
+		my $ccLessArgs = $COMPILER_DRIVER_C;
+		$ccLessArgs  =~ s/\ .*//;
+		$STRIP = ReplaceLast_ ($ccLessArgs, 'gcc', 'strip');
+	}
 	if (!(defined $RANLIB) and (!("$^O" eq "cygwin"))) {
 		$RANLIB = "ranlib";
 	}
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
+	}
+	if (!(defined $STRIP) and  $PROJECTPLATFORMSUBDIR eq 'Unix') {
+		$STRIP = "strip";
 	}
 }
 
