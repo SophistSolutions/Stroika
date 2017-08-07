@@ -60,7 +60,7 @@ namespace Stroika {
                 return fRep_.get () == nullptr;
             }
             template <typename ELEMENT_TYPE>
-            inline void Stream<ELEMENT_TYPE>::Ptr::clear ()
+            inline void Stream<ELEMENT_TYPE>::Ptr::reset ()
             {
                 fRep_.reset ();
             }

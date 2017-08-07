@@ -165,22 +165,26 @@ namespace Stroika {
 
             public:
                 /**
+                 *  reset () doesn't clear the data in the stream, or close the stream, but unreferences the Stream
+                 *  smart pointer. Only if this Stream smartpointer is the last reference to the underlying stream
+                 *  data does this reset () close the underlying stream.
+                 */
+                nonvirtual void reset () noexcept;
+
+            public:
+                /**
                  *  empty() doesn't check the data in the stream, but instead checks if this Stream
                  *  smart pointer references any actual stream.
                  *
-                 *  @see clear()
+                 *  @see reset()
                  */
                 nonvirtual bool empty () const;
 
             public:
-                /**
-                 *  clear () doesn't clear the data in the stream, or close the stream, but unreferences the Stream
-                 *  smart pointer. Only if this Stream smartpointer is the last reference to the underlying stream
-                 *  data does this clear () close the underlying stream.
-                 *
-                 *  @see empty()
-                 */
-                nonvirtual void clear ();
+                [[deprecated ("USE reset - deprecated v2.0a213")]] void clear ()
+                {
+                    reset ();
+                }
 
             public:
                 /**

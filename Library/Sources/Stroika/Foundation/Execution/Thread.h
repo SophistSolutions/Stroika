@@ -494,6 +494,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \brief Clear the pointer this Thread smart pointer refers to. This does nothing to affect the state of the underlying thread.
+                 */
+                nonvirtual void reset () noexcept;
+
+            public:
+                /**
                  *  Each thread has associated an std::function, which gets run by the thread. It can be accessed
                  *  via GetFunction(), but is only settable in the thread constructor.
                  */

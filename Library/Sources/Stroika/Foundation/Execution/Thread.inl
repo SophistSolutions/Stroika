@@ -164,6 +164,11 @@ namespace Stroika {
                 }
                 return fRep_->GetNativeHandle ();
             }
+            inline void Thread::Ptr::reset () noexcept
+            {
+                lock_guard<AssertExternallySynchronizedLock> critSec{*this};
+                fRep_.reset ();
+            }
             inline Function<void()> Thread::Ptr::GetFunction () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

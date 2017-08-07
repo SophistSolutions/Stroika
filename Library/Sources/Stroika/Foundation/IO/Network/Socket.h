@@ -208,6 +208,16 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  reset () doesn't clear the data in the socket, or close the socket, but unreferences the socket
+                     *  smart pointer. Only if this socket smartpointer is the last reference to the underlying stream
+                     *  data does this reset () close the underlying socket.
+                     *
+                     *  @see Close ()
+                     */
+                    nonvirtual void reset () noexcept;
+
+                public:
+                    /**
                      */
                     nonvirtual Ptr& operator= (Ptr&& s);
                     nonvirtual Ptr& operator= (const Ptr& s);
@@ -292,6 +302,7 @@ namespace Stroika {
                      *  \note - this is a chance in v2.0a209
                      *
                      *  @see Detach
+                     *  @see reset ()
                      */
                     nonvirtual void Close () const;
 

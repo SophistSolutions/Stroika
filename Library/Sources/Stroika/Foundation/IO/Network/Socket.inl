@@ -50,6 +50,10 @@ namespace Stroika {
                     fRep_ = s.fRep_;
                     return *this;
                 }
+                inline void Socket::Ptr::reset () noexcept
+                {
+                    fRep_.reset ();
+                }
                 inline shared_ptr<Socket::_IRep> Socket::Ptr::_GetSharedRep () const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
