@@ -119,7 +119,7 @@ project-files:
 tests:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) || exit $$?;\
 	done
 else
 	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
@@ -129,7 +129,7 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	for i in $(TESTS); do\
 		tstName=`$(StroikaRoot)/Tests/ScriptsLib/PrintTestName.pl $$i`;\
 		$(ECHO) "$$PREFIX" "Test $$i: $$tstName:";\
-		$(MAKE) --directory $$i -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2));\
+		$(MAKE) --directory $$i -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2)) || exit $$?;\
 	done
 else
 	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); perl ScriptsLib/_buildall.pl build
