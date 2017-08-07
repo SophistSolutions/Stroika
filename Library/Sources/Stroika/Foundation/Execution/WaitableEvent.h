@@ -295,8 +295,6 @@ namespace Stroika {
             private:
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 struct WE_ {
-                    [[deprecated ("as of v2.0a209 = USE kWaitQuietlyTimeoutResult")]] static constexpr bool kTIMEOUTBoolResult{kWaitQuietlyTimeoutResult};
-
                     ResetType                 fResetType;
                     mutex                     fMutex{};
                     condition_variable        fConditionVariable{};

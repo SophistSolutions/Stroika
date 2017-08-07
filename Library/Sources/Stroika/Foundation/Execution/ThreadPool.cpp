@@ -107,10 +107,10 @@ ThreadPool::~ThreadPool ()
 {
     Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
     try {
-        AbortAndWaitForDoneUntil_ (Time::kInfinite);
+        AbortAndWaitForDone_ ();
     }
     catch (...) {
-        DbgTrace (L"serious bug - make AbortAndWaitForDoneUntil_ noexcept after we lose deprecated variants");
+        DbgTrace (L"serious bug - make AbortAndWaitForDone_ noexcept after we lose deprecated variants");
         AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
     }
 }
@@ -349,26 +349,6 @@ size_t ThreadPool::GetPendingTasksCount () const
     return count;
 }
 
-void ThreadPool::WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
-{
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
-    Require (fAborted_);
-    {
-        Collection<Thread::Ptr> threadsToShutdown; // cannot keep critical section while waiting on subthreads since they may need to acquire the critsection for whatever they are doing...
-        {
-            auto critSec{make_unique_lock (fCriticalSection_)};
-            fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
-        }
-        Thread::WaitForDoneUntil (threadsToShutdown, timeoutAt);
-    }
-}
-
-void ThreadPool::Abort ()
-{
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort", L"*this=%s", ToString ().c_str ())};
-    Abort_ ();
-}
-
 void ThreadPool::Abort_ ()
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
@@ -387,20 +367,10 @@ void ThreadPool::Abort_ ()
     }
 }
 
-void ThreadPool::AbortAndWaitForDone (Time::DurationSecondsType timeout)
-{
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone", L"*this=%s, timeout=%f", ToString ().c_str (), timeout)};
-    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    AbortAndWaitForDoneUntil (timeout + Time::GetTickCount ());
-    DISABLE_COMPILER_MSC_WARNING_END (4996)
-    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-}
-
-void ThreadPool::AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt)
+void ThreadPool::AbortAndWaitForDone_ ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil_", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone_", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
 #endif
     DISABLE_COMPILER_MSC_WARNING_START (4996)
     CheckForThreadInterruption ();
@@ -411,14 +381,8 @@ void ThreadPool::AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt)
         auto critSec{make_unique_lock (fCriticalSection_)};
         fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
     }
-    Thread::AbortAndWaitForDoneUntil (threadsToShutdown, timeoutAt);
+    Thread::AbortAndWaitForDone (threadsToShutdown);
     DISABLE_COMPILER_MSC_WARNING_END (4996)
-}
-
-void ThreadPool::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
-{
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
-    AbortAndWaitForDoneUntil_ (timeoutAt);
 }
 
 String ThreadPool::ToString () const

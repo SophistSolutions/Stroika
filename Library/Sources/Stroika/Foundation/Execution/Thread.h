@@ -343,9 +343,13 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \brief - shorthand for AbortAndWaitForDoneUntil (Time::GetTickCount () + timeout)
+                 *
                  *  \note ***Cancelation Point***
                  *
                  *  @see Thread::Ptr::AbortAndWaitForDone
+                 *
+                 *  @see Thread::AbortAndWaitForDoneUntil
                  */
                 static void AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -652,16 +656,6 @@ namespace Stroika {
                  *  @see AbortAndWaitForDone ()
                  */
                 nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
-
-            public:
-                [[deprecated ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil")]] nonvirtual void AbortAndWaitUntilDone (Time::DurationSecondsType timeoutAt)
-                {
-                    AbortAndWaitForDoneUntil (timeoutAt);
-                }
-                [[deprecated ("Deprecated in 2.0a209 - use AbortAndWaitForDoneUntil")]] static void AbortAndWaitUntilDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt)
-                {
-                    Thread::AbortAndWaitForDoneUntil (threads, timeoutAt);
-                }
 
             public:
                 /**

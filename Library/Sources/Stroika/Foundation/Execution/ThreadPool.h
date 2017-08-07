@@ -89,7 +89,11 @@ namespace Stroika {
 
             public:
                 /*
-                 *  Destroying a threadpool implicitly calls AbortAndWaitForDone () and eats any errors (cannot rethrow)
+                 *  Destroying a threadpool implicitly calls AbortAndWaitForDone () and eats any errors (cannot rethrow).
+                 *
+                 *  \note - ThreadPool used to have explicit abort methods, but there was no point. When aborting, you must wait for them all to
+                 *          shut down to destroy the object. And since you cannot restart the object, there is no point in ever aborting without destorying.
+                 *          so KISS - just destory the ThreadPool object.
                  */
                 ~ThreadPool ();
 
@@ -205,67 +209,11 @@ namespace Stroika {
                  */
                 nonvirtual size_t GetPendingTasksCount () const;
 
-            public:
-                /**
-                 *  throws if timeout
-                 *
-                 *  \req 'aborted'
-                 */
-                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const
-                {
-                    DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                    DISABLE_COMPILER_MSC_WARNING_START (4996)
-                    WaitForDoneUntil (timeout + Time::GetTickCount ());
-                    DISABLE_COMPILER_MSC_WARNING_END (4996)
-                    DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-                }
-
-            public:
-                /**
-                 *  throws if timeout
-                 *
-                 *  \req 'aborted'
-                 */
-                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
-
-            public:
-                /**
-                 * Tells the ThreadPool to shutdown - once aborted - it is an error to keep adding new tasks
-                 *
-                 *  \note ***Cancelation Point***
-                 *
-                 *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
-                 *          or it cancels before starting that process
-                 */
-                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void Abort ();
-
             private:
                 nonvirtual void Abort_ ();
 
-            public:
-                /**
-                 *  throws if timeout
-                 *
-                 *  \note ***Cancelation Point***
-                 *
-                 *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
-                 *          or it cancels before starting that process
-                 */
-                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
-
             private:
-                nonvirtual void AbortAndWaitForDoneUntil_ (Time::DurationSecondsType timeoutAt);
-
-            public:
-                /**
-                 *  throws if timeout
-                 *
-                 *  \note ***Cancelation Point***
-                 *
-                 *  \note - this either shuts down all threads and puts the ThreadPool into an aborted state (from which it cannot be removed),
-                 *          or it cancels before starting that process
-                 */
-                [[deprecated ("as of v2.0a209 - just destroy ThreadPool")]] nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt);
+                nonvirtual void AbortAndWaitForDone_ ();
 
             public:
                 /**
