@@ -437,7 +437,7 @@ sub	SetDefaultForCompilerDriver_
 	if (!(defined $STRIP) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		my $ccLessArgs = $COMPILER_DRIVER_C;
 		$ccLessArgs  =~ s/\ .*//;
-		$STRIP = ReplaceLast_ ($ccLessArgs, 'gcc', 'strip');
+		$STRIP = trim (`$ccLessArgs -print-multiarch`) . "-strip";
 	}
 	if (!(defined $RANLIB) and (!("$^O" eq "cygwin"))) {
 		$RANLIB = "ranlib";
