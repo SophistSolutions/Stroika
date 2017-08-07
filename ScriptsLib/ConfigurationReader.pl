@@ -174,6 +174,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'RANLIB'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<STRIP>");
+		if (defined $pps) {
+			$configuration {'STRIP'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<EXTRA_COMPILER_ARGS>");
 		if (defined $pps) {
 			$configuration {'EXTRA_COMPILER_ARGS'} = $pps;

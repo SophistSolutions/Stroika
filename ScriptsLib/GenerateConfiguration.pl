@@ -94,6 +94,7 @@ my $COMPILER_DRIVER_C = "";				# @todo allow cmdline option to set _C or _CPlusP
 my $COMPILER_DRIVER_CPlusPlus = "";
 my $AR = undef;
 my $RANLIB = undef;
+my $STRIP = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $EXTRA_LINKER_ARGS = "";
 my $CrossCompiling = "false";
@@ -130,6 +131,7 @@ sub	DoHelp_
         print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
         print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
         print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
+        print("	    --strip {ARG}                                   /* default is undefined, but for POSIX, defaults to strip */\n");
         print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
         print("	    --append-extra-compiler-args {ARG}              /* Appends ARG to 'extra compiler */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
@@ -257,6 +259,9 @@ sub	SetInitialDefaults_
 	}
 	if ("$^O" eq "cygwin") {
 		$FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_UseSystem;
+	}
+	if ($PROJECTPLATFORMSUBDIR eq "Unix") {
+		$STRIP = "strip";
 	}
 
 	if ("$^O" eq "darwin") {
@@ -670,6 +675,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$RANLIB = $var;
 		}
+		elsif ((lc ($var) eq "-strip") or (lc ($var) eq "--strip")) {
+			$i++;
+			$var = $ARGV[$i];
+			$STRIP = $var;
+		}
 		elsif ((lc ($var) eq "-extra-compiler-args") or (lc ($var) eq "--extra-compiler-args")) {
 			$i++;
 			$var = $ARGV[$i];
@@ -846,11 +856,11 @@ sub	CHECK_OPTIONS_
 	if ($PROJECTPLATFORMSUBDIR eq "") {
 		die ("Cannot identify ProjectPlatformSubdir\n");
 	}
-	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2010") {
-		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
-	}
 	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2012") {
 		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2012\n");
+	}
+	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2015") {
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2015\n");
 	}
   	CHECK_FEATURE_OPTION($FEATUREFLAG_LIBCURL);
 }
@@ -1002,6 +1012,9 @@ sub	WriteConfigFile_
 	}
 	if (defined $RANLIB) {
 		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	}
+	if (defined $STRIP) {
+		print (OUT "    <STRIP>$STRIP</STRIP>\n");
 	}
 
 	if ($runtimeStackProtectorFlag == true) {
