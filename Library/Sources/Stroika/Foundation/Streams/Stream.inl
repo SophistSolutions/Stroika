@@ -35,33 +35,39 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline auto Stream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const -> _SharedIRep
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_;
             }
             template <typename ELEMENT_TYPE>
             inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepConstRef () const -> const _IRep&
             {
                 RequireNotNull (fRep_);
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return *fRep_.get ();
             }
             template <typename ELEMENT_TYPE>
             inline auto Stream<ELEMENT_TYPE>::Ptr::_GetRepRWRef () const -> _IRep&
             {
                 RequireNotNull (fRep_);
+                lock_guard<AssertExternallySynchronizedLock> critSec{*this};
                 return *fRep_.get ();
             }
             template <typename ELEMENT_TYPE>
             inline bool Stream<ELEMENT_TYPE>::Ptr::IsSeekable () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fSeekable_;
             }
             template <typename ELEMENT_TYPE>
             inline bool Stream<ELEMENT_TYPE>::Ptr::empty () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_.get () == nullptr;
             }
             template <typename ELEMENT_TYPE>
             inline void Stream<ELEMENT_TYPE>::Ptr::reset ()
             {
+                lock_guard<AssertExternallySynchronizedLock> critSec{*this};
                 fRep_.reset ();
             }
             template <typename ELEMENT_TYPE>

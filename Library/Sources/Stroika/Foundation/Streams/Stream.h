@@ -139,7 +139,7 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
              */
             template <typename ELEMENT_TYPE>
-            class Stream<ELEMENT_TYPE>::Ptr {
+            class Stream<ELEMENT_TYPE>::Ptr : protected Debug::AssertExternallySynchronizedLock {
             public:
                 /**
                  *  defaults to null (empty ())

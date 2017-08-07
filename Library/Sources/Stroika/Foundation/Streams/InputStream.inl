@@ -144,13 +144,15 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::GetOffset () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return _GetRepConstRef ().GetReadOffset ();
             }
             template <typename ELEMENT_TYPE>
             SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::GetOffsetToEndOfStream () const
             {
-                SeekOffsetType savedReadFrom = GetOffset ();
-                SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                SeekOffsetType                                      savedReadFrom = GetOffset ();
+                SeekOffsetType                                      size          = Seek (Whence::eFromEnd, 0);
                 Seek (Whence::eFromStart, savedReadFrom);
                 Assert (size >= savedReadFrom);
                 size -= savedReadFrom;
@@ -160,23 +162,27 @@ namespace Stroika {
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::Seek (SeekOffsetType offset) const
             {
                 Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return _GetRepRWRef ().SeekRead (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputStream<ELEMENT_TYPE>::Ptr::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return _GetRepRWRef ().SeekRead (whence, offset);
             }
             template <typename ELEMENT_TYPE>
             inline auto InputStream<ELEMENT_TYPE>::Ptr::Read () const -> Memory::Optional<ElementType>
             {
-                ElementType b{};
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                ElementType                                         b{};
                 RequireNotNull (_GetSharedRep ());
                 return (_GetRepRWRef ().Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
             }
             template <typename ELEMENT_TYPE>
             inline size_t InputStream<ELEMENT_TYPE>::Ptr::Read (ElementType* intoStart, ElementType* intoEnd) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetSharedRep ().get ());
@@ -185,6 +191,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             auto InputStream<ELEMENT_TYPE>::Ptr::Peek () const -> Memory::Optional<ElementType>
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Require (this->IsSeekable ());
                 SeekOffsetType saved  = GetOffset ();
                 auto           result = this->Read ();
@@ -194,6 +201,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             size_t InputStream<ELEMENT_TYPE>::Ptr::Peek (ElementType* intoStart, ElementType* intoEnd) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Require (this->IsSeekable ());
                 SeekOffsetType saved  = GetOffset ();
                 auto           result = this->Read (intoStart, intoEnd);
@@ -203,17 +211,20 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             inline bool InputStream<ELEMENT_TYPE>::Ptr::IsAtEOF () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return Peek ().IsMissing ();
             }
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 RequireNotNull (_GetSharedRep ().get ());
                 return _GetRepRWRef ().ReadNonBlocking (nullptr, nullptr);
             }
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetSharedRep ().get ());
@@ -223,6 +234,7 @@ namespace Stroika {
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
             POD_TYPE InputStream<ELEMENT_TYPE>::Ptr::ReadRaw () const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 POD_TYPE tmp; // intentionally don't zero-initialize
                 size_t   n{ReadAll (reinterpret_cast<Memory::Byte*> (&tmp), reinterpret_cast<Memory::Byte*> (&tmp + 1))};
@@ -237,6 +249,7 @@ namespace Stroika {
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void InputStream<ELEMENT_TYPE>::Ptr::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 size_t n{ReadAll (reinterpret_cast<Memory::Byte*> (start), reinterpret_cast<Memory::Byte*> (end))};
                 if (n != sizeof (POD_TYPE) * (end - start)) {
@@ -246,6 +259,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             size_t InputStream<ELEMENT_TYPE>::Ptr::ReadAll (ElementType* intoStart, ElementType* intoEnd) const
             {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 RequireNotNull (intoStart);
                 Require ((intoEnd - intoStart) >= 1);
                 RequireNotNull (_GetSharedRep ().get ());
