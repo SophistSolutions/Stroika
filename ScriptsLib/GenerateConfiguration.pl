@@ -131,7 +131,7 @@ sub	DoHelp_
         print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
         print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
         print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
-        print("	    --strip {ARG}                                   /* default is undefined, but for POSIX, defaults to strip */\n");
+        print("	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
         print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
         print("	    --append-extra-compiler-args {ARG}              /* Appends ARG to 'extra compiler */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
