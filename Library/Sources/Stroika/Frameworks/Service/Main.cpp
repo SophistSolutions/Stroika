@@ -202,20 +202,20 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eInstall: {
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"Installing...");
             }
             Install ();
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"done\n");
             }
         } break;
         case CommandArgs::MajorOperation::eUnInstall: {
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"UnInstalling...");
             }
             UnInstall ();
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"done\n");
             }
         } break;
@@ -226,22 +226,22 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
             RunDirectly ();
         } break;
         case CommandArgs::MajorOperation::eStart: {
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"Starting...");
             }
             constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
             Start (kTimeOut_);
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"done\n");
             }
         } break;
         case CommandArgs::MajorOperation::eStop: {
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"Stopping...");
             }
             constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
             Stop (kTimeOut_);
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"done\n");
             }
         } break;
@@ -250,12 +250,12 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
             //ForcedStop ();
         } break;
         case CommandArgs::MajorOperation::eRestart: {
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"Restarting...");
             }
             constexpr Time::DurationSecondsType kTimeOut_{30.0}; // a vaguely reasonable default - apps can override by handling before calling Run
             Restart (kTimeOut_);
-            if (not out.empty ()) {
+            if (out != nullptr) {
                 out.Write (L"done\n");
             }
         } break;

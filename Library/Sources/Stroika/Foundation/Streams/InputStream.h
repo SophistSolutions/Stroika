@@ -457,12 +457,6 @@ namespace Stroika {
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
                 nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
-
-                // NOT SURE WHY NEEEDED? - vs2k17 compile error? maybe issue is namesapce in whcih stream<> stuff resides?
-                inline bool operator!= (nullptr_t) const
-                {
-                    return not this->empty ();
-                }
             };
 
             template <>

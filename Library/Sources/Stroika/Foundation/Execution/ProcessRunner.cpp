@@ -1102,7 +1102,7 @@ namespace {
                     /*
                      *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
                      */
-                    if (not out.empty ()) {
+                    if (out != nullptr) {
                         Byte  buf[kReadBufSize_];
                         DWORD nBytesRead = 0;
                         while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {

@@ -139,7 +139,7 @@ namespace Stroika {
             class Stream<ELEMENT_TYPE>::Ptr : protected Debug::AssertExternallySynchronizedLock {
             public:
                 /**
-                 *  defaults to null (empty ())
+                 *  defaults to nullptr
                  */
                 Ptr ()           = default;
                 Ptr (const Ptr&) = default;
@@ -174,10 +174,11 @@ namespace Stroika {
                  *  smart pointer references any actual stream.
                  *
                  *  @todo   CONSIDER DEPRECATING empty () - and replacing with == nullptr?
-                 *
-                 *  @see reset()
                  */
-                nonvirtual bool empty () const;
+                [[deprecated ("USE == nullptr - deprecated v2.0a213")]] bool empty () const
+                {
+                    return *this == nullptr;
+                }
 
             public:
                 [[deprecated ("USE reset - deprecated v2.0a213")]] void clear ()
@@ -188,12 +189,16 @@ namespace Stroika {
             public:
                 /**
                  *  \brief return true iff stream ptr is nullptr
+                 *
+                 *  @see reset()
                  */
                 nonvirtual bool operator== (nullptr_t) const;
 
             public:
                 /**
                  *  \brief return true iff stream ptr is not nullptr
+                 *
+                 *  @see reset()
                  */
                 nonvirtual bool operator!= (nullptr_t) const;
 
