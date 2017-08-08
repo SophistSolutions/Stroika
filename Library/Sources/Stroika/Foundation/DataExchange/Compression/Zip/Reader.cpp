@@ -72,7 +72,7 @@ namespace {
                 Assert (fInStream_ == nullptr);
                 Ensure (not IsOpenRead ());
             }
-            virtual bool IsOpenRead () const
+            virtual bool IsOpenRead () const override
             {
                 return fInStream_ != nullptr;
             }
