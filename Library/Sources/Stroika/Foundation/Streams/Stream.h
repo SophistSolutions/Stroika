@@ -18,9 +18,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo https://stroika.atlassian.net/browse/STK-598 - Stream (and therefore subtypes) 'smart pointer wrapper' should use
- *            Debug::AssertExternallySynchonized (reps generally do as appropriate))
- *
  *      @todo https://stroika.atlassian.net/browse/STK-605 - Possibly add IsInternallySyncrhonized () method to Stream<>::Ptr and _IRep
  */
 
