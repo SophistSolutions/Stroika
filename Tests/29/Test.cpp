@@ -787,7 +787,7 @@ namespace {
                 WriteJSON_ (sharedMemStream);
                 ReadJSON_ (sharedMemStream);
                 VerifyTestResult (sharedMemStream.ReadNonBlocking ().IsMissing ()); // would be at EOF, but not KNOWN at EOF til writing side closed.
-                sharedMemStream.CloseForWrites ();
+                sharedMemStream.CloseWrite ();
                 VerifyTestResult (sharedMemStream.IsAtEOF ()); // now at EOF because input closed
             }
         }
