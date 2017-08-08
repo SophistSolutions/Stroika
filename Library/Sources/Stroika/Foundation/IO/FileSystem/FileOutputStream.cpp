@@ -86,6 +86,22 @@ public:
     {
         return fSeekable_;
     }
+    virtual void CloseWrite () override
+    {
+        Require (IsOpenWrite ());
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+#if qPlatform_Windows
+            ::_close (fFD_);
+#else
+            ::close (fFD_);
+#endif
+        }
+        fFD_ = -1;
+    }
+    virtual bool IsOpenWrite () const override
+    {
+        return fFD_ >= 0;
+    }
     virtual void Write (const Byte* start, const Byte* end) override
     {
         Require (start != nullptr or start == end);

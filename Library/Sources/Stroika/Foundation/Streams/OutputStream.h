@@ -36,6 +36,7 @@
  *
  *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
  *              have flush/close allowed, and anything else generate an assert error?
+ &&&&&&&&
  *
  *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesnt change EOF. EOF
  *              remains fixed as max written to. DODUCMNET THIS (for text and binary) - and provide a SetEOF() method
@@ -143,20 +144,6 @@ namespace Stroika {
                 nonvirtual Ptr& operator= (const Ptr&) = default;
                 nonvirtual Ptr& operator= (Ptr&&) = default;
 
-            protected:
-                /**
-                 * _SharedIRep rep is the underlying shared output Stream object.
-                 *
-                 *  \req rep != nullptr (use nullptr_t constructor)
-                 */
-                explicit Ptr (const _SharedIRep& rep);
-
-            protected:
-                /**
-                 *  \brief protected access to underlying stream smart pointer
-                 */
-                nonvirtual _SharedIRep _GetSharedRep () const;
-
             public:
                 /**
                  *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
@@ -167,6 +154,8 @@ namespace Stroika {
             public:
                 /**
                  * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
+                 *
+                 *  \req IsOpen ()
                  */
                 nonvirtual SeekOffsetType GetOffset () const;
 
@@ -185,6 +174,7 @@ namespace Stroika {
                  *          probably not a great strategy -- LGP 2017-06-16
                  *
                  *  \req IsSeekable ()
+                 *  \req IsOpen ()
                  */
                 nonvirtual SeekOffsetType GetOffsetToEndOfStream () const;
 
@@ -196,6 +186,8 @@ namespace Stroika {
                  *  Seek () past the end of stream is NOT legal (may reconsider).
                  *
                  *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
+                 *
+                 *  \req IsOpen ()
                  */
                 nonvirtual SeekOffsetType Seek (SeekOffsetType offset) const;
                 nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
@@ -212,6 +204,8 @@ namespace Stroika {
                  *
                  *  \req start <= end, and if one is nullptr, both mustbe nullptr { for overload taking start/end }
                  *  \req cStr != nullptr { for loverload taking c_str }
+                 *
+                 *  \req IsOpen ()
                  */
                 nonvirtual void Write (const ElementType* start, const ElementType* end) const;
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
@@ -235,8 +229,9 @@ namespace Stroika {
                  *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
                  *            non-POD data, not hard, but we dont want to encourage it.
                  *
-                 * \req std::is_pod<POD_TYPE>::value
-                 * \req ELEMENT_TYPE==Byte
+                 *  \req std::is_pod<POD_TYPE>::value
+                 *  \req ELEMENT_TYPE==Byte
+                 *  \req IsOpen ()
                  *
                  *  shorthand for declaring
                  *      POD_TYPE    tmp;
@@ -249,9 +244,54 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \req IsOpen ()
                  */
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
                 nonvirtual void PrintF (const wchar_t* format, ...);
+
+            public:
+                /**
+                 *  Put the output stream in a state where it cannot be written to anymore.
+                 *  If argument 'reset' is true, this also clears the smart pointer (calls Stream<>::reset()).
+                 *
+                 *  It is generally unneeded to ever call Close () - as streams are closed automatically when the final
+                 *  reference to them is released (smartptr).
+                 *
+                 *  But - this can be handy - in that it allows for exception hanlding. Exceptions closing out an output stream - doing
+                 *  final writes - cannot be reported if done by destroying objects (cannot throw from dtor) - so Close () assures
+                 *  a clean shutdown with exceptions being propagated during the cleanup.
+                 *
+                 *  \note Most calls on an OutputStream after it is closed are illegal, and result in Require () errors. It is up
+                 *        to the caller/user of the shared output streams to assure they dont use them after being closed. Note - if that
+                 *        sounds hard its not: it naturally falls out of normal usage.
+                 *
+                 *        The rationale is just that I can think of no useful case where a caller might want to allow writing after close, and
+                 *        have that transalted into an exception, and this choice is more performant (and could be reversed more easily
+                 *        than the opposite policy if I change my mind).
+                 *
+                 *  \note Close () - and IsOpen () are intentionally duplicated in InputStream () and OutputStream () classes. This is so
+                 *        you can close down the OutputStream side of an InputOutputStream, and leave open the InputSide - so it sees EOF.
+                 *
+                 *  \note When a subtype stream (like BufferedOutputStream) aggregates another stream, it is not left to that subclass
+                 *        whether or not closing the top level stream also Closes the sub-stream. Typically, if the class designer intends
+                 *        you to think of the ownership as 'aggregation' - close of this stream will close any aggregated streams, but
+                 *        if this class is designed to 'reference' other streams, it will not close them.
+                 *
+                 *        See the stream documentation for that stream class to see how it handles Close.
+                 *
+                 *  \req IsOpen ()
+                 */
+                nonvirtual void Close () const;
+                nonvirtual void Close (bool reset);
+
+            public:
+                /**
+                 *  Put the output stream in a state where it cannot be written to anymore.
+                 *  If argument 'reset' is true, this also clears the smart pointer (Stream<>::reset()).
+                 *
+                 *  @see Close ()
+                 */
+                nonvirtual bool IsOpen () const;
 
             public:
                 /**
@@ -263,6 +303,8 @@ namespace Stroika {
                  *  finish their writes until they are destroyed. The trouble then - is that they cannot
                  *  propagate exceptions! Calling Flush() before destroying the output stream allows exceptions
                  *  to be propagated properly.
+                 *
+                 *  \req IsOpen ()
                  */
                 nonvirtual void Flush () const;
 
@@ -273,9 +315,25 @@ namespace Stroika {
                  * @todo need overloads for basic types, std::string, int, float, etc...
                  * But dont do except for string for now. Dont make same mistake as iostream - with formatting. Not clear how todo
                  * right so dont dig a hole and do it wrong (yet).
+                 *
+                 *  \req IsOpen ()
                  */
                 template <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
                 const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (T write2TextStream) const;
+
+            protected:
+                /**
+                 * _SharedIRep rep is the underlying shared output Stream object.
+                 *
+                 *  \req rep != nullptr (use nullptr_t constructor)
+                 */
+                explicit Ptr (const _SharedIRep& rep);
+
+            protected:
+                /**
+                 *  \brief protected access to underlying stream smart pointer
+                 */
+                nonvirtual _SharedIRep _GetSharedRep () const;
             };
 
             template <>
@@ -309,6 +367,23 @@ namespace Stroika {
 
             public:
                 nonvirtual _IRep& operator= (const _IRep&) = delete;
+
+            public:
+                /**
+                 *  May (but typically not) called before destruction. If called, \req no other write or seek etc operations.
+                 *
+                 *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Write, so subclassers dont need to
+                 *          do that in implementing reps, but probably good docs/style todo in both places.'
+                 *
+                 *  \note -  CloseWrite must implicitly Flush ()
+                 */
+                virtual void CloseWrite () = 0;
+
+            public:
+                /**
+                 *  return true iff CloseWrite () has not been called (cannot construct closed stream)
+                 */
+                virtual bool IsOpenWrite () const = 0;
 
             public:
                 virtual SeekOffsetType GetWriteOffset () const = 0;

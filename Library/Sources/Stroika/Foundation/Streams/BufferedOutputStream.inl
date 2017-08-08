@@ -37,7 +37,9 @@ namespace Stroika {
                 }
                 ~Rep_ ()
                 {
-                    IgnoreExceptionsForCall (Flush ());
+                    if (IsOpenWrite ()) {
+                        IgnoreExceptionsForCall (Flush ());
+                    }
                     Ensure (fBuffer_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
                 }
 
@@ -65,11 +67,21 @@ namespace Stroika {
                     fAborted_ = true; // for debug sake track this
                     fBuffer_.clear ();
                 }
-
                 //
                 virtual bool IsSeekable () const override
                 {
                     return false; // @todo - COULD be seekable if underlying fRealOut_ was!!!
+                }
+                virtual void CloseWrite () override
+                {
+                    Require (IsOpenWrite ());
+                    Flush ();
+                    fRealOut_.Close ();
+                    Assert (fRealOut_ == nullptr);
+                }
+                virtual bool IsOpenWrite () const override
+                {
+                    return fRealOut_ != nullptr;
                 }
                 virtual SeekOffsetType GetWriteOffset () const override
                 {

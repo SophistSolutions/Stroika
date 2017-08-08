@@ -36,6 +36,17 @@ public:
     {
         return false;
     }
+    virtual void CloseWrite () override
+    {
+        Require (IsOpenWrite ());
+        fSD_.Close ();
+        Assert (fSD_ == nullptr);
+        Ensure (not IsOpenWrite ());
+    }
+    virtual bool IsOpenWrite () const override
+    {
+        return fSD_ != nullptr;
+    }
     virtual SeekOffsetType GetReadOffset () const override
     {
         RequireNotReached (); // not seekable

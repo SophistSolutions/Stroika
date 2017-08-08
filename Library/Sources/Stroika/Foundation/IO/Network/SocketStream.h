@@ -30,6 +30,8 @@ namespace Stroika {
                  *  The only real conneciton is that they share a common socket, and if it is closed,
                  *  then the whole SocketStream will stop working.
                  *
+                 *      \note   SocketStream aggregates its owned ConnectionOrientedSocket, so that a Close () on SocketStream
+                 *              will Close that socket as well.
                  */
                 class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
                 public:

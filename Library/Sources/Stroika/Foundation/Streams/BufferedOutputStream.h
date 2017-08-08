@@ -38,6 +38,10 @@ namespace Stroika {
              *
              *      \note   If you fail to Flush() this object before it is destroyed, exceptions in flushing
              *              the data may be suppressed.
+             *              Best to call @Close ()
+             *
+             *      \note   BufferedOutputStream aggregates its owned substream, so that a Close () on BufferedOutputStream
+             *              will Close that substream.
              *
              *      \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */

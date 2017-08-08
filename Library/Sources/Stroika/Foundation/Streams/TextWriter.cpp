@@ -44,6 +44,17 @@ protected:
     {
         return false;
     }
+    virtual void CloseWrite () override
+    {
+        Require (IsOpenWrite ());
+        _fSource.Close ();
+        Assert (_fSource == nullptr);
+        Ensure (not IsOpenWrite ());
+    }
+    virtual bool IsOpenWrite () const override
+    {
+        return _fSource != nullptr;
+    }
     virtual SeekOffsetType GetWriteOffset () const override
     {
         AssertNotImplemented ();
@@ -102,6 +113,17 @@ protected:
     virtual bool IsSeekable () const override
     {
         return false;
+    }
+    virtual void CloseWrite () override
+    {
+        Require (IsOpenWrite ());
+        _fSource.Close ();
+        Assert (_fSource == nullptr);
+        Ensure (not IsOpenWrite ());
+    }
+    virtual bool IsOpenWrite () const override
+    {
+        return _fSource != nullptr;
     }
     virtual SeekOffsetType GetWriteOffset () const override
     {
@@ -243,6 +265,7 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
 
 shared_ptr<OutputStream<Characters::Character>::_IRep> TextWriter::mk_ (const OutputStream<Byte>::Ptr& src, Format format)
 {
+    Require (src.IsOpen ());
     bool newOneSeekable = src.IsSeekable ();
     bool withBOM        = (format == Format::eUTF8WithBOM or format == Format::eWCharTWithBOM);
     switch (format) {

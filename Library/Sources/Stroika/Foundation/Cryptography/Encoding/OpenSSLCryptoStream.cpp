@@ -242,6 +242,17 @@ public:
     {
         return false;
     }
+    virtual void CloseWrite () override
+    {
+        Require (IsOpenWrite ());
+        fRealOut_.Close ();
+        Assert (fRealOut_ == nullptr);
+        Ensure (not IsOpenWrite ());
+    }
+    virtual bool IsOpenWrite () const override
+    {
+        return fRealOut_ != nullptr;
+    }
     virtual SeekOffsetType GetWriteOffset () const override
     {
         RequireNotReached ();

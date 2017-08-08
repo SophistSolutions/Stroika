@@ -59,6 +59,9 @@ namespace Stroika {
              *
              *  \note   This API was called TextOutputStreamAdapter
              *
+             *  \note   TextWriter aggregates its owned substream, so that a Close () on TextWriter
+             *          will Close that substream.
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
              */
             class TextWriter : public OutputStream<Characters::Character> {

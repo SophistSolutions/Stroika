@@ -180,6 +180,27 @@ namespace Stroika {
                 Write (reinterpret_cast<const Memory::Byte*> (start), reinterpret_cast<const Memory::Byte*> (end));
             }
             template <typename ELEMENT_TYPE>
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::Close () const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                _GetSharedRep ()->CloseWrite ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::Close (bool reset)
+            {
+                lock_guard<AssertExternallySynchronizedLock> critSec{*this};
+                _GetSharedRep ()->CloseWrite ();
+                if (reset) {
+                    this->reset ();
+                }
+            }
+            template <typename ELEMENT_TYPE>
+            inline bool OutputStream<ELEMENT_TYPE>::Ptr::IsOpen () const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                return _GetSharedRep ()->IsOpenWrite ();
+            }
+            template <typename ELEMENT_TYPE>
             inline void OutputStream<ELEMENT_TYPE>::Ptr::Flush () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};

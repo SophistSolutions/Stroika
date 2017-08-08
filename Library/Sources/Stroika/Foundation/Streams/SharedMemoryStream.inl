@@ -27,6 +27,9 @@ namespace Stroika {
             public:
                 using ElementType = ELEMENT_TYPE;
 
+            private:
+                bool fIsOpenForWrite_{true};
+
             public:
                 Rep_ ()
                     : fData_ ()
@@ -45,6 +48,15 @@ namespace Stroika {
                 virtual bool IsSeekable () const override
                 {
                     return true;
+                }
+                virtual void CloseWrite () override
+                {
+                    Require (IsOpenWrite ());
+                    fIsOpenForWrite_ = false;
+                }
+                virtual bool IsOpenWrite () const override
+                {
+                    return fIsOpenForWrite_;
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {

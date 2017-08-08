@@ -173,6 +173,8 @@ namespace Stroika {
                  *  empty() doesn't check the data in the stream, but instead checks if this Stream
                  *  smart pointer references any actual stream.
                  *
+                 *  @todo   CONSIDER DEPRECATING empty () - and replacing with == nullptr?
+                 *
                  *  @see reset()
                  */
                 nonvirtual bool empty () const;

@@ -30,6 +30,9 @@ namespace Stroika {
                 private:
                     using OStreamType = typename TRAITS::OStreamType;
 
+                private:
+                    bool fOpen_{true};
+
                 public:
                     Rep_ (OStreamType& originalStream)
                         : fOriginalStream_ (originalStream)
@@ -40,6 +43,16 @@ namespace Stroika {
                     virtual bool IsSeekable () const override
                     {
                         return true;
+                    }
+                    virtual void CloseWrite () override
+                    {
+                        Require (IsOpenWrite ());
+                        fOpen_ = false;
+                        Ensure (not IsOpenWrite ());
+                    }
+                    virtual bool IsOpenWrite () const override
+                    {
+                        return fOpen_;
                     }
                     virtual SeekOffsetType GetWriteOffset () const override
                     {
@@ -91,7 +104,7 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** OutputStreamFromStdOStream<ELEMENT_TYPE> ***************
+                 ********************* OutputStreamFromStdOStream<ELEMENT_TYPE> *****************
                  ********************************************************************************
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>

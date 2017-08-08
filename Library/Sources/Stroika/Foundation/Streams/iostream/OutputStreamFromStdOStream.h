@@ -44,6 +44,8 @@ namespace Stroika {
 
                 /**
                  *  OutputStreamFromStdOStream wraps an argument std::ostream or std::wostream or std::basic_ostream<> as a Stroika OutputStream object
+                 *
+                 *      \note   OutputStreamFromStdOStream ::Close () does not call close on the owned basic_ostream, because there is no such stdC++ method (though filestream has one)
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = OutputStreamFromStdOStreamSupport::TraitsType<ELEMENT_TYPE>>
                 class OutputStreamFromStdOStream : public OutputStream<ELEMENT_TYPE> {
