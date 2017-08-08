@@ -48,6 +48,11 @@ namespace Stroika {
              *  \note   This is similar to the .net TextReader (https://msdn.microsoft.com/en-us/library/system.io.textreader(v=vs.110).aspx) except that
              *          much of the 'reading' API is baked into InputStream<Character>::Ptr.
              *
+             *  \note   TextReader's are smart about not reading more than they need to from the source Stream (unless you make that stream buffered, in
+             *          which case the buffering can cause it to read ahead)
+             *
+             *          But TextReader itself doesn't read ahead more than it needs to to complete requested methods.
+             *
              *  \par Example Usage
              *      \code
              *      for (String line : TextReader::New (FileInputStream::New (L"/tmp/foo")).ReadLines ()) {
