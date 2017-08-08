@@ -39,7 +39,7 @@ namespace Stroika {
                     fRealIn_.Close ();
                     Assert (fRealIn_ == nullptr);
                 }
-                virtual bool IsOpenRead () const
+                virtual bool IsOpenRead () const override
                 {
                     return fRealIn_ != nullptr;
                 }

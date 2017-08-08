@@ -63,7 +63,7 @@ namespace Stroika {
                         fOpen_ = false;
                         Ensure (not IsOpenRead ());
                     }
-                    virtual bool IsOpenRead () const
+                    virtual bool IsOpenRead () const override
                     {
                         return fOpen_;
                     }

@@ -50,7 +50,7 @@ protected:
         fSource_.Close ();
         Assert (fSource_ == nullptr);
     }
-    virtual bool IsOpenRead () const
+    virtual bool IsOpenRead () const override
     {
         return fSource_ != nullptr;
     }

@@ -66,7 +66,7 @@ namespace Stroika {
                     Require (IsOpenRead ());
                     fIsOpenForRead_ = false;
                 }
-                virtual bool IsOpenRead () const
+                virtual bool IsOpenRead () const override
                 {
                     return fIsOpenForRead_;
                 }

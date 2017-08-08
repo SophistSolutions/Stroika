@@ -61,7 +61,7 @@ public:
             fSD_.reset ();
         }
     }
-    virtual bool IsOpenRead () const
+    virtual bool IsOpenRead () const override
     {
         return fOpenForRead_;
     }

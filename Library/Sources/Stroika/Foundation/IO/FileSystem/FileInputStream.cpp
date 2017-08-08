@@ -117,7 +117,7 @@ public:
         }
         fFD_ = -1;
     }
-    virtual bool IsOpenRead () const
+    virtual bool IsOpenRead () const override
     {
         return fFD_ >= 0;
     }

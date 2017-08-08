@@ -123,7 +123,7 @@ namespace Stroika {
             public:
                 [[deprecated ("USE CloseWrite () - deprecated v2.0a213")]] void CloseForWrites ()
                 {
-                    CloseWrite (false);
+                    this->CloseWrite (false);
                 }
 
             public:
