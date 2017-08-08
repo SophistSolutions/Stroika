@@ -120,6 +120,18 @@ namespace Stroika {
             {
                 return InputStream<ELEMENT_TYPE>::Ptr::Seek (whence, offset);
             }
+            template <typename ELEMENT_TYPE>
+            inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr_t) const
+            {
+                Ensure (InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr) == OutputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr));
+                return InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr);
+            }
+            template <typename ELEMENT_TYPE>
+            inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr_t) const
+            {
+                Ensure (InputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr) == OutputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr));
+                return InputStream<ELEMENT_TYPE>::Ptr::operator!= (nullptr);
+            }
         }
     }
 }

@@ -163,6 +163,22 @@ namespace Stroika {
                 nonvirtual SeekOffsetType SeekRead (SignedSeekOffsetType offset) const;
                 nonvirtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) const;
 
+            public:
+                /**
+                 *  \brief return true iff stream ptr is nullptr
+                 *
+                 *  @see reset()
+                 */
+                nonvirtual bool operator== (nullptr_t) const;
+
+            public:
+                /**
+                 *  \brief return true iff stream ptr is not nullptr
+                 *
+                 *  @see reset()
+                 */
+                nonvirtual bool operator!= (nullptr_t) const;
+
             protected:
                 /**
                 *  \brief protected access to underlying stream smart pointer
