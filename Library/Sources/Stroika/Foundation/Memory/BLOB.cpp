@@ -190,6 +190,7 @@ namespace {
         {
         }
         struct REP : InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+            bool fIsOpenForRead_{true};
             REP (const BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
@@ -199,6 +200,15 @@ namespace {
             virtual bool IsSeekable () const override
             {
                 return true;
+            }
+            virtual void CloseRead () override
+            {
+                Require (IsOpenRead ());
+                fIsOpenForRead_ = false;
+            }
+            virtual bool IsOpenRead () const override
+            {
+                return fIsOpenForRead_;
             }
             virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
             {
