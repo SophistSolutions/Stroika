@@ -107,14 +107,16 @@ namespace Stroika {
             inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffset () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 return _GetSharedRep ()->GetWriteOffset ();
             }
             template <typename ELEMENT_TYPE>
             SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::GetOffsetToEndOfStream () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                SeekOffsetType                                      savedReadFrom = GetOffset ();
-                SeekOffsetType                                      size          = Seek (Whence::eFromEnd, 0);
+                Require (IsOpen ());
+                SeekOffsetType savedReadFrom = GetOffset ();
+                SeekOffsetType size          = Seek (Whence::eFromEnd, 0);
                 Seek (Whence::eFromStart, savedReadFrom);
                 Assert (size >= savedReadFrom);
                 size -= savedReadFrom;
@@ -124,6 +126,7 @@ namespace Stroika {
             inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::Seek (SeekOffsetType offset) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
                 return _GetSharedRep ()->SeekWrite (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
             }
@@ -131,12 +134,14 @@ namespace Stroika {
             inline SeekOffsetType OutputStream<ELEMENT_TYPE>::Ptr::Seek (Whence whence, SignedSeekOffsetType offset) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 return _GetSharedRep ()->SeekWrite (whence, offset);
             }
             template <typename ELEMENT_TYPE>
             inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const ElementType* start, const ElementType* end) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 Require (start <= end);
                 Require (start != nullptr or start == end);
                 Require (end != nullptr or start == end);
@@ -149,6 +154,7 @@ namespace Stroika {
             inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const Memory::BLOB& blob) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 Write (blob.begin (), blob.end ());
             }
             template <typename ELEMENT_TYPE>
@@ -156,12 +162,14 @@ namespace Stroika {
             inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const wchar_t* cStr) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 Write (cStr, cStr + ::wcslen (cStr));
             }
             template <typename ELEMENT_TYPE>
             inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const ElementType& e) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 Write (&e, &e + 1);
             }
             template <typename ELEMENT_TYPE>
@@ -169,6 +177,7 @@ namespace Stroika {
             inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE& p) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 WriteRaw (&p, &p + 1);
             }
             template <typename ELEMENT_TYPE>
@@ -176,6 +185,7 @@ namespace Stroika {
             inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 static_assert (std::is_pod<POD_TYPE>::value, "");
                 Write (reinterpret_cast<const Memory::Byte*> (start), reinterpret_cast<const Memory::Byte*> (end));
             }
@@ -183,12 +193,14 @@ namespace Stroika {
             inline void OutputStream<ELEMENT_TYPE>::Ptr::Close () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 _GetSharedRep ()->CloseWrite ();
             }
             template <typename ELEMENT_TYPE>
             inline void OutputStream<ELEMENT_TYPE>::Ptr::Close (bool reset)
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpen ());
                 _GetSharedRep ()->CloseWrite ();
                 if (reset) {
                     this->reset ();

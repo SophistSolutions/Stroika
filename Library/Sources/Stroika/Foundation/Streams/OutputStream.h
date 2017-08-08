@@ -30,14 +30,6 @@
  *              zero write, and it assuming no seek past EOF makes implementations simpler, and
  *              definition more consistent (read).
  *
- *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
- *
- *              (maybe close/flush ignored).
- *
- *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
- *              have flush/close allowed, and anything else generate an assert error?
- &&&&&&&&
- *
  *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesnt change EOF. EOF
  *              remains fixed as max written to. DODUCMNET THIS (for text and binary) - and provide a SetEOF() method
  *              (maybe just for seekable streams)? Maybe add rule that SetEOF () can only go backwards (shorten). Then call
@@ -270,9 +262,9 @@ namespace Stroika {
                  *        than the opposite policy if I change my mind).
                  *
                  *  \note Close () - and IsOpen () are intentionally duplicated in InputStream () and OutputStream () classes. This is so
-                 *        you can close down the OutputStream side of an InputOutputStream, and leave open the InputSide - so it sees EOF.
+                 *        you can close down the OutputStream side of an InputOutputStream, and leave open the InputStream side - so it sees EOF.
                  *
-                 *  \note When a subtype stream (like BufferedOutputStream) aggregates another stream, it is not left to that subclass
+                 *  \note When a subtype stream (like BufferedOutputStream) aggregates another stream, it is left to that subclass
                  *        whether or not closing the top level stream also Closes the sub-stream. Typically, if the class designer intends
                  *        you to think of the ownership as 'aggregation' - close of this stream will close any aggregated streams, but
                  *        if this class is designed to 'reference' other streams, it will not close them.
@@ -286,8 +278,10 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Put the output stream in a state where it cannot be written to anymore.
-                 *  If argument 'reset' is true, this also clears the smart pointer (Stream<>::reset()).
+                 *  Return true, unless a call to Close () has been done on the underlying stream (not just Ptr).
+                 *
+                 *  \note InputStream and OutputStream (when mixed in InputOutputStream) have separate IsOpen/IsClosed flags, so you
+                 *        can call Close on the write side of the stream and still read from the InputStream side.
                  *
                  *  @see Close ()
                  */
