@@ -87,11 +87,11 @@ public:
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"FileInputStream::Rep_::~Rep_");
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
             DbgTrace (L"closing %d", fFD_);
         }
 #endif
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenRead ()) {
 #if qPlatform_Windows
             ::_close (fFD_);
 #else
@@ -104,6 +104,22 @@ public:
     virtual bool IsSeekable () const override
     {
         return fSeekable_ == eSeekable;
+    }
+    virtual void CloseRead () override
+    {
+        Require (IsOpenRead ());
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+#if qPlatform_Windows
+            ::_close (fFD_);
+#else
+            ::close (fFD_);
+#endif
+        }
+        fFD_ = -1;
+    }
+    virtual bool IsOpenRead () const
+    {
+        return fFD_ >= 0;
     }
     virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
     {

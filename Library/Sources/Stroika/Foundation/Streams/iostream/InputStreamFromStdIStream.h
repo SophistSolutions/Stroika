@@ -54,6 +54,8 @@ namespace Stroika {
                  *      tmpStrm << "some xml";
                  *      XML::SAXParse (InputStreamFromStdIStream<Memory::Byte>::New (tmpStrm), MyCallback ());
                  *      \endcode
+                 *
+                 *      \note   InputStreamFromStdIStream ::Close () does not call close on the owned basic_istream, because there is no such stdC++ method (though filestream has one)
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS = InputStreamFromStdIStreamSupport::TraitsType<ELEMENT_TYPE>>
                 class InputStreamFromStdIStream : public InputStream<ELEMENT_TYPE> {

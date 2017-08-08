@@ -28,7 +28,7 @@ namespace Stroika {
                 using ElementType = ELEMENT_TYPE;
 
             private:
-                bool fIsOpenForWrite_{true};
+                bool fIsOpenForRead_{true};
 
             public:
                 Rep_ ()
@@ -43,6 +43,7 @@ namespace Stroika {
                     Write (start, end);
                 }
                 Rep_ (const Rep_&)       = delete;
+                ~Rep_ ()                 = default;
                 nonvirtual Rep_& operator= (const Rep_&) = delete;
 
                 virtual bool IsSeekable () const override
@@ -51,12 +52,23 @@ namespace Stroika {
                 }
                 virtual void CloseWrite () override
                 {
+                    lock_guard<recursive_mutex> critSec{fMutex_};
                     Require (IsOpenWrite ());
-                    fIsOpenForWrite_ = false;
+                    fClosedForWrites_ = true;
+                    fMoreDataWaiter_.Set ();
                 }
                 virtual bool IsOpenWrite () const override
                 {
-                    return fIsOpenForWrite_;
+                    return not fClosedForWrites_;
+                }
+                virtual void CloseRead () override
+                {
+                    Require (IsOpenRead ());
+                    fIsOpenForRead_ = false;
+                }
+                virtual bool IsOpenRead () const
+                {
+                    return fIsOpenForRead_;
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
@@ -234,12 +246,6 @@ namespace Stroika {
                     Ensure ((fData_.begin () <= fWriteCursor_) and (fWriteCursor_ <= fData_.end ()));
                     return fWriteCursor_ - fData_.begin ();
                 }
-                void CloseForWrites ()
-                {
-                    lock_guard<recursive_mutex> critSec{fMutex_};
-                    fClosedForWrites_ = true;
-                    fMoreDataWaiter_.Set ();
-                }
                 vector<ElementType> AsVector () const
                 {
                     lock_guard<recursive_mutex> critSec{fMutex_};
@@ -302,14 +308,6 @@ namespace Stroika {
             inline SharedMemoryStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
                 : inherited (from)
             {
-            }
-            template <typename ELEMENT_TYPE>
-            inline void SharedMemoryStream<ELEMENT_TYPE>::Ptr::CloseForWrites ()
-            {
-                RequireNotNull (inherited::_GetSharedRep ().get ());
-                AssertMember (inherited::_GetSharedRep ().get (), Rep_);
-                Rep_& rep = *dynamic_cast<Rep_*> (inherited::_GetSharedRep ().get ());
-                rep.CloseForWrites ();
             }
             template <typename ELEMENT_TYPE>
             template <typename T>

@@ -108,35 +108,34 @@ namespace Stroika {
                 nonvirtual Ptr& operator= (const Ptr&) = default;
                 nonvirtual Ptr& operator= (Ptr&&) = default;
 
-            protected:
-                /**
-                 *  \brief protected access to underlying stream smart pointer
-                 */
-                nonvirtual _SharedIRep _GetSharedRep () const;
-
-            protected:
-                /**
-                 * \req *this != nullptr
-                 */
-                nonvirtual const _IRep& _GetRepConstRef () const;
-
-            protected:
-                /**
-                 * \req *this != nullptr
-                 */
-                nonvirtual _IRep& _GetRepRWRef () const;
-
-            public:
-                /**
-                 *
-                 */
-                nonvirtual bool empty () const;
-
             public:
                 /**
                  *      \req InputStream<ELEMENT_TYPE>::Ptr::IsSeekable () == OutputStream<ELEMENT_TYPE>::IsSeekable ()
                  */
                 nonvirtual bool IsSeekable () const;
+
+            public:
+                /**
+                 *  Close BOTH the InputStream and OutputStream side of this InputOutputStream.
+                 *
+                 *  \brief Alias for CloseRead (); CloseWrite ();
+                 */
+                nonvirtual void Close () const;
+                nonvirtual void Close (bool reset);
+
+            public:
+                /**
+                 *  \brief Alias for InputStream<>::Ptr::Close ();
+                 */
+                nonvirtual void CloseRead () const;
+                nonvirtual void CloseRead (bool reset);
+
+            public:
+                /**
+                 *  \brief Alias for OutputStream<>::Ptr::Close ();
+                 */
+                nonvirtual void CloseWrite () const;
+                nonvirtual void CloseWrite (bool reset);
 
             public:
                 /**
@@ -163,6 +162,31 @@ namespace Stroika {
                  */
                 nonvirtual SeekOffsetType SeekRead (SignedSeekOffsetType offset) const;
                 nonvirtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) const;
+
+            protected:
+                /**
+                *  \brief protected access to underlying stream smart pointer
+                */
+                nonvirtual _SharedIRep _GetSharedRep () const;
+
+            protected:
+                /**
+                * \req *this != nullptr
+                */
+                nonvirtual const _IRep& _GetRepConstRef () const;
+
+            protected:
+                /**
+                * \req *this != nullptr
+                */
+                nonvirtual _IRep& _GetRepRWRef () const;
+
+            public:
+                [[deprecated ("USE == nullptr - deprecated v2.0a213")]] bool empty () const
+                {
+                    Ensure (InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr) == OutputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr));
+                    return InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr);
+                }
             };
 
             /**

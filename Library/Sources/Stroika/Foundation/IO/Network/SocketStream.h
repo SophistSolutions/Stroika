@@ -32,6 +32,10 @@ namespace Stroika {
                  *
                  *      \note   SocketStream aggregates its owned ConnectionOrientedSocket, so that a Close () on SocketStream
                  *              will Close that socket as well.
+                 *
+                 *              But SocketStream is an InputOutputStream - so you can close the input and output sides separately.
+                 *              If you call close on only one side of the input stream, Shutdown () will be used to shutdown
+                 *              just that end of the stream.
                  */
                 class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
                 public:

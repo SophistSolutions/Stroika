@@ -36,10 +36,22 @@ namespace Stroika {
             public:
                 nonvirtual Rep_& operator= (const Rep_&) = delete;
 
+            private:
+                bool fIsOpenForRead_{true};
+
             protected:
                 virtual bool IsSeekable () const override
                 {
                     return true;
+                }
+                virtual void CloseRead () override
+                {
+                    Require (IsOpenRead ());
+                    fIsOpenForRead_ = false;
+                }
+                virtual bool IsOpenRead () const
+                {
+                    return fIsOpenForRead_;
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {

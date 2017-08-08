@@ -33,6 +33,16 @@ namespace Stroika {
                 {
                     return false; // @todo - COULD be seekable if underlying fRealIn_ was!!!
                 }
+                virtual void CloseRead () override
+                {
+                    Require (IsOpenRead ());
+                    fRealIn_.Close ();
+                    Assert (fRealIn_ == nullptr);
+                }
+                virtual bool IsOpenRead () const
+                {
+                    return fRealIn_ != nullptr;
+                }
                 virtual SeekOffsetType GetReadOffset () const override
                 {
                     RequireNotReached ();

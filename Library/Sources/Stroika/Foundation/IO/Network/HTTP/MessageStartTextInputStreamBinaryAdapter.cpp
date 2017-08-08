@@ -44,6 +44,16 @@ protected:
     {
         return true;
     }
+    virtual void CloseRead () override
+    {
+        Require (IsOpenRead ());
+        fSource_.Close ();
+        Assert (fSource_ == nullptr);
+    }
+    virtual bool IsOpenRead () const
+    {
+        return fSource_ != nullptr;
+    }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));

@@ -21,12 +21,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   https://stroika.atlassian.net/browse/STK-586
- *              Should add Close () method. Any subsequent calls to this stream - would fail?
- *
- *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
- *              have flush/close allowed, and anything else generate an assert error?
- *
  *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
  *              and be safely atomic (atomic stuff only an lssue for 'Synchronized' stream and could probably just
  *              make both calls inside ITS Synchronized lock?).
@@ -201,23 +195,50 @@ namespace Stroika {
                 nonvirtual Ptr& operator= (const Ptr&) = default;
                 nonvirtual Ptr& operator= (Ptr&&) = default;
 
-            protected:
+            public:
                 /**
-                 *  \brief protected access to underlying stream smart pointer
+                 *  Put the input stream in a state where it cannot be read from anymore.
+                 *  If argument 'reset' is true, this also clears the smart pointer (calls Stream<>::reset()).
+                 *
+                 *  It is generally unneeded to ever call Close () - as streams are closed automatically when the final
+                 *  reference to them is released (smartptr).
+                 *
+                 *  But - this can be handy to signal to the reader from the stream (how this works depends on subtype) - that there
+                 *  will be no more reading done.
+                 *
+                 *  \note Most calls on an InputStream after it is closed are illegal, and result in Require () errors. It is up
+                 *        to the caller/user of the shared output streams to assure they dont use them after being closed. Note - if that
+                 *        sounds hard its not: it naturally falls out of normal usage.
+                 *
+                 *        The rationale is just that I can think of no useful case where a caller might want to allow writing after close, and
+                 *        have that transalted into an exception, and this choice is more performant (and could be reversed more easily
+                 *        than the opposite policy if I change my mind).
+                 *
+                 *  \note Close () - and IsOpen () are intentionally duplicated in InputStream () and OutputStream () classes. This is so
+                 *        you can close down the OutputStream side of an InputOutputStream, and leave open the InputStream side - so it sees EOF.
+                 *
+                 *  \note When a subtype stream (like BufferedInputStream) aggregates another stream, it is left to that subclass
+                 *        whether or not closing the top level stream also Closes the sub-stream. Typically, if the class designer intends
+                 *        you to think of the ownership as 'aggregation' - close of this stream will close any aggregated streams, but
+                 *        if this class is designed to 'reference' other streams, it will not close them.
+                 *
+                 *        See the stream documentation for that stream class to see how it handles Close.
+                 *
+                 *  \req IsOpen ()
                  */
-                nonvirtual _SharedIRep _GetSharedRep () const;
+                nonvirtual void Close () const;
+                nonvirtual void Close (bool reset);
 
-            protected:
+            public:
                 /**
-                 * \req *this != nullptr
+                 *  Return true, unless a call to Close () has been done on the underlying stream (not just Ptr).
+                 *
+                 *  \note InputStream and OutputStream (when mixed in InputOutputStream) have separate IsOpen/IsClosed flags, so you
+                 *        can call Close on the write side of the stream and still read from the InputStream side.
+                 *
+                 *  @see Close ()
                  */
-                nonvirtual const _IRep& _GetRepConstRef () const;
-
-            protected:
-                /**
-                 * \req *this != nullptr
-                 */
-                nonvirtual _IRep& _GetRepRWRef () const;
+                nonvirtual bool IsOpen () const;
 
             public:
                 /**
@@ -457,6 +478,24 @@ namespace Stroika {
                 template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
                 nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
                 nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
+
+            protected:
+                /**
+                *  \brief protected access to underlying stream smart pointer
+                */
+                nonvirtual _SharedIRep _GetSharedRep () const;
+
+            protected:
+                /**
+                * \req *this != nullptr
+                */
+                nonvirtual const _IRep& _GetRepConstRef () const;
+
+            protected:
+                /**
+                * \req *this != nullptr
+                */
+                nonvirtual _IRep& _GetRepRWRef () const;
             };
 
             template <>
@@ -493,6 +532,21 @@ namespace Stroika {
 
             public:
                 nonvirtual _IRep& operator= (const _IRep&) = delete;
+
+            public:
+                /**
+                 *  May (but typically not) called before destruction. If called, \req no other write or seek etc operations.
+                 *
+                 *  \note - 'Require (IsOpen()) automatically checked in Ptr wrappers for things like Read, so subclassers dont need to
+                 *          do that in implementing reps, but probably good docs/style todo in both places.'
+                 */
+                virtual void CloseRead () = 0;
+
+            public:
+                /**
+                 *  return true iff CloseRead () has not been called (cannot construct closed stream)
+                 */
+                virtual bool IsOpenRead () const = 0;
 
             public:
                 virtual SeekOffsetType GetReadOffset () const = 0;

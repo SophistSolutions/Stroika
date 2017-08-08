@@ -27,6 +27,8 @@ using namespace Stroika::Foundation::IO::Network;
  */
 class SocketStream::Rep_ : public InputOutputStream<Byte>::_IRep {
 public:
+    bool fOpenForRead_{true};
+    bool fOpenForWrite_{true};
     Rep_ (const ConnectionOrientedSocket::Ptr& sd)
         : InputOutputStream<Byte>::_IRep ()
         , fSD_ (sd)
@@ -39,13 +41,29 @@ public:
     virtual void CloseWrite () override
     {
         Require (IsOpenWrite ());
-        fSD_.Close ();
-        Assert (fSD_ == nullptr);
+        fSD_.Shutdown (Socket::ShutdownTarget::eWrites);
+        if (not fOpenForRead_) {
+            fSD_.Close ();
+            fSD_.reset ();
+        }
         Ensure (not IsOpenWrite ());
     }
     virtual bool IsOpenWrite () const override
     {
-        return fSD_ != nullptr;
+        return fOpenForWrite_;
+    }
+    virtual void CloseRead () override
+    {
+        Require (IsOpenRead ());
+        fSD_.Shutdown (Socket::ShutdownTarget::eReads);
+        if (not fOpenForWrite_) {
+            fSD_.Close ();
+            fSD_.reset ();
+        }
+    }
+    virtual bool IsOpenRead () const
+    {
+        return fOpenForRead_;
     }
     virtual SeekOffsetType GetReadOffset () const override
     {

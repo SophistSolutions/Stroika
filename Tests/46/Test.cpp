@@ -28,13 +28,13 @@ namespace {
         {
             {
                 MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New (nullptr, nullptr);
-                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
             }
             {
                 const char              kData[] = "1";
                 MemoryStream<Byte>::Ptr s       = MemoryStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kData)), reinterpret_cast<const Byte*> (std::end (kData)));
-                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
                 Byte result[100] = {0};
                 VerifyTestResult (s.Read (std::begin (result), std::end (result)) == 2);
@@ -57,12 +57,12 @@ namespace {
         {
             {
                 MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
-                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
             }
             {
                 MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
-                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
 
                 const Byte kData_[] = {3, 53, 43, 23, 3};
@@ -87,14 +87,14 @@ namespace {
         {
             {
                 MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
-                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
                 VerifyTestResult (static_cast<InputStream<Byte>::Ptr> (s).IsSeekable ());
                 VerifyTestResult (static_cast<OutputStream<Byte>::Ptr> (s).IsSeekable ());
             }
             {
                 MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
-                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s != nullptr);
 
                 const Byte kData_[] = {3, 53, 43, 23, 3};
                 s.Write (std::begin (kData_), std::end (kData_));
@@ -246,7 +246,7 @@ namespace {
                     for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
                         pipe.Write (i);
                     };
-                    pipe.CloseForWrites (); // critical or consumer hangs on final read
+                    pipe.CloseWrite (); // critical or consumer hangs on final read
                 },
                                                     Thread::eAutoStart);
                 Thread::WaitForDone ({consumer, producer});

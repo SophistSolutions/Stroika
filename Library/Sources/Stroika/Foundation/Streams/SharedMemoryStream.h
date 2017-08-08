@@ -37,7 +37,7 @@ namespace Stroika {
              *  attempts to seek or write more than will fit in RAM will fail (with an exception).
              *
              *  \note   SharedMemoryStream is suitable for synchonized reading and writing between two threads (producer / consumer pattern).
-             *          Reads will block at the end of the stream until some thread calls SharedMemoryStream><>::CloseForWrites ()
+             *          Reads will block at the end of the stream until some thread calls SharedMemoryStream><>::CloseWrite ()
              *
              *          @see MemoryStream
              *
@@ -62,7 +62,7 @@ namespace Stroika {
              *                  for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
              *                      pipe.Write (i);
              *                  };
-             *                  pipe.CloseForWrites ();    // critical or consumer hangs on final read
+             *                  pipe.CloseWrite ();    // critical or consumer hangs on final read
              *              },
              *              Thread::eAutoStart);
              *           Thread::WaitForDone ({consumer, producer});
@@ -121,13 +121,10 @@ namespace Stroika {
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
             public:
-                /**
-                 *  Any subsequent writes or SeekWrite() calls are a bug/caller error, though its legal (and common) to continue reading.
-                 *
-                 *  \note Since its illegal to destory a SharedMemoryStream while there are pending reads (or writes for that matter),
-                 *        it is typically Required to call this before destroying a SharedMemoryStream.
-                 */
-                nonvirtual void CloseForWrites ();
+                [[deprecated ("USE CloseWrite () - deprecated v2.0a213")]] void CloseForWrites ()
+                {
+                    CloseWrite (false);
+                }
 
             public:
                 /**

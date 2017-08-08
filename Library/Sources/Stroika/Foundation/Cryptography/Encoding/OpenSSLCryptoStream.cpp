@@ -116,6 +116,17 @@ public:
     {
         return false;
     }
+    virtual void CloseRead () override
+    {
+        Require (IsOpenRead ());
+        fRealIn_.Close ();
+        Assert (fRealIn_ == nullptr);
+        Ensure (not IsOpenRead ());
+    }
+    virtual bool IsOpenRead () const
+    {
+        return fRealIn_ != nullptr;
+    }
     virtual SeekOffsetType GetReadOffset () const override
     {
         RequireNotReached ();

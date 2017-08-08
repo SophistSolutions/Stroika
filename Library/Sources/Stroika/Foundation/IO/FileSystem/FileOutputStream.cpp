@@ -73,7 +73,7 @@ public:
     ~Rep_ ()
     {
         IgnoreExceptionsForCall (Flush ()); // for fFlushFlag == FlushFlag::eToDisk
-        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction) {
+        if (fAdoptFDPolicy_ == AdoptFDPolicy::eCloseOnDestruction and IsOpenWrite ()) {
 #if qPlatform_Windows
             ::_close (fFD_);
 #else

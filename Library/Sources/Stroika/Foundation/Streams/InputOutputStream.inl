@@ -53,16 +53,42 @@ namespace Stroika {
                 return *reinterpret_cast<_IRep*> (&InputStream<ELEMENT_TYPE>::Ptr::_GetRepRWRef ()); // faster than dynamic_cast, and if not equivilent, add caching later here
             }
             template <typename ELEMENT_TYPE>
-            inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::empty () const
-            {
-                Ensure (InputStream<ELEMENT_TYPE>::Ptr::empty () == OutputStream<ELEMENT_TYPE>::Ptr::empty ());
-                return InputStream<ELEMENT_TYPE>::Ptr::empty ();
-            }
-            template <typename ELEMENT_TYPE>
             inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::IsSeekable () const
             {
                 Require (InputStream<ELEMENT_TYPE>::Ptr::IsSeekable () == OutputStream<ELEMENT_TYPE>::Ptr::IsSeekable ());
                 return InputStream<ELEMENT_TYPE>::Ptr::IsSeekable ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline void InputOutputStream<ELEMENT_TYPE>::Ptr::Close () const
+            {
+                CloseRead ();
+                CloseWrite ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline void InputOutputStream<ELEMENT_TYPE>::Ptr::Close (bool reset)
+            {
+                CloseRead (reset);
+                CloseWrite (reset);
+            }
+            template <typename ELEMENT_TYPE>
+            inline void InputOutputStream<ELEMENT_TYPE>::Ptr::CloseRead () const
+            {
+                InputStream<ELEMENT_TYPE>::Ptr::Close ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline void InputOutputStream<ELEMENT_TYPE>::Ptr::CloseRead (bool reset)
+            {
+                InputStream<ELEMENT_TYPE>::Ptr::Close (reset);
+            }
+            template <typename ELEMENT_TYPE>
+            inline void InputOutputStream<ELEMENT_TYPE>::Ptr::CloseWrite () const
+            {
+                OutputStream<ELEMENT_TYPE>::Ptr::Close ();
+            }
+            template <typename ELEMENT_TYPE>
+            inline void InputOutputStream<ELEMENT_TYPE>::Ptr::CloseWrite (bool reset)
+            {
+                OutputStream<ELEMENT_TYPE>::Ptr::Close (reset);
             }
             template <typename ELEMENT_TYPE>
             inline SeekOffsetType InputOutputStream<ELEMENT_TYPE>::Ptr::GetReadOffset () const

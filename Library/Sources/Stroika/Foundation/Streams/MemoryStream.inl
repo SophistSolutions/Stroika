@@ -27,7 +27,8 @@ namespace Stroika {
                 using ElementType = ELEMENT_TYPE;
 
             private:
-                bool fOpen_{true};
+                bool fOpenRead_{true};
+                bool fOpenWrite_{true};
 
             public:
                 Rep_ ()
@@ -51,11 +52,20 @@ namespace Stroika {
                 virtual void CloseWrite () override
                 {
                     Require (IsOpenWrite ());
-                    fOpen_ = false;
+                    fOpenWrite_ = false;
                 }
                 virtual bool IsOpenWrite () const override
                 {
-                    return fOpen_;
+                    return fOpenWrite_;
+                }
+                virtual void CloseRead () override
+                {
+                    Require (IsOpenRead ());
+                    fOpenRead_ = false;
+                }
+                virtual bool IsOpenRead () const
+                {
+                    return fOpenRead_;
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {

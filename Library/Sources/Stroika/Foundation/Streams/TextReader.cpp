@@ -40,6 +40,16 @@ protected:
     {
         return false; // but many subclasses implement seekability
     }
+    virtual void CloseRead () override
+    {
+        Require (IsOpenRead ());
+        fSource_.Close ();
+        Assert (fSource_ == nullptr);
+    }
+    virtual bool IsOpenRead () const
+    {
+        return fSource_ != nullptr;
+    }
 
 // at least on windows, fCharCoverter with utf8 converter appeared to not mutate the mbState. Just reconverting
 // whole thing worked, so try that for now... Slow/inefficeint, but at least it works
@@ -280,10 +290,22 @@ public:
     {
     }
 
+private:
+    bool fIsOpen_{true};
+
 protected:
     virtual bool IsSeekable () const override
     {
         return true;
+    }
+    virtual void CloseRead () override
+    {
+        Require (IsOpenRead ());
+        fIsOpen_ = false;
+    }
+    virtual bool IsOpenRead () const
+    {
+        return fIsOpen_;
     }
     virtual size_t Read (Character* intoStart, Character* intoEnd) override
     {

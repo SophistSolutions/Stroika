@@ -113,9 +113,9 @@ namespace {
                 Execution::Sleep (1);
                 VerifyTestResult (myStdOut.ReadNonBlocking ().IsMissing ()); // sb no data available, but NOT EOF
                 myStdIn.Write (k16MB_);
-                myStdIn.CloseForWrites (); // so cat process can finish
+                myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();
-                myStdOut.CloseForWrites (); // one process done, no more writes to this stream
+                myStdOut.CloseWrite (); // one process done, no more writes to this stream
                 VerifyTestResult (myStdOut.ReadAll () == k16MB_);
             }
         }

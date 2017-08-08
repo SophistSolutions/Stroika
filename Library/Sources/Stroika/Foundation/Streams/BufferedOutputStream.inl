@@ -67,7 +67,6 @@ namespace Stroika {
                     fAborted_ = true; // for debug sake track this
                     fBuffer_.clear ();
                 }
-                //
                 virtual bool IsSeekable () const override
                 {
                     return false; // @todo - COULD be seekable if underlying fRealOut_ was!!!

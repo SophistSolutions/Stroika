@@ -65,6 +65,17 @@ namespace {
                 // for now - KISS
                 return false; // SHOULD allow seekable IFF src is seekable
             }
+            virtual void CloseRead () override
+            {
+                Require (IsOpenRead ());
+                fInStream_.Close ();
+                Assert (fInStream_ == nullptr);
+                Ensure (not IsOpenRead ());
+            }
+            virtual bool IsOpenRead () const
+            {
+                return fInStream_ != nullptr;
+            }
             virtual SeekOffsetType GetReadOffset () const override
             {
                 return _fSeekOffset;
