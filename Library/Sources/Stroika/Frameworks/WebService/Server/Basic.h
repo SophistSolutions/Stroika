@@ -32,6 +32,7 @@ namespace Stroika {
                 using namespace Stroika::Foundation;
 
                 using Characters::String;
+                using Containers::Mapping;
                 using Containers::Sequence;
                 using Containers::Set;
                 using Memory::Optional;
