@@ -37,10 +37,10 @@ namespace Stroika {
                 namespace VariantValue {
 
 /*
-                     ********************************************************************************
-                     **************** WebService::Server::VariantValue::mkRequestHandler ************
-                     ********************************************************************************
-                     */
+                    ********************************************************************************
+                    **************** WebService::Server::VariantValue::mkRequestHandler ************
+                    ********************************************************************************
+                    */
 #if 0
                     namespace {
                         template <typename T, typename... REST_IN_ARGS>
@@ -123,7 +123,7 @@ namespace Stroika {
                             }
                             //  tuple<IN_ARGS...> junk;
 
-                            save_it_for_later<OUT_ARG, IN_ARGS...> aaa{objVarMapper, vvs, f};
+                            save_it_for_later<OUT_ARG, IN_ARGS...> aaa{ objVarMapper, vvs, f };
 
                             //tuple<IN_ARGS...> args2Forward = ConvertVariantValuesToTypes_ (objVarMapper, vvs, std::forward<IN_ARGS...> (junk)...);
                             //tuple<IN_ARGS...> args2Forward = std::apply (ConvertVariantValuesToTypes_, tuple_cat (objVarMapper, vvs, std::forward<IN_ARGS> (junk)...));
@@ -141,6 +141,26 @@ namespace Stroika {
                         };
                     }
 #endif
+
+                    //template <typename ...OUT_ARG>
+                    template <typename OUT_ARG>
+                    //void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<OUT_ARG...> (void)>& f)
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARG (void)>& f)
+                    {
+                        //using commonT = std::common_type_t<OUT_ARG...>;
+                        //WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<commonT> (f ())));
+                        WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<OUT_ARG> (f ())));
+                    }
+                    inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<void(void)>& f)
+                    {
+                        f ();
+                        WriteResponse (response, webServiceDescription, VariantValue{});
+                    }
+                    template <typename... OUT_ARG, typename... IN_ARGS>
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<OUT_ARG...> (void)>& f, IN_ARGS... inArgs)
+                    {
+                        CallFAndWriteConvertedResponse (response, webServiceDescription, objVarMapper, bind (f, std::forward<IN_ARGS> (inArgs)...));
+                    }
 
                     template <typename OUT_ARGS>
                     OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (void)>& f)
@@ -270,7 +290,7 @@ namespace Stroika {
                     {
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f ()));
+                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f);
                         };
                     }
                 }

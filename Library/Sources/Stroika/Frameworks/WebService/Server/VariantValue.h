@@ -98,6 +98,11 @@ namespace Stroika {
 
                     /**
                      */
+                    template <typename... OUT_ARG, typename... IN_ARGS>
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<OUT_ARG...> (void)>& f, IN_ARGS... inArgs);
+
+                    /**
+                     */
                     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
                     /**
