@@ -142,13 +142,9 @@ namespace Stroika {
                     }
 #endif
 
-                    //template <typename ...RETURN_TYPE>
                     template <typename RETURN_TYPE>
-                    //void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<RETURN_TYPE...> (void)>& f)
                     void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
                     {
-                        //using commonT = std::common_type_t<RETURN_TYPE...>;
-                        //WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<commonT> (f ())));
                         WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<RETURN_TYPE> (f ())));
                     }
                     inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<void(void)>& f)
@@ -156,8 +152,8 @@ namespace Stroika {
                         f ();
                         WriteResponse (response, webServiceDescription, VariantValue{});
                     }
-                    template <typename... RETURN_TYPE, typename... IN_ARGS>
-                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<RETURN_TYPE...> (void)>& f, IN_ARGS... inArgs)
+                    template <typename RETURN_TYPE, typename... IN_ARGS>
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
                     {
                         CallFAndWriteConvertedResponse (response, webServiceDescription, objVarMapper, bind (f, std::forward<IN_ARGS> (inArgs)...));
                     }
@@ -223,7 +219,7 @@ namespace Stroika {
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
-                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]))));
+                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
                         };
                     }
                     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
@@ -239,7 +235,7 @@ namespace Stroika {
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
-                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]))));
+                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]));
                         };
                     }
                     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
@@ -255,7 +251,7 @@ namespace Stroika {
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
-                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]))));
+                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]));
                         };
                     }
                     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
@@ -271,7 +267,7 @@ namespace Stroika {
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
-                            WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3]))));
+                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3]));
                         };
                     }
 

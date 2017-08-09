@@ -73,8 +73,8 @@ namespace Stroika {
                      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesBody - optionally restricting which params we grab from URL/body.
                      *
                      *  If parameters given in both places, use the BODY -provided value.
-					 *
-					 *	@todo - Rename losing _NEW - once some time has passed (around v2.0a213) - will be deprecated
+                     *
+                     *  @todo - Rename losing _NEW - once some time has passed (around v2.0a213) - will be deprecated
                      */
                     Mapping<String, VariantValue> PickoutParamValues_NEW (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
 
@@ -101,8 +101,8 @@ namespace Stroika {
 
                     /**
                      */
-                    template <typename... RETURN_TYPE, typename... IN_ARGS>
-                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<RETURN_TYPE...> (void)>& f, IN_ARGS... inArgs);
+                    template <typename RETURN_TYPE, typename... IN_ARGS>
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs);
 
                     /**
                      */
