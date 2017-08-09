@@ -207,7 +207,7 @@ namespace Stroika {
 
                     // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
                     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f)
                     {
                         using namespace Containers;
                         return [=](WebServer::Message* m) {
