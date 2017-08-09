@@ -46,18 +46,28 @@ void WebService::Server::ExpectedMethod (const Request* request, const WebServic
  ************************ WebService::Server::WriteDocsPage *********************
  ********************************************************************************
  */
-void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const String& h1Text)
+const String WebService::Server::DocsOptions::kDefaultCSSSection =
+    L"div.mainDocs {margin-left: .3in; margin-right: .3in; }"
+    L"div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }"
+    L"div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}"
+    L"div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }";
+
+void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
 {
     response->writeln (L"<html>");
     response->writeln (L"<style type=\"text/css\">");
-    response->writeln (L"div.mainDocs {margin-left: .3in; margin-right: .3in; }");
-    response->writeln (L"div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }");
-    response->writeln (L"div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}");
-    response->writeln (L"div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }");
+    response->writeln (docsOptions.fCSSSection);
     response->writeln (L"</style>");
     response->writeln (L"<body>");
-    response->printf (L"<h1>%s</h1>", h1Text.c_str ());
+    response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.c_str ());
     response->writeln (L"<ul>");
+    auto substVars = [=](const String& origStr) {
+        String str = origStr;
+        for (auto i : docsOptions.fVariables2Substitute) {
+            str = str.ReplaceAll ("{{" + i.fKey + L"}}", i.fValue);
+        }
+        return str;
+    };
     auto writeDocs = [=](const String& methodName, const String& docs, const String& exampleCall) {
         response->writeln (L"<li>");
         response->printf (L"<a href=\"/%s\">%s</a>", methodName.c_str (), methodName.c_str ());
@@ -68,11 +78,11 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     for (WebServiceMethodDescription i : operations) {
         StringBuilder tmpDocs;
         if (i.fDetailedDocs) {
-            i.fDetailedDocs->Apply ([&](const String& i) { tmpDocs += L"<div>" + i + L"</div>"; });
+            i.fDetailedDocs->Apply ([&](const String& i) { tmpDocs += L"<div>" + substVars (i) + L"</div>"; });
         }
         StringBuilder tmpCurl;
         if (i.fCurlExample) {
-            i.fCurlExample->Apply ([&](const String& i) { tmpCurl += L"<div>" + i + L"</div>"; });
+            i.fCurlExample->Apply ([&](const String& i) { tmpCurl += L"<div>" + substVars (i) + L"</div>"; });
         }
         writeDocs (i.fOperation, tmpDocs.c_str (), tmpCurl.c_str ());
     }

@@ -42,7 +42,13 @@ namespace Stroika {
                 void ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage);
                 void ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription);
 
-                void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const String& h1Text = L"Operations");
+                struct DocsOptions {
+                    String fH1Text = L"Operations";
+                    Mapping<String, String> fVariables2Substitute;
+                    String              fCSSSection = kDefaultCSSSection;
+                    static const String kDefaultCSSSection;
+                };
+                void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = DocsOptions{});
             }
         }
     }
