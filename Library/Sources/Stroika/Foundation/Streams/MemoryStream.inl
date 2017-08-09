@@ -72,6 +72,7 @@ namespace Stroika {
                     RequireNotNull (intoStart);
                     RequireNotNull (intoEnd);
                     Require (intoStart < intoEnd);
+                    Require (IsOpenRead ());
                     size_t                                             nRequested = intoEnd - intoStart;
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
@@ -91,12 +92,14 @@ namespace Stroika {
                 {
                     Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fData_.end () - fReadCursor_);
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
                     Require (start != nullptr or start == end);
                     Require (end != nullptr or start == end);
+                    Require (IsOpenWrite ());
                     if (start != end) {
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                         size_t                                             roomLeft     = fData_.end () - fWriteCursor_;
@@ -123,16 +126,19 @@ namespace Stroika {
                 }
                 virtual void Flush () override
                 {
+                    Require (IsOpenWrite ());
                     // nothing todo - write 'writes thru'
                 }
                 virtual SeekOffsetType GetReadOffset () const override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     return fReadCursor_ - fData_.begin ();
                 }
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     switch (whence) {
                         case Whence::eFromStart: {
                             if (offset < 0) {
@@ -175,11 +181,13 @@ namespace Stroika {
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenWrite ());
                     return fWriteCursor_ - fData_.begin ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenWrite ());
                     switch (whence) {
                         case Whence::eFromStart: {
                             if (offset < 0) {

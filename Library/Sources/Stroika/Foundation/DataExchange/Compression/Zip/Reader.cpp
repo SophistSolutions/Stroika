@@ -78,15 +78,18 @@ namespace {
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
+                Require (IsOpenRead ());
                 return _fSeekOffset;
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 RequireNotReached ();
+                Require (IsOpenRead ());
                 return SeekOffsetType{};
             }
             nonvirtual bool _AssureInputAvailableReturnTrueIfAtEOF ()
             {
+                Require (IsOpenRead ());
                 if (fZStream_.avail_in == 0) {
                     Assert (NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
                     fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (begin (fInBuf_), end (fInBuf_)));
@@ -109,6 +112,7 @@ namespace {
             virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require (intoStart < intoEnd); // API rule for streams
+                Require (IsOpenRead ());
             Again:
                 bool isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
 
@@ -140,6 +144,7 @@ namespace {
             virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+                Require (IsOpenRead ());
 // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
 #if 0
                 if (intoStart == nullptr) {
@@ -214,6 +219,7 @@ namespace {
             virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
             {
                 Require (intoStart < intoEnd); // API rule for streams
+                Require (IsOpenRead ());
             Again:
                 bool      isAtSrcEOF = _AssureInputAvailableReturnTrueIfAtEOF ();
                 ptrdiff_t outBufSize = intoEnd - intoStart;
@@ -242,6 +248,7 @@ namespace {
             {
                 // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - incomplete IMPL
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+                Require (IsOpenRead ());
                 WeakAssert (false);
                 // @todo - FIX TO REALLY CHECK
                 return {};

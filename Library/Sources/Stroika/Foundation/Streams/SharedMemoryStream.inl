@@ -75,6 +75,7 @@ namespace Stroika {
                     RequireNotNull (intoStart);
                     RequireNotNull (intoEnd);
                     Require (intoStart < intoEnd);
+                    Require (IsOpenRead ());
                     size_t nRequested = intoEnd - intoStart;
                 //bool   mustWaitForData{false};    // dont think we need that cuz fMoreDataWaiter_ being set does same thing
 
@@ -106,6 +107,7 @@ namespace Stroika {
                 virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+                    Require (IsOpenRead ());
                     lock_guard<recursive_mutex> critSec{fMutex_};
                     size_t                      nDefinitelyAvail = fData_.end () - fReadCursor_;
                     if (nDefinitelyAvail > 0) {
@@ -122,7 +124,7 @@ namespace Stroika {
                 {
                     Require (start != nullptr or start == end);
                     Require (end != nullptr or start == end);
-                    Require (not fClosedForWrites_);
+                    Require (IsOpenWrite ());
                     if (start != end) {
                         lock_guard<recursive_mutex> critSec{fMutex_};
                         size_t                      roomLeft     = fData_.end () - fWriteCursor_;
@@ -155,11 +157,13 @@ namespace Stroika {
                 virtual SeekOffsetType GetReadOffset () const override
                 {
                     lock_guard<recursive_mutex> critSec{fMutex_};
+                    Require (IsOpenRead ());
                     return fReadCursor_ - fData_.begin ();
                 }
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<recursive_mutex> critSec{fMutex_};
+                    Require (IsOpenRead ());
                     fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                     switch (whence) {
                         case Whence::eFromStart: {
@@ -203,12 +207,13 @@ namespace Stroika {
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     lock_guard<recursive_mutex> critSec{fMutex_};
+                    Require (IsOpenWrite ());
                     return fWriteCursor_ - fData_.begin ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<recursive_mutex> critSec{fMutex_};
-                    Require (not fClosedForWrites_);
+                    Require (IsOpenWrite ());
                     fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                     switch (whence) {
                         case Whence::eFromStart: {

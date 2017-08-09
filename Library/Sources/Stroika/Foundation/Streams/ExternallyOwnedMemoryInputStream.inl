@@ -58,6 +58,7 @@ namespace Stroika {
                     RequireNotNull (intoStart);
                     RequireNotNull (intoEnd);
                     Require (intoStart < intoEnd);
+                    Require (IsOpenRead ());
                     size_t                                             nRequested = intoEnd - intoStart;
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
@@ -74,16 +75,19 @@ namespace Stroika {
                 virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fEnd_ - fCursor_);
                 }
                 virtual SeekOffsetType GetReadOffset () const override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     return fCursor_ - fStart_;
                 }
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     switch (whence) {
                         case Whence::eFromStart: {
                             if (offset < 0) {

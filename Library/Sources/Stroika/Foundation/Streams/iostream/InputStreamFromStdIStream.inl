@@ -74,6 +74,7 @@ namespace Stroika {
                         Require (intoStart < intoEnd);
 
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                        Require (IsOpenRead ());
                         if (fOriginalStream_.eof ()) {
                             return 0;
                         }
@@ -90,6 +91,7 @@ namespace Stroika {
                     }
                     virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                     {
+                        Require (IsOpenRead ());
                         std::streamsize sz = fOriginalStream_.rdbuf ()->in_avail ();
                         // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
                         if (sz == 0) {
@@ -104,11 +106,13 @@ namespace Stroika {
                     {
                         // instead of tellg () - avoids issue with EOF where fail bit set???
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                        Require (IsOpenRead ());
                         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
                     }
                     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                     {
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                        Require (IsOpenRead ());
                         switch (whence) {
                             case Whence::eFromStart:
                                 fOriginalStream_.seekg (offset, ios::beg);

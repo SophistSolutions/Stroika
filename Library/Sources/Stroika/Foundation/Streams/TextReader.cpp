@@ -61,6 +61,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+        Require (IsOpenRead ());
 
         /*
          *  Try to minimize # of calls to underlying fSource binary stream per call this this Read () - efficiency.
@@ -131,6 +132,7 @@ protected:
     {
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        Require (IsOpenRead ());
         WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
         return {};
@@ -139,12 +141,14 @@ protected:
     virtual SeekOffsetType GetReadOffset () const override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (IsOpenRead ());
         return fOffset_;
     }
 
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (IsOpenRead ());
         AssertNotReached ();
         return fOffset_;
     }
@@ -187,6 +191,7 @@ protected:
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (IsOpenRead ());
 
         // if already cached, return from cache. If not already cached, add to cache
         if (fOffset_ < fCache_.size ()) {
@@ -223,6 +228,7 @@ protected:
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) {
@@ -311,7 +317,8 @@ protected:
     {
         Require (intoEnd - intoStart >= 1);
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        Character*                                         outI = intoStart;
+        Require (IsOpenRead ());
+        Character* outI = intoStart;
         if (fPutBack_) {
             *outI = *fPutBack_;
             fPutBack_.clear ();
@@ -334,6 +341,7 @@ protected:
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        Require (IsOpenRead ());
         if (intoStart == nullptr) {
             // Don't read (so dont update fOffset_) - just see how much available
             Traversal::Iterator<Character> srcIt = fSrcIter_;
@@ -352,6 +360,7 @@ protected:
     virtual SeekOffsetType GetReadOffset () const override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (IsOpenRead ());
         if (fPutBack_) {
             Assert (fOffset_ >= 1);
             return fOffset_ - 1;
@@ -360,6 +369,7 @@ protected:
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
+        Require (IsOpenRead ());
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         size_t                                             sourceLen = fSource_.GetLength ();
         SeekOffsetType                                     newOffset{};

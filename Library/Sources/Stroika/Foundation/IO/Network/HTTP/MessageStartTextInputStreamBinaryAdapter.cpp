@@ -58,6 +58,7 @@ protected:
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+        Require (IsOpenRead ());
 
         if (intoStart == nullptr) {
             return 0;
@@ -106,6 +107,7 @@ protected:
     {
         // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API -- INCOMPLETE IMPL
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        Require (IsOpenRead ());
         WeakAssert (false);
         // @todo - FIX TO REALLY CHECK
         return {};
@@ -113,11 +115,13 @@ protected:
     virtual SeekOffsetType GetReadOffset () const override
     {
         auto critSec{make_unique_lock (fCriticalSection_)};
+        Require (IsOpenRead ());
         return fOffset_;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         auto critSec{make_unique_lock (fCriticalSection_)};
+        Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) {

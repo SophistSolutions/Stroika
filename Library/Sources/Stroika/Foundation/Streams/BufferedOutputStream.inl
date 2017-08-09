@@ -85,16 +85,19 @@ namespace Stroika {
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     RequireNotReached ();
+                    Require (IsOpenWrite ());
                     return 0;
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     RequireNotReached ();
+                    Require (IsOpenWrite ());
                     return 0;
                 }
                 virtual void Flush () override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenWrite ());
                     Flush_ ();
                 }
                 // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
@@ -103,6 +106,7 @@ namespace Stroika {
                 {
                     Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
                     Require (not fAborted_);
+                    Require (IsOpenWrite ());
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     /*
                      * Minimize the number of writes at the possible cost of extra copying.

@@ -46,21 +46,25 @@ namespace Stroika {
                 virtual SeekOffsetType GetReadOffset () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenRead ());
                     return BASE_REP_TYPE::GetReadOffset ();
                 }
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenRead ());
                     return BASE_REP_TYPE::SeekRead (whence, offset);
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenRead ());
                     return BASE_REP_TYPE::Read (intoStart, intoEnd);
                 }
                 virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenRead ());
                     return BASE_REP_TYPE::ReadNonBlocking (intoStart, intoEnd);
                 }
                 virtual void CloseWrite () override
@@ -76,21 +80,25 @@ namespace Stroika {
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenWrite ());
                     return BASE_REP_TYPE::GetWriteOffset ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenWrite ());
                     return BASE_REP_TYPE::SeekWrite (whence, offset);
                 }
                 virtual void Write (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenWrite ());
                     BASE_REP_TYPE::Write (start, end);
                 }
                 virtual void Flush () override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
+                    Require (IsOpenWrite ());
                     BASE_REP_TYPE::Flush ();
                 }
 

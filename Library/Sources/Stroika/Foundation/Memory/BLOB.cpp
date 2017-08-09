@@ -234,11 +234,14 @@ namespace {
             }
             virtual SeekOffsetType GetReadOffset () const override
             {
+                Require (IsOpenRead ());
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fCur - fStart;
             }
             virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                Require (IsOpenRead ());
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) {

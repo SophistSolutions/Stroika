@@ -130,11 +130,13 @@ public:
     virtual SeekOffsetType GetReadOffset () const override
     {
         RequireNotReached ();
+        Require (IsOpenRead ());
         return 0;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         RequireNotReached ();
+        Require (IsOpenRead ());
         return 0;
     }
     virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
@@ -146,6 +148,7 @@ public:
          */
         Require (intoStart < intoEnd);
         auto critSec{Execution::make_unique_lock (fCriticalSection_)};
+        Require (IsOpenRead ());
         if (fOutBufStart_ == fOutBufEnd_) {
             /*
              *  Then pull from 'real in' stream until we have reach EOF there, or until we have some bytes to output
@@ -187,6 +190,7 @@ public:
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         auto critSec{Execution::make_unique_lock (fCriticalSection_)};
+        Require (IsOpenRead ());
         // advance fOutBufStart_ if possible, and then we know if there is upstream data, and can use _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
         if (fOutBufStart_ == fOutBufEnd_) {
             Byte toDecryptBuf[kInBufSize_];
@@ -267,11 +271,13 @@ public:
     virtual SeekOffsetType GetWriteOffset () const override
     {
         RequireNotReached ();
+        Require (IsOpenWrite ());
         return 0;
     }
     virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         RequireNotReached ();
+        Require (IsOpenWrite ());
         return 0;
     }
     // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
@@ -279,6 +285,7 @@ public:
     virtual void Write (const Byte* start, const Byte* end) override
     {
         Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
+        Require (IsOpenWrite ());
         Memory::SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (_GetMinOutBufSize (end - start));
         auto   critSec{Execution::make_unique_lock (fCriticalSection_)};
         size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
@@ -288,6 +295,7 @@ public:
 
     virtual void Flush () override
     {
+        Require (IsOpenWrite ());
         Byte   outBuf[EVP_MAX_BLOCK_LENGTH];
         size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
         Assert (nBytesInOutBuf < sizeof (outBuf));

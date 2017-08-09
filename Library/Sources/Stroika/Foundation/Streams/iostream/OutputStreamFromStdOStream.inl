@@ -58,11 +58,13 @@ namespace Stroika {
                     {
                         // instead of tellg () - avoids issue with EOF where fail bit set???
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                        Require (IsOpenWrite ());
                         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::out);
                     }
                     virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                     {
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                        Require (IsOpenWrite ());
                         switch (whence) {
                             case Whence::eFromStart:
                                 fOriginalStream_.seekp (offset, ios::beg);
@@ -80,6 +82,7 @@ namespace Stroika {
                     {
                         Require (start != nullptr or start == end);
                         Require (end != nullptr or start == end);
+                        Require (IsOpenWrite ());
 
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 
@@ -92,6 +95,7 @@ namespace Stroika {
                     virtual void Flush () override
                     {
                         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                        Require (IsOpenWrite ());
                         fOriginalStream_.flush ();
                         if (fOriginalStream_.fail ()) {
                             Execution::Throw (Execution::StringException (Characters::String_Constant (L"Failed to flush ostream")));

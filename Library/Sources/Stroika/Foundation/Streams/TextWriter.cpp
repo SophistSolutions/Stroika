@@ -58,15 +58,18 @@ protected:
     virtual SeekOffsetType GetWriteOffset () const override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return 0;
     }
     virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return 0;
     }
     virtual void Write (const Character* start, const Character* end) override
     {
+        Require (IsOpenWrite ());
         const wchar_t* sc = CVT_CHARACTER_2_wchar_t (start);
         const wchar_t* ec = CVT_CHARACTER_2_wchar_t (end);
         const wchar_t* pc = sc;
@@ -90,6 +93,7 @@ protected:
     }
     virtual void Flush () override
     {
+        Require (IsOpenWrite ());
         // NYI
     }
 
@@ -128,21 +132,25 @@ protected:
     virtual SeekOffsetType GetWriteOffset () const override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return 0;
     }
     virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return 0;
     }
     virtual void Write (const Character* start, const Character* end) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (IsOpenWrite ());
         _fSource.Write (reinterpret_cast<const Byte*> (start), reinterpret_cast<const Byte*> (end));
     }
     virtual void Flush () override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+        Require (IsOpenWrite ());
         _fSource.Flush ();
     }
 
@@ -174,12 +182,14 @@ protected:
     virtual SeekOffsetType GetWriteOffset () const override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return fOffset_;
     }
 
     virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return 0;
     }
 
@@ -211,12 +221,14 @@ protected:
     virtual SeekOffsetType GetWriteOffset () const override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return fOffset_;
     }
 
     virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         AssertNotImplemented ();
+        Require (IsOpenWrite ());
         return 0;
     }
 

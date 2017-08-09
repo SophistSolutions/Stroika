@@ -68,37 +68,46 @@ public:
     virtual SeekOffsetType GetReadOffset () const override
     {
         RequireNotReached (); // not seekable
+        Require (IsOpenRead ());
         return 0;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
         RequireNotReached (); // not seekable
+        Require (IsOpenRead ());
         return 0;
     }
     virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
     {
+        Require (IsOpenRead ());
         return fSD_.Read (intoStart, intoEnd);
     }
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
+        Require (IsOpenRead ());
+        Require (IsOpenWrite ());
         return fSD_.ReadNonBlocking (intoStart, intoEnd);
     }
     virtual SeekOffsetType GetWriteOffset () const override
     {
         RequireNotReached (); // not seekable
+        Require (IsOpenWrite ());
         return 0;
     }
     virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
     {
         RequireNotReached (); // not seekable
+        Require (IsOpenWrite ());
         return 0;
     }
     virtual void Write (const Byte* start, const Byte* end) override
     {
+        Require (IsOpenWrite ());
         fSD_.Write (start, end);
     }
     virtual void Flush () override
     {
+        Require (IsOpenWrite ());
         // socket has no flush API, so write must do the trick...
     }
 

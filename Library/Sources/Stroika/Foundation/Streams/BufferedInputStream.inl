@@ -46,22 +46,26 @@ namespace Stroika {
                 virtual SeekOffsetType GetReadOffset () const override
                 {
                     RequireNotReached ();
+                    Require (IsOpenRead ());
                     return 0;
                 }
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
                     RequireNotReached ();
+                    Require (IsOpenRead ());
                     return 0;
                 }
                 virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     return fRealIn_.Read (intoStart, intoEnd);
                 }
                 virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                 {
                     // easy todo while no real buffer implementation ;-)
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                    Require (IsOpenRead ());
                     return fRealIn_.ReadNonBlocking (intoStart, intoEnd);
                 }
 
