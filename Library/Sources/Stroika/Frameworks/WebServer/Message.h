@@ -58,6 +58,30 @@ namespace Stroika {
                 nonvirtual const Response* PeekResponse () const;
                 nonvirtual Response* PeekResponse ();
 
+            public:
+                /**
+                 *  \brief shorthand for "PeekRequest ()->GetURL ()"
+                 *
+                 *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
+                 */
+                nonvirtual URL GetRequestURL () const;
+
+            public:
+                /**
+                 *  \brief shorthand for "PeekRequest ()->GetHTTPMethod ()"
+                 *
+                 *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
+                 */
+                nonvirtual String GetRequestHTTPMethod () const;
+
+            public:
+                /**
+                 *  \brief shorthand for "PeekRequest ()->GetBody ()"
+                 *
+                 *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
+                 */
+                nonvirtual Memory::BLOB GetRequestBody ();
+
             private:
                 Memory::Optional<IO::Network::SocketAddress> fPeerAddress_;
                 Request                                      fRequest_;

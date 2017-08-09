@@ -51,6 +51,21 @@ namespace Stroika {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
                 return &fResponse_;
             }
+            inline URL Message::GetRequestURL () const
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fRequest_.GetURL ();
+            }
+            inline String Message::GetRequestHTTPMethod () const
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fRequest_.GetHTTPMethod ();
+            }
+            inline Memory::BLOB Message::GetRequestBody ()
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fRequest_.GetBody ();
+            }
         }
     }
 }
