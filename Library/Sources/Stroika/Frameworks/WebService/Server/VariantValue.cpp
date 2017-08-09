@@ -158,6 +158,11 @@ Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (con
  ***************** WebService::Server::VariantValue::WriteResponse **************
  ********************************************************************************
  */
+void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription)
+{
+    // nothing todo to write empty (void) response
+}
+
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
     Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::JSON_CT ()); // all we support for now

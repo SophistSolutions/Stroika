@@ -106,6 +106,7 @@ namespace Stroika {
 
                     /**
                      */
+                    void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription);
                     void WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue);
 
                     /**
@@ -133,6 +134,8 @@ namespace Stroika {
                      *
                      *  @todo REWRITE USING PickoutParamValues, and ApplyArgs (allowing intermeidate varsions 
                      */
+                    template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_COMBINED)>& f);
                     template <typename RETURN_TYPE, typename ARG_TYPE_0>
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f);
                     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>

@@ -143,22 +143,6 @@ namespace Stroika {
 #endif
 
                     template <typename RETURN_TYPE>
-                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
-                    {
-                        WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<RETURN_TYPE> (f ())));
-                    }
-                    inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<void(void)>& f)
-                    {
-                        f ();
-                        WriteResponse (response, webServiceDescription, VariantValue{});
-                    }
-                    template <typename RETURN_TYPE, typename... IN_ARGS>
-                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
-                    {
-                        CallFAndWriteConvertedResponse (response, webServiceDescription, objVarMapper, bind (f, std::forward<IN_ARGS> (inArgs)...));
-                    }
-
-                    template <typename RETURN_TYPE>
                     RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (void)>& f)
                     {
                         Require (paramNames.size () == 0);
@@ -205,7 +189,33 @@ namespace Stroika {
                         return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]), objVarMapper.ToObject<ARG_TYPE_3> (vvs[3])));
                     }
 
+                    template <typename RETURN_TYPE>
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
+                    {
+                        WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<RETURN_TYPE> (f ())));
+                    }
+                    inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<void(void)>& f)
+                    {
+                        f ();
+                        WriteResponse (response, webServiceDescription);
+                    }
+                    template <typename RETURN_TYPE, typename... IN_ARGS>
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
+                    {
+                        CallFAndWriteConvertedResponse (response, webServiceDescription, objVarMapper, bind (f, std::forward<IN_ARGS> (inArgs)...));
+                    }
+
                     // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
+                    template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
+                    {
+                        using namespace Containers;
+                        return [=](WebServer::Message* m) {
+                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
+                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_COMBINED> (allArgsAsVariantValue));
+                        };
+                    }
                     template <typename RETURN_TYPE, typename ARG_TYPE_0>
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
                     {
