@@ -111,16 +111,19 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
  */
 Sequence<DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, DataExchange::VariantValue>& paramValues)
 {
+    return OrderParamValues (paramNames, paramValues);
+#if 0
     Sequence<DataExchange::VariantValue> vvs;
     for (auto i : paramNames) {
         vvs += paramValues.LookupValue (i);
     }
     return vvs;
+#endif
 }
 
 Sequence<DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage)
 {
-    return PickoutParamValues (paramNames, GetWebServiceArgsAsVariantValue (request, fromInMessage).As<Mapping<String, DataExchange::VariantValue>> ());
+    return OrderParamValues (paramNames, GetWebServiceArgsAsVariantValue (request, fromInMessage).As<Mapping<String, DataExchange::VariantValue>> ());
 }
 
 /*
@@ -134,6 +137,20 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
     // body params take precedence, if they overlap
     PickoutParamValuesBody (request, namedBodyParams).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
     return result;
+}
+
+/*
+ ********************************************************************************
+ ************ WebService::Server::VariantValue::OrderParamValues ****************
+ ********************************************************************************
+ */
+Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, DataExchange::VariantValue>& paramValues)
+{
+    Sequence<DataExchange::VariantValue> vvs;
+    for (auto i : paramNames) {
+        vvs += paramValues.LookupValue (i);
+    }
+    return vvs;
 }
 
 /*

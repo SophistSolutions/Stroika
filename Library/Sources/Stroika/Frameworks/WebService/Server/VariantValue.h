@@ -66,19 +66,22 @@ namespace Stroika {
                      */
                     VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage = {});
 
-                    /**
-                     &&& considering deprecating these &&&
-                     */
-                    Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
-                    Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage = {});
+                    [[deprecated ("USE OrderParamValues - deprecated v2.0a213")]] Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
+                    [[deprecated ("USE PickoutParamValues_NEW - then lookup param names in mapping result, deprecated v2.0a213")]] Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage = {});
 
-                    //// NEW
                     /**
                      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesBody - optionally restricting which params we grab from URL/body.
                      *
                      *  If parameters given in both places, use the BODY -provided value.
+					 *
+					 *	@todo - Rename losing _NEW - once some time has passed (around v2.0a213) - will be deprecated
                      */
                     Mapping<String, VariantValue> PickoutParamValues_NEW (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
+
+                    /**
+                     *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).
+                     */
+                    Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
 
                     /**
                      *  \brief Apply the arguments in Mapping<String,VariantValue> in the order specified by paramNames, to function f, using objVariantMapper to transform them, and return the result
