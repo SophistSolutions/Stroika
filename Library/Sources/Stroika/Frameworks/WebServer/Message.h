@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
+#include "../../Foundation/IO/Network/URL.h"
 
 #include "Request.h"
 #include "Response.h"
@@ -23,6 +24,8 @@ namespace Stroika {
         namespace WebServer {
 
             using namespace Stroika::Foundation;
+
+            using IO::Network::URL;
 
             /**
              *  For now assume externally sycnhronized
