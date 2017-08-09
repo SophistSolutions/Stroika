@@ -84,33 +84,33 @@ namespace Stroika {
                         }
                     }
                     namespace {
-                        template <typename OUT_ARG, typename... Args>
+                        template <typename RETURN_TYPE, typename... Args>
                         struct save_it_for_later {
 
                             DataExchange::ObjectVariantMapper objVarMapper;
                             Sequence<VariantValue>            vvs;
 
-                            const function<OUT_ARG (Args...)>& f;
+                            const function<RETURN_TYPE (Args...)>& f;
 
                             std::tuple<Args...> params;
 
 
                             template <std::size_t... I>
-                            OUT_ARG call_func (std::index_sequence<I...>)
+                            RETURN_TYPE call_func (std::index_sequence<I...>)
                             {
                                 //return f (ConvertVariantValuesToTypes_ (objVarMapper, vvs, std::get<I> (params)...));
                             //  using T = decltype (std::get<I> (params)...);
                                 //using T = tuple_element_t<I, std::tuple<Args...>>;
                                 return f (objVarMapper.ToObject<tuple_element_t<I..., decltype(params)>> (vvs.Nth (I))...);
                             }
-                            OUT_ARG delayed_dispatch ()
+                            RETURN_TYPE delayed_dispatch ()
                             {
                                 return call_func (std::index_sequence_for<Args...>{});
                             }
                         };
                     }
-                    template <typename OUT_ARG, typename... IN_ARGS>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARG (IN_ARGS...)>& f)
+                    template <typename RETURN_TYPE, typename... IN_ARGS>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (IN_ARGS...)>& f)
                     {
                         return [=](WebServer::Message* m) {
                             using namespace Containers;
@@ -123,17 +123,17 @@ namespace Stroika {
                             }
                             //  tuple<IN_ARGS...> junk;
 
-                            save_it_for_later<OUT_ARG, IN_ARGS...> aaa{ objVarMapper, vvs, f };
+                            save_it_for_later<RETURN_TYPE, IN_ARGS...> aaa{ objVarMapper, vvs, f };
 
                             //tuple<IN_ARGS...> args2Forward = ConvertVariantValuesToTypes_ (objVarMapper, vvs, std::forward<IN_ARGS...> (junk)...);
                             //tuple<IN_ARGS...> args2Forward = std::apply (ConvertVariantValuesToTypes_, tuple_cat (objVarMapper, vvs, std::forward<IN_ARGS> (junk)...));
-                            //OUT_ARG           response2Send = f (std::forward<IN_ARGS> (args2Forward)...);
-                            OUT_ARG response2Send = aaa.delayed_dispatch ();
+                            //RETURN_TYPE           response2Send = f (std::forward<IN_ARGS> (args2Forward)...);
+                            RETURN_TYPE response2Send = aaa.delayed_dispatch ();
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (response2Send));
                         };
                     }
-                    template <typename OUT_ARGS, typename IN_ARGS>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
+                    template <typename RETURN_TYPE, typename IN_ARGS>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS)>& f)
                     {
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
@@ -142,34 +142,34 @@ namespace Stroika {
                     }
 #endif
 
-                    //template <typename ...OUT_ARG>
-                    template <typename OUT_ARG>
-                    //void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<OUT_ARG...> (void)>& f)
-                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARG (void)>& f)
+                    //template <typename ...RETURN_TYPE>
+                    template <typename RETURN_TYPE>
+                    //void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<RETURN_TYPE...> (void)>& f)
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
                     {
-                        //using commonT = std::common_type_t<OUT_ARG...>;
+                        //using commonT = std::common_type_t<RETURN_TYPE...>;
                         //WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<commonT> (f ())));
-                        WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<OUT_ARG> (f ())));
+                        WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<RETURN_TYPE> (f ())));
                     }
                     inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<void(void)>& f)
                     {
                         f ();
                         WriteResponse (response, webServiceDescription, VariantValue{});
                     }
-                    template <typename... OUT_ARG, typename... IN_ARGS>
-                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<OUT_ARG...> (void)>& f, IN_ARGS... inArgs)
+                    template <typename... RETURN_TYPE, typename... IN_ARGS>
+                    void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<std::common_type_t<RETURN_TYPE...> (void)>& f, IN_ARGS... inArgs)
                     {
                         CallFAndWriteConvertedResponse (response, webServiceDescription, objVarMapper, bind (f, std::forward<IN_ARGS> (inArgs)...));
                     }
 
-                    template <typename OUT_ARGS>
-                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (void)>& f)
+                    template <typename RETURN_TYPE>
+                    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (void)>& f)
                     {
                         Require (paramNames.size () == 0);
                         return f ();
                     }
-                    template <typename OUT_ARGS, typename ARG_TYPE_0>
-                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0>
+                    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
                     {
                         Require (paramNames.size () == 1);
                         Sequence<VariantValue> vvs;
@@ -178,8 +178,8 @@ namespace Stroika {
                         }
                         return f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
                     }
-                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1>
-                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
+                    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f)
                     {
                         Require (paramNames.size () == 2);
                         Sequence<VariantValue> vvs;
@@ -188,8 +188,8 @@ namespace Stroika {
                         }
                         return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1])));
                     }
-                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
-                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
+                    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
                     {
                         Require (paramNames.size () == 3);
                         Sequence<VariantValue> vvs;
@@ -198,8 +198,8 @@ namespace Stroika {
                         }
                         return objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2])));
                     }
-                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
-                    OUT_ARGS ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
+                    RETURN_TYPE ApplyArgs (const Mapping<String, VariantValue>& variantValueArgs, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
                     {
                         Require (paramNames.size () == 4);
                         Sequence<VariantValue> vvs;
@@ -210,8 +210,8 @@ namespace Stroika {
                     }
 
                     // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
-                    template <typename OUT_ARGS, typename ARG_TYPE_0>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0)>& f)
                     {
                         using namespace Containers;
                         Require (paramNames.size () == 1);
@@ -226,8 +226,8 @@ namespace Stroika {
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]))));
                         };
                     }
-                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1)>& f)
                     {
                         using namespace Containers;
                         Require (paramNames.size () == 2);
@@ -242,8 +242,8 @@ namespace Stroika {
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]))));
                         };
                     }
-                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2)>& f)
                     {
                         using namespace Containers;
                         Require (paramNames.size () == 3);
@@ -258,8 +258,8 @@ namespace Stroika {
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]), objVarMapper.ToObject<ARG_TYPE_1> (vvs[1]), objVarMapper.ToObject<ARG_TYPE_2> (vvs[2]))));
                         };
                     }
-                    template <typename OUT_ARGS, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<OUT_ARGS (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
+                    template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1, typename ARG_TYPE_2, typename ARG_TYPE_3>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<String>& paramNames, const function<RETURN_TYPE (ARG_TYPE_0, ARG_TYPE_1, ARG_TYPE_2, ARG_TYPE_3)>& f)
                     {
                         using namespace Containers;
                         Require (paramNames.size () == 4);
@@ -276,8 +276,8 @@ namespace Stroika {
                     }
 
 #if 0
-                    template <typename OUT_ARGS, typename IN_ARGS>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (IN_ARGS)>& f)
+                    template <typename RETURN_TYPE, typename IN_ARGS>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS)>& f)
                     {
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
@@ -285,8 +285,8 @@ namespace Stroika {
                         };
                     }
 #endif
-                    template <typename OUT_ARGS>
-                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<OUT_ARGS (void)>& f)
+                    template <typename RETURN_TYPE>
+                    WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
                     {
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
