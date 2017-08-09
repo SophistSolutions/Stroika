@@ -33,6 +33,16 @@ namespace Stroika {
                     lock_guard<mutex> critSec{fCriticalSection_};
                     return BASE_REP_TYPE::IsSeekable ();
                 }
+                virtual void CloseWrite () override
+                {
+                    lock_guard<mutex> critSec{fCriticalSection_};
+                    BASE_REP_TYPE::CloseWrite ();
+                }
+                virtual bool IsOpenWrite () const override
+                {
+                    lock_guard<mutex> critSec{fCriticalSection_};
+                    return BASE_REP_TYPE::IsOpenWrite ();
+                }
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     lock_guard<mutex> critSec{fCriticalSection_};
