@@ -53,18 +53,23 @@ namespace Stroika {
             }
             inline URL Message::GetRequestURL () const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRequest_.GetURL ();
             }
             inline String Message::GetRequestHTTPMethod () const
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRequest_.GetHTTPMethod ();
             }
             inline Memory::BLOB Message::GetRequestBody ()
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRequest_.GetBody ();
+            }
+            inline void Message::SetResponseContentType (const InternetMediaType& contentType)
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                return fResponse_.SetContentType (contentType);
             }
         }
     }

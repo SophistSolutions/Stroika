@@ -85,6 +85,14 @@ namespace Stroika {
                  */
                 nonvirtual Memory::BLOB GetRequestBody ();
 
+            public:
+                /**
+                 *  \brief shorthand for "PeekResponse ()->SetContentType ()"
+                 *
+                 *  \note This shorthand is provided here because its very commonly used from RequestHandlers, and because it provides better threadsafty testing
+                 */
+                nonvirtual void SetResponseContentType (const InternetMediaType& contentType);
+
             private:
                 Memory::Optional<IO::Network::SocketAddress> fPeerAddress_;
                 Request                                      fRequest_;
