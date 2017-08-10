@@ -83,7 +83,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage)
 {
     String method{request->GetHTTPMethod ()};
-    if (method == L"POST") {
+    if (method == L"POST" or method == L"PUT") {
         // Allow missing (content-size: 0) for args to method - and dont fail it as invalid json
         // @also - @todo - check ContentType ebfore reading as JSON!!!
         Memory::BLOB inData = request->GetBody ();
@@ -99,7 +99,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
     }
     else {
         Execution::Throw (Execution::StringException (
-            String_Constant{L"Expected GET with query-string arguments or POST"} +
+            String_Constant{L"Expected GET with query-string arguments or PUT or POST"} +
             (fromInMessage ? (L" from " + *fromInMessage) : L"")));
     }
 }

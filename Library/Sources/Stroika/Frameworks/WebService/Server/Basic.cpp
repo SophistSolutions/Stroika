@@ -5,6 +5,7 @@
 
 #include "../../../Foundation/Characters/StringBuilder.h"
 #include "../../../Foundation/Characters/String_Constant.h"
+#include "../../../Foundation/Characters/ToString.h"
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
@@ -31,7 +32,7 @@ void WebService::Server::ExpectedMethod (const Request* request, const Set<Strin
     String method{request->GetHTTPMethod ()};
     if (not methods.Contains (method)) {
         Execution::Throw (Execution::StringException (
-            String_Constant{L"Expected GET with query-string arguments or POST"} +
+            String_Constant{L"Expected HTTP method "} + Characters::ToString (methods) +
             (fromInMessage ? (L" from " + *fromInMessage) : L"")));
     }
 }
