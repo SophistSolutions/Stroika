@@ -390,7 +390,8 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual void store (Configuration::ArgByValueType<T> v);
+                nonvirtual void store (const T& v);
+                nonvirtual void store (T&& v);
 
             private:
                 unique_lock<MutexType> fUniqueLock_;

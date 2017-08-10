@@ -269,10 +269,14 @@ namespace Stroika {
                 return *const_cast<T*> (this->fT);
             }
             template <typename T, typename TRAITS>
-            inline void Synchronized<T, TRAITS>::WritableReference::store (Configuration::ArgByValueType<T> v)
+            inline void Synchronized<T, TRAITS>::WritableReference::store (const T& v)
             {
-                // const_cast Safe because the only way to construct one of these is from a non-const pointer, or another WritableReference
-                *const_cast<T*> (this->fT) = v;
+                rwref () = v;
+            }
+            template <typename T, typename TRAITS>
+            inline void Synchronized<T, TRAITS>::WritableReference::store (T&& v)
+            {
+                rwref () = move (v);
             }
 
             /*

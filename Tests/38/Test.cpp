@@ -451,6 +451,11 @@ namespace {
                     x.rwget ().rwref ()->method ();
                     x.cget ().cref ()->const_method ();
                 }
+                {
+                    Synchronized<Memory::Optional<NotCopyable>> x;
+                    auto                                        l = x.rwget ();
+                    l.store ({});
+                }
             }
         }
         void DoIt ()
