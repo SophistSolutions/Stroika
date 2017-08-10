@@ -4,6 +4,7 @@ set -E
 trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
+: ${CONTINUE:=false}
 : ${INCLUDE_HELGRIND_TESTS:=true}
 : ${INCLUDE_PERFORMANCE_TESTS:=true}
 : ${CLOBBER_FIRST:=true}
@@ -56,10 +57,23 @@ STARTAT_INT=$(date +%s)
 
 
 STARTAT=`date`;
-rm -f $TEST_OUT_FILE
-echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
-echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
-make regression-test-configurations >>$TEST_OUT_FILE 2>&1
+if [ $CONTINUE ] ; then
+	echo "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT"
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
+else
+	rm -f $TEST_OUT_FILE
+	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
+	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
+	make regression-test-configurations >>$TEST_OUT_FILE 2>&1
+fi
 
 NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
 NUM_REGTESTS=`wc -l Tests/Tests-Description.txt | awk '{print $1;}'`

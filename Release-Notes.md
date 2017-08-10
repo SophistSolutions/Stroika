@@ -20,6 +20,81 @@ History
 
 
 
+  
+   
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a213">v2.0a213</a><br/>2017-08-10</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a212...v2.0a213</li>
+		<li>Streams
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-586: OutputStream<> now supports Close, and IsOpen methods</li>
+				<li>Includes deprecating SharedMemoryStream<>::CloseForWrites () and replacing it with
+            call to (now) inherited InputOutputStream<>::CloseWrite ()</li>
+				<li>CloseRead/CloseWrite/IsOpenWrite/IsOpenRead support in approrpaite concrete methods - to provide better docs and assertionsStream</li>
+				<li>Deprecated Stream<>::empty () - instead using != nullptr or == nullptr; and lose obsolete hack I had in InputStream code re-declaring operator!= commednted no reason and can see no need anymore</li>
+				<li>Require IsOpen () in many places, and docs improvements</li>
+				<li>mark https://stroika.atlassian.net/browse/STK-598 resolved cuz just did this a few days ago - Debug::AssertExternallySynchonized in Stream classes</li>
+			</ul>
+		</li>
+		<li>Frameworks/WebService/Server
+			<ul>
+				<li>improvements to PUT handling and error reproting with /VariantValue</li>
+				<li>typename ARG_TYPE_COMBINED viariant of mkRequestHandler  () overload</li>
+				<li>more use of CallFAndWriteConvertedResponse  - seems to be working. Maybe able to go fully
+            VARIANT template arg...</li>
+				<li> added OrderParamValues;     deprecated PickoutParamValues and related cleanups</li>
+				<li>Draft CallFAndWriteConvertedResponse  () support - to improvie
+    Frameworks/WebService/Server/VariantValue
+    so it can support returning 'void' - or at least close/soon</li>
+				<li>improved WriteDocs support - configurable CSS section and variable subst in new DocsOptions object/argument</li>
+			</ul>
+		</li>
+		<li>Frameworks/WebServer/Message
+			<ul>
+				<li>Added a few shorthand helpers for Frameworks::WebServer::Message, eg. Message::SetResponseContentType ()</li>
+			</ul>
+		</li>
+		<li>configure support for --strip
+			<ul>
+				<li>improved default STRIP program for configure (NOTE - upgraders will need to re-generate configurations)</li>
+				<li>use configured STRIP pgoram in building installer (sample service)</li>
+			</ul>
+		</li>
+		<li>delete some deprecated routines - deprecated in 2.0a209: kTIMEOUTBoolResult, ThreadPool:: abort and waitfordone retouines (and documetned why); and Thread::AbortAndWaitUntilDone</li>
+		<li>use || exit $? inside forloops in a few more spots of makefiles (so when samples fail to build we stop)</li>
+		<li>stream and inputstream/outputstream Ptr classes now use inherited Debug::AssertExternallySynchronizedLock</li>
+		<li>{Socket | Stream | Thread}::Ptr::reset () support, and deprecated Stream::clear (just use Stream::reset)</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a213-{Windows-x86-vs2k17,linux-gcc-6.3.0-x64,MacOS-x86-XCode8}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode8,Windows-VS2k17}-2.0a213-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 8.3.3 (apple clang 8.1)</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.3</li>
+				<li>gcc 7.1</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
    
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a212">v2.0a212</a><br/>2017-08-05</td>
