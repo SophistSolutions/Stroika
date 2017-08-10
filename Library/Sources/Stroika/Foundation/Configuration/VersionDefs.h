@@ -79,6 +79,7 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
+             *          // be sure to #include "Stroika/Foundation/Configuration/StroikaVersion.h" for kStroika_Version_FullVersion else kStroika_Version_FullVersion acts as if 0, and always use old code
              *          #if     kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION (2, 0, kStroika_Version_Stage_Alpha, 156, 0)
              *              use new function;
              *          #else
