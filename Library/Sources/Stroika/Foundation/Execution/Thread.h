@@ -118,25 +118,25 @@ namespace Stroika {
              *  The only difference between Interruption and Aborting is that Aborting is permanent, whereas
              *  Interrupt happens just once.
              *
-             *  Thread 'interuption' happens via 'cancelation points'. Cancelation points are points in the code
+             *  Thread 'interruption' happens via 'cancelation points'. Cancelation points are points in the code
              *  where we check to see if the current running thread has been interupted (or aborted) and raise
              *  the appropriate exception. 
              *
              *  This mechanism is almost completely co-operative, meaning that user
-             *  code must call CheckForThreadInterruption () in the right places to make interuption work. But Stroika
+             *  code must call CheckForThreadInterruption () in the right places to make interruption work. But Stroika
              *  is structured to make that happen automatically throughout most of its code, but having key routines (like Sleep, and WaitableEvents)
              *  automatically internally be cancelation points.
              *
              *  The only slight exception to this is on Windows, where we have the APC mechanism that will interupt a wide vareity of windows
              *  system calls (see docs below).
              *
-             *  \note - its important that this 'interuption' can only happen at well defined times, because that allows
+             *  \note - its important that this 'interruption' can only happen at well defined times, because that allows
              *        for safe and reliable cleanup of whatever activitites were being done (e.g. cannot interupt in a destructor)
              *
              *  Thread interruption/aborting is tricky todo safely and portably. We take a number of approaches:
              *      (1) We maintain a thread-local-storage variable - saying if this thread has been aborted.
              *          Sprinkling CheckForThreadInterruption throughout your code - will trigger a AbortException ()
-             *          in that thread context. Note a pointer to that TLS interuption variable is also stored
+             *          in that thread context. Note a pointer to that TLS interruption variable is also stored
              *          in the thread 'rep' object, so it can be set (by Thread::Interrupt).
              *
              *      (2) WINDOWS ONLY: Async-injection (QueueUserAPC/Windows) - Alertable state -  APC functions get 'suddenly launched' in the context
@@ -155,7 +155,7 @@ namespace Stroika {
              *
              *      (3) POSIX ONLY: Signal injection - we send a special (defaults to SIG_USR2) signal to a particular thread.
              *          This triggers an EINTR on most UNIX system calls, which are automatically restarted in most cases
-             *          (@see Execution::Handle_ErrNoResultInterruption), but in case of interuption, we call
+             *          (@see Execution::Handle_ErrNoResultInterruption), but in case of interruption, we call
              *          CheckForThreadInterruption ()
              *
              *  \note @see defails on cancelation points, because many common std C++ blocking operations, like std::mutex are not
@@ -182,7 +182,7 @@ namespace Stroika {
              *  @see Handle_ErrNoResultInterruption
              *
              *  ***Thread Cancelation Points***
-             *      A cancelation point is any (typically but not always blocking) funciton which will be interupted (cause interuption exception) and stop blocking,
+             *      A cancelation point is any (typically but not always blocking) funciton which will be interupted (cause interruption exception) and stop blocking,
              *      when someone calls Thread::Interupt or Thread::Abort() on its thread object.
              *
              *      Roughly, these are subroutines which call 
@@ -621,7 +621,7 @@ namespace Stroika {
                  *
                  *  \note   This frequently (and nearly always in a destructor) - should be preceded by:
                  *      \code
-                 *           Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to probibit this thread from interuption until its killed owned threads
+                 *           Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to prohibit this thread from interruption until its killed owned threads
                  *      \endcode
                  *  @see AbortAndWaitForDoneUntil ()
                  *
@@ -646,7 +646,7 @@ namespace Stroika {
                  *
                  *   \note   This frequently (and nearly always in a destructor) - should be preceded by:
                  *      \code
-                 *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to probibit this thread from interuption until its killed owned threads
+                 *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to prohibit this thread from interruption until its killed owned threads
                  *      \endcode
                  *
                  *   \note ***Cancelation Point***

@@ -203,7 +203,7 @@ Thread::SuppressInterruptionInContext::~SuppressInterruptionInContext ()
      *  Would LIKE to do:
      *
      *  if (t_InterruptionSuppressDepth_ == 0 and t_Interrupting_ != InterruptFlagState_::eNone) {
-     *      DbgTrace (L"~SuppressInterruptionInContext () completing with interuption pending, so this thread will interupt at the next cancelation point");
+     *      DbgTrace (L"~SuppressInterruptionInContext () completing with interruption pending, so this thread will interupt at the next cancelation point");
      *  }
      *  But cannot safely/easily, because DbgTrace internally uses SuppressInterruptionInContext!
      */
@@ -286,7 +286,7 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
     static bool sDidInit_{false}; // initialize after main() started, but before any threads
     if (not sDidInit_) {
         sDidInit_                               = true;
-        kCallInRepThreadAbortProcSignalHandler_ = SignalHandler (Rep_::InteruptionSignalHandler_, SignalHandler::Type::eDirect);
+        kCallInRepThreadAbortProcSignalHandler_ = SignalHandler (Rep_::InterruptionSignalHandler_, SignalHandler::Type::eDirect);
     }
 #endif
 }
@@ -701,12 +701,12 @@ Thread::NativeHandleType Thread::Rep_::GetNativeHandle ()
 }
 
 #if qPlatform_POSIX
-void Thread::Rep_::InteruptionSignalHandler_ (SignalID signal)
+void Thread::Rep_::InterruptionSignalHandler_ (SignalID signal)
 {
     //
     //#if USE_NOISY_TRACE_IN_THIS_MODULE_
     // unsafe to call trace code - because called as unsafe (SignalHandler::Type::eDirect) handler
-    //TraceContextBumper ctx ("Thread::Rep_::InteruptionSignalHandler_");
+    //TraceContextBumper ctx ("Thread::Rep_::InterruptionSignalHandler_");
     //#endif
     // This doesn't REALLY need to get called. Its enough to have the side-effect of the EINTR from system calls.
     // the TLS variable gets set through the rep poitner in NotifyOfInterruptionFromAnyThread_

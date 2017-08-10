@@ -278,7 +278,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
  */
 ProcessRunner::BackgroundProcess::Rep_::~Rep_ ()
 {
-    Thread::SuppressInterruptionInContext suppressInterruption; // critical to probibit this thread from interuption until its killed owned threads
+    Thread::SuppressInterruptionInContext suppressInterruption; // critical to prohibit this thread from interruption until its killed owned threads
     // because it has internal pointers to the Rep
     fProcessRunner.AbortAndWaitForDone ();
 }
