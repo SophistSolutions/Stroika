@@ -1,7 +1,5 @@
 ProjectPlatformSubdir	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
-ifeq (Unix,$(ProjectPlatformSubdir))
-StroikaRoot=$(realpath ../)
-endif
+StroikaRoot=$(realpath ../)/
 
 .PHONY:	tests all check clobber
 
@@ -76,37 +74,37 @@ all:		tests
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); perl ScriptsLib/_checkall.pl
 endif
 
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Tests..."
-	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Tests/
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Tests..."
+	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
 	@$(ECHO) done
 endif
 
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory clobber CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
-	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@rm -rf ../IntermediateFiles/$(CONFIGURATION)/Tests/
-	@rm -rf ../Builds/$(CONFIGURATION)/Test??
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
+	@rm -rf $(StroikaRoot)Builds/$(CONFIGURATION)/Test??
 endif
 
 
@@ -118,23 +116,29 @@ project-files:
 
 tests:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory tests CONFIGURATION=$$i ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) || exit $$?;\
 	done
 else
-	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Tests:"
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
-	(cd Projects/Unix && ./BuildProjectsFiles.pl);\
-	for i in $(TESTS); do\
-		tstName=`$(StroikaRoot)/Tests/ScriptsLib/PrintTestName.pl $$i`;\
-		$(ECHO) "$$PREFIX" "Test $$i: $$tstName:";\
-		$(MAKE) --directory $$i -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2)) || exit $$?;\
-	done
+	@(cd Projects/Unix && ./BuildProjectsFiles.pl)
+	@$(MAKE) $(TESTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2))
 else
 	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); perl ScriptsLib/_buildall.pl build
 endif
 endif
+
+
+#### @todo make targets final EXE and dont need PHONY and can be even quicker running
+.PHONY: $(TESTS)
+$(TESTS):
+ifeq ($(CONFIGURATION),)
+	ERROR
+endif
+	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && $(ECHO) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName.pl $@`:"
+	@$(MAKE) --directory $@ -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2))
 
 
 run-tests:

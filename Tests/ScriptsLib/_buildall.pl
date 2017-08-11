@@ -27,7 +27,7 @@ if ($BLD_TRG eq '' || $BLD_TRG eq 'build') {
 
 my $ECHO_BUILD_LINES = $ENV{'ECHO_BUILD_LINES'};
 my $level = $ENV{'MAKE_INDENT_LEVEL'};
-print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests:\n");
+#print(`../ScriptsLib/PrintLevelLeader.sh $level` . "Building Stroika {$activeConfig} Tests:\n");
 
 my $subLevel = $level + 1;
 my $subLevelLeader = `../ScriptsLib/PrintLevelLeader.sh $subLevel`;
