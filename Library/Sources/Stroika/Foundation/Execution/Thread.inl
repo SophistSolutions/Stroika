@@ -76,7 +76,7 @@ namespace Stroika {
 
             private:
 #if qPlatform_POSIX
-                static void InteruptionSignalHandler_ (SignalID signal);
+                static void InterruptionSignalHandler_ (SignalID signal);
 #elif qPlatform_Windows
                 static void CALLBACK CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter);
 #endif
