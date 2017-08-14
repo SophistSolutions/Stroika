@@ -1406,7 +1406,7 @@ namespace {
             Test_String_cstr_call_<wstring>, L"wstring",
             Test_String_cstr_call_<String>, L"Charactes::String",
             51000,
-            1.35,
+            1.4,
             &failedTests);
 #if kStroika_Version_FullVersion >= Stroika_Make_FULL_VERSION(2, 0, kStroika_Version_Stage_Alpha, 21, 0)
         Tester (
