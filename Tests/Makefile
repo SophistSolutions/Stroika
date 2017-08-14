@@ -135,7 +135,7 @@ endif
 .PHONY: $(TESTS)
 $(TESTS):
 ifeq ($(CONFIGURATION),)
-	ERROR
+	$(error CONFIGURATION variable required for this target)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && $(ECHO) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName.pl $@`:"
 	@$(MAKE) --directory $@ -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2))
