@@ -93,6 +93,27 @@ namespace Stroika {
                  */
                 nonvirtual void SetResponseContentType (const InternetMediaType& contentType);
 
+            public:
+                /**
+                 *  \brief alias for PeekResponse ()->write (...args...);
+                 */
+                template <typename... ARGS_TYPE>
+                nonvirtual void write (ARGS_TYPE&&... args);
+
+            public:
+                /**
+                *   \brief alias for PeekResponse ()->printf (...args...);
+                */
+                template <typename... ARGS_TYPE>
+                nonvirtual void printf (ARGS_TYPE&&... args);
+
+            public:
+                /**
+                 *  \brief alias for PeekResponse ()->writeln (...args...);
+                 */
+                template <typename... ARGS_TYPE>
+                nonvirtual void writeln (ARGS_TYPE&&... args);
+
             private:
                 Memory::Optional<IO::Network::SocketAddress> fPeerAddress_;
                 Request                                      fRequest_;
