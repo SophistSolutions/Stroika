@@ -59,7 +59,7 @@ STARTAT_INT=$(date +%s)
 
 
 STARTAT=`date`;
-if [ $CONTINUE ] ; then
+if [ $CONTINUE -ne 0 ] ; then
 	echo "CONTINUING (output to $TEST_OUT_FILE) - started at $STARTAT"
 	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
 	echo "$PREFIX_OUT_LABEL" "---------------------" >>$TEST_OUT_FILE 2>&1
