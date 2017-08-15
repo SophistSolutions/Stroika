@@ -10,8 +10,6 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=0; else  CLOBBER_FIRST=1; fi; fi
 : ${PARALELLMAKEFLAG:=-j4}
 
-echo CONTINUE=$CONTINUE
-echo CLOBBER_FIRST=$CLOBBER_FIRST
 
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 
