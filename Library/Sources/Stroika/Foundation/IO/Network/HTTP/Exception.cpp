@@ -41,8 +41,8 @@ namespace {
                 case StatusCodes::kNotFound:
                     effectiveReason = L"URL not found";
                     break;
-                case 405:
-                    effectiveReason = L"Method Nnt allowed";
+                case StatusCodes::kMethodNotAllowed:
+                    effectiveReason = L"Method Not allowed";
                     break;
                 case 410:
                     effectiveReason = L"Gone (service has been discontinued)";

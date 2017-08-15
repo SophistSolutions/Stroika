@@ -3,12 +3,15 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
+#include "../../Foundation/IO/Network/HTTP/Headers.h"
 
 #include "Router.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Memory;
 
@@ -36,7 +39,19 @@ struct Router::Rep_ : Interceptor::_IRep {
             (*handler) (m);
         }
         else {
-            Execution::Throw (IO::Network::HTTP::Exception (IO::Network::HTTP::StatusCodes::kNotFound));
+            if (Optional<Set<String>> o = GetAllowedMethodsForRequest_ (*m->PeekRequest ())) {
+                // From 10.4.6 405 Method Not Allowed
+                //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
+                //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
+                Assert (not o->empty ());
+                StringBuilder res;
+                o->Apply ([&res](const String& i) { if (not res.empty ()) { res += L", "; } res += i; });
+                m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAllow, res.str ());
+                Execution::Throw (IO::Network::HTTP::Exception (IO::Network::HTTP::StatusCodes::kMethodNotAllowed));
+            }
+            else {
+                Execution::Throw (IO::Network::HTTP::Exception (IO::Network::HTTP::StatusCodes::kNotFound));
+            }
         }
     }
     Optional<RequestHandler> Lookup_ (const Request& request) const
@@ -57,6 +72,28 @@ struct Router::Rep_ : Interceptor::_IRep {
             return r.fHandler_;
         }
         return Optional<RequestHandler>{};
+    }
+    Optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
+    {
+        URL                      url         = request.GetURL ();
+        String                   hostRelPath = url.GetHostRelativePath ();
+        static const Set<String> kMethods2Try_{String_Constant{L"GET"}, String_Constant{L"PUT"}, String_Constant{L"OPTIONS"}, String_Constant{L"DELETE"}, String_Constant{L"POST"}};
+        Set<String>              methods;
+        for (String method : kMethods2Try_) {
+            for (Route r : fRoutes_) {
+                if (r.fVerbMatch_ and not method.Match (*r.fVerbMatch_)) {
+                    continue;
+                }
+                if (r.fPathMatch_ and not hostRelPath.Match (*r.fPathMatch_)) {
+                    continue;
+                }
+                if (r.fRequestMatch_ and not(*r.fRequestMatch_) (request)) {
+                    continue;
+                }
+                methods.Add (method);
+            }
+        }
+        return methods.empty () ? Optional<Set<String>>{} : Optional<Set<String>>{methods};
     }
 
     const Sequence<Route> fRoutes_; // no need for synchronization cuz constant - just set on construction

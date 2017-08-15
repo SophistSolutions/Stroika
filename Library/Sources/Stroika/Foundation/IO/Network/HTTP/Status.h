@@ -36,9 +36,10 @@ namespace Stroika {
                          * The request could not be understood by the server due to malformed syntax.
                          * The client SHOULD NOT repeat the request without modifications.
                          */
-                        constexpr Status kBadRequest   = 400;
-                        constexpr Status kUnauthorized = 401;
-                        constexpr Status kNotFound     = 404;
+                        constexpr Status kBadRequest       = 400;
+                        constexpr Status kUnauthorized     = 401;
+                        constexpr Status kNotFound         = 404;
+                        constexpr Status kMethodNotAllowed = 405;
                         /**
                          *  The server did not receive a complete request message within the time that it was prepared to wait.
                          */
