@@ -4,12 +4,14 @@ set -E
 trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
-: ${CONTINUE:=false}
-: ${INCLUDE_HELGRIND_TESTS:=true}
-: ${INCLUDE_PERFORMANCE_TESTS:=true}
-: ${CLOBBER_FIRST:=true}
+: ${CONTINUE:=0}
+: ${INCLUDE_HELGRIND_TESTS:=1}
+: ${INCLUDE_PERFORMANCE_TESTS:=1}
+if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=0; else  CLOBBER_FIRST=1; fi; fi
 : ${PARALELLMAKEFLAG:=-j4}
 
+echo CONTINUE=$CONTINUE
+echo CLOBBER_FIRST=$CLOBBER_FIRST
 
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 
@@ -86,7 +88,7 @@ for i in `ScriptsLib/GetConfigurations.sh`; do
 	echo "   $i"  >>$TEST_OUT_FILE 2>&1;
 done
 
-if [ "$CLOBBER_FIRST" = true ] ; then
+if [ $CLOBBER_FIRST -ne 0 ] ; then
   	echo "Make clobber"
   	echo "Make clobber" >>$TEST_OUT_FILE 2>&1
   	make clobber >>$TEST_OUT_FILE 2>&1
@@ -191,7 +193,7 @@ else
 fi
 
 
-if [ "$INCLUDE_PERFORMANCE_TESTS" = true ] ; then
+if [ $INCLUDE_PERFORMANCE_TESTS -ne 0 ] ; then
 	ScriptsLib/RunPerformanceRegressionTests.sh
 fi
 
