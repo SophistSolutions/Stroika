@@ -75,7 +75,7 @@ endif
 
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika/ThirdPartyComponents/xerces $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/xerces $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -107,19 +107,19 @@ endif
 
 
 check-prerequisite-tools:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for Xerces..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces..."
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@#https://stroika.atlassian.net/browse/STK-437
 	@#NOT QUITE FIXED - BUT a start
 	@#very hard to track down subtle bug - avoidance - @see http://stackoverflow.com/questions/34074925/vs-2015-cannot-open-compiler-generated-file-invalid-argument
 	@#This doesnt appear broken on windows 10 - but does on windows 8.1 - must investigate further
-	@EXTRACHAR=37 && MAXCHAR=49 && SUM=$(($$EXTRACHAR + $$MAXCHAR)) && PWD=`pwd` && ADJ_PWDLEN=$$(($${#PWD} - $$EXTRACHAR)) && if [[ $$ADJ_PWDLEN -gt $$MAXCHAR ]] ; then  $(ECHO) && ../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "WARNING: STRLEN(Stroika-Root-Directory) == $$ADJ_PWDLEN, and can be no more than $$MAXCHAR characters on windows 8.1 to avoid Xerces build problem" && ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL); fi;
+	@EXTRACHAR=37 && MAXCHAR=49 && SUM=$(($$EXTRACHAR + $$MAXCHAR)) && PWD=`pwd` && ADJ_PWDLEN=$$(($${#PWD} - $$EXTRACHAR)) && if [[ $$ADJ_PWDLEN -gt $$MAXCHAR ]] ; then  $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(Stroika-Root-Directory) == $$ADJ_PWDLEN, and can be no more than $$MAXCHAR characters on windows 8.1 to avoid Xerces build problem" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL); fi;
 endif
 	@$(ECHO) "done";
 
 
 check:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -136,12 +136,12 @@ endif
 
 
 $(ZIPPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 doCreate_:	$(ZIPPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT...";
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
@@ -153,7 +153,7 @@ endif
 
 
 doPatching_:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching Xerces...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Xerces...";
 	@(cd CURRENT; tar xf ../Patches/VC15Projects.tar.gz --no-same-owner);
 	@$(ECHO) "done"
 
@@ -172,7 +172,7 @@ endif
 endif
 
 doBuilds_:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
 	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
@@ -181,7 +181,7 @@ else
 	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl build > CURRENT/BUILD.OUT 2>&1
 endif
 	@$(ECHO) "done"
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Copying builds to $(BUILDS_ROOT) ..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/

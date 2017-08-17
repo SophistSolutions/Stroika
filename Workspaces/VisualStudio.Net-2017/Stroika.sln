@@ -126,6 +126,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\PrintConfigurationVariable.pl = ..\..\ScriptsLib\PrintConfigurationVariable.pl
 		..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl = ..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl
 		..\..\ScriptsLib\PrintLevelLeader.sh = ..\..\ScriptsLib\PrintLevelLeader.sh
+		..\..\ScriptsLib\PrintProgressLine.sh = ..\..\ScriptsLib\PrintProgressLine.sh
 		..\..\ScriptsLib\RegressionTests.sh = ..\..\ScriptsLib\RegressionTests.sh
 		..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl = ..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl
 		..\..\ScriptsLib\RunMKLinkViaUAC.bat = ..\..\ScriptsLib\RunMKLinkViaUAC.bat
@@ -133,6 +134,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\RunPerfTests.bat = ..\..\ScriptsLib\RunPerfTests.bat
 		..\..\ScriptsLib\RunRemoteMacBuild.sh = ..\..\ScriptsLib\RunRemoteMacBuild.sh
 		..\..\ScriptsLib\StringUtils.pl = ..\..\ScriptsLib\StringUtils.pl
+		..\..\ScriptsLib\SubstituteBackVariables.sh = ..\..\ScriptsLib\SubstituteBackVariables.sh
 		..\..\ScriptsLib\WebGet.sh = ..\..\ScriptsLib\WebGet.sh
 	EndProjectSection
 EndProject

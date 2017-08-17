@@ -37,13 +37,13 @@ $(ObjDir)%.o : %.cpp
 $(ALL_OBJS): all_objs_
 
 all_objs_:
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika Frameworks Objs:";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Frameworks Objs:";
 	@(for i in $(SubDirs); do $(MAKE) --directory $$i --no-print-directory -s all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CONFIGURATION=$(CONFIGURATION); done;);
 
 
 $(StroikaFrameworksLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Creating $(subst $(StroikaRoot),\$$StroikaRoot/, $@)..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Creating $(subst $(StroikaRoot),\$$StroikaRoot/, $@)..."
 	@rm -f $(StroikaFrameworksLib)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 		echo "      $(AR) cr $(StroikaFrameworksLib) $(ALL_OBJS)";\

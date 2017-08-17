@@ -51,13 +51,13 @@ help:
 ifeq ($(CONFIGURATION),)
 all:		IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
 	@#first run all checks so any errors for missing tools appear ASAP
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Prerequisites for Stroika:"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL)  "Checking Prerequisites for Stroika:"
 	@$(MAKE) --no-print-directory --silent apply-configurations-if-needed MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory --silent IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL IntermediateFiles/$$i/TOOLS_CHECKED CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika all {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika all {$$i}:";\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
@@ -69,13 +69,13 @@ check: assure-default-configurations-exist_
 ifeq ($(CONFIGURATION),)
 ifeq ($(MAKECMDGOALS),check)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Check {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Check {$$i}:";\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 endif
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)}:"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Tools --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -86,13 +86,13 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clean:"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clean:"
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory clean CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clean {$(CONFIGURATION)}:"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clean {$(CONFIGURATION)}:"
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Tools --no-print-directory clean CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -103,13 +103,13 @@ endif
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clobber..."
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clobber..."
 	@rm -rf IntermediateFiles/*
 	@rm -rf Builds/*
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION= MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 else
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika Clobber {$(CONFIGURATION)}..."
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika Clobber {$(CONFIGURATION)}..."
 	@$(MAKE) --directory ThirdPartyComponents --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Library --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 	@$(MAKE) --directory Tools --no-print-directory clobber CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -125,7 +125,7 @@ documentation:
 ifeq ($(CONFIGURATION),)
 libraries:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Making Stroika/Libraries {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making Stroika/Libraries {$$i}:";\
 		$(MAKE) --no-print-directory libraries CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
@@ -139,7 +139,7 @@ endif
 ifeq ($(CONFIGURATION),)
 third-party-components:	IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Making Stroika/Third-party-components {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making Stroika/Third-party-components {$$i}:";\
 		$(MAKE) --no-print-directory third-party-components CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
@@ -174,7 +174,7 @@ project-files-qt-creator-save:
 ifeq ($(CONFIGURATION),)
 tools:	assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Making Stroika/Tools {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making Stroika/Tools {$$i}:";\
 		$(MAKE) tools --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
@@ -187,7 +187,7 @@ endif
 ifeq ($(CONFIGURATION),)
 tests:	assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Making Stroika/Tests {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making Stroika/Tests {$$i}:";\
 		$(MAKE) tests --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
@@ -200,7 +200,7 @@ endif
 ifeq ($(CONFIGURATION),)
 samples:	assure-default-configurations-exist_
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Making Stroika/Samples {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making Stroika/Samples {$$i}:";\
 		$(MAKE) samples --no-print-directory CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
@@ -213,7 +213,7 @@ endif
 ifeq ($(CONFIGURATION),)
 run-tests:
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
-		ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Stroika/Run-All-Tests {$$i}:";\
+		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Run-All-Tests {$$i}:";\
 		$(MAKE) --no-print-directory run-tests CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) || exit $$?;\
 	done
 else
@@ -258,24 +258,24 @@ endif
 
 
 check-prerequisite-tools-common:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking for installed tools:"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type sed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh sed && exit 1)"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type wget 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh wget && exit 1)"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type perl 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh perl && exit 1)"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type tar 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh tar && exit 1)"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type patch 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh patch && exit 1)"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type tr 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh tr && exit 1)"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type pkg-config 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh pkg-config && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking for installed tools:"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type sed 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh sed && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type wget 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh wget && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type perl 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh perl && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type tar 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh tar && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type patch 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh patch && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type tr 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh tr && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type pkg-config 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh pkg-config && exit 1)"
 ifeq ($(shell uname -s),Darwin)
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh realpath && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh realpath && exit 1)"
 else
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh realpath && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type realpath 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh realpath && exit 1)"
 endif
 ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh dos2unix && exit 1)"
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh unix2dos && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh dos2unix && exit 1)"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh unix2dos && exit 1)"
 endif
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "All Required-Always Tools Present"
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "All Required-Always Tools Present"
 	@mkdir -p IntermediateFiles
 	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL
 
@@ -329,16 +329,16 @@ ifeq ($(CONFIGURATION),)
 	$(error Cannot call apply-configuration without a configuration argument)
 endif
 	@ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Applying configuration {$(CONFIGURATION)}:"
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Applying configuration {$(CONFIGURATION)}:"
 	@mkdir -p "IntermediateFiles/$(CONFIGURATION)/"
 	@perl ScriptsLib/ApplyConfiguration.pl $(CONFIGURATION)
-	@ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
+	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Writing \"IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h\""
 	@ScriptsLib/MakeVersionFile.sh STROIKA_VERSION IntermediateFiles/$(CONFIGURATION)/Stroika-Current-Version.h StroikaLibVersion
 	@touch IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 
 
 default-configurations:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) Making default configurations...
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making default configurations...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ `uname` = "Darwin" ] ; then\
 		./configure Debug --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
@@ -358,7 +358,7 @@ default-configurations:
 	
 
 regression-test-configurations:
-	@ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) Making regression-test configurations...
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making regression-test configurations...
 	@rm -f ConfigurationFiles/*
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ `uname -o` = "Cygwin" ] ; then\

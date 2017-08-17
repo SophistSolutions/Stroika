@@ -82,7 +82,7 @@ endif
 
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/lzma $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/lzma $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -100,7 +100,7 @@ endif
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
@@ -108,18 +108,18 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for lzma..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for lzma..."
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
 	@$(ECHO) "done";
 
 
 
 check_prerequisites_:
-	@{ type 7za > /dev/null 2>&1; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh 7za && exit 1; }
+	@{ type 7za > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh 7za && exit 1; }
 
 
 doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extract $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extract $(ZIPEDFILE) to CURRENT..."
 	@rm -rf CURRENT
 	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
 	@#DISABLE - OLD - NOT APPARNETLY NEEDEED ANYMORE - AND CHMOD -R doesnt work on macos --LGP 2017-01-03
@@ -129,7 +129,7 @@ doCreate:	$(ZIPEDFILE)
 
 
 doBuilds:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling, and redirecting messages to CURRENT/BUILD.OUT ..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -290,7 +290,7 @@ ORIGS:	$(ZIPEDFILE)
 
 
 check:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "   FAILED: missing $$i";\

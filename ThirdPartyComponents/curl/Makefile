@@ -73,7 +73,7 @@ endif
 
 #TODO - fix to take into account DEBUG versus RELEASE! Must build all combos!
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika/ThirdPartyComponents/libcurl $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/libcurl $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -82,7 +82,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
@@ -97,7 +97,7 @@ endif
 
 
 doCreate:	$(ZIPPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Creating CURRENT...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT...";
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
@@ -214,7 +214,7 @@ endif
 
 
 doPatching_:
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching Curl...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Curl...";
 	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq ($(shell uname),AIX)
@@ -230,13 +230,13 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Building configure tools CURRENT/BUILD-CONF-TOOLS.OUT..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building configure tools CURRENT/BUILD-CONF-TOOLS.OUT..."
 	@mkdir -p $(INTERMEDIATEFILES_ROOT)$(CONFIGURATION)/ThirdPartyComponents $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Configure (see CURRENT/CONFIGURE.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Configure (see CURRENT/CONFIGURE.OUT)..."
 	@$(ECHO) "export CC=$(CC);$(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
 	@cd CURRENT && (export CC="$(CC)";$(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) "Building (see CURRENT/MAKE.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building (see CURRENT/MAKE.OUT)..."
 	@echo $(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" >> CURRENT/MAKE.OUT 2>&1
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
@@ -248,7 +248,7 @@ else
 endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) ".Building libcurl CURRENT into $(BUILDS_DIR)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) ".Building libcurl CURRENT into $(BUILDS_DIR)..."
 	@rm -rf $(BUILDS_DIR)
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
@@ -258,13 +258,13 @@ endif
 
 
 check_prerequisites_:
-	@type automake > /dev/null 2>&1 || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool.sh automake && exit 1)
-	@type libtool > /dev/null 2>&1 || (../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "checking tools... " && ../../ScriptsLib/GetMessageForMissingTool.sh libtool && exit 1)
+	@type automake > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool.sh automake && exit 1)
+	@type libtool > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools... " && ../../ScriptsLib/GetMessageForMissingTool.sh libtool && exit 1)
 
 
 
 check:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -281,7 +281,7 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for curl..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for curl..."
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
 	@$(ECHO) "done";
 

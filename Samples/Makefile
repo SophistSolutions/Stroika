@@ -65,10 +65,10 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)} Samples:";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Samples:";
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && $(ECHO) -n "Checking $$SUBPROJ... ";\
+		$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking $$SUBPROJ... ";\
 		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall_vs.pl);\
 	done
 endif
@@ -82,7 +82,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Samples...";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} Samples...";
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clean) 1> /dev/null || true;\
@@ -104,7 +104,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Clobbering Stroika {$(CONFIGURATION)} Samples...";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} Samples...";
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clobber) 1> /dev/null || true;\
@@ -126,7 +126,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Samples:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Samples:"
 	@$(MAKE) --no-print-directory $(SUBPROJECTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 

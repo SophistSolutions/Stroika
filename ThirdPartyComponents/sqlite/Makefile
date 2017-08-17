@@ -82,7 +82,7 @@ endif
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
@@ -92,7 +92,7 @@ SILENT_BUILD_FLAG=
 endif
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Building Stroika/ThirdPartyComponents/sqlite $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/sqlite $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -177,18 +177,18 @@ endif
 
 
 check-prerequisite-tools:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Prerequisite tools for sqlite..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite..."
 	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
 	@$(ECHO) "done";
 
 
 
 check_prerequisites_:
-	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking required build tools..." && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
+	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking required build tools..." && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
 
 
 check:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "   FAILED: missing $$i";\

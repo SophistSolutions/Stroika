@@ -90,7 +90,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} Tests..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} Tests..."
 	@rm -rf $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tests/
 	@$(ECHO) done
 endif
@@ -121,7 +121,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Tests:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Tests:"
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@(cd Projects/Unix && ./BuildProjectsFiles.pl)
 	@$(MAKE) $(TESTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2))
@@ -137,7 +137,7 @@ $(TESTS):
 ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1)) && $(ECHO) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName.pl $@`:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName.pl $@`:"
 	@$(MAKE) --directory $@ -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 2))
 
 
@@ -148,8 +148,8 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && echo "Running Stroka {$(CONFIGURATION)} Tests:"
-	@PREFIX=`../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Running Stroka {$(CONFIGURATION)} Tests:"
+	@PREFIX=`../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1))`;\
         if [ "`perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling`" = "true" ] && [ "$(REMOTE)" = "" ] ; then\
            echo "$$PREFIX" "Skiping cuz Cross-Compiling and REMOTE= not specified...";\
 	else\

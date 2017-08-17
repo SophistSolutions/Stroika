@@ -162,7 +162,7 @@ endif
 STRIP_ANNOYING_MESSAGES=		0
 
 all:
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION):"
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -209,7 +209,7 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "      FAILED: missing $$i";\
@@ -220,13 +220,13 @@ endif
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
 doPatch:
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && echo -n "Patching OpenSSL..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Patching OpenSSL..."
 ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 	@$(ECHO) -n .
 	@patch --quiet -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
@@ -240,7 +240,7 @@ endif
 
 
 doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extracting $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extracting $(ZIPEDFILE) to CURRENT..."
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
 	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) -C CURRENT --strip-components 1
@@ -271,7 +271,7 @@ doBuilds:
 	@
 	@#Run openssl configure scripts
 	@
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Configuring (output to CURRENT/CONFIG.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (output to CURRENT/CONFIG.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd CURRENT && eval (./config -t | tail -1) $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT
 	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && ./config -t | tail -1 >> CONFIG.OUT
@@ -291,7 +291,7 @@ endif
 	@
 	@#Do actual OpenSSL build
 	@
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)...";
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
 endif
@@ -306,7 +306,7 @@ endif
 	@
 	@# OpenSSL build to INSTALLDIR (inside Stroika Builds)
 	@
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Installing (to $(BUILDS_OUTPUT_DIR)), and redirecting messages to CURRENT/INSTALL.OUT ...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Installing (to $(BUILDS_OUTPUT_DIR)), and redirecting messages to CURRENT/INSTALL.OUT ...";
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
 endif
@@ -326,10 +326,10 @@ endif
 	@
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq  (1.0.,$(findstring 1.0.,$(VERSION)))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling and testing (redirecting messages to CURRENT/BUILD.OUT)...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling and testing (redirecting messages to CURRENT/BUILD.OUT)...";
 	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl > CURRENT/BUILD.OUT 2>&1;
 	@$(ECHO) "done"
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Copying builds to $(BUILDS_ROOT) ..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/bin && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/bin/
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Debug32/libeay32.* CURRENT/Builds/Debug32/ssleay32.* CURRENT/Builds/Debug32/lib.pdb $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
@@ -373,7 +373,7 @@ endif
 	@#Run Regression Tests (unless cross compiling)
 	@
 ifeq (false,$(CrossCompiling))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@### @todo FIX FOR WINDOWS BUILDS - not sure why all tests fail -- which is why we dont bother with diff
 	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake test 2>&1\"">> CURRENT/TEST-OUT.txt || true

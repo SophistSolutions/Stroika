@@ -18,7 +18,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -42,12 +42,12 @@ endif
 
 check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking-Prerequisite Tools Stroika ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents:"
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking-Prerequisite Tools Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -77,7 +77,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -101,9 +101,9 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents..."
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Cleaning Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
 	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
@@ -117,9 +117,9 @@ endif
 
 clobber:
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Clobbering Stroika ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents..."
 else
-	@../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Clobbering Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
 	@#ok to call with NO CONFIG (does all)
 	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)

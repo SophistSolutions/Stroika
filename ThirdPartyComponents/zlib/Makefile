@@ -71,7 +71,7 @@ all:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika/ThirdPartyComponents/zlib $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/zlib $(VERSION):"
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 
@@ -85,7 +85,7 @@ endif
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
 	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
@@ -94,7 +94,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Patching..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching..."
 	@dos2unix -q CURRENT/win32/Makefile.msc > CURRENT/PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH >> CURRENT/PATCHING.OUT
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH >> CURRENT/PATCHING.OUT
@@ -108,7 +108,7 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Configuring (messages to CURRENT/CONFIGURE.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (messages to CURRENT/CONFIGURE.OUT)..."
 	@echo "export CC=$(CC) cd CURRENT && ./configure" > CURRENT/CONFIGURE.OUT
 	@(export CC="$(CC)"; cd CURRENT && ./configure) >> CURRENT/CONFIGURE.OUT 2>&1
 	@$(ECHO) "done"
@@ -119,7 +119,7 @@ doCreate:	$(ZIPEDFILE)
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Extract $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extract $(ZIPEDFILE) to CURRENT..."
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPEDFILE) -C CURRENT --strip-components 1
@@ -135,10 +135,10 @@ doBuilds:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)..."
 	@make doBuildInternal_ > CURRENT/BUILD.OUT 2>&1
 	@$(ECHO) "done"
-	@../../ScriptsLib/PrintLevelLeader.sh $$(($(MAKE_INDENT_LEVEL)+1)) && $(ECHO) -n "Copying builds to $(BUILDS_ROOT) ..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/libz.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp CURRENT/zlib.h CURRENT/zconf.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
@@ -231,7 +231,7 @@ check:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "   FAILED: missing $$i";\
