@@ -18,12 +18,15 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
 /*
  ********************************************************************************
  ************************* WebServer::Router::Rep_ ******************************
  ********************************************************************************
  */
-//
+
 struct Router::Rep_ : Interceptor::_IRep {
     Rep_ (const Sequence<Route>& routes)
         : fRoutes_ (routes)
@@ -34,6 +37,9 @@ struct Router::Rep_ : Interceptor::_IRep {
     }
     virtual void HandleMessage (Message* m) override
     {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ()};
+#endif
         Optional<RequestHandler> handler = Lookup_ (*m->PeekRequest ());
         if (handler) {
             (*handler) (m);
