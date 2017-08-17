@@ -11,6 +11,7 @@
 ifndef StroikaRoot
 	$error("StroikaRoot must be defined and included before this file (should be done automatically in Configuration.mk)")
 endif
+export StroikaRoot
 
 ifndef ObjDir
 	ObjDir		=	./

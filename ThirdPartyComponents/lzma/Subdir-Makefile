@@ -247,11 +247,9 @@ LINKTARGETPREFIX= -o
 
 
 %.$(OBJSUFFIX) : %.cpp
-	@#echo "      Compiling $(subst ../,, $<)..."
 	"$(CC)" $(CFLAGS) -c $<
 
 %.$(OBJSUFFIX) : %.c
-	@#echo "      Compiling $(subst ../,, $<)..."
 	"$(CC)" $(CFLAGS) -c $<
 
 
