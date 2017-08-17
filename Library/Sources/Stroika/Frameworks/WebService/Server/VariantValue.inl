@@ -204,7 +204,7 @@ namespace Stroika {
                     template <typename RETURN_TYPE, typename... IN_ARGS>
                     inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
                     {
-                        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper, bind<RETURN_TYPE> (f, std::forward<IN_ARGS> (inArgs)...));
+                        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper, function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, std::forward<IN_ARGS> (inArgs)...)});
                     }
                     // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
                     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>
