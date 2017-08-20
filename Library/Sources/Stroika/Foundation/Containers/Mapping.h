@@ -257,7 +257,16 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note Alias LookupOrException
+                 */
+                template <typename THROW_IF_MISSING>
+                nonvirtual mapped_type LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const;
+
+            public:
+                /**
                  *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
+                 *
+                 *  \note Alias LookupOrDefault
                  */
                 nonvirtual mapped_type LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue = mapped_type ()) const;
 

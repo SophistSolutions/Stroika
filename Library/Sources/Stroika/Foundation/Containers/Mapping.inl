@@ -142,6 +142,15 @@ namespace Stroika {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename THROW_IF_MISSING>
+            inline MAPPED_VALUE_TYPE Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
+            {
+                if (Memory::Optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) {
+                    return *r;
+                }
+                Execution::Throw (throwIfMissing);
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
             inline MAPPED_VALUE_TYPE Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
             {
                 Memory::Optional<MAPPED_VALUE_TYPE> r{Lookup (key)};
