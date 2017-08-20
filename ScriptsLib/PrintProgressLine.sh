@@ -14,7 +14,7 @@ do
 		case "$arg" in
 		-n)    NFLAG=$arg
 				;;
-		*)      PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS $arg"
+		*)      PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS$arg"
 				;;
 		esac
 	fi
