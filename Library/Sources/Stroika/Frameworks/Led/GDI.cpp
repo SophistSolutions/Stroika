@@ -1160,10 +1160,10 @@ void Led_Tablet_::RecolorHelper::DoRecolor_CopyTo8BitManualMungePixAndBack (cons
      */
     Verify (::GdiFlush ()); // make sure bits in sync... - not SURE if this is needed?
     {
-        register const unsigned char* kMappingTable = fMappingTable;
-        unsigned char*                dataStart     = fDibData;
-        unsigned char*                dataEnd       = dataStart + fDibDataByteCount;
-        for (register unsigned char* i = dataStart; i < dataEnd; ++i) {
+        const unsigned char* kMappingTable = fMappingTable;
+        unsigned char*       dataStart     = fDibData;
+        unsigned char*       dataEnd       = dataStart + fDibDataByteCount;
+        for (unsigned char* i = dataStart; i < dataEnd; ++i) {
             *i = kMappingTable[*i];
         }
     }
