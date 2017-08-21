@@ -39,9 +39,6 @@ namespace Stroika {
             protected:
                 using _DataHyperRectangleRepSharedPtr = typename inherited::_DataHyperRectangleRepSharedPtr;
 
-            protected:
-                [[deprecated ("USE _DataHyperRectangleRepSharedPtr - deprecated v2.0a211")]] typedef _DataHyperRectangleRepSharedPtr _SharedPtrIRep;
-
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.

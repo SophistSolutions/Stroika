@@ -258,12 +258,6 @@ namespace Stroika {
                 using _IterableRepSharedPtr = SharedPtrImplementationTemplate<_IRep>;
 
             protected:
-                [[deprecated ("USE _IterableRepSharedPtr - deprecated v2.0a211")]] typedef _IterableRepSharedPtr _SharedPtrIRep;
-
-            protected:
-                [[deprecated ("USE _IterableRepSharedPtr - deprecated v2.0a211")]] typedef _IterableRepSharedPtr _IterableSharedPtr;
-
-            protected:
                 /**
                  *  _IteratorRepSharedPtr is logically shared_ptr<Iterator<T>::_IRep>. However, we may use alternative 'shared ptr' implementations,
                  *  so use this type to assure compatability with the approppriate shared ptr implementation.
@@ -1108,9 +1102,6 @@ namespace Stroika {
 
             protected:
                 using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-
-            protected:
-                [[deprecated ("USE _IterableRepSharedPtr - deprecated v2.0a211")]] typedef _IterableRepSharedPtr _SharedPtrIRep;
 
             public:
                 using _APPLY_ARGTYPE      = const function<void(ArgByValueType<T> item)>&;

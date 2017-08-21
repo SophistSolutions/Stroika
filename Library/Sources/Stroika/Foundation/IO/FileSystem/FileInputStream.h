@@ -89,24 +89,6 @@ namespace Stroika {
                     static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
                     static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
 
-                public:
-                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT)
-                    {
-                        return New (fileName, seekable, bufferFlag);
-                    }
-                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::InputStream<Memory::Byte>::Ptr mk (const String& fileName, BufferFlag bufferFlag)
-                    {
-                        return New (fileName, bufferFlag);
-                    }
-                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT, BufferFlag bufferFlag = BufferFlag::eDEFAULT)
-                    {
-                        return New (fd, adoptFDPolicy, seekable, bufferFlag);
-                    }
-                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::InputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, BufferFlag bufferFlag)
-                    {
-                        return New (fd, bufferFlag);
-                    }
-
                 private:
                     class Rep_;
 

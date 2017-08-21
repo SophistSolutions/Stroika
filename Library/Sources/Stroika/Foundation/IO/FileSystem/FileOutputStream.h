@@ -139,23 +139,6 @@ namespace Stroika {
                     static OutputStream<Memory::Byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
                     static OutputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
 
-                public:
-                    /**
-                     * @see FileOutputStream constructor
-                     */
-                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
-                    {
-                        return New (fileName, flushFlag, bufferedFlag);
-                    }
-                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::OutputStream<Memory::Byte>::Ptr mk (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
-                    {
-                        return New (fileName, appendFlag, flushFlag, bufferedFlag);
-                    }
-                    [[deprecated ("USE New - deprecated v2.0a211")]] static Streams::OutputStream<Memory::Byte>::Ptr mk (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT, BufferFlag bufferedFlag = BufferFlag::eDEFAULT)
-                    {
-                        return New (fd, adoptFDPolicy, seekableFlag, flushFlag, bufferedFlag);
-                    }
-
                 private:
                     class Rep_;
 

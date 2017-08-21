@@ -46,14 +46,8 @@ namespace Stroika {
         namespace IO {
             namespace FileSystem {
 
-//tmphack - just while we have [[deprecated ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211")]]
-#if 1
-                class Ptr;
-                Ptr Default ();
-#endif
-
                 /**
-                */
+                 */
                 enum class RemoveDirectoryPolicy {
                     eFailIfNotEmpty,
                     eRemoveAnyContainedFiles, // note - this includes the case of included folders which include more files - fully recursive
@@ -81,12 +75,6 @@ namespace Stroika {
                  *
                  */
                 class Ptr {
-                public:
-                    [[deprecated ("USE IO::FileSystem::Default () - lose double FileSystem - deprecated v2.0a211")]] static Ptr Default ()
-                    {
-                        return IO::FileSystem::Default ();
-                    }
-
                 public:
                     /**
                      *  Return true if the given access is allowed (for the current user id).
@@ -293,8 +281,6 @@ namespace Stroika {
                      */
                     nonvirtual void SetCurrentDirectory (const String& newDir);
                 };
-
-                [[deprecated ("USE IO::FileSystem::Ptr- deprecated v2.0a211")]] typedef Ptr FileSystem;
 
                 /**
                  *  \note   Design Note: why method 'Default ()' instead of just sThe, or something like that?

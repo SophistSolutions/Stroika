@@ -242,13 +242,6 @@ namespace Stroika {
 
             public:
                 /**
-                 *     Create a Synchronized (thread safe) copy of this stream. Note - this still refers to the same
-                 *  underlying stream.
-                 */
-                [[deprecated ("as of v2.0a211 - USE New (Execution::InternallySyncrhonized)")]] nonvirtual Ptr Synchronized () const;
-
-            public:
-                /**
                  * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
                  */
                 nonvirtual SeekOffsetType GetOffset () const;

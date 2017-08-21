@@ -121,9 +121,6 @@ namespace Stroika {
             protected:
                 using _QueueRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
-            protected:
-                [[deprecated ("USE _QueueRepSharedPtr - deprecated v2.0a211")]] typedef _QueueRepSharedPtr _SharedPtrIRep;
-
             public:
                 /**
                  *  @todo Document carefully Queue(start,end) iter order - so copy works well! -- SEE DESIGN IN TODO DOCS ABOVE

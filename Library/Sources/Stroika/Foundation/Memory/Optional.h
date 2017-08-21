@@ -517,14 +517,6 @@ namespace Stroika {
 
             public:
                 /**
-                 */
-                [[deprecated ("USE has_value - deprecated v2.0a211")]] nonvirtual constexpr bool engaged () const noexcept
-                {
-                    return has_value ();
-                }
-
-            public:
-                /**
                  *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
                  *
                  *  \note alias for std::optional<>::has_value ()

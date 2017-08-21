@@ -81,9 +81,6 @@ namespace Stroika {
             protected:
                 using _StackRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
-            protected:
-                [[deprecated ("USE _StackRepSharedPtr - deprecated v2.0a211")]] typedef _StackRepSharedPtr _SharedPtrIRep;
-
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.

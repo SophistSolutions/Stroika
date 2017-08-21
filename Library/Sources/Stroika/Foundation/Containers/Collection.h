@@ -119,9 +119,6 @@ namespace Stroika {
             protected:
                 using _CollectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
-            protected:
-                [[deprecated ("USE _CollectionRepSharedPtr - deprecated v2.0a211")]] typedef _CollectionRepSharedPtr _SharedPtrIRep;
-
             public:
                 Collection ();
                 Collection (const Collection<T>& src) noexcept;

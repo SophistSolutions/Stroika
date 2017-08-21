@@ -279,11 +279,6 @@ namespace Stroika {
                  */
                 using IteratorRepSharedPtr = SharedPtrImplementationTemplate<IRep>;
 
-            public:
-                /**
-                */
-                [[deprecated ("USE IteratorRepSharedPtr - deprecated v2.0a211")]] typedef IteratorRepSharedPtr SharedIRepPtr;
-
             private:
                 struct Rep_Cloner_ {
                     static IteratorRepSharedPtr Copy (const IRep& t);

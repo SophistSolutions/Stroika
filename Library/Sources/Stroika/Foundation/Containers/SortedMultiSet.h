@@ -65,9 +65,6 @@ namespace Stroika {
             protected:
                 using _SortedMultiSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
-            protected:
-                [[deprecated ("USE _SortedMultiSetRepSharedPtr - deprecated v2.0a211")]] typedef _SortedMultiSetRepSharedPtr _SharedPtrIRep;
-
             public:
                 SortedMultiSet ();
                 SortedMultiSet (const SortedMultiSet<T, TRAITS>& src) noexcept;

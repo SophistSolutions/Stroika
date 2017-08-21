@@ -59,9 +59,6 @@ namespace Stroika {
             protected:
                 using _SortedMappingRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
-            protected:
-                [[deprecated ("USE _SortedMappingRepSharedPtr - deprecated v2.0a211")]] typedef _SortedMappingRepSharedPtr _SharedPtrIRep;
-
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
