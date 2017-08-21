@@ -55,7 +55,7 @@ DEB_WORKDIR=$(ObjDir)DEB_TMP/
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build.Out
 installer-deb:
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Building DEB installer: $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb; temp files in $(DEB_WORKDIR); logging to $(DEB_BUILD_OUT)..."
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Building DEB installer: $(shell $(StroikaRoot)ScriptsLib/SubsctituteBackVariables.sh $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb; temp files in $(DEB_WORKDIR); logging to $(DEB_BUILD_OUT))..."
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-deb without a configuration argument)
 endif
@@ -92,7 +92,7 @@ RPM_WORKDIR=$(ObjDir)RPM_TMP/
 RPM_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 RPM_BUILD_OUT=$(ObjDir)RPM-Installer-Build.Out
 installer-rpm:
-	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Building RPM installer:  $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm; temp files in $(RPM_WORKDIR); logging to $(RPM_BUILD_OUT)..."
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Building RPM installer:  $(shell $(StroikaRoot)ScriptsLib/SubsctituteBackVariables.sh $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(RPM_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).rpm; temp files in $(RPM_WORKDIR); logging to $(RPM_BUILD_OUT))..."
 ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-rpm without a configuration argument)
 endif
