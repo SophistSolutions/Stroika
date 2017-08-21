@@ -52,7 +52,7 @@ all_objs_:
 
 $(StroikaFoundationLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Creating $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh `realpath $@`)..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Creating $(shell $(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh `realpath --canonicalize-missing $@`)..."
 	@rm -f $(StroikaFoundationLib)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 		echo "      $(AR) cr $(StroikaFoundationLib) $(ALL_OBJS)";\
