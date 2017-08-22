@@ -14,7 +14,7 @@ do
 		case "$arg" in
 		-n)    NFLAG=$arg
 				;;
-		*)     if [ "$PRINT_STUFF_EXTRAS"="" ] ; then PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS$arg" ; else PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS $arg"; fi
+		*)     if [ "$PRINT_STUFF_EXTRAS" = "" ] ; then PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS$arg" ; else PRINT_STUFF_EXTRAS="$PRINT_STUFF_EXTRAS $arg"; fi
 				;;
 		esac
 	fi
