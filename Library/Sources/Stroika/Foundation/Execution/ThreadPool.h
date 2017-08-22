@@ -60,7 +60,7 @@ namespace Stroika {
 
             /**
              *  The ThreadPool class creates a small fixed number of Thread objects, and lets you use them
-             *  as if there were many more. You submit a task (representable as a copyable IRunnable) -
+             *  as if there were many more. You submit a task (representable as a comparable std::function - @see Function) -
              *  and it gets eventually executed.
              *
              *  If as Task in the thread pool raises an exception - this will be IGNORED (except for the
