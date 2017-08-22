@@ -194,8 +194,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #if defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
 // still broken in _MS_VS_2k17_15Pt1_
-// FIXED??? in _MS_VS_2k17_15Pt3Pt1_
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
+// still broken in _MS_VS_2k17_15Pt3Pt1_ - BUT MUCH MORE SUBTLY - WEBSERVER APP CRASHES (USES OPTIONAL) - AT RUNTIME - (at least debug build) - SO TEST WEBSERVER SAMPLE
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt1_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
 #endif
