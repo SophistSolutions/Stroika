@@ -6,7 +6,7 @@
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 .NOTPARALLEL:
 
-export StroikaRoot=$(shell realpath ../../..)/
+export StroikaRoot=$(shell realpath ../..)/
 
 SHELL=/bin/bash
 
