@@ -6,6 +6,8 @@
 .PHONY:	all clean clobber check doBuild doCreate doPatch
 .NOTPARALLEL:
 
+export StroikaRoot=$(shell realpath ../../..)/
+
 SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -306,7 +308,7 @@ endif
 	@
 	@# OpenSSL build to INSTALLDIR (inside Stroika Builds)
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Installing "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "to $(BUILDS_OUTPUT_DIR), and redirecting messages to CURRENT/INSTALL.OUT"`"...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Installing "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "to $(BUILDS_OUTPUT_DIR), and redirecting messages to CURRENT/INSTALL.OUT"`"..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
 endif
