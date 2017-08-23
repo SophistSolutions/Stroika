@@ -247,6 +247,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  the Date/0 CTOR returns an empty date (see @Date::empty ())
                  */
                 constexpr Date ();
                 constexpr Date (const Date& src) = default;

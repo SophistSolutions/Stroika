@@ -262,6 +262,14 @@ namespace {
                     // Note - saw this fail once on raspberry pi but appears the machine was just being slow - nothing looked other than slow - wrong in
                     // the tracelog - so don't worry unless we see again. That machine can be quite slow
                     //  -- LGP 2017-07-05
+                    //
+                    //  NOTE - saw this a second time on raspberrypi - with:
+                    //      "This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt: tries: 1." in the log
+                    //      about 6 seconds into wait
+                    //      SIGNAL to abort other thread set at 1.6 TICKCOUNT, and it got it and started aborting at 2.1
+                    //      and 0x762ff450][0007.556]       In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x762ff450, status: Aborting}
+                    // and this failed at 0007.583, so just wait a little longer
+                    // CHANGE NEXT RELEASE A BIT MORE
                 }
                 Time::DurationSecondsType doneAt        = Time::GetTickCount ();
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
