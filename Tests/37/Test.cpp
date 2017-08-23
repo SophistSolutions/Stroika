@@ -205,57 +205,57 @@ namespace {
             }
             VerifyTestResult (passed);
         }
-        void TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ()
+        void TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_ ()
         {
-            Debug::TraceContextBumper traceCtx ("Deadlock block on waitable event and abort thread (thread cancelation)");
-            // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
-            struct FRED1 {
-                static void DoIt (void* ignored)
-                {
-                    sRegTest3Event_T1_.Wait (60.0); // just has to be much more than the waits below
-                }
+            Debug::TraceContextBumper traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)"};
+            // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
+            static constexpr Time::DurationSecondsType kLONGTimeForThread2Wait_{60.0}; // just has to be much more than the waits below
+            auto                                       myWaitingThreadProc = []() {
+                sRegTest3Event_T1_.Wait (kLONGTimeForThread2Wait_);
             };
 
             sRegTest3Event_T1_.Reset ();
-            int         updaterValue = 0;
-            Thread::Ptr thread1      = Thread::New (bind (&FRED1::DoIt, &updaterValue));
-            thread1.Start ();
+            Thread::Ptr t = Thread::New (myWaitingThreadProc, Thread::eAutoStart);
 
-            // At this point the thread SHOULD block and wait 60.0 seconds
+            // At this point the thread 't' SHOULD block and wait kLONGTimeForThread2Wait_ seconds
+            // So we wait a shorter time for it, and that should fail
             {
-                const Time::DurationSecondsType kMargingOfErrorLo_ = .5;
-                const Time::DurationSecondsType kMargingOfErrorHi_ = 5.0; // if sys busy, thread could be put to sleep almost any amount of time
-                const Time::DurationSecondsType kWaitOnAbortFor    = 1.0;
-                Time::DurationSecondsType       startTestAt        = Time::GetTickCount ();
-                Time::DurationSecondsType       caughtExceptAt     = 0;
+                const Time::DurationSecondsType kMarginOfErrorLo_ = .5;
+                const Time::DurationSecondsType kMarginOfErrorHi_ = 5.0; // if sys busy, thread could be put to sleep almost any amount of time
+                const Time::DurationSecondsType kWaitOnAbortFor   = 1.0;
+                Time::DurationSecondsType       startTestAt       = Time::GetTickCount ();
+                Time::DurationSecondsType       caughtExceptAt    = 0;
 
                 try {
-                    thread1.WaitForDone (kWaitOnAbortFor);
+                    t.WaitForDone (kWaitOnAbortFor);
                 }
                 catch (const Execution::TimeOutException&) {
                     caughtExceptAt = Time::GetTickCount ();
                 }
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
-                if (not(expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_)) {
+                if (not(expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt and caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_)) {
                     DbgTrace (L"expectedEndAt=%f, caughtExceptAt=%f", double(expectedEndAt), double(caughtExceptAt));
                 }
-                VerifyTestResult (expectedEndAt - kMargingOfErrorLo_ <= caughtExceptAt);
+                VerifyTestResult (expectedEndAt - kMarginOfErrorLo_ <= caughtExceptAt);
                 // FAILURE:
                 //      2.0a208x release - in regtests on raspberrypi-gcc-5, regtests  - (caughtExceptAt - expectedEndAt) was 4.1,
                 //      so may need to be much larger occasionally (on slow raspberry pi) - but rarely fails.
-                //      But failed with kMargingOfErrorHi_=2.0, so from 2.5 5.0 for future releases
-                VerifyTestResult (caughtExceptAt <= expectedEndAt + kMargingOfErrorHi_);
+                //      But failed with kMarginOfErrorHi_=2.0, so from 2.5 5.0 for future releases
+                VerifyTestResult (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_);
             }
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
-                constexpr Time::DurationSecondsType kMargingOfError = 3.5; // larger margin of error cuz sometimes fails on raspberrypi
-                constexpr Time::DurationSecondsType kWaitOnAbortFor = 2.5; // use such a long timeout cuz we run this on 'debug' builds,
+                constexpr Time::DurationSecondsType kMarginOfError_ = 3.5; // larger margin of error cuz sometimes fails on raspberrypi
+                constexpr Time::DurationSecondsType kWaitOnAbortFor = 3.0; // use such a long timeout cuz we run this on 'debug' builds,
                                                                            // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
                                                                            // due to timeout on raspberrypi (rare even there)
+                                                                           //
+                                                                           // Upped from 2.5 to 3.0 because failed twice between July and August 2017 on
+                                                                           // raspberrypi -- LGP 2017-08-23
                 Time::DurationSecondsType startTestAt = Time::GetTickCount ();
                 try {
-                    thread1.AbortAndWaitForDone (kWaitOnAbortFor);
+                    t.AbortAndWaitForDone (kWaitOnAbortFor);
                 }
                 catch (const Execution::TimeOutException&) {
                     VerifyTestResult (false); // shouldn't fail to wait cuz we did abort
@@ -270,17 +270,20 @@ namespace {
                     //      and 0x762ff450][0007.556]       In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x762ff450, status: Aborting}
                     // and this failed at 0007.583, so just wait a little longer
                     // CHANGE NEXT RELEASE A BIT MORE
+                    //
+                    /// @todo CHANGED TIME FROM 2.5 to 3 2017-08-23 - so if we see again react, and if not, clear out these warnings/docs
+                    //
                 }
                 Time::DurationSecondsType doneAt        = Time::GetTickCount ();
                 Time::DurationSecondsType expectedEndAt = startTestAt + kWaitOnAbortFor;
-                if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError)) {
+                if (not(startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_)) {
                     DbgTrace (L"startTestAt=%f, doneAt=%f, expectedEndAt=%f", double(startTestAt), double(doneAt), double(expectedEndAt));
                 }
-                VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMargingOfError);
+                VerifyTestResult (startTestAt <= doneAt and doneAt <= expectedEndAt + kMarginOfError_);
             }
 
             // Thread MUST be done/terminated by this point
-            VerifyTestResult (thread1.GetStatus () == Thread::Status::eCompleted);
+            VerifyTestResult (t.GetStatus () == Thread::Status::eCompleted);
         }
     }
     void RegressionTest3_WaitableEvents_ ()
@@ -289,7 +292,7 @@ namespace {
         WAITABLE_EVENTS_::NOTIMEOUTS_ ();
         WAITABLE_EVENTS_::PingBackAndForthWithSimpleTimeouts_ ();
         WAITABLE_EVENTS_::TEST_TIMEOUT_EXECPETIONS_ ();
-        WAITABLE_EVENTS_::TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ();
+        WAITABLE_EVENTS_::TEST_ThreadCancelationOnAThreadWhichIsWaitingOnAnEvent_ ();
     }
 }
 
