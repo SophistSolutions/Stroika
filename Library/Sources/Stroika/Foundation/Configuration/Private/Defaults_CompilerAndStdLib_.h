@@ -35,6 +35,18 @@
  *******************************************************************
  */
 
+/*
+ *  @eee StroikaConfig.cpp
+ *
+ * We want to issue a warning about the compiler/build system compatability flags, but we dont want to issue the warning for every file
+ * compiled.
+ *
+ * That way -for the COMMON case of using Stroika with a NEWER compiler than has been tested, you get ONE message, not one per file in stroika. This isnt perfect, because
+ * you only get the warning when building Stroika, not YOUR application. But it was really a PITA building stroika based apps using an older
+ * stroika and getting so many warnings.
+ *
+ *     -- LGP 2017-08-24
+ */
 #if defined(__clang__)
 
 #if defined(__APPLE__)
@@ -42,10 +54,10 @@
 // see
 //      clang++-3.8 -dM -E - < /dev/null
 #if (__clang_major__ < 8) || (__clang_major__ == 8 && (__clang_minor__ < 0))
-#pragma message("Warning: Stroika does not support versions prior to clang++ 8.0 (APPLE)")
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 8.0 (APPLE)"
 #endif
 #if (__clang_major__ > 8) || (__clang_major__ == 8 && (__clang_minor__ > 1))
-#pragma message("Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
@@ -53,10 +65,10 @@
 // see
 //      clang++-3.8 -dM -E - < /dev/null
 #if (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 7))
-#pragma message("Warning: Stroika does not support versions prior to clang++ 3.7 (non-apple)")
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 3.7 (non-apple)"
 #endif
 #if (__clang_major__ > 4) || (__clang_major__ == 4 && (__clang_minor__ > 0))
-#pragma message("Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #endif
@@ -64,10 +76,10 @@
 #elif defined(__GNUC__)
 
 #if __GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ < 0))
-#pragma message("Warning: Stroika does not support versions prior to GCC 5.0")
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to GCC 5.0"
 #endif
 #if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 1))
-#pragma message("Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
@@ -81,21 +93,21 @@
 #define _MS_VS_2k17_15Pt3Pt2_ 191125507
 
 #if _MSC_VER < 1910
-#pragma message("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017")
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
 #elif _MSC_VER <= 1911
 // check which sub-version of MSVC2k17
 #if _MSC_FULL_VER > _MS_VS_2k17_15Pt3Pt2_
-#pragma message("Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
-#pragma message("Info: This version of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES")
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 
 #else
 
-#pragma message("Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what features are supported by your compiler.")
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does recognize the compiler being used. It may work, but you may need to update some of the other defines for what features are supported by your compiler."
 
 #endif
 
