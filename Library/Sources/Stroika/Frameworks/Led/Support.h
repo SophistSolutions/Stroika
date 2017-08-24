@@ -45,11 +45,11 @@
 #include <X11/Xatom.h>
 #endif
 
-using namespace std;
-
 namespace Stroika {
     namespace Frameworks {
         namespace Led {
+
+            using namespace std;
 
             using Foundation::Memory::Byte;
 
@@ -152,11 +152,11 @@ public:                              \
 #endif
 
 #if qWideCharacters
-            const wchar_t kNonBreakingSpace = 0x00a0;
-            const wchar_t kZeroWidthSpace   = 0x200b;
-            const wchar_t kPoundSign        = 0x00a3;
-            const wchar_t kCentSign         = 0x00a2;
-            const wchar_t kYenSign          = 0x00a5;
+            constexpr wchar_t kNonBreakingSpace = 0x00a0;
+            constexpr wchar_t kZeroWidthSpace   = 0x200b;
+            constexpr wchar_t kPoundSign        = 0x00a3;
+            constexpr wchar_t kCentSign         = 0x00a2;
+            constexpr wchar_t kYenSign          = 0x00a5;
 #endif
 
             /*
