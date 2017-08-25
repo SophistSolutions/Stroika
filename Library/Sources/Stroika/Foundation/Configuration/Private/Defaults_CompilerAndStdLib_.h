@@ -78,7 +78,7 @@
 #if __GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to GCC 5.0"
 #endif
-#if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 1))
+#if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 2))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -352,6 +352,7 @@ Or on MacOS Clang
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
 // APPEARS still broken with gcc 7.1
+// APPEARS TO BE FIXED in GCC 7.2
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
 #elif defined(_MSC_VER)
 // STILL WARNINGS - _MS_VS_2k17_FULLVER_ --
@@ -390,7 +391,7 @@ Vusual studio:
 #if !defined(__clang__) && defined(__GNUC__)
 // still broken with gcc 6.2
 // still broken with gcc 7.1
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 4) && (__clang_minor__ <= 0))
 #elif defined(_MSC_VER)
@@ -771,7 +772,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy 0
 #endif
