@@ -460,7 +460,7 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #ifndef qCompilerAndStdLib_process_init_constructor_array_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_process_init_constructor_array_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
+#define qCompilerAndStdLib_process_init_constructor_array_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2))
 #else
 #define qCompilerAndStdLib_process_init_constructor_array_Buggy 0
 #endif
@@ -482,7 +482,7 @@ In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
 #ifndef qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
+#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2))
 #else
 #define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy 0
 #endif
