@@ -460,7 +460,7 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #ifndef qCompilerAndStdLib_process_init_constructor_array_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_process_init_constructor_array_Buggy (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
+#define qCompilerAndStdLib_process_init_constructor_array_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
 #else
 #define qCompilerAndStdLib_process_init_constructor_array_Buggy 0
 #endif
