@@ -352,8 +352,8 @@ Or on MacOS Clang
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
 // APPEARS still broken with gcc 7.1
-// APPEARS TO BE FIXED in GCC 7.2
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+// APPEARS still broken with gcc 7.2
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #elif defined(_MSC_VER)
 // STILL WARNINGS - _MS_VS_2k17_FULLVER_ --
 // STILL WARNINGS in _MS_VS_2k17_15Pt1_
