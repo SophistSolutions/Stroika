@@ -53,7 +53,7 @@ namespace Stroika {
                     /**
                      * Convert URL query argumetns to a mapping of name to value pairs (so they can be mapped to objects)
                      *
-                     *  @see PickoutParamValuesBody () to just pickout params from Body
+                     *  @see PickoutParamValuesFromBody () to just pickout params from Body
                      *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
                     Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, const Optional<Iterable<String>>& namedParameters = {});
@@ -65,20 +65,25 @@ namespace Stroika {
                      *  @see PickoutParamValuesFromURL () to just pickout params from URL
                      *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
-                    Mapping<String, VariantValue> PickoutParamValuesBody (Request* request, const Optional<Iterable<String>>& namedParameters);
-                    Mapping<String, VariantValue> PickoutParamValuesBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters);
+                    Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, const Optional<Iterable<String>>& namedParameters);
+                    Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters);
+
+                    [[deprecated ("USE PickoutParamValuesFromBody, deprecated in v2.0a217")]] inline Mapping<String, VariantValue> PickoutParamValuesBody (Request* request, const Optional<Iterable<String>>& namedParameters)
+                    {
+                        return PickoutParamValuesFromBody (request, namedParameters);
+                    }
+                    [[deprecated ("USE PickoutParamValuesFromBody, deprecated in v2.0a217")]] inline Mapping<String, VariantValue> PickoutParamValuesBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
+                    {
+                        return PickoutParamValuesFromBody (body, bodyContentType, namedParameters);
+                    }
 
                     /**
-                     */
-                    VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage = {});
-
-                    /**
-                     * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesBody - optionally restricting which params we grab from URL/body.
+                     * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
                      *
                      *  If parameters given in both places, use the BODY -provided value.
                      *
                      *  @see PickoutParamValuesFromURL () to just pickout params from URL
-                     *  @see PickoutParamValuesBody () to just pickout params from Body
+                     *  @see PickoutParamValuesFromBody () to just pickout params from Body
                      *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
                     Mapping<String, VariantValue> PickoutParamValues (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
@@ -87,6 +92,10 @@ namespace Stroika {
                     {
                         return PickoutParamValues (request, namedURLParams, namedBodyParams);
                     }
+
+                    /**
+                     */
+                    VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage = {});
 
                     /**
                      *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).

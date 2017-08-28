@@ -53,16 +53,16 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 
 /*
  ********************************************************************************
- *********** WebService::Server::VariantValue::PickoutParamValuesBody ***********
+ ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesBody (Request* request, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request, const Optional<Iterable<String>>& namedParameters)
 {
     Memory::BLOB inData = request->GetBody ();
-    return PickoutParamValuesBody (request->GetBody (), request->GetContentType (), namedParameters);
+    return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType (), namedParameters);
 }
 
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
 {
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::JSON_CT ();
     if (bodyContentType.Value (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::JSON_CT ()) {
@@ -113,7 +113,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 {
     Mapping<String, DataExchange::VariantValue> result = PickoutParamValuesFromURL (request, namedURLParams);
     // body params take precedence, if they overlap
-    PickoutParamValuesBody (request, namedBodyParams).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
+    PickoutParamValuesFromBody (request, namedBodyParams).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
     return result;
 }
 
