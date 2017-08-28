@@ -121,12 +121,6 @@ namespace Stroika {
                 nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
             public:
-                [[deprecated ("USE CloseWrite () - deprecated v2.0a213")]] void CloseForWrites ()
-                {
-                    this->CloseWrite (false);
-                }
-
-            public:
                 /**
                  *  Convert the current contents of this SharedMemoryStream into one of the "T" representations.
                  *  T can be one of:

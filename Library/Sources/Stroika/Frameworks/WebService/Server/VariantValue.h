@@ -52,12 +52,18 @@ namespace Stroika {
 
                     /**
                      * Convert URL query argumetns to a mapping of name to value pairs (so they can be mapped to objects)
+                     *
+                     *  @see PickoutParamValuesBody () to just pickout params from Body
+                     *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
                     Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, const Optional<Iterable<String>>& namedParameters = {});
                     Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, const Optional<Iterable<String>>& namedParameters = {});
 
                     /**
                      * Convert body to a mapping of name to value pairs (so they can be mapped to objects)
+                     *
+                     *  @see PickoutParamValuesFromURL () to just pickout params from URL
+                     *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
                     Mapping<String, VariantValue> PickoutParamValuesBody (Request* request, const Optional<Iterable<String>>& namedParameters);
                     Mapping<String, VariantValue> PickoutParamValuesBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters);
@@ -66,20 +72,25 @@ namespace Stroika {
                      */
                     VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage = {});
 
-                    [[deprecated ("USE OrderParamValues - deprecated v2.0a213")]] Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
-                    [[deprecated ("USE PickoutParamValues_NEW - then lookup param names in mapping result, deprecated v2.0a213")]] Sequence<VariantValue> PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage = {});
-
                     /**
                      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesBody - optionally restricting which params we grab from URL/body.
                      *
                      *  If parameters given in both places, use the BODY -provided value.
                      *
-                     *  @todo - Rename losing _NEW - once some time has passed (around v2.0a213) - will be deprecated
+                     *  @see PickoutParamValuesFromURL () to just pickout params from URL
+                     *  @see PickoutParamValuesBody () to just pickout params from Body
+                     *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
-                    Mapping<String, VariantValue> PickoutParamValues_NEW (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
+                    Mapping<String, VariantValue> PickoutParamValues (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
+
+                    [[deprecated ("USE PickoutParamValues, deprecated in v2.0a217")]] inline Mapping<String, VariantValue> PickoutParamValues_NEW (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {})
+                    {
+                        return PickoutParamValues (request, namedURLParams, namedBodyParams);
+                    }
 
                     /**
                      *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).
+                     *  This is useful if you know the order of named parameters, and just want to pass them as ordered parameters.
                      */
                     Sequence<VariantValue> OrderParamValues (const Iterable<String>& paramNames, const Mapping<String, VariantValue>& paramValues);
 

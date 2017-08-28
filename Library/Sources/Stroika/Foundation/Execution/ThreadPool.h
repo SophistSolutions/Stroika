@@ -210,10 +210,10 @@ namespace Stroika {
                 nonvirtual size_t GetPendingTasksCount () const;
 
             private:
-                nonvirtual void Abort_ ();
+                nonvirtual void Abort_ () noexcept;
 
             private:
-                nonvirtual void AbortAndWaitForDone_ ();
+                nonvirtual void AbortAndWaitForDone_ () noexcept;
 
             public:
                 /**

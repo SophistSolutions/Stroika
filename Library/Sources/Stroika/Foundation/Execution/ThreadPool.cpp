@@ -105,14 +105,7 @@ ThreadPool::ThreadPool (unsigned int nThreads, const Memory::Optional<String>& t
 
 ThreadPool::~ThreadPool ()
 {
-    Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
-    try {
-        AbortAndWaitForDone_ ();
-    }
-    catch (...) {
-        DbgTrace (L"serious bug - make AbortAndWaitForDone_ noexcept after we lose deprecated variants");
-        AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
-    }
+    AbortAndWaitForDone_ ();
 }
 
 unsigned int ThreadPool::GetPoolSize () const
@@ -349,11 +342,10 @@ size_t ThreadPool::GetPendingTasksCount () const
     return count;
 }
 
-void ThreadPool::Abort_ ()
+void ThreadPool::Abort_ () noexcept
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
-    CheckForThreadInterruption ();
-    Thread::SuppressInterruptionInContext suppressCtx;            // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
+    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
+    Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // disable cuz - see below
     fAborted_ = true;                                             // No race, because fAborted never 'unset'
                                                                   // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
@@ -367,21 +359,27 @@ void ThreadPool::Abort_ ()
     }
 }
 
-void ThreadPool::AbortAndWaitForDone_ ()
+void ThreadPool::AbortAndWaitForDone_ () noexcept
 {
+    Thread::SuppressInterruptionInContext suppressCtx; // cuz we must shutdown owned threads
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::AbortAndWaitForDone_", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
 #endif
-    DISABLE_COMPILER_MSC_WARNING_START (4996)
-    CheckForThreadInterruption ();
-    Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
-    Abort_ ();                                         // to get the rest of the threadpool abort stuff triggered - flag saying aborting
-    Collection<Thread::Ptr> threadsToShutdown;
-    {
-        auto critSec{make_unique_lock (fCriticalSection_)};
-        fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
+    try {
+        Abort_ (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
+        Collection<Thread::Ptr> threadsToShutdown;
+        {
+            auto critSec{make_unique_lock (fCriticalSection_)};
+            fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
+        }
+        Thread::AbortAndWaitForDone (threadsToShutdown);
     }
-    Thread::AbortAndWaitForDone (threadsToShutdown);
+    catch (...) {
+        DbgTrace (L"serious bug");
+        AssertNotReached (); // this should never happen due to the SuppressInterruptionInContext...
+    }
+
+    DISABLE_COMPILER_MSC_WARNING_START (4996)
     DISABLE_COMPILER_MSC_WARNING_END (4996)
 }
 

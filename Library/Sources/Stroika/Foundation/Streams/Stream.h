@@ -170,24 +170,6 @@ namespace Stroika {
 
             public:
                 /**
-                 *  empty() doesn't check the data in the stream, but instead checks if this Stream
-                 *  smart pointer references any actual stream.
-                 *
-                 *  @todo   CONSIDER DEPRECATING empty () - and replacing with == nullptr?
-                 */
-                [[deprecated ("USE == nullptr - deprecated v2.0a213")]] bool empty () const
-                {
-                    return *this == nullptr;
-                }
-
-            public:
-                [[deprecated ("USE reset - deprecated v2.0a213")]] void clear ()
-                {
-                    reset ();
-                }
-
-            public:
-                /**
                  *  \brief return true iff stream ptr is nullptr
                  *
                  *  @see reset()

@@ -196,13 +196,6 @@ namespace Stroika {
                 * \req *this != nullptr
                 */
                 nonvirtual _IRep& _GetRepRWRef () const;
-
-            public:
-                [[deprecated ("USE == nullptr - deprecated v2.0a213")]] bool empty () const
-                {
-                    Ensure (InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr) == OutputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr));
-                    return InputStream<ELEMENT_TYPE>::Ptr::operator== (nullptr);
-                }
             };
 
             /**
