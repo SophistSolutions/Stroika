@@ -41,6 +41,14 @@ namespace Stroika {
                 CREATE_CONTAINER_TYPE Make (const FROM_CONTAINER_TYPE& rhs);
 
                 /**
+                 *  \brief construct a new vector<T> by concatenating the two args together.
+                 *
+                 *  Hard to believe this is so awkward in STL!
+                 */
+                template <typename T>
+                vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2);
+
+                /**
                  *  Though you can append to a vector<> with
                  *      insert (this->begin (), arg.begin (), arg.end ())
                  *  That's awkward if 'arg' is an unnamed value - say the result of a function. You must

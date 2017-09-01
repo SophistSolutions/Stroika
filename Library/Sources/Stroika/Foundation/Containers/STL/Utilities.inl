@@ -44,6 +44,14 @@ namespace Stroika {
                 }
 
                 template <typename T>
+                vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2)
+                {
+                    vector<T> result = v1;
+                    result.insert (result.end (), v2.begin (), v2.end ());
+                    return result;
+                }
+
+                template <typename T>
                 vector<T> Intersection (const vector<T>& s1, const vector<T>& s2)
                 {
                     vector<T> result;
