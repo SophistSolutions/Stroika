@@ -102,6 +102,9 @@ namespace Stroika {
                  *
                  *  The only difference between eManualReset and eAutoReset is that when a Wait() succeeds, as the very last step in returning
                  *  a successful wait, the event is automatically 'Reset'.
+                 *
+                 *  \note This means that AutoReset events are unsuitable for use when multiple threads are waiting on an event, and you wish to
+                 *        make them all up. By definition, only ONE thread wakes up to recieve the 'AutoReset' event.
                  */
                 enum ResetType {
                     eAutoReset,
