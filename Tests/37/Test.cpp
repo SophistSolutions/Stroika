@@ -85,8 +85,8 @@ namespace {
 }
 
 namespace {
-    WaitableEvent sRegTest3Event_T1_ (WaitableEvent::eAutoReset);
-    WaitableEvent sRegTest3Event_T2_ (WaitableEvent::eAutoReset);
+    WaitableEvent sRegTest3Event_T1_{WaitableEvent::eAutoReset};
+    WaitableEvent sRegTest3Event_T2_{WaitableEvent::eAutoReset};
     namespace WAITABLE_EVENTS_ {
         void NOTIMEOUTS_ ()
         {
@@ -670,8 +670,8 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest12_WaitAny_"};
         // EXPERIMENTAL
-        WaitableEvent                              we1 (WaitableEvent::eAutoReset);
-        WaitableEvent                              we2 (WaitableEvent::eAutoReset);
+        WaitableEvent                              we1{WaitableEvent::eAutoReset};
+        WaitableEvent                              we2{WaitableEvent::eAutoReset};
         static constexpr Time::DurationSecondsType kMaxWaitTime_{5.0};
         Thread::Ptr                                t1 = Thread::New ([&we1]() {
             Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
@@ -698,8 +698,8 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
         // EXPERIMENTAL
-        WaitableEvent we1 (WaitableEvent::eAutoReset);
-        WaitableEvent we2 (WaitableEvent::eAutoReset);
+        WaitableEvent we1{WaitableEvent::eAutoReset};
+        WaitableEvent we2{WaitableEvent::eAutoReset};
         bool          w1Fired = false;
         bool          w2Fired = false;
         Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired]() {

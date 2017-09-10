@@ -96,9 +96,10 @@ namespace Stroika {
             class WaitableEvent {
             public:
                 /**
-                 *  eAutoReset is ALMOST worth being the default, and is very frequently the simplest thing to do.
                  *  eManualReset is the simplest to understand. Wait only returns when the event is set, and the only thing that can set it
                  *  is a call to Set().
+                 *
+                 *  eAutoReset is sometimes useful when you have a single thread waiting on the event, and need to wake that thread repeatedly, each time an event happens.
                  *
                  *  The only difference between eManualReset and eAutoReset is that when a Wait() succeeds, as the very last step in returning
                  *  a successful wait, the event is automatically 'Reset'.
@@ -106,16 +107,26 @@ namespace Stroika {
                  *  \note This means that AutoReset events are unsuitable for use when multiple threads are waiting on an event, and you wish to
                  *        make them all up. By definition, only ONE thread wakes up to recieve the 'AutoReset' event.
                  */
-                enum ResetType {
+                enum class ResetType {
                     eAutoReset,
                     eManualReset,
+
+                    Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)
                 };
 
             public:
+                static constexpr ResetType eAutoReset = ResetType::eAutoReset;
+
+            public:
+                static constexpr ResetType eManualReset = ResetType::eManualReset;
+
+            public:
                 /**
-                 *
+                 *  \note   WaitableEvent () defaults to 'manual reset' - because it often doesnt matter how the waitable event gets reset (because it never does)
+                 *          and this (manual reset) is the least surprising behavior.
                  */
-                WaitableEvent (ResetType resetType);
+                WaitableEvent (ResetType resetType   = eManualReset);
+                WaitableEvent (WaitableEvent&&)      = delete;
                 WaitableEvent (const WaitableEvent&) = delete;
 
             public:
@@ -129,6 +140,7 @@ namespace Stroika {
 #endif
 
             public:
+                nonvirtual WaitableEvent& operator= (const WaitableEvent&&) = delete;
                 nonvirtual WaitableEvent& operator= (const WaitableEvent&) = delete;
 
             public:

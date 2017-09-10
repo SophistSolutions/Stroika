@@ -277,9 +277,9 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
     , fAccessSTDThreadMutex_ ()
     , fThread_ ()
     , fStatus_ (Status::eNotYetRunning)
-    , fRefCountBumpedEvent_ (WaitableEvent::eAutoReset)
-    , fOK2StartEvent_ (WaitableEvent::eAutoReset)
-    , fThreadDoneAndCanJoin_ (WaitableEvent::eManualReset)
+    , fRefCountBumpedEvent_{}
+    , fOK2StartEvent_{}
+    , fThreadDoneAndCanJoin_{}
     , fThreadName_ ()
 {
 #if qPlatform_POSIX

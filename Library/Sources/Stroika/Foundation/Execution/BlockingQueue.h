@@ -120,9 +120,10 @@ namespace Stroika {
             public:
                 /*
                  *  Note - you may want to pass in a specific queue object, to require use of a particular concrete implementation
-                 *  for the Queue (such as one that doesnt allocate memory).
+                 *  for the Queue (such as one that doesnt allocate memory). But when contructing a blocking Q (even with another Q)
+                 *  the 'useQueue' must be empty.
                  */
-                BlockingQueue ();
+                BlockingQueue () = default;
                 BlockingQueue (const Containers::Queue<T>& useQueue);
 
             public:
@@ -211,7 +212,7 @@ namespace Stroika {
                 nonvirtual void clear ();
 
             private:
-                WaitableEvent                      fDataAvailable_;
+                WaitableEvent                      fDataAvailable_{WaitableEvent::eManualReset};
                 bool                               fEndOfInput_{false};
                 Synchronized<Containers::Queue<T>> fQueue_;
             };

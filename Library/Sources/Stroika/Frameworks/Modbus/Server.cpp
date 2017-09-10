@@ -419,7 +419,7 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
             if (options.fLogger) {
                 options.fLogger.value ()->Log (Logger::Priority::eInfo, L"Listening for ModbusTCP requests on port %d", usingPortNumber);
             }
-            WaitableEvent{WaitableEvent::eAutoReset}.Wait (); // forever (til thread abort)
+            WaitableEvent{}.Wait (); // forever (til thread abort)
         },
         String_Constant{L"Modbus-Listener"});
 }

@@ -91,7 +91,7 @@ int main (int argc, const char* argv[])
 
         WebServerForDeviceDescription_ deviceWS (portForOurWS, d, deviceInfo);
         BasicServer                    b (d, deviceInfo, BasicServer::FrequencyInfo ());
-        Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (); // wait forever - til user hits ctrl-c
+        Execution::WaitableEvent{}.Wait (); // wait forever - til user hits ctrl-c
     }
     catch (...) {
         String exceptMsg = Characters::ToString (current_exception ());

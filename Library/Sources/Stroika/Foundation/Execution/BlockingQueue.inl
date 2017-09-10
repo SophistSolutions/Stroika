@@ -22,17 +22,10 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            BlockingQueue<T>::BlockingQueue ()
-                : fDataAvailable_ (WaitableEvent::eManualReset)
-                , fQueue_ ()
-            {
-            }
-            template <typename T>
             BlockingQueue<T>::BlockingQueue (const Containers::Queue<T>& useQueue)
-                : fDataAvailable_ (WaitableEvent::eAutoReset)
-                , fQueue_ (useQueue)
+                : fQueue_ (useQueue)
             {
-                Require (useQueue.empty ());
+                Require (useQueue.empty ()); // this constructor is only used to control the 'type' (data structure/backend) used by the Blocking Queue
             }
             template <typename T>
             inline void BlockingQueue<T>::AddTail (const T& e, Time::DurationSecondsType timeout)
