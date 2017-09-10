@@ -106,6 +106,9 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
  ********************************** WaitableEvent *******************************
  ********************************************************************************
  */
+constexpr WaitableEvent::ResetType WaitableEvent::eAutoReset;
+constexpr WaitableEvent::ResetType WaitableEvent::eManualReset;
+
 #if qDebug || qStroika_FeatureSupported_Valgrind
 WaitableEvent::~WaitableEvent ()
 {
