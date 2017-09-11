@@ -881,6 +881,65 @@ namespace {
 }
 
 namespace {
+    namespace RegressionTest19_ThreadPoolAndBlockingQueue_ {
+        namespace Private_ {
+            void TEST_ ()
+            {
+                constexpr size_t kThreadPoolSize_{10};
+                ThreadPool       consumerThreadPool;
+                consumerThreadPool.SetPoolSize (kThreadPoolSize_);
+                ThreadPool producerThreadPool;
+                producerThreadPool.SetPoolSize (kThreadPoolSize_);
+
+                enum {
+                    START = 0,
+                    END   = 100
+                };
+                int                             counter = 0;
+                BlockingQueue<function<void()>> q;
+
+                Verify (q.GetLength () == 0);
+
+                constexpr size_t kTaskCounts_ = kThreadPoolSize_ * 10;
+
+                for (size_t i = 0; i < kTaskCounts_; ++i) {
+                    producerThreadPool.AddTask (
+                        [&q, &counter]() {
+                            for (int incBy = START; incBy <= END; ++incBy) {
+                                q.AddTail ([&counter, incBy]() { counter += incBy; });
+                            }
+                        });
+                    consumerThreadPool.AddTask (
+                        [&q]() {
+                            while (true) {
+                                function<void()> f = q.RemoveHead ();
+                                f ();
+                            }
+                        });
+                }
+
+                // wait for all producers to be done, and then mark the input Q with EOF
+                while (producerThreadPool.GetTasksCount () != 0) {
+                    Execution::Sleep (.1);
+                }
+                q.EndOfInput ();
+
+                while (consumerThreadPool.GetTasksCount () != 0) {
+                    Execution::Sleep (.1);
+                }
+                int expectedValue = ((START + END) * (END - START + 1) / 2) * kTaskCounts_;
+                Verify (counter == expectedValue);
+            }
+        }
+        void DoIt ()
+        {
+            Debug::TraceContextBumper ctx{"RegressionTest19_ThreadPoolAndBlockingQueue_"};
+            Private_::TEST_ ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -912,6 +971,7 @@ namespace {
         RegressionTest16_SimpleThreadConstructDestructLeak_::RunTests ();
         RegressionTest17_ThreadInterruption_::RunTests ();
         RegressionTest18_RWSynchronized_::DoIt ();
+        RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
     }
 }
 
