@@ -209,6 +209,38 @@ namespace Stroika {
                  */
                 nonvirtual size_t GetPendingTasksCount () const;
 
+            public:
+                /**
+                *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
+                *
+                *   When called with a specific set of tasks, this proceedure waits for exactly those tasks. When called with no task
+                *   argument, it waits until GetTaskCount () == 0.
+                *
+                *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.
+                *         But - its perfectly legal to add new tasks after this returns, so the task count could increase (if tasks were added) after
+                *         this returns without exception (obviously there are likely more tasks if it returns with a timeout exception).
+                *
+                *  \note ***Cancelation Point***
+                */
+                nonvirtual void WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeout = Time::kInfinite) const;
+                nonvirtual void WaitForTasksDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
+
+            public:
+                /**
+                *  Wait for the given amount of time for all (either given argument or all tasks in this thread pool) to be done.
+                *
+                *   When called with a specific set of tasks, this proceedure waits for exactly those tasks. When called with no task
+                *   argument, it waits until GetTaskCount () == 0.
+                *
+                *   \note For the all-tasks overload, if new tasks are added to the thread pool, those are waited for too.
+                *         But - its perfectly legal to add new tasks after this returns, so the task count could increase (if tasks were added) after
+                *         this returns without exception (obviously there are likely more tasks if it returns with a timeout exception).
+                *
+                *  \note ***Cancelation Point***
+                */
+                nonvirtual void WaitForTasksDoneUntil (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeoutAt) const;
+                nonvirtual void WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) const;
+
             private:
                 nonvirtual void Abort_ () noexcept;
 

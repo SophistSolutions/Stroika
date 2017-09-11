@@ -342,6 +342,32 @@ size_t ThreadPool::GetPendingTasksCount () const
     return count;
 }
 
+void ThreadPool::WaitForTasksDoneUntil (const Iterable<TaskType>& tasks, Time::DurationSecondsType timeoutAt) const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, tasks=%s, timeoutAt=%f", ToString ().c_str (), ToString (tasks).c_str (), timeoutAt)};
+#endif
+    CheckForThreadInterruption ();
+    for (auto&& task : tasks) {
+        auto now = Time::GetTickCount ();
+        ThrowTimeoutExceptionAfter (timeoutAt);
+        this->WaitForTask (task, timeoutAt - now);
+    }
+}
+
+void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) const
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::WaitForTasksDoneUntil", L"*this=%s, timeoutAt=%f", ToString ().c_str (), timeoutAt)};
+#endif
+    CheckForThreadInterruption ();
+    // @todo - use waitableevent - this is a horribly implementation
+    while (GetTasksCount () != 0) {
+        ThrowTimeoutExceptionAfter (timeoutAt);
+        Execution::Sleep (.1);
+    }
+}
+
 void ThreadPool::Abort_ () noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted

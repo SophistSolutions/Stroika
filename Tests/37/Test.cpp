@@ -919,14 +919,11 @@ namespace {
                 }
 
                 // wait for all producers to be done, and then mark the input Q with EOF
-                while (producerThreadPool.GetTasksCount () != 0) {
-                    Execution::Sleep (.1);
-                }
+                producerThreadPool.WaitForTasksDone ();
                 q.EndOfInput ();
 
-                while (consumerThreadPool.GetTasksCount () != 0) {
-                    Execution::Sleep (.1);
-                }
+                // Wait for consumers to finish, and validate their side-effect - count - is correct.
+                consumerThreadPool.WaitForTasksDone ();
                 int expectedValue = ((START + END) * (END - START + 1) / 2) * kTaskCounts_;
                 Verify (counter == expectedValue);
             }
