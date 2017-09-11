@@ -51,6 +51,9 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
+             *  \note   \em async-signal-safety - this is NOT safe to use from signals (from http://pubs.opengroup.org/onlinepubs/009695399/functions/pthread_cond_broadcast.html - It is not safe to use the pthread_cond_signal() function in a signal handler that is invoked asynchronously
+             *          Use POSIX sem_init/sem_post () 
+             *
              *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and
              *              other similar classes are not.
              *              and you can easily use shared_ptr<> on an WaitableEvent to make it copyable.
