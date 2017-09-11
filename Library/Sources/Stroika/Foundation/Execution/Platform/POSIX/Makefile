@@ -11,6 +11,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Users.o\
+	$(ObjDir)SemWaitableEvent.o\
 	$(ObjDir)SignalBlock.o\
 
 
