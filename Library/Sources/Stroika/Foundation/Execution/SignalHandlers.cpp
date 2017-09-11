@@ -16,7 +16,9 @@
 
 #include "Common.h"
 #include "ErrNoException.h"
+#if qPlatform_POSIX
 #include "Platform/POSIX/SemWaitableEvent.h"
+#endif
 #include "Sleep.h"
 #include "Synchronized.h"
 #include "Thread.h"
