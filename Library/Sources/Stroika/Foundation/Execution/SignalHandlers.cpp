@@ -13,12 +13,14 @@
 #include "../Containers/Mapping.h"
 #include "../Debug/BackTrace.h"
 #include "../Debug/Trace.h"
-#include "../Execution/Sleep.h"
-#include "../Execution/Synchronized.h"
-#include "../Execution/WaitableEvent.h"
 
 #include "Common.h"
+#include "ErrNoException.h"
+#include "Platform/POSIX/SemWaitableEvent.h"
+#include "Sleep.h"
+#include "Synchronized.h"
 #include "Thread.h"
+#include "WaitableEvent.h"
 
 #if qPlatform_POSIX
 #include "Platform/POSIX/SignalBlock.h"
@@ -50,11 +52,18 @@ using Time::DurationSecondsType;
 #define qDoBacktraceOnFirstPassSignalHandler_ 0
 #endif
 
+//#define qUseSemPOSTFromSignalHandler_ 0
+//#define qUseSemPOSTFromSignalHandler_ 1
+#ifndef qUseSemPOSTFromSignalHandler_
+#define qUseSemPOSTFromSignalHandler_ qPlatform_POSIX
+#endif
+
+// @todo - DISABLE THIS - https://stroika.atlassian.net/browse/STK-617 - LGP 2017-09-09
 // VERY UNSURE???
 // Started experimenting(enabling) this with Stroika v2.0a135 -- LGP 2016-03-21
 //#define qConditionVariableSetSafeFromSignalHandler_ 0
 #ifndef qConditionVariableSetSafeFromSignalHandler_
-#define qConditionVariableSetSafeFromSignalHandler_ 1
+#define qConditionVariableSetSafeFromSignalHandler_ (!qUseSemPOSTFromSignalHandler_)
 #endif
 
 /*
@@ -111,8 +120,10 @@ class SignalHandlerRegistry::SafeSignalsManager::Rep_ {
 private:
     void waitForNextSig_ ()
     {
-// USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one waits()
-#if qConditionVariableSetSafeFromSignalHandler_
+#if qUseSemPOSTFromSignalHandler_
+        fRecievedSig_.Wait ();
+#elif qConditionVariableSetSafeFromSignalHandler_
+        // USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one waits()
         // @todo - verify std::condition_variable (not sure that is safe in signal handler)
         // THis is probably OK for now
         unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
@@ -125,8 +136,11 @@ private:
     }
     void tell2Wake_ ()
     {
-// USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one signals ()
-#if qConditionVariableSetSafeFromSignalHandler_
+#if qUseSemPOSTFromSignalHandler_
+        fWorkAvailable_ = true;
+        fRecievedSig_.Set ();
+#elif qConditionVariableSetSafeFromSignalHandler_
+        // USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one signals ()
         fRecievedSig_.notify_one ();
         {
             std::lock_guard<std::mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
@@ -179,7 +193,9 @@ public:
                             }
                         }
                     }
-#if qConditionVariableSetSafeFromSignalHandler_
+#if qUseSemPOSTFromSignalHandler_
+                    fWorkAvailable_ = false;
+#elif qConditionVariableSetSafeFromSignalHandler_
                     fWorkAvailable_ = false;
 #endif
                 }
@@ -232,7 +248,9 @@ public:
     {
         fHandlers_.rwget ()->Remove (signal);
         PopulateSafeSignalHandlersCache_ (signal);
-#if !qConditionVariableSetSafeFromSignalHandler_
+#if qUseSemPOSTFromSignalHandler_
+#elif qConditionVariableSetSafeFromSignalHandler_
+#else
         fChangedRecheckTime_.Set ();
 #endif
     }
@@ -242,7 +260,9 @@ public:
     {
         fHandlers_.rwget ()->Add (signal, safeHandlers);
         PopulateSafeSignalHandlersCache_ (signal);
-#if !qConditionVariableSetSafeFromSignalHandler_
+#if qUseSemPOSTFromSignalHandler_
+#elif qConditionVariableSetSafeFromSignalHandler_
+#else
         fChangedRecheckTime_.Set ();
 #endif
     }
@@ -267,7 +287,10 @@ private:
     atomic<SignalID>     fLastSignalRecieved_{NSIG};
     Thread::Ptr          fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
-#if qConditionVariableSetSafeFromSignalHandler_
+#if qUseSemPOSTFromSignalHandler_
+    std::atomic<bool>                            fWorkAvailable_{false};
+    Execution::Platform::POSIX::SemWaitableEvent fRecievedSig_;
+#elif qConditionVariableSetSafeFromSignalHandler_
     std::atomic<bool>  fWorkAvailable_{false};
     mutex              fRecievedSig_NotSureWhatMutexFor_;
     condition_variable fRecievedSig_;
