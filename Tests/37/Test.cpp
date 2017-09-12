@@ -886,9 +886,9 @@ namespace {
         namespace Private_ {
             void TEST_ ()
             {
-                constexpr size_t kThreadPoolSize_{10};
-                ThreadPool       consumerThreadPool{kThreadPoolSize_, L"consumers"};
-                ThreadPool       producerThreadPool{kThreadPoolSize_, L"producers"};
+                constexpr unsigned int kThreadPoolSize_{10};
+                ThreadPool             consumerThreadPool{kThreadPoolSize_, L"consumers"};
+                ThreadPool             producerThreadPool{kThreadPoolSize_, L"producers"};
 
                 enum {
                     START = 0,
