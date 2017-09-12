@@ -894,7 +894,7 @@ namespace {
                     START = 0,
                     END   = 100
                 };
-                atomic<uint64_t>                counter = 0;
+                atomic<uint64_t>                counter{};
                 BlockingQueue<function<void()>> q;
 
                 Verify (q.GetLength () == 0);
