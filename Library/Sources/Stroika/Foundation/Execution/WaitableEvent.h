@@ -303,7 +303,7 @@ namespace Stroika {
                  *  This API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
                  *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
                  *
-                 *  The WaitableEvent class internally uses condition_variable::wait_for () - and this doesnt advertise support for
+                 *  The WaitableEvent class internally uses condition_variable::wait_for () - and this doesn't advertise support for
                  *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
                  *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
                  *  effecitvely busy wait, and this checking is ONLY needed for the specail, rare case of thread abort.
