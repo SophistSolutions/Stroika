@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <condition_variable>
 #include <mutex>
 
 #include "../Configuration/Common.h"
@@ -212,9 +213,44 @@ namespace Stroika {
                 nonvirtual void clear ();
 
             private:
-                WaitableEvent                      fDataAvailable_{WaitableEvent::eManualReset};
-                bool                               fEndOfInput_{false};
-                Synchronized<Containers::Queue<T>> fQueue_;
+                /**
+                 *              
+                 WRITE:
+                    auto  updateLock{ fLockPlusCondVar_.MakeeLock () };
+                    LockPlusCondVar_::
+                        fQueue_.AddTail (e);
+                    fLockPlusCondVar_.notify_all (updateLock);
+
+                    COULD redo with function taking lambda for 'do inside'
+                */
+                struct LockPlusCondVar_ {
+                    mutex              fMutex_;
+                    condition_variable fConditionVariable_;
+
+                    using WaitableLockType = std::unique_lock<std::mutex>;
+                    using QuickLockType    = std::lock_guard<std::mutex>;
+
+                    void notify_one (WaitableLockType& lock)
+                    {
+                        lock.unlock ();
+                        fConditionVariable_.notify_one ();
+                    }
+                    void notify_all (WaitableLockType& lock)
+                    {
+                        lock.unlock ();
+                        fConditionVariable_.notify_all ();
+                    }
+                    template <typename FUNCITON>
+                    void DoInsideWriteLock (FUNCITON doIt)
+                    {
+                        WaitableLockType updateLock{fMutex_};
+                        doIt ();
+                        notify_all (updateLock);
+                    }
+                };
+                mutable LockPlusCondVar_ fLockPlusCondVar_;
+                bool                     fEndOfInput_{false};
+                Containers::Queue<T>     fQueue_;
             };
         }
     }
