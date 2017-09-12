@@ -228,6 +228,41 @@ wstring Duration::As () const
 }
 
 namespace {
+    template <typename T>
+    inline T DoPin_ (double d, double multiplier)
+    {
+        if (d > T::max ().count () / multiplier) {
+            return T::max ();
+        }
+        return T (typename T::rep (d * multiplier));
+    }
+}
+
+template <>
+chrono::seconds Duration::AsPinned () const
+{
+    return DoPin_<std::chrono::seconds> (ParseTime_ (fDurationRep_), 1);
+}
+
+template <>
+chrono::milliseconds Duration::AsPinned () const
+{
+    return DoPin_<std::chrono::milliseconds> (ParseTime_ (fDurationRep_), 1000.0);
+}
+
+template <>
+chrono::microseconds Duration::AsPinned () const
+{
+    return DoPin_<std::chrono::microseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0);
+}
+
+template <>
+chrono::nanoseconds Duration::AsPinned () const
+{
+    return DoPin_<std::chrono::nanoseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0 * 1000.0);
+}
+
+namespace {
     string::const_iterator SkipWhitespace_ (string::const_iterator i, string::const_iterator end)
     {
         // GNU LIBC code (header) says that whitespace is allowed (though I've found no external docs to support this).
