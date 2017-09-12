@@ -147,7 +147,7 @@ namespace Stroika {
                  *  throw a timeout error (no matter the timeout provided).
                  *
                  *  \note This doesn't delete the current entries in the blocking queue, so they will still get consumed. This just prevents
-                 *        the Q from blocking when its emptied out.
+                 *        the Q from blocking while its being emptied out.
                  */
                 nonvirtual void EndOfInput ();
 
@@ -174,7 +174,7 @@ namespace Stroika {
                  *  If there is an entry at the head of the Q, return it immediately. Wait up til
                  *  'timeout' seconds for an entry to appear. Return 'issing' value if none appears.
                  *
-                 *  If timeout == 0 (the default) this amounts to peeking, and never waits.
+                 *  If timeout == 0 (the default) this amounts to peeking (but with remove), and never waits.
                  *
                  *  Analagous to the java BlockingQueue<T>::poll () method.
                  */
@@ -215,14 +215,7 @@ namespace Stroika {
             private:
                 /**
                  *              
-                 WRITE:
-                    auto  updateLock{ fLockPlusCondVar_.MakeeLock () };
-                    LockPlusCondVar_::
-                        fQueue_.AddTail (e);
-                    fLockPlusCondVar_.notify_all (updateLock);
-
-                    COULD redo with function taking lambda for 'do inside'
-                */
+                 */
                 struct LockPlusCondVar_ {
                     mutex              fMutex_;
                     condition_variable fConditionVariable_;

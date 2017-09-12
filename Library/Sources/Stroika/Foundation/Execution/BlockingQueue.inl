@@ -34,14 +34,14 @@ namespace Stroika {
             {
                 // Our locks are short-lived, so its safe to ignore the timeout - this will always be fast
                 Require (not fEndOfInput_);
-                LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
+                typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
                 fQueue_.AddTail (e);
                 fLockPlusCondVar_.notify_all (waitableLock);
             }
             template <typename T>
             inline void BlockingQueue<T>::EndOfInput ()
             {
-                LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
+                typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
                 fEndOfInput_ = true;
                 fLockPlusCondVar_.notify_all (waitableLock); // like input cuz readers could be waiting and need to know no more
             }
@@ -50,8 +50,8 @@ namespace Stroika {
             {
                 Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
-                    Memory::Optional<T>                tmp = fQueue_.RemoveHeadIf ();
+                    typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
+                    Memory::Optional<T>                         tmp = fQueue_.RemoveHeadIf ();
                     if (tmp.IsPresent ()) {
                         // Only notify_all() on additions
                         return *tmp;
@@ -68,7 +68,7 @@ namespace Stroika {
             {
                 Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
+                    typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
                     if (Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ()) {
                         return tmp;
                     }
@@ -79,19 +79,19 @@ namespace Stroika {
             template <typename T>
             inline Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
-                LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
+                typename LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
                 return fQueue_.HeadIf ();
             }
             template <typename T>
             inline bool BlockingQueue<T>::empty () const
             {
-                LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
+                typename LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
                 return fQueue_.empty ();
             }
             template <typename T>
             inline size_t BlockingQueue<T>::GetLength () const
             {
-                LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
+                typename LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
                 return fQueue_.GetLength ();
             }
             template <typename T>
@@ -102,7 +102,7 @@ namespace Stroika {
             template <typename T>
             inline void BlockingQueue<T>::clear ()
             {
-                LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
+                typename LockPlusCondVar_::QuickLockType quickLock{fLockPlusCondVar_.fMutex_};
                 fQueue_.clear ();
             }
         }
