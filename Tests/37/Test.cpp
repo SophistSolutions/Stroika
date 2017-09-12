@@ -7,6 +7,7 @@
 #include <iostream>
 #include <mutex>
 
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Execution/BlockingQueue.h"
 #include "Stroika/Foundation/Execution/Finally.h"
@@ -886,16 +887,14 @@ namespace {
             void TEST_ ()
             {
                 constexpr size_t kThreadPoolSize_{10};
-                ThreadPool       consumerThreadPool;
-                consumerThreadPool.SetPoolSize (kThreadPoolSize_);
-                ThreadPool producerThreadPool;
-                producerThreadPool.SetPoolSize (kThreadPoolSize_);
+                ThreadPool       consumerThreadPool{kThreadPoolSize_, L"consumers"};
+                ThreadPool       producerThreadPool{kThreadPoolSize_, L"producers"};
 
                 enum {
                     START = 0,
                     END   = 100
                 };
-                int                             counter = 0;
+                atomic<uint64_t>                counter = 0;
                 BlockingQueue<function<void()>> q;
 
                 Verify (q.GetLength () == 0);
@@ -906,7 +905,9 @@ namespace {
                     producerThreadPool.AddTask (
                         [&q, &counter]() {
                             for (int incBy = START; incBy <= END; ++incBy) {
-                                q.AddTail ([&counter, incBy]() { counter += incBy; });
+                                q.AddTail ([&counter, incBy]() {
+                                    counter += incBy;
+                                });
                             }
                         });
                     consumerThreadPool.AddTask (
