@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <chrono>
 #include <limits>
 
 /**
@@ -25,6 +26,8 @@ namespace Stroika {
     namespace Foundation {
         namespace Time {
 
+            using std::chrono::time_point;
+
             /**
              *  Use double instead of long double because we dont have time to test performance impact, and only some (gcc/unix)
              *  systems make a difference anyhow (not on ppc).
@@ -32,6 +35,16 @@ namespace Stroika {
              *  <<<OBSOLETE COMMENT>>>>Use long double because sometimes the basis of tickcount can get large (if we run for a year or so).
              */
             using DurationSecondsType = double;
+
+            /**
+             */
+            template <class Clock, class Duration = typename Clock::duration>
+            DurationSecondsType time_point2DurationSeconds (const time_point<Clock, Duration>& tp);
+
+            /**
+             */
+            template <class Clock, class Duration = typename Clock::duration>
+            time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t);
 
             /**
              *  Get the number of seconds since some constant, system-specified reference time. This is used

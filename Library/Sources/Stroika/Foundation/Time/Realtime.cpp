@@ -3,16 +3,16 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <algorithm>
+//#include <algorithm>
 
-#if qPlatform_Windows
-#include <Windows.h>
-#elif qPlatform_POSIX
-#include <time.h>
-#endif
+//#if qPlatform_Windows
+//#include <Windows.h>
+//#elif qPlatform_POSIX
+//#include <time.h>
+//#endif
 
 #include "../Debug/Assertions.h"
-#include "../Memory/SmallStackBuffer.h"
+//#include "../Memory/SmallStackBuffer.h"
 
 #include "Realtime.h"
 
@@ -28,6 +28,8 @@ using namespace Stroika::Foundation::Time;
 namespace {
     inline DurationSecondsType GetTickCount_ () noexcept
     {
+        return time_point2DurationSeconds (chrono::steady_clock::now ());
+#if 0
 #if qPlatform_POSIX
         timespec ts;
         Verify (::clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
@@ -56,6 +58,7 @@ namespace {
         return static_cast<DurationSecondsType> (counter.QuadPart) / sPerformanceFrequencyBasis_;
 #else
         return ::time (0); //tmphack... not good but better than assert error
+#endif
 #endif
     }
 }
