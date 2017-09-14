@@ -60,7 +60,7 @@ namespace Stroika {
                         Execution::Throw (Execution::TimeOutException::kThe); // Since we always must return, and know we never will, throw timeout now
                     }
                     ThrowTimeoutExceptionAfter (waitTil);
-                    fLockPlusCondVar_.fConditionVariable_.wait_for (waitableLock, Time::Duration{waitTil - Time::GetTickCount ()}.AsPinned<std::chrono::milliseconds> ());
+                    fLockPlusCondVar_.fConditionVariable_.wait_until (waitableLock, Time::DurationSeconds2time_point (waitTil));
                 }
             }
             template <typename T>
@@ -73,7 +73,7 @@ namespace Stroika {
                         return tmp;
                     }
                     ThrowTimeoutExceptionAfter (waitTil);
-                    fLockPlusCondVar_.fConditionVariable_.wait_for (waitableLock, Time::Duration{waitTil - Time::GetTickCount ()}.AsPinned<std::chrono::milliseconds> ());
+                    fLockPlusCondVar_.fConditionVariable_.wait_until (waitableLock, Time::DurationSeconds2time_point (waitTil));
                 }
             }
             template <typename T>
