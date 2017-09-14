@@ -33,7 +33,7 @@ namespace Stroika {
                 // Cannot use  Math::AtLeast<DurationSecondsType> <> () because according to IEEE floating point -0 == 0 (but still prints as neg zero)
                 // So do more carefully creafted if-test instead
                 using std::chrono::duration;
-                DurationSecondsType tmp = chrono::duration<DurationSecondsType>{tp.time_since_epoch ()}.count () - Private_::GetClockTickountOffset_<Clock> ();
+                DurationSecondsType tmp = duration<DurationSecondsType>{tp.time_since_epoch ()}.count () - Private_::GetClockTickountOffset_<Clock> ();
                 if (tmp <= 0) {
                     tmp = 0;
                 }
@@ -60,7 +60,13 @@ namespace Stroika {
              */
             inline DurationSecondsType Time::GetTickCount () noexcept
             {
-                return time_point2DurationSeconds (std::chrono::steady_clock::now ());
+                try {
+                    return time_point2DurationSeconds (std::chrono::steady_clock::now ());
+                }
+                catch (...) {
+                    // Cannot DbgTrace here because DbgTrace () calls this...
+                    return 0;
+                }
             }
         }
     }
