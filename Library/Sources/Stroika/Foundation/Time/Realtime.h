@@ -14,12 +14,8 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *      @todo   Consider making DurationSecondsType = long double (and for now must fix kInfinite to L..
- *              while we support qCompilerAndStdLib_constexpr_Buggy). Tried and worked, but didnt have time
+ *      @todo   Consider making DurationSecondsType = long double. Tried and worked, but didnt have time
  *              to test impact/performance, and possibly pointless without changing internal rep of Duration at the same time.
- *
- *      @todo   Consider making Time::GetTickCount () inline. Measure code-size impact.
- *
  */
 
 namespace Stroika {
@@ -53,7 +49,7 @@ namespace Stroika {
             time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t);
 
             /**
-             *  Get the number of seconds since since this process started.
+             *  Get the number of seconds since time_point2DurationSeconds, etc APIs first called (typically since this process started).
              *
              *  This uses chrono::steady_clock.
              *
