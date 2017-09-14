@@ -58,7 +58,7 @@ namespace Stroika {
              ******************************* Time::GetTickCount *****************************
              ********************************************************************************
              */
-            inline DurationSecondsType Time::GetTickCount () noexcept
+            inline DurationSecondsType GetTickCount () noexcept
             {
                 try {
                     return time_point2DurationSeconds (std::chrono::steady_clock::now ());
