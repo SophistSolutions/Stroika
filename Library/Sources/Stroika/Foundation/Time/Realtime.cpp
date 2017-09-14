@@ -3,16 +3,7 @@
  */
 #include "../StroikaPreComp.h"
 
-//#include <algorithm>
-
-//#if qPlatform_Windows
-//#include <Windows.h>
-//#elif qPlatform_POSIX
-//#include <time.h>
-//#endif
-
 #include "../Debug/Assertions.h"
-//#include "../Memory/SmallStackBuffer.h"
 
 #include "Realtime.h"
 
@@ -20,51 +11,32 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Time;
 
-/*
- ********************************************************************************
- ************************* Time::GetTickCount ***********************************
- ********************************************************************************
- */
 namespace {
-    inline DurationSecondsType GetTickCount_ () noexcept
+    template <class Clock, class Duration>
+    inline DurationSecondsType cvt_ (const time_point<Clock, Duration>& tp)
     {
-        return time_point2DurationSeconds (chrono::steady_clock::now ());
-#if 0
-#if qPlatform_POSIX
-        timespec ts;
-        Verify (::clock_gettime (CLOCK_MONOTONIC, &ts) == 0);
-        return ts.tv_sec + DurationSecondsType (ts.tv_nsec) / (1000.0 * 1000.0 * 1000.0);
-#elif qPlatform_Windows
-        static DurationSecondsType sPerformanceFrequencyBasis_ = []() -> DurationSecondsType {
-            LARGE_INTEGER performanceFrequency;
-            if (::QueryPerformanceFrequency (&performanceFrequency) == 0) {
-                return 0.0;
-            }
-            else {
-                return static_cast<DurationSecondsType> (performanceFrequency.QuadPart);
-            }
-        }();
-        if (sPerformanceFrequencyBasis_ == 0.0) {
-#if (_WIN32_WINNT >= 0x0600)
-            return (DurationSecondsType (::GetTickCount64 ()) / 1000.0);
-#else
-            DISABLE_COMPILER_MSC_WARNING_START (28159)
-            return (DurationSecondsType (::GetTickCount ()) / 1000.0);
-            DISABLE_COMPILER_MSC_WARNING_END (28159)
-#endif
-        }
-        LARGE_INTEGER counter;
-        Verify (::QueryPerformanceCounter (&counter));
-        return static_cast<DurationSecondsType> (counter.QuadPart) / sPerformanceFrequencyBasis_;
-#else
-        return ::time (0); //tmphack... not good but better than assert error
-#endif
-#endif
+        return std::chrono::duration<DurationSecondsType>{tp.time_since_epoch ()}.count ();
     }
 }
-DurationSecondsType Stroika::Foundation::Time::GetTickCount () noexcept
-{
-    static const DurationSecondsType kFirstTC_ = GetTickCount_ ();
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind (kFirstTC_); // I Think it may be a bug that helgrind doesnt recognize g++ magic statics
-    return GetTickCount_ () - kFirstTC_;
+
+namespace Stroika {
+    namespace Foundation {
+        namespace Time {
+            namespace Private_ {
+                /*
+                 ********************************************************************************
+                 *********************** Time::Private::GetClockTickountOffset_ *****************
+                 ********************************************************************************
+                 */
+                template <>
+                DurationSecondsType GetClockTickountOffset_<chrono::steady_clock> ()
+                {
+                    // in CPP file, so that we can guarantee kFirstTC_ done exactly once, and have value not depend on which module compiled against/in what order etc.
+                    // And must be done in function - not file scope - cuz must be done first time referenced, and nearly always before main ()
+                    static const DurationSecondsType kFirstTC_ = cvt_ (chrono::steady_clock::now ());
+                    return kFirstTC_;
+                }
+            }
+        }
+    }
 }

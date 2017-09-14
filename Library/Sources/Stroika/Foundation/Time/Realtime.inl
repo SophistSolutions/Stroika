@@ -13,6 +13,14 @@ namespace Stroika {
     namespace Foundation {
         namespace Time {
 
+            namespace Private_ {
+                template <class Clock>
+                DurationSecondsType GetClockTickountOffset_ ();
+
+                template <>
+                DurationSecondsType GetClockTickountOffset_<std::chrono::steady_clock> ();
+            }
+
             /*
              ********************************************************************************
              ***************************** time_point2DurationSeconds ***********************
@@ -21,7 +29,15 @@ namespace Stroika {
             template <class Clock, class Duration>
             inline DurationSecondsType time_point2DurationSeconds (const time_point<Clock, Duration>& tp)
             {
-                return std::chrono::duration<DurationSecondsType>{tp.time_since_epoch ()}.count ();
+                // nb: AtLeast() needed because first time through, steady_clock::now () for param called before one inside GetClockTickountOffset_
+                // Cannot use  Math::AtLeast<DurationSecondsType> <> () because according to IEEE floating point -0 == 0 (but still prints as neg zero)
+                // So do more carefully creafted if-test instead
+                using std::chrono::duration;
+                DurationSecondsType tmp = chrono::duration<DurationSecondsType>{tp.time_since_epoch ()}.count () - Private_::GetClockTickountOffset_<Clock> ();
+                if (tmp <= 0) {
+                    tmp = 0;
+                }
+                return tmp;
             }
 
             /*
@@ -32,7 +48,19 @@ namespace Stroika {
             template <class Clock, class Duration>
             inline time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t)
             {
-                return time_point<Clock, Duration> (Duration (duration<DurationSecondsType>{t}));
+                Require (t >= 0);
+                using std::chrono::duration;
+                return time_point<Clock, Duration> (std::chrono::duration_cast<Duration> (duration<DurationSecondsType>{t + Private_::GetClockTickountOffset_<Clock> ()}));
+            }
+
+            /*
+             ********************************************************************************
+             ******************************* Time::GetTickCount *****************************
+             ********************************************************************************
+             */
+            inline DurationSecondsType Time::GetTickCount () noexcept
+            {
+                return time_point2DurationSeconds (std::chrono::steady_clock::now ());
             }
         }
     }
