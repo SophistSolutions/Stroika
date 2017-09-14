@@ -96,18 +96,24 @@ my $VSDIR_VC = "$VSDIR\\VC";
 sub GetString2InsertIntoBatchFileToInit32BitCompiles
 {
 	my $result = "";
+	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
 	$result 	.=	"\" x86;\r\n";
+	$result 	.=	"popd\r\n";
 	return $result;
 }
 
 sub GetString2InsertIntoBatchFileToInit64BitCompiles
 {
 	my $result = "";
+	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
 	$result 	.=	"\" x64;\r\n";
+	$result 	.=	"popd\r\n";
 	return $result;
 }
 
