@@ -9,6 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#include "../Debug/Assertions.h"
+
 namespace Stroika {
     namespace Foundation {
         namespace Time {
