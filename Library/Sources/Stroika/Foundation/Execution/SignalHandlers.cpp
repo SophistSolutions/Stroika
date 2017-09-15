@@ -155,7 +155,7 @@ public:
                     Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
                     CheckForThreadInterruption ();
                     if (skipWaitForNextSigOnce) {
-                        skipWaitForNextSigOnce = false
+                        skipWaitForNextSigOnce = false;
                     }
                     else {
                         waitForNextSig_ ();
