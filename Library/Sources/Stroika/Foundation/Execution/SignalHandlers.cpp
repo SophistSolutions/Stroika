@@ -18,15 +18,12 @@
 #include "ErrNoException.h"
 #if qPlatform_POSIX
 #include "Platform/POSIX/SemWaitableEvent.h"
+#include "Platform/POSIX/SignalBlock.h"
 #endif
 #include "Sleep.h"
 #include "Synchronized.h"
 #include "Thread.h"
 #include "WaitableEvent.h"
-
-#if qPlatform_POSIX
-#include "Platform/POSIX/SignalBlock.h"
-#endif
 
 #include "SignalHandlers.h"
 
@@ -58,8 +55,8 @@ using Time::DurationSecondsType;
 // https://stroika.atlassian.net/browse/STK-617
 // https://stackoverflow.com/questions/31117959/waking-up-thread-from-signal-handler
 // -- LGP 2017-09-10
-#ifndef qUsePOSIXSemPOSTFromSignalHandler_
-#define qUsePOSIXSemPOSTFromSignalHandler_ qPlatform_POSIX
+#ifndef qConditionVariablesSafeInAsyncSignalHanlders
+#define qConditionVariablesSafeInAsyncSignalHanlders !qPlatform_POSIX
 #endif
 
 /*
@@ -116,21 +113,17 @@ class SignalHandlerRegistry::SafeSignalsManager::Rep_ {
 private:
     void waitForNextSig_ ()
     {
-#if qUsePOSIXSemPOSTFromSignalHandler_
-        fRecievedSig_.Wait ();
-#else
+#if qConditionVariablesSafeInAsyncSignalHanlders
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
         fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() { return fWorkMaybeAvailable_.load (); });
+#else
+        fRecievedSig_.Wait ();
 #endif
     }
     void tell2Wake_ ()
     {
-#if qUsePOSIXSemPOSTFromSignalHandler_
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
-        fWorkMaybeAvailable_ = true;
-        fRecievedSig_.Set ();
-#else
+#if qConditionVariablesSafeInAsyncSignalHanlders
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
@@ -138,6 +131,10 @@ private:
             fWorkMaybeAvailable_ = true;
         }
         fRecievedSig_.notify_one ();
+#else
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
+        fWorkMaybeAvailable_ = true;
+        fRecievedSig_.Set ();
 #endif
     }
 
@@ -273,11 +270,11 @@ private:
     Thread::Ptr          fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
     std::atomic<bool> fWorkMaybeAvailable_{false};
-#if qUsePOSIXSemPOSTFromSignalHandler_
-    Execution::Platform::POSIX::SemWaitableEvent fRecievedSig_;
-#else
+#if qConditionVariablesSafeInAsyncSignalHanlders
     mutex              fRecievedSig_NotSureWhatMutexFor_;
     condition_variable fRecievedSig_;
+#else
+    Execution::Platform::POSIX::SemWaitableEvent fRecievedSig_;
 #endif
 };
 DISABLE_COMPILER_MSC_WARNING_END (4351)
