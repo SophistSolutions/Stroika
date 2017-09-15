@@ -121,20 +121,21 @@ private:
 #else
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-        fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() { return fWorkAvailable_.load (); });
+        fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() { return fWorkMaybeAvailable_.load (); });
 #endif
     }
     void tell2Wake_ ()
     {
 #if qUsePOSIXSemPOSTFromSignalHandler_
-        fWorkAvailable_ = true;
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
+        fWorkMaybeAvailable_ = true;
         fRecievedSig_.Set ();
 #else
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
             std::lock_guard<std::mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-            fWorkAvailable_ = true;
+            fWorkMaybeAvailable_ = true;
         }
         fRecievedSig_.notify_one ();
 #endif
@@ -149,10 +150,16 @@ public:
             [this]() {
                 // This is a safe context
                 Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
+                bool                      skipWaitForNextSigOnce = false;
                 while (true) {
                     Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
                     CheckForThreadInterruption ();
-                    waitForNextSig_ ();
+                    if (skipWaitForNextSigOnce) {
+                        skipWaitForNextSigOnce = false
+                    }
+                    else {
+                        waitForNextSig_ ();
+                    }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = %d", fLastSignalRecieved_.load ());
 #endif
@@ -181,7 +188,11 @@ public:
                             }
                         }
                     }
-                    fWorkAvailable_ = false;
+                    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
+                    //When we set fWorkMaybeAvailable_ false, do one more time around loop, so if race,
+                    // we still check protected data. Avoid mutex because not signal safe
+                    fWorkMaybeAvailable_   = false;
+                    skipWaitForNextSigOnce = true;
                 }
             },
             Thread::eAutoStart,
@@ -261,7 +272,7 @@ private:
     atomic<SignalID>     fLastSignalRecieved_{NSIG};
     Thread::Ptr          fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
-    std::atomic<bool> fWorkAvailable_{false};
+    std::atomic<bool> fWorkMaybeAvailable_{false};
 #if qUsePOSIXSemPOSTFromSignalHandler_
     Execution::Platform::POSIX::SemWaitableEvent fRecievedSig_;
 #else
