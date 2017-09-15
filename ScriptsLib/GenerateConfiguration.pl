@@ -243,7 +243,7 @@ sub	SetInitialDefaults_
 			}
 			#autodetect ATLMFC (Express verison missing it)
 			if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2017") {
-				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc >/dev/null 2> /dev/null');
+				system ('ls -l "/cygdrive/c/Program Files (x86)//Microsoft Visual Studio/2017/"*/VC/Tools/MSVC/*/atlmfc/include/afxext.h >/dev/null 2> /dev/null');
 				if ($? == 0) {
 					$FEATUREFLAG_ATLMFC = $LIBFEATUREFLAG_UseSystem;
 				}
