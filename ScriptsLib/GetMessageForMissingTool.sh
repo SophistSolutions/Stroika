@@ -38,6 +38,8 @@ if [ $TOOL == "libtool" ] ; then
 elif [ $TOOL == "7za" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install p7zip-full"
+	elif [ $DistroBasedOn == "cygwin" ] ; then
+		echo -n ": try cygwin setup, package name p7zip"
 	fi
 elif [ $TOOL == "tr" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
