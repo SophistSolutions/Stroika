@@ -146,6 +146,20 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \par Example Usage
+                 *      \code
+                 *        Collection<int> c;
+                 *        std::vector<int> v;
+                 *
+                 *        MultiSet<int> s1  = {1, 2, 3};
+                 *        MultiSet<int> s2  = s1;
+                 *        MultiSet<int> s3  { s1 };
+                 *        MultiSet<int> s4  { s1.begin (), s1.end () };
+                 *        MultiSet<int> s5  { c };
+                 *        MultiSet<int> s6  { v };
+                 *        //@todo - make this work - use ITERATOR NOT PTR - MultiSet<int> s7  { v.begin (), v.end () };
+                 *        MultiSet<int> s8  { move (s1) };
+                 *      \endcode
                  */
                 MultiSet ();
                 MultiSet (const MultiSet<T, TRAITS>& src) noexcept;

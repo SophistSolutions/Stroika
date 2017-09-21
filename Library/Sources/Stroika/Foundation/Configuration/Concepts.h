@@ -129,6 +129,9 @@ namespace Stroika {
                     using type = decltype (check (declval<T> ()));
                 };
             }
+            /**
+             *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
+             */
             template <typename ITERABLE_OF_T, typename T>
             using IsIterableOfT = std::integral_constant<bool, not std::is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 

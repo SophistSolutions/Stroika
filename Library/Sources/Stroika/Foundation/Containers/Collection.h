@@ -120,6 +120,25 @@ namespace Stroika {
                 using _CollectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
+                /**
+                 *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
+                 *  all the elements.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *        Sequence<int> s;
+                 *        std::vector<int> v;
+                 *
+                 *        Collection<int> c1  = {1, 2, 3};
+                 *        Collection<int> c2  = c1;
+                 *        Collection<int> c3  { c1 };
+                 *        Collection<int> c4  { c1.begin (), c1.end () };
+                 *        Collection<int> c5  { s };
+                 *        Collection<int> c6  { v };
+                 *        Collection<int> c7  { v.begin (), v.end () };
+                 *        Collection<int> c8  { move (c1) };
+                 *      \endcode
+                 */
                 Collection ();
                 Collection (const Collection<T>& src) noexcept;
                 Collection (Collection<T>&& src) noexcept;

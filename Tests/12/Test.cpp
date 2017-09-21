@@ -37,6 +37,26 @@ namespace {
 }
 
 namespace {
+    namespace ExampleCTORS_Test_2_ {
+        void DoTest ()
+        {
+            // From Collection<> CTOR docs
+            Sequence<int>    s;
+            std::vector<int> v;
+
+            Collection<int> c1 = {1, 2, 3};
+            Collection<int> c2 = c1;
+            Collection<int> c3{c1};
+            Collection<int> c4{c1.begin (), c1.end ()};
+            Collection<int> c5{s};
+            Collection<int> c6{v};
+            Collection<int> c7{v.begin (), v.end ()};
+            Collection<int> c8{move (c1)};
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -62,6 +82,8 @@ namespace {
         RunTests_<Collection_stdforward_list<size_t>> ();
         RunTests_<Collection_stdforward_list<SimpleClass>> ();
         RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
+
+        ExampleCTORS_Test_2_::DoTest ();
     }
 }
 

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
@@ -751,6 +752,26 @@ namespace SequenceIndexing_Test_16_ {
 }
 
 namespace {
+    namespace ExampleCTORS_Test_17_ {
+        void DoTest ()
+        {
+            // From Sequence<> CTOR docs
+            Collection<int>  c;
+            std::vector<int> v;
+
+            Sequence<int> s1 = {1, 2, 3};
+            Sequence<int> s2 = s1;
+            Sequence<int> s3{s1};
+            Sequence<int> s4{s1.begin (), s1.end ()};
+            Sequence<int> s5{c};
+            Sequence<int> s6{v};
+            Sequence<int> s7{v.begin (), v.end ()};
+            Sequence<int> s8{move (s1)};
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -798,6 +819,8 @@ namespace {
         SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_stdvector<size_t>> ();
 
         SequenceIndexing_Test_16_::DoTest ();
+
+        ExampleCTORS_Test_17_::DoTest ();
     }
 }
 

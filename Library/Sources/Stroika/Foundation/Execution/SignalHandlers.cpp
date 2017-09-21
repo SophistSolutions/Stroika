@@ -121,7 +121,7 @@ private:
         fRecievedSig_.Wait ();
 #endif
     }
-    void tell2Wake_ ()
+    void tell2WakeAfterDataUpdate_ ()
     {
 #if qConditionVariablesSafeInAsyncSignalHanlders
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
@@ -147,16 +147,10 @@ public:
             [this]() {
                 // This is a safe context
                 Debug::TraceContextBumper trcCtx ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_");
-                bool                      skipWaitForNextSigOnce = false;
                 while (true) {
                     Debug::TraceContextBumper trcCtx1 ("Waiting for next safe signal");
                     CheckForThreadInterruption ();
-                    if (skipWaitForNextSigOnce) {
-                        skipWaitForNextSigOnce = false;
-                    }
-                    else {
-                        waitForNextSig_ ();
-                    }
+                    waitForNextSig_ ();
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace ("fRecievedSig_ wait complete (either arrival or timeout): fLastSignalRecieved_ = %d", fLastSignalRecieved_.load ());
 #endif
@@ -186,10 +180,11 @@ public:
                         }
                     }
                     Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
-                    //When we set fWorkMaybeAvailable_ false, do one more time around loop, so if race,
-                    // we still check protected data. Avoid mutex because not signal safe
-                    fWorkMaybeAvailable_   = false;
-                    skipWaitForNextSigOnce = true;
+                    // When we set fWorkMaybeAvailable_ false, do one more time around loop so no race - if we set from true to false
+                    // we always recehck protected data (and mutex not signal safe)
+                    if (fWorkMaybeAvailable_.exchange (false)) {
+                        goto Again;
+                    }
                 }
             },
             Thread::eAutoStart,
@@ -203,7 +198,7 @@ public:
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (fRecievedSig_); // For RARE (1/10 times) failure in regtest Foundation::Execution::Signals
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
-        tell2Wake_ ();
+        tell2WakeAfterDataUpdate_ ();
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     }
 
@@ -219,7 +214,7 @@ public:
         if (fHanlderAvailable_[signal]) {
             fIncomingSignalCounts_[signal]++;
             fLastSignalRecieved_ = signal; // used as a quick check
-            tell2Wake_ ();
+            tell2WakeAfterDataUpdate_ ();
         }
     }
 
