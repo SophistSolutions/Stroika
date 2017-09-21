@@ -1014,7 +1014,7 @@ eq_result
 #define qCompilerAndStdLib_Supports_stdoptional CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_HAS_CXX17)
 #elif defined(_LIBCPP_VERSION)
 // has_include works - because we have the include, but alas it somehow gets suppressed unless you compile with -std=c++1z, so test this macro and has_include
-#define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus > kStrokia_Foundation_Configuration_cplusplus_14) && __has_include (<optional>))
+#define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17) && __has_include (<optional>))
 #elif defined(__GNUC__) && __GNUC__ == 7
 #define qCompilerAndStdLib_Supports_stdoptional (__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17)
 #else
