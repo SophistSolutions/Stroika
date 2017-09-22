@@ -44,9 +44,13 @@ namespace Stroika {
                  *  \brief construct a new vector<T> by concatenating the two args together.
                  *
                  *  Hard to believe this is so awkward in STL!
+                 *
+                 *  @todo REDO USING VARIADIC_TEMPLATES, and common template to copy once, and then do successfive appends
                  */
                 template <typename T>
                 vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2);
+                template <typename T>
+                vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2, const vector<T>& v3);
 
                 /**
                  *  Though you can append to a vector<> with
