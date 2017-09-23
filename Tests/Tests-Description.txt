@@ -47,3 +47,4 @@
 [47]	Foundation::Time
 [48]	Foundation::Traversal
 [49]	Foundation::PERFORMANCE
+[50]	Foundation::Containers::STL
