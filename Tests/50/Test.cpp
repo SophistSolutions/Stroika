@@ -20,6 +20,7 @@ namespace {
         void DoTest ()
         {
             vector<int> v1 = {1, 2, 3};
+            VerifyTestResult ((STL::Concatenate (v1) == v1));
             VerifyTestResult ((STL::Concatenate (v1, v1) == vector<int>{1, 2, 3, 1, 2, 3}));
             VerifyTestResult ((STL::Concatenate (v1, v1, v1) == vector<int>{1, 2, 3, 1, 2, 3, 1, 2, 3}));
         }

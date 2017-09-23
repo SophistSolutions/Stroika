@@ -14,14 +14,74 @@ namespace Stroika {
         namespace Containers {
             namespace STL {
 
+                /*
+                 ********************************************************************************
+                 ***************************** Containers::STL::Make ****************************
+                 ********************************************************************************
+                 */
                 template <typename CREATE_CONTAINER_TYPE, typename FROM_CONTAINER_TYPE>
                 inline CREATE_CONTAINER_TYPE Make (const FROM_CONTAINER_TYPE& rhs)
                 {
                     return CREATE_CONTAINER_TYPE (rhs.begin (), rhs.end ());
                 }
 
+                /*
+                 ********************************************************************************
+                 ************************ Containers::STL::Append *******************************
+                 ********************************************************************************
+                 */
+                template <typename TARGET_CONTAINER>
+                inline void Append (TARGET_CONTAINER* v)
+                {
+                    RequireNotNull (v);
+                }
+                template <typename TARGET_CONTAINER, typename SRC_CONTAINER>
+                inline void Append (TARGET_CONTAINER* v, const SRC_CONTAINER& v2)
+                {
+                    RequireNotNull (v);
+                    size_t c = max (v->capacity (), v->size () + v2.size ());
+                    v->reserve (c);
+                    v->insert (v->end (), v2.begin (), v2.end ());
+                }
+                template <typename TARGET_CONTAINER, typename SRC_CONTAINER, typename... Args>
+                inline void Append (TARGET_CONTAINER* v, const SRC_CONTAINER& v2, Args... args)
+                {
+                    RequireNotNull (v);
+                    Append (v, v2);
+                    Append (v, args...);
+                }
+
+                /*
+                 ********************************************************************************
+                 ***************************** Containers::STL::Concat **************************
+                 ********************************************************************************
+                 */
+                template <typename TARGET_CONTAINER, typename SRC_CONTAINER, typename... Args>
+                TARGET_CONTAINER Concat (const SRC_CONTAINER& v2, Args... args)
+                {
+                    TARGET_CONTAINER tmp;
+                    Append (&tmp, v2, args...);
+                    return tmp;
+                }
+
+                /*
+                 ********************************************************************************
+                 ************************ Containers::STL::Concatenate **************************
+                 ********************************************************************************
+                 */
+                template <typename SRC_CONTAINER, typename... Args>
+                inline vector<typename SRC_CONTAINER::value_type> Concatenate (const SRC_CONTAINER& v2, Args... args)
+                {
+                    return Concat<vector<typename SRC_CONTAINER::value_type>> (v2, args...);
+                }
+
+                /*
+                 ********************************************************************************
+                 ************************ Containers::STL::Intesects ****************************
+                 ********************************************************************************
+                 */
                 template <typename T>
-                bool Intersects (const set<T>& s1, const set<T>& s2)
+                bool Intesects (const set<T>& s1, const set<T>& s2)
                 {
                     for (typename set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
                         if (s2.find (*i) != s2.end ()) {
@@ -31,34 +91,11 @@ namespace Stroika {
                     return false;
                 }
 
-                template <typename T, typename ContainerOfT>
-                void Append (vector<T>* v, const ContainerOfT& v2)
-                {
-                    //@todo consider rewrite using v->insert (v->end (), v2.begin (), v2.end ()); not sure we want/need the capacity thing
-                    RequireNotNull (v);
-                    size_t c = max (v->capacity (), v->size () + v2.size ());
-                    v->reserve (c);
-                    for (typename ContainerOfT::const_iterator i = v2.begin (); i != v2.end (); ++i) {
-                        v->push_back (*i);
-                    }
-                }
-
-                template <typename T>
-                vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2)
-                {
-                    vector<T> result = v1;
-                    result.insert (result.end (), v2.begin (), v2.end ());
-                    return result;
-                }
-                template <typename T>
-                vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2, const vector<T>& v3)
-                {
-                    vector<T> result = v1;
-                    result.insert (result.end (), v2.begin (), v2.end ());
-                    result.insert (result.end (), v3.begin (), v3.end ());
-                    return result;
-                }
-
+                /*
+                 ********************************************************************************
+                 ************************ Containers::STL::Intesects ****************************
+                 ********************************************************************************
+                 */
                 template <typename T>
                 vector<T> Intersection (const vector<T>& s1, const vector<T>& s2)
                 {
@@ -92,6 +129,11 @@ namespace Stroika {
                     }
                 }
 
+                /*
+                 ********************************************************************************
+                 **************************** Containers::STL::Union ****************************
+                 ********************************************************************************
+                 */
                 template <typename T, typename FROMCONTAINER>
                 void Union (set<T>* s1, const FROMCONTAINER& s2)
                 {
@@ -109,6 +151,11 @@ namespace Stroika {
                     return result;
                 }
 
+                /*
+                 ********************************************************************************
+                 **************************** Containers::STL::Difference ***********************
+                 ********************************************************************************
+                 */
                 template <typename T, typename FROMCONTAINER>
                 void Difference (set<T>* s1, const FROMCONTAINER& s2)
                 {

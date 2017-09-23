@@ -41,25 +41,35 @@ namespace Stroika {
                 CREATE_CONTAINER_TYPE Make (const FROM_CONTAINER_TYPE& rhs);
 
                 /**
-                 *  \brief construct a new vector<T> by concatenating the two args together.
-                 *
-                 *  Hard to believe this is so awkward in STL!
-                 *
-                 *  @todo REDO USING VARIADIC_TEMPLATES, and common template to copy once, and then do successfive appends
-                 */
-                template <typename T>
-                vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2);
-                template <typename T>
-                vector<T> Concatenate (const vector<T>& v1, const vector<T>& v2, const vector<T>& v3);
-
-                /**
                  *  Though you can append to a vector<> with
                  *      insert (this->begin (), arg.begin (), arg.end ())
                  *  That's awkward if 'arg' is an unnamed value - say the result of a function. You must
                  *  assign to a named temporary. This helper makes that unneeded.
                  */
-                template <typename T, typename ContainerOfT>
-                void Append (vector<T>* v, const ContainerOfT& v2);
+                template <typename TARGET_CONTAINER>
+                void Append (TARGET_CONTAINER* v);
+                template <typename TARGET_CONTAINER, typename SRC_CONTAINER>
+                void Append (TARGET_CONTAINER* v, const SRC_CONTAINER& v2);
+                template <typename TARGET_CONTAINER, typename SRC_CONTAINER, typename... Args>
+                void Append (TARGET_CONTAINER* v, const SRC_CONTAINER& v2, Args... args);
+
+                /**
+                 *  \brief construct a new STL container by concatenating the args together.
+                 *
+                 *  \note Hard to believe this is so awkward in STL!
+                 *
+                 *  @see Concatenate
+                 */
+                template <typename TARGET_CONTAINER, typename SRC_CONTAINER, typename... Args>
+                TARGET_CONTAINER Concat (const SRC_CONTAINER& v2, Args... args);
+
+                /**
+                 *  \brief construct a new vector<T> by concatenating the args together. Alias for Concat<vector<typename SRC_CONTAINER::value_type>> ()
+                 *
+                 *  @see Concat
+                 */
+                template <typename SRC_CONTAINER, typename... Args>
+                vector<typename SRC_CONTAINER::value_type> Concatenate (const SRC_CONTAINER& v2, Args... args);
 
                 /**
                  * Returns true if the intersetion of s1 and s2 is non-empty
