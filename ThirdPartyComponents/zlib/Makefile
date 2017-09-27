@@ -25,9 +25,10 @@ USE_DIRNAME=CURRENT
 #
 
 FETCHURLS=
+FETCHURLS+=https://github.com/madler/zlib/archive/v$(VERSION).tar.gz
 FETCHURLS+=http://zlib.net/zlib-$(VERSION).tar.gz
 FETCHURLS+=http://prdownloads.sourceforge.net/libpng/zlib-$(VERSION).tar.gz?download
-FETCHURLS+=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
+#FETCHURLS+=http://sourceforge.net/projects/libpng/files/zlib/$(VERSION)/zlib-$(VERSION).tar.gz/download
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 WIN_CC32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_32)")
