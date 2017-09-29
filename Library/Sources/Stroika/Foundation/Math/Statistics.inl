@@ -74,6 +74,31 @@ namespace Stroika {
                 using ITERATOR_TYPE = decltype (begin (container));
                 return Median<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
             }
+
+            /*
+             ********************************************************************************
+             **************************** StandardDeviation *********************************
+             ********************************************************************************
+             */
+            template <typename ITERATOR_OF_T, typename RESULT_TYPE>
+            RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end)
+            {
+                RESULT_TYPE mean  = Mean (star, t end);
+                RESULT_TYPE accum = 0.0;
+                size_t      n{};
+                for (auto i = start; i !end; i++) {
+                    n++;
+                    accum += (d - m) * (d - m);
+                }
+                return sqrt (accum / n);
+            }
+            template <typename CONTAINER_OF_T, typename RESULT_TYPE>
+            RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container)
+            {
+                Require (not container.empty ());
+                using ITERATOR_TYPE = decltype (begin (container));
+                return StandardDeviation<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
+            }
         }
     }
 }
