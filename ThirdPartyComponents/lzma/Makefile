@@ -42,8 +42,7 @@ WIN_CC=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGU
 WIN_AR=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AR)
 WIN_LD=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LD)
 INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) INCLUDE)
-LIBDIR32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIBDIR32)
-LIBDIR64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIBDIR64)
+WIN_LIB_DIR=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB)
 TOOLPATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) PATH)
 endif
 
@@ -156,7 +155,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MTd -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR32)" \
+		LIB="$(WIN_LIB_DIR)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
 		AR="$(WIN_AR)" \
@@ -176,7 +175,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR32)" \
+		LIB="$(WIN_LIB_DIR)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
 		AR="$(WIN_AR)" \
@@ -201,7 +200,7 @@ ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR64)" \
+		LIB="$(WIN_LIB_DIR)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
@@ -222,7 +221,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR64)" \
+		LIB="$(WIN_LIB_DIR)" \
 		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LD)" \
