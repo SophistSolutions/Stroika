@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.3
+VisualStudioVersion = 15.0.26730.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -462,7 +462,7 @@ Global
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-A-32|x64.Build.0 = Release-A-32|x64
-		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-64|Win32
+		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-U-32|x64
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-U-32|x64
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-32|Win32.ActiveCfg = Release-U-32|Win32
@@ -473,7 +473,8 @@ Global
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-32|x64.Deploy.0 = Release-U-32|x64
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-64|Win32.ActiveCfg = Release-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-64|Win32.Build.0 = Release-U-32|Win32
-		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-64|x64.ActiveCfg = Release-U-32|x64
+		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-64|x64.ActiveCfg = Release-U-64|x64
+		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-Logging-U-64|x64.Build.0 = Release-U-64|x64
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
 		{474730FA-6DA6-4660-9D53-7AA36FBB0373}.Release-U-32|x64.ActiveCfg = Release-U-64|x64
@@ -496,7 +497,7 @@ Global
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-A-32|x64.Build.0 = Release-A-32|x64
-		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-64|Win32
+		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-U-32|x64
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-U-32|x64
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-32|Win32.ActiveCfg = Release-U-32|Win32
@@ -505,7 +506,8 @@ Global
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-32|x64.Build.0 = Release-U-32|x64
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-64|Win32.ActiveCfg = Release-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-64|Win32.Build.0 = Release-U-32|Win32
-		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-64|x64.ActiveCfg = Release-U-32|x64
+		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-64|x64.ActiveCfg = Release-U-64|x64
+		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-Logging-U-64|x64.Build.0 = Release-U-64|x64
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
 		{50EDA128-F1DF-4CDA-AFDF-F50E1A8BA421}.Release-U-32|x64.ActiveCfg = Release-U-64|x64
@@ -556,7 +558,7 @@ Global
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-A-32|x64.Build.0 = Release-A-32|x64
-		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-64|Win32
+		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-U-32|x64
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-U-32|x64
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-32|Win32.ActiveCfg = Release-U-32|Win32
@@ -567,7 +569,7 @@ Global
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-32|x64.Deploy.0 = Release-U-32|x64
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-64|Win32.ActiveCfg = Release-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-64|Win32.Build.0 = Release-U-32|Win32
-		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-64|x64.ActiveCfg = Release-U-32|x64
+		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-Logging-U-64|x64.ActiveCfg = Release-U-64|x64
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
 		{5065D4BB-4395-4874-A4F0-C6B4AA6D5DBD}.Release-U-32|x64.ActiveCfg = Release-U-64|x64
@@ -621,7 +623,7 @@ Global
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-A-32|x64.Build.0 = Release-A-32|x64
-		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-64|Win32
+		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-U-32|x64
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-U-32|x64
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-32|Win32.ActiveCfg = Release-U-32|Win32
@@ -632,7 +634,7 @@ Global
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-32|x64.Deploy.0 = Release-U-32|x64
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-64|Win32.ActiveCfg = Release-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-64|Win32.Build.0 = Release-U-32|Win32
-		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-64|x64.ActiveCfg = Release-U-32|x64
+		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-Logging-U-64|x64.ActiveCfg = Release-U-64|x64
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
 		{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}.Release-U-32|x64.ActiveCfg = Release-U-64|x64
@@ -706,6 +708,7 @@ Global
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-32|x64.Build.0 = Release-U-32|x64
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|Win32.ActiveCfg = Release-U-64|Win32
 		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|x64.ActiveCfg = Release-U-64|x64
+		{E6501207-BB83-4CE7-94CA-7429272D4977}.Release-U-64|x64.Build.0 = Release-U-64|x64
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|Win32.ActiveCfg = Debug-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|Win32.Build.0 = Debug-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-A-32|x64.ActiveCfg = Release-U-32|Win32
@@ -716,7 +719,6 @@ Global
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|Win32.ActiveCfg = Debug-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|Win32.Build.0 = Debug-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|x64.ActiveCfg = Release-U-32|Win32
-		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Debug-U-64|x64.Build.0 = Release-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-A-32|Win32.ActiveCfg = Release-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-A-32|Win32.Build.0 = Release-U-32|Win32
 		{3912B87E-C560-4EEA-A936-5F4BB26B0AA6}.Release-A-32|x64.ActiveCfg = Release-U-32|Win32
@@ -755,8 +757,8 @@ Global
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-A-32|Win32.Build.0 = Release-A-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-A-32|x64.ActiveCfg = Release-A-32|x64
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-A-32|x64.Build.0 = Release-A-32|x64
-		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-A-32|Win32
-		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|Win32.Build.0 = Release-A-32|Win32
+		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|Win32.ActiveCfg = Release-U-32|Win32
+		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|Win32.Build.0 = Release-U-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|x64.ActiveCfg = Release-U-32|x64
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-DbgMemLeaks-U-32|x64.Build.0 = Release-U-32|x64
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-32|Win32.ActiveCfg = Release-U-64|Win32
@@ -767,8 +769,7 @@ Global
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-32|x64.Deploy.0 = Release-U-64|x64
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-64|Win32.ActiveCfg = Release-A-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-64|Win32.Build.0 = Release-A-32|Win32
-		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-64|x64.ActiveCfg = Release-U-32|x64
-		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-64|x64.Build.0 = Release-U-32|x64
+		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-Logging-U-64|x64.ActiveCfg = Release-U-64|x64
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-U-32|Win32.ActiveCfg = Release-U-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-U-32|Win32.Build.0 = Release-U-32|Win32
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530}.Release-U-32|x64.ActiveCfg = Release-U-32|x64
@@ -876,5 +877,8 @@ Global
 		{985C4A1E-F99E-4B52-8CF0-4CFE5B9DC530} = {0D9311A4-3664-4903-A8CA-66B67CEC1727}
 		{808123CA-811B-455B-A0B8-B93D289CB7B1} = {60B10CF8-17F2-4135-A577-21B7BD811DD6}
 		{17CE653D-28FF-4F04-8007-579A0C708DC1} = {60B10CF8-17F2-4135-A577-21B7BD811DD6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6991AF93-FA39-4CFE-AD4E-56282C79EE18}
 	EndGlobalSection
 EndGlobal
