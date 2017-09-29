@@ -299,39 +299,39 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 
 
 ###@tod - see if the $ENV stuff still needed???? Maybe obsolete, and would be good if obsolete
-sub Fill_Defined_Variables_
-{
-	my %env32 = GetEnvironmentVariablesForConfiguration ("Debug-U-32");
-	my %env64 = GetEnvironmentVariablesForConfiguration ("Debug-U-64");
+#sub Fill_Defined_Variables_
+#{
+#	my %env32 = GetEnvironmentVariablesForConfiguration ("Debug-U-32");
+#	my %env64 = GetEnvironmentVariablesForConfiguration ("Debug-U-64");
+#
+#	$ENV{"VisualStudioVersion"} = %env32{"VisualStudioVersion"};
+#	$ENV{"VCINSTALLDIR"} = %env32{"VCINSTALLDIR"};
+#	$ENV{"INCLUDE"} = %env32{"INCLUDE"};
+#	$ENV{"LIBDIR32"} = %env32{"LIB"};
+#	$ENV{"LIBDIR64"} = %env64{"LIB"};
+#
+#
+#	my $cwVSDIR = toCygPath_ ($VSDIR);
+#	my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
+#	my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
+#	#print ("yyy = $cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86\n");
+#	#print ("xxx = @exe32Dirs\n");
+#	my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
+#	my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
+#
+#	$ENV{"AS_32"} = toCygPath_ ($exe32Dir . "\\ml");
+#	$ENV{"AS_64"} = toCygPath_ ($exe64Dir . "\\ml64");
+#	$ENV{"CC_32"} = toCygPath_ ($exe32Dir . "\\cl");
+#	$ENV{"CC_64"} = toCygPath_ ($exe64Dir . "\\cl");
+#	$ENV{"LINK_32"} = toCygPath_ ($exe32Dir . "\\link");
+#	$ENV{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
+#	$ENV{"LIB_32"} = toCygPath_ ($exe32Dir . "\\lib");
+#	$ENV{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
+#}
 
-	$ENV{"VisualStudioVersion"} = %env32{"VisualStudioVersion"};
-	$ENV{"VCINSTALLDIR"} = %env32{"VCINSTALLDIR"};
-	$ENV{"INCLUDE"} = %env32{"INCLUDE"};
-	$ENV{"LIBDIR32"} = %env32{"LIB"};
-	$ENV{"LIBDIR64"} = %env64{"LIB"};
 
 
-	my $cwVSDIR = toCygPath_ ($VSDIR);
-	my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
-	my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
-	#print ("yyy = $cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86\n");
-	#print ("xxx = @exe32Dirs\n");
-	my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-	my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
-
-	$ENV{"AS_32"} = toCygPath_ ($exe32Dir . "\\ml");
-	$ENV{"AS_64"} = toCygPath_ ($exe64Dir . "\\ml64");
-	$ENV{"CC_32"} = toCygPath_ ($exe32Dir . "\\cl");
-	$ENV{"CC_64"} = toCygPath_ ($exe64Dir . "\\cl");
-	$ENV{"LINK_32"} = toCygPath_ ($exe32Dir . "\\link");
-	$ENV{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
-	$ENV{"LIB_32"} = toCygPath_ ($exe32Dir . "\\lib");
-	$ENV{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
-}
-
-
-
-Fill_Defined_Variables_();
+#Fill_Defined_Variables_();
 
 #runShellScriptAndCaptureEnvVars_32_();
 
