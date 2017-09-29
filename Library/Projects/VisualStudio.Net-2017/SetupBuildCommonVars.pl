@@ -323,11 +323,9 @@ sub Fill_Defined_Variables_
 	$ENV{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
 	$ENV{"LIB_32"} = toCygPath_ ($exe32Dir . "\\lib");
 	$ENV{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
-
-	my $winPATH = %env32{"PATH"};
-	#print "GOT env32 PATH=" . $winPATH . "\n";
-	#$ENV{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
 }
+
+
 
 Fill_Defined_Variables_();
 
