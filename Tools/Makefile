@@ -5,7 +5,7 @@ endif
 StroikaRoot=$(shell realpath ../)/
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
-ECHO?=$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
+ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 .PHONY:	samples all check clobber
 
@@ -23,28 +23,30 @@ help:
 
 all:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) "Building Stroika {$(CONFIGURATION)} Tools:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Tools:"
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 else
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(( $(MAKE_INDENT_LEVEL)+1)) -n "Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler..."
+	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
+	@$(ECHO) done
 endif
 endif
 
 
 check:
 ifeq ($(CONFIGURATION),)
-	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
+	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintLevelLeader.sh $(MAKE_INDENT_LEVEL) && $(ECHO) -n "Checking Stroika {$(CONFIGURATION)} Tools:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Stroika {$(CONFIGURATION)} Tools:"
 	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd "Projects/$(ProjectPlatformSubdir)" && perl checkall.pl
 endif
 
@@ -59,7 +61,7 @@ else
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory clean 2> /dev/null || true
 else
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl clean
+	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Clean"
 endif
 endif
 
@@ -74,7 +76,7 @@ else
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Tools/Frameworks/ --no-print-directory clobber 2> /dev/null || true
 else
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd "Projects/$(ProjectPlatformSubdir)" && perl buildall.pl clobber
+	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Clobber"
 endif
 endif
 

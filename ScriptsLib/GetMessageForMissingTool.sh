@@ -28,7 +28,9 @@ elif [ -f /etc/debian_version ] ; then
     PSUEDONAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
     REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
 fi
-
+case `uname` in
+   CYGWIN*)  DistroBasedOn='cygwin' ;;
+esac
 
 echo -n "Missing component $TOOL"
 if [ $TOOL == "libtool" ] ; then

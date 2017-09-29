@@ -281,6 +281,21 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test49", "..\..\Tests\Proje
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test50", "..\..\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj", "{6F1E0B42-E170-42D0-94BA-10565DDB2808}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.Net-2017", "VisualStudio.Net-2017", "{704D0451-F85C-4C0B-802F-806B9AF680B5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\Projects\VisualStudio.Net-2017\.gitignore = ..\..\Tests\Projects\VisualStudio.Net-2017\.gitignore
+		..\..\Tests\Projects\VisualStudio.Net-2017\BuildProjectsFiles.pl = ..\..\Tests\Projects\VisualStudio.Net-2017\BuildProjectsFiles.pl
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project-Template", "Project-Template", "{6364A1DA-F20C-4C0D-B705-31ECDEC046B4}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\.gitignore = ..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\.gitignore
+		..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\checkall.pl = ..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\checkall.pl
+		..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\Run.pl = ..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\Run.pl
+		..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\TestN.vcxproj = ..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\TestN.vcxproj
+		..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\TestN.vcxproj.filters = ..\..\Tests\Projects\VisualStudio.Net-2017\Project-Template\TestN.vcxproj.filters
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -2134,6 +2149,8 @@ Global
 		{15F1E993-1682-447B-9DB0-787D43E22EB5} = {281EACD8-7BD9-4ABD-8AEF-8C024990AB6C}
 		{F9F18DEE-5178-4CA2-93CC-4D139CCAE749} = {8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235}
 		{DF99323A-025D-4608-937C-FF5A382BCCBA} = {F9F18DEE-5178-4CA2-93CC-4D139CCAE749}
+		{704D0451-F85C-4C0B-802F-806B9AF680B5} = {8DCF5A19-DEBC-4B81-8824-9F2E4ACF8235}
+		{6364A1DA-F20C-4C0D-B705-31ECDEC046B4} = {704D0451-F85C-4C0B-802F-806B9AF680B5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5F3CD3BB-5E9F-494D-B34E-3B5A2794D644}

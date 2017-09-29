@@ -136,12 +136,7 @@ $(SUBPROJECTS):
 ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $@ && perl buildall_vs.pl
-endif
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $@ --silent all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
-endif
 
 
 skel-usage_:

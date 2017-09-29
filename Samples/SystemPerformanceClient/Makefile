@@ -1,5 +1,9 @@
 include ../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
+ifneq ($(CONFIGURATION),)
+	ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+endif
+
 SrcDir				=	$(StroikaRoot)Samples/SystemPerformanceClient/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_SystemPerformanceClient/
 
@@ -25,7 +29,11 @@ Objs	=	\
 
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Samples/SystemPerformanceClient:"
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+else
+	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/SystemPerformanceClient.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
+endif
 
 
 $(TARGETEXE):	$(ObjDir) $(Objs)

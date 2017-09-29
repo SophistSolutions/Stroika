@@ -100,7 +100,7 @@ sub GetString2InsertIntoBatchFileToInit32BitCompiles
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x86;\r\n";
+	$result 	.=	"\" x86 > nul;\r\n";
 	$result 	.=	"popd\r\n";
 	return $result;
 }
@@ -112,7 +112,7 @@ sub GetString2InsertIntoBatchFileToInit64BitCompiles
 	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x64;\r\n";
+	$result 	.=	"\" x64 > nul;\r\n";
 	$result 	.=	"popd\r\n";
 	return $result;
 }
@@ -128,17 +128,11 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
 	if (index($activeConfigBits, "32") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x86 >nul;\r\n";
+		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
 		print $fh $result;
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x64 >nul;\r\n";
+		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles();
 		print $fh $result;
 	}
 	else {
@@ -172,9 +166,11 @@ sub GetConfig32Or64_
 {
 	my $activeConfig = $_[0];
 	if ($activeConfig =~ m/32/) {
+	#print ("GetConfig32Or64_ with config=$activeConfig   RETURN 32\r\n");
 		return "32";
 	}
 	if ($activeConfig =~ m/64/) {
+	#print ("GetConfig32Or64_ with config=$activeConfig   RETURN 64\r\n");
 		return "64";
 	}
 	die ("failed to map config $activeConfig to 32/64")
@@ -189,17 +185,12 @@ sub RunSystemWithVCVarsSetInEnvironment
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
 	if (index($activeConfigBits, "32") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x86 >nul;\r\n";
+		my $result = 		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
 		print $fh $result;
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x64 >nul;\r\n";
+		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles();
+		#print "64 case and result=$result\r\n";
 		print $fh $result;
 	}
 	else {
@@ -207,6 +198,8 @@ sub RunSystemWithVCVarsSetInEnvironment
 	}
 	print $fh $cmd2Run . "\r\n";
 	close $fh;
+
+	#print "TMPFILENAME=$tmpFileName; cfg=$_[0], activeconfigbits=$activeConfigBits, and cmd2run=$cmd2Run\r\n";
 	my $result = system ("cmd /C $tmpFileName");
 	unlink ($tmpFileName);
 	return $result;
@@ -227,9 +220,7 @@ sub convertWinPathVar2CygwinPathVar_
 
 sub runShellScriptAndCaptureEnvVars_32_
 {
-	$x = "$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
 	$x = RunBackTickWithVCVarsSetInEnvironment_("32", "set");
-	#print ("XXXX => $x\n");
 	my %skippedVars = (
 		ALLUSERSPROFILE => 1,
 		PPID => 1,
@@ -254,6 +245,7 @@ sub runShellScriptAndCaptureEnvVars_32_
 }
 
 
+###@tod - see if the $ENV stuff still needed???? Maybe obsolete, and would be good if obsolete
 sub Fill_Defined_Variables_
 {
 	my %env32 = GetEnvironmentVariablesForConfiguration ("Debug-U-32");
@@ -285,7 +277,7 @@ sub Fill_Defined_Variables_
 
 	my $winPATH = %env32{"PATH"};
 	#print "GOT env32 PATH=" . $winPATH . "\n";
-	$ENV{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
+	#$ENV{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
 }
 
 Fill_Defined_Variables_();

@@ -181,33 +181,30 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	rm -rf $(BUILDS_DIR)
+	cd CURRENT && rm -f *.obj *.pdb *.lib
 ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	@rm -rf $(BUILDS_DIR)
-	@cd CURRENT && rm -f *.obj *.pdb *.lib
-	@cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS32)\\\" CC=\\\"$(WIN_CC32)\\\" AR=\\\"$(WIN_LIB32)\\\" zlib.lib\""
-	@mkdir -p $(BUILDS_DIR)Debug32
-	@mv CURRENT/zlib.lib $(BUILDS_DIR)Debug32/
+	cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS32)\\\" CC=\\\"$(WIN_CC32)\\\" AR=\\\"$(WIN_LIB32)\\\" zlib.lib\""
+	mkdir -p $(BUILDS_DIR)Debug32
+	mv CURRENT/zlib.lib $(BUILDS_DIR)Debug32/
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	@cd CURRENT && rm -f *.obj *.pdb *.lib
-	@cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS32)\\\" CC=\\\"$(WIN_CC32)\\\" AR=\\\"$(WIN_LIB32)\\\" zlib.lib\""
-	@mkdir -p $(BUILDS_DIR)Release32
-	@mv CURRENT/zlib.lib $(BUILDS_DIR)Release32/
+	cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF\\\" OBJA=\\\"inffas32.obj match686.obj\\\" AS=\\\"$(WIN_AS32)\\\" CC=\\\"$(WIN_CC32)\\\" AR=\\\"$(WIN_LIB32)\\\" zlib.lib\""
+	mkdir -p $(BUILDS_DIR)Release32
+	mv CURRENT/zlib.lib $(BUILDS_DIR)Release32/
 endif
 endif
 ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
-	@cd CURRENT && rm -f *.obj *.pdb *.lib
-	@cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG  /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS64)\\\" CC=\\\"$(WIN_CC64)\\\" AR=\\\"$(WIN_LIB64)\\\" zlib.lib\""
-	@mkdir -p $(BUILDS_DIR)Debug64
-	@mv CURRENT/zlib.lib $(BUILDS_DIR)Debug64/
+	cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MTd /DZLIB_DEBUG  /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS64)\\\" CC=\\\"$(WIN_CC64)\\\" AR=\\\"$(WIN_LIB64)\\\" zlib.lib\""
+	mkdir -p $(BUILDS_DIR)Debug64
+	mv CURRENT/zlib.lib $(BUILDS_DIR)Debug64/
 endif
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
-	@cd CURRENT && rm -f *.obj *.pdb *.lib
-	@cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS64)\\\" CC=\\\"$(WIN_CC64)\\\" AR=\\\"$(WIN_LIB64)\\\" zlib.lib\""
-	@mkdir -p $(BUILDS_DIR)Release64
-	@mv CURRENT/zlib.lib $(BUILDS_DIR)Release64/
+	cd CURRENT && env --unset=MAKEFLAGS --unset=MFLAGS sh -c "perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake -f win32/Makefile.msc LOC=\\\"/safeseh /MT /DASMV /DASMINF /I.\\\" OBJA=\\\"inffasx64.obj gvmat64.obj inffas8664.obj\\\" AS=\\\"$(WIN_AS64)\\\" CC=\\\"$(WIN_CC64)\\\" AR=\\\"$(WIN_LIB64)\\\" zlib.lib\""
+	mkdir -p $(BUILDS_DIR)Release64
+	mv CURRENT/zlib.lib $(BUILDS_DIR)Release64/
 endif
 endif
 else

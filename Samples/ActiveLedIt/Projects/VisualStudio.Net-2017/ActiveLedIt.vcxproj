@@ -178,6 +178,7 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <None Include="..\..\BuildCAB.bat" />
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Demo ReadMe.rtf" />
+    <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.rtf" />
     <None Include="..\..\Sources\AboutBoxImage.bmp" />
     <None Include="..\..\Sources\AboutBoxImage.vsd" />

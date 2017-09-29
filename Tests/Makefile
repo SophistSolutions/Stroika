@@ -122,12 +122,8 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Tests:"
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@(cd Projects/Unix && ./BuildProjectsFiles.pl)
+	@(cd Projects/$(ProjectPlatformSubdir) && ./BuildProjectsFiles.pl)
 	@$(MAKE) $(TESTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
-else
-	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); perl ScriptsLib/_buildall.pl build
-endif
 endif
 
 
@@ -138,8 +134,11 @@ ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName.pl $@`:"
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $@ -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
-
+else
+	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
+endif
 
 run-tests:
 ifeq ($(CONFIGURATION),)
