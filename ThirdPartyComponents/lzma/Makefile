@@ -49,7 +49,7 @@ WIN_LINK64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CON
 INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) INCLUDE)
 LIBDIR32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIBDIR32)
 LIBDIR64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIBDIR64)
-PATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) PATH)
+TOOLPATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) PATH)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -225,7 +225,7 @@ ifeq ($(CONFIGURATION),Debug-U-64)
 		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(LIBDIR64)" \
-		PATH="$(PATH)" \
+		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LINK64)" \
 		AR="$(WIN_LIB64)" \
@@ -257,7 +257,7 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
 		LIB="$(LIBDIR64)" \
-		PATH="$(PATH)" \
+		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
 		LD="$(WIN_LINK64)" \
 		AR="$(WIN_LIB64)" \

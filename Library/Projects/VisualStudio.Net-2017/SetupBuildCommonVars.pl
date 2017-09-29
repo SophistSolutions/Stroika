@@ -206,17 +206,17 @@ sub RunSystemWithVCVarsSetInEnvironment
 }
 
 
-#sub convertWinPathVar2CygwinPathVar_
-#{
-#	my $winPath = $_[0];
-#	#print "doing convertWinPathVar2CygwinPathVar_ (" . $winPath . ")\n";
-#	my $newCygPath = "";
-#	foreach $pathElt (split (";",$winPath)) {
-#		$newCygPath .= toCygPath_ ($pathElt) . ":";
-#	}
-#	#print "returning convertWinPathVar2CygwinPathVar_ (" . $newCygPath . ")\n";
-#	return $newCygPath;
-#}
+sub convertWinPathVar2CygwinPathVar_
+{
+	my $winPath = $_[0];
+	#print "doing convertWinPathVar2CygwinPathVar_ (" . $winPath . ")\n";
+	my $newCygPath = "";
+	foreach $pathElt (split (";",$winPath)) {
+		$newCygPath .= toCygPath_ ($pathElt) . ":";
+	}
+	#print "returning convertWinPathVar2CygwinPathVar_ (" . $newCygPath . ")\n";
+	return $newCygPath;
+}
 
 #sub runShellScriptAndCaptureEnvVars_32_
 #{
@@ -266,27 +266,31 @@ sub GetAugmentedEnvironmentVariablesForConfiguration
 	if (index($activeConfigBits, "32") != -1) {
 		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
 		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-		$resEnv{"AS_32"} .= toCygPath_ ($exe32Dir . "\\ml");
-		$resEnv{"AS"} .= toCygPath_ ($exe32Dir . "\\ml");
-		$resEnv{"CC_32"} .= toCygPath_ ($exe32Dir . "\\cl");
-		$resEnv{"CC"} .= toCygPath_ ($exe32Dir . "\\cl");
-		$resEnv{"LINK_32"} .= toCygPath_ ($exe32Dir . "\\link");
-		$resEnv{"LD"} .= toCygPath_ ($exe32Dir . "\\link");
-		$resEnv{"AR"} .= toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS_32"} = toCygPath_ ($exe32Dir . "\\ml");
+		$resEnv{"AS"} = toCygPath_ ($exe32Dir . "\\ml");
+		$resEnv{"CC_32"} = toCygPath_ ($exe32Dir . "\\cl");
+		$resEnv{"CC"} = toCygPath_ ($exe32Dir . "\\cl");
+		$resEnv{"LINK_32"} = toCygPath_ ($exe32Dir . "\\link");
+		$resEnv{"LD"} = toCygPath_ ($exe32Dir . "\\link");
+		$resEnv{"AR"} = toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
-		$resEnv{"AS_64"} .= toCygPath_ ($exe64Dir . "\\ml64");
-		$resEnv{"AS"} .= toCygPath_ ($exe64Dir . "\\ml64");
-		$resEnv{"CC_64"} .= toCygPath_ ($exe64Dir . "\\cl");
-		$resEnv{"CC"} .= toCygPath_ ($exe64Dir . "\\cl");
-		$resEnv{"LINK_64"} .= toCygPath_ ($exe64Dir . "\\link");
-		$resEnv{"LD"} .= toCygPath_ ($exe64Dir . "\\link");
-		$resEnv{"LIB_64"} .= toCygPath_ ($exe64Dir . "\\lib");
-		$resEnv{"AR"} .= toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+		$resEnv{"AS_64"} = toCygPath_ ($exe64Dir . "\\ml64");
+		$resEnv{"AS"} = toCygPath_ ($exe64Dir . "\\ml64");
+		$resEnv{"CC_64"} = toCygPath_ ($exe64Dir . "\\cl");
+		$resEnv{"CC"} = toCygPath_ ($exe64Dir . "\\cl");
+		$resEnv{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
+		$resEnv{"LD"} = toCygPath_ ($exe64Dir . "\\link");
+		$resEnv{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
+		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 
+
+	my $winPATH = %resEnv{"PATH"};
+	#print "GOT env32 PATH=" . $winPATH . "\n";
+	$resEnv{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
 
 	return %resEnv;
 }
