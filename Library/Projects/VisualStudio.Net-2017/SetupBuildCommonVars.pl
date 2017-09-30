@@ -218,132 +218,36 @@ sub convertWinPathVar2CygwinPathVar_
 	return $newCygPath;
 }
 
-#sub runShellScriptAndCaptureEnvVars_32_
-#{
-#	$x = RunBackTickWithVCVarsSetInEnvironment_("32", "set");
-#	my %skippedVars = (
-#		ALLUSERSPROFILE => 1,
-#		PPID => 1,
-#		CommandPromptType => 1,
-#		'!ExitCode' => 1,
-#		COMPUTERNAME => 1,
-#	);
-#	foreach $line (split ("\n",$x)) {
-#		my @splitLine = split (/=/, $line);
-#		my $envVar = @splitLine[0];
-#		my $envVarValue = @splitLine[1];
-#		if ($envVar eq "PATH") {
-#			my $newCygPath = convertWinPathVar2CygwinPathVar_($envVarValue);
-#			print "APPLYING-NEW-CYGPATH-PATH: $newCygPath\n";
-#			$ENV{$envVar}=$newCygPath;
-#		}
-#		elsif (not (%skippedVars{$envVar})) {
-#			print "Setting $envVar   =   $envVarValue\n";
-#			$ENV{$envVar}=$envVarValue;
-#		}
-#	}
-#}
-
-
-
 
 sub GetAugmentedEnvironmentVariablesForConfiguration
 {
-	###@todo - I tink save to NOT generate _32 when configbits=64 and vice versa - which means fwer calls to GetEnvironmentVariablesForConfiguration
 	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
 	my %resEnv = GetEnvironmentVariablesForConfiguration ($activeConfigBits);
 
-#	my %env32 = GetEnvironmentVariablesForConfiguration ("Debug-U-32");
-#	my %env64 = GetEnvironmentVariablesForConfiguration ("Debug-U-64");
-
-#	$resEnv{"LIBDIR32"} .= %env32{"LIB"};
-#	$resEnv{"LIBDIR64"} .= %env64{"LIB"};
-
-
 	my $cwVSDIR = toCygPath_ ($VSDIR);
 
-	### @tod ocan probably lose alot of these defines too - like LINK_32, etc but review/test carefully -- LGP 2017-09-29
 	if (index($activeConfigBits, "32") != -1) {
 		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
 		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-		#$resEnv{"AS_32"} = toCygPath_ ($exe32Dir . "\\ml");
 		$resEnv{"AS"} = toCygPath_ ($exe32Dir . "\\ml");
-		#$resEnv{"CC_32"} = toCygPath_ ($exe32Dir . "\\cl");
 		$resEnv{"CC"} = toCygPath_ ($exe32Dir . "\\cl");
-		#$resEnv{"LINK_32"} = toCygPath_ ($exe32Dir . "\\link");
 		$resEnv{"LD"} = toCygPath_ ($exe32Dir . "\\link");
 		$resEnv{"AR"} = toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
 		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
 		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
-		#$resEnv{"AS_64"} = toCygPath_ ($exe64Dir . "\\ml64");
 		$resEnv{"AS"} = toCygPath_ ($exe64Dir . "\\ml64");
-		#$resEnv{"CC_64"} = toCygPath_ ($exe64Dir . "\\cl");
 		$resEnv{"CC"} = toCygPath_ ($exe64Dir . "\\cl");
-		#$resEnv{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
 		$resEnv{"LD"} = toCygPath_ ($exe64Dir . "\\link");
-		#$resEnv{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
 		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
 	}
-
 
 	my $winPATH = %resEnv{"PATH"};
 	#print "GOT env32 PATH=" . $winPATH . "\n";
 	$resEnv{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
 
 	return %resEnv;
-}
-
-
-
-
-###@tod - see if the $ENV stuff still needed???? Maybe obsolete, and would be good if obsolete
-#sub Fill_Defined_Variables_
-#{
-#	my %env32 = GetEnvironmentVariablesForConfiguration ("Debug-U-32");
-#	my %env64 = GetEnvironmentVariablesForConfiguration ("Debug-U-64");
-#
-#	$ENV{"VisualStudioVersion"} = %env32{"VisualStudioVersion"};
-#	$ENV{"VCINSTALLDIR"} = %env32{"VCINSTALLDIR"};
-#	$ENV{"INCLUDE"} = %env32{"INCLUDE"};
-#	$ENV{"LIBDIR32"} = %env32{"LIB"};
-#	$ENV{"LIBDIR64"} = %env64{"LIB"};
-#
-#
-#	my $cwVSDIR = toCygPath_ ($VSDIR);
-#	my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
-#	my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
-#	#print ("yyy = $cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86\n");
-#	#print ("xxx = @exe32Dirs\n");
-#	my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-#	my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
-#
-#	$ENV{"AS_32"} = toCygPath_ ($exe32Dir . "\\ml");
-#	$ENV{"AS_64"} = toCygPath_ ($exe64Dir . "\\ml64");
-#	$ENV{"CC_32"} = toCygPath_ ($exe32Dir . "\\cl");
-#	$ENV{"CC_64"} = toCygPath_ ($exe64Dir . "\\cl");
-#	$ENV{"LINK_32"} = toCygPath_ ($exe32Dir . "\\link");
-#	$ENV{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
-#	$ENV{"LIB_32"} = toCygPath_ ($exe32Dir . "\\lib");
-#	$ENV{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
-#}
-
-
-
-#Fill_Defined_Variables_();
-
-#runShellScriptAndCaptureEnvVars_32_();
-
-#print "ENV{CC_32}= ", $ENV{'CC_32'}, "\n";
-#print "ENV{CC_64}= ", $ENV{'CC_64'}, "\n";
-#print "ENV{LINK_32}= ", $ENV{'LINK_32'}, "\n";
-#print "ENV{LINK_64}= ", $ENV{'LINK_64'}, "\n";
-#print "ENV{LIB_32}= ", $ENV{'LIB_32'}, "\n";
-#print "ENV{LIB_64}= ", $ENV{'LIB_64'}, "\n";
-
-if (0) {
-	PRINT_PATH_ ("AFTER SETTING PATH ENV=$ENV{'PATH'}\n");
 }
 
 1
