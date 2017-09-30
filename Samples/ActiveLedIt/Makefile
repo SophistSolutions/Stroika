@@ -19,20 +19,20 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_WebServer
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ActiveLedIt
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)WebServer.o\
+	$(ObjDir)ActiveLedIt.o\
 
 
 all:
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Samples/ActiveLedIt:"
-	if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
+	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
 		perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/ActiveLedIt.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build";\
 	else\
 		$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\
