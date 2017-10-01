@@ -23,8 +23,8 @@
     <None Include="..\..\Sources\small.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\Makefile" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Resource.h">

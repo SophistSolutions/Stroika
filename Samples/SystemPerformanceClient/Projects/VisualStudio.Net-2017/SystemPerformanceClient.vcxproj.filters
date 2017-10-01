@@ -20,7 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Makefile" />
   </ItemGroup>

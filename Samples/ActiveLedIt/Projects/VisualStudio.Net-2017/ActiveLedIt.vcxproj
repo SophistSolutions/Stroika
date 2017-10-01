@@ -174,7 +174,6 @@ echo regsvr32 exec. time &gt; "$(OutDir)regsvr32.trg"
     <None Include="..\..\ActiveLedIt Source ReadMe.rtf" />
     <None Include="..\..\ActiveLedItReference.rtf" />
     <None Include="..\..\ActiveLedItTemplate.inf" />
-    <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\BuildCAB.bat" />
     <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Demo ReadMe.rtf" />

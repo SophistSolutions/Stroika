@@ -66,12 +66,9 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Samples:";
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking $$SUBPROJ... ";\
-		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall_vs.pl);\
-	done
-endif
+		$(MAKE) --directory $$SUBPROJ --no-print-directory check CONFIGURATION=$(CONFIGURATION);\
+    done
 endif
 
 
@@ -83,16 +80,9 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} Samples...";
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clean) 1> /dev/null || true;\
-	done
-endif
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
-endif
 	@$(ECHO) done
 endif
 
@@ -105,16 +95,9 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} Samples...";
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clobber) 1> /dev/null || true;\
-	done
-endif
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent clobber CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
-endif
 	@$(ECHO) done
 endif
 

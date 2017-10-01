@@ -39,6 +39,12 @@ else
 endif
 
 
+check:
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) "Checking Samples/SSDPClient...              " `perl checkall_vs.pl`
+endif
+
+
 $(TARGETEXE):	$(ObjDir) $(Objs)
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Linking `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh $@`..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
