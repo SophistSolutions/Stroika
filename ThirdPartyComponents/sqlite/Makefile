@@ -34,8 +34,6 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 
-
-
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 CC=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC)
 AR=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AR)
