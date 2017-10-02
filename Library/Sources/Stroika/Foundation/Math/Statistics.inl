@@ -83,7 +83,7 @@ namespace Stroika {
             template <typename ITERATOR_OF_T, typename RESULT_TYPE>
             RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end)
             {
-                RESULT_TYPE mean  = Mean (star, t end);
+                RESULT_TYPE mean  = Mean (start, end);
                 RESULT_TYPE accum = 0.0;
                 size_t      n{};
                 for (auto i = start; i !end; i++) {
