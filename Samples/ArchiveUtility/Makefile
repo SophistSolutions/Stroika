@@ -18,7 +18,11 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ArchiveUtility/ArchiveUtility.exe
+else
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_ArchiveUtility
+endif
 
 
 VPATH	=			$(SrcDir)/Sources/
@@ -37,11 +41,11 @@ else
 endif
 
 
-check:
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) "Checking Samples/ArchiveUtility...          " `perl checkall_vs.pl`
-endif
 
+check:
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/ArchiveUtility...           "
+	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
 
 
 $(TARGETEXE):	 $(ObjDir) $(Objs)

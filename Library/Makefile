@@ -24,7 +24,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i check || exit $$?;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Stroika {$(CONFIGURATION)} Library:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Stroika {$(CONFIGURATION)} Library:      "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Stroika-Foundation.a";
 	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Stroika-Frameworks.a";
@@ -38,7 +38,7 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-UPnP.lib";
 	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-WebServer.lib";
 endif
-	@$(ECHO) "      [SUCCEEDED]";
+	@$(ECHO) "[SUCCEEDED]";
 endif
 
 

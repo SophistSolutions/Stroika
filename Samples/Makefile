@@ -24,13 +24,13 @@ ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
-# SOMEDAY SOON GET THIS FROM .PL FILE!!!
+# SOMEDAY SOON GET IF BUILT FROM CONFIGURATION FILE!!!
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
 endif
+SUBPROJECTS+=	SimpleService
 SUBPROJECTS+=	SSDPClient
 SUBPROJECTS+=	SSDPServer
-SUBPROJECTS+=	SimpleService
 SUBPROJECTS+=	SystemPerformanceClient
 SUBPROJECTS+=	Traceroute
 SUBPROJECTS+=	WebServer
@@ -61,13 +61,13 @@ all:		samples
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i || exit $$?;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Samples:";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Samples:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(MAKE) --directory $$SUBPROJ --no-print-directory check CONFIGURATION=$(CONFIGURATION);\
+		$(MAKE) --directory $$SUBPROJ --no-print-directory check CONFIGURATION=$(CONFIGURATION) || exit $$?;\
     done
 endif
 

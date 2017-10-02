@@ -17,7 +17,7 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-LedIt/LedIt.exe
 
 
 VPATH	=			$(SrcDir)/Sources/
@@ -39,8 +39,17 @@ endif
 
 
 check:
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/LedIt...                    "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) "Checking Samples/LedIt...                   " `perl checkall_vs.pl`
+	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
+		$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE);\
+		$(ECHO) "[SUCCEEDED]";\
+	else\
+		$(ECHO) "[SKIPPED]";\
+	fi
+else
+	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
 endif
 
 

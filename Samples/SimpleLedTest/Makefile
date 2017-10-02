@@ -17,7 +17,7 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_WebServer
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleLedTest/SimpleLedTest.exe
 
 
 VPATH	=			$(SrcDir)/Sources/
@@ -40,8 +40,17 @@ endif
 
 
 check:
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SimpleLedTest...            "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) "Checking Samples/SimpleLedTest...           " `perl checkall_vs.pl`
+	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" ]] ; then\
+		$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE);\
+		$(ECHO) "[SUCCEEDED]";\
+	else\
+		$(ECHO) "[SKIPPED]";\
+	fi
+else
+	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
 endif
 
 

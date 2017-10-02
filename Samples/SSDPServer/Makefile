@@ -18,8 +18,11 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/SSDPServer.exe
+else
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SSDPServer
-
+endif
 
 VPATH	=			$(SrcDir)/Sources/
 
@@ -42,8 +45,17 @@ endif
 
 
 check:
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/SSDPServer...               "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) "Checking Samples/SSDPServer...              " `perl checkall_vs.pl`
+	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
+		$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE);\
+	else\
+		$(ECHO) "[SKIPPED]";\
+	fi
+	@$(ECHO) "[SUCCEEDED]";
+else
+	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
 endif
 
 

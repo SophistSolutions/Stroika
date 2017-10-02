@@ -1033,7 +1033,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{B7
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Unix", "Unix", "{285BD8F4-F975-4D92-9A33-0B3552397239}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\Library\Projects\Unix\checkall.pl = ..\..\Library\Projects\Unix\checkall.pl
 		..\..\Library\Projects\Unix\SharedBuildRules-Default.mk = ..\..\Library\Projects\Unix\SharedBuildRules-Default.mk
 		..\..\Library\Projects\Unix\SharedMakeVariables-Default.mk = ..\..\Library\Projects\Unix\SharedMakeVariables-Default.mk
 	EndProjectSection

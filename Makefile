@@ -70,7 +70,7 @@ ifeq ($(CONFIGURATION),)
 ifeq ($(MAKECMDGOALS),check)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Check {$$i}:";\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;;\
 	done
 endif
 else

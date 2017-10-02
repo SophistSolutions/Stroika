@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Makefile" />
-    <None Include="..\..\checkall_vs.pl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\ReadMe.txt" />
