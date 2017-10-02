@@ -714,6 +714,14 @@ namespace {
 }
 
 namespace {
+    void Test_14_timepoint_ ()
+    {
+        TraceContextBumper ctx ("Test_14_timepoint_");
+        Verify (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) == time_point<chrono::steady_clock>::max ());
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -732,6 +740,7 @@ namespace {
         Test_11_DurationRange_ ();
         Test_12_DateRange_ ();
         Test_13_DateTimeRange_ ();
+        Test_14_timepoint_ ();
     }
 }
 

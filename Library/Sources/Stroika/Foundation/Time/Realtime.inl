@@ -11,6 +11,7 @@
  */
 
 #include "../Debug/Assertions.h"
+#include "../Math/Common.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -49,11 +50,30 @@ namespace Stroika {
              ********************************************************************************
              */
             template <class Clock, class Duration>
-            inline time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t)
+            time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t)
             {
                 Require (t >= 0);
                 using std::chrono::duration;
-                return time_point<Clock, Duration> (std::chrono::duration_cast<Duration> (duration<DurationSecondsType>{t + Private_::GetClockTickountOffset_<Clock> ()}));
+                using std::chrono::duration_cast;
+                using std::chrono::time_point;
+#if 1
+                // @todo - understand why (on windows at least) regtest
+                // Verify (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) == time_point<chrono::steady_clock>::max ());
+                // fails with below code - not above. Issue is tmp variable convert from float to int, somehow goes negative... Not sure my bug or MSFT - must look more carefully
+                DurationSecondsType dMin = duration_cast<duration<DurationSecondsType>> (Duration::min ()).count ();
+                DurationSecondsType dMax = duration_cast<duration<DurationSecondsType>> (Duration::max ()).count ();
+                DurationSecondsType dv   = t + Private_::GetClockTickountOffset_<Clock> ();
+                if (dv <= dMin) {
+                    return time_point<Clock, Duration>::min ();
+                }
+                if (dv >= dMax) {
+                    return time_point<Clock, Duration>::max ();
+                }
+                return time_point<Clock, Duration> (duration_cast<Duration> (std::chrono::duration<DurationSecondsType>{dv}));
+#else
+                time_point<Clock, Duration> tmp = time_point<Clock, Duration> (duration_cast<Duration> (duration<DurationSecondsType>{t + Private_::GetClockTickountOffset_<Clock> ()}));
+                return Math::PinInRange (tmp, time_point<Clock, Duration>::min (), time_point<Clock, Duration>::max ());
+#endif
             }
 
             /*
