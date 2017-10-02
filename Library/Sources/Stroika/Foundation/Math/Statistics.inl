@@ -83,19 +83,20 @@ namespace Stroika {
             template <typename ITERATOR_OF_T, typename RESULT_TYPE>
             RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end)
             {
-                RESULT_TYPE mean  = Mean (start, end);
-                RESULT_TYPE accum = 0.0;
+                RESULT_TYPE mean = Mean (start, end);
+                RESULT_TYPE accum{};
                 size_t      n{};
-                for (auto i = start; i !end; i++) {
+                for (auto i = start; i != end; i++) {
                     n++;
-                    accum += (d - m) * (d - m);
+                    accum += (*i - mean) * (*i - mean);
                 }
-                return sqrt (accum / n);
+                Require (n >= 2);
+                return sqrt (accum / (n - 1));
             }
             template <typename CONTAINER_OF_T, typename RESULT_TYPE>
             RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container)
             {
-                Require (not container.empty ());
+                Require (container.size () >= 2);
                 using ITERATOR_TYPE = decltype (begin (container));
                 return StandardDeviation<ITERATOR_TYPE, RESULT_TYPE> (begin (container), end (container));
             }

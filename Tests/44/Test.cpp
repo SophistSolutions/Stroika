@@ -141,6 +141,8 @@ namespace {
         VerifyTestResult (Math::Median (vector<int> ({1, 3, 5})) == 3);
         VerifyTestResult (Math::Median (vector<int> ({5, 3, 1})) == 3);
         VerifyTestResult (Math::Median (vector<int> ({5, 3, 19, 1})) == 4);
+        VerifyTestResult (Math::Mean (vector<double> ({5, 3, 19, 1})) == 7);
+        VerifyTestResult (Math::NearlyEquals (Math::StandardDeviation (vector<double> ({5, 3, 19, 1})), 8.164966, .0001));
     }
 }
 
