@@ -19,7 +19,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Sources\AboutBoxImage.bmp" />

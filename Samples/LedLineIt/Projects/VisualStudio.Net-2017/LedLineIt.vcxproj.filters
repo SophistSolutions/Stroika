@@ -32,7 +32,6 @@
     <None Include="..\..\Sources\PreComp.pch">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Makefile" />
   </ItemGroup>

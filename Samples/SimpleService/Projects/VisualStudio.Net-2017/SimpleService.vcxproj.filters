@@ -25,7 +25,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\Makefile" />
     <None Include="..\..\Sources\Service.inl">

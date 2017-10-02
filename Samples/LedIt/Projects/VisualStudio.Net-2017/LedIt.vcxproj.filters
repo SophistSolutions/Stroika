@@ -95,7 +95,6 @@
     <None Include="..\..\Sources\Toolbar.bmp">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\Unix\Makefile">
       <Filter>Projects\Unix</Filter>

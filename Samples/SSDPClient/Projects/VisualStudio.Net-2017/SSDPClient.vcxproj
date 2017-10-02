@@ -526,7 +526,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Makefile" />
   </ItemGroup>
   <ItemGroup>

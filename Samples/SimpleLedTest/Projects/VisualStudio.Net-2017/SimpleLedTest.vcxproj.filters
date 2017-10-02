@@ -23,7 +23,6 @@
     <None Include="..\..\Sources\small.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Makefile" />
   </ItemGroup>
   <ItemGroup>
