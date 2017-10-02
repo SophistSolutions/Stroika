@@ -26,18 +26,18 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 FETCHURLS=
 #
+#ARCHIVE sites have old versions which matters when you are building an
+#older verison of Stroika
+#
+FETCHURLS+=http://archive.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
+
+#
 #Most Mirrors only have the current release so when xercesc updated, these start
 #failing (bad when building old stroika)
 #
 FETCHURLS+=http://apache.cs.utah.edu//xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
-
-#
-#ARCHIVE sites have old versions which matters when you are building an
-#older verison of Stroika
-#
-FETCHURLS+=http://archive.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 
 
 
