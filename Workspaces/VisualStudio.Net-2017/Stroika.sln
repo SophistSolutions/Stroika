@@ -107,6 +107,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\ApplyConfiguration.pl = ..\..\ScriptsLib\ApplyConfiguration.pl
 		..\..\ScriptsLib\BuildClang.sh = ..\..\ScriptsLib\BuildClang.sh
 		..\..\ScriptsLib\BuildGCC.sh = ..\..\ScriptsLib\BuildGCC.sh
+		..\..\ScriptsLib\CheckFileExists.sh = ..\..\ScriptsLib\CheckFileExists.sh
 		..\..\ScriptsLib\CheckValidConfiguration.sh = ..\..\ScriptsLib\CheckValidConfiguration.sh
 		..\..\ScriptsLib\CheckWindowsVersion.bat = ..\..\ScriptsLib\CheckWindowsVersion.bat
 		..\..\ScriptsLib\ConfigurationReader.pl = ..\..\ScriptsLib\ConfigurationReader.pl
@@ -1839,7 +1840,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VisualStudio.net-2017", "VisualStudio.net-2017", "{200E7999-6106-44D0-9348-9D5D38C3F77C}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\Library\Projects\VisualStudio.Net-2017\.gitignore = ..\..\Library\Projects\VisualStudio.Net-2017\.gitignore
-		..\..\Library\Projects\VisualStudio.Net-2017\checkall.pl = ..\..\Library\Projects\VisualStudio.Net-2017\checkall.pl
 		..\..\Library\Projects\VisualStudio.Net-2017\SetupBuildCommonVars.pl = ..\..\Library\Projects\VisualStudio.Net-2017\SetupBuildCommonVars.pl
 	EndProjectSection
 EndProject

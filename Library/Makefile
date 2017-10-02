@@ -25,7 +25,20 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Stroika {$(CONFIGURATION)} Library:"
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd Projects/$(ProjectPlatformSubdir) && perl checkall.pl
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Stroika-Foundation.a";
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Stroika-Frameworks.a";
+endif
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	@## COULD also check PDB and IDB files but not needed
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Foundation.lib";
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-Led.lib";
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-Service.lib";
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-SystemPerformance.lib";
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-UPnP.lib";
+	@../ScriptsLib/CheckFileExists.sh "../Builds/$(CONFIGURATION)/Library/Stroika-Frameworks-WebServer.lib";
+endif
+	@$(ECHO) "      [SUCCEEDED]";
 endif
 
 
@@ -58,10 +71,6 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Clobbering Stroika {$(CONFIGURATION)} Library:"
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory Sources/Stroika/Foundation/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
 	@$(MAKE) --directory Sources/Stroika/Frameworks/ --no-print-directory --silent clobber MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) 2> /dev/null || true
-else
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); cd Projects/$(ProjectPlatformSubdir) && perl buildall.pl Clobber
-endif
 endif
