@@ -44,6 +44,14 @@ namespace Stroika {
             DurationSecondsType time_point2DurationSeconds (const time_point<Clock, Duration>& tp);
 
             /**
+             *  Map a 'tickcount' value to a std::time_point (which references a particular clock). This is used to interact
+             *  with std::chrono calls, like condition_variable<>::wait_until (), etc.
+             *
+             *  Note - those routines - due to use of fixed point arithmatic - have a large issue with overflow. As a result,
+             *  DurationSeconds2time_point will often return a much smaller time_point than might have made sense, but this is
+             *  just to avoid overflows.
+             *
+             *  This may need to be revisisted... @see @See https://stroika.atlassian.net/browse/STK-619
              */
             template <class Clock = std::chrono::steady_clock, class Duration = typename Clock::duration>
             time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t);
@@ -61,6 +69,7 @@ namespace Stroika {
             DurationSecondsType GetTickCount () noexcept;
 
             /**
+             *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinite differntly - no arithmatic, just no timeout
              */
             constexpr DurationSecondsType kInfinite = std::numeric_limits<DurationSecondsType>::max ();
         }

@@ -717,7 +717,8 @@ namespace {
     void Test_14_timepoint_ ()
     {
         TraceContextBumper ctx ("Test_14_timepoint_");
-        Verify (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) == time_point<chrono::steady_clock>::max ());
+        // @see https://stroika.atlassian.net/browse/STK-619 - VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) == time_point<chrono::steady_clock>::max ());
+        VerifyTestResult (Time::DurationSeconds2time_point (Time::GetTickCount () + Time::kInfinite) > chrono::steady_clock::now () + chrono::seconds (10000));
     }
 }
 
