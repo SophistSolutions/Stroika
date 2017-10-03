@@ -777,6 +777,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
@@ -1410,6 +1411,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>
@@ -1838,6 +1840,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\PIDLoop.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</ExcludedFromBuild>

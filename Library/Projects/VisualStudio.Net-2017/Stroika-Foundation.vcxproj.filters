@@ -840,6 +840,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.cpp">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2003,6 +2006,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.h">
       <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.h">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3221,6 +3227,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.inl">
       <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.inl">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
