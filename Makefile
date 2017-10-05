@@ -371,10 +371,9 @@ regression-test-configurations:
 		./configure malloc-guard --malloc-guard true;\
 		#\
 		./configure my-gcc-5.4.0-release --compiler-driver ~/gcc-5.4.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		./configure my-gcc-6.3.0-debug-c++17 --compiler-driver ~/gcc-6.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		./configure my-gcc-6.3.0-release-c++17 --compiler-driver ~/gcc-6.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
-		#NOTE - --sanitize none on gcc-7.1/2.0-debug* cuz we dont have the right asan libraries installed yet;  - sudo apt-get install libasan4\
-		./configure my-gcc-7.1.0-debug-c++14 --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14 --sanitize none;\
+		./configure my-gcc-6.4.0-debug-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
+		./configure my-gcc-6.4.0-release-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
+		#NOTE - --sanitize none on gcc-7.2.0-debug* cuz we dont have the right asan libraries installed yet;  - sudo apt-get install libasan4\
 		./configure my-gcc-7.2.0-debug-c++14 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14 --sanitize none;\
 		./configure my-gcc-7.2.0-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none;\
 		./configure my-gcc-7.2.0-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
