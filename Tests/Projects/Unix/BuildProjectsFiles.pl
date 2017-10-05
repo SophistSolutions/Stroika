@@ -27,7 +27,6 @@ sub	CopyWithWithSubst {
 sub	DoDirN {
 	my $tst = $_[0];
 	mkdir ($tst);
-	CopyWithWithSubst ("Project-Template/checkall.pl","$tst/checkall.pl", $tst);
 	CopyWithWithSubst ("Project-Template/Run.pl","$tst/Run.pl", $tst);
 	CopyWithWithSubst ("Project-Template/TestN.Makefile","$tst/Makefile", $tst);
 }
