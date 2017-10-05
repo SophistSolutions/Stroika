@@ -223,12 +223,37 @@ namespace Stroika {
                     using WaitableLockType = std::unique_lock<std::mutex>;
                     using QuickLockType    = std::lock_guard<std::mutex>;
 
-                    void notify_one (WaitableLockType& lock)
+                    /**
+                     * NOTIFY the condition variable (notify_one), but unlock first due to:                  *
+                     *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
+                     *
+                     *          The notifying thread does not need to hold the lock on the same mutex as the 
+                     *          one held by the waiting thread(s); in fact doing so is a pessimization, since
+                     *          the notified thread would immediately block again, waiting for the notifying
+                     *          thread to release the lock.
+                     *
+                     *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
+                     *
+                     */
+                    void release_and_notify_one (WaitableLockType& lock)
                     {
                         lock.unlock ();
                         fConditionVariable_.notify_one ();
                     }
-                    void notify_all (WaitableLockType& lock)
+
+                    /**
+                     * NOTIFY the condition variable (notify_all), but unlock first due to:                  *
+                     *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
+                     *
+                     *          The notifying thread does not need to hold the lock on the same mutex as the 
+                     *          one held by the waiting thread(s); in fact doing so is a pessimization, since
+                     *          the notified thread would immediately block again, waiting for the notifying
+                     *          thread to release the lock.
+                     *
+                     *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
+                     *
+                     */
+                    void release_and_notify_all (WaitableLockType& lock)
                     {
                         lock.unlock ();
                         fConditionVariable_.notify_all ();
@@ -238,7 +263,7 @@ namespace Stroika {
                     {
                         WaitableLockType updateLock{fMutex_};
                         doIt ();
-                        notify_all (updateLock);
+                        release_and_notify_all (updateLock);
                     }
                 };
                 mutable LockPlusCondVar_ fLockPlusCondVar_;

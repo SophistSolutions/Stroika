@@ -36,14 +36,14 @@ namespace Stroika {
                 Require (not fEndOfInput_);
                 typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
                 fQueue_.AddTail (e);
-                fLockPlusCondVar_.notify_all (waitableLock);
+                fLockPlusCondVar_.release_and_notify_all (waitableLock);
             }
             template <typename T>
             inline void BlockingQueue<T>::EndOfInput ()
             {
                 typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
                 fEndOfInput_ = true;
-                fLockPlusCondVar_.notify_all (waitableLock); // like input cuz readers could be waiting and need to know no more
+                fLockPlusCondVar_.release_and_notify_all (waitableLock); // like input cuz readers could be waiting and need to know no more
             }
             template <typename T>
             T BlockingQueue<T>::RemoveHead (Time::DurationSecondsType timeout)
