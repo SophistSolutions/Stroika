@@ -402,8 +402,8 @@ regression-test-configurations:
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
-		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
-		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
+		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
+		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true --sanitize none;\
 		./configure raspberrypi-gcc-6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true --sanitize none;\
