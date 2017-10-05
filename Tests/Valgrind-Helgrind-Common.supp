@@ -54,3 +54,10 @@
    ...
    fun:start_thread
 }
+{
+   https://stroika.atlassian.net/browse/STK-620
+   Helgrind:Misc
+   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZNSt18condition_variable10notify_allEv
+   ...
+}
