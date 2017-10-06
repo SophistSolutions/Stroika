@@ -155,7 +155,7 @@ namespace {
         void DoItOnce_ (LOCK* lock, ITERABLE_TYPE elt1, unsigned int repeatCount, MUTATE_FUNCTION baseMutateFunction)
         {
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
-            auto                        mutateFunction = [&oneToKeepOverwriting, lock, repeatCount, &baseMutateFunction]() {
+            auto                        mutateFunction = [&oneToKeepOverwriting, repeatCount, &baseMutateFunction]() {
                 Debug::TraceContextBumper traceCtx ("{}::MutateFunction ()");
                 DbgTrace ("(type %s)", typeid (ITERABLE_TYPE).name ());
                 for (unsigned int i = 0; i < repeatCount; ++i) {
