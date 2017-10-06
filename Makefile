@@ -383,7 +383,7 @@ regression-test-configurations:
 		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
 		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
 		./configure my-clang-4.0.1-release --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
-		###TMPDISABLE./configure my-clang-5.0.0-release --compiler-driver ~/clang-5.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag;\
+		./configure my-clang-5.0.0-release --compiler-driver ~/clang-5.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag;\
 		#sudo apt-get install libc++abi1 for clang libc++ based apps to run\
 		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
 		./configure my-clang-4.0.1-libc++-debug --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
