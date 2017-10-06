@@ -71,7 +71,7 @@ namespace Stroika {
             /**
              *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinite differntly - no arithmatic, just no timeout
              */
-            constexpr DurationSecondsType kInfinite = std::numeric_limits<DurationSecondsType>::max ();
+            constexpr DurationSecondsType kInfinite = std::numeric_limits<DurationSecondsType>::infinity ();
         }
     }
 }
