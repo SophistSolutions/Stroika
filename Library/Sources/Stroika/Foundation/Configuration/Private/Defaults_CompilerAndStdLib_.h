@@ -784,7 +784,8 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 #if defined(_LIBCPP_VERSION)
 // Broken in _LIBCPP_VERSION  3900
 // Broken in _LIBCPP_VERSION  4000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (_LIBCPP_VERSION <= 4000)
+// Broken in _LIBCPP_VERSION  5000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (_LIBCPP_VERSION <= 5000)
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
