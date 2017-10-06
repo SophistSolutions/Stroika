@@ -9,7 +9,7 @@ ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 all:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory CONFIGURATION=$$i all;\
+		$(MAKE) --no-print-directory CONFIGURATION=$$i all || exit $$?;\
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Library:"
