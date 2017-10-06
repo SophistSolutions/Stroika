@@ -67,7 +67,7 @@
 #if (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 7))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 3.7 (non-apple)"
 #endif
-#if (__clang_major__ > 4) || (__clang_major__ == 4 && (__clang_minor__ > 0))
+#if (__clang_major__ > 5) || (__clang_major__ == 5 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -316,6 +316,18 @@ Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER
 #endif
 
 /*
+ */
+#ifndef qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy (((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#else
+#define qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy 0
+#endif
+
+#endif
+
+/*
 @DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
 
 
@@ -353,7 +365,7 @@ Or on MacOS Clang
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
@@ -392,6 +404,16 @@ Vusual studio:
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.h(329): note: see declaration of 'Stroika::Foundation::IO::Network::V4::kLocalhost' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
 
 
+
+clang 5.0
+In file included from ./../../IO/Network/InternetAddress.h:392:
+./../../IO/Network/InternetAddress.inl:280:47: error: redefinition of 'kAddrAny'
+                    constexpr InternetAddress kAddrAny{in_addr{}};
+                                              ^
+./../../IO/Network/InternetAddress.h:352:43: note: previous definition is here
+                    const InternetAddress kAddrAny;
+
+
 */
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
@@ -400,7 +422,7 @@ Vusual studio:
 // still broken with gcc 7.1
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 4) && (__clang_minor__ <= 0))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
 // still broken in _MS_VS_2k17_15Pt1_
@@ -584,13 +606,38 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 ./../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/../../ObjectVariantMapper.inl:311:37: error: no viable overloaded '='
 
+
+
+CLANG 5.0:
+/home/lewis/clang-5.0.0/bin/../include/c++/v1/type_traits:3061:38: error: incomplete type 'Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication' used in type trait expression
+    : public integral_constant<bool, __is_constructible(_Tp, _Args...)>
+                                     ^
+./../../../Memory/Optional.h:399:30: note: in instantiation of template class 'std::__1::is_constructible<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication, const
+      Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication &>' requested here
+                        std::is_constructible<T, const T2&>::value and
+                             ^
+./../../../Memory/Optional.h:401:17: note: in instantiation of default argument for 'Optional<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication,
+      Stroika::Foundation::Memory::Optional_Traits_Blockallocated_Indirect_Storage<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication> >' required here
+                Optional (const Optional<T2, TRAITS2>& from);
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./../../../Memory/Optional.h:351:19: note: while substituting deduced template arguments into function template 'Optional' [with T2 = Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication, TRAITS2 =
+      Stroika::Foundation::Memory::Optional_Traits_Blockallocated_Indirect_Storage<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication>, SFINAE_SAFE_CONVERTIBLE = (no value)]
+            class Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
+                  ^
+./Connection.h:205:40: note: while declaring the implicit copy constructor for 'Options'
+                    struct Connection::Options {
+                                       ^
+./Connection.h:269:32: note: forward declaration of 'Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication'
+                        struct Authentication;
+
+
 */
 #ifndef qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #else
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy 0
 #endif
@@ -640,13 +687,21 @@ SocketAddress.cpp
 SocketStream.cpp
 
 
+
+
+./../Configuration/Endian.inl:34:37: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
+            inline constexpr Endian GetEndianness ()
+                                    ^
+./../Configuration/Endian.inl:37:25: note: read of member 'cdat' of union with active member 'sdat' is not allowed in a constant expression
+
+
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))
 #elif defined(_MSC_VER)
@@ -781,7 +836,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
