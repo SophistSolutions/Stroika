@@ -49,8 +49,12 @@ endif
 BASIC_NAME_LC=stroika-simpleservice
 BASIC_NAME=Stroika-SimpleService
 
-
-DEB_WORKDIR=$(ObjDir)DEB_TMP/
+#The 'deb' package creator requires the directory have particular permissions. on WSL (windows subsystem for linux)
+#using the /mnt filesystem, the permissions dont work. So use /tmp for these. But that means creating the directories
+#in a temp location (already emppty) and deleting it at the end (bit of a PITA if you want to review the data, but hten just
+#comment out the delete line)
+#DEB_WORKDIR=$(ObjDir)DEB_TMP/
+DEB_WORKDIR=$(shell mktemp -d)
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build.Out
 installer-deb:
@@ -59,7 +63,6 @@ ifeq ($(CONFIGURATION),)
 	$(error Cannot make installer-deb without a configuration argument)
 endif
 	@#NB: This installs control scripts for systemd, so assumes ubuntu 15 or later --LGP 2017-07-29
-	@rm -rf $(DEB_WORKDIR)
 	@#Make directories to be created by the installer
 	@mkdir -p $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/DEBIAN
 	@mkdir -p $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION)/opt/$(BASIC_NAME)/
@@ -85,6 +88,7 @@ endif
 	@dpkg --build $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION) 2>&1 > $(DEB_BUILD_OUT)
 	@cp $(DEB_WORKDIR)$(BASIC_NAME_LC)-$(DEB_VERSION).deb $(TARGET_OUT_DIR)$(BASIC_NAME_LC)-$(DEB_VERSION).$(INSTALLER_OS_TAG).$(INSTALLER_PLATFORM_TAG).deb
 	
+	@rm -rf $(DEB_WORKDIR)
 	@$(ECHO) "done"
 
 
