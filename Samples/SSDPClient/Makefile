@@ -48,10 +48,10 @@ check:
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE);\
+		$(ECHO) "[SUCCEEDED]";\
 	else\
 		$(ECHO) "[SKIPPED]";\
 	fi
-	@$(ECHO) "[SUCCEEDED]";
 else
 	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
 	@$(ECHO) "[SUCCEEDED]";
