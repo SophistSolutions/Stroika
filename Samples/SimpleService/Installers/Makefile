@@ -54,7 +54,7 @@ BASIC_NAME=Stroika-SimpleService
 #in a temp location (already emppty) and deleting it at the end (bit of a PITA if you want to review the data, but hten just
 #comment out the delete line)
 #DEB_WORKDIR=$(ObjDir)DEB_TMP/
-DEB_WORKDIR=$(shell mktemp -d)/
+DEB_WORKDIR:=$(shell mktemp -d)/
 DEB_VERSION=$(MAJOR_DOT_MINOR_VERSION)$(INSTALLER_RELEASE_TAG)
 DEB_BUILD_OUT=$(ObjDir)DEB-Installer-Build.Out
 installer-deb:
