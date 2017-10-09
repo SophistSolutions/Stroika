@@ -385,14 +385,14 @@ namespace {
             void DoInterlocktest_ (function<void(INTISH_TYPE*)> increment, function<void(INTISH_TYPE*)> decrement)
             {
                 using namespace Execution;
-                constexpr int kMaxTimes_  = 100 * 1000;
-                INTISH_TYPE   s           = 0;
-                Thread::Ptr   incrementer = Thread::New ([&s, increment, kMaxTimes_]() {
+                static constexpr int kMaxTimes_  = 100 * 1000;
+                INTISH_TYPE          s           = 0;
+                Thread::Ptr          incrementer = Thread::New ([&s, increment]() {
                     for (int i = 0; i < kMaxTimes_; ++i) {
                         increment (&s);
                     }
                 });
-                Thread::Ptr decrementer = Thread::New ([&s, decrement, kMaxTimes_]() {
+                Thread::Ptr decrementer = Thread::New ([&s, decrement]() {
                     for (int i = 0; i < kMaxTimes_; ++i) {
                         decrement (&s);
                     }

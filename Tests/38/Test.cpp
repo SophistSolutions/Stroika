@@ -769,14 +769,14 @@ namespace {
         //
         Debug::TraceContextBumper traceCtx ("RegressionTest15_ThreadPoolStarvationBug_");
         {
-            Time::DurationSecondsType           testStartedAt       = Time::GetTickCount ();
-            constexpr unsigned                  kThreadPoolSize_    = 10;
-            constexpr unsigned                  kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
-            constexpr Time::DurationSecondsType kTime2WaitPerTask_{0.01};
-            constexpr Time::DurationSecondsType kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
-            ThreadPool                          p;
+            Time::DurationSecondsType                  testStartedAt       = Time::GetTickCount ();
+            static constexpr unsigned                  kThreadPoolSize_    = 10;
+            static constexpr unsigned                  kStepsToGetTrouble_ = 100 * kThreadPoolSize_; // wag - should go through each thread pretty quickly
+            static constexpr Time::DurationSecondsType kTime2WaitPerTask_{0.01};
+            static constexpr Time::DurationSecondsType kRoughEstimateOfTime2Run_ = kTime2WaitPerTask_ * kStepsToGetTrouble_ / kThreadPoolSize_;
+            ThreadPool                                 p;
             p.SetPoolSize (kThreadPoolSize_);
-            auto doItHandler = [kTime2WaitPerTask_]() { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
+            auto doItHandler = []() { Execution::Sleep (kTime2WaitPerTask_); }; // sb pretty quick
 
             for (int i = 0; i < kStepsToGetTrouble_; ++i) {
                 p.AddTask (doItHandler);
