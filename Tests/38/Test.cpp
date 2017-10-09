@@ -211,16 +211,19 @@ namespace {
             Debug::TraceContextBumper traceCtx{"Deadlock block on waitable event and abort thread (thread cancelation)"};
             // Make a thread to wait a 'LONG TIME' on a single event, and verify it gets cancelled reasonably
             static constexpr Time::DurationSecondsType kLONGTimeForThread2Wait_{60.0}; // just has to be much more than the waits below
+            static WaitableEvent                       s_autoResetEvent_{WaitableEvent::eAutoReset};
             auto                                       myWaitingThreadProc = []() {
-                sRegTest3Event_T1_.Wait (kLONGTimeForThread2Wait_);
+                Debug::TraceContextBumper innerThreadLoopCtx{"innerThreadLoop"};
+                s_autoResetEvent_.Wait (kLONGTimeForThread2Wait_);
             };
 
-            sRegTest3Event_T1_.Reset ();
+            s_autoResetEvent_.Reset ();
             Thread::Ptr t = Thread::New (myWaitingThreadProc, Thread::eAutoStart);
 
             // At this point the thread 't' SHOULD block and wait kLONGTimeForThread2Wait_ seconds
             // So we wait a shorter time for it, and that should fail
             {
+                Debug::TraceContextBumper       ctx1{L"expect-failed-wait"};
                 const Time::DurationSecondsType kMarginOfErrorLo_ = .5;
                 const Time::DurationSecondsType kMarginOfErrorHi_ = 5.0; // if sys busy, thread could be put to sleep almost any amount of time
                 const Time::DurationSecondsType kWaitOnAbortFor   = 1.0;
@@ -247,6 +250,7 @@ namespace {
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
+                Debug::TraceContextBumper           ctx1{L"expect-abort-to-work-and-wait-to-succceed"};
                 constexpr Time::DurationSecondsType kMarginOfError_ = 3.5; // larger margin of error cuz sometimes fails on raspberrypi
                 constexpr Time::DurationSecondsType kWaitOnAbortFor = 3.0; // use such a long timeout cuz we run this on 'debug' builds,
                                                                            // with asan, valgrind, and on small arm devices. Upped from 2.0 to 2.5 seconds
@@ -273,6 +277,26 @@ namespace {
                     // CHANGE NEXT RELEASE A BIT MORE
                     //
                     /// @todo CHANGED TIME FROM 2.5 to 3 2017-08-23 - so if we see again react, and if not, clear out these warnings/docs
+                    //
+                    //  @todo SAW AGAIN - 2017-10-07
+                    //      [---MAIN---][0000.628]          <Thread::WaitForDoneUntil (*this={id: 0x762ff450, status: Running}, timeoutAt=1.627011e+00)> {
+                    //      [---MAIN---][0001.647]              Throwing exception: Timeout Expired from /tmp/Test38(Stroika::Foundation::Debug::BackTrace[abi:cxx11](unsigned int)+0x51) [0x4e9f7e]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_ws[abi:cxx11]()+0x23) [0x4f0558]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_s[abi:cxx11]()+0x1d) [0x4f0496]; /tmp/Test38(void Stroika::Foundation::Execution::Throw<Stroika::Foundation::Execution::TimeOutException>(Stroika::Foundation::Execution::TimeOutException const&)+0x3d) [0x47449e]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Ptr::WaitForDoneUntil(double) const+0x91) [0x5352c6]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Ptr::WaitForDone(double) const+0x3f) [0x46eca8]; /tmp/Test38() [0x45f152]; /tmp/Test38() [0x45f500]; /tmp/Test38() [0x463464]; /tmp/Test38(Stroika::TestHarness::PrintPassOrFail(void (*)())+0x19) [0x4a7442]; /tmp/Test38(main+0x25) [0x4634fe]; /lib/arm-linux-gnueabihf/libc.so.6(__libc_start_main+0x114) [0x76cca678];
+                    //      [---MAIN---][0001.648]          } </Thread::WaitForDoneUntil>
+                    //      [---MAIN---][0001.649]          <Thread::AbortAndWaitForDoneUntil (*this={id: 0x762ff450, status: Running}, timeoutAt=4.647912e+00)> {
+                    //      [---MAIN---][0001.649]              <Thread::Abort (*this={id: 0x762ff450, status: Running})> {
+                    //      [---MAIN---][0001.651]                  <Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers (signal: SIGUSR2, handlers: [ {type: Direct, target: 0xfa8e50} ])/>
+                    //      [---MAIN---][0001.653]                  <Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x762ff450, signal = SIGUSR2)/>
+                    //      [---MAIN---][0001.653]              } </Thread::Abort>
+                    //      [0x762ff450][0002.155]      Throwing exception: Thread Abort from /tmp/Test38(Stroika::Foundation::Debug::BackTrace[abi:cxx11](unsigned int)+0x51) [0x4e9f7e]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_ws[abi:cxx11]()+0x23) [0x4f0558]; /tmp/Test38(Stroika::Foundation::Execution::Private_::GetBT_s[abi:cxx11]()+0x1d) [0x4f0496]; /tmp/Test38(void Stroika::Foundation::Execution::Throw<Stroika::Foundation::Execution::Thread::AbortException>(Stroika::Foundation::Execution::Thread::AbortException const&)+0x3d) [0x53b9ee]; /tmp/Test38(Stroika::Foundation::Execution::CheckForThreadInterruption()+0x91) [0x535eee]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(double)+0x5d) [0x57297a]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntil(double)+0x21) [0x5728ba]; /tmp/Test38(Stroika::Foundation::Execution::WaitableEvent::Wait(double)+0x33) [0x46f198]; /tmp/Test38() [0x45f01c]; /tmp/Test38() [0x466066]; /tmp/Test38(std::function<void ()>::operator()() c
+                    //      onst+0x2f) [0x4726e0]; /tmp/Test38(void Stroika::Foundation::Execution::Function<void ()>::operator()<>() const+0x5b) [0x53a16c]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Rep_::Run_()+0x1b) [0x53308c]; /tmp/Test38(Stroika::Foundation::Execution::Thread::Rep_::ThreadMain_(std::shared_ptr<Stroika::Foundation::Execution::Thread::Rep_> const*)+0x3cd) [0x533da6];
+                    //      [---MAIN---][0006.378]              This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interrupt: tries: 1.
+                    //      [---MAIN---][0006.379]              <Thread::Abort (*this={id: 0x762ff450, status: Aborting})> {
+                    //      [0x762ff450][0006.379]      In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (InterruptException) for thread: {id: 0x762ff450, status: Aborting}
+                    //      [---MAIN---][0006.379]                  <Stroika::Foundation::Execution::Signals::Execution::SendSignal (target = 0x762ff450, signal = SIGUSR2)/>
+                    //      [---MAIN---][0006.380]              } </Thread::Abort>
+                    //      [0x762ff450][0006.380]      removing thread id 0x762ff450 from sRunningThreads_ ([ 0x762ff450 ])
+                    //
+                    //  So issue is, why the delay from [0002.155] to [0006.378]..."This should ALMOST NEVER happen..."
                     //
                 }
                 Time::DurationSecondsType doneAt        = Time::GetTickCount ();
