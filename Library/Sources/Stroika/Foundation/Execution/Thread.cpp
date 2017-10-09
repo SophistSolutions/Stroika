@@ -922,20 +922,11 @@ void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt)
             return;
         }
         else {
-// If timeLeft BIG - ignore timeout exception and go through loop again
-#if 1
+            // If timeLeft BIG - ignore timeout exception and go through loop again
             if (WaitForDoneUntilQuietly (Time::GetTickCount () + kAbortAndWaitForDoneUntil_TimeBetweenAborts_) == WaitableEvent::kWaitQuietlySetResult) {
                 return;
             }
-// timeout just continue to loop
-#else
-            try {
-                WaitForDone (kAbortAndWaitForDoneUntil_TimeBetweenAborts_);
-                return;
-            }
-            catch (const TimeOutException&) {
-            }
-#endif
+            // timeout just continue to loop
         }
         if (tries <= 1) {
             // this COULD happen due to a lucky race - OR - the code could just be BUSY for a while (not calling CheckForAborted). But even then - it COULD make
