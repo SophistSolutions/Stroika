@@ -360,7 +360,10 @@ sub	SetDefaultForCompilerDriver_
 			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
 				$runtimeStackProtectorFlag = true;
 			}
-			if ($sanitizerFlags eq "") {
+			if (`uname -r` eq "4.4.0-43-Microsoft") {
+				#LEAVE empty default, cuz for this version of WSL, asan doesnt work - insufficient procfs support
+			}
+			else if ($sanitizerFlags eq "") {
 				$sanitizerFlags = "address,undefined";
 			}
 			else {
