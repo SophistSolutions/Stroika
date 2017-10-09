@@ -22,6 +22,7 @@ namespace Stroika {
                 : WhenTimeExceeded (warnIfLongerThan, [](Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("(timeTaken=%f seconds)", timeTaken); })
             {
             }
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
             inline TimingTrace::TimingTrace (const char* label, Time::DurationSecondsType warnIfLongerThan)
                 : WhenTimeExceeded (warnIfLongerThan, [label](Time::DurationSecondsType timeTaken) noexcept { DbgTrace ("%s (timeTaken=%f seconds)", label, timeTaken); })
             {
@@ -34,6 +35,7 @@ namespace Stroika {
                 : WhenTimeExceeded (warnIfLongerThan, [label](Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); })
             {
             }
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wunused-lambda-capture\"");
         }
     }
 }
