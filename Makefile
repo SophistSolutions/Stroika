@@ -336,10 +336,7 @@ endif
 default-configurations:
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making default configurations...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [ `uname` = "Darwin" ] ; then\
-		./configure Debug --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
-	elif [ `uname -o` = "Cygwin" ] ; then\
+	if [ `uname -o` = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
