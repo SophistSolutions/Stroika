@@ -23,7 +23,7 @@ endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 Objs	=	\
-	$(ObjDir)HTMLViewCompiler.o\
+	$(ObjDir)HTMLViewCompiler.o
 else
 Objs	=	
 endif
