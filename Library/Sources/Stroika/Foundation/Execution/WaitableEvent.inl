@@ -51,7 +51,7 @@ namespace Stroika {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (fMutex);
 #else
-                auto critSec{make_unique_lock (fMutex)};
+                auto     critSec{make_unique_lock (fMutex)};
 #endif
                 fTriggered = false;
             }
@@ -61,12 +61,26 @@ namespace Stroika {
             }
             inline void WaitableEvent::WE_::Set ()
             {
+                /**
+                 * NOTIFY the condition variable (notify_all), but unlock first due to:                  *
+                 *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
+                 *
+                 *          The notifying thread does not need to hold the lock on the same mutex as the
+                 *          one held by the waiting thread(s); in fact doing so is a pessimization, since
+                 *          the notified thread would immediately block again, waiting for the notifying
+                 *          thread to release the lock.
+                 *
+                 *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
+                 *
+                 */
+                {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fMutex);
+                    MACRO_LOCK_GUARD_CONTEXT (fMutex);
 #else
-                auto critSec{make_unique_lock (fMutex)};
+                    auto critSec{make_unique_lock (fMutex)};
 #endif
-                fTriggered = true;
+                    fTriggered = true;
+                }
                 fConditionVariable.notify_all ();
             }
 
