@@ -28,7 +28,6 @@ sub	DoDirN {
 	my $tst = $_[0];
 	mkdir ($tst);
 	copy("Project-Template/.gitignore","$tst/.gitignore") or die "Copy failed: $!";
-	CopyWithWithSubst ("Project-Template/Run.pl","$tst/Run.pl", $tst);
 	CopyWithWithSubst ("Project-Template/TestN.vcxproj","$tst/Test$tst.vcxproj", $tst);
 	CopyWithWithSubst ("Project-Template/TestN.vcxproj.filters","$tst/Test$tst.vcxproj.filters", $tst);
 	
