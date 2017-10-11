@@ -97,6 +97,7 @@ my $RANLIB = undef;
 my $STRIP = undef;
 my $EXTRA_COMPILER_ARGS = "";
 my $EXTRA_LINKER_ARGS = "";
+my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
 
@@ -137,6 +138,8 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
         print("	    --append-extra-linker-args {ARG}                /* Appends ARG to 'extra linker */\n");
         print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
+        print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables, such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
+        print("	    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */\n");
         print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
         print("	    --cross-compiling {true|false}                  /* Defaults generally to false, but set explicitly to control if certain tests will be run */\n");
@@ -713,6 +716,19 @@ sub	ParseCommandLine_Remaining_
 			}
 			$EXTRA_LINKER_ARGS .= $var;
 		}
+		elsif ((lc ($var) eq "-run-prefix") or (lc ($var) eq "--run-prefix")) {
+			$i++;
+			$var = $ARGV[$i];
+			$RUN_PREFIX = $var;
+		}
+		elsif ((lc ($var) eq "-append-run-prefix") or (lc ($var) eq "--append-run-prefix")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($RUN_PREFIX eq "")) {
+				$RUN_PREFIX .= " ";
+			}
+			$RUN_PREFIX .= $var;
+		}
 		elsif ((lc ($var) eq "-append-extra-compiler-and-linker-args") or (lc ($var) eq "--append-extra-compiler-and-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
@@ -1029,6 +1045,8 @@ sub	WriteConfigFile_
 	}
 	print (OUT "    <EXTRA_COMPILER_ARGS>$EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
 	print (OUT "    <EXTRA_LINKER_ARGS>$EXTRA_LINKER_ARGS</EXTRA_LINKER_ARGS>\n");
+
+	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
 
 	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
 
