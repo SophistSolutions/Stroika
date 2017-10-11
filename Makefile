@@ -333,10 +333,12 @@ endif
 	@touch IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 
 
+UNAME_DASH_O_=$(shell uname -o 2>/dev/null || true)
+
 default-configurations:
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making default configurations...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [ `uname -o` = "Cygwin" ] ; then\
+	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
@@ -354,7 +356,7 @@ regression-test-configurations:
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making regression-test configurations...
 	@rm -f ConfigurationFiles/*
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [ `uname -o` = "Cygwin" ] ; then\
+	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable;\
 		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable;\
 		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags;\
