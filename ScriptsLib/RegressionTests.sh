@@ -23,7 +23,7 @@ if [ "$(uname -s)" == "Darwin" ] ; then
     #LGP 2017-01-05
 
     echo "USING MacOS..."
-    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt
+    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode9-$VER-OUT.txt
     rm -rf ConfigurationFiles
     make default-configurations
     echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
