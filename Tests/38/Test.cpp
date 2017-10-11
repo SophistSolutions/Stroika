@@ -709,6 +709,10 @@ namespace {
         Time::DurationSecondsType startAt = Time::GetTickCount ();
         t1.Start ();
         t2.Start ();
+        /*
+         *  Saw this: FAILED: RegressionTestFailure; WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2});;..\..\..\38\Test.cpp: 712
+         *      2017-10-10 - but just once and not since (and on loaded machine so that could have caused queer scheduling) - Windows ONLY
+         */
         VerifyTestResult (WaitableEvent::WaitForAny (Sequence<WaitableEvent*> ({&we1, &we2})) == set<WaitableEvent*> ({&we2})); // may not indicate a real problem if triggered rarely - just threads ran in queer order, but can happen
         Time::DurationSecondsType timeTaken = Time::GetTickCount () - startAt;
         VerifyTestResult (timeTaken <= kMaxWaitTime_); // make sure we didnt wait for the 1.0 second on first thread
