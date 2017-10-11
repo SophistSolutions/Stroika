@@ -246,6 +246,22 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 /*
+  *     Assert (::sem_init (&fSem_, kpshared, defaultValue) == 0) failed in 'Stroika::Foundation::Execution::Platform::POSIX::SemWaitableEvent::SemWaitableEvent()'; SemWaitableEvent.cpp:26
+ABORTING...
+  *
+  *     https://stackoverflow.com/questions/1413785/sem-init-on-os-x
+  */
+#ifndef qCompilerAndStdLib_unnamed_semaphores_Buggy
+
+#if defined(__APPLE__) && defined(__MACH__) /*qPlatform_MacOS - not not including Defaults_Configuration_Common.h before here*/
+#define qCompilerAndStdLib_unnamed_semaphores_Buggy 1
+#else
+#define qCompilerAndStdLib_unnamed_semaphores_Buggy 0
+#endif
+
+#endif
+
+/*
  *  NOTE - when this fails - it compiles but crashes in MSFT implementaiton
  *
  *                []  (19 seconds)  [46]  Foundation::Time  (../Builds/Debug-U-32/Test46/Test46.exe) crash/assert failure

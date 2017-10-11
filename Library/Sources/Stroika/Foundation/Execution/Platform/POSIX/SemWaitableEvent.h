@@ -49,7 +49,11 @@ namespace Stroika {
                         nonvirtual void Set ();
 
                     private:
+#if qCompilerAndStdLib_unnamed_semaphores_Buggy
+                        sem_t* fSem_;
+#else
                         sem_t fSem_;
+#endif
                     };
                 }
             }
