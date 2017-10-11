@@ -3,6 +3,8 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include <unistd.h>
+
 #include "../../ErrNoException.h"
 
 #include "SemWaitableEvent.h"
