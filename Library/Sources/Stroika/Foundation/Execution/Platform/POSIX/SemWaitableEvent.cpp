@@ -27,8 +27,8 @@ SemWaitableEvent::SemWaitableEvent ()
     int           defaultValue = 0;
 #if qCompilerAndStdLib_unnamed_semaphores_Buggy
     char nameBuf[1000] = "/tmp/semaphore-XXXXXX";
-    ::close (::mkstemp (nameBuf));
-    Verify ((fSem_ = ::sem_open (nameBuf, 0)) != SEM_FAILED);
+    ::close (::mkstemp (nameBuf)); // create file as side-effect so no race - file name still reserved by this CTOR
+    Verify ((fSem_ = ::sem_open (nameBuf, O_CREAT, S_IRWXU | S_IRWXG, defaultValue)) != SEM_FAILED);
     Verify (::sem_unlink (nameBuf) == 0);
 #else
     Verify (::sem_init (&fSem_, kpshared, defaultValue) == 0);
