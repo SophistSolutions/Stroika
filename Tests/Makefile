@@ -131,7 +131,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Tests:"
-	@(cd Projects/$(ProjectPlatformSubdir) && ./BuildProjectsFiles.pl)
+	@(cd Projects/$(ProjectPlatformSubdir) && perl ./BuildProjectsFiles.pl)
 	@$(MAKE) --no-print-directory $(TESTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 
