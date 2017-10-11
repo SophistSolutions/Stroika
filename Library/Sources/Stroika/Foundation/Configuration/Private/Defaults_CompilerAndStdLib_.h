@@ -1157,13 +1157,13 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 /*
 @CONFIGVAR:     qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 *
-*   Looking at returned string object from locale - its got a bogus length. And hten the DTOR for that string causes crash. Just dont
+*   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just dont
 *   use this til debugged.
 */
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
+#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8)))
 #else
