@@ -367,7 +367,7 @@ regression-test-configurations:
 	else\
 		./configure DEFAULT_CONFIG;\
 		./configure no-third-party-components --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no;\
-		##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621
+		##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621\
 		##./configure malloc-guard --malloc-guard true;\
 		#\
 		./configure my-gcc-5.4.0-release --compiler-driver ~/gcc-5.4.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
