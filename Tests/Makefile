@@ -165,6 +165,7 @@ else
 			TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
 			$(RUNTEST_REMOTECOPYSETUP);\
 			TIMESTAMP=`date +%s`;\
+			EXERESULT="CRASHED";\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
 			if [ -e PerformanceDump.txt ]; then\
 			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null;\
