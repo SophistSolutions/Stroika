@@ -370,10 +370,11 @@ namespace Stroika {
          *          and GCC 5.3 on ubuntu its a wash. For now - switch so we default to shared_ptr on gcc and SharedPtr using
          *          vs2k15
          *
-         *
          *  \note   As of 2016-07-09, and version v2.0a156 (after SpinLock fence/lockless blockallocation changes), it appears on windows/VS2k13,
          *          SharedPtr is still about 10% faster
          *
+         *  \note   As of 2017-10-13 - Stroika v2.0a217, and Visual Studio.Net 2017 (15.4.0) - SharedPtr<> remains about 15% faster than shared_ptr<> 
+         *          on windows.
          */
 #ifndef qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #if defined(_MSC_VER)
