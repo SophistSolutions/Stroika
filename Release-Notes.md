@@ -73,6 +73,7 @@ History
 				<li>PickoutParamValuesBody / PickoutParamValuesFromBody -- see these notes</li>
 			</ul>
 		</li>
+		<li>Makefile and configuration and losing perl scripts
 			<ul>
 				<li>makefile output tweaks building sample installers</li>
 				<li>Much progress on https://stroika.atlassian.net/browse/STK-271 - losing about 1/2 of the remaining perl build scripts (moved logic to makefile), eg Run.pl, checkall.pl, etc</li>
@@ -98,7 +99,12 @@ History
 				<li>check more carefully for atlmfc (look for not just atl stuff but MFC too)</li>
 			</ul>
 		</li>
-		<li>MISC
+		<li>Math
+			<ul>
+				<li>New function Math::StandardDeviation () and added regression test</li>
+			</ul>
+		</li>
+		<li>Miscelaneous
 			<ul>
 				<li>Added Duration::AsPinned</li>
 				<li>makedev() now requires include sys/sysmacros.h for linux</li>
@@ -109,11 +115,6 @@ History
 					returns 0-based. And better to NOT do so the values reported in columsn match more exactly
 					the GetTickCount () results.</li>
 				<li>https://stroika.atlassian.net/browse/STK-621 - lose testing malloc-guard - not importnat and not perfectly implemented (so seems to have some incompatability with glibc - use by latest libcurl)</li>
-			</ul>
-		</li>
-		<li>Math
-			<ul>
-				<li>New function Math::StandardDeviation () and added regression test</li>
 			</ul>
 		</li>
 		<li>Samples
@@ -134,18 +135,6 @@ History
 				</li>
 			</ul>
 		</li>
-		<li>Time::GetTickCount
-			<ul>
-				<li>DurationSecondsType Time::GetTickCount () now inline:
-        return time_point2DurationSeconds (std::chrono::steady_clock::now ());</li>
-				<li>time_point2DurationSeconds etc enforce tickcount/DurationSecondsType >= 0.</li>
-				<li>Document using steady-clock and based on zero at startup</li>
-				<li>Lose all the non-portable variation ways of getting tickcount</li>
-				<li>KEY REASON for this is now we can convert GetTickCount () result to a time_point which can
-    be used with stuff like wait_until in stdC++ api</li>
-				<li>added time_point2DurationSeconds and DurationSeconds2time_point, and re-implement GetTickCount () to always use time_point2DurationSeconds (chrono::steady_clock::now ());time_point2DurationSeconds (chrono::steady_clock::now ());</li>
-			</ul>
-		</li>
 		<li>Threads
 			<ul>
 				<li>https://stroika.atlassian.net/browse/STK-619  - make kInfinite use numeric_liits::infinity () not max (). NOTE - this could have more impact (see jira ticket) than it sounds on the surface</li>
@@ -157,7 +146,6 @@ History
 						<li>Leaning MORE AND MORE against using/supporting eAutoResetEvent</li>
 						<li>Manual reset event now the default for WaitableEvent. And many places in stroika where i (needlessly) used autoreset, just use the default or explicit manual reset event</li>
 						<li>Fixed bug where BlockingQueue did one way for one CTOR, and the other way for the other!</li>
-						<li>xxxxxxxxxxxxx</li>
 					</ul>
 				</li>
 			</ul>
@@ -175,6 +163,18 @@ History
 				<li>Improve wget call for building curl</li>
 				<li>re-ordered FETCHURLS for xerces (since archihve site has new and old so may as well cehck there first)</li>
 				<li>zlib sourceforge download no longer works with wget because it downloads js code that furhters download - so use github download instead</li>
+			</ul>
+		</li>
+		<li>Time::GetTickCount
+			<ul>
+				<li>DurationSecondsType Time::GetTickCount () now inline:
+        return time_point2DurationSeconds (std::chrono::steady_clock::now ());</li>
+				<li>time_point2DurationSeconds etc enforce tickcount/DurationSecondsType >= 0.</li>
+				<li>Document using steady-clock and based on zero at startup</li>
+				<li>Lose all the non-portable variation ways of getting tickcount</li>
+				<li>KEY REASON for this is now we can convert GetTickCount () result to a time_point which can
+    be used with stuff like wait_until in stdC++ api</li>
+				<li>added time_point2DurationSeconds and DurationSeconds2time_point, and re-implement GetTickCount () to always use time_point2DurationSeconds (chrono::steady_clock::now ());time_point2DurationSeconds (chrono::steady_clock::now ());</li>
 			</ul>
 		</li>
 		<li>WebService
