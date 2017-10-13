@@ -13,7 +13,7 @@ VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 MULTIPLIER=${MULTIPLIER-15}
 if [ "$(uname -s)" == "Darwin" ] ; then
     EXE=${EXE-"Builds/Release/Test50"}
-    CONFIG_LABEL_IN_OUTPUT="MacOS-x86-XCode8"
+    CONFIG_LABEL_IN_OUTPUT="MacOS-x86-XCode9"
     CMDRUN_PREFIX="nice -10 "
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
