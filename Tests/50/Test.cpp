@@ -1260,7 +1260,7 @@ namespace {
             Test_stdsharedptrBaseline, L"shared_ptr",
             Test_MemorySharedPtr, L"SharedPtr",
             27000,
-            1.0,
+            1.05,
             &failedTests);
 #endif
 #if 0
