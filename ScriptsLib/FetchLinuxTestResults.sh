@@ -1,4 +1,4 @@
-MACHINE=${MACHINE:-LewisDevVM5}
+MACHINE=${MACHINE:-LewisLinuxDevVM7}
 LOGIN=lewis
 SSH_TARGET=$LOGIN@$MACHINE
 #BUILD_DIR=Sandbox/Stroika-Reg-Tests-Dev
