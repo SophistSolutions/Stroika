@@ -17,6 +17,201 @@ History
 
 
 
+ 
+   
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a217">v2.0a217</a><br/>2017-10-13xx</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a216...v2.0a217</li>
+		<li>BlockingQueue
+			<ul>
+				<li>rewrite BlockingQueue to use condition_variable, so that it wakes multiple threads when new data is available (little tested)</li>
+				<li>small code cleanup to BlockingQueue code - and document better use of condition_variable, and workaround for helgrind bug https://stroika.atlassian.net/browse/STK-620</li>
+				<li>https://stroika.atlassian.net/browse/STK-620 helgrind suppression for errant warning about condition_variable::notify_all</li>
+				<li>BlockingQueue now uses ConditionVariable_.wait_until instead of wait_for to avoid /usr/include/c++/6/chrono:176:38: runtime error: signed integer overflow: 9223372036854775807 * 1000000 cannot be represented in type 'long int'</li>
+				<li>RegressionTest19_ThreadPoolAndBlockingQueue_ new regression test</li>
+			</ul>
+		</li>
+		<li>Compilers Supported 
+			<ul>
+				<li>Added G++ 7.2</li>
+				<li>Added clang++ 5.0</li>
+				<li>Added Apple XCode 9.0, Apple clang++-9.0</li>
+				<li>Added support Visaul C++ .net 15.3.4 (SP4)</li>
+				<li>regression tests: use clang.4.0.1 instead of 4.0.0</li>
+				<li>regression tests: use gcc.6.4 instead of 6.3</li>
+				<li>regression tests: use gcc.7.2 instead of 7.1</li>
+			</ul>
+		</li>
+		<li>Compile Bug workaround changes (besides support new compilers)
+			<ul>
+				<li>Added new qCompilerAndStdLib_unnamed_semaphores_Buggy (and workaround for MacOS)</li>
+				<li>simplified qCompilerAndStdLib_Supports_stdoptional macro - c++17 or later for std::optional</li>
+			</ul>
+		</li>
+		<li>Containers
+			<ul>
+				<li>Added docs on Container CTORS (examples of use); and regtests to verify each works</li>
+				<li>Containers::STL
+					<ul>
+						<li>New STL::Concatenate ()</li>
+						<li>Improved STL::Concatenate and STL::Append - variadic templates</li>
+						<li>new regression test for Containers::STL</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>DataExchange
+			<ul>
+				<li>added regression test for MakeCommonSerializer_EnumAsInt () and fixed a bug with it</li>
+			</ul>
+		</li>
+		<li>Deprecation
+			<ul>
+				<li>Lose v2.0a213 deprecated functions, like Stream<>::empty/clear, SharedMemoryStream::CloseForWrites, inputstream::empty()</li>
+				<li>PickoutParamValuesBody / PickoutParamValuesFromBody -- see these notes</li>
+			</ul>
+		</li>
+			<ul>
+				<li>makefile output tweaks building sample installers</li>
+				<li>Much progress on https://stroika.atlassian.net/browse/STK-271 - losing about 1/2 of the remaining perl build scripts (moved logic to makefile), eg Run.pl, checkall.pl, etc</li>
+				<li>MAYBE fixed run-tests makefile script so when test crashes in prints CRASHED as status instead of []</li>
+				<li>configure --run-prefix and --append-run-prefix; changed regression test configs to --append-run-prefix for clang with libc++ (so tests run without installing clang ABI separately)</li>
+				<li>Support new configuration RUN_PATH variable in Tests Makefile for 'run-tests' (incomplete but enough to get clang tests passing I think - still need to rewrite/refactor how used)</li>
+				<li>change default for DEBUG sanitize flags - to not include asan by default on WSL cuz so far doesnt work there (tied to version)</li>
+				<li>on make check - stop checks if one fails</li>
+				<li>replace checkall.pl use with with utility ScriptsLib/CheckFileExists.sh in makefiles</li>
+				<li>MAKE_INDENT_LEVEL - supported in WebGet so things look better on wget</li>
+				<li>cleaning up used env vars from PrintEnvVarFromCommonBuildVars.pl (looks like LIB is really WIN_LIB_DIRECTORIES)</li>
+				<li>tons of changes to windows build system (still incomplete but builds Debug-U-32 at least); mostly use ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) MSBuild.exe ... in place of buildall_vs.pl scripts and refactored that .pl code so works with recent changes in vcvars.bat</li>
+				<li>VisualStudio.Net-2017/SetupBuildCommonVars.pl
+					<ul>
+						<li>lose Fill_Defined_Variables_ from Projects/VisualStudio.Net-2017/SetupBuildCommonVars and use CC insetad of CC_32 etc - in caslls to PrintEnvVarFromCommonBuildVars.pl (most places - but still must review)</li>
+						<li>fix handling of PATH with PrintEnvVarFromCommonBuildVars.pl - so now maybe works for -64 builds</li>
+						<li>lose obsolete code from VisualStudio.Net-2017/SetupBuildCommonVars.pl, and added new helper GetAugmentedEnvironmentVariablesForConfiguration () which is still not used</li>
+						<li>had to re-install OS, and not sure what all changed. Maybe update to VS2k? - but now vcvarsall.bat seems to change directory, so undo that change (probably new visual studio verison caused this and OS install coincidence)</li>
+					</ul>
+				</li>
+				<li>improve GetMessageForMissingTool.sh for cygwin</li>
+				<li>fixed regression in regression test script (change from true/false to 0/1 in tests) - was causing helgrind tests to be skipped</li>
+				<li>check more carefully for atlmfc (look for not just atl stuff but MFC too)</li>
+			</ul>
+		</li>
+		<li>MISC
+			<ul>
+				<li>Added Duration::AsPinned</li>
+				<li>makedev() now requires include sys/sysmacros.h for linux</li>
+				<li>errno_ErrorException::LookupMessage () maps ETIMEDOUT to TimeoutExcpetion</li>
+				<li>code celanup - renaming qUsePOSIXSemPOSTFromSignalHandler_ to qConditionVariablesSafeInAsyncSignalHanlders (soon to move)</li>
+				<li>hopefully resolved race/regression with signal(POSIX) code change recently (was done originally because I found docs saying what I was doing was not safe)</li>
+				<li>Lose Debug/Trace GetStartOfEpoch_ () logic. Redundent since GetTickCount () now assures
+					returns 0-based. And better to NOT do so the values reported in columsn match more exactly
+					the GetTickCount () results.</li>
+				<li>https://stroika.atlassian.net/browse/STK-621 - lose testing malloc-guard - not importnat and not perfectly implemented (so seems to have some incompatability with glibc - use by latest libcurl)</li>
+			</ul>
+		</li>
+		<li>Math
+			<ul>
+				<li>New function Math::StandardDeviation () and added regression test</li>
+			</ul>
+		</li>
+		<li>Samples
+			<ul>
+				<li>Makefile cleanups</li>
+				<li>Sample/SimpleService: Accomodate requirment from dpkg: control directory has bad permissions 777 (must be >=0755 and <=0775), and wehre we create tmpdir for DEB, so it can work right with WSL</li>
+				<li>fixed windows project for archiveutility to support Release-U-32-Logging configuraiton</li>
+				<li>use Samples-SimpleService isntead of Samples_SimpleService as path dir name in IntermediateFiles and Builds</li>
+			</ul>
+		</li>
+		<li>Signal Handlers
+			<ul>
+				<li>close https://stroika.atlassian.net/browse/STK-617 - use qUsePOSIXSemPOSTFromSignalHandler_ and docs and lose qConditionVariableSetSafeFromSignalHandler_</li>
+				<li>New POSIX\SemWaitableEvent.cpp (and Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled); and used for
+					https://stroika.atlassian.net/browse/STK-617
+					Enabled new qUseSemPOSTFromSignalHandler_ - using sem_wait, to see if
+					this works. Fixes possible latent bug with signal handling.
+				</li>
+			</ul>
+		</li>
+		<li>Time::GetTickCount
+			<ul>
+				<li>DurationSecondsType Time::GetTickCount () now inline:
+        return time_point2DurationSeconds (std::chrono::steady_clock::now ());</li>
+				<li>time_point2DurationSeconds etc enforce tickcount/DurationSecondsType >= 0.</li>
+				<li>Document using steady-clock and based on zero at startup</li>
+				<li>Lose all the non-portable variation ways of getting tickcount</li>
+				<li>KEY REASON for this is now we can convert GetTickCount () result to a time_point which can
+    be used with stuff like wait_until in stdC++ api</li>
+				<li>added time_point2DurationSeconds and DurationSeconds2time_point, and re-implement GetTickCount () to always use time_point2DurationSeconds (chrono::steady_clock::now ());time_point2DurationSeconds (chrono::steady_clock::now ());</li>
+			</ul>
+		</li>
+		<li>Threads
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-619  - make kInfinite use numeric_liits::infinity () not max (). NOTE - this could have more impact (see jira ticket) than it sounds on the surface</li>
+				<li>Added regtest Test_14_timepoint_ () and changed DurationSeconds2time_point () so maybe works better avoiding overflow</li>
+				<li>WaitableEvent
+					<ul>
+						<li>WaitableEvent::Set () fix for condition_variable::notify_all () - outside lock(pessimizaiton issue) - so SB performance tweak</li>
+						<li>WaitableEvent Cleanups</li>
+						<li>Leaning MORE AND MORE against using/supporting eAutoResetEvent</li>
+						<li>Manual reset event now the default for WaitableEvent. And many places in stroika where i (needlessly) used autoreset, just use the default or explicit manual reset event</li>
+						<li>Fixed bug where BlockingQueue did one way for one CTOR, and the other way for the other!</li>
+						<li>xxxxxxxxxxxxx</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>ThreadPool
+			<ul>
+				<li>make ThreadPool::Abort_ and AbortAndWaitForDone_ noexecpt and cleanup internal code a bit cuz of that</li>
+				<li>new helper functions - ThreadPool::WaitForTasksDone/WaitForTasksDoneUntil (and used in regtest)</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>CURL: use 7.56.0</li>
+				<li>curl requires autoconf as well as automake in check_prerequistites</li>
+				<li>Improve wget call for building curl</li>
+				<li>re-ordered FETCHURLS for xerces (since archihve site has new and old so may as well cehck there first)</li>
+				<li>zlib sourceforge download no longer works with wget because it downloads js code that furhters download - so use github download instead</li>
+			</ul>
+		</li>
+		<li>WebService
+			<ul>
+				<li>Lose some unused overloads of Server::VariantValue::PickoutParamValues
+    added docs, deprecated PickoutParamValues_NEW and lost deprecated (older differnt) PickoutParamValues_NEW</li>
+				<li>rename PickoutParamValuesBody to PickoutParamValuesFromBody () - and deprecate mapper from oldname to new name</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a217-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode9,Windows-VS2k17}-2.0a217-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.3</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 
  
@@ -25,7 +220,7 @@ History
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a216">v2.0a216</a><br/>2017-08-24</td>
 <td>
 	<ul>
-		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a216...v2.0a216</li>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a215...v2.0a216</li>
 		<li>use new _STROIKA_CONFIGURATION_WARNING_ trick to only emit compiler mismatch (version) warnings ONCE - by emitting just in the StroikaConfig.cpp file</li>
 		<li>no using namespace std at top level in Led/Support.h</li>
 		<li>Cleaned up and fixed timing on one thread-based regression test</li>
