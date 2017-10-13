@@ -774,6 +774,72 @@ namespace {
 }
 
 namespace {
+    void DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ()
+    {
+        using namespace Traversal;
+        const bool kWrite2FileAsWell_ = true; // just for debugging
+
+        enum class Fred {
+            a = -3,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+
+            Stroika_Define_Enum_Bounds (a, h)
+        };
+
+        struct SharedContactsConfig_ {
+            Fred fEnum1;
+
+            SharedContactsConfig_ ()
+                : fEnum1 (Fred::a)
+            {
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
+                return fEnum1 == rhs.fEnum1;
+            }
+        };
+
+        {
+            ObjectVariantMapper mapper;
+
+            mapper.Add (ObjectVariantMapper::MakeCommonSerializer_EnumAsInt<Fred> ());
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
+            mapper.AddClass<SharedContactsConfig_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                {L"fEnum1", Stroika_Foundation_DataExchange_StructFieldMetaInfo (SharedContactsConfig_, fEnum1)},
+            });
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
+
+            SharedContactsConfig_ tmp;
+            tmp.fEnum1     = Fred::b;
+            VariantValue v = mapper.FromObject (tmp);
+
+            // at this point - we should have VariantValue object with "Enabled" field.
+            // This can then be serialized using
+
+            Streams::MemoryStream<Byte>::Ptr tmpStream = Streams::MemoryStream<Byte>::New ();
+            Variant::JSON::Writer ().Write (v, tmpStream);
+
+            if (kWrite2FileAsWell_) {
+                String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"12.txt";
+                Variant::JSON::Writer ().Write (v, IO::FileSystem::FileOutputStream::New (fileName));
+                SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (IO::FileSystem::FileInputStream::New (fileName)));
+            }
+
+            // THEN deserialized, and mapped back to C++ object form
+            SharedContactsConfig_ tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpStream));
+            VerifyTestResult (tmp2 == tmp);
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
@@ -787,6 +853,7 @@ namespace {
         DoRegressionTests_Subclass_9_ ();
         DoRegressionTests_FileTypeConverterOverride_10_ ();
         DoRegressionTests_CustomMapper_11_ ();
+        DoRegressionTests_MakeCommonSerializer_EnumAsInt_12_ ();
     }
 }
 
