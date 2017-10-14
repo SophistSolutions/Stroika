@@ -968,6 +968,7 @@ namespace {
 namespace {
     void RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ()
     {
+        // For fixed bug - https://stroika.atlassian.net/browse/STK-622
         Debug::TraceContextBumper ctx{"RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_"};
         enum {
             START = 0,

@@ -77,7 +77,12 @@ namespace Stroika {
                     if (Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ()) {
                         return tmp;
                     }
-                    ThrowTimeoutExceptionAfter (waitTil);
+                    if (fEndOfInput_) {
+                        return {}; // on end of input, no point in waiting
+                    }
+                    if (Time::GetTickCount () > waitTil) {
+                        return {}; // on timeout, return 'missing'
+                    }
                     fLockPlusCondVar_.fConditionVariable_.wait_until (waitableLock, Time::DurationSeconds2time_point (waitTil));
                 }
             }
