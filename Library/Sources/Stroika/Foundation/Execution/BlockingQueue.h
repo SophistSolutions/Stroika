@@ -153,6 +153,14 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This returns true iff EndOfInput () has been called. It does NOT imply the BlockingQueue is empty.
+                 *
+                 *  This routine exist because there is no other non-blocking way to check (peek) at see if you are at end of input.
+                 */
+                nonvirtual bool IsAtEndOfInput () const;
+
+            public:
+                /**
                  *  Blocks until item removed, and throws if timeout exceeded.
                  *
                  *  If there are currently no items in the Q, this may wait indefinitely (up to timeout provided).

@@ -966,6 +966,55 @@ namespace {
 }
 
 namespace {
+    void RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ()
+    {
+        Debug::TraceContextBumper ctx{"RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_"};
+        enum {
+            START = 0,
+            END   = 100
+        };
+        int                             expectedValue = (START + END) * (END - START + 1) / 2;
+        int                             counter       = 0;
+        BlockingQueue<function<void()>> q;
+
+        Verify (q.GetLength () == 0);
+
+        Thread::Ptr consumerThread = Thread::New (
+            [&q]() {
+                while (true) {
+                    if (Memory::Optional<function<void()>> of = q.RemoveHeadIfPossible ()) {
+                        function<void()> f = *of;
+                        f ();
+                    }
+                    if (q.IsAtEndOfInput () and q.empty ()) {
+                        break;
+                    }
+                }
+            },
+            Thread::eAutoStart,
+            String{L"Consumer"});
+        Execution::Sleep (0.1); // so consume gets a chance to fail removehead at least once...
+        Thread::Ptr producerThread = Thread::New (
+            [&q, &counter]() {
+                for (int incBy = START; incBy <= END; ++incBy) {
+                    q.AddTail ([&counter, incBy]() { counter += incBy; });
+                }
+                q.EndOfInput ();
+            },
+            Thread::eAutoStart,
+            String{L"Producer"});
+        Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (counter);
+        while (counter != expectedValue and Time::GetTickCount () < killAt) {
+            Execution::Sleep (.5);
+        }
+        Verify (counter == expectedValue);
+        producerThread.WaitForDone (); // producer already set to run off the end...
+        consumerThread.WaitForDone (); // consumer will end due to exception reading from end
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -998,6 +1047,7 @@ namespace {
         RegressionTest17_ThreadInterruption_::RunTests ();
         RegressionTest18_RWSynchronized_::DoIt ();
         RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
+        RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
     }
 }
 

@@ -46,6 +46,12 @@ namespace Stroika {
                 fLockPlusCondVar_.release_and_notify_all (waitableLock); // like input cuz readers could be waiting and need to know no more
             }
             template <typename T>
+            inline bool BlockingQueue<T>::IsAtEndOfInput () const
+            {
+                typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_}; // lock not strictly needed, but it avoids false-positive from lock checking tools
+                return fEndOfInput_;
+            }
+            template <typename T>
             T BlockingQueue<T>::RemoveHead (Time::DurationSecondsType timeout)
             {
                 Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
