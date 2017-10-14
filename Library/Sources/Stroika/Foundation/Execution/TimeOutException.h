@@ -6,7 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
-#include <condition_variable>
+#include <condition_variable> // for cv_status
 
 #include "../Time/Realtime.h"
 
