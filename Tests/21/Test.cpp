@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Containers/Collection.h"
+
 #include "Stroika/Foundation/Containers/Set.h"
 
 #include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
@@ -37,6 +39,26 @@ namespace {
             // only work todo on sorted sets
         };
         CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<value_type, typename TraitsType::SetTraitsType>> (extraChecksFunction);
+    }
+}
+
+namespace {
+    namespace ExampleCTORS_Test_2_ {
+        void DoTest ()
+        {
+            // From Set<> CTOR docs
+            Collection<int>  c;
+            std::vector<int> v;
+
+            Set<int> s1 = {1, 2, 3};
+            Set<int> s2 = s1;
+            Set<int> s3{s1};
+            Set<int> s4{s1.begin (), s1.end ()};
+            Set<int> s5{c};
+            Set<int> s6{v};
+            Set<int> s7{v.begin (), v.end ()};
+            Set<int> s8{move (s1)};
+        }
     }
 }
 
@@ -77,6 +99,8 @@ namespace {
                 MySimpleClassWithoutComparisonOperators_CompareEquals_,
                 MySimpleClassWithoutComparisonOperators_ComparerWithCompare_>;
             DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperatorsSet_stdset_TRAITS>> ();
+
+            ExampleCTORS_Test_2_::DoTest ();
         }
     }
 }

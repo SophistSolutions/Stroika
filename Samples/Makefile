@@ -24,13 +24,13 @@ ifeq ($(qFeatureFlag_ATLMFC), use-system)
 SUBPROJECTS+=	LedIt
 SUBPROJECTS+=	LedLineIt
 endif
-# SOMEDAY SOON GET THIS FROM .PL FILE!!!
+# SOMEDAY SOON GET IF BUILT FROM CONFIGURATION FILE!!!
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 SUBPROJECTS+=	SimpleLedTest
 endif
+SUBPROJECTS+=	SimpleService
 SUBPROJECTS+=	SSDPClient
 SUBPROJECTS+=	SSDPServer
-SUBPROJECTS+=	SimpleService
 SUBPROJECTS+=	SystemPerformanceClient
 SUBPROJECTS+=	Traceroute
 SUBPROJECTS+=	WebServer
@@ -61,17 +61,14 @@ all:		samples
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i;\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i || exit $$?;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Samples:";
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Samples:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking $$SUBPROJ... ";\
-		(CONFIGURATION=$(CONFIGURATION) cd $$SUBPROJ && perl checkall_vs.pl);\
-	done
-endif
+		$(MAKE) --directory $$SUBPROJ --no-print-directory check CONFIGURATION=$(CONFIGURATION) || exit $$?;\
+    done
 endif
 
 
@@ -83,16 +80,9 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} Samples...";
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clean) 1> /dev/null || true;\
-	done
-endif
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
-endif
 	@$(ECHO) done
 endif
 
@@ -105,16 +95,9 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} Samples...";
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@for SUBPROJ in $(SUBPROJECTS) ; do \
-		(export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1)); cd $$SUBPROJ && perl buildall_vs.pl Clobber) 1> /dev/null || true;\
-	done
-endif
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent clobber CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
-endif
 	@$(ECHO) done
 endif
 
@@ -136,12 +119,7 @@ $(SUBPROJECTS):
 ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@export CONFIGURATION=$(CONFIGURATION); export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); cd $@ && perl buildall_vs.pl
-endif
-ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $@ --silent all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
-endif
 
 
 skel-usage_:

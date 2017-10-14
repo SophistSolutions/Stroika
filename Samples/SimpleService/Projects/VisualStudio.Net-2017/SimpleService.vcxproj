@@ -502,8 +502,6 @@
     <ClCompile Include="..\..\Sources\Service.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\buildall_vs.pl" />
-    <None Include="..\..\checkall_vs.pl" />
     <None Include="..\..\Installers\Makefile" />
     <None Include="..\..\Installers\stroika-simpleservice.control" />
     <None Include="..\..\Installers\stroika-simpleservice.rpm.spec" />

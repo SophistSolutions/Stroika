@@ -28,7 +28,9 @@ elif [ -f /etc/debian_version ] ; then
     PSUEDONAME=`cat /etc/lsb-release | grep '^DISTRIB_CODENAME' | awk -F=  '{ print $2 }'`
     REV=`cat /etc/lsb-release | grep '^DISTRIB_RELEASE' | awk -F=  '{ print $2 }'`
 fi
-
+case `uname` in
+   CYGWIN*)  DistroBasedOn='cygwin' ;;
+esac
 
 echo -n "Missing component $TOOL"
 if [ $TOOL == "libtool" ] ; then
@@ -38,6 +40,8 @@ if [ $TOOL == "libtool" ] ; then
 elif [ $TOOL == "7za" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install p7zip-full"
+	elif [ $DistroBasedOn == "cygwin" ] ; then
+		echo -n ": try cygwin setup, package name p7zip"
 	fi
 elif [ $TOOL == "tr" ] ; then
 	if [ $DistroBasedOn == "Debian" ] ; then

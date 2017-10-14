@@ -11,6 +11,10 @@ ECHO?=	$(shell ../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO_BUILD_LINES?=0
 
+RUN_PREFIX	=	$(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RUN_PREFIX)
+ifneq (,$(RUN_PREFIX))
+RUN_PREFIX:=$(RUN_PREFIX) 
+endif
 
 REMOTE_RUN_PREFIX=
 
@@ -22,6 +26,8 @@ BASEEXEPATTERN=Test$$i.exe
 EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i/Test$$i.exe
 endif
 
+### @todo - rewrite the below mess so valgrind etc CONSTRUCT a RUN_PREFIX, and then unify the code a bit.
+### and change place where REMOTE_RUN_PREFIX set (RegressionTests.sh) and use the RUN_PREFIX mechanism (configuration)
 
 ifneq (,$(REMOTE))
 RUNTEST_REMOTECOPYSETUP=scp -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
@@ -47,8 +53,8 @@ RUNTEST_EXE_RUN=valgrind $(VALGRIND_OPTIONS) $(EXEPATTERN)
 RUNTEST_EXE_RUN_PRINTLINE=$(RUNTEST_EXE_RUN)
 else
 RUNTEST_REMOTECOPYSETUP=:
-RUNTEST_EXE_RUN=$(EXEPATTERN)
-RUNTEST_EXE_RUN_PRINTLINE=$(EXEPATTERN)
+RUNTEST_EXE_RUN=$(RUN_PREFIX)$(EXEPATTERN)
+RUNTEST_EXE_RUN_PRINTLINE=$(RUN_PREFIX)$(EXEPATTERN)
 endif
 
 
@@ -75,11 +81,14 @@ all:		tests
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `$(StroikaRoot)ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) || exit $$?;\
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL); perl ScriptsLib/_checkall.pl
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Tests:"
+	@for tst in $(TESTS) ; do\
+		$(MAKE) --directory $$tst --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
+	done
 endif
 
 
@@ -122,12 +131,8 @@ ifeq ($(CONFIGURATION),)
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Tests:"
-ifeq (Unix,$(ProjectPlatformSubdir))
-	@(cd Projects/Unix && ./BuildProjectsFiles.pl)
-	@$(MAKE) $(TESTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
-else
-	@export CONFIGURATION=$(CONFIGURATION);export MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL);export ECHO_BUILD_LINES=$(ECHO_BUILD_LINES); perl ScriptsLib/_buildall.pl build
-endif
+	@(cd Projects/$(ProjectPlatformSubdir) && perl ./BuildProjectsFiles.pl)
+	@$(MAKE) --no-print-directory $(TESTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 
 
@@ -138,8 +143,11 @@ ifeq ($(CONFIGURATION),)
 	$(error CONFIGURATION variable required for this target)
 endif
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Test $@: `$(StroikaRoot)Tests/ScriptsLib/PrintTestName.pl $@`:"
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $@ -s all CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
-
+else
+	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/$@/Test$@.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
+endif
 
 run-tests:
 ifeq ($(CONFIGURATION),)
@@ -157,6 +165,7 @@ else
 			TESTNAME=`perl ScriptsLib/PrintTestName.pl $$i`;\
 			$(RUNTEST_REMOTECOPYSETUP);\
 			TIMESTAMP=`date +%s`;\
+			EXERESULT="CRASHED";\
 			EXERESULT=`$(RUNTEST_EXE_RUN)`;\
 			if [ -e PerformanceDump.txt ]; then\
 			  mv PerformanceDump.txt ../Builds/$(CONFIGURATION)/PerformanceDump.txt 2>/dev/null;\

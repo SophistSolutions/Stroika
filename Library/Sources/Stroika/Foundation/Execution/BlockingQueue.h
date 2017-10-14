@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <condition_variable>
 #include <mutex>
 
 #include "../Configuration/Common.h"
@@ -120,9 +121,10 @@ namespace Stroika {
             public:
                 /*
                  *  Note - you may want to pass in a specific queue object, to require use of a particular concrete implementation
-                 *  for the Queue (such as one that doesnt allocate memory).
+                 *  for the Queue (such as one that doesnt allocate memory). But when contructing a blocking Q (even with another Q)
+                 *  the 'useQueue' must be empty.
                  */
-                BlockingQueue ();
+                BlockingQueue () = default;
                 BlockingQueue (const Containers::Queue<T>& useQueue);
 
             public:
@@ -145,7 +147,7 @@ namespace Stroika {
                  *  throw a timeout error (no matter the timeout provided).
                  *
                  *  \note This doesn't delete the current entries in the blocking queue, so they will still get consumed. This just prevents
-                 *        the Q from blocking when its emptied out.
+                 *        the Q from blocking while its being emptied out.
                  */
                 nonvirtual void EndOfInput ();
 
@@ -172,7 +174,7 @@ namespace Stroika {
                  *  If there is an entry at the head of the Q, return it immediately. Wait up til
                  *  'timeout' seconds for an entry to appear. Return 'issing' value if none appears.
                  *
-                 *  If timeout == 0 (the default) this amounts to peeking, and never waits.
+                 *  If timeout == 0 (the default) this amounts to peeking (but with remove), and never waits.
                  *
                  *  Analagous to the java BlockingQueue<T>::poll () method.
                  */
@@ -211,9 +213,62 @@ namespace Stroika {
                 nonvirtual void clear ();
 
             private:
-                WaitableEvent                      fDataAvailable_;
-                bool                               fEndOfInput_{false};
-                Synchronized<Containers::Queue<T>> fQueue_;
+                /**
+                 *              
+                 */
+                struct LockPlusCondVar_ {
+                    mutex              fMutex_;
+                    condition_variable fConditionVariable_;
+
+                    using WaitableLockType = std::unique_lock<std::mutex>;
+                    using QuickLockType    = std::lock_guard<std::mutex>;
+
+                    /**
+                     * NOTIFY the condition variable (notify_one), but unlock first due to:                  *
+                     *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
+                     *
+                     *          The notifying thread does not need to hold the lock on the same mutex as the 
+                     *          one held by the waiting thread(s); in fact doing so is a pessimization, since
+                     *          the notified thread would immediately block again, waiting for the notifying
+                     *          thread to release the lock.
+                     *
+                     *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
+                     *
+                     */
+                    void release_and_notify_one (WaitableLockType& lock)
+                    {
+                        lock.unlock ();
+                        fConditionVariable_.notify_one ();
+                    }
+
+                    /**
+                     * NOTIFY the condition variable (notify_all), but unlock first due to:                  *
+                     *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
+                     *
+                     *          The notifying thread does not need to hold the lock on the same mutex as the 
+                     *          one held by the waiting thread(s); in fact doing so is a pessimization, since
+                     *          the notified thread would immediately block again, waiting for the notifying
+                     *          thread to release the lock.
+                     *
+                     *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
+                     *
+                     */
+                    void release_and_notify_all (WaitableLockType& lock)
+                    {
+                        lock.unlock ();
+                        fConditionVariable_.notify_all ();
+                    }
+                    template <typename FUNCITON>
+                    void DoInsideWriteLock (FUNCITON doIt)
+                    {
+                        WaitableLockType updateLock{fMutex_};
+                        doIt ();
+                        release_and_notify_all (updateLock);
+                    }
+                };
+                mutable LockPlusCondVar_ fLockPlusCondVar_;
+                bool                     fEndOfInput_{false};
+                Containers::Queue<T>     fQueue_;
             };
         }
     }

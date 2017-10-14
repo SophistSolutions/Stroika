@@ -56,7 +56,7 @@
 #if (__clang_major__ < 8) || (__clang_major__ == 8 && (__clang_minor__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 8.0 (APPLE)"
 #endif
-#if (__clang_major__ > 8) || (__clang_major__ == 8 && (__clang_minor__ > 1))
+#if (__clang_major__ > 9) || (__clang_major__ == 9 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -67,7 +67,7 @@
 #if (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 7))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 3.7 (non-apple)"
 #endif
-#if (__clang_major__ > 4) || (__clang_major__ == 4 && (__clang_minor__ > 0))
+#if (__clang_major__ > 5) || (__clang_major__ == 5 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -78,7 +78,7 @@
 #if __GNUC__ < 5 || (__GNUC__ == 5 && (__GNUC_MINOR__ < 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to GCC 5.0"
 #endif
-#if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 1))
+#if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 2))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -91,13 +91,17 @@
 #define _MS_VS_2k17_15Pt1_ 191025019
 #define _MS_VS_2k17_15Pt3Pt1_ 191125506
 #define _MS_VS_2k17_15Pt3Pt2_ 191125507
+#define _MS_VS_2k17_15Pt3Pt4_ 191125508
+// 2 releases by this same name. Thx msft
+#define _MS_VS_2k17_15Pt3Pt4x1_ 191125547
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
 #elif _MSC_VER <= 1911
 // check which sub-version of MSVC2k17
-#if _MSC_FULL_VER > _MS_VS_2k17_15Pt3Pt2_
-#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#if _MSC_FULL_VER > _MS_VS_2k17_15Pt3Pt4x1_
+// @todo figure out how to add arg to message
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version ( #_MSC_FULL_VER ) of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
 #else
@@ -170,7 +174,10 @@
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_union_designators_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+//// NO - THIS IS NOT VALID C++ -- SO REWRITE -- LGP 2017-10-09
+#define qCompilerAndStdLib_union_designators_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_union_designators_Buggy 0
 #endif
@@ -210,7 +217,9 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_ - BUT MUCH MORE SUBTLY - WEBSERVER APP CRASHES (USES OPTIONAL) - AT RUNTIME - (at least debug build) - SO TEST WEBSERVER SAMPLE
 // still broken in _MS_VS_2k17_15Pt3Pt2_ - BUT MUCH MORE SUBTLY - WEBSERVER APP CRASHES (USES OPTIONAL) - AT RUNTIME - (at least debug build) - SO TEST WEBSERVER SAMPLE
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
 #endif
@@ -237,10 +246,27 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 /*
+  *     Assert (::sem_init (&fSem_, kpshared, defaultValue) == 0) failed in 'Stroika::Foundation::Execution::Platform::POSIX::SemWaitableEvent::SemWaitableEvent()'; SemWaitableEvent.cpp:26
+ABORTING...
+  *
+  *     https://stackoverflow.com/questions/1413785/sem-init-on-os-x
+  */
+#ifndef qCompilerAndStdLib_unnamed_semaphores_Buggy
+
+#if defined(__APPLE__) && defined(__MACH__) /*qPlatform_MacOS - not not including Defaults_Configuration_Common.h before here*/
+#define qCompilerAndStdLib_unnamed_semaphores_Buggy 1
+#else
+#define qCompilerAndStdLib_unnamed_semaphores_Buggy 0
+#endif
+
+#endif
+
+/*
  *  NOTE - when this fails - it compiles but crashes in MSFT implementaiton
  *
  *                []  (19 seconds)  [46]  Foundation::Time  (../Builds/Debug-U-32/Test46/Test46.exe) crash/assert failure
-*/
+ *                  NOTE - assert error so only fails on DEBUG builds
+ */
 #ifndef qCompilerAndStdLib_std_get_time_pctx_Buggy
 
 #if defined(_MSC_VER)
@@ -248,7 +274,9 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -266,7 +294,9 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
@@ -310,6 +340,18 @@ Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER
 #endif
 
 /*
+ */
+#ifndef qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy
+
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy (((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#else
+#define qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy 0
+#endif
+
+#endif
+
+/*
 @DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
 
 
@@ -341,24 +383,31 @@ Or on MacOS Clang
     /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Trace.o)
     /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Timezone.o)
     duplicate symbol __ZN7Stroika10Foundation4Time8Timezone8kUnknownE in:
+    ...
+    duplicate symbol __ZN7Stroika10Foundation4Time9TimeOfDay4kMaxE in:
+    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Trace.o)
+    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(WellKnownLocations.o)
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
 // APPEARS still broken with gcc 7.1
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+// APPEARS still broken with gcc 7.2
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #elif defined(_MSC_VER)
 // STILL WARNINGS - _MS_VS_2k17_FULLVER_ --
 // STILL WARNINGS in _MS_VS_2k17_15Pt1_
 // now link error in _MS_VS_2k17_15Pt3Pt1_
 // now link error in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -384,21 +433,35 @@ Vusual studio:
 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\InternetAddress.h(329): note: see declaration of 'Stroika::Foundation::IO::Network::V4::kLocalhost' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
 
 
+
+clang 5.0
+In file included from ./../../IO/Network/InternetAddress.h:392:
+./../../IO/Network/InternetAddress.inl:280:47: error: redefinition of 'kAddrAny'
+                    constexpr InternetAddress kAddrAny{in_addr{}};
+                                              ^
+./../../IO/Network/InternetAddress.h:352:43: note: previous definition is here
+                    const InternetAddress kAddrAny;
+
+
 */
 #ifndef qCompilerAndStdLib_constexpr_union_variants_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
 // still broken with gcc 6.2
 // still broken with gcc 7.1
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
+#elif defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 4) && (__clang_minor__ <= 0))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_FULLVER_
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
 #endif
@@ -460,7 +523,7 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #ifndef qCompilerAndStdLib_process_init_constructor_array_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_process_init_constructor_array_Buggy (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
+#define qCompilerAndStdLib_process_init_constructor_array_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2))
 #else
 #define qCompilerAndStdLib_process_init_constructor_array_Buggy 0
 #endif
@@ -482,7 +545,7 @@ In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
 #ifndef qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1))
+#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2))
 #else
 #define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy 0
 #endif
@@ -506,7 +569,9 @@ In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy 0
 #endif
@@ -530,7 +595,9 @@ In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -573,13 +640,38 @@ inline  constexpr   void    EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue
 
 ./../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/../../ObjectVariantMapper.inl:311:37: error: no viable overloaded '='
 
+
+
+CLANG 5.0:
+/home/lewis/clang-5.0.0/bin/../include/c++/v1/type_traits:3061:38: error: incomplete type 'Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication' used in type trait expression
+    : public integral_constant<bool, __is_constructible(_Tp, _Args...)>
+                                     ^
+./../../../Memory/Optional.h:399:30: note: in instantiation of template class 'std::__1::is_constructible<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication, const
+      Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication &>' requested here
+                        std::is_constructible<T, const T2&>::value and
+                             ^
+./../../../Memory/Optional.h:401:17: note: in instantiation of default argument for 'Optional<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication,
+      Stroika::Foundation::Memory::Optional_Traits_Blockallocated_Indirect_Storage<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication> >' required here
+                Optional (const Optional<T2, TRAITS2>& from);
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./../../../Memory/Optional.h:351:19: note: while substituting deduced template arguments into function template 'Optional' [with T2 = Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication, TRAITS2 =
+      Stroika::Foundation::Memory::Optional_Traits_Blockallocated_Indirect_Storage<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication>, SFINAE_SAFE_CONVERTIBLE = (no value)]
+            class Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
+                  ^
+./Connection.h:205:40: note: while declaring the implicit copy constructor for 'Options'
+                    struct Connection::Options {
+                                       ^
+./Connection.h:269:32: note: forward declaration of 'Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication'
+                        struct Authentication;
+
+
 */
 #ifndef qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #else
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy 0
 #endif
@@ -629,13 +721,25 @@ SocketAddress.cpp
 SocketStream.cpp
 
 
+
+
+./../Configuration/Endian.inl:34:37: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
+            inline constexpr Endian GetEndianness ()
+                                    ^
+./../Configuration/Endian.inl:37:25: note: read of member 'cdat' of union with active member 'sdat' is not allowed in a constant expression
+
+
+
+error C2975: '_Test': invalid template argument for 'std::conditional', expected compile-time constant expression (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
+1>C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.11.25503\include\xtr1common(66): note: see declaration of '_Test' (compiling source file ..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp)
+
 */
 #ifndef qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy (__GNUC__ == 5 && (__GNUC_MINOR__ <= 3))
 #elif defined(_MSC_VER)
@@ -643,7 +747,9 @@ SocketStream.cpp
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -695,7 +801,7 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 #ifndef qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 8) && (__clang_minor__ <= 1))
+#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || (__clang_minor__ <= 0))
 #else
@@ -717,7 +823,8 @@ Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value refer
 #if defined(_LIBCPP_VERSION)
 // Broken in _LIBCPP_VERSION  3900
 // Broken in _LIBCPP_VERSION  4000
-#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (_LIBCPP_VERSION <= 4000)
+// Broken in _LIBCPP_VERSION  5000
+#define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy (_LIBCPP_VERSION <= 5000)
 #else
 #define qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy 0
 #endif
@@ -767,11 +874,11 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 4) || ((__clang_major__ == 4) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy 0
 #endif
@@ -826,7 +933,9 @@ Compiling regtests for Median/OrderBy...
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt2_)
+// assume _MS_VS_2k17_15Pt3Pt4_ same as _MS_VS_2k17_15Pt3Pt2_
+// still broken in _MS_VS_2k17_15Pt3Pt4x1_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt3Pt4x1_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
 #endif
@@ -999,13 +1108,11 @@ eq_result
 #if !defined(qCompilerAndStdLib_Supports_stdoptional)
 #if qCompilerAndStdLib_has_include_Buggy && defined(_MSC_VER)
 #define qCompilerAndStdLib_Supports_stdoptional CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_HAS_CXX17)
-#elif defined(_LIBCPP_VERSION)
-// has_include works - because we have the include, but alas it somehow gets suppressed unless you compile with -std=c++1z, so test this macro and has_include
-#define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus > kStrokia_Foundation_Configuration_cplusplus_14) && __has_include (<optional>))
-#elif defined(__GNUC__) && __GNUC__ == 7
-#define qCompilerAndStdLib_Supports_stdoptional (__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17)
+//#elif defined(__GNUC__) && __GNUC__ == 7
+//#define qCompilerAndStdLib_Supports_stdoptional (__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17)
 #else
-#define qCompilerAndStdLib_Supports_stdoptional (__has_include (<optional>))
+// has_include works - because we have the include, but alas it somehow gets suppressed unless you compile with -std=c++1z, so test this macro and has_include
+#define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17) && __has_include (<optional>))
 #endif
 #endif
 
@@ -1050,13 +1157,13 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 /*
 @CONFIGVAR:     qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 *
-*   Looking at returned string object from locale - its got a bogus length. And hten the DTOR for that string causes crash. Just dont
+*   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just dont
 *   use this til debugged.
 */
 #ifndef qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
+#define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 3) || ((__clang_major__ == 3) && (7 <= __clang_minor__ and __clang_minor__ <= 8)))
 #else

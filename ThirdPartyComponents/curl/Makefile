@@ -17,7 +17,8 @@ DoCreateSymLink=0
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-VERSION=7.54.1
+VERSION=7.56.0
+#VERSION=7.54.1
 #VERSION=7.54.0
 #VERSION=7.53.1
 BASENAME=curl-$(VERSION)
@@ -82,8 +83,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
-	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
@@ -259,6 +259,7 @@ endif
 
 check_prerequisites_:
 	@type automake > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool.sh automake && exit 1)
+	@type autoconf > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools......... " && ../../ScriptsLib/GetMessageForMissingTool.sh autoconf && exit 1)
 	@type libtool > /dev/null 2>&1 || (../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "checking tools... " && ../../ScriptsLib/GetMessageForMissingTool.sh libtool && exit 1)
 
 

@@ -112,7 +112,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void()>& startedCB)
      *  abort (raise exception) and all the destructors on the stack (above) from this routine will get played
      *  backewards to cleanup.
      */
-    Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (); // until told to stop by abort exception
+    Execution::WaitableEvent{}.Wait (); // until told to stop by abort exception
 
     AssertNotReached ();
 }

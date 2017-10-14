@@ -6,6 +6,7 @@
 #include "../IO/FileAccessException.h"
 
 #include "Exceptions.h"
+#include "TimeOutException.h"
 
 #include "ErrNoException.h"
 
@@ -92,6 +93,9 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
         }
         case EACCES: {
             Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
+        }
+        case ETIMEDOUT: {
+            Execution::Throw (Execution::TimeOutException::kThe);
         }
 // If I decide to pursue mapping, this maybe a good place to start
 //  http://aplawrence.com/Unixart/errors.html

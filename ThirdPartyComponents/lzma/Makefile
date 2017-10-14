@@ -38,18 +38,12 @@ FETCHURLS+=http://www.7-zip.org/a/$(BASENAME).7z
 
 
 ifneq (,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-WIN_CC32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_32)
-WIN_CC64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC_64)
-#WIN_AS32=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AS_32)")
-#WIN_AS64=$(shell cygpath -w "$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AS_64)")
-WIN_LIB32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_32)
-WIN_LIB64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB_64)
-WIN_LINK32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LINK_32)
-WIN_LINK64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LINK_64)
+WIN_CC=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) CC)
+WIN_AR=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) AR)
+WIN_LD=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LD)
 INCLUDE=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) INCLUDE)
-LIBDIR32=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIBDIR32)
-LIBDIR64=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIBDIR64)
-PATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) PATH)
+WIN_LIB_DIR=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) LIB)
+TOOLPATH=$(shell perl ../../ScriptsLib/PrintEnvVarFromCommonBuildVars.pl $(CONFIGURATION) PATH)
 endif
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -100,8 +94,7 @@ endif
 
 
 $(ZIPEDFILE):
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
-	@../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
 
 
 check-prerequisite-tools:
@@ -144,17 +137,27 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
 else
-ifeq ($(CONFIGURATION),Debug-U-32)
+	#clean out CURRENT
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC32)" \
-		CPlusPlus="$(WIN_CC32)" \
+		EXESUFFIX=.exe \
+		LIBSUFFIX=lib \
+		OBJSUFFIX=obj \
+		clobber
+
+	#Build to CURRENT - if its 32-bit debug/relase
+ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
+ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
+	$(MAKE) --directory CURRENT \
+		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
+		CC="$(WIN_CC)" \
+		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MTd -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR32)" \
+		LIB="$(WIN_LIB_DIR)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(WIN_LINK32)" \
-		AR="$(WIN_LIB32)" \
+		LD="$(WIN_LD)" \
+		AR="$(WIN_AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -163,28 +166,18 @@ ifeq ($(CONFIGURATION),Debug-U-32)
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
-	mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
-	mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/lzma/
-	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/
 endif
-ifeq (U-32,$(findstring U-32,$(CONFIGURATION)))
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
-		clobber
-	$(MAKE) --directory CURRENT \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC32)" \
-		CPlusPlus="$(WIN_CC32)" \
+		CC="$(WIN_CC)" \
+		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR32)" \
+		LIB="$(WIN_LIB_DIR)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(WIN_LINK32)" \
-		AR="$(WIN_LIB32)" \
+		LD="$(WIN_LD)" \
+		AR="$(WIN_AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -193,42 +186,24 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
-ifeq ($(CONFIGURATION),Release-U-32)
-	mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/
-	mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/lzma/
-	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/
-endif
-ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
-	mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/
-	mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/lzma/
-	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-32)
-	mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/
-	mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/lzma/
-	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/
-endif
 endif
 endif
 
-ifeq ($(CONFIGURATION),Debug-U-64)
+
+	#Build to CURRENT - if its 64-bit debug/relase
+ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
+ifeq (Debug,$(findstring Debug,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
-		clobber
-	$(MAKE) --directory CURRENT \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC64)" \
-		CPlusPlus="$(WIN_CC64)" \
+		CC="$(WIN_CC)" \
+		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MTd -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR64)" \
-		PATH="$(PATH)" \
+		LIB="$(WIN_LIB_DIR)" \
+		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(WIN_LINK64)" \
-		AR="$(WIN_LIB64)" \
+		LD="$(WIN_LD)" \
+		AR="$(WIN_AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -237,30 +212,19 @@ ifeq ($(CONFIGURATION),Debug-U-64)
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
-	mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/
-	mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/lzma/
-	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/
 endif
-
-ifeq (U-64,$(findstring U-64,$(CONFIGURATION)))
 ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 	$(MAKE) --directory CURRENT \
 		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		EXESUFFIX=.exe \
-		LIBSUFFIX=lib \
-		OBJSUFFIX=obj \
-		clobber
-	$(MAKE) --directory CURRENT \
-		ProjectPlatformSubdir="$(ProjectPlatformSubdir)" \
-		CC="$(WIN_CC64)" \
-		CPlusPlus="$(WIN_CC64)" \
+		CC="$(WIN_CC)" \
+		CPlusPlus="$(WIN_CC)" \
 		CFLAGS="-nologo -W3 -MT -O2 -Oy- -Z7" \
 		INCLUDE="$(INCLUDE)" \
-		LIB="$(LIBDIR64)" \
-		PATH="$(PATH)" \
+		LIB="$(WIN_LIB_DIR)" \
+		PATH="$(TOOLPATH)" \
 		LIBS="oleaut32.lib ole32.lib user32.lib" \
-		LD="$(WIN_LINK64)" \
-		AR="$(WIN_LIB64)" \
+		LD="$(WIN_LD)" \
+		AR="$(WIN_AR)" \
 		ARCRATEFLAGS="-nologo" \
 		ARTARGETPREFIX=-out: \
 		LINKTARGETPREFIX=-out: \
@@ -269,19 +233,14 @@ ifeq (Release,$(findstring Release,$(CONFIGURATION)))
 		LIBSUFFIX=lib \
 		OBJSUFFIX=obj \
 		all
+endif
+endif
 
-ifeq ($(CONFIGURATION),Release-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/lzma/
-	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/lzma/
-	@cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/
-endif
-endif
-endif
+	# Now copy the right output
+	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/lzma.lib  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
+	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/
+	cp CURRENT/lzma.exe CURRENT/7zDec.exe $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
+
 endif
 
 

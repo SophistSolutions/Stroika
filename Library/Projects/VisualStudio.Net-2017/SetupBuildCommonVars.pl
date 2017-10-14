@@ -96,18 +96,24 @@ my $VSDIR_VC = "$VSDIR\\VC";
 sub GetString2InsertIntoBatchFileToInit32BitCompiles
 {
 	my $result = "";
+	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x86;\r\n";
+	$result 	.=	"\" x86 > nul;\r\n";
+	$result 	.=	"popd\r\n";
 	return $result;
 }
 
 sub GetString2InsertIntoBatchFileToInit64BitCompiles
 {
 	my $result = "";
+	##pushd/popd needed cuz vcvars now changes directories (no idea why)
+	$result 	.=	"pushd %TEMP%\r\n";
 	$result 	.=	"call \"";
 	$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$result 	.=	"\" x64;\r\n";
+	$result 	.=	"\" x64 > nul;\r\n";
+	$result 	.=	"popd\r\n";
 	return $result;
 }
 
@@ -122,17 +128,11 @@ sub RunBackTickWithVCVarsSetInEnvironment_
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
 	if (index($activeConfigBits, "32") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x86 >nul;\r\n";
+		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
 		print $fh $result;
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x64 >nul;\r\n";
+		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles();
 		print $fh $result;
 	}
 	else {
@@ -166,9 +166,11 @@ sub GetConfig32Or64_
 {
 	my $activeConfig = $_[0];
 	if ($activeConfig =~ m/32/) {
+	#print ("GetConfig32Or64_ with config=$activeConfig   RETURN 32\r\n");
 		return "32";
 	}
 	if ($activeConfig =~ m/64/) {
+	#print ("GetConfig32Or64_ with config=$activeConfig   RETURN 64\r\n");
 		return "64";
 	}
 	die ("failed to map config $activeConfig to 32/64")
@@ -183,17 +185,12 @@ sub RunSystemWithVCVarsSetInEnvironment
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
 	if (index($activeConfigBits, "32") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x86 >nul;\r\n";
+		my $result = 		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
 		print $fh $result;
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
-		my $result = "";
-		$result 	.=	"call \"";
-		$result 	.=	"$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-		$result 	.=	"\" x64 >nul;\r\n";
+		my $result = GetString2InsertIntoBatchFileToInit64BitCompiles();
+		#print "64 case and result=$result\r\n";
 		print $fh $result;
 	}
 	else {
@@ -201,6 +198,8 @@ sub RunSystemWithVCVarsSetInEnvironment
 	}
 	print $fh $cmd2Run . "\r\n";
 	close $fh;
+
+	#print "TMPFILENAME=$tmpFileName; cfg=$_[0], activeconfigbits=$activeConfigBits, and cmd2run=$cmd2Run\r\n";
 	my $result = system ("cmd /C $tmpFileName");
 	unlink ($tmpFileName);
 	return $result;
@@ -219,82 +218,36 @@ sub convertWinPathVar2CygwinPathVar_
 	return $newCygPath;
 }
 
-sub runShellScriptAndCaptureEnvVars_32_
+
+sub GetAugmentedEnvironmentVariablesForConfiguration
 {
-	$x = "$VSDIR_VC\\Auxiliary\\Build\\vcvarsall.bat";
-	$x = RunBackTickWithVCVarsSetInEnvironment_("32", "set");
-	#print ("XXXX => $x\n");
-	my %skippedVars = (
-		ALLUSERSPROFILE => 1,
-		PPID => 1,
-		CommandPromptType => 1,
-		'!ExitCode' => 1,
-		COMPUTERNAME => 1,
-	);
-	foreach $line (split ("\n",$x)) {
-		my @splitLine = split (/=/, $line);
-		my $envVar = @splitLine[0];
-		my $envVarValue = @splitLine[1];
-		if ($envVar eq "PATH") {
-			my $newCygPath = convertWinPathVar2CygwinPathVar_($envVarValue);
-			print "APPLYING-NEW-CYGPATH-PATH: $newCygPath\n";
-			$ENV{$envVar}=$newCygPath;
-		}
-		elsif (not (%skippedVars{$envVar})) {
-			print "Setting $envVar   =   $envVarValue\n";
-			$ENV{$envVar}=$envVarValue;
-		}
-	}
-}
-
-
-sub Fill_Defined_Variables_
-{
-	my %env32 = GetEnvironmentVariablesForConfiguration ("Debug-U-32");
-	my %env64 = GetEnvironmentVariablesForConfiguration ("Debug-U-64");
-
-	$ENV{"VisualStudioVersion"} = %env32{"VisualStudioVersion"};
-	$ENV{"VCINSTALLDIR"} = %env32{"VCINSTALLDIR"};
-	$ENV{"INCLUDE"} = %env32{"INCLUDE"};
-	$ENV{"LIBDIR32"} = %env32{"LIB"};
-	$ENV{"LIBDIR64"} = %env64{"LIB"};
-
+	my $activeConfigBits = GetConfig32Or64_ ($_[0]);
+	my %resEnv = GetEnvironmentVariablesForConfiguration ($activeConfigBits);
 
 	my $cwVSDIR = toCygPath_ ($VSDIR);
-	my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
-	my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
-	#print ("yyy = $cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86\n");
-	#print ("xxx = @exe32Dirs\n");
-	my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
-	my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
 
-	$ENV{"AS_32"} = toCygPath_ ($exe32Dir . "\\ml");
-	$ENV{"AS_64"} = toCygPath_ ($exe64Dir . "\\ml64");
-	$ENV{"CC_32"} = toCygPath_ ($exe32Dir . "\\cl");
-	$ENV{"CC_64"} = toCygPath_ ($exe64Dir . "\\cl");
-	$ENV{"LINK_32"} = toCygPath_ ($exe32Dir . "\\link");
-	$ENV{"LINK_64"} = toCygPath_ ($exe64Dir . "\\link");
-	$ENV{"LIB_32"} = toCygPath_ ($exe32Dir . "\\lib");
-	$ENV{"LIB_64"} = toCygPath_ ($exe64Dir . "\\lib");
+	if (index($activeConfigBits, "32") != -1) {
+		my @exe32Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x86");
+		my $exe32Dir = fromCygPath_ (@exe32Dirs[0]);
+		$resEnv{"AS"} = toCygPath_ ($exe32Dir . "\\ml");
+		$resEnv{"CC"} = toCygPath_ ($exe32Dir . "\\cl");
+		$resEnv{"LD"} = toCygPath_ ($exe32Dir . "\\link");
+		$resEnv{"AR"} = toCygPath_ ($exe32Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+	}
+	elsif (index($activeConfigBits, "64") != -1) {
+		my @exe64Dirs = bsd_glob ("$cwVSDIR/VC/Tools/MSVC/*/bin/HostX86/x64");
+		my $exe64Dir = fromCygPath_ (@exe64Dirs[0]);
+		$resEnv{"AS"} = toCygPath_ ($exe64Dir . "\\ml64");
+		$resEnv{"CC"} = toCygPath_ ($exe64Dir . "\\cl");
+		$resEnv{"LD"} = toCygPath_ ($exe64Dir . "\\link");
+		$resEnv{"AR"} = toCygPath_ ($exe64Dir . "\\lib");		# 'AR' is what unix uses to create libraries
+	}
 
-	my $winPATH = %env32{"PATH"};
+	my $winPATH = %resEnv{"PATH"};
 	#print "GOT env32 PATH=" . $winPATH . "\n";
-	$ENV{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
-}
+	$resEnv{"PATH"} = convertWinPathVar2CygwinPathVar_($winPATH);
 
-Fill_Defined_Variables_();
-
-#runShellScriptAndCaptureEnvVars_32_();
-
-#print "ENV{CC_32}= ", $ENV{'CC_32'}, "\n";
-#print "ENV{CC_64}= ", $ENV{'CC_64'}, "\n";
-#print "ENV{LINK_32}= ", $ENV{'LINK_32'}, "\n";
-#print "ENV{LINK_64}= ", $ENV{'LINK_64'}, "\n";
-#print "ENV{LIB_32}= ", $ENV{'LIB_32'}, "\n";
-#print "ENV{LIB_64}= ", $ENV{'LIB_64'}, "\n";
-
-if (0) {
-	PRINT_PATH_ ("AFTER SETTING PATH ENV=$ENV{'PATH'}\n");
+	return %resEnv;
 }
 
 1

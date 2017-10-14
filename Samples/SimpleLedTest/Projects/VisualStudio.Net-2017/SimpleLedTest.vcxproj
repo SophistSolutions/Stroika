@@ -11,8 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\buildall_vs.pl" />
-    <None Include="..\..\checkall_vs.pl" />
+    <None Include="..\..\Makefile" />
     <None Include="..\..\Sources\small.ico" />
     <None Include="..\..\Sources\Test.ico" />
     <None Include="..\..\Sources\UnknownEmbeddingIcon.bmp" />

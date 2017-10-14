@@ -1,67 +1,129 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-//  TEST    Foundation::Execution::Signals
+//  TEST    Foundation::Execution::ProcessRunner
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/ProcessRunner.h"
+#if qPlatform_POSIX
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
+#endif
 #include "Stroika/Foundation/Execution/Sleep.h"
+#include "Stroika/Foundation/Streams/MemoryStream.h"
+#include "Stroika/Foundation/Streams/SharedMemoryStream.h"
 
-#include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
-using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 
-using Containers::Set;
+using Characters::String;
 
 namespace {
-    void Test1_Basic_ ()
+    void RegressionTest1_ ()
     {
-        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-        {
-            bool called = false;
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
-            ::raise (SIGINT);
-            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-            VerifyTestResult (called);
-        }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        Debug::TraceContextBumper        ctx{L"RegressionTest1_"};
+        Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
+        // quickie about to test..
+        ProcessRunner pr (L"echo hi mom", nullptr, myStdOut);
+        pr.Run ();
+    }
+    void RegressionTest2_ ()
+    {
+        Debug::TraceContextBumper        ctx{L"RegressionTest2_"};
+        Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
+        // quickie about to test..
+        ProcessRunner pr (L"echo hi mom");
+        String        out = pr.Run (L"");
+        VerifyTestResult (out.Trim () == L"hi mom");
+    }
+    void RegressionTest3_Pipe_ ()
+    {
+        Debug::TraceContextBumper        ctx{L"RegressionTest3_Pipe_"};
+        Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
+        ProcessRunner                    pr1 (L"echo hi mom");
+        Streams::MemoryStream<Byte>::Ptr pipe = Streams::MemoryStream<Byte>::New ();
+        ProcessRunner                    pr2 (L"cat");
+        pr1.SetStdOut (pipe);
+        pr2.SetStdIn (pipe);
+
+        Streams::MemoryStream<Byte>::Ptr pr2Out = Streams::MemoryStream<Byte>::New ();
+        pr2.SetStdOut (pr2Out);
+
+        pr1.Run ();
+        pr2.Run ();
+
+        String out = String::FromUTF8 (pr2Out.As<string> ());
+
+        VerifyTestResult (out.Trim () == L"hi mom");
+    }
+    void RegressionTest4_DocSample_ ()
+    {
+        Debug::TraceContextBumper ctx{L"RegressionTest4_DocSample_"};
+        // cat doesn't exist on windows (without cygwin or some such) - but the regression test code depends on that anyhow
+        // so this should be OK for now... -- LGP 2017-06-31
+        Memory::BLOB                     kData_{Memory::BLOB::Raw ("this is a test")};
+        Streams::MemoryStream<Byte>::Ptr processStdIn  = Streams::MemoryStream<Byte>::New (kData_);
+        Streams::MemoryStream<Byte>::Ptr processStdOut = Streams::MemoryStream<Byte>::New ();
+        ProcessRunner                    pr (L"cat", processStdIn, processStdOut);
+        pr.Run ();
+        VerifyTestResult (processStdOut.ReadAll () == kData_);
     }
 }
 
 namespace {
-    void Test2_Direct_ ()
-    {
-        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-        {
-            bool called = false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::Type::eDirect));
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
-            ::raise (SIGINT);
-            VerifyTestResult (called);
+    namespace LargeDataSentThroughPipe_Test5_ {
+        namespace Private_ {
+            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
+            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
+
+            void SingleProcessLargeDataSend_ ()
+            {
+                Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>::New (k16MB_);
+                Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
+                ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
+                pr.Run ();
+                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
+            }
         }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        void DoTests ()
+        {
+            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipe_Test5_::DoTests"};
+            Private_::SingleProcessLargeDataSend_ ();
+        }
     }
 }
 
 namespace {
-    void Test3_Safe_ ()
-    {
-        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-        {
-            bool called = false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
-            ::raise (SIGINT);
-            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-            VerifyTestResult (called);
+    namespace LargeDataSentThroughPipeBackground_Test6_ {
+        namespace Private_ {
+            const Memory::BLOB k1K_   = Memory::BLOB::Raw ("0123456789abcdef").Repeat (1024 / 16);
+            const Memory::BLOB k1MB_  = k1K_.Repeat (1024);
+            const Memory::BLOB k16MB_ = k1MB_.Repeat (16);
+
+            void SingleProcessLargeDataSend_ ()
+            {
+                Assert (k1MB_.size () == 1024 * 1024);
+                Streams::SharedMemoryStream<Byte>::Ptr myStdIn  = Streams::SharedMemoryStream<Byte>::New (); // note must use SharedMemoryStream cuz we want to distinguish EOF from no data written yet
+                Streams::SharedMemoryStream<Byte>::Ptr myStdOut = Streams::SharedMemoryStream<Byte>::New ();
+                ProcessRunner                          pr (L"cat", myStdIn, myStdOut);
+                ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
+                Execution::Sleep (1);
+                VerifyTestResult (myStdOut.ReadNonBlocking ().IsMissing ()); // sb no data available, but NOT EOF
+                myStdIn.Write (k16MB_);
+                myStdIn.CloseWrite (); // so cat process can finish
+                bg.WaitForDone ();
+                myStdOut.CloseWrite (); // one process done, no more writes to this stream
+                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
+            }
         }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        void DoTests ()
+        {
+            Debug::TraceContextBumper ctx{L"LargeDataSentThroughPipeBackground_Test6_::DoTests"};
+            Private_::SingleProcessLargeDataSend_ ();
+        }
     }
 }
 
@@ -69,15 +131,24 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        Test1_Basic_ ();
-        Test2_Direct_ ();
-        Test3_Safe_ ();
+        Debug::TraceContextBumper ctx{L"DoRegressionTests_"};
+#if qPlatform_POSIX
+        // Many performance instruments use pipes
+        // @todo - REVIEW IF REALLY NEEDED AND WHY? SO LONG AS NO FAIL SHOULDNT BE?
+        //  --LGP 2014-02-05
+        Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
+#endif
+        RegressionTest1_ ();
+        RegressionTest2_ ();
+        RegressionTest3_Pipe_ ();
+        RegressionTest4_DocSample_ ();
+        LargeDataSentThroughPipe_Test5_::DoTests ();
+        LargeDataSentThroughPipeBackground_Test6_::DoTests ();
     }
 }
 
 int main (int argc, const char* argv[])
 {
-    SignalHandlerRegistry::SafeSignalsManager safeSignals;
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
 }

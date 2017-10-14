@@ -13,6 +13,10 @@
 #include <winioctl.h>
 #endif
 
+#if qPlatform_Linux
+#include <sys/sysmacros.h>
+#endif
+
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/FloatConversion.h"
 #include "../../../Foundation/Characters/String2Int.h"

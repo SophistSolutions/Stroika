@@ -189,6 +189,20 @@ namespace Stroika {
 
             public:
                 /**
+                 * Defined for
+                 *      std::chrono::seconds
+                 *      std::chrono::milliseconds
+                 *      std::chrono::microseconds
+                 *      std::chrono::nanoseconds
+                 *
+                 *  Same as As<> - except that it handles overflows, so if you pass in Duration {numeric_limits<long double>::max ()} and convert to seconds, you wont overflow,
+                 *  but get chrono::seconds::max
+                 */
+                template <typename T>
+                nonvirtual T AsPinned () const;
+
+            public:
+                /**
                  *  Shorthand for As<String> ().AsUTF8 ()
                  */
                 nonvirtual string AsUTF8 () const;
@@ -333,6 +347,15 @@ namespace Stroika {
             chrono::microseconds Duration::As () const;
             template <>
             chrono::nanoseconds Duration::As () const;
+
+            template <>
+            chrono::seconds Duration::AsPinned () const;
+            template <>
+            chrono::milliseconds Duration::AsPinned () const;
+            template <>
+            chrono::microseconds Duration::AsPinned () const;
+            template <>
+            chrono::nanoseconds Duration::AsPinned () const;
 
             class Duration::FormatException : public Execution::StringException {
             public:

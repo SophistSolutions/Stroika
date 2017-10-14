@@ -124,6 +124,23 @@ namespace Stroika {
 
             public:
                 /**
+                 *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
+                 *  all the elements.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *        Collection<int> c;
+                 *        std::vector<int> v;
+                 *
+                 *        Set<int> s1  = {1, 2, 3};
+                 *        Set<int> s2  = s1;
+                 *        Set<int> s3  { s1 };
+                 *        Set<int> s4  { s1.begin (), s1.end () };
+                 *        Set<int> s5  { c };
+                 *        Set<int> s6  { v };
+                 *        Set<int> s7  { v.begin (), v.end () };
+                 *        Set<int> s8  { move (s1) };
+                 *      \endcode
                  */
                 Set ();
                 Set (const Set<T, TRAITS>& src) noexcept;

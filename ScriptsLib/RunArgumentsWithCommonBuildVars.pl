@@ -17,6 +17,8 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 my $activeConfig = $ARGV[0];
 my $cmd = $ARGV[1];
 
+#print "ENTERING RunAgumentWithCommandBuildVars.pl: CMD=$cmd\r\n";
+
 require "$thisScriptDir/ConfigurationReader.pl";
 
 my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ($activeConfig);
@@ -25,7 +27,7 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 }
 
 
-
+###DELETEME
 sub RunAndPrint
 {
 	my $cmd2Run = $_[0];
@@ -55,4 +57,4 @@ sub RunAndPrint
 }
 
 #RunAndPrint (join(' ',@ARGV));
-RunAndPrint ($cmd);
+RunSystemWithVCVarsSetInEnvironment ($activeConfig, $cmd);

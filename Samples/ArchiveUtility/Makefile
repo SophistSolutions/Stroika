@@ -1,5 +1,9 @@
 include ../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
+ifneq ($(CONFIGURATION),)
+	ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+endif
+
 SrcDir				=	$(StroikaRoot)Samples/ArchiveUtility/
 ObjDir				=	$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples_ArchiveUtility/
 
@@ -14,7 +18,11 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ArchiveUtility/ArchiveUtility.exe
+else
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_ArchiveUtility
+endif
 
 
 VPATH	=			$(SrcDir)/Sources/
@@ -26,7 +34,18 @@ Objs	=	\
 
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Samples/ArchiveUtility:"
+ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
+else
+	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/ArchiveUtility.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build";
+endif
+
+
+
+check:
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) -n "Checking Samples/ArchiveUtility...           "
+	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
 
 
 $(TARGETEXE):	 $(ObjDir) $(Objs)

@@ -23,7 +23,7 @@ if [ "$(uname -s)" == "Darwin" ] ; then
     #LGP 2017-01-05
 
     echo "USING MacOS..."
-    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode8-$VER-OUT.txt
+    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode9-$VER-OUT.txt
     rm -rf ConfigurationFiles
     make default-configurations
     echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
@@ -158,7 +158,7 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 #HELGRIND
-if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
+if [ "$INCLUDE_HELGRIND_TESTS" -ne 0 ] ; then
 	echo -n "Run-Tests VALGRIND=helgrind VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc ..."
 	echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND=helgrind VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
@@ -175,7 +175,7 @@ fi
 
 
 #HELGRIND ON SYSPERFORM (experimental - must find better way)
-if [ "$INCLUDE_HELGRIND_TESTS" = true ] ; then
+if [ "$INCLUDE_HELGRIND_TESTS" -ne 0 ] ; then
 	echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc/Samples_SystemPerformanceClient ..."
 	echo "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc/Samples_SystemPerformanceClient..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)

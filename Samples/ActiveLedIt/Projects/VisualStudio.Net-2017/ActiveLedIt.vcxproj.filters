@@ -136,7 +136,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\..\ActiveLedItTemplate.inf" />
-    <None Include="..\..\buildall_vs.pl" />
     <None Include="..\..\BuildCAB.bat">
       <Filter>Source Files</Filter>
     </None>
@@ -147,6 +146,7 @@
     <None Include="..\..\ReadMe.rtf">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\..\Makefile" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\ActiveLedIt.cpp">

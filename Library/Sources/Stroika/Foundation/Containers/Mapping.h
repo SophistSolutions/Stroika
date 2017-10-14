@@ -153,6 +153,21 @@ namespace Stroika {
                  *
                  *  The underlying data structure (and performance characteristcs) of the Mapping is
                  *  defined by @see Concrete::Mapping_Factory<>
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *        Collection<pair<int,int>> c;
+                 *        std::map<int,int> m;
+                 *
+                 *        Mapping<int,int> m1  = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+                 *        Mapping<int,int> m2  = m1;
+                 *        Mapping<int,int> m3  { m1 };
+                 *        Mapping<int,int> m4  { m1.begin (), m1.end () };
+                 *        Mapping<int,int> m5  { c };
+                 *        Mapping<int,int> m6  { m };
+                 *        Mapping<int,int> m7  { m.begin (), m.end () };
+                 *        Mapping<int,int> m8  { move (m1) };
+                 *      \endcode
                  */
                 Mapping ();
                 Mapping (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src) noexcept;

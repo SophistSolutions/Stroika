@@ -12,22 +12,22 @@
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 MULTIPLIER=${MULTIPLIER-15}
 if [ "$(uname -s)" == "Darwin" ] ; then
-    EXE=${EXE-"Builds/Release/Test49"}
-    CONFIG_LABEL_IN_OUTPUT="MacOS-x86-XCode8"
+    EXE=${EXE-"Builds/Release/Test50"}
+    CONFIG_LABEL_IN_OUTPUT="MacOS-x86-XCode9"
     CMDRUN_PREFIX="nice -10 "
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ] ; then
     # Do something under GNU/Linux platform
-    EXE=${EXE-"Builds/my-gcc-6.3.0-release-c++17/Test49"}
-    CONFIG_LABEL_IN_OUTPUT="linux-gcc-6.3.0-x64"
+    EXE=${EXE-"Builds/my-gcc-7.2.0-release-c++17/Test50"}
+    CONFIG_LABEL_IN_OUTPUT="linux-gcc-7.2.0-x64"
     CMDRUN_PREFIX="nice -10 taskset -c 0 "
 elif [ "$(expr substr $(uname -s) 1 10)" == "MINGW32_NT" ] ; then
     # Do something under Windows NT platform
-    EXE=${EXE-"Builds/Release-U-32/Test49/Test49"}
+    EXE=${EXE-"Builds/Release-U-32/Test50/Test50"}
     CONFIG_LABEL_IN_OUTPUT="Windows-x86-vs2k17"
     CMDRUN_PREFIX=""
 elif [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
     # Do something under Windows NT platform
-    EXE=${EXE-"Builds/Release-U-32/Test49/Test49"}
+    EXE=${EXE-"Builds/Release-U-32/Test50/Test50"}
     CONFIG_LABEL_IN_OUTPUT="Windows-x86-vs2k17"
     CMDRUN_PREFIX=""
 else

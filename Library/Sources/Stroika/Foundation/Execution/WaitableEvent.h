@@ -51,6 +51,9 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
+             *  \note   \em async-signal-safety - this is NOT safe to use from signals (from http://pubs.opengroup.org/onlinepubs/009695399/functions/pthread_cond_broadcast.html - It is not safe to use the pthread_cond_signal() function in a signal handler that is invoked asynchronously
+             *          Use POSIX sem_init/sem_post () 
+             *
              *  \note   \em Design Note     Considered making this copyable, or at least movable, but mutex and
              *              other similar classes are not.
              *              and you can easily use shared_ptr<> on an WaitableEvent to make it copyable.
@@ -96,23 +99,37 @@ namespace Stroika {
             class WaitableEvent {
             public:
                 /**
-                 *  eAutoReset is ALMOST worth being the default, and is very frequently the simplest thing to do.
                  *  eManualReset is the simplest to understand. Wait only returns when the event is set, and the only thing that can set it
                  *  is a call to Set().
                  *
+                 *  eAutoReset is sometimes useful when you have a single thread waiting on the event, and need to wake that thread repeatedly, each time an event happens.
+                 *
                  *  The only difference between eManualReset and eAutoReset is that when a Wait() succeeds, as the very last step in returning
                  *  a successful wait, the event is automatically 'Reset'.
+                 *
+                 *  \note This means that AutoReset events are unsuitable for use when multiple threads are waiting on an event, and you wish to
+                 *        make them all up. By definition, only ONE thread wakes up to recieve the 'AutoReset' event.
                  */
-                enum ResetType {
+                enum class ResetType {
                     eAutoReset,
                     eManualReset,
+
+                    Stroika_Define_Enum_Bounds (eAutoReset, eManualReset)
                 };
 
             public:
+                static constexpr ResetType eAutoReset = ResetType::eAutoReset;
+
+            public:
+                static constexpr ResetType eManualReset = ResetType::eManualReset;
+
+            public:
                 /**
-                 *
+                 *  \note   WaitableEvent () defaults to 'manual reset' - because it often doesnt matter how the waitable event gets reset (because it never does)
+                 *          and this (manual reset) is the least surprising behavior.
                  */
-                WaitableEvent (ResetType resetType);
+                WaitableEvent (ResetType resetType   = eManualReset);
+                WaitableEvent (WaitableEvent&&)      = delete;
                 WaitableEvent (const WaitableEvent&) = delete;
 
             public:
@@ -126,6 +143,7 @@ namespace Stroika {
 #endif
 
             public:
+                nonvirtual WaitableEvent& operator= (const WaitableEvent&&) = delete;
                 nonvirtual WaitableEvent& operator= (const WaitableEvent&) = delete;
 
             public:
@@ -285,7 +303,7 @@ namespace Stroika {
                  *  This API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
                  *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
                  *
-                 *  The WaitableEvent class internally uses condition_variable::wait_for () - and this doesnt advertise support for
+                 *  The WaitableEvent class internally uses condition_variable::wait_for () - and this doesn't advertise support for
                  *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
                  *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
                  *  effecitvely busy wait, and this checking is ONLY needed for the specail, rare case of thread abort.

@@ -26,18 +26,18 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 FETCHURLS=
 #
+#ARCHIVE sites have old versions which matters when you are building an
+#older verison of Stroika
+#
+FETCHURLS+=http://archive.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
+
+#
 #Most Mirrors only have the current release so when xercesc updated, these start
 #failing (bad when building old stroika)
 #
 FETCHURLS+=http://apache.cs.utah.edu//xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
-
-#
-#ARCHIVE sites have old versions which matters when you are building an
-#older verison of Stroika
-#
-FETCHURLS+=http://archive.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 
 
 
@@ -136,8 +136,7 @@ endif
 
 
 $(ZIPPEDFILE):
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1))
-	@../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 doCreate_:	$(ZIPPEDFILE)
@@ -178,7 +177,27 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
 	$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) all 2>&1 >> CURRENT/BUILD.OUT
 else
-	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl build > CURRENT/BUILD.OUT 2>&1
+ifeq ($(CONFIGURATION),Debug-U-32)
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
+endif
+ifeq ($(CONFIGURATION),Release-U-32)
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
+endif
+ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
+endif
+ifeq ($(CONFIGURATION),Release-Logging-U-32)
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
+endif
+ifeq ($(CONFIGURATION),Debug-U-64)
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=x64 /target:Build" > CURRENT/BUILD.OUT 2>&1
+endif
+ifeq ($(CONFIGURATION),Release-U-64)
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:Build" > CURRENT/BUILD.OUT 2>&1
+endif
+ifeq ($(CONFIGURATION),Release-Logging-U-64)
+	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:Build" > CURRENT/BUILD.OUT 2>&1
+endif
 endif
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."

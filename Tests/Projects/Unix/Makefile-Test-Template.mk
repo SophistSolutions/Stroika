@@ -19,7 +19,11 @@ Includes				+=	-I.
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)/Test$(TEST_NUM).exe
+else
 TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Test$(TEST_NUM)
+endif
 
 
 VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/
@@ -33,6 +37,12 @@ Objs	=	\
 
 
 all:	$(ObjDir) $(TARGETEXE)
+
+
+check:
+	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Test $(TEST_NUM): $(shell perl $(StroikaRoot)Tests/ScriptsLib/PrintTestName.pl $(TEST_NUM)) :  "
+	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(TARGETEXE)
+	@$(ECHO) "[SUCCEEDED]";
 
 
 $(TARGETEXE):	$(Objs)

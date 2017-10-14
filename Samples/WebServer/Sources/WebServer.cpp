@@ -110,8 +110,8 @@ int main (int argc, const char* argv[])
     }
 
     try {
-        MyWebServer_ myWebServer{portNumber};                                             // listen and dispatch while this object exists
-        Execution::WaitableEvent (Execution::WaitableEvent::eAutoReset).Wait (quitAfter); // wait forever - til user hits ctrl-c
+        MyWebServer_ myWebServer{portNumber};        // listen and dispatch while this object exists
+        Execution::WaitableEvent{}.Wait (quitAfter); // wait forever - til user hits ctrl-c
     }
     catch (const Execution::TimeOutException&) {
         cerr << "Timed out - so - terminating..." << endl;

@@ -515,12 +515,12 @@ namespace Stroika {
                 static_assert (std::is_enum<ENUM_TYPE>::value, "This only works for enum types");
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
-                auto fromObjectMapper = [](const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
+                FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [](const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
                     return VariantValue (static_cast<SerializeAsType> (*fromObjOfTypeT));
                 };
-                auto toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
+                ToObjectMapperType<ENUM_TYPE> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     *intoObjOfTypeT = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
                     Assert (static_cast<SerializeAsType> (*intoObjOfTypeT) == d.As<SerializeAsType> ()); // no round-trip loss

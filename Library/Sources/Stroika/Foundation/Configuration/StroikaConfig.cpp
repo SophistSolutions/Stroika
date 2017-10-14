@@ -7,8 +7,9 @@
 
 #include "StroikaConfig.h"
 
+// This will be set - if ever - at the top of Defaults_CompilerAndStdLib_.h
 #ifdef _STROIKA_CONFIGURATION_WARNING_
-#pragma messsage("****COMPILER COMPATABILITY ISSUE*****")
+#pragma message("****COMPILER COMPATABILITY ISSUE*****")
 #pragma message(_STROIKA_CONFIGURATION_WARNING_)
-#pragma messsage("****COMPILER COMPATABILITY ISSUE*****")
+#pragma message("****COMPILER COMPATABILITY ISSUE*****")
 #endif

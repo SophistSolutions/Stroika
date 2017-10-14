@@ -70,7 +70,7 @@ ifeq ($(CONFIGURATION),)
 ifeq ($(MAKECMDGOALS),check)
 	@for i in `ScriptsLib/GetConfigurations.sh` ; do\
 		ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Stroika/Check {$$i}:";\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) || exit $$?;\
 	done
 endif
 else
@@ -333,13 +333,12 @@ endif
 	@touch IntermediateFiles/$(CONFIGURATION)/APPLIED_CONFIGURATION
 
 
+UNAME_DASH_O_=$(shell uname -o 2>/dev/null || true)
+
 default-configurations:
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making default configurations...
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [ `uname` = "Darwin" ] ; then\
-		./configure Debug --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
-	elif [ `uname -o` = "Cygwin" ] ; then\
+	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
@@ -357,7 +356,7 @@ regression-test-configurations:
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making regression-test configurations...
 	@rm -f ConfigurationFiles/*
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
-	if [ `uname -o` = "Cygwin" ] ; then\
+	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable;\
 		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable;\
 		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags;\
@@ -368,24 +367,27 @@ regression-test-configurations:
 	else\
 		./configure DEFAULT_CONFIG;\
 		./configure no-third-party-components --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no;\
-		./configure malloc-guard --malloc-guard true;\
+		##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621\
+		##./configure malloc-guard --malloc-guard true;\
 		#\
 		./configure my-gcc-5.4.0-release --compiler-driver ~/gcc-5.4.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		./configure my-gcc-6.3.0-debug-c++17 --compiler-driver ~/gcc-6.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		./configure my-gcc-6.3.0-release-c++17 --compiler-driver ~/gcc-6.3.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
-		#NOTE - --sanitize none on gcc-7.1.0-debug* cuz we dont have the right asan libraries installed yet;  - sudo apt-get install libasan4\
-		./configure my-gcc-7.1.0-debug-c++14 --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14 --sanitize none;\
-		./configure my-gcc-7.1.0-debug-c++17 --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none;\
-		./configure my-gcc-7.1.0-release-c++17 --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
+		./configure my-gcc-6.4.0-debug-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
+		./configure my-gcc-6.4.0-release-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
+		#NOTE - --sanitize none on gcc-7.2.0-debug* cuz we dont have the right asan libraries installed yet;  - sudo apt-get install libasan4\
+		./configure my-gcc-7.2.0-debug-c++14 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14 --sanitize none;\
+		./configure my-gcc-7.2.0-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none;\
+		./configure my-gcc-7.2.0-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
 		#LTO not working for my private builds of clang- no matter\
 		./configure my-clang-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
 		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
 		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
-		./configure my-clang-4.0.0-release --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
-		#sudo apt-get install libc++abi1 for clang libc++ based apps to run\
-		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
-		./configure my-clang-4.0.0-libc++-debug --compiler-driver ~/clang-4.0.0/bin/clang++ --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
+		./configure my-clang-4.0.1-release --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
+		./configure my-clang-5.0.0-release --compiler-driver ~/clang-5.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag;\
+		#sudo append-run-prefix need to run executables and find libraries (otherwise use apt-get install libc++abi1 for clang libc++ based apps to run)\
+		./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-3.9.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
+		./configure my-clang-4.0.1-libc++-debug --compiler-driver ~/clang-4.0.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-4.0.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
+		./configure my-clang-5.0.0-libc++-debug --compiler-driver ~/clang-5.0.0/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-5.0.0/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --append-extra-compiler-and-linker-args -stdlib=libc++ --sanitize none;\
 		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
@@ -400,9 +402,9 @@ regression-test-configurations:
 		#./configure gcc-debug-threadsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --block-allocation disable --extra-compiler-args -fsanitize=thread --extra-linker-args -fsanitize=thread;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
-		#nb: still using gcc 6.3 for debug cuz of asan version installed on latest ubuntu\
-		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --compiler-driver ~/gcc-6.3.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
-		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --compiler-driver ~/gcc-7.1.0/bin/x86_64-pc-linux-gnu-gcc --cppstd-version-flag --std=c++17 --only-if-has-compiler --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
+		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
+		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
+		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true --sanitize none;\
 		./configure raspberrypi-gcc-6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true --sanitize none;\

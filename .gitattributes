@@ -1,4 +1,6 @@
 *.inf text eol=crlf diff
+*.spec text eol=lf diff
+*.control text eol=lf
 *.bat text eol=crlf diff
 *.sln text eol=crlf diff
 *.wixproj text eol=crlf diff

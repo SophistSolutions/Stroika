@@ -53,16 +53,16 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 
 /*
  ********************************************************************************
- *********** WebService::Server::VariantValue::PickoutParamValuesBody ***********
+ ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesBody (Request* request, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request, const Optional<Iterable<String>>& namedParameters)
 {
     Memory::BLOB inData = request->GetBody ();
-    return PickoutParamValuesBody (request->GetBody (), request->GetContentType (), namedParameters);
+    return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType (), namedParameters);
 }
 
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
 {
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::JSON_CT ();
     if (bodyContentType.Value (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::JSON_CT ()) {
@@ -109,33 +109,11 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
  ********** WebService::Server::VariantValue::PickoutParamValues ****************
  ********************************************************************************
  */
-Sequence<DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (const Iterable<String>& paramNames, const Mapping<String, DataExchange::VariantValue>& paramValues)
-{
-    return OrderParamValues (paramNames, paramValues);
-#if 0
-    Sequence<DataExchange::VariantValue> vvs;
-    for (auto i : paramNames) {
-        vvs += paramValues.LookupValue (i);
-    }
-    return vvs;
-#endif
-}
-
-Sequence<DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (const Iterable<String>& paramNames, Request* request, const Optional<String>& fromInMessage)
-{
-    return OrderParamValues (paramNames, GetWebServiceArgsAsVariantValue (request, fromInMessage).As<Mapping<String, DataExchange::VariantValue>> ());
-}
-
-/*
- ********************************************************************************
- ************* WebService::Server::VariantValue::PickoutParamValues_NEW *********
- ********************************************************************************
- */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues_NEW (Request* request, const Optional<Iterable<String>>& namedURLParams, const Optional<Iterable<String>>& namedBodyParams)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request* request, const Optional<Iterable<String>>& namedURLParams, const Optional<Iterable<String>>& namedBodyParams)
 {
     Mapping<String, DataExchange::VariantValue> result = PickoutParamValuesFromURL (request, namedURLParams);
     // body params take precedence, if they overlap
-    PickoutParamValuesBody (request, namedBodyParams).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
+    PickoutParamValuesFromBody (request, namedBodyParams).Apply ([&](auto i) { result.Add (i.fKey, i.fValue); });
     return result;
 }
 

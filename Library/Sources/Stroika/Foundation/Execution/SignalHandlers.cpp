@@ -13,16 +13,17 @@
 #include "../Containers/Mapping.h"
 #include "../Debug/BackTrace.h"
 #include "../Debug/Trace.h"
-#include "../Execution/Sleep.h"
-#include "../Execution/Synchronized.h"
-#include "../Execution/WaitableEvent.h"
 
 #include "Common.h"
-#include "Thread.h"
-
+#include "ErrNoException.h"
 #if qPlatform_POSIX
+#include "Platform/POSIX/SemWaitableEvent.h"
 #include "Platform/POSIX/SignalBlock.h"
 #endif
+#include "Sleep.h"
+#include "Synchronized.h"
+#include "Thread.h"
+#include "WaitableEvent.h"
 
 #include "SignalHandlers.h"
 
@@ -50,11 +51,12 @@ using Time::DurationSecondsType;
 #define qDoBacktraceOnFirstPassSignalHandler_ 0
 #endif
 
-// VERY UNSURE???
-// Started experimenting(enabling) this with Stroika v2.0a135 -- LGP 2016-03-21
-//#define qConditionVariableSetSafeFromSignalHandler_ 0
-#ifndef qConditionVariableSetSafeFromSignalHandler_
-#define qConditionVariableSetSafeFromSignalHandler_ 1
+// Use this for POSIX, since condition_variables aren't safe on POSIX (signals)
+// https://stroika.atlassian.net/browse/STK-617
+// https://stackoverflow.com/questions/31117959/waking-up-thread-from-signal-handler
+// -- LGP 2017-09-10
+#ifndef qConditionVariablesSafeInAsyncSignalHanlders
+#define qConditionVariablesSafeInAsyncSignalHanlders !qPlatform_POSIX
 #endif
 
 /*
@@ -111,30 +113,28 @@ class SignalHandlerRegistry::SafeSignalsManager::Rep_ {
 private:
     void waitForNextSig_ ()
     {
-// USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one waits()
-#if qConditionVariableSetSafeFromSignalHandler_
-        // @todo - verify std::condition_variable (not sure that is safe in signal handler)
-        // THis is probably OK for now
+#if qConditionVariablesSafeInAsyncSignalHanlders
+        Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-        fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() { return fWorkAvailable_.load (); });
+        fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() { return fWorkMaybeAvailable_.load (); });
 #else
-        constexpr DurationSecondsType kLongCheck_{1.0f};
-        constexpr DurationSecondsType kQuickCheck_{0.1f};
-        fChangedRecheckTime_.WaitQuietly (fHandlers_->empty () ? kLongCheck_ : kQuickCheck_); // HACK til we can do condition variable SET from signal handler
+        fRecievedSig_.Wait ();
 #endif
     }
-    void tell2Wake_ ()
+    void tell2WakeAfterDataUpdate_ ()
     {
-// USAGE BASED ON EXAMPLE FROM http://en.cppreference.com/w/cpp/thread/condition_variable/notify_one signals ()
-#if qConditionVariableSetSafeFromSignalHandler_
+#if qConditionVariablesSafeInAsyncSignalHanlders
+        Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
             std::lock_guard<std::mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-            fWorkAvailable_ = true;
+            fWorkMaybeAvailable_ = true;
         }
         fRecievedSig_.notify_one ();
 #else
-        fChangedRecheckTime_.Set ();
+        Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
+        fWorkMaybeAvailable_ = true;
+        fRecievedSig_.Set ();
 #endif
     }
 
@@ -179,9 +179,12 @@ public:
                             }
                         }
                     }
-#if qConditionVariableSetSafeFromSignalHandler_
-                    fWorkAvailable_ = false;
-#endif
+                    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWorkMaybeAvailable_); // ignore because we are careful not to unset unless safe
+                    // When we set fWorkMaybeAvailable_ false, do one more time around loop so no race - if we set from true to false
+                    // we always recehck protected data (and mutex not signal safe)
+                    if (fWorkMaybeAvailable_.exchange (false)) {
+                        goto Again;
+                    }
                 }
             },
             Thread::eAutoStart,
@@ -195,7 +198,7 @@ public:
         Stroika_Foundation_Debug_ValgrindDisableHelgrind (fRecievedSig_); // For RARE (1/10 times) failure in regtest Foundation::Execution::Signals
         Thread::SuppressInterruptionInContext suppressInterruption;
         fBlockingQueuePusherThread_.Abort ();
-        tell2Wake_ ();
+        tell2WakeAfterDataUpdate_ ();
         fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     }
 
@@ -211,7 +214,7 @@ public:
         if (fHanlderAvailable_[signal]) {
             fIncomingSignalCounts_[signal]++;
             fLastSignalRecieved_ = signal; // used as a quick check
-            tell2Wake_ ();
+            tell2WakeAfterDataUpdate_ ();
         }
     }
 
@@ -232,9 +235,6 @@ public:
     {
         fHandlers_.rwget ()->Remove (signal);
         PopulateSafeSignalHandlersCache_ (signal);
-#if !qConditionVariableSetSafeFromSignalHandler_
-        fChangedRecheckTime_.Set ();
-#endif
     }
 
 public:
@@ -242,9 +242,6 @@ public:
     {
         fHandlers_.rwget ()->Add (signal, safeHandlers);
         PopulateSafeSignalHandlersCache_ (signal);
-#if !qConditionVariableSetSafeFromSignalHandler_
-        fChangedRecheckTime_.Set ();
-#endif
     }
 
 private:
@@ -267,12 +264,12 @@ private:
     atomic<SignalID>     fLastSignalRecieved_{NSIG};
     Thread::Ptr          fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
-#if qConditionVariableSetSafeFromSignalHandler_
-    std::atomic<bool>  fWorkAvailable_{false};
+    std::atomic<bool> fWorkMaybeAvailable_{false};
+#if qConditionVariablesSafeInAsyncSignalHanlders
     mutex              fRecievedSig_NotSureWhatMutexFor_;
     condition_variable fRecievedSig_;
 #else
-    WaitableEvent fChangedRecheckTime_{WaitableEvent::eAutoReset}; // tmphack until we support using condition variables or some such
+    Execution::Platform::POSIX::SemWaitableEvent fRecievedSig_;
 #endif
 };
 DISABLE_COMPILER_MSC_WARNING_END (4351)

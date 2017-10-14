@@ -7,6 +7,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Containers/Collection.h"
+
 #include "Stroika/Foundation/Containers/MultiSet.h"
 
 #include "Stroika/Foundation/Containers/Concrete/MultiSet_Array.h"
@@ -36,6 +38,26 @@ namespace {
             // only work todo on sorted mappings
         };
         CommonTests::MultiSetTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+    }
+}
+
+namespace {
+    namespace ExampleCTORS_Test_2_ {
+        void DoTest ()
+        {
+            // From Set<> CTOR docs
+            Collection<int>  c;
+            std::vector<int> v;
+
+            MultiSet<int> s1 = {1, 2, 3};
+            MultiSet<int> s2 = s1;
+            MultiSet<int> s3{s1};
+            MultiSet<int> s4{s1.begin (), s1.end ()};
+            MultiSet<int> s5{c};
+            MultiSet<int> s6{v};
+            //@todo - make this work - use ITERATOR NOT PTR -  MultiSet<int> s7{v.begin (), v.end ()};
+            MultiSet<int> s8{move (s1)};
+        }
     }
 }
 
@@ -79,6 +101,8 @@ namespace {
                 MySimpleClassWithoutComparisonOperators_ComparerWithCompare_>;
             DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }
+
+        ExampleCTORS_Test_2_::DoTest ();
     }
 }
 

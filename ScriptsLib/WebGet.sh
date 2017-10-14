@@ -1,4 +1,8 @@
 #!/bin/bash
+
+MY_PATH="`dirname \"$0\"`"
+#MY_PATH=`realpath $MY_PATH`
+
 OUTPUTFILE=$1
 SRCURL1=$2
 SRCURL2=$3
@@ -23,10 +27,12 @@ if [ "$SRCURL6" == "" ] ; then
 	SRCURL6=$SRCURL4
 fi
 
+: ${MAKE_INDENT_LEVEL:=0}
+
 RETRIES=2
 
 WGET_CMD_BASE="wget --quiet --no-check-certificate --tries=$RETRIES -O $OUTPUTFILE"
-echo -n "$WGET_CMD_BASE $SRCURL1 ... "
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL -n "$WGET_CMD_BASE $SRCURL1 ... "
 $WGET_CMD_BASE $SRCURL1
 if [ $? -eq 0 ] ; then
 	echo "done"
@@ -34,8 +40,8 @@ if [ $? -eq 0 ] ; then
 fi
 
 echo failed
-echo "WARNING: mirror failed, so retrying:"
-echo -n "$WGET_CMD_BASE $SRCURL2 ... "
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  -n "$WGET_CMD_BASE $SRCURL2 ... "
 $WGET_CMD_BASE $SRCURL2
 if [ $? -eq 0 ] ; then
 	echo "done"
@@ -43,8 +49,8 @@ if [ $? -eq 0 ] ; then
 fi
 
 echo failed
-echo "WARNING: mirror failed, so retrying:"
-echo -n "$WGET_CMD_BASE $SRCURL3 ... "
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  -n "$WGET_CMD_BASE $SRCURL3 ... "
 $WGET_CMD_BASE -O $OUTPUTFILE $SRCURL3
 if [ $? -eq 0 ] ; then
 	echo "done"
@@ -52,8 +58,8 @@ if [ $? -eq 0 ] ; then
 fi
 
 echo failed
-echo "WARNING: mirror failed, so retrying:"
-echo -n "$WGET_CMD_BASE $SRCURL4 ... "
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  -n "$WGET_CMD_BASE $SRCURL4 ... "
 $WGET_CMD_BASE $SRCURL4
 if [ $? -eq 0 ] ; then
 	echo "done"
@@ -61,8 +67,8 @@ if [ $? -eq 0 ] ; then
 fi
 
 echo failed
-echo "WARNING: mirror failed, so retrying:"
-echo -n "$WGET_CMD_BASE $SRCURL5 ... "
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  -n "$WGET_CMD_BASE $SRCURL5 ... "
 $WGET_CMD_BASE $SRCURL5
 if [ $? -eq 0 ] ; then
 	echo "done"
@@ -70,14 +76,14 @@ if [ $? -eq 0 ] ; then
 fi
 
 echo failed
-echo "WARNING: mirror failed, so retrying:"
-echo -n "$WGET_CMD_BASE $SRCURL6 ... "
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  "WARNING: mirror failed, so retrying:"
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  -n "$WGET_CMD_BASE $SRCURL6 ... "
 $WGET_CMD_BASE $SRCURL6
 if [ $? -eq 0 ] ; then
 	echo "done"
     	exit 0;
 fi
 
-echo Failed downloading $OUTPUTFILE
+$MY_PATH/PrintProgressLine.sh $MAKE_INDENT_LEVEL  Failed downloading $OUTPUTFILE
 rm -f $OUTPUTFILE
 exit 1

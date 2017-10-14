@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <chrono>
 #include <limits>
 
 /**
@@ -13,17 +14,15 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *      @todo   Consider making DurationSecondsType = long double (and for now must fix kInfinite to L..
- *              while we support qCompilerAndStdLib_constexpr_Buggy). Tried and worked, but didnt have time
+ *      @todo   Consider making DurationSecondsType = long double. Tried and worked, but didnt have time
  *              to test impact/performance, and possibly pointless without changing internal rep of Duration at the same time.
- *
- *      @todo   Consider making Time::GetTickCount () inline. Measure code-size impact.
- *
  */
 
 namespace Stroika {
     namespace Foundation {
         namespace Time {
+
+            using std::chrono::time_point;
 
             /**
              *  Use double instead of long double because we dont have time to test performance impact, and only some (gcc/unix)
@@ -34,29 +33,45 @@ namespace Stroika {
             using DurationSecondsType = double;
 
             /**
-             *  Get the number of seconds since some constant, system-specified reference time. This is used
-             *  to tell how much time has elapsed since a particular event.
-             *
-             *  Note - though this is based on the same reference time as an time values packed into event records,
-             *  it maybe differently normalized. These times are all in seconds, whereas event records are often in
-             *  other units (ticks - 1/60 of a second, or milliseconds).
-             *
-             *  In the case of X-Windows - this business is very complicated because there are two different times
-             *  one might be intersted in. There is the time on the client (where Led is running) and the time on the X-Server
-             *  (users computer screen). Alas - X11R4 appears to have quite weak support for time - and offers no way I've found
-             *  to accurately get the time from the users computer. As a result - with X-Windows - you must arrange to call
-             *  @'SyncronizeLedXTickCount' for each event that specifies a time value (as soon as that event arrives). This
-             *  data - together with time values from the client (where Led is running) computer will be used to provide a
-             *  better approximation of the true elapsed time.
+             *  Computes the offset of the time_point from the beginning time for the given clock.
              *
              *  \note Starts At Zero
              *      To avoid issues with roundoff, we start this at zero when the software first boots.
+             *
+             *  \todo - never implement assure done asap or at startup time - when not = chrono::steady_clock. Basline is from first call. Should add static init call as well.
+             */
+            template <class Clock = std::chrono::steady_clock, class Duration = typename Clock::duration>
+            DurationSecondsType time_point2DurationSeconds (const time_point<Clock, Duration>& tp);
+
+            /**
+             *  Map a 'tickcount' value to a std::time_point (which references a particular clock). This is used to interact
+             *  with std::chrono calls, like condition_variable<>::wait_until (), etc.
+             *
+             *  Note - those routines - due to use of fixed point arithmatic - have a large issue with overflow. As a result,
+             *  DurationSeconds2time_point will often return a much smaller time_point than might have made sense, but this is
+             *  just to avoid overflows.
+             *
+             *  This may need to be revisisted... @see @See https://stroika.atlassian.net/browse/STK-619
+             */
+            template <class Clock = std::chrono::steady_clock, class Duration = typename Clock::duration>
+            time_point<Clock, Duration> DurationSeconds2time_point (DurationSecondsType t);
+
+            /**
+             *  Get the number of seconds since time_point2DurationSeconds, etc APIs first called (typically since this process started).
+             *
+             *  This uses chrono::steady_clock.
+             *
+             *  \note Starts At Zero
+             *      To avoid issues with roundoff, we start this at zero when the software first boots.
+             *
+             *  \note - this value is convertible to time_point<chrono::steady_clock> via DurationSeconds2time_point, and so can be used with wait_until etc APIs
              */
             DurationSecondsType GetTickCount () noexcept;
 
             /**
+             *  @See https://stroika.atlassian.net/browse/STK-619    CONSIDER LOSING THIS - AND USE special TYPE and overloading, and handle kInfinite differntly - no arithmatic, just no timeout
              */
-            constexpr DurationSecondsType kInfinite = std::numeric_limits<DurationSecondsType>::max ();
+            constexpr DurationSecondsType kInfinite = std::numeric_limits<DurationSecondsType>::infinity ();
         }
     }
 }

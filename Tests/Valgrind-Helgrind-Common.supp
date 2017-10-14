@@ -46,3 +46,18 @@
    ...
    fun:start_thread
 }
+{
+   Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled
+   Helgrind:PthAPIerror
+   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZN7Stroika10Foundation9Execution8Platform5POSIX16SemWaitableEvent4WaitEv
+   ...
+   fun:start_thread
+}
+{
+   https://stroika.atlassian.net/browse/STK-620
+   Helgrind:Misc
+   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
+   fun:_ZNSt18condition_variable10notify_allEv
+   ...
+}

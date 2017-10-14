@@ -8,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Containers/Collection.h"
+
 #include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
@@ -152,6 +154,26 @@ namespace {
 }
 
 namespace {
+    namespace ExampleCTORS_Test_5_ {
+        void DoTest ()
+        {
+            // From Mapping<> CTOR docs
+            Collection<pair<int, int>> c;
+            std::map<int, int>         m;
+
+            Mapping<int, int> m1 = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+            Mapping<int, int> m2 = m1;
+            Mapping<int, int> m3{m1};
+            Mapping<int, int> m4{m1.begin (), m1.end ()};
+            Mapping<int, int> m5{c};
+            Mapping<int, int> m6{m};
+            Mapping<int, int> m7{m.begin (), m.end ()};
+            Mapping<int, int> m8{move (m1)};
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
@@ -202,6 +224,8 @@ namespace {
         Test3_SimpleMappingTest_WhichRequiresExplcitValueComparer ();
 
         Test4_MappingCTOROverloads_::DoIt ();
+
+        ExampleCTORS_Test_5_::DoTest ();
     }
 }
 

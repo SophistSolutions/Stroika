@@ -190,6 +190,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'EXTRA_LINKER_ARGS'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<RUN_PREFIX>");
+		if (defined $pps) {
+			$configuration {'RUN_PREFIX'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CDefine>");
 		if (defined $pps) {
 			$useExtraCDefines[@useExtraCDefines] = $pps;
