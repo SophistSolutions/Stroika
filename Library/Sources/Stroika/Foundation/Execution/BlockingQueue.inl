@@ -57,8 +57,7 @@ namespace Stroika {
                 Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
                 while (true) {
                     typename LockPlusCondVar_::WaitableLockType waitableLock{fLockPlusCondVar_.fMutex_};
-                    Memory::Optional<T>                         tmp = fQueue_.RemoveHeadIf ();
-                    if (tmp.IsPresent ()) {
+                    if (Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ()) {
                         // Only notify_all() on additions
                         return *tmp;
                     }
