@@ -2010,6 +2010,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.h">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3230,6 +3233,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.inl">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

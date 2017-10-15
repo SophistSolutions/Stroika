@@ -1417,6 +1417,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.h" />
@@ -1846,6 +1847,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Exceptions.inl" />
