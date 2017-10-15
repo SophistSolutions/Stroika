@@ -972,15 +972,15 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
     }
     if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::kWaitQuietlySetResult) {
         /*
-        *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
-        *  This really only has effect #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        *  because thats the only time we have an imporant side effect of the threads finalizing.
-        *
-        *  @see https://stroika.atlassian.net/browse/STK-496
-        *
-        *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
-        *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)
-        */
+         *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
+         *  This really only has effect #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
+         *  because thats the only time we have an imporant side effect of the threads finalizing.
+         *
+         *  @see https://stroika.atlassian.net/browse/STK-496
+         *
+         *  NOTE: because we call this join () inside fAccessSTDThreadMutex_, its critical the running thread has terminated to the point where it will no
+         *  longer access fThread_ (and therfore not lock fAccessSTDThreadMutex_)
+         */
         lock_guard<mutex> critSec2{fRep_->fAccessSTDThreadMutex_};
         if (fRep_->fThread_.joinable ()) {
             // fThread_.join () will block indefinitely - but since we waited on fRep_->fThreadDoneAndCanJoin_ - it shouldn't really take long
