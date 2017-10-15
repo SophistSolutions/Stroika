@@ -9,11 +9,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "Thread.h"
-
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
+
+            void CheckForThreadInterruption ();
 
             /*
              ********************************************************************************
@@ -21,7 +21,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename MUTEX>
-            Time::DurationSecondsType onVariable<MUTEX>::sThreadAbortCheckFrequency_Default{1};
+            Time::DurationSecondsType ConditionVariable<MUTEX>::sThreadAbortCheckFrequency_Default{1};
 
             template <typename MUTEX>
             inline void ConditionVariable<MUTEX>::release_and_notify_one (LockType& lock)
