@@ -95,8 +95,8 @@ namespace Stroika {
                  *      2) false if the predicate pred still evaluates to false after the rel_time timeout expired, otherwise true.
                  */
                 cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
-                template <typename _Predicate>
-                bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, _Predicate& pred);
+                template <typename PREDICATE>
+                bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE pred);
 
                 /**
                   * Like condition_variable wait_for, except
@@ -110,8 +110,8 @@ namespace Stroika {
                   *     2) false if the predicate pred still evaluates to false after the rel_time timeout expired, otherwise true.
                   */
                 cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
-                template <typename _Predicate>
-                bool wait_for (LockType& lock, Time::DurationSecondsType timeout, _Predicate& pred);
+                template <typename PREDICATE>
+                bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE pred);
 
                 /**
                  *  NOT USED YET - ROUGH PROTOTYPE
