@@ -312,9 +312,9 @@ namespace Stroika {
             private:
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 struct WE_ {
-                    ResetType                 fResetType;
-                    ConditionVariable<>       fConditionVariable{};
-                    bool                      fTriggered{false};
+                    ResetType           fResetType;
+                    ConditionVariable<> fConditionVariable{};
+                    bool                fTriggered{false};
 
                     WE_ (ResetType resetType);
                     nonvirtual void Reset ();
