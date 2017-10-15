@@ -1072,7 +1072,7 @@ namespace {
         RegressionTest18_RWSynchronized_::DoIt ();
         RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
-        RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
+        //RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
     }
 }
 
