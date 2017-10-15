@@ -20,34 +20,34 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             *************************** ConditionVariable<MUTEX> ***************************
+             **************** ConditionVariable<MUTEX, CONDITION_VARIABLE> ******************
              ********************************************************************************
              */
-            template <typename MUTEX>
-            Time::DurationSecondsType ConditionVariable<MUTEX>::sThreadAbortCheckFrequency_Default{1};
+            template <typename MUTEX, typename CONDITION_VARIABLE>
+            Time::DurationSecondsType ConditionVariable<MUTEX, CONDITION_VARIABLE>::sThreadAbortCheckFrequency_Default{1};
 
-            template <typename MUTEX>
-            inline void ConditionVariable<MUTEX>::release_and_notify_one (LockType& lock)
+            template <typename MUTEX, typename CONDITION_VARIABLE>
+            inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_one (LockType& lock)
             {
                 lock.unlock ();
                 fConditionVariable.notify_one ();
             }
-            template <typename MUTEX>
-            inline void ConditionVariable<MUTEX>::release_and_notify_all (LockType& lock)
+            template <typename MUTEX, typename CONDITION_VARIABLE>
+            inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_all (LockType& lock)
             {
                 lock.unlock ();
                 fConditionVariable.notify_all ();
             }
-            template <typename MUTEX>
-            cv_status ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
+            template <typename MUTEX, typename CONDITION_VARIABLE>
+            cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
             {
                 // @todo WRONG - must redo the loop below - not using predicate to handle timeout right
                 unsigned int cntCalled = 0;
                 return wait_until (lock, timeoutAt, [&cntCalled]() { return ++cntCalled > 1; }) ? cv_status::no_timeout : cv_status::timeout;
             }
-            template <typename MUTEX>
+            template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename PREDICATE>
-            bool ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake)
+            bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake)
             {
                 while (not readToWake ()) {
                     CheckForThreadInterruption ();
@@ -70,20 +70,20 @@ namespace Stroika {
                 }
                 return true;
             }
-            template <typename MUTEX>
-            inline cv_status ConditionVariable<MUTEX>::wait_for (LockType& lock, Time::DurationSecondsType timeout)
+            template <typename MUTEX, typename CONDITION_VARIABLE>
+            inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout)
             {
                 return wait_until (lock, timeout + Time::GetTickCount ());
             }
-            template <typename MUTEX>
+            template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename PREDICATE>
-            bool ConditionVariable<MUTEX>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake)
+            bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake)
             {
                 return wait_until (lock, timeout + Time::GetTickCount (), std::move (readToWake));
             }
-            template <typename MUTEX>
+            template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename FUNCTION>
-            void ConditionVariable<MUTEX>::MutateDataNotifyAll (FUNCTION mutatorFunction)
+            void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyAll (FUNCTION mutatorFunction)
             {
                 {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
@@ -95,9 +95,9 @@ namespace Stroika {
                 }
                 fConditionVariable.notify_all ();
             }
-            template <typename MUTEX>
+            template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename FUNCTION>
-            void ConditionVariable<MUTEX>::MutateDataNotifyOne (FUNCTION mutatorFunction)
+            void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyOne (FUNCTION mutatorFunction)
             {
                 {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow

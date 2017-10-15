@@ -30,7 +30,7 @@ namespace Stroika {
              *  This is just meant to codify some good practices and share some code. Its a VERY thin wrapper - if even
              *  that - on the std::mutex.
              */
-            template <typename MUTEX = mutex>
+            template <typename MUTEX = mutex, typename CONDITION_VARIABLE = std::conditional<is_same<mutex, MUTEX>::value, condition_variable, condition_variable_any>::type>
             struct ConditionVariable {
 
                 /**
@@ -47,12 +47,13 @@ namespace Stroika {
                 static Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
                 Time::DurationSecondsType        fThreadAbortCheckFrequency{sThreadAbortCheckFrequency_Default};
 
-                using MutexType     = MUTEX;
-                using LockType      = std::unique_lock<MUTEX>;
-                using QuickLockType = std::lock_guard<MUTEX>;
+                using MutexType             = MUTEX;
+                using ConditionVariableType = CONDITION_VARIABLE;
+                using LockType              = std::unique_lock<MUTEX>;
+                using QuickLockType         = std::lock_guard<MUTEX>;
 
                 MutexType          fMutex;
-                condition_variable fConditionVariable;
+                CONDITION_VARIABLE fConditionVariable;
 
                 /**
                  * NOTIFY the condition variable (notify_one), but unlock first due to:                  
