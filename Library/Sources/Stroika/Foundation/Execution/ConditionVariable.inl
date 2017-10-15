@@ -51,7 +51,8 @@ namespace Stroika {
                     CheckForThreadInterruption ();
                     Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
                     if (remaining < 0) {
-                        return false;
+                        //return false; // maybe should recheck pred ()
+                        return pred ();
                     }
                     remaining = min (remaining, fThreadAbortCheckFrequency);
 
@@ -62,7 +63,7 @@ namespace Stroika {
                          */
                     }
                     else {
-                        break; // if not a timeout - condition variable really signaled, we really return
+                        ////no break - recheck pred();;;; spurrious??? break; // if not a timeout - condition variable really signaled, we really return
                     }
                 }
                 return true;
