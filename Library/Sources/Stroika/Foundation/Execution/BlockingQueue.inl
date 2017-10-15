@@ -34,16 +34,12 @@ namespace Stroika {
             {
                 // Our locks are short-lived, so its safe to ignore the timeout - this will always be fast
                 Require (not fEndOfInput_);
-                typename ConditionVariable<>::LockType waitableLock{fLockPlusCondVar_.fMutex};
-                fQueue_.AddTail (e);
-                fLockPlusCondVar_.release_and_notify_all (waitableLock);
+                fLockPlusCondVar_.MutateDataNotifyAll ([=]() { fQueue_.AddTail (e); });
             }
             template <typename T>
             inline void BlockingQueue<T>::EndOfInput ()
             {
-                typename ConditionVariable<>::LockType waitableLock{fLockPlusCondVar_.fMutex};
-                fEndOfInput_ = true;
-                fLockPlusCondVar_.release_and_notify_all (waitableLock); // like input cuz readers could be waiting and need to know no more
+                fLockPlusCondVar_.MutateDataNotifyAll ([=]() { fEndOfInput_ = true; });
             }
             template <typename T>
             inline bool BlockingQueue<T>::IsAtEndOfInput () const
@@ -65,7 +61,6 @@ namespace Stroika {
                         Execution::Throw (Execution::TimeOutException::kThe); // Since we always must return, and know we never will, throw timeout now
                     }
                     ThrowTimeoutExceptionAfter (waitTil);
-                    //fLockPlusCondVar_.fConditionVariable.wait_until (waitableLock, Time::DurationSeconds2time_point (waitTil));
                     //fLockPlusCondVar_.wait_until (waitableLock, Time::DurationSeconds2time_point (waitTil));
                     fLockPlusCondVar_.wait_until (waitableLock, waitTil);
                 }
@@ -85,7 +80,6 @@ namespace Stroika {
                     if (Time::GetTickCount () > waitTil) {
                         return {}; // on timeout, return 'missing'
                     }
-                    //fLockPlusCondVar_.fConditionVariable.wait_until (waitableLock, Time::DurationSeconds2time_point (waitTil));
                     fLockPlusCondVar_.wait_until (waitableLock, waitTil);
                 }
             }
@@ -115,8 +109,11 @@ namespace Stroika {
             template <typename T>
             inline void BlockingQueue<T>::clear ()
             {
-                typename ConditionVariable<>::QuickLockType quickLock{fLockPlusCondVar_.fMutex};
+                typename ConditionVariable<>::LockType waitableLock{fLockPlusCondVar_.fMutex};
                 fQueue_.clear ();
+                if (fEndOfInput_) {
+                    fLockPlusCondVar_.release_and_notify_all (waitableLock); // cuz readers could be waiting and need to know no more
+                }
             }
         }
     }
