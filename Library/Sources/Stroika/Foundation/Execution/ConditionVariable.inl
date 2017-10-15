@@ -93,7 +93,7 @@ namespace Stroika {
 #else
                     auto critSec{make_unique_lock (fMutex)};
 #endif
-                    doIt ();
+					mutatorFunction ();
                 }
                 fConditionVariable.notify_all ();
             }
@@ -107,7 +107,7 @@ namespace Stroika {
 #else
                     auto critSec{make_unique_lock (fMutex)};
 #endif
-                    doIt ();
+					mutatorFunction ();
                 }
                 fConditionVariable.notify_one ();
             }
