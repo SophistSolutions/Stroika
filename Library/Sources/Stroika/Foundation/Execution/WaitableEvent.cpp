@@ -68,7 +68,7 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
      *  Note - this unique_lock<> looks like a bug, but is not. Internally, fConditionVariable_.wait_for does an
      *  unlock.
      */
-    std::unique_lock<mutex> lock (fMutex);
+    std::unique_lock<mutex> lock (fConditionVariable.fMutex);
     /*
      * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
      * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurious.
@@ -83,9 +83,9 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
         /*
          *  See WaitableEvent::SetThreadAbortCheckFrequency ();
          */
-        remaining = min (remaining, fThreadAbortCheckFrequency);
+        remaining = min (remaining, fConditionVariable.fThreadAbortCheckFrequency);
 
-        if (fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
+        if (fConditionVariable.fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
             /*
              *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
              *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
@@ -112,8 +112,8 @@ constexpr WaitableEvent::ResetType WaitableEvent::eManualReset;
 #if qDebug || qStroika_FeatureSupported_Valgrind
 WaitableEvent::~WaitableEvent ()
 {
-    Require (fExtraWaitableEvents_.empty ());                                   // Cannot kill a waitable event while its being waited on by others
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWE_.fConditionVariable); // avoid sporadic (about 1/3 time) probably spurrious helgrind failure - for test Foundation::Execution::Threads -https://stroika.atlassian.net/browse/STK-484
+    Require (fExtraWaitableEvents_.empty ());                                                      // Cannot kill a waitable event while its being waited on by others
+    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWE_.fConditionVariable.fConditionVariable); // avoid sporadic (about 1/3 time) probably spurrious helgrind failure - for test Foundation::Execution::Threads -https://stroika.atlassian.net/browse/STK-484
 }
 #endif
 

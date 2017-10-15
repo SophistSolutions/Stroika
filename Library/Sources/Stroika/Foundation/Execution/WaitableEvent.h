@@ -6,13 +6,12 @@
 
 #include "../StroikaPreComp.h"
 
-#include <condition_variable>
 #include <forward_list>
-#include <mutex>
 #include <set>
 
 #include "../Configuration/Common.h"
 
+#include "ConditionVariable.h"
 #include "Exceptions.h"
 
 /**
@@ -314,10 +313,8 @@ namespace Stroika {
                 DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 struct WE_ {
                     ResetType                 fResetType;
-                    mutex                     fMutex{};
-                    condition_variable        fConditionVariable{};
+                    ConditionVariable<>       fConditionVariable{};
                     bool                      fTriggered{false};
-                    Time::DurationSecondsType fThreadAbortCheckFrequency{0.5};
 
                     WE_ (ResetType resetType);
                     nonvirtual void Reset ();

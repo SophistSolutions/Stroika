@@ -49,9 +49,9 @@ namespace Stroika {
             inline void WaitableEvent::WE_::Reset ()
             {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fMutex);
+                MACRO_LOCK_GUARD_CONTEXT (fConditionVariable.fMutex);
 #else
-                auto     critSec{make_unique_lock (fMutex)};
+                auto     critSec{make_unique_lock (fConditionVariable.fMutex)};
 #endif
                 fTriggered = false;
             }
@@ -75,13 +75,13 @@ namespace Stroika {
                  */
                 {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fMutex);
+                    MACRO_LOCK_GUARD_CONTEXT (fConditionVariable.fMutex);
 #else
-                    auto critSec{make_unique_lock (fMutex)};
+                    auto critSec{make_unique_lock (fConditionVariable.fMutex)};
 #endif
                     fTriggered = true;
                 }
-                fConditionVariable.notify_all ();
+                fConditionVariable.fConditionVariable.notify_all ();
             }
 
             /*
