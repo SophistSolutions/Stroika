@@ -88,7 +88,7 @@ namespace Stroika {
                  *      using float instead of chrono (fix)
                  *      supports Stroika thread interruption
                  *
-                 *      pred    -   predicate which returns false if the waitnig should be continued.
+                 *      pred    -   predicate which returns false if the waiting should be continued.
                  *
                  *  Returns:
                  *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
@@ -103,7 +103,7 @@ namespace Stroika {
                   *      using float instead of chrono (fix)
                   *      supports Stroika thread interruption
                   *
-                  *     pred    -   predicate which returns false if the waitnig should be continued.
+                  *     pred    -   predicate which returns false if the waiting should be continued.
                   *
                   * Returns:
                   *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.

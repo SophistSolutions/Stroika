@@ -41,33 +41,28 @@ namespace Stroika {
             template <typename MUTEX>
             cv_status ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
             {
-                while (true) {
-                    CheckForThreadInterruption ();
-                    Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
-                    if (remaining < 0) {
-                        return cv_status::timeout;
-                    }
-                    remaining = min (remaining, fThreadAbortCheckFrequency);
-
-                    if (fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
-                        /*
-                         *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
-                         *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
-                         */
-                    }
-                    else {
-                        // if not a timeout, we really return
-                        return cv_status::no_timeout;
-                    }
-                }
+                return wait_until (lock, timeoutAt, []() { return false; });
             }
             template <typename MUTEX>
             template <typename PREDICATE>
             bool ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE pred)
             {
                 while (not pred ()) {
-                    if (wait_until (lock, timeoutAt) == cv_status::timeout) {
-                        return pred ();
+                    CheckForThreadInterruption ();
+                    Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
+                    if (remaining < 0) {
+                        return false;
+                    }
+                    remaining = min (remaining, fThreadAbortCheckFrequency);
+
+                    if (fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
+                        /*
+                         *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
+                         *  this timeout value (or any return code) - cuz we re-examine pred () and tickcount.
+                         */
+                    }
+                    else {
+                        break; // if not a timeout - condition variable really signaled, we really return
                     }
                 }
                 return true;
@@ -93,7 +88,7 @@ namespace Stroika {
 #else
                     auto critSec{make_unique_lock (fMutex)};
 #endif
-					mutatorFunction ();
+                    mutatorFunction ();
                 }
                 fConditionVariable.notify_all ();
             }
@@ -107,7 +102,7 @@ namespace Stroika {
 #else
                     auto critSec{make_unique_lock (fMutex)};
 #endif
-					mutatorFunction ();
+                    mutatorFunction ();
                 }
                 fConditionVariable.notify_one ();
             }
