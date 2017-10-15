@@ -41,7 +41,8 @@ namespace Stroika {
             template <typename MUTEX>
             cv_status ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
             {
-                return wait_until (lock, timeoutAt, []() { return false; });
+                unsigned int cntCalled = 0;
+                return wait_until (lock, timeoutAt, [&cntCalled]() { return ++cntCalled > 1; }) ? cv_status::no_timeout : cv_status::timeout;
             }
             template <typename MUTEX>
             template <typename PREDICATE>

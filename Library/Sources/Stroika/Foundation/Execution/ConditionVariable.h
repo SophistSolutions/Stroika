@@ -49,8 +49,9 @@ namespace Stroika {
                 static Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
                 Time::DurationSecondsType        fThreadAbortCheckFrequency{sThreadAbortCheckFrequency_Default};
 
-                using MutexType = MUTEX;
-                using LockType  = std::unique_lock<MUTEX>;
+                using MutexType     = MUTEX;
+                using LockType      = std::unique_lock<MUTEX>;
+                using QuickLockType = std::lock_guard<MUTEX>;
 
                 MutexType          fMutex;
                 condition_variable fConditionVariable;
@@ -92,23 +93,23 @@ namespace Stroika {
                  *
                  *  Returns:
                  *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
-                 *      2) false if the predicate pred still evaluates to false after the rel_time timeout expired, otherwise true.
+                 *      2) true of 'readyToWake' () is reason we woke
                  */
                 cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
                 template <typename PREDICATE>
                 bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake);
 
                 /**
-                  * Like condition_variable wait_for, except
-                  *      using float instead of chrono (fix)
-                  *      supports Stroika thread interruption
-                  *
-                  *     readToWake    -   predicate which returns false if the waiting should be continued.
-                  *
-                  * Returns:
-                  *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
-                  *     2) false if the predicate pred still evaluates to false after the rel_time timeout expired, otherwise true.
-                  */
+                 * Like condition_variable wait_for, except
+                 *      using float instead of chrono (fix)
+                 *      supports Stroika thread interruption
+                 *
+                 *     readToWake    -   predicate which returns false if the waiting should be continued.
+                 *
+                 * Returns:
+                 *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
+                 *     2) true of 'readyToWake' () is reason we woke
+                 */
                 cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
                 template <typename PREDICATE>
                 bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake);
