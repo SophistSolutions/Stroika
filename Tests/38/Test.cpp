@@ -1016,6 +1016,29 @@ namespace {
 }
 
 namespace {
+    void RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ()
+    {
+        // For fixed bug - https://stroika.atlassian.net/browse/STK-622
+        Debug::TraceContextBumper       ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
+        BlockingQueue<function<void()>> q;
+
+        Verify (q.GetLength () == 0);
+        Thread::Ptr consumerThread = Thread::New (
+            [&q]() {
+                while (true) {
+                    function<void()> f = q.RemoveHead ();
+                    f ();
+                }
+            },
+            Thread::eAutoStart,
+            String{L"Consumer"});
+        Execution::Sleep (0.5);
+        // make sure we can interrupt a blocking read on the BlockingQueue
+        consumerThread.AbortAndWaitForDone ();
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -1049,6 +1072,7 @@ namespace {
         RegressionTest18_RWSynchronized_::DoIt ();
         RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
+        RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
     }
 }
 
