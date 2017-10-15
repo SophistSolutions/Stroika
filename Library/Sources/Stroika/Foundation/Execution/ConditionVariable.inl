@@ -9,6 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#include "../Time/Duration.h"
+
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
