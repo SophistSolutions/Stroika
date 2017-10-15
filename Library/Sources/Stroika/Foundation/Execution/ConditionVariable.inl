@@ -41,6 +41,7 @@ namespace Stroika {
             template <typename MUTEX>
             cv_status ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
             {
+                // @todo WRONG - must redo the loop below - not using predicate to handle timeout right
                 unsigned int cntCalled = 0;
                 return wait_until (lock, timeoutAt, [&cntCalled]() { return ++cntCalled > 1; }) ? cv_status::no_timeout : cv_status::timeout;
             }
@@ -52,8 +53,7 @@ namespace Stroika {
                     CheckForThreadInterruption ();
                     Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
                     if (remaining < 0) {
-                        //return false; // maybe should recheck readToWake ()
-                        return readToWake ();
+                        return false; // maybe should recheck readToWake () but wait_until/2 assumes NO for now
                     }
                     remaining = min (remaining, fThreadAbortCheckFrequency);
 
