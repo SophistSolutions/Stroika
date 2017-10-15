@@ -6,13 +6,11 @@
 
 #include "../StroikaPreComp.h"
 
-#include <condition_variable>
-#include <mutex>
-
 #include "../Configuration/Common.h"
 #include "../Containers/Queue.h"
 #include "../Memory/Optional.h"
 
+#include "ConditionVariable.h"
 #include "Exceptions.h"
 #include "Synchronized.h"
 #include "WaitableEvent.h"
@@ -221,6 +219,7 @@ namespace Stroika {
                 nonvirtual void clear ();
 
             private:
+#if 0
                 /**
                  *              
                  */
@@ -274,9 +273,11 @@ namespace Stroika {
                         release_and_notify_all (updateLock);
                     }
                 };
-                mutable LockPlusCondVar_ fLockPlusCondVar_;
-                bool                     fEndOfInput_{false};
-                Containers::Queue<T>     fQueue_;
+#endif
+                //              mutable LockPlusCondVar_ fLockPlusCondVar_;
+                mutable ConditionVariable<> fLockPlusCondVar_;
+                bool                        fEndOfInput_{false};
+                Containers::Queue<T>        fQueue_;
             };
         }
     }

@@ -1021,7 +1021,6 @@ namespace {
         // For fixed bug - https://stroika.atlassian.net/browse/STK-622
         Debug::TraceContextBumper       ctx{"RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_"};
         BlockingQueue<function<void()>> q;
-
         Verify (q.GetLength () == 0);
         Thread::Ptr consumerThread = Thread::New (
             [&q]() {
@@ -1072,7 +1071,7 @@ namespace {
         RegressionTest18_RWSynchronized_::DoIt ();
         RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
-        //RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
+        RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
     }
 }
 
