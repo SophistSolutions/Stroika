@@ -69,6 +69,19 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
      *  unlock.
      */
     std::unique_lock<mutex> lock (fConditionVariable.fMutex);
+#if 1
+    if (fConditionVariable.wait_until (lock, timeoutAt, [this]() { return fTriggered; })) {
+        // then we were triggered
+        ///??? do we need to cehck for spurrious wakeup?
+
+        //hacktotest not alwas right
+        //Assert (fTriggered);
+    }
+    else {
+        //Assert (not fTriggered);
+        return kWaitQuietlyTimeoutResult;
+    }
+#else
     /*
      * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
      * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurious.
@@ -94,6 +107,7 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
              */
         }
     }
+#endif
     if (fResetType == eAutoReset) {
         // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
         fTriggered = false; // autoreset
