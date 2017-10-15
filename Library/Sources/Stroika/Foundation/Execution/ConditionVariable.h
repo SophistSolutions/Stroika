@@ -14,8 +14,6 @@
  *
  *  \file
  *
- *
- *
  */
 
 namespace Stroika {
