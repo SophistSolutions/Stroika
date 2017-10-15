@@ -62,7 +62,7 @@ namespace Stroika {
                 }
             }
             template <typename MUTEX>
-            template <typename _Predicate>
+            template <typename PREDICATE>
             bool ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE pred)
             {
                 while (not pred ()) {
@@ -78,7 +78,7 @@ namespace Stroika {
                 return wait_until (lock, timeout + Time::GetTickCount ());
             }
             template <typename MUTEX>
-            template <typename _Predicate>
+            template <typename PREDICATE>
             bool ConditionVariable<MUTEX>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE pred)
             {
                 return wait_until (lock, timeout + Time::GetTickCount (), std::move (pred));
