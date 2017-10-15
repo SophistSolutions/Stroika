@@ -30,7 +30,7 @@ namespace Stroika {
              *  This is just meant to codify some good practices and share some code. Its a VERY thin wrapper - if even
              *  that - on the std::mutex.
              */
-            template <typename MUTEX = mutex, typename CONDITION_VARIABLE = std::conditional<is_same<mutex, MUTEX>::value, condition_variable, condition_variable_any>::type>
+            template <typename MUTEX = mutex, typename CONDITION_VARIABLE = typename std::conditional<is_same<mutex, MUTEX>::value, condition_variable, condition_variable_any>::type>
             struct ConditionVariable {
 
                 /**
