@@ -60,11 +60,13 @@ namespace Stroika {
             }
             template <typename MUTEX>
             template <typename _Predicate>
-            bool ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, _Predicate& _Pred)
+            bool ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, _Predicate& pred)
             {
-                while (!_Pred ())
-                    if (wait_until (lock, timeoutAt) == cv_status::timeout)
-                        return _Pred ();
+                while (not pred ()) {
+                    if (wait_until (lock, timeoutAt) == cv_status::timeout) {
+                        return pred ();
+                    }
+                }
                 return true;
             }
             template <typename MUTEX>
@@ -74,12 +76,9 @@ namespace Stroika {
             }
             template <typename MUTEX>
             template <typename _Predicate>
-            bool ConditionVariable<MUTEX>::wait_for (LockType& lock, Time::DurationSecondsType timeout, _Predicate& _Pred)
+            bool ConditionVariable<MUTEX>::wait_for (LockType& lock, Time::DurationSecondsType timeout, _Predicate& pred)
             {
-                while (!_Pred ())
-                    if (wait_for (lock, timeout) == cv_status::timeout)
-                        return _Pred ();
-                return true;
+                return wait_until (lock, timeout + Time::GetTickCount (), pred);
             }
             template <typename MUTEX>
             template <typename FUNCTION>

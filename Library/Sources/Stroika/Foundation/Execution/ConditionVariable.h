@@ -87,19 +87,31 @@ namespace Stroika {
                  *  Like condition_variable wait_until, except
                  *      using float instead of chrono (fix)
                  *      supports Stroika thread interruption
+                 *
+                 *      pred    -   predicate which returns false if the waitnig should be continued.
+                 *
+                 *  Returns:
+                 *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
+                 *      2) false if the predicate pred still evaluates to false after the rel_time timeout expired, otherwise true.
                  */
                 cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
                 template <typename _Predicate>
-                bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, _Predicate& _Pred);
+                bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, _Predicate& pred);
 
                 /**
                   * Like condition_variable wait_for, except
                   *      using float instead of chrono (fix)
                   *      supports Stroika thread interruption
+                  *
+                  *     pred    -   predicate which returns false if the waitnig should be continued.
+                  *
+                  * Returns:
+                  *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
+                  *     2) false if the predicate pred still evaluates to false after the rel_time timeout expired, otherwise true.
                   */
                 cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
                 template <typename _Predicate>
-                bool wait_for (LockType& lock, Time::DurationSecondsType timeout, _Predicate& _Pred);
+                bool wait_for (LockType& lock, Time::DurationSecondsType timeout, _Predicate& pred);
 
                 /**
                  *  NOT USED YET - ROUGH PROTOTYPE
