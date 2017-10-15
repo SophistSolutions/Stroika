@@ -18,7 +18,6 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)AbortableMutex.o\
-	$(ObjDir)BlockingQueue.o\
 	$(ObjDir)CommandLine.o\
 	$(ObjDir)DLLSupport.o\
 	$(ObjDir)Exceptions.o\

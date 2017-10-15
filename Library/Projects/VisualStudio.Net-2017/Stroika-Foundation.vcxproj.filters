@@ -444,9 +444,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
