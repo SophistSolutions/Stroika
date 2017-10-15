@@ -88,7 +88,7 @@ namespace Stroika {
                  *      using float instead of chrono (fix)
                  *      supports Stroika thread interruption
                  *
-                 *      pred    -   predicate which returns false if the waiting should be continued.
+                 *      readToWake    -   predicate which returns false if the waiting should be continued.
                  *
                  *  Returns:
                  *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
@@ -96,14 +96,14 @@ namespace Stroika {
                  */
                 cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
                 template <typename PREDICATE>
-                bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE pred);
+                bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake);
 
                 /**
                   * Like condition_variable wait_for, except
                   *      using float instead of chrono (fix)
                   *      supports Stroika thread interruption
                   *
-                  *     pred    -   predicate which returns false if the waiting should be continued.
+                  *     readToWake    -   predicate which returns false if the waiting should be continued.
                   *
                   * Returns:
                   *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
@@ -111,7 +111,7 @@ namespace Stroika {
                   */
                 cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
                 template <typename PREDICATE>
-                bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE pred);
+                bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake);
 
                 /**
                  *  NOT USED YET - ROUGH PROTOTYPE

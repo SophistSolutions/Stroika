@@ -45,14 +45,14 @@ namespace Stroika {
             }
             template <typename MUTEX>
             template <typename PREDICATE>
-            bool ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE pred)
+            bool ConditionVariable<MUTEX>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake)
             {
-                while (not pred ()) {
+                while (not readToWake ()) {
                     CheckForThreadInterruption ();
                     Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
                     if (remaining < 0) {
-                        //return false; // maybe should recheck pred ()
-                        return pred ();
+                        //return false; // maybe should recheck readToWake ()
+                        return readToWake ();
                     }
                     remaining = min (remaining, fThreadAbortCheckFrequency);
 
@@ -63,6 +63,7 @@ namespace Stroika {
                          */
                     }
                     else {
+                        // @todo DOCUMENT WHY - when can get spurrious wakeups
                         ////no break - recheck pred();;;; spurrious??? break; // if not a timeout - condition variable really signaled, we really return
                     }
                 }
@@ -75,9 +76,9 @@ namespace Stroika {
             }
             template <typename MUTEX>
             template <typename PREDICATE>
-            bool ConditionVariable<MUTEX>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE pred)
+            bool ConditionVariable<MUTEX>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake)
             {
-                return wait_until (lock, timeout + Time::GetTickCount (), std::move (pred));
+                return wait_until (lock, timeout + Time::GetTickCount (), std::move (readToWake));
             }
             template <typename MUTEX>
             template <typename FUNCTION>
