@@ -35,7 +35,7 @@ namespace Stroika {
              *          bool fTriggered = false;
              *
              *          // THREAD A:
-             *           fLockPlusCondVar_.MutateDataNotifyAll ([=]() { fTriggered = true; });
+             *           fConditionVariable.MutateDataNotifyAll ([=]() { fTriggered = true; });
              *
              *          // THREAD B:
              *          std::unique_lock<mutex> lock (fConditionVariable.fMutex);
@@ -43,9 +43,32 @@ namespace Stroika {
              *              REACT TO CHANGE ();
              *          }
              *          else {
-             *              Throw (TimeoutException ());
+             *              Throw (TimeOutException ());
              *          }
              *      \endcode
+             *
+             *  \note   @todo FIXUP REST OF THIS DOC - https://stroika.atlassian.net/browse/STK-623
+             *          
+             *          Important to understand about condition variables, and I've never found documented anywhere
+             *          very well, is that the total ordering created by this pattern of update is crucial!
+             *
+             *          Thread A lock and then unlocks mutex, so change of state of triggered always BEFORE (or after)
+             *          the change of state in the condition variable mutex, so no ambiguity about when fTriggered set.
+             *
+             *          If its set before, condition variable sees that on entry (in its pred check).
+             *
+             *          If its after, then on the mutex unlock (I DONT KNOW HOW THIS HAPPENS YET) - the COndition
+             *          var must somehow get 'awkakened' - probably by a TLS list (queue) of waiters to get notififed
+             *          and that gets hooked in the mutex code???? GUESSING.
+             *
+             *          So anyhow - note - its critical when changing values of underlying 'condition' - to wrap that in mutex
+             *          lock/unlock.
+             *
+             *          SOURCE OF INFO  - http://en.cppreference.com/w/cpp/thread/condition_variable 
+             *          "Even if the shared variable is atomic, it must be modified under the mutex in order to correctly publish the modification to the waiting thread."
+             *
+             *          This is probably why "std::condition_variable works only with std::unique_lock<std::mutex>".
+             *          BUT - then i dont understnad how " std::condition_variable_any provides a condition variable that works with any BasicLockable"
              */
             template <typename MUTEX = mutex, typename CONDITION_VARIABLE = typename std::conditional<is_same<mutex, MUTEX>::value, condition_variable, condition_variable_any>::type>
             struct ConditionVariable {
