@@ -145,7 +145,7 @@ namespace Stroika {
                  *  throw a timeout error (no matter the timeout provided).
                  *
                  *  \note This doesn't delete the current entries in the blocking queue, so they will still get consumed. This just prevents
-                 *        the Q from blocking while its being emptied out.
+                 *        the Q from blocking while its being emptied out. This is like adding the special value 'EOF' to the end of Q.
                  */
                 nonvirtual void EndOfInput ();
 
@@ -155,7 +155,17 @@ namespace Stroika {
                  *
                  *  This routine exist because there is no other non-blocking way to check (peek) at see if you are at end of input.
                  */
-                nonvirtual bool IsAtEndOfInput () const;
+                nonvirtual bool EndOfInputHasBeenQueued () const;
+
+            public:
+                /**
+                 *  This returns true iff EndOfInput () has been called and the BlockingQueue is empty.
+                 *
+                 *  \note Equivilent to EndOfInputHasBeenQueued () and empty ()
+                 *
+                 *  \note   Once this is true, it will always remain true.
+                 */
+                nonvirtual bool QAtEOF () const;
 
             public:
                 /**
@@ -219,63 +229,7 @@ namespace Stroika {
                 nonvirtual void clear ();
 
             private:
-#if 0
-                /**
-                 *              
-                 */
-                struct LockPlusCondVar_ {
-                    mutex              fMutex_;
-                    condition_variable fConditionVariable_;
-
-                    using WaitableLockType = std::unique_lock<std::mutex>;
-                    using QuickLockType    = std::lock_guard<std::mutex>;
-
-                    /**
-                     * NOTIFY the condition variable (notify_one), but unlock first due to:                  *
-                     *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
-                     *
-                     *          The notifying thread does not need to hold the lock on the same mutex as the 
-                     *          one held by the waiting thread(s); in fact doing so is a pessimization, since
-                     *          the notified thread would immediately block again, waiting for the notifying
-                     *          thread to release the lock.
-                     *
-                     *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
-                     *
-                     */
-                    void release_and_notify_one (WaitableLockType& lock)
-                    {
-                        lock.unlock ();
-                        fConditionVariable_.notify_one ();
-                    }
-
-                    /**
-                     * NOTIFY the condition variable (notify_all), but unlock first due to:                  *
-                     *      http://en.cppreference.com/w/cpp/thread/condition_variable/notify_all
-                     *
-                     *          The notifying thread does not need to hold the lock on the same mutex as the 
-                     *          one held by the waiting thread(s); in fact doing so is a pessimization, since
-                     *          the notified thread would immediately block again, waiting for the notifying
-                     *          thread to release the lock.
-                     *
-                     *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
-                     *
-                     */
-                    void release_and_notify_all (WaitableLockType& lock)
-                    {
-                        lock.unlock ();
-                        fConditionVariable_.notify_all ();
-                    }
-                    template <typename FUNCITON>
-                    void DoInsideWriteLock (FUNCITON doIt)
-                    {
-                        WaitableLockType updateLock{fMutex_};
-                        doIt ();
-                        release_and_notify_all (updateLock);
-                    }
-                };
-#endif
-                //              mutable LockPlusCondVar_ fLockPlusCondVar_;
-                mutable ConditionVariable<> fLockPlusCondVar_;
+                mutable ConditionVariable<> fCondtionVariable_;
                 bool                        fEndOfInput_{false};
                 Containers::Queue<T>        fQueue_;
             };

@@ -306,6 +306,9 @@ namespace Stroika {
                  *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
                  *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
                  *  effecitvely busy wait, and this checking is ONLY needed for the specail, rare case of thread abort.
+                 *
+                 *  \note - As of Stroika v2.0a218 - this appears to have never been implemented, so CAN be removed safely.
+                 *          or reworked if desired...
                  */
                 nonvirtual void SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
 

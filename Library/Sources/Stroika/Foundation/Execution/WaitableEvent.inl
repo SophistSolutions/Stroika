@@ -81,7 +81,7 @@ namespace Stroika {
 #endif
                     fTriggered = true;
                 }
-                fConditionVariable.fConditionVariable.notify_all ();
+                fConditionVariable.notify_all ();
             }
 
             /*

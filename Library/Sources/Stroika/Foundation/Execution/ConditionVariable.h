@@ -29,6 +29,23 @@ namespace Stroika {
              *
              *  This is just meant to codify some good practices and share some code. Its a VERY thin wrapper - if even
              *  that - on the std::mutex.
+             *
+             *  \par Example Usage
+             *      \code
+             *          bool fTriggered = false;
+             *
+             *          // THREAD A:
+             *           fLockPlusCondVar_.MutateDataNotifyAll ([=]() { fTriggered = true; });
+             *
+             *          // THREAD B:
+             *          std::unique_lock<mutex> lock (fConditionVariable.fMutex);
+             *          if (fConditionVariable.wait_until (lock, timeoutAt, [this]() { return fTriggered; })) {
+             *              REACT TO CHANGE ();
+             *          }
+             *          else {
+             *              Throw (TimeoutException ());
+             *          }
+             *      \endcode
              */
             template <typename MUTEX = mutex, typename CONDITION_VARIABLE = typename std::conditional<is_same<mutex, MUTEX>::value, condition_variable, condition_variable_any>::type>
             struct ConditionVariable {
@@ -67,7 +84,7 @@ namespace Stroika {
                  *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
                  *
                  */
-                void release_and_notify_one (LockType& lock);
+                nonvirtual void release_and_notify_one (LockType& lock);
 
                 /**
                  * NOTIFY the condition variable (notify_all), but unlock first due to:                  
@@ -81,7 +98,17 @@ namespace Stroika {
                  *  \note https://stroika.atlassian.net/browse/STK-620 - helgrind workaround needed because of this unlock, but the unlock is still correct
                  *
                  */
-                void release_and_notify_all (LockType& lock);
+                nonvirtual void release_and_notify_all (LockType& lock);
+
+                /**
+                 *  \brief forward notify_one () call to underlying std::condition_variable'
+                 */
+                nonvirtual void notify_one () noexcept;
+
+                /**
+                 *  \brief forward notify_all () call to underlying std::condition_variable'
+                 */
+                nonvirtual void notify_all () noexcept;
 
                 /**
                  *  Like condition_variable wait_until, except
@@ -93,10 +120,13 @@ namespace Stroika {
                  *  Returns:
                  *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
                  *      2) true of 'readyToWake' () is reason we woke
+                 *
+                 *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
+                 *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
                  */
-                cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
+                nonvirtual cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
                 template <typename PREDICATE>
-                bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake);
+                nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake);
 
                 /**
                  * Like condition_variable wait_for, except
@@ -108,10 +138,13 @@ namespace Stroika {
                  * Returns:
                  *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
                  *     2) true of 'readyToWake' () is reason we woke
+                 *
+                 *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_for () - except
+                 *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
                  */
-                cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
+                nonvirtual cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
                 template <typename PREDICATE>
-                bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake);
+                nonvirtual bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake);
 
                 /**
                  *  NOT USED YET - ROUGH PROTOTYPE
@@ -119,7 +152,7 @@ namespace Stroika {
                  *  Idea is you pass lambda to do actual data change, and this acquires lock first, and notifies all after.
                  */
                 template <typename FUNCTION>
-                void MutateDataNotifyAll (FUNCTION mutatorFunction);
+                nonvirtual void MutateDataNotifyAll (FUNCTION mutatorFunction);
 
                 /**
                  *  NOT USED YET - ROUGH PROTOTYPE
@@ -127,7 +160,7 @@ namespace Stroika {
                  *  Idea is you pass lambda to do actual data change, and this acquires lock first, and notifies one after.
                  */
                 template <typename FUNCTION>
-                void MutateDataNotifyOne (FUNCTION mutatorFunction);
+                nonvirtual void MutateDataNotifyOne (FUNCTION mutatorFunction);
             };
         }
     }

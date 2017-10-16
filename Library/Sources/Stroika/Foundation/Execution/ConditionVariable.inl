@@ -30,12 +30,22 @@ namespace Stroika {
             inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_one (LockType& lock)
             {
                 lock.unlock ();
-                fConditionVariable.notify_one ();
+                notify_one ();
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_all (LockType& lock)
             {
                 lock.unlock ();
+                notify_all ();
+            }
+            template <typename MUTEX, typename CONDITION_VARIABLE>
+            inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::notify_one () noexcept
+            {
+                fConditionVariable.notify_one ();
+            }
+            template <typename MUTEX, typename CONDITION_VARIABLE>
+            inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::notify_all () noexcept
+            {
                 fConditionVariable.notify_all ();
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
@@ -64,6 +74,7 @@ namespace Stroika {
                          */
                     }
                     else {
+                        // https://stroika.atlassian.net/browse/STK-623
                         // @todo DOCUMENT WHY - when can get spurrious wakeups
                         ////no break - recheck pred();;;; spurrious??? break; // if not a timeout - condition variable really signaled, we really return
                     }

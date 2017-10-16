@@ -60,59 +60,17 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
     Debug::TraceContextBumper ctx (L"WaitableEvent::WE_::WaitUntil", "timeout = %e", timeoutAt);
 #endif
     CheckForThreadInterruption ();
-    if (timeoutAt <= Time::GetTickCount ()) {
-        return kWaitQuietlyTimeoutResult;
-    }
-
-    /*
-     *  Note - this unique_lock<> looks like a bug, but is not. Internally, fConditionVariable_.wait_for does an
-     *  unlock.
-     */
     std::unique_lock<mutex> lock (fConditionVariable.fMutex);
-#if 1
     if (fConditionVariable.wait_until (lock, timeoutAt, [this]() { return fTriggered; })) {
-        // then we were triggered
-        ///??? do we need to cehck for spurrious wakeup?
-
-        //hacktotest not alwas right
-        //Assert (fTriggered);
+        if (fResetType == eAutoReset) {
+            // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
+            fTriggered = false; // autoreset
+        }
+        return not kWaitQuietlyTimeoutResult;
     }
     else {
-        //Assert (not fTriggered);
         return kWaitQuietlyTimeoutResult;
     }
-#else
-    /*
-     * The reason for the loop is that fConditionVariable_.wait_for() can return for things like errno==EINTR,
-     * but must keep waiting. wait_for () returns no_timeout if for a real reason (notify called) OR spurious.
-     */
-    while (not fTriggered) {
-        CheckForThreadInterruption ();
-        Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
-        if (remaining < 0) {
-            return kWaitQuietlyTimeoutResult;
-        }
-
-        /*
-         *  See WaitableEvent::SetThreadAbortCheckFrequency ();
-         */
-        remaining = min (remaining, fConditionVariable.fThreadAbortCheckFrequency);
-
-        if (fConditionVariable.fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
-            /*
-             *  Cannot throw here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
-             *  this timeout value (or any return code) - cuz we re-examine fTriggered and tickcount.
-             *
-             *      Throw (TimeOutException::kThe);
-             */
-        }
-    }
-#endif
-    if (fResetType == eAutoReset) {
-        // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?
-        fTriggered = false; // autoreset
-    }
-    return not kWaitQuietlyTimeoutResult;
 }
 
 /*

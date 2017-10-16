@@ -987,7 +987,7 @@ namespace {
                         function<void()> f = *of;
                         f ();
                     }
-                    if (q.IsAtEndOfInput () and q.empty ()) {
+                    if (q.QAtEOF ()) {
                         break;
                     }
                 }
