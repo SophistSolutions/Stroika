@@ -43,22 +43,14 @@ namespace Stroika {
             template <typename T>
             inline bool BlockingQueue<T>::EndOfInputHasBeenQueued () const
             {
-// lock not strictly needed, but it avoids false-positive from lock checking tools
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fCondtionVariable_.fMutex);
-#else
-                typename ConditionVariable<>::QuickLockType quickLock{fCondtionVariable_.fMutex};
-#endif
+                // lock not strictly needed, but it avoids false-positive from lock checking tools
+                typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
                 return fEndOfInput_;
             }
             template <typename T>
             inline bool BlockingQueue<T>::QAtEOF () const
             {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fCondtionVariable_.fMutex);
-#else
-                typename ConditionVariable<>::QuickLockType quickLock{fCondtionVariable_.fMutex};
-#endif
+                typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
                 return fEndOfInput_ and fQueue_.empty ();
             }
             template <typename T>
@@ -99,31 +91,19 @@ namespace Stroika {
             template <typename T>
             inline Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fCondtionVariable_.fMutex);
-#else
-                typename ConditionVariable<>::QuickLockType quickLock{fCondtionVariable_.fMutex};
-#endif
+                typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
                 return fQueue_.HeadIf ();
             }
             template <typename T>
             inline bool BlockingQueue<T>::empty () const
             {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fCondtionVariable_.fMutex);
-#else
-                typename ConditionVariable<>::QuickLockType quickLock{fCondtionVariable_.fMutex};
-#endif
+                typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
                 return fQueue_.empty ();
             }
             template <typename T>
             inline size_t BlockingQueue<T>::GetLength () const
             {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fCondtionVariable_.fMutex);
-#else
-                typename ConditionVariable<>::QuickLockType quickLock{fCondtionVariable_.fMutex};
-#endif
+                typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
                 return fQueue_.GetLength ();
             }
             template <typename T>

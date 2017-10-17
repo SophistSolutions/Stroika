@@ -48,11 +48,7 @@ namespace Stroika {
             }
             inline void WaitableEvent::WE_::Reset ()
             {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (fConditionVariable.fMutex);
-#else
-                auto     critSec{make_unique_lock (fConditionVariable.fMutex)};
-#endif
+                typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
                 fTriggered = false;
             }
             inline bool WaitableEvent::WE_::PeekIsSet () const noexcept
@@ -74,11 +70,7 @@ namespace Stroika {
                  *
                  */
                 {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fConditionVariable.fMutex);
-#else
-                    auto critSec{make_unique_lock (fConditionVariable.fMutex)};
-#endif
+                    typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
                     fTriggered = true;
                 }
                 fConditionVariable.notify_all ();

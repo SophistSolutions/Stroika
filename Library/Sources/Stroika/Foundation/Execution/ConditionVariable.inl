@@ -97,11 +97,7 @@ namespace Stroika {
             void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyAll (FUNCTION mutatorFunction)
             {
                 {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fMutex);
-#else
-                    auto critSec{make_unique_lock (fMutex)};
-#endif
+                    typename ConditionVariable<>::QuickLockType quickLock{fMutex};
                     mutatorFunction ();
                 }
                 fConditionVariable.notify_all ();
@@ -111,11 +107,7 @@ namespace Stroika {
             void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyOne (FUNCTION mutatorFunction)
             {
                 {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (fMutex);
-#else
-                    auto critSec{make_unique_lock (fMutex)};
-#endif
+                    typename ConditionVariable<>::QuickLockType quickLock{fMutex};
                     mutatorFunction ();
                 }
                 fConditionVariable.notify_one ();
