@@ -9,6 +9,8 @@
 #include <condition_variable>
 #include <mutex>
 
+#include "../Time/Realtime.h"
+
 /**
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
