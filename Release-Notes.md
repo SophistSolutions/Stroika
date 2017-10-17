@@ -20,9 +20,52 @@ History
 
 
 
+   
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a219">v2.0a219</a><br/>2017-10-17</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a218...v2.0a219</li>
+		<li>https://stroika.atlassian.net/browse/STK-623 a few small cleanups to ConditionVariable<>
+			<ul>
+				<li>Fixed missing #include</li>
+				<li>Docs and Examples</li>
+				<li>ConditionVariable<>notify_one/notify_all () helper</li>
+				<li>new ConditionVariable helper class</li>
+				<li>BlockingQueue<T>::QAtEOF () and renamed BlockingQueue<T>::IsAtEndOfInput -> EndOfInputHasBeenQueued</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a219-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode9,Windows-VS2k17}-2.0a219-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4</li>
+				<li>gcc 6.3</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.7.1 (ubuntu)</li>
+				<li>clang++3.8.1 (ubuntu)</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc5 and gcc6</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
 
  
    
+
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a218">v2.0a218</a><br/>2017-10-16</td>
 <td>
