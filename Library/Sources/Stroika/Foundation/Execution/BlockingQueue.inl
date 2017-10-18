@@ -50,16 +50,8 @@ namespace Stroika {
             template <typename T>
             inline bool BlockingQueue<T>::QAtEOF () const
             {
-#if 1
-                // https://stroika.atlassian.net/browse/STK-624
-                // CRAZY (race) bug workarounds - TEMPHACK - @todo
-                return EndOfInputHasBeenQueued () and empty ();
-#else
-                // THIS VARIANT BETTER, BUT FAILS WITH:
-                //      valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp --suppressions=Valgrind-MemCheck-BlockAllocation.supp  ../Builds/VALGRIND_LatestGCC_Dbg_SSLPurify/Test38
                 typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
                 return fEndOfInput_ and fQueue_.empty ();
-#endif
             }
             template <typename T>
             T BlockingQueue<T>::RemoveHead (Time::DurationSecondsType timeout)
