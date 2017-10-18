@@ -33,7 +33,7 @@ History
 				<li>ConditionVariable<>notify_one/notify_all () helper</li>
 				<li>new ConditionVariable helper class</li>
 				<li>BlockingQueue<T>::QAtEOF () and renamed BlockingQueue<T>::IsAtEndOfInput -> EndOfInputHasBeenQueued</li>
-				<li>opened https://stroika.atlassian.net/browse/STK-624 to track known (but not understood) issue with BlockingQueue</li>
+				<li>https://stroika.atlassian.net/browse/STK-624  really turns out to be just issue with regression test for blockinqueue</li>
 			</ul>
 		</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a219-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>

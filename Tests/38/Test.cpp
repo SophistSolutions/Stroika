@@ -982,25 +982,14 @@ namespace {
 
         Thread::Ptr consumerThread = Thread::New (
             [&q]() {
-                while (true) {
+                while (not q.QAtEOF ()) {
                     if (Memory::Optional<function<void()>> of = q.RemoveHeadIfPossible ()) {
                         function<void()> f = *of;
                         f ();
                     }
-// @todo - NOTE - once this is cleareed up - replace 'true' in while () with 'not q.QAtEOF ()' and lose all this
-#if 1
-                    // https://stroika.atlassian.net/browse/STK-624
-                    // CRAZY (race) bug workarounds - TEMPHACK - @todo
-                    if (q.EndOfInputHasBeenQueued () and q.empty ()) {
-                        break;
+                    else {
+                        Execution::Sleep (.1); // give time for producer to catch up
                     }
-#else
-                    // THIS VARIANT BETTER, BUT FAILS WITH:
-                    //      valgrind -q --track-origins=yes --tool=memcheck --leak-check=full --suppressions=Valgrind-MemCheck-Common.supp --suppressions=Valgrind-MemCheck-BlockAllocation.supp  ../Builds/VALGRIND_LatestGCC_Dbg_SSLPurify/Test38
-                    if (q.QAtEOF ()) {
-                        break;
-                    }
-#endif
                 }
             },
             Thread::eAutoStart,
@@ -1010,6 +999,9 @@ namespace {
             [&q, &counter]() {
                 for (int incBy = START; incBy <= END; ++incBy) {
                     q.AddTail ([&counter, incBy]() { counter += incBy; });
+                    if (incBy == (END - START) / 2) {
+                        Execution::Sleep (.1); // illogical in real app, but give time for consumer to catch up to help check no race
+                    }
                 }
                 q.EndOfInput ();
             },
