@@ -164,6 +164,8 @@ namespace Stroika {
                  *  \note Equivilent to EndOfInputHasBeenQueued () and empty ()
                  *
                  *  \note   Once this is true, it will always remain true.
+                 *
+                 *  \note   This function is non-blocking.
                  */
                 nonvirtual bool QAtEOF () const;
 
@@ -188,7 +190,7 @@ namespace Stroika {
                  *  of throwing.
                  *
                  *  If there is an entry at the head of the Q, return it immediately. Wait up til
-                 *  'timeout' seconds for an entry to appear. Return 'issing' value if none appears.
+                 *  'timeout' seconds for an entry to appear. Return 'missing' value if none appears.
                  *
                  *  If timeout == 0 (the default) this amounts to peeking (but with remove), and never waits.
                  *
