@@ -33,7 +33,7 @@ History
 				<li>vc++2k17</li>
 				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
 				<li>gcc 5.4</li>
-				<li>gcc 6.3</li>
+				<li>gcc 6.4</li>
 				<li>gcc 7.2</li>
 				<li>clang++3.7.1 (ubuntu)</li>
 				<li>clang++3.8.1 (ubuntu)</li>
@@ -76,7 +76,7 @@ History
 				<li>vc++2k17</li>
 				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
 				<li>gcc 5.4</li>
-				<li>gcc 6.3</li>
+				<li>gcc 6.4</li>
 				<li>gcc 7.2</li>
 				<li>clang++3.7.1 (ubuntu)</li>
 				<li>clang++3.8.1 (ubuntu)</li>
@@ -122,7 +122,7 @@ History
 				<li>vc++2k17</li>
 				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
 				<li>gcc 5.4</li>
-				<li>gcc 6.3</li>
+				<li>gcc 6.4</li>
 				<li>gcc 7.2</li>
 				<li>clang++3.7.1 (ubuntu)</li>
 				<li>clang++3.8.1 (ubuntu)</li>
