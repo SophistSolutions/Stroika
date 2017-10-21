@@ -398,7 +398,9 @@ regression-test-configurations:
 		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
 		#OR maybe I have a bug with the stream/iostream convert code - wait a bit and test more later--LGP 2016-08-17\
 		./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr;\
-		./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr;\
+		#This config gets link erorrs probably cuz of https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81004  with LTO\
+		#./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr;\
+		./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr;\
 		#./configure gcc-debug-threadsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --block-allocation disable --extra-compiler-args -fsanitize=thread --extra-linker-args -fsanitize=thread;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
