@@ -73,6 +73,7 @@ my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef ';
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-compat ';
 
+my $FEATUREFLAG_ActivePerl = undef;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
 my $FEATUREFLAG_OpenSSL = "";
 my $FEATUREFLAG_OpenSSLExtraArgs = "";
@@ -115,6 +116,7 @@ sub	DoHelp_
         print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++14, --std=c++17, or --std=c++1z, etc) - UNIX ONLY */\n");
+        print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
         print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
         print("	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
@@ -594,6 +596,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$CPPSTD_VERSION_FLAG = $var;
 		}
+        elsif ((lc ($var) eq "-activeperl") or (lc ($var) eq "--activeperl")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_ActivePerl = $var;
+        }
         elsif ((lc ($var) eq "-libcurl") or (lc ($var) eq "--libcurl")) {
             $i++;
             $var = $ARGV[$i];
@@ -971,6 +978,17 @@ sub PostProcessOptions_ ()
 	if ($MALLOC_GUARD eq true) {
 		push (@useExtraCDefines, '#define qStroika_Foundation_Debug_MallocGuard 1');
 	}
+
+	
+
+	if (! defined $FEATUREFLAG_ActivePerl) {
+		if ($FEATUREFLAG_OpenSSL eq "use" && ("$^O" eq "cygwin")) {
+			$FEATUREFLAG_ActivePerl = "use";
+		}
+		else {
+			$FEATUREFLAG_ActivePerl = $LIBFEATUREFLAG_No;
+		}
+	}
 }
 
 
@@ -1012,6 +1030,7 @@ sub	WriteConfigFile_
 	}
 	
 	
+	print (OUT "    <qFeatureFlag_ActivePerl>$FEATUREFLAG_ActivePerl</qFeatureFlag_ActivePerl>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
 	if (not ($FEATUREFLAG_OpenSSLExtraArgs eq "")) {
