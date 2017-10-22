@@ -22,6 +22,4 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 
 my $envVarName=$ARGV[1];
 my %e = GetAugmentedEnvironmentVariablesForConfiguration ($activeConfig);
-#my %e = GetEnvironmentVariablesForConfiguration ($activeConfig);
-#print "$ENV{$envVarName}"
 print "$e{$envVarName}"
