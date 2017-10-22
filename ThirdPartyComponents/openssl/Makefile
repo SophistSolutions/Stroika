@@ -185,7 +185,6 @@ endif
 	@#echo "***DBG-entering make rule with PRODUCED_OUTPUT_ARTIFACTS=$(PRODUCED_OUTPUT_ARTIFACTS); and cur-target=$@"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
-	@#echo done; sleep 10;
 
 
 clean:
@@ -279,13 +278,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && eval `./config -t | tail -1` $(CONFIG_ARGS) >> CONFIG.OUT;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "MFLAGS= MAKEFLAGS= cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > CURRENT/CONFIG.OUT
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> CURRENT/CONFIG.OUT
-	@#MUST FIX THIS - ESP BIT ABOUT CDRIVE DEPENDENCY
-	@echo "cat makefile | sed 's/\/usr\/bin\/perl/perl/g' > m1 && mv m1 makefile" >> CURRENT/CONFIG.OUT
-	@cat CURRENT/makefile | sed 's/\/usr\/bin\/perl/perl/g' > m1 && mv m1 CURRENT/makefile >> CURRENT/CONFIG.OUT
-	@echo "cat makefile | sed 's/\/cygdrive\/c/c:\//g' > m1 && mv m1 makefile" >> CURRENT/CONFIG.OUT
-	@cat CURRENT/makefile | sed 's/\/cygdrive\/c/c:\//g' > m1 && mv m1 CURRENT/makefile >> CURRENT/CONFIG.OUT
+	@echo "MFLAGS= MAKEFLAGS= cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > CURRENT/CONFIG.OUT
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> CURRENT/CONFIG.OUT
 endif
 	@$(ECHO) "done"
 	@
