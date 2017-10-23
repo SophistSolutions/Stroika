@@ -22,8 +22,6 @@
  *  \file
  *
  * TODO
- *      @todo   Stop allowing stuff like nullptr for Abort () etc... - change them to assert errors!!! - and change all the docs!!!
- *
  *      @todo   Probably no longer need siginterrupt () calls, since we DONT set SA_RESTART in our call to sigaction().
  *
  *      @todo   DOCS and review impl/test impl of abort/thread code. Add test case for Interrupt.
@@ -38,11 +36,6 @@
  *              which is needed for our exception stuff - I think.
  *
  *              (mostly did this - but keep todo around to update docs)
- *
- *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling -
- *              calling detatch when a thread is never waited for. (GNU/C+++ thread impl only)
- *
- *              (note we've seen no warnings in valgrind for years, so pretty safe)
  */
 namespace Stroika {
     namespace Foundation {
@@ -319,25 +312,33 @@ namespace Stroika {
 
             public:
                 /**
-                 *    foreach Thread t: t.Abort ()
+                 *    \brief foreach Thread t: t.Abort ()
+                 *
+                 * \req    foreach Thread t: t != nullptr
                  */
                 static void Abort (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
                 /**
                  *    foreach Thread t: t.Interrupt ()
+                 *
+                 * \req    foreach Thread t: t != nullptr
                  */
                 static void Interrupt (const Traversal::Iterable<Thread::Ptr>& threads);
 
             public:
                 /**
                  *  \note ***Cancelation Point***
+                 *
+                 * \req    foreach Thread t: t != nullptr
                  */
                 static void WaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
                  *  \note ***Cancelation Point***
+                 *
+                 * \req    foreach Thread t: t != nullptr
                  */
                 static void WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt);
 
@@ -350,6 +351,8 @@ namespace Stroika {
                  *  @see Thread::Ptr::AbortAndWaitForDone
                  *
                  *  @see Thread::AbortAndWaitForDoneUntil
+                 *
+                 * \req    foreach Thread t: t != nullptr
                  */
                 static void AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -358,6 +361,8 @@ namespace Stroika {
                  *   \note ***Cancelation Point***
                  *
                  *  @see Thread::Ptr::AbortAndWaitForDoneUntil
+                 *
+                 * \req    foreach Thread t: t != nullptr
                  */
                 static void AbortAndWaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeoutAt);
 
@@ -499,6 +504,8 @@ namespace Stroika {
             public:
                 /**
                  *  \brief Clear the pointer this Thread smart pointer refers to. This does nothing to affect the state of the underlying thread.
+                 *
+                 *  \Ensure *this == nullptr
                  */
                 nonvirtual void reset () noexcept;
 
@@ -543,6 +550,8 @@ namespace Stroika {
                  *  Note that its legal to call Abort on a thread in any state - including == nullptr.
                  *  Some may just have no effect.
                  *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+                 *
                  *  @see Interrupt
                  */
                 nonvirtual void Abort () const;
@@ -568,6 +577,8 @@ namespace Stroika {
                  *
                  *  \note   only partly implemented and untested
                  *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+                 *
                  *  @see Abort
                  */
                 nonvirtual void Interrupt () const;
@@ -581,6 +592,8 @@ namespace Stroika {
                  *  @see WaitForDoneUntil ()
                  *
                  *  \note ***Cancelation Point***
+                 *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
                  */
                 nonvirtual void WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
@@ -595,6 +608,8 @@ namespace Stroika {
                  *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
                  *
                  *  \note ***Cancelation Point***
+                 *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
                  */
                 nonvirtual void WaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
@@ -612,7 +627,9 @@ namespace Stroika {
                  *          except for in a debugger or #if     qStroika_Foundation_Exection_Thread_SupportThreadStatistics
                  *
                  *  \note ***Cancelation Point***
-                */
+                 *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
+                 */
                 nonvirtual bool WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) const;
 
             public:
@@ -626,6 +643,8 @@ namespace Stroika {
                  *  @see AbortAndWaitForDoneUntil ()
                  *
                  *  \note ***Cancelation Point***
+                 *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
                  */
                 nonvirtual void AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
@@ -654,6 +673,8 @@ namespace Stroika {
                  *  @see Abort ()
                  *  @see WaitForDoneUntil ()
                  *  @see AbortAndWaitForDone ()
+                 *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
                  */
                 nonvirtual void AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const;
 
@@ -683,6 +704,8 @@ namespace Stroika {
                  *  @see WaitForDoneUntil ()
                  *
                  *  \note   ***Cancelation Point***
+                 *
+                 *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
                  */
                 nonvirtual void WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 #endif

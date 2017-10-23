@@ -837,12 +837,16 @@ void Thread::Ptr::Start () const
 
 void Thread::Ptr::Abort () const
 {
-    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this=%s", ToString ().c_str ())};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::Abort", L"*this=%s", ToString ().c_str ())};
+    Require (*this != nullptr);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // smart ptr - its the ptr thats const, not the rep
+#if 0
+                                                                        // Replaced with Require in 2.0a221x
     if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
     }
+#endif
 
     // note status not protected by critsection, but SB OK for this
 
@@ -889,12 +893,16 @@ void Thread::Ptr::Abort () const
 
 void Thread::Ptr::Interrupt () const
 {
-    Debug::TraceContextBumper                           ctx ("Thread::Interrupt");
+    Debug::TraceContextBumper ctx ("Thread::Interrupt");
+    Require (*this != nullptr);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+#if 0
+    // Replaced with Require in 2.0a221x
     if (fRep_ == nullptr) {
         // then its effectively already stopped.
         return;
     }
+#endif
     // not status not protected by critsection, but SB OK for this
     DbgTrace (L"*this=%s", ToString ().c_str ());
 
@@ -965,11 +973,14 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::WaitForDoneUntilQuietly", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
 #endif
+    Require (*this != nullptr);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     CheckForThreadInterruption (); // always a cancelation point
+#if 0
     if (fRep_ == nullptr) {
         return WaitableEvent::kWaitQuietlySetResult; // then its effectively already done.
     }
+#endif
     if (fRep_->fThreadDoneAndCanJoin_.WaitUntilQuietly (timeoutAt) == WaitableEvent::kWaitQuietlySetResult) {
         /*
          *  This is not critical, but has the effect of assuring the COUNT of existing threads is what the caller would expect.
@@ -995,10 +1006,13 @@ bool Thread::Ptr::WaitForDoneUntilQuietly (Time::DurationSecondsType timeoutAt) 
 void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    Require (*this != nullptr);
     CheckForThreadInterruption ();
+#if 0
     if (fRep_ == nullptr) {
         return; // then its effectively already done.
     }
+#endif
     HANDLE thread = fRep_->GetNativeHandle ();
     if (thread == INVALID_HANDLE_VALUE) {
         return;
@@ -1018,11 +1032,9 @@ void Thread::Ptr::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType tim
 
 Thread::Status Thread::Ptr::GetStatus_ () const noexcept
 {
-    Require (fRep_ != nullptr);
+    Require (*this != nullptr);
+    Assert (fRep_ != nullptr);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    if (fRep_ == nullptr) {
-        return Status::eNull;
-    }
     return fRep_->fStatus_;
 }
 
