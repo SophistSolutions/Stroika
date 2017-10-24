@@ -620,7 +620,7 @@ void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& app
     Thread::Ptr p = fRunThread_.load ();
     if (p != nullptr) {
         p.AbortAndWaitForDone ();
-        fRunThread_.store (Execution::Thread::Ptr{});
+        fRunThread_.store (nullptr);
     }
     fAppRep_ = appRep;
 }
