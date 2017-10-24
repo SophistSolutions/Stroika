@@ -566,14 +566,18 @@ void Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop");
-    fRunThread_.AbortAndWaitForDone (timeout);
+    if (fRunThread_ != nullptr) {
+        fRunThread_.AbortAndWaitForDone (timeout);
+    }
 }
 
 void Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop");
-    fRunThread_.AbortAndWaitForDone (timeout);
+    if (fRunThread_ != nullptr) {
+        fRunThread_.AbortAndWaitForDone (timeout);
+    }
 }
 
 pid_t Main::RunTilIdleService::_GetServicePID () const
@@ -613,8 +617,11 @@ void Main::BasicUNIXServiceImpl::_Attach (const shared_ptr<IApplicationRep>& app
     Execution::Thread::SuppressInterruptionInContext suppressInterruption; // this must run to completion - it only blocks waiting for subsidiary thread to finish
     Require ((appRep == nullptr and fAppRep_.load () != nullptr) or
              (fAppRep_.load () == nullptr and fAppRep_.load () != appRep));
-    fRunThread_.load ().AbortAndWaitForDone ();
-    fRunThread_.store (Execution::Thread::Ptr{});
+    Thread::Ptr p = fRunThread_.load ();
+    if (p != nullptr) {
+        p.AbortAndWaitForDone ();
+        fRunThread_.store (Execution::Thread::Ptr{});
+    }
     fAppRep_ = appRep;
 }
 
