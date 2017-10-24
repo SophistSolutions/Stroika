@@ -76,9 +76,8 @@ endif
 
 
 check:
-ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@####$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL) + 1)) "Checking Samples/ArchiveUtility...          " `perl checkall_vs.pl`
-endif
+	@$(StroikaRoot)ScriptsLib/CheckFileExists.sh $(StroikaFoundationLib)
+	@$(ECHO) "[SUCCEEDED]"
 
 
 clean::
@@ -98,6 +97,6 @@ else
 	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../Projects/$(ProjectPlatformSubdir)/Stroika-Foundation.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Clean";
 endif
 
-
-Build:	all
+# not sure what that target for??? Lose
+#Build:	all
 
