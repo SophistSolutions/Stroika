@@ -35,10 +35,12 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
  */
 PeriodicNotifier::~PeriodicNotifier ()
 {
-    // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
-    // after main exists...
-    Execution::Thread::SuppressInterruptionInContext suppressInterruption;
-    fListenThread_.AbortAndWaitForDone ();
+    if (fListenThread_ != nullptr) {
+        // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
+        // after main exists...
+        Execution::Thread::SuppressInterruptionInContext suppressInterruption;
+        fListenThread_.AbortAndWaitForDone ();
+    }
 }
 
 void PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)

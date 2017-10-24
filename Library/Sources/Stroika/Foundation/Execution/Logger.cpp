@@ -129,8 +129,10 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         Debug::TraceContextBumper ctx ("Logger::Rep_::UpdateBookkeepingThread_");
         {
             auto bktLck = fBookkeepingThread_.rwget ();
-            bktLck->AbortAndWaitForDone ();
-            bktLck.store (Thread::Ptr{});
+            if (bktLck.cref () != nullptr) {
+                bktLck->AbortAndWaitForDone ();
+                bktLck.store (Thread::Ptr{});
+            }
         }
 
         Time::DurationSecondsType    suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->Value (0);

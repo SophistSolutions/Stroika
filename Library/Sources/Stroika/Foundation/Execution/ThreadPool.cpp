@@ -205,7 +205,9 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
             }
         }
     }
-    thread2Kill.AbortAndWaitForDone (timeout);
+    if (thread2Kill != nullptr) {
+        thread2Kill.AbortAndWaitForDone (timeout);
+    }
 }
 
 void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)

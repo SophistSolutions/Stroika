@@ -383,7 +383,9 @@ struct LinkMonitor::Rep_ {
         }
 #elif qPlatform_POSIX
         Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
-        fMonitorThread_.AbortAndWaitForDone ();
+        if (fMonitorThread_ != nullptr) {
+            fMonitorThread_.AbortAndWaitForDone ();
+        }
 #endif
     }
 };
