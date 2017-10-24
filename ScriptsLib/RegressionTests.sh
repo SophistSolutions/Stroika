@@ -118,8 +118,8 @@ echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
 ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
 if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 	STAGE_STARTAT_INT=$(date +%s)
-	make run-tests CONFIGURATION=raspberrypi-gcc-5 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 	make run-tests CONFIGURATION=raspberrypi-gcc-6 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+	make run-tests CONFIGURATION=raspberrypi-gcc-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 	#make run-tests CONFIGURATION=raspberrypi_valgrind_gcc-5_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 	make run-tests CONFIGURATION=raspberrypi_valgrind_gcc-6_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 	#see https://stroika.atlassian.net/browse/STK-512 for REMOTE_RUN_PREFIX explanation

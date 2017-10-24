@@ -370,7 +370,6 @@ regression-test-configurations:
 		##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621\
 		##./configure malloc-guard --malloc-guard true;\
 		#\
-		./configure my-gcc-5.4.0-release --compiler-driver ~/gcc-5.4.0/bin/x86_64-unknown-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
 		./configure my-gcc-6.4.0-debug-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.4.0-release-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#NOTE - --sanitize none on gcc-7.2.0-debug* cuz we dont have the right asan libraries installed yet;  - sudo apt-get install libasan4\
@@ -379,8 +378,6 @@ regression-test-configurations:
 		./configure my-gcc-7.2.0-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
 		#LTO not working for my private builds of clang- no matter\
-		./configure my-clang-3.7.1-release --compiler-driver ~/clang-3.7.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
-		./configure my-clang-3.8.1-release --compiler-driver ~/clang-3.8.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
 		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
 		./configure my-clang-4.0.1-release --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
 		./configure my-clang-5.0.0-release --compiler-driver ~/clang-5.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag;\
@@ -408,8 +405,8 @@ regression-test-configurations:
 		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
 		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
-		./configure raspberrypi-gcc-5 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true --sanitize none;\
 		./configure raspberrypi-gcc-6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true --sanitize none;\
+		./configure raspberrypi-gcc-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none;\
 		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
 		#./configure raspberrypi-gcc-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-5' --cross-compiling true;\
 		./configure raspberrypi-gcc-6-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true;\
