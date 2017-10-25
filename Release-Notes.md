@@ -19,6 +19,61 @@ History
 
 
 
+     
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a221">v2.0a221</a><br/>2017-10-25</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a220...v2.0a221</li>
+		<li>***RELEASE DEFECT*** - Extra 'info' warning about GCC args in arm target - need to cleanup</li>
+		<li>***RELEASE DEFECT*** - two valgrind failures (due to upgrade to ubuntu 17.10 I think) - both look innocuous but need more careful review</li>
+		<li>Ubuntu 17.10 and UNIX Compile support change
+			<ul>
+				<li>build gcc7 instead of gcc5 for raspberrypi regression tests</li>
+				<li>workaround LTO bug in gcc 7.2 (sb fixed in 7.3) in configuraiton gcc-release-sanitize</li>
+				<li>lose support for building unix regtests gcc 5.4 and clang 3.7, 3.8 (still support in headers, but soon lose that too)</li>
+			</ul>
+		</li>
+		<li>Thread::Ptr not allowing dereference nullptr anymore
+			<ul>
+				<li>Things like Abort (), and AbortAndWaitForDone () used to work when Thread::Ptr was == nullptr. Now documented NO, and added requires.</li>
+				<li>Updated some internal Stroika code to accomodate this change</li>
+				<li>***NOT BACKWARD COMPATIBLE*** - but easy to detect/fix usage in DEBUG builds</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>ActivePerl was added to ThirdPartyComponents - JUST for Windows - to allow building the newest version of OpenSSL; its not intended to be used otherwise; new qFeatureFlag_ActivePerl in configuration; defaults to true for cygwin and openssl; and if so - extract ac opy of activeperl</li>
+				<li>Upgraded SQLite to 3.20.1</li>
+				<li>Upgraded OpenSSL to 1.1.0f</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a221-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode9,Windows-VS2k17}-2.0a221-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
    
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a220">v2.0a220</a><br/>2017-10-19</td>
