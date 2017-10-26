@@ -101,6 +101,14 @@ namespace Stroika {
              *      }
              *      \endcode
              *
+             *  \par OR
+             *      \code
+             *      enum class Color { red, blue, green,  Stroika_Define_Enum_Bounds (red, green) };
+             *      for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
+             *          // iterate over each color - red, green, blue
+             *      }
+             *      \endcode
+             *
              *  \note   Since the default traits for an enum with Stroika type anotation (Stroika_Define_Enum_Bounds)
              *          provides  the start/end, DiscreteRange<SOME_ENUM>::FullRange ().Elements () returns an
              *          iterable with all possible legal values of the enum.
