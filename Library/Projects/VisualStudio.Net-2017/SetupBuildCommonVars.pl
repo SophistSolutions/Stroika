@@ -185,7 +185,7 @@ sub RunSystemWithVCVarsSetInEnvironment
 	($fh, $tmpFileName) = tempfile( $template, SUFFIX => ".bat");
 	print $fh '@echo off' . "\r\n";
 	if (index($activeConfigBits, "32") != -1) {
-		my $result = 		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
+		my $result = GetString2InsertIntoBatchFileToInit32BitCompiles();
 		print $fh $result;
 	}
 	elsif (index($activeConfigBits, "64") != -1) {
