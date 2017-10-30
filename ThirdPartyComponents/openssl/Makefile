@@ -24,18 +24,11 @@ endif
 # CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
 #
 
-#VERSION=1.0.2g
-#VERSION=1.0.2h
 #VERSION=1.1.0
 #VERSION=1.1.0d
 #VERSION=1.1.0e
 VERSION=1.1.0f
-#### DOESNT BUILD ON WINDOWS - FUNKY CHANGES WITH PERL - ACTIVEPERL PITA - NOT SURE WHAT TODO - VERSION=1.1.0f
 
-#appears needed for 1.0.2d
-ifeq ($(VERSION),1.0.2d)
-BAD_TARFILE_BUG_WORKAROUND_=i
-endif
 
 BASENAME=openssl-$(VERSION)
 EXTRACTED_DIRNAME=$(BASENAME)
@@ -129,16 +122,9 @@ endif
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq (1.0.,$(findstring 1.0.,$(VERSION)))
-WIN_CRYPTO_LIB_BASENAME=libeay32
-WIN_SSL_LIB_BASENAME=ssleay32
-WIN_PDB_BASENAME=lib
-endif
-ifneq  (1.0.,$(findstring 1.0.,$(VERSION)))
 WIN_CRYPTO_LIB_BASENAME=libcrypto
 WIN_SSL_LIB_BASENAME=libssl
 WIN_PDB_BASENAME=ossl_static
-endif
 endif
 
 PRODUCED_OUTPUT_ARTIFACTS=	\
@@ -159,10 +145,6 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin/c_rehash.pl
 endif
 
-# COULD make this conditional
-### DISABLE TEMPORARILY TO MAKE SURE NOT A SOURCE OF BUGS WITH upgrade to 1.1 (currently hard)
-#STRIP_ANNOYING_MESSAGES=		1
-STRIP_ANNOYING_MESSAGES=		0
 
 all:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION):"
@@ -228,14 +210,8 @@ $(ZIPEDFILE):
 doPatch:
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching OpenSSL..."
-ifeq (1,$(STRIP_ANNOYING_MESSAGES))
-	@$(ECHO) -n .
-	@patch --quiet -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
-endif
-ifeq  (1.1.,$(findstring 1.1.,$(VERSION)))
 	@$(ECHO) -n .
 	@patch --quiet -p0 CURRENT/Configurations/windows-makefile.tmpl < Patches/FixQuotesInWindowsMakefileTemplate.PATCH
-endif
 	@$(ECHO) "done"
 endif
 
@@ -244,9 +220,9 @@ doCreate:	$(ZIPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extracting $(ZIPEDFILE) to CURRENT..."
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
-	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) -C CURRENT --strip-components 1
+	@tar xf $(ZIPEDFILE) -C CURRENT --strip-components 1
 else
-	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+	@tar xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
 endif
 	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
@@ -292,10 +268,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifneq  (1.0.,$(findstring 1.0.,$(VERSION)))
 	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"\"" > CURRENT/BUILD.OUT
 	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"">> CURRENT/BUILD.OUT
-endif
 endif
 	@$(ECHO) "done"
 	@
@@ -307,7 +281,6 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifneq  (1.0.,$(findstring 1.0.,$(VERSION)))
 	@### use install_dev cuz thats all that works - install fails (still to debug)
 	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > CURRENT/INSTALL.OUT
 	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> CURRENT/INSTALL.OUT
@@ -315,56 +288,8 @@ ifneq  (1.0.,$(findstring 1.0.,$(VERSION)))
 	@rm -rf $(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)/lib/engines-1_1 
 	@rm -f $(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)/ThirdPartyComponents/bin/app
 endif
-endif
 	@$(ECHO) "done"
 	@
-	@#OpenSSL 1.0 VS support (using buildall_windows_.pl)  - LEGACY
-	@
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq  (1.0.,$(findstring 1.0.,$(VERSION)))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling and testing (redirecting messages to CURRENT/BUILD.OUT)...";
-	@CONFIGURATION=$(CONFIGURATION) ./buildall_windows_.pl > CURRENT/BUILD.OUT 2>&1;
-	@$(ECHO) "done"
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."
-ifeq ($(CONFIGURATION),Debug-U-32)
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/bin && cp CURRENT/Builds/Debug32/openssl.* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/bin/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Debug32/libeay32.* CURRENT/Builds/Debug32/ssleay32.* CURRENT/Builds/Debug32/lib.pdb $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Debug32/Includes/openssl $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/bin && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/bin/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* CURRENT/Builds/Release32/lib.pdb $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Release32/Includes/openssl $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/bin && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/bin/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* CURRENT/Builds/Release32/lib.pdb $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Release32/Includes/openssl $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/bin && cp CURRENT/Builds/Release32/openssl.* $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/bin/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release32/libeay32.* CURRENT/Builds/Release32/ssleay32.* CURRENT/Builds/Release32/lib.pdb $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Release32/Includes/openssl $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Debug-U-64)
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/bin && cp CURRENT/Builds/Debug64/openssl.* $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/bin/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Debug64/libeay32.* CURRENT/Builds/Debug64/ssleay32.* CURRENT/Builds/Debug64/lib.pdb $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Debug64/Includes/openssl $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/bin && cp CURRENT/Builds/Release64/openssl.* $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/bin/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release64/libeay32.* CURRENT/Builds/Release64/ssleay32.* CURRENT/Builds/Release64/lib.pdb $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Release64/Includes/openssl $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/bin && cp CURRENT/Builds/Release64/openssl.* $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/bin/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp -r CURRENT/Builds/Release64/libeay32.* CURRENT/Builds/Release64/ssleay32.* CURRENT/Builds/Release64/lib.pdb $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp -r --dereference CURRENT/Builds/Release64/Includes/openssl $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
-endif
-	@#irrelevant tmp hack for 1.0 openssl compat
-	@touch $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin/c_rehash.pl
-endif
-endif
 	@
 	@#Run Regression Tests (unless cross compiling)
 	@
@@ -385,7 +310,7 @@ endif
 ORIGS:	$(ZIPEDFILE)
 	@mkdir -p ORIGS && rm -rf ORIGS/*
 ifeq ($(shell uname -s),Darwin)
-	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) -C ORIGS --strip-components 1
+	@tar xf $(ZIPEDFILE) -C ORIGS --strip-components 1
 else
-	@tar $(BAD_TARFILE_BUG_WORKAROUND_)xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
+	@tar xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
 endif
