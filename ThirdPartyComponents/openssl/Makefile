@@ -281,12 +281,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@### use install_dev cuz thats all that works - install fails (still to debug)
-	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > CURRENT/INSTALL.OUT
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> CURRENT/INSTALL.OUT
-	@###HACK -workaround install bug??? --LGP 2016-08-15
-	@rm -rf $(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)/lib/engines-1_1 
-	@rm -f $(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH)/ThirdPartyComponents/bin/app
+	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > CURRENT/INSTALL.OUT
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> CURRENT/INSTALL.OUT
 endif
 	@$(ECHO) "done"
 	@
