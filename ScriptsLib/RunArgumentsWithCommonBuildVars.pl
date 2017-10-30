@@ -24,4 +24,11 @@ if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 	require "$useProjectDir/SetupBuildCommonVars.pl";
 }
 
-RunSystemWithVCVarsSetInEnvironment ($activeConfig, $cmd);
+my $result = RunSystemWithVCVarsSetInEnvironment ($activeConfig, $cmd);
+# exit int ($result) doesnt work - for reasons I dont udnerstnad, but since abanodoming perl, no point in debugging - just workaround for now --LGP 2017-10-29
+if ($result == 0) {
+	exit 0;
+}
+else {
+	exit 1;
+}
