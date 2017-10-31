@@ -19,6 +19,8 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@###@todo fix - qFeatureFlag_cmake like qFeatureFlag_ActivePerl, but @todo - DOCUMENT ONLY FOR CYGWIN
+	@$(MAKE) --directory cmake --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ActivePerl), use)
 	@$(MAKE) --directory ActivePerl --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -77,27 +79,27 @@ endif
 check:
 ifeq ($(CONFIGURATION),)
 	@for i in `../ScriptsLib/GetConfigurations.sh` ; do\
-		$(MAKE) --no-print-directory check CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
+		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
-	@$(MAKE) --directory zlib --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory zlib --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_OpenSSL), 1)
-	@$(MAKE) --directory openssl --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory openssl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_libcurl), 1)
-	@$(MAKE) --directory curl --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory curl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_LZMA), 1)
-	@$(MAKE) --directory lzma --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory lzma --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
-	@$(MAKE) --directory Xerces --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory Xerces --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_sqlite), 1)
-	@$(MAKE) --directory sqlite --no-print-directory check CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory sqlite --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 endif
 
@@ -109,12 +111,14 @@ else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
 	@#ok to call with NO CONFIG (does all)
-	@$(MAKE) --directory zlib --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory openssl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory curl --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory lzma --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory Xerces --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory sqlite --no-print-directory clean CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory ActivePerl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory cmake --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory zlib --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory openssl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory lzma --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Xerces --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory sqlite --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
 	@$(ECHO) done
 
 
@@ -125,10 +129,12 @@ else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
 	@#ok to call with NO CONFIG (does all)
-	@$(MAKE) --directory zlib --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory openssl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory curl --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory lzma --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory Xerces --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory sqlite --no-print-directory clobber CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory ActivePerl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory cmake --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory zlib --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory openssl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory lzma --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Xerces --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory sqlite --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
 	@$(ECHO) "done"

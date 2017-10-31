@@ -11,11 +11,23 @@ SHELL=/bin/bash
 .NOTPARALLEL:
 
 
-VERSION=3.1.4
+
+
+VERSION=3.2.0
+#VERSION=3.1.4
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
+
+BUILD_WITH_CMAKE=0
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (3.1,$(findstring 3.1,$(VERSION)))
+BUILD_WITH_CMAKE=0
+endif
+BUILD_WITH_CMAKE=1
+endif
+
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
@@ -40,7 +52,15 @@ FETCHURLS+=http://www.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 FETCHURLS+=http://www-us.apache.org/dist/xerces/c/3/sources/$(BASENAME).tar.gz
 
 
-
+ifneq (,$(findstring /cygdrive/,$(PATH)))
+    UNAME := Cygwin
+else
+ifneq (,$(findstring WINDOWS,$(PATH)))
+    UNAME := Windows
+else
+    UNAME := $(shell uname -s)
+endif
+endif
 
 BUILDS_ROOT=../../Builds/
 
@@ -52,6 +72,16 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libxerces-c.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (1,$(BUILD_WITH_CMAKE))
+ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
+PRODUCED_OUTPUT_ARTIFACTS+=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_3D.lib
+endif
+ifeq (Release,$(findstring Release, $(CONFIGURATION)))
+PRODUCED_OUTPUT_ARTIFACTS+=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_3.lib
+endif
+else
 ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_static_3D.lib
@@ -61,6 +91,19 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_static_3.lib
 endif
 endif
+endif
+
+ifeq (1,$(BUILD_WITH_CMAKE))
+CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
+CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces
+CMAKE_CURRENT_SOURCE_DIR:=CURRENT
+ifeq ($(UNAME),Cygwin)
+CMAKE_PER_TARGET_BUILD_DIR:=$(shell cygpath -a -w $(CMAKE_PER_TARGET_BUILD_DIR) | sed s/\\\\/\\\\\\\\/g)
+CMAKE_CURRENT_SOURCE_DIR:=$(shell cygpath -a -w $(CMAKE_CURRENT_SOURCE_DIR) | sed s/\\\\/\\\\\\\\/g)
+CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=$(shell cygpath -a $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR))
+endif
+endif
+
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -90,13 +133,21 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
+	@#with cmake we dont change CURRENT, but other makes do write files there...
+ifeq (1,$(BUILD_WITH_CMAKE))
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CURRENT
+else
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate_
+endif
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds_
 
 
 clean:
+ifeq (1,$(BUILD_WITH_CMAKE))
+	@rm -rf $(EXTRACTED_DIRNAME) $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
+else
 	@rm -rf $(EXTRACTED_DIRNAME) CURRENT
-
+endif
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
@@ -114,6 +165,9 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@#very hard to track down subtle bug - avoidance - @see http://stackoverflow.com/questions/34074925/vs-2015-cannot-open-compiler-generated-file-invalid-argument
 	@#This doesnt appear broken on windows 10 - but does on windows 8.1 - must investigate further
 	@EXTRACHAR=37 && MAXCHAR=49 && SUM=$(($$EXTRACHAR + $$MAXCHAR)) && PWD=`pwd` && ADJ_PWDLEN=$$(($${#PWD} - $$EXTRACHAR)) && if [[ $$ADJ_PWDLEN -gt $$MAXCHAR ]] ; then  $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(Stroika-Root-Directory) == $$ADJ_PWDLEN, and can be no more than $$MAXCHAR characters on windows 8.1 to avoid Xerces build problem" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL); fi;
+endif
+ifeq (1,$(BUILD_WITH_CMAKE))
+	@#{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
 endif
 	@$(ECHO) "done";
 
@@ -139,7 +193,13 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
+
+CURRENT:	$(ZIPPEDFILE)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate_
+
+
 doCreate_:	$(ZIPPEDFILE)
+	@#### @todo FIX this code so this is not deleted/re-created each time we build!!!! -- not needed once we switch to cmake build -- LGP 2017-10-30
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT...";
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
@@ -152,9 +212,13 @@ endif
 
 
 doPatching_:
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (0,$(BUILD_WITH_CMAKE))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Xerces...";
 	@(cd CURRENT; tar xf ../Patches/VC15Projects.tar.gz --no-same-owner);
 	@$(ECHO) "done"
+endif
+endif
 
 
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -170,13 +234,73 @@ CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
 endif
 endif
 
+
+
+
+ifeq (1,$(BUILD_WITH_CMAKE))
+
+CMAKE_ARGS=
+CMAKE_ARGS+= -Dnetwork:BOOL=OFF
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+CMAKE_ARGS+= -Dtranscoder=windows
+endif
+CMAKE_ARGS+= -Dmessage-loader=inmemory
+CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
+CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
+
+
+#@todo fix to be based on enable assertions flag
+ifeq (Release,$(findstring Release,$(CONFIGURATION)))
+CMAKE_CONFIGURATION=Release
+else
+CMAKE_CONFIGURATION=Debug
+endif
+
+#Default Xerces build generates depednency on DLL version of runtime
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (Release,$(CMAKE_CONFIGURATION))
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="/MT"
+else
+CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="/MTd"
+endif
+endif
+
+
+#@todo fix config mechanism to have var saying 32 or 64 bits?? Or -arch?
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq (32,$(findstring 32,$(CONFIGURATION)))
+CMAKE_WINDOWS_GENERATOR=Visual Studio 15 2017
+else
+CMAKE_WINDOWS_GENERATOR=Visual Studio 15 2017 Win64
+endif
+endif
+
+endif
+
+
+ALTERNATE_CMAKE_BINDIR=
+ifeq ($(UNAME),Cygwin)
+ALTERNATE_CMAKE_BINDIR=$(shell cygpath --absolute --unix ../cmake/CURRENT/bin/)
+endif
+
+
+
 doBuilds_:
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
 	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
 	$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) all 2>&1 >> CURRENT/BUILD.OUT
+else ifeq (1,$(BUILD_WITH_CMAKE))
+	@mkdir -p $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
+	@touch $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)..."
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_WINDOWS_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@echo done
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT)..."
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
 else
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
 endif
@@ -204,6 +328,8 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
+else ifeq (1,$(BUILD_WITH_CMAKE))
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)  --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
 else
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp "CURRENT/Build/Win32/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
