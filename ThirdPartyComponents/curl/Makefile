@@ -17,7 +17,7 @@ DoCreateSymLink=0
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-VERSION=7.56.0
+VERSION=7.56.1
 #VERSION=7.54.1
 #VERSION=7.54.0
 #VERSION=7.53.1
