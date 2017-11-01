@@ -3,8 +3,8 @@
 #	doesnt work with building for windows (at least not easily?), so keep a binary around.
 #
 #
-MAJ_VERSION=3.10
-VERSION=$(MAJ_VERSION).0-rc3
+MAJ_VERSION=3.9
+VERSION=$(MAJ_VERSION).4
 BASENAME=cmake-$(VERSION)-win32-x86
 #BASENAME=cmake-$(VERSION)-win64-x64
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).zip
