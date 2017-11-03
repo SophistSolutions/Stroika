@@ -270,11 +270,12 @@ endif
 
 
 #@todo fix config mechanism to have var saying 32 or 64 bits?? Or -arch?
+CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (32,$(findstring 32,$(CONFIGURATION)))
-CMAKE_WINDOWS_GENERATOR=Visual Studio 15 2017
+CMAKE_USE_GENERATOR=Visual Studio 15 2017
 else
-CMAKE_WINDOWS_GENERATOR=Visual Studio 15 2017 Win64
+CMAKE_USE_GENERATOR=Visual Studio 15 2017 Win64
 endif
 endif
 
@@ -289,19 +290,19 @@ endif
 
 
 doBuilds_:
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (1,$(BUILD_WITH_CMAKE))
+	@mkdir -p $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
+	@touch $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)..."
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@echo done
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT)..."
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
+else ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
 	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
 	$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) all 2>&1 >> CURRENT/BUILD.OUT
-else ifeq (1,$(BUILD_WITH_CMAKE))
-	@mkdir -p $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
-	@touch $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)..."
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_WINDOWS_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@echo done
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT)..."
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
 else
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 ifeq ($(CONFIGURATION),Debug-U-32)
@@ -328,11 +329,11 @@ endif
 endif
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."
-ifeq (Unix,$(ProjectPlatformSubdir))
+ifeq (1,$(BUILD_WITH_CMAKE))
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)  --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
+else ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
-else ifeq (1,$(BUILD_WITH_CMAKE))
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)  --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
 else
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp "CURRENT/Build/Win32/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
