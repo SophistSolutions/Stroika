@@ -42,6 +42,10 @@ namespace {
             VerifyTestResult (r.Contains (3));
         }
         {
+            Range<double> r{3, 5, Openness::eOpen, Openness::eOpen};
+            VerifyTestResult (not r.Contains (3));
+        }
+        {
 #if 0
             ////// MAYBE GET RID OF THIS???
             Range<int> r1 (3, 5);

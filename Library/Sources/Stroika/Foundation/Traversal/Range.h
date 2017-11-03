@@ -191,9 +191,17 @@ namespace Stroika {
                 /**
                  *  Range () creates an empty range.
                  *
-                 *  Optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values.
+                 *  Optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as openness).
                  *
                  *  \req begin <= end (after substitution of optional values)
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *              Range<double> r1 (3, 5);
+                 *              VerifyTestResult (r1.Contains (3) or not r1.Contains (3));  // depends on TRAITS openness
+                 *              Range<double> r2 { 3, 5, Openness::eOpen, Openness::eOpen };
+                 *              VerifyTestResult (not r2.Contains (3));
+                 *      \endcode
                  */
                 constexpr explicit Range ();
                 template <typename T2, typename TRAITS2>
