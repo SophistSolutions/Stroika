@@ -168,7 +168,7 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@#@todo RETEST (not sure how) - and see if still needed - changed build system to use cmake around v2.0a222
 endif
 ifeq (1,$(BUILD_WITH_CMAKE))
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), no)
+ifeq ($(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), no)
 	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
 endif
 endif
