@@ -165,9 +165,12 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@#very hard to track down subtle bug - avoidance - @see http://stackoverflow.com/questions/34074925/vs-2015-cannot-open-compiler-generated-file-invalid-argument
 	@#This doesnt appear broken on windows 10 - but does on windows 8.1 - must investigate further
 	@EXTRACHAR=37 && MAXCHAR=49 && SUM=$(($$EXTRACHAR + $$MAXCHAR)) && PWD=`pwd` && ADJ_PWDLEN=$$(($${#PWD} - $$EXTRACHAR)) && if [[ $$ADJ_PWDLEN -gt $$MAXCHAR ]] ; then  $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(Stroika-Root-Directory) == $$ADJ_PWDLEN, and can be no more than $$MAXCHAR characters on windows 8.1 to avoid Xerces build problem" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL); fi;
+	@#@todo RETEST (not sure how) - and see if still needed - changed build system to use cmake around v2.0a222
 endif
 ifeq (1,$(BUILD_WITH_CMAKE))
-	@#{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
+ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), no)
+	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
+endif
 endif
 	@$(ECHO) "done";
 

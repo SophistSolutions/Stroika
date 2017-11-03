@@ -19,8 +19,9 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
-	@###@todo fix - qFeatureFlag_cmake like qFeatureFlag_ActivePerl, but @todo - DOCUMENT ONLY FOR CYGWIN
+ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), use)
 	@$(MAKE) --directory cmake --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ActivePerl), use)
 	@$(MAKE) --directory ActivePerl --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
