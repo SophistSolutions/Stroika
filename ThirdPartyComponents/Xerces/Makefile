@@ -21,12 +21,13 @@ TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 
 BUILD_WITH_CMAKE=0
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+#ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (3.1,$(findstring 3.1,$(VERSION)))
 BUILD_WITH_CMAKE=0
-endif
+else
 BUILD_WITH_CMAKE=1
 endif
+#endif
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -335,6 +336,9 @@ endif
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."
 ifeq (1,$(BUILD_WITH_CMAKE))
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)  --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
+ifeq (Unix,$(ProjectPlatformSubdir))
+	@cd $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && ln -s libxerces-c-3.2.a libxerces-c.a
+endif
 else ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
