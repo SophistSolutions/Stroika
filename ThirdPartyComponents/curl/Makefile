@@ -45,6 +45,9 @@ qFeatureFlag_OpenSSL	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
+CXX=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
+AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
+RANLIB=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RANLIB)
 endif
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
@@ -234,8 +237,8 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 	@mkdir -p $(INTERMEDIATEFILES_ROOT)$(CONFIGURATION)/ThirdPartyComponents $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Configure (see CURRENT/CONFIGURE.OUT)..."
-	@$(ECHO) "export CC=$(CC);$(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
-	@cd CURRENT && (export CC="$(CC)";$(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
+	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
+	@cd CURRENT && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building (see CURRENT/MAKE.OUT)..."
 	@echo $(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" >> CURRENT/MAKE.OUT 2>&1
