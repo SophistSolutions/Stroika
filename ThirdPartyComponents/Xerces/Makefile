@@ -20,14 +20,12 @@ ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 
-BUILD_WITH_CMAKE=0
-#ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+
 ifeq (3.1,$(findstring 3.1,$(VERSION)))
 BUILD_WITH_CMAKE=0
 else
 BUILD_WITH_CMAKE=1
 endif
-#endif
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -114,6 +112,8 @@ endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 CXX=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
+AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
+RANLIB=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RANLIB)
 #CFLAGS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) EXTRA_COMPILER_ARGS)
 
 #NOT a good solution, but setting CFLAGS arg to configure causes grave disorder
@@ -298,18 +298,19 @@ doBuilds_:
 ifeq (1,$(BUILD_WITH_CMAKE))
 	@mkdir -p $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
 	@touch $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)..."
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)..."
+	@echo 'export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
 	@echo done
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT)..."
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT)..."
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
 else ifeq (Unix,$(ProjectPlatformSubdir))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
 	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
 	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
 	$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) all 2>&1 >> CURRENT/BUILD.OUT
 else
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (Log to CURRENT/BUILD.OUT)..."
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
 endif
@@ -333,9 +334,9 @@ ifeq ($(CONFIGURATION),Release-Logging-U-64)
 endif
 endif
 	@$(ECHO) "done"
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) ..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT) ..."
 ifeq (1,$(BUILD_WITH_CMAKE))
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)  --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUID.OUT
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)  --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && ln -s libxerces-c-3.2.a libxerces-c.a
 endif
