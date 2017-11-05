@@ -40,7 +40,7 @@ namespace Stroika {
                 return GetCurrentTimestamp () - backThisTime;
             }
             template <typename KEY, typename VALUE, typename TIME_TRAITS>
-            nonvirtual void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::ClearOlderThan (TimeStampType t)
+            void CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::ClearOlderThan (TimeStampType t)
             {
                 for (auto i = fMap_.begin (); i != fMap_.end (); ++i) {
                     if (i->fValue.fDataCapturedAt < t) {
