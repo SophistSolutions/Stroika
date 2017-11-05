@@ -46,7 +46,8 @@ my $ENABLE_LTO = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 my $ENABLE_GLIBCXX_DEBUG = DEFAULT_BOOL_OPTIONS;
 my $CPPSTD_VERSION_FLAG = '';
-my $CWARNING_FLAGS = '<<USE_DEFAULTS>>';
+my $CWARNING_FLAGS = undef;
+my $ADD2CWARNING_FLAGS = "";
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
 my $sanitizerFlags = "";
@@ -137,6 +138,8 @@ sub	DoHelp_
         print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
         print("	    --ranlib {ARG}                                  /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ranlib */\n");
         print("	    --strip {ARG}                                   /* sets program to do stripping; default is undefined, but for POSIX, defaults to strip */\n");
+        print("	    --compiler-warning-args {ARG}                   /* Sets variable with compiler warnings flags */\n");
+        print("	    --append-compiler-warning-args {ARG}            /* Appends ARG to 'compiler warning flags */\n");
         print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
         print("	    --append-extra-compiler-args {ARG}              /* Appends ARG to 'extra compiler */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
@@ -321,7 +324,7 @@ sub	SetDefaultForCompilerDriver_
 			$STATIC_LINK_GCCRUNTIME = 1;
 		}
 	}
-	if ($CWARNING_FLAGS eq "<<USE_DEFAULTS>>") {
+	if (! defined $CWARNING_FLAGS) {
 		$CWARNING_FLAGS = '';
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
@@ -704,6 +707,19 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$STRIP = $var;
 		}
+		elsif ((lc ($var) eq "-compiler-warning-args") or (lc ($var) eq "--compiler-warning-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			$CWARNING_FLAGS = $var;
+		}
+		elsif ((lc ($var) eq "-append-compiler-warning-args") or (lc ($var) eq "--append-compiler-warning-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($ADD2CWARNING_FLAGS eq "")) {
+				$ADD2CWARNING_FLAGS .= " ";
+			}
+			$ADD2CWARNING_FLAGS .= $var;
+		}
 		elsif ((lc ($var) eq "-extra-compiler-args") or (lc ($var) eq "--extra-compiler-args")) {
 			$i++;
 			$var = $ARGV[$i];
@@ -1004,7 +1020,11 @@ sub PostProcessOptions_ ()
 			$FEATUREFLAG_PrivateOverrideOfCMake = $LIBFEATUREFLAG_No;
 		}
 	}
+
+	$CWARNING_FLAGS .= $ADD2CWARNING_FLAGS;
 }
+
+
 
 
 PostProcessOptions_ ();
