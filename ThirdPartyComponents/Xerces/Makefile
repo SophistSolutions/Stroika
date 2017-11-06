@@ -166,6 +166,7 @@ ifeq ($(CONFIGURATION),)
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
 endif
+	@rm -rf CURRENT
 
 
 check-prerequisite-tools:
