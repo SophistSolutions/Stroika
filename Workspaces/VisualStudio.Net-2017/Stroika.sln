@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -623,6 +623,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CURRENT", "CURRENT", "{816ADD37-229E-4BEF-B264-2076D67F824F}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\ThirdPartyComponents\Xerces\CURRENT\aclocal.m4 = ..\..\ThirdPartyComponents\Xerces\CURRENT\aclocal.m4
+		..\..\ThirdPartyComponents\Xerces\CURRENT\CMakeLists.txt = ..\..\ThirdPartyComponents\Xerces\CURRENT\CMakeLists.txt
+		..\..\ThirdPartyComponents\Xerces\CURRENT\config.h.cmake.in = ..\..\ThirdPartyComponents\Xerces\CURRENT\config.h.cmake.in
 		..\..\ThirdPartyComponents\Xerces\CURRENT\config.h.in = ..\..\ThirdPartyComponents\Xerces\CURRENT\config.h.in
 		..\..\ThirdPartyComponents\Xerces\CURRENT\configure = ..\..\ThirdPartyComponents\Xerces\CURRENT\configure
 		..\..\ThirdPartyComponents\Xerces\CURRENT\configure.ac = ..\..\ThirdPartyComponents\Xerces\CURRENT\configure.ac
@@ -1986,6 +1988,40 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cmake", "cmake", "{582D2C28
 		..\..\ThirdPartyComponents\cmake\Makefile = ..\..\ThirdPartyComponents\cmake\Makefile
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cmake", "cmake", "{9EF5DCF6-CE80-4C93-9044-DE1D30C34A77}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\FindICU.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\FindICU.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\RunTest.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\RunTest.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesBool.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesBool.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesConst.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesConst.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesDLL.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesDLL.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesFileMgrSelection.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesFileMgrSelection.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesFunctions.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesFunctions.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesIconvConst.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesIconvConst.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesICU.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesICU.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesIncludes.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesIncludes.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesInline.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesInline.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesIntTypes.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesIntTypes.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesLFS.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesLFS.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesLString.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesLString.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesMsgLoaderSelection.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesMsgLoaderSelection.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesMutexMgrSelection.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesMutexMgrSelection.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesNamespaces.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesNamespaces.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesNetAccessorSelection.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesNetAccessorSelection.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesOperatorDelete.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesOperatorDelete.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesPathDelimiters.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesPathDelimiters.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesPathMax.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesPathMax.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesSSE2.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesSSE2.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesStdLibs.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesStdLibs.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesStdNamespace.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesStdNamespace.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesTest.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesTest.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesTranscoderSelection.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesTranscoderSelection.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesVolatile.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesVolatile.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesWarnings.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesWarnings.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesWChar.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesWChar.cmake
+		..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesXMLCh.cmake = ..\..\ThirdPartyComponents\Xerces\CURRENT\cmake\XercesXMLCh.cmake
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
@@ -2430,6 +2466,7 @@ Global
 		{40601CB5-D1E2-423D-A40B-338C603FA971} = {07E1639C-4B37-4DEB-8866-E9B6D735BDAF}
 		{922D134F-C34A-49F2-87DF-24FDEC35201D} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
 		{582D2C28-219C-4F51-B9A3-DCF810062A9F} = {A9C08FB8-1E7E-47BA-9487-7F980FD92B7E}
+		{9EF5DCF6-CE80-4C93-9044-DE1D30C34A77} = {816ADD37-229E-4BEF-B264-2076D67F824F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4E14669-78F6-4BB6-AB59-88D35B712B6D}
