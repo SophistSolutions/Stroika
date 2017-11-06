@@ -21,6 +21,15 @@ TARFILE=$(BASENAME).tar
 EXTRACTED_DIRNAME=$(BASENAME)
 
 
+
+ifneq ($(CONFIGURATION),)
+ProjectPlatformSubdir			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
+IncludeDebugSymbolsInLibraries	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
+ENABLE_ASSERTIONS				=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_ASSERTIONS)
+OptimizerFlag					=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) OptimizerFlag)
+endif
+
+
 ifeq (3.1,$(findstring 3.1,$(VERSION)))
 BUILD_WITH_CMAKE=0
 else
@@ -115,10 +124,6 @@ CXX=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION)
 AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
 RANLIB=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RANLIB)
 #CFLAGS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) EXTRA_COMPILER_ARGS)
-
-#NOT a good solution, but setting CFLAGS arg to configure causes grave disorder
-#CC+=$(CFLAGS)
-#CXX+=$(CFLAGS)
 endif
 
 
@@ -153,6 +158,7 @@ ifeq (1,$(BUILD_WITH_CMAKE))
 else
 	@rm -rf $(EXTRACTED_DIRNAME) CURRENT
 endif
+
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
@@ -229,6 +235,7 @@ endif
 endif
 
 
+ifeq (0,$(BUILD_WITH_CMAKE))
 ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIGURE_ARGS=
 CONFIGURE_ARGS+=--enable-static --disable-shared --without-icu --without-curl
@@ -239,6 +246,7 @@ CONFIGURE_ARGS+=--disable-transcoder-gnuiconv
 CONFIGURE_ARGS+=--disable-transcoder-icu
 ifeq ($(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling),true)
 CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
+endif
 endif
 endif
 
@@ -257,8 +265,7 @@ CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
 CMAKE_ARGS+= -DCMAKE_INSTALL_PREFIX=$(CMAKE_PER_TARGET_BUILD_DIR)
 
 
-#@todo fix to be based on enable assertions flag
-ifeq (Release,$(findstring Release,$(CONFIGURATION)))
+ifeq (0,$(ENABLE_ASSERTIONS))
 CMAKE_CONFIGURATION=Release
 else
 CMAKE_CONFIGURATION=Debug
