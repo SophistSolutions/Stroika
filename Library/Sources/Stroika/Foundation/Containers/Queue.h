@@ -28,12 +28,6 @@
  *              max size would throw. This can be handy with stuff like blocking q? and probably
  *              other cases as well (when you dont want q to grow indefinitely).
  *
- *      @todo   REVIEW BlockingQueue<> code - and add variants returning Optional - so that BlockingQueue.
- *              can be done without a critical section.
- *
- *      @todo   Embelish docs about iteration order, and order of interpretation of Iteratorbased copy CTOR
- *              and then implement properly. Maybe add AddAll() method? Or EnqueAll??
- *
  *      @todo   Select carefully thoguht through principle descriptive documemtatnion (probably: HEAD/TAIL)
  *              and use that docuemntation PRINCIPLALLY THORUHGOUT THE API (and class docs).
  *
@@ -80,18 +74,6 @@ namespace Stroika {
              *  @see PriorityQueues<T, TRAITS> - which allow removal based on the priority
              *          assigned to an item.
              *
-             * Notes:
-             *      <<< TODO - OBSOLETE - DONT DOCUMENT HERE WHAT IS DEFAULT. INSTEAD - Add
-             *      @see link to FACTORY - which tells you what is the default!!!
-             *
-             *      @todo also - that doc about circular array is perhaps what we SHOUDL use by default
-             *      but NYI
-             *
-             *      We currently default to the circular array implementation, as it is
-             *  fastest under most circumstances. One drawback to it is that it has
-             *  unpredictable costs for an Enqueue operation. DoubleLinkList is usually
-             *  slower, but has very predictable costs.
-             *
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
@@ -123,7 +105,9 @@ namespace Stroika {
 
             public:
                 /**
-                 *  @todo Document carefully Queue(start,end) iter order - so copy works well! -- SEE DESIGN IN TODO DOCS ABOVE
+                 *  Construct a new Queue object. Overloads that take an argument container or start/end iterators, iterate from
+                 *  start to end, adding the items to the tail of the Queue, so the resulting Queue will be in the same order (when iterated or dequeued)
+                 *  as the order of the items its created from.
                  */
                 Queue ();
                 Queue (const Queue<T>& src) noexcept;
@@ -151,14 +135,14 @@ namespace Stroika {
 
             public:
                 /**
-                old DOCS.
-                 * Head lets you peek at what would be the result of the next Dequeue. It is
-                 * an error to call Head () with an empty Q.
+                 *  Add the given item to the end of the Q, so it will be removed last of all the items currently in the Q.
                  */
                 nonvirtual void AddTail (ArgByValueType<T> item);
 
             public:
                 /**
+                 *  \req not empty ()
+                 *  @see HeadIf ()
                  */
                 nonvirtual T Head () const;
 
@@ -179,27 +163,21 @@ namespace Stroika {
 
             public:
                 /**
-                old DOCS.
-                 * Stick the given item at the end of the Q. Since a Q is a LIFO structure,
-                 * this item will be the removed (by a DeQueue) operation only after all other
-                 * elements of the Q have been removed (DeQueued).
+                 *  \brief Alias for AddTail () - add item to the end of the Q (line).
                  */
-                nonvirtual void Enqueue (ArgByValueType<T> item); // AddTail
+                nonvirtual void Enqueue (ArgByValueType<T> item);
 
             public:
                 /**
-                old DOCS.
-                 * Remove the first item from the Q. This is an error (assertion) if the Q is
-                 * empty. This returns that last most distant (historical/time) item from the Q -
-                 * IE the one who has been waiting the longest.
-                 *
-                 *  @todo maybe add DequeIf() - return Optional<T>?
+                 *  \brief Alias for RemoveHead () - remove item from the head of the Q (line).
                  */
-                nonvirtual T Dequeue (); //RemoveHead
+                nonvirtual T Dequeue ();
 
             public:
                 /**
+                 *  Items are appended to the tail of the Q in same order they are encountered iterating from start to end of the container (or start to end iterators given).
                  *
+                 *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
                  */
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 nonvirtual void AddAllToTail (const CONTAINER_OF_T& s);
@@ -213,8 +191,8 @@ namespace Stroika {
 
             public:
                 /**
-                * \brief STL-ish alias for RemoveAll ().
-                */
+                 * \brief STL-ish alias for RemoveAll ().
+                 */
                 nonvirtual void clear ();
 
             public:
