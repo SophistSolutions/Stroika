@@ -106,36 +106,36 @@ endif
 
 
 clean:
+	@#ok to call with NO CONFIG (does all)
 ifeq ($(CONFIGURATION),)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents..."
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
-	@#ok to call with NO CONFIG (does all)
-	@$(MAKE) --directory ActivePerl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory cmake --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory zlib --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory openssl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory curl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory lzma --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory Xerces --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory sqlite --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory cmake --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory zlib --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory openssl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory lzma --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Xerces --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory sqlite --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(ECHO) done
 
 
 clobber:
+	@#ok to call with NO CONFIG (does all)
 ifeq ($(CONFIGURATION),)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents..."
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
-	@#ok to call with NO CONFIG (does all)
-	@$(MAKE) --directory ActivePerl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory cmake --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory zlib --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory openssl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory curl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory lzma --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory Xerces --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
-	@$(MAKE) --directory sqlite --no-print-directory $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory cmake --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory zlib --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory openssl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory curl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory lzma --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory Xerces --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory sqlite --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(ECHO) "done"
