@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <cstdarg>
 #include <ios>
 #include <locale>
 
