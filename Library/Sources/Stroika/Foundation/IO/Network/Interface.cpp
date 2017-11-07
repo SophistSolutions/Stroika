@@ -63,6 +63,11 @@ using namespace Stroika::Foundation::IO::Network;
 #pragma comment(lib, "Iphlpapi.lib")
 #endif
 
+#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+namespace std {
+    using ::snprintf;
+}
+#endif
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************

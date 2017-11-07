@@ -9,6 +9,12 @@
 
 using namespace Stroika::Foundation;
 
+#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+namespace std {
+    using ::snprintf;
+}
+#endif
+
 string Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t* end)
 {
     string result;
