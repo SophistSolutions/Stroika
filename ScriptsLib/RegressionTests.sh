@@ -8,7 +8,7 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 : ${INCLUDE_HELGRIND_TESTS:=1}
 : ${INCLUDE_PERFORMANCE_TESTS:=1}
 if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=0; else  CLOBBER_FIRST=1; fi; fi
-: ${PARALELLMAKEFLAG:=-j4}
+: ${PARALELLMAKEFLAG:=-j5}
 
 
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
