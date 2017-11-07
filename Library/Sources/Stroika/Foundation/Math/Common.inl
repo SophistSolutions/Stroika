@@ -9,9 +9,35 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include <cmath>
 #include <cstdlib>
 
 #include "../Debug/Assertions.h"
+
+#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+namespace std {
+    template <typename T>
+    bool isnan (T t)
+    {
+        return ::isnan (t); /*__builtin_isnan*/
+    }
+    template <typename T>
+    bool isinf (T t)
+    {
+        return ::isinf (t);
+    }
+    template <typename T>
+    int fpclassify (T t)
+    {
+        return ::fpclassify (t);
+    }
+    template <typename T>
+    T llabs (T t)
+    {
+        return ::llabs (t);
+    }
+}
+#endif
 
 namespace Stroika {
     namespace Foundation {

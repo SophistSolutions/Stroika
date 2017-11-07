@@ -552,6 +552,19 @@ In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
 
 #endif
 
+/**
+ *
+ */
+#ifndef qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+
+#if !defined(__clang__) && defined(__GNUC__)
+#define qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 5 && (__GLIBC_MINOR__ > 23))
+#else
+#define qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy 0
+#endif
+
+#endif
+
 /*
   Range.cpp
   ****NOTE - WARNING NOT ERRR - BUT USELESS AND ANNOYING ****
