@@ -14,7 +14,7 @@
 
 #include "../Debug/Assertions.h"
 
-#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
 namespace std {
     template <typename T>
     bool isnan (T t)
@@ -202,7 +202,7 @@ namespace Stroika {
                 if (std::isnan (diff)) {
 // nan-nan, or inf-inf
 // maybe other cases shouldnt be considered nearly equals?
-#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
                     return fpclassify (l) == fpclassify (r);
 #else
                     return std::fpclassify (l) == std::fpclassify (r);

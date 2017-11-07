@@ -3,13 +3,15 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <cstdio>
+
 #include "../Characters/CString/Utilities.h"
 
 #include "Format.h"
 
 using namespace Stroika::Foundation;
 
-#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
 namespace std {
     using ::snprintf;
 }

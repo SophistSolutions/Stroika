@@ -553,14 +553,14 @@ In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
 #endif
 
 /**
- *
+ * Issue doesnt affect Ubuntu 16.04, but appears to affect any system using libc 2.26 or later with g++5
  */
-#ifndef qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+#ifndef qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 5 && (__GLIBC_MINOR__ > 23))
+#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 5 && (__GLIBC_MINOR__ > 23))
 #else
-#define qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy 0
+#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy 0
 #endif
 
 #endif
