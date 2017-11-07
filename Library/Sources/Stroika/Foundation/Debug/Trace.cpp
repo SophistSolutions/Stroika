@@ -28,6 +28,12 @@
 
 #include "Trace.h"
 
+#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+namespace std {
+    using ::__gnu_cxx::snprintf;
+}
+#endif
+
 using namespace Stroika::Foundation;
 
 using namespace Characters;

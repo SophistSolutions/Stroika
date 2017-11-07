@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include <cmath>
+#include <cstdio>
 
 #include "../Characters/CString/Utilities.h"
 #include "../Characters/FloatConversion.h"
@@ -28,6 +29,12 @@ using namespace Time;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+namespace std {
+    using ::__gnu_cxx::snprintf;
+}
+#endif
 
 /*
  ********************************************************************************
