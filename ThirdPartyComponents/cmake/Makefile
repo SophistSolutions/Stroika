@@ -1,4 +1,4 @@
-﻿#
+#
 #	Xerces 3.2 and later requires cmake to build on windows, and the cygwin version
 #	doesnt work with building for windows (at least not easily?), so keep a binary around.
 #
