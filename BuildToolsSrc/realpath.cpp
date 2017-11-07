@@ -23,16 +23,32 @@ int main (int argc, char** argv)
     char  result[PATH_MAX];
 
     if (canonicalizeMissing) {
+        auto backTick = [](const string& cmd) -> string {
+            char result[PATH_MAX] = "\0";
+            // super-primitive impl - wont work with funny (quote) chars in pathnames
+            FILE* in = nullptr;
+            if ((in = popen (cmd.c_str (), "r")) != NULL) {
+                fgets (result, sizeof (result) / sizeof (result[0]), in);
+                pclose (in);
+                size_t n = strlen (result);
+                if (n > 0 and result[n - 1] == '\n') {
+                    result[n - 1] = '\0';
+                }
+                return result;
+            }
+            fprintf (stderr, "backTick failed\n");
+            ::exit (1);
+            return {};
+        };
         // super-primitive impl - wont work with funny (quote) chars in pathnames
-        string cmd;
-        cmd += "echo `dirname " + string (path) + "`'/'`basename " + string (path) + "`";
-        FILE* in = nullptr;
-        if ((in = popen (cmd.c_str (), "r")) != NULL) {
-            fgets (result, sizeof (result) / sizeof (result[0]), in);
-            printf ("%s\n", result);
-            pclose (in);
-            return 0;
+        string dirName  = backTick ("dirname " + string (path));
+        string basename = backTick ("basename " + string (path));
+        if (dirName == ".") {
+            dirName = backTick ("pwd");
         }
+        dirName += "/";
+        printf ("%s\n", (dirName + basename).c_str ());
+        return 0;
     }
     else if (realpath (path, result)) {
         printf ("%s\n", result);

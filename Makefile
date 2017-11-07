@@ -418,4 +418,4 @@ regression-test-configurations:
 
 
 install-realpath:
-	g++ -O -o /usr/local/bin/realpath BuildToolsSrc/realpath.cpp
+	g++ --std=c++14 -O -o /usr/local/bin/realpath BuildToolsSrc/realpath.cpp
