@@ -30,7 +30,7 @@
 
 #if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
 namespace std {
-    using ::__gnu_cxx::snprintf;
+    using ::snprintf;
 }
 #endif
 

@@ -29,8 +29,8 @@ using namespace Stroika::Foundation::Characters::CString;
 
 #if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
 namespace std {
-    using ::__gnu_cxx::snprintf;
-    using ::__gnu_cxx::vsnprintf;
+    using ::snprintf;
+    using ::vsnprintf;
 }
 #endif
 
