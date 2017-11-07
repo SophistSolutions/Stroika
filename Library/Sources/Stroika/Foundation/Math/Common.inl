@@ -27,11 +27,6 @@ namespace std {
         return ::isinf (t);
     }
     template <typename T>
-    int fpclassify (T t)
-    {
-        return ::fpclassify (t);
-    }
-    template <typename T>
     T llabs (T t)
     {
         return ::llabs (t);
@@ -205,9 +200,13 @@ namespace Stroika {
                 Require (epsilon >= 0);
                 TC diff = (l - r);
                 if (std::isnan (diff)) {
-                    // nan-nan, or inf-inf
-                    // maybe other cases shouldnt be considered nearly equals?
+// nan-nan, or inf-inf
+// maybe other cases shouldnt be considered nearly equals?
+#if qCompilerAndStdLib_mathfunctions_glibc_buggy_Buggy
+                    return fpclassify (l) == fpclassify (r);
+#else
                     return std::fpclassify (l) == std::fpclassify (r);
+#endif
                 }
                 if (std::isinf (diff)) {
                     static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());

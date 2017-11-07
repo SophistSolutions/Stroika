@@ -674,7 +674,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         Assert (nYears > 0.0);
         if (nYears > 0.0) {
             char buf[10 * 1024];
-            (void)snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
+            (void)std::snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
             result += buf;
             timeLeft -= nYears * kSecondsPerYear;
             if (std::isinf (timeLeft) or timeLeft < 0) {
@@ -690,7 +690,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
         if (nMonths != 0) {
             char buf[1024];
-            (void)snprintf (buf, sizeof (buf), "%dM", nMonths);
+            (void)std::snprintf (buf, sizeof (buf), "%dM", nMonths);
             result += buf;
             timeLeft -= nMonths * kSecondsPerMonth;
         }
@@ -700,7 +700,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
         if (nDays != 0) {
             char buf[1024];
-            (void)snprintf (buf, sizeof (buf), "%dD", nDays);
+            (void)std::snprintf (buf, sizeof (buf), "%dD", nDays);
             result += buf;
             timeLeft -= nDays * kSecondsPerDay;
         }
@@ -712,7 +712,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
             unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
             if (nHours != 0) {
                 char buf[1024];
-                (void)snprintf (buf, sizeof (buf), "%dH", nHours);
+                (void)std::snprintf (buf, sizeof (buf), "%dH", nHours);
                 result += buf;
                 timeLeft -= nHours * kSecondsPerHour;
             }
@@ -722,7 +722,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
             unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
             if (nMinutes != 0) {
                 char buf[1024];
-                (void)snprintf (buf, sizeof (buf), "%dM", nMinutes);
+                (void)std::snprintf (buf, sizeof (buf), "%dM", nMinutes);
                 result += buf;
                 timeLeft -= nMinutes * kSecondsPerMinute;
             }
@@ -737,7 +737,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
             //
             // Pick a slightly more aggressive number for now, to avoid the bugs/performance cost,
             // and eventually totally rewrite how we handle this.
-            Verify (::snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
+            Verify (std::snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
             result += "S";

@@ -125,7 +125,7 @@ String Execution::GetEXEPath (pid_t processID)
     Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
     ssize_t                                       n;
     char                                          linkNameBuf[1024];
-    (void)::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
+    (void)std::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
     while ((n = ::readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
         buf.GrowToSize (buf.GetSize () * 2);
     }

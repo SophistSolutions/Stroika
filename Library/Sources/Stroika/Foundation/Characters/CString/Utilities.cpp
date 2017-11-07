@@ -48,7 +48,7 @@ string Characters::CString::FormatV (const char* format, va_list argsList)
         va_copy (argListCopy, argsList);
     }
 #else
-    while (::vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
+    while (std::vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);

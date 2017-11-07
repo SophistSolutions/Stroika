@@ -4879,7 +4879,7 @@ void StyledTextIOWriter_RTF::WriteTagNValue (const char* tagStr, int value)
     write ('\\');
     write (tagStr);
     char buf[1024];
-    (void)::snprintf (buf, NEltsOf (buf), "%d", value);
+    (void)std::snprintf (buf, NEltsOf (buf), "%d", value);
     write (buf);
     write (' ');
 }
@@ -5004,7 +5004,7 @@ void StyledTextIOWriter_RTF::WriteColorTable (WriterContext& writerContext)
     for (size_t i = 0; i < entryCount; i++) {
         Led_Color c = fColorTable->LookupColor (i);
         char      buf[1024];
-        (void)::snprintf (buf, NEltsOf (buf), "\\red%d\\green%d\\blue%d;", c.GetRed () >> 8, c.GetGreen () >> 8, c.GetBlue () >> 8);
+        (void)std::snprintf (buf, NEltsOf (buf), "\\red%d\\green%d\\blue%d;", c.GetRed () >> 8, c.GetGreen () >> 8, c.GetBlue () >> 8);
         write (buf);
     }
 

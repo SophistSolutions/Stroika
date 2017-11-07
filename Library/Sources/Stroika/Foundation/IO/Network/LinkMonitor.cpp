@@ -213,10 +213,10 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
 #endif
     auto printMacAddr = [](const uint8_t macaddrBytes[6]) -> String {
         char buf[100]{};
-        (void)snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
-                        macaddrBytes[0], macaddrBytes[1],
-                        macaddrBytes[2], macaddrBytes[3],
-                        macaddrBytes[4], macaddrBytes[5]);
+        (void)std::snprintf (buf, sizeof (buf), "%02x:%02x:%02x:%02x:%02x:%02x",
+                             macaddrBytes[0], macaddrBytes[1],
+                             macaddrBytes[2], macaddrBytes[3],
+                             macaddrBytes[4], macaddrBytes[5]);
         return String::FromAscii (buf);
     };
 #if qPlatform_Linux
@@ -292,10 +292,10 @@ struct LinkMonitor::Rep_ {
         Rep_* rep = reinterpret_cast<Rep_*> (callerContext);
         if (Address != NULL) {
             char ipAddrBuf[1024];
-            (void)::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
-                              Address->Address.Ipv4.sin_addr.s_host,
-                              Address->Address.Ipv4.sin_addr.s_lh,
-                              Address->Address.Ipv4.sin_addr.s_impno);
+            (void)std::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
+                                 Address->Address.Ipv4.sin_addr.s_host,
+                                 Address->Address.Ipv4.sin_addr.s_lh,
+                                 Address->Address.Ipv4.sin_addr.s_impno);
             LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
             rep->SendNotifies (lc, String (), String::FromAscii (ipAddrBuf));
         }
@@ -345,7 +345,7 @@ struct LinkMonitor::Rep_ {
                                     if_indextoname (ifa->ifa_index, name);
                                     {
                                         char ipAddrBuf[1024];
-                                        snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
+                                        std::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
                                         SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromAscii (ipAddrBuf));
                                     }
                                 }

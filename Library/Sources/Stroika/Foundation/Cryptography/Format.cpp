@@ -17,7 +17,7 @@ string Cryptography::Private_::mkArrayFmt_ (const uint8_t* start, const uint8_t*
     for (const uint8_t* i = start; i != end; ++i) {
         char b[10];
         b[0] = '\0';
-        snprintf (b, NEltsOf (b), "%02x", *i);
+        std::snprintf (b, NEltsOf (b), "%02x", *i);
         result += b;
     }
     return result;
@@ -27,7 +27,7 @@ string Cryptography::Private_::mkFmt_ (unsigned int n)
 {
     char b[1024];
     b[0] = '\0';
-    snprintf (b, NEltsOf (b), "0x%u", n);
+    std::snprintf (b, NEltsOf (b), "0x%u", n);
     return b;
 }
 
@@ -35,7 +35,7 @@ string Cryptography::Private_::mkFmt_ (unsigned long n)
 {
     char b[1024];
     b[0] = '\0';
-    snprintf (b, NEltsOf (b), "0x%lu", n);
+    std::snprintf (b, NEltsOf (b), "0x%lu", n);
     return b;
 }
 
@@ -43,6 +43,6 @@ string Cryptography::Private_::mkFmt_ (unsigned long long n)
 {
     char b[1024];
     b[0] = '\0';
-    snprintf (b, NEltsOf (b), "0x%llu", n);
+    std::snprintf (b, NEltsOf (b), "0x%llu", n);
     return b;
 }

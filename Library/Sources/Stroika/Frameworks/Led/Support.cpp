@@ -950,7 +950,7 @@ void Led::DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName, c
     IUnknown* nextObj = nullptr;
     for (size_t i = 0; SUCCEEDED (iter->Next (1, &nextObj, nullptr)); ++i) {
         char nameBuf[1024];
-        (void)::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", static_cast<int> (i));
+        (void)std::snprintf (nameBuf, NEltsOf (nameBuf), "obj#%d", static_cast<int> (i));
         char levelPrefixBuf[1024];
         Assert (::strlen (levelPrefix) < sizeof (levelPrefixBuf) / 2); // assert MUCH less
         Characters::CString::Copy (levelPrefixBuf, NEltsOf (levelPrefixBuf), levelPrefix);
@@ -1533,7 +1533,7 @@ HSZ Led_URLManager::ClientArguments (const char* pFormat, ...)
             DWORD* pWord = va_arg (VarList, DWORD*);
             if (pWord != nullptr) {
                 //  See if we need to use hex.
-                snprintf (caNumpad, NEltsOf (caNumpad), "%lu", *pWord);
+                std::snprintf (caNumpad, NEltsOf (caNumpad), "%lu", *pWord);
                 csRetval += caNumpad;
             }
         }
@@ -1853,7 +1853,7 @@ string Led::MakeSophistsAppNameVersionURL (const string& relURL, const string& a
 {
     Require (relURL.length () > 0 and relURL[0] == '/');
     char fullVersionBuf[1024];
-    (void)::snprintf (fullVersionBuf, NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
+    (void)std::snprintf (fullVersionBuf, NEltsOf (fullVersionBuf), "%d", qLed_FullVersion);
     string fullURL = "http://www.sophists.com" + relURL +
                      "?AppName=" + appName +
 #if qPlatform_Windows
