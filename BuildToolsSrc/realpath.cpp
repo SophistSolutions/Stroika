@@ -43,8 +43,8 @@ int main (int argc, char** argv)
         // super-primitive impl - wont work with funny (quote) chars in pathnames
         string dirName  = backTick ("dirname " + string (path));
         string basename = backTick ("basename " + string (path));
-        if (dirName == ".") {
-            dirName = backTick ("pwd");
+        if (dirName/length () != 0 && dirName[0] == '.') {
+            dirName = backTick ("pwd") + "/" + dirName;
         }
         dirName += "/";
         printf ("%s\n", (dirName + basename).c_str ());
