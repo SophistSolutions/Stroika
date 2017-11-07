@@ -4,6 +4,7 @@
 #include "../StroikaPreComp.h"
 
 #include <cstdarg>
+#include <cstdio>
 #include <cstdlib>
 #include <iomanip>
 #include <limits>
