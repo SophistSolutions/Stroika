@@ -62,7 +62,9 @@ elif [ $TOOL == "realpath" ] ; then
 elif [ $TOOL == "node" ] ; then
 	echo -n ": try apt-get install nodejs-legacy"
 else
-	if [ $DistroBasedOn == "Debian" ] ; then
+	if [ `uname -s` == "Darwin" ] ; then
+		echo -n ": try brew install $TOOL"
+	elif [ $DistroBasedOn == "Debian" ] ; then
 		echo -n ": try apt-get install $TOOL"
 	elif [ $DistroBasedOn == "cygwin" ] ; then
 		echo -n ": try cygwin setup, package name $TOOL"
