@@ -203,7 +203,7 @@ namespace Stroika {
 // nan-nan, or inf-inf
 // maybe other cases shouldnt be considered nearly equals?
 #if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-                    return fpclassify (l) == fpclassify (r);
+                    return fpclassify (l) == fpclassify (static_cast<TC> (r));
 #else
                     return std::fpclassify (l) == std::fpclassify (r);
 #endif
