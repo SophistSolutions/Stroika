@@ -3,6 +3,7 @@
  */
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include <cstdlib>
 #include <iostream>
 
 #include "Stroika/Foundation/Characters/CodePage.h"
