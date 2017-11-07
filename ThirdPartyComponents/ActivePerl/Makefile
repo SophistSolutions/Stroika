@@ -1,4 +1,4 @@
-﻿#
+#
 #	OpenSSL 1.1.0f and later requires ActivePerl to build on windows, so keep
 #	a binary around.
 #
