@@ -94,11 +94,22 @@ namespace Stroika {
                  */
                 nonvirtual void Set (const T& v);
 
+                /**
+                 *  Call this with a lambda that will update the associated value. The update will happen INSIDE a lock (synchonized).
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *      // extension of example in class docs above
+                 *      sModuleConfiguration_.SynchonizedUpdate ([] (MyData_ data) { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { data.fLastSynchronizedAt = DateTime::Now ();} return data; });
+                 *      \endcode
+                 */
+                nonvirtual void SynchonizedUpdate (const function<T (T)>& updaterFunction);
+
             private:
                 Synchronized<Memory::Optional<IMPL>> fIndirect_;
 
             private:
-                // Force IMPL CTOR out of line
+                // separate this method out so the callers can be inlined, this more rarely executed, and longer segment of code is not
                 nonvirtual void DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref);
             };
         }
