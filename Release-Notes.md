@@ -296,7 +296,7 @@ History
 				<li>Lose Debug/Trace GetStartOfEpoch_ () logic. Redundent since GetTickCount () now assures
 					returns 0-based. And better to NOT do so the values reported in columsn match more exactly
 					the GetTickCount () results.</li>
-				<li>https://stroika.atlassian.net/browse/STK-621 - lose testing malloc-guard - not importnat and not perfectly implemented (so seems to have some incompatability with glibc - use by latest libcurl)</li>
+				<li>https://stroika.atlassian.net/browse/STK-621 - lose testing malloc-guard - not important and not perfectly implemented (so seems to have some incompatability with glibc - use by latest libcurl)</li>
 			</ul>
 		</li>
 		<li>Samples
@@ -4541,7 +4541,7 @@ with:
 		<li>
 			VS2k15
 			<ul>
-				<li>define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy - last importnat bug (with workaround) for ms vs 2k15, and applied (cruddy but workable) workaround</li>
+				<li>define qCompilerAndStdLib_COutCErrStartupCrasher_Buggy - last important bug (with workaround) for ms vs 2k15, and applied (cruddy but workable) workaround</li>
 				<li>NEW PerformanceDump-v2.0a141-x86-vs2k15-ReleaseU.txt</li>
 				<li>Switching all my development to using VS2k15 instead of VS2k13. Ran final release testing with VS2k13 also - for this release, but probably soon abanodon vs2k13</li>
 			</ul>

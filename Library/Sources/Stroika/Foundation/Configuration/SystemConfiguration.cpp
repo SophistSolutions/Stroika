@@ -883,7 +883,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         //
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _POSIX_V6_LP64_OFF64 ? 64 : 32;
 #elif defined(_V6_LP64_OFF64)
-        //AIX? but maybe others??? -- LGP 2016-09-10 - not importnat to fix/remove
+        //AIX? but maybe others??? -- LGP 2016-09-10 - not important to fix/remove
         tmp.fBits = ::sysconf (_SC_V6_LP64_OFF64) == _V6_LP64_OFF64 ? 64 : 32;
 #else
         // could be a C+++ const - let it not compile if not available, and we'll dig...
