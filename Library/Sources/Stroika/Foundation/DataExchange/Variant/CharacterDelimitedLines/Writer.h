@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchange_CharacterDelimitedLines_Writer_h_
-#define _Stroika_Foundation_DataExchange_CharacterDelimitedLines_Writer_h_ 1
+#ifndef _Stroika_Foundation_DataExchange_Variant_CharacterDelimitedLines_Writer_h_
+#define _Stroika_Foundation_DataExchange_Variant_CharacterDelimitedLines_Writer_h_ 1
 
 #include "../../../StroikaPreComp.h"
 
@@ -56,4 +56,4 @@ namespace Stroika {
  ********************************************************************************
  */
 
-#endif /*_Stroika_Foundation_DataExchange_CharacterDelimitedLines_Writer_h_*/
+#endif /*_Stroika_Foundation_DataExchange_Variant_CharacterDelimitedLines_Writer_h_*/

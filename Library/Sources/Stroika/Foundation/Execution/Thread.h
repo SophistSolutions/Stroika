@@ -352,6 +352,11 @@ namespace Stroika {
                  *
                  *  @see Thread::AbortAndWaitForDoneUntil
                  *
+                 *   \note   This frequently (and nearly always in a destructor) - should be preceded by:
+                 *      \code
+                 *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to prohibit this thread from interruption until its killed owned threads
+                 *      \endcode
+                 *
                  * \req    foreach Thread t: t != nullptr
                  */
                 static void AbortAndWaitForDone (const Traversal::Iterable<Thread::Ptr>& threads, Time::DurationSecondsType timeout = Time::kInfinite);
@@ -361,6 +366,11 @@ namespace Stroika {
                  *   \note ***Cancelation Point***
                  *
                  *  @see Thread::Ptr::AbortAndWaitForDoneUntil
+                 *
+                 *   \note   This frequently (and nearly always in a destructor) - should be preceded by:
+                 *      \code
+                 *            Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to prohibit this thread from interruption until its killed owned threads
+                 *      \endcode
                  *
                  * \req    foreach Thread t: t != nullptr
                  */
@@ -640,6 +650,7 @@ namespace Stroika {
                  *      \code
                  *           Execution::Thread::SuppressInterruptionInContext  suppressInterruption;  // critical to prohibit this thread from interruption until its killed owned threads
                  *      \endcode
+                 *
                  *  @see AbortAndWaitForDoneUntil ()
                  *
                  *  \note ***Cancelation Point***

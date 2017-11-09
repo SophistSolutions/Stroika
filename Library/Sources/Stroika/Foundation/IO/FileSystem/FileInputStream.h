@@ -79,6 +79,11 @@ namespace Stroika {
                      *  The New overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
                      *
                      *  \req fd is a valid file descriptor (for that overload)
+                     *
+                     *  \par Example Usage
+                     *      \code
+                     *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
+                     *      \endcode
                      */
                     static Ptr New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
                     static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);

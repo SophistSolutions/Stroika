@@ -60,7 +60,7 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *      ThroughTmpFileWriter    tmpFile (targetFileName);
-                 *      FileOutputStream  out (tmpFile.GetTmpFilePath ());
+                 *      IO::FileSystem::FileOutputStream::Ptr outStream = IO::FileSystem::FileOutputStream::New (tmpFile.GetFilePath ());
                  *      YourCodeToWriteDataToStream (your_data, out);
                  *      out.clear();        // close like this so we can throw exception - cannot throw if we count on DTOR
                  *      tmpFile.Commit ();  // any exceptions cause the tmp file to be automatically cleaned up
