@@ -27,3 +27,5 @@ README text diff
 *.sh text eol=lf diff
 configure eol=lf diff
 STROIKA_VERSION text diff
+*.supp text
+*.gitattributes text
