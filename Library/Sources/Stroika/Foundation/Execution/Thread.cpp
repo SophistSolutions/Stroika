@@ -917,7 +917,8 @@ namespace {
 
 void Thread::Ptr::AbortAndWaitForDoneUntil (Time::DurationSecondsType timeoutAt) const
 {
-    Debug::TraceContextBumper                           ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Thread::AbortAndWaitForDoneUntil", L"*this=%s, timeoutAt=%e", ToString ().c_str (), timeoutAt)};
+    RequireNotNull (*this);
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     unsigned int tries = 0;
