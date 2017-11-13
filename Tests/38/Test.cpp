@@ -225,7 +225,7 @@ namespace {
             {
                 Debug::TraceContextBumper       ctx1{L"expect-failed-wait"};
                 const Time::DurationSecondsType kMarginOfErrorLo_ = .5;
-                const Time::DurationSecondsType kMarginOfErrorHi_ = 5.0; // if sys busy, thread could be put to sleep almost any amount of time
+                const Time::DurationSecondsType kMarginOfErrorHi_ = 6.0; // if sys busy, thread could be put to sleep almost any amount of time
                 const Time::DurationSecondsType kWaitOnAbortFor   = 1.0;
                 Time::DurationSecondsType       startTestAt       = Time::GetTickCount ();
                 Time::DurationSecondsType       caughtExceptAt    = 0;
@@ -245,6 +245,10 @@ namespace {
                 //      2.0a208x release - in regtests on raspberrypi-gcc-5, regtests  - (caughtExceptAt - expectedEndAt) was 4.1,
                 //      so may need to be much larger occasionally (on slow raspberry pi) - but rarely fails.
                 //      But failed with kMarginOfErrorHi_=2.0, so from 2.5 5.0 for future releases
+                //
+                // FAILURE:
+                //      2.0a222x release (raspberrypi-gcc-6 config (a debug build), failed with (caughtExceptAt - expectedEndAt) about 5.1
+                //      so set kMarginOfErrorHi_ to 6.0 -- LGP 2017-11-13
                 VerifyTestResult (caughtExceptAt <= expectedEndAt + kMarginOfErrorHi_);
             }
 
