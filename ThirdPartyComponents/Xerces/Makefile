@@ -344,7 +344,8 @@ endif
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copying builds to $(BUILDS_ROOT) (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT) ..."
 ifeq (1,$(BUILD_WITH_CMAKE))
-	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)  --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
+	@#NB: Set MAKEFLAGS= to silence warnings about -j jobserver when run with -j N (probaly bug with Xerces 3.2 cmake makefile but didnt dig cuz not important)
+	@MAKEFLAGS= && cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && ln -s libxerces-c-3.2.a libxerces-c.a
 endif
