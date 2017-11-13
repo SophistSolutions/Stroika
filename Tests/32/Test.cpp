@@ -623,16 +623,9 @@ namespace {
                 static const ReaderFromVoidStarFactory sEltReader_ =
                     []() -> ReaderFromVoidStarFactory {
                     using KVPType_ = KeyValuePair<TunerNumberType_, TARGET_TYPE>;
-                    return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo> {
-#if qCompilerAndStdLib_typeidoftemplateinlambda_Buggy
-                        {Name{L"Tuner", Name::eAttribute}, StructFieldMetaInfo { offsetof (KVPType_, fKey),
-                                                                                 typeid (TunerNumberType_) }},
-                            {Name{Name::eValue}, StructFieldMetaInfo { offsetof (KVPType_, fValue),
-                                                                       typeid (TARGET_TYPE) }},
-#else
+                    return Registry::MakeClassReader<KVPType_> (initializer_list<StructFieldInfo>{
                         {Name{L"Tuner", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
-                            {Name{Name::eValue}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue)},
-#endif
+                        {Name{Name::eValue}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fValue)},
                     });
                 }();
                 DISABLE_COMPILER_MSC_WARNING_END (4573)
