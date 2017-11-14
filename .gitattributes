@@ -1,3 +1,6 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
 *.inf text eol=crlf diff
 *.spec text eol=lf diff
 *.control text eol=lf
