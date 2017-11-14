@@ -260,6 +260,9 @@ CMAKE_ARGS=
 CMAKE_ARGS+= -Dnetwork:BOOL=OFF
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 CMAKE_ARGS+= -Dtranscoder=windows
+else ifeq ($(UNAME),Darwin)
+#AVOID Undefined symbols for architecture x86_64:  "_CFRelease", etc.... Avoid library dependency
+CMAKE_ARGS+= -Dtranscoder=iconv
 endif
 CMAKE_ARGS+= -Dmessage-loader=inmemory
 CMAKE_ARGS+= -DBUILD_SHARED_LIBS:BOOL=OFF
