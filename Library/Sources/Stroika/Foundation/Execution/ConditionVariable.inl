@@ -58,14 +58,14 @@ namespace Stroika {
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename PREDICATE>
-            bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake)
+            bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readyToWake)
             {
                 Require (lock.owns_lock ());
-                while (not readToWake ()) {
+                while (not readyToWake ()) {
                     CheckForThreadInterruption ();
                     Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
                     if (remaining < 0) {
-                        return false; // maybe should recheck readToWake () but wait_until/2 assumes NO for now
+                        return false; // maybe should recheck readyToWake () but wait_until/2 assumes NO for now
                     }
                     remaining = min (remaining, fThreadAbortCheckFrequency);
 
@@ -93,17 +93,17 @@ namespace Stroika {
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename PREDICATE>
-            bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake)
+            bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readyToWake)
             {
                 Require (lock.owns_lock ());
-                return wait_until (lock, timeout + Time::GetTickCount (), std::move (readToWake));
+                return wait_until (lock, timeout + Time::GetTickCount (), std::move (readyToWake));
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename FUNCTION>
             void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyAll (FUNCTION mutatorFunction)
             {
                 {
-                    typename ConditionVariable<>::QuickLockType quickLock{fMutex};
+                    QuickLockType quickLock{fMutex};
                     mutatorFunction ();
                 }
                 fConditionVariable.notify_all ();
@@ -113,7 +113,7 @@ namespace Stroika {
             void ConditionVariable<MUTEX, CONDITION_VARIABLE>::MutateDataNotifyOne (FUNCTION mutatorFunction)
             {
                 {
-                    typename ConditionVariable<>::QuickLockType quickLock{fMutex};
+                    QuickLockType quickLock{fMutex};
                     mutatorFunction ();
                 }
                 fConditionVariable.notify_one ();

@@ -140,7 +140,7 @@ namespace Stroika {
                  *      using float instead of chrono (fix)
                  *      supports Stroika thread interruption
                  *
-                 *      readToWake    -   predicate which returns false if the waiting should be continued.
+                 *      readyToWake    -   predicate which returns false if the waiting should be continued.
                  *
                  *  Returns:
                  *      1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
@@ -148,20 +148,20 @@ namespace Stroika {
                  *
                  *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
                  *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
-				 *
-				 *	\req (lock.owns_lock ());
-				 *	\ensure (lock.owns_lock ());
-				 */
+                 *
+                 *  \req (lock.owns_lock ());
+                 *  \ensure (lock.owns_lock ());
+                 */
                 nonvirtual cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
                 template <typename PREDICATE>
-                nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake);
+                nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readyToWake);
 
                 /**
                  * Like condition_variable wait_for, except
                  *      using float instead of chrono (fix)
                  *      supports Stroika thread interruption
                  *
-                 *     readToWake    -   predicate which returns false if the waiting should be continued.
+                 *     readyToWake    -   predicate which returns false if the waiting should be continued.
                  *
                  * Returns:
                  *     1) std::cv_status::timeout if the relative timeout specified by rel_time expired, std::cv_status::no_timeout otherwise.
@@ -175,7 +175,7 @@ namespace Stroika {
                  */
                 nonvirtual cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
                 template <typename PREDICATE>
-                nonvirtual bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake);
+                nonvirtual bool wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readyToWake);
 
                 /**
                  *  NOT USED YET - ROUGH PROTOTYPE
