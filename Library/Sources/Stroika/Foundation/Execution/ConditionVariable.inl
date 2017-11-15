@@ -52,36 +52,44 @@ namespace Stroika {
             cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
             {
                 Require (lock.owns_lock ());
-                // @todo WRONG - must redo the loop below - not using predicate to handle timeout right
-                unsigned int cntCalled = 0;
-                return wait_until (lock, timeoutAt, [&cntCalled]() { return ++cntCalled > 1; }) ? cv_status::no_timeout : cv_status::timeout;
+                while (true) {
+                    CheckForThreadInterruption ();
+                    Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
+                    if (remaining < 0) {
+                        return cv_status::timeout;
+                    }
+                    remaining = min (remaining, fThreadAbortCheckFrequency);
+
+                    Assert (lock.owns_lock ());
+                    std::cv_status tmp = fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ());
+                    Assert (lock.owns_lock ());
+                    if (tmp == std::cv_status::timeout) {
+                        /*
+                         *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
+                         *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
+                         */
+                    }
+                    else {
+                        return tmp; // can be spurious wakeup, or real, no way to know
+                    }
+                }
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename PREDICATE>
             bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readyToWake)
             {
                 Require (lock.owns_lock ());
+                CheckForThreadInterruption ();
                 while (not readyToWake ()) {
-                    CheckForThreadInterruption ();
-                    Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
-                    if (remaining < 0) {
-                        return false; // maybe should recheck readyToWake () but wait_until/2 assumes NO for now
-                    }
-                    remaining = min (remaining, fThreadAbortCheckFrequency);
-
-                    Assert (lock.owns_lock ());
-                    if (fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
+                    // NB: further checks for interruption happen inside wait_until() called here...
+                    if (wait_until (lock, timeoutAt) == cv_status::timeout) {
                         /*
-                         *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
-                         *  this timeout value (or any return code) - cuz we re-examine pred () and tickcount.
+                         *  Somewhat ambiguous if this should check readyToWake just return false. Probably best to check, since the condition is met, and thats
+                         *  probably more important than the timeout.
                          */
+                        return readyToWake ();
                     }
-                    else {
-                        // https://stroika.atlassian.net/browse/STK-623
-                        // @todo DOCUMENT WHY - when can get spurrious wakeups
-                        ////no break - recheck pred();;;; spurrious??? break; // if not a timeout - condition variable really signaled, we really return
-                    }
-                    Assert (lock.owns_lock ());
+                    // Maybe a real wakeup, or a spurious one, so just check the readyToWake() predicate again, and keep looping!
                 }
                 return true;
             }
@@ -93,7 +101,7 @@ namespace Stroika {
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename PREDICATE>
-            bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readyToWake)
+            inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readyToWake)
             {
                 Require (lock.owns_lock ());
                 return wait_until (lock, timeout + Time::GetTickCount (), std::move (readyToWake));
