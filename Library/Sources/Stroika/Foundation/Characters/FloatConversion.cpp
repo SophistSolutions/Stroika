@@ -124,21 +124,23 @@ namespace {
 
         String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromAscii (s.str ());
 
-        // for now - dont default to do for scientific
-        // @todo but later fix so works for scientific - default off for sicentific - but if set explicitly on - do right thing (before 'e')
-        bool useTrimTrailingZeros = options.GetTrimTrailingZeros ().Value (not(s.flags () & std::ios_base::scientific));
+        bool useTrimTrailingZeros = options.GetTrimTrailingZeros ().Value (true);
         if (useTrimTrailingZeros) {
-            // strip trailing zeros - except for the last first one after the decimal point
-            size_t pastDot = tmp.find ('.');
-            if (pastDot != String::npos) {
-                pastDot++;
-                size_t pPastLastZero = tmp.length ();
-                for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                    if (tmp[pPastLastZero - 1] != '0') {
-                        break;
+            // strip trailing zeros - except for the last first one after the decimal point.
+            // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!
+            bool hasE = tmp.find ('e') != String::npos or tmp.find ('E') != String::npos;
+            if (not hasE) {
+                size_t pastDot = tmp.find ('.');
+                if (pastDot != String::npos) {
+                    pastDot++;
+                    size_t pPastLastZero = tmp.length ();
+                    for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
+                        if (tmp[pPastLastZero - 1] != '0') {
+                            break;
+                        }
                     }
+                    tmp = tmp.SubString (0, pPastLastZero);
                 }
-                tmp = tmp.SubString (0, pPastLastZero);
             }
         }
         return tmp;

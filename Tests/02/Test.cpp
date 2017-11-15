@@ -1020,6 +1020,7 @@ namespace {
         VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (2)) == L"3.1");
         VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (3)) == L"3.12");
         VerifyTestResult (Float2String (31.234, Characters::Float2StringOptions::Precision (3)) == L"31.2");
+        VerifyTestResult (Float2String (30707548160.0) == L"3.07075e+10"); // when not specified if scientific or not, stdlib chooses somehow a cutoff. Not sure how... So this may not be a portable test
     }
 }
 
