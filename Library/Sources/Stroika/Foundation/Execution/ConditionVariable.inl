@@ -51,6 +51,7 @@ namespace Stroika {
             template <typename MUTEX, typename CONDITION_VARIABLE>
             cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt)
             {
+                Require (lock.owns_lock ());
                 // @todo WRONG - must redo the loop below - not using predicate to handle timeout right
                 unsigned int cntCalled = 0;
                 return wait_until (lock, timeoutAt, [&cntCalled]() { return ++cntCalled > 1; }) ? cv_status::no_timeout : cv_status::timeout;
@@ -59,6 +60,7 @@ namespace Stroika {
             template <typename PREDICATE>
             bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake)
             {
+                Require (lock.owns_lock ());
                 while (not readToWake ()) {
                     CheckForThreadInterruption ();
                     Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
@@ -67,6 +69,7 @@ namespace Stroika {
                     }
                     remaining = min (remaining, fThreadAbortCheckFrequency);
 
+                    Assert (lock.owns_lock ());
                     if (fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ()) == std::cv_status::timeout) {
                         /*
                          *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
@@ -78,18 +81,21 @@ namespace Stroika {
                         // @todo DOCUMENT WHY - when can get spurrious wakeups
                         ////no break - recheck pred();;;; spurrious??? break; // if not a timeout - condition variable really signaled, we really return
                     }
+                    Assert (lock.owns_lock ());
                 }
                 return true;
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             inline cv_status ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout)
             {
+                Require (lock.owns_lock ());
                 return wait_until (lock, timeout + Time::GetTickCount ());
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>
             template <typename PREDICATE>
             bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readToWake)
             {
+                Require (lock.owns_lock ());
                 return wait_until (lock, timeout + Time::GetTickCount (), std::move (readToWake));
             }
             template <typename MUTEX, typename CONDITION_VARIABLE>

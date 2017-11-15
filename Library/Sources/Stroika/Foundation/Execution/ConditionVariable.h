@@ -148,7 +148,10 @@ namespace Stroika {
                  *
                  *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_until () - except
                  *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
-                 */
+				 *
+				 *	\req (lock.owns_lock ());
+				 *	\ensure (lock.owns_lock ());
+				 */
                 nonvirtual cv_status wait_until (LockType& lock, Time::DurationSecondsType timeoutAt);
                 template <typename PREDICATE>
                 nonvirtual bool wait_until (LockType& lock, Time::DurationSecondsType timeoutAt, PREDICATE readToWake);
@@ -166,6 +169,9 @@ namespace Stroika {
                  *
                  *  \note   The intention here is to be semantically IDENTICAL to condition_variable::wait_for () - except
                  *          for adding support for thread interruption (and a minor point - Time::DurationSecondsType)
+                 *
+                 *  \req (lock.owns_lock ());
+                 *  \ensure (lock.owns_lock ());
                  */
                 nonvirtual cv_status wait_for (LockType& lock, Time::DurationSecondsType timeout);
                 template <typename PREDICATE>
