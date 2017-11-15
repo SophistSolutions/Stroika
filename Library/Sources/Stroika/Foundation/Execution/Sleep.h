@@ -50,6 +50,8 @@ namespace Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
              *  \note   ***Cancelation Point***
+             *
+             *  \note   Very similar to std::this_thread::sleep_for () - except for the overload returning remaining amount, and cancelation support
              */
             void Sleep (Time::DurationSecondsType seconds2Wait);
             void Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);
@@ -69,9 +71,14 @@ namespace Stroika {
              *  @see Sleep ();
              *
              *  \note   ***Cancelation Point***
+             *
              *  \note   Unlike Sleep () - this may or may not yield.
+             *
              *  \note   SleepUntil restarts if interruped, so if it returns, it will return after untilTickCount
+             *
              *  \note   This may or may not end up calling Sleep(). It is not an error to call with a tickCount which has already passed: it just returns quickly, and may not yield.
+             *
+             *  \note   Very similar to std::this_thread::sleep_until () - except for the cancelation support
              */
             void SleepUntil (Time::DurationSecondsType untilTickCount);
         }

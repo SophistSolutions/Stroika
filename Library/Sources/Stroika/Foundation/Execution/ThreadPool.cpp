@@ -366,7 +366,7 @@ void ThreadPool::WaitForTasksDoneUntil (Time::DurationSecondsType timeoutAt) con
     // @todo - use waitableevent - this is a horribly implementation
     while (GetTasksCount () != 0) {
         ThrowTimeoutExceptionAfter (timeoutAt);
-        Execution::Sleep (.1);
+        Execution::Sleep (100ms);
     }
 }
 

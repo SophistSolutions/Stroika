@@ -735,7 +735,7 @@ void Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
     (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ({String (), (String_Constant{L"--"} + String (CommandNames::kRunAsService))}));
 
     while (_GetServicePID () <= 0) {
-        Execution::Sleep (0.5);
+        Execution::Sleep (500ms);
         Execution::ThrowTimeoutExceptionAfter (timeoutAt);
     }
 }

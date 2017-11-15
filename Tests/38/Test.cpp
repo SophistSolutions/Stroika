@@ -42,7 +42,7 @@ namespace {
             static void DoIt (void* ignored)
             {
                 for (int i = 1; i < 10; i++) {
-                    Execution::Sleep (.001);
+                    Execution::Sleep (1ms);
                 }
             }
         };
@@ -356,7 +356,7 @@ namespace {
                             for (int i = 0; i < 10; i++) {
                                 syncofint::WritableReference r   = argP->rwget ();
                                 int                          tmp = r;
-                                Execution::Sleep (.01);
+                                Execution::Sleep (10ms);
                                 //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                                 r = tmp + 1;
 #if 0
@@ -1004,7 +1004,7 @@ namespace {
                 for (int incBy = START; incBy <= END; ++incBy) {
                     q.AddTail ([&counter, incBy]() { counter += incBy; });
                     if (incBy == (END - START) / 2) {
-                        Execution::Sleep (.1); // illogical in real app, but give time for consumer to catch up to help check no race
+                        Execution::Sleep (100ms); // illogical in real app, but give time for consumer to catch up to help check no race
                     }
                 }
                 q.EndOfInput ();

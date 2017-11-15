@@ -818,7 +818,7 @@ namespace {
                                     //
                                     // OK - this is clearly wrong - @see https://stroika.atlassian.net/browse/STK-589 - Fix performance of ProcessRunner - use select / poll instead of sleep when write to pipe returns 0
                                     //
-                                    Execution::Sleep (0.001);
+                                    Execution::Sleep (1ms);
                                 }
                             }
                         }
@@ -827,7 +827,7 @@ namespace {
                         // nothing on input stream, so pull from stdout, stderr, and wait a little to avoid busy-waiting
                         readSoNotBlocking (useSTDOUT, out);
                         readSoNotBlocking (useSTDERR, err);
-                        Execution::Sleep (0.1);
+                        Execution::Sleep (100ms);
                     }
                 }
             }
@@ -1031,7 +1031,7 @@ namespace {
                                 if (p < e and written == 0) {
                                     // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
                                     // send it data - back off a little
-                                    Execution::Sleep (0.1f);
+                                    Execution::Sleep (100ms);
                                 }
 #if 0
                                     // Do timeout handling at a higher level

@@ -107,7 +107,7 @@ namespace {
     {
         TraceContextBumper  ctx ("Test_1_TestTickCountGrowsMonotonically_");
         DurationSecondsType start = Time::GetTickCount ();
-        Execution::Sleep (0.1);
+        Execution::Sleep (100ms);
         VerifyTestResult (start <= Time::GetTickCount ());
     }
 }

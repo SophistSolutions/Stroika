@@ -107,7 +107,7 @@ namespace Stroika {
              *      );
              *      Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
              *      while (counter != expectedValue and Time::GetTickCount () < killAt) {
-             *          Execution::Sleep (.5);
+             *          Execution::Sleep (500ms);
              *      }
              *      Verify (counter == expectedValue);
              *      producerThread.WaitForDone ();      // producer already set to run off the end...
