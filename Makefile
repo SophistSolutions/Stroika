@@ -404,7 +404,7 @@ regression-test-configurations:
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
 		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
-		./configure VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file true --block-allocation disable;\
+		./configure VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable;\
 		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
