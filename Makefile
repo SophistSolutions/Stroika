@@ -411,7 +411,7 @@ regression-test-configurations:
 		./configure raspberrypi-gcc-6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi-gcc-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
 		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
-		./configure raspberrypi-gcc-6-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
+		./configure raspberrypi-gcc-7-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi_valgrind_gcc-7_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-7' --valgrind enable --block-allocation disable --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 	fi
 

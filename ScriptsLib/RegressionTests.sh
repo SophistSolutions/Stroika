@@ -122,7 +122,7 @@ if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 	make run-tests CONFIGURATION=raspberrypi-gcc-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 	make run-tests CONFIGURATION=raspberrypi_valgrind_gcc-7_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 	#see https://stroika.atlassian.net/browse/STK-512 for REMOTE_RUN_PREFIX explanation
-	make run-tests CONFIGURATION=raspberrypi-gcc-6-sanitize REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  REMOTE_RUN_PREFIX="LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3" >>$TEST_OUT_FILE 2>&1
+	make run-tests CONFIGURATION=raspberrypi-gcc-7-sanitize REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  REMOTE_RUN_PREFIX="LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3" >>$TEST_OUT_FILE 2>&1
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
