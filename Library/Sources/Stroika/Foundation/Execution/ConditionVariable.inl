@@ -70,7 +70,8 @@ namespace Stroika {
                          */
                     }
                     else {
-                        return tmp; // can be spurious wakeup, or real, no way to know
+                        Assert (tmp == std::cv_status::no_timeout);
+                        return std::cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
                     }
                 }
             }
