@@ -16,8 +16,6 @@ ifneq (,$(RUN_PREFIX))
 RUN_PREFIX:=$(RUN_PREFIX) 
 endif
 
-REMOTE_RUN_PREFIX=
-
 ifeq (Unix,$(ProjectPlatformSubdir))
 BASEEXEPATTERN=Test$$i
 EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i
@@ -27,12 +25,12 @@ EXEPATTERN=../Builds/$(CONFIGURATION)/Test$$i/Test$$i.exe
 endif
 
 ### @todo - rewrite the below mess so valgrind etc CONSTRUCT a RUN_PREFIX, and then unify the code a bit.
-### and change place where REMOTE_RUN_PREFIX set (RegressionTests.sh) and use the RUN_PREFIX mechanism (configuration)
+### and change place where RUN_PREFIX set (RegressionTests.sh) and use the RUN_PREFIX mechanism (configuration)
 
 ifneq (,$(REMOTE))
 RUNTEST_REMOTECOPYSETUP=scp -q $(EXEPATTERN) $(REMOTE):/tmp/$(BASEEXEPATTERN)
-RUNTEST_EXE_RUN=ssh $(REMOTE) $(REMOTE_RUN_PREFIX) /tmp/$(BASEEXEPATTERN)
-RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) $(REMOTE_RUN_PREFIX) /tmp/$(BASEEXEPATTERN)
+RUNTEST_EXE_RUN=ssh $(REMOTE) $(RUN_PREFIX) /tmp/$(BASEEXEPATTERN)
+RUNTEST_EXE_RUN_PRINTLINE=scp $(EXEPATTERN)...; ssh $(REMOTE) $(RUN_PREFIX) /tmp/$(BASEEXEPATTERN)
 else ifeq (memcheck,$(VALGRIND))
 EXTRA_VALGRIND_OPTIONS=
 VALGRIND_SUPPRESSIONS?= Valgrind-MemCheck-Common.supp
