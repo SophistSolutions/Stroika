@@ -68,6 +68,14 @@ namespace Stroika {
                          *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
                          *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
                          */
+                        {
+                            // TEST POSSIBLE FIX/WORKAROUND FOR https://stroika.atlassian.net/browse/STK-629
+                            Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
+                            if (remaining < 0) {
+                                return cv_status::timeout;
+                            }
+                            return std::cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
+                        }
                     }
                     else {
                         Assert (tmp == std::cv_status::no_timeout);

@@ -53,6 +53,8 @@ namespace Stroika {
             }
             inline bool WaitableEvent::WE_::PeekIsSet () const noexcept
             {
+                // TEST POSSIBLE FIX/WORKAROUND FOR https://stroika.atlassian.net/browse/STK-629
+                typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
                 return fTriggered;
             }
             inline void WaitableEvent::WE_::Set ()
