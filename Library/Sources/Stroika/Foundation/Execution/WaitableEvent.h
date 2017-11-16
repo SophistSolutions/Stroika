@@ -313,11 +313,10 @@ namespace Stroika {
                 nonvirtual void SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
 
             private:
-                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 struct WE_ {
-                    ResetType           fResetType;
-                    ConditionVariable<> fConditionVariable{};
-                    bool                fTriggered{false};
+                    ResetType                   fResetType;
+                    mutable ConditionVariable<> fConditionVariable{};
+                    bool                        fTriggered{false};
 
                     WE_ (ResetType resetType);
                     nonvirtual void Reset ();
@@ -326,7 +325,6 @@ namespace Stroika {
                     nonvirtual void WaitUntil (Time::DurationSecondsType timeoutAt);
                     nonvirtual bool WaitUntilQuietly (Time::DurationSecondsType timeoutAt);
                 };
-                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
                 WE_ fWE_;
 #if qExecution_WaitableEvent_SupportWaitForMultipleObjects
                 forward_list<shared_ptr<WE_>> fExtraWaitableEvents_;
