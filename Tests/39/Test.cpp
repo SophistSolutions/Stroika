@@ -41,7 +41,6 @@ using Execution::WaitableEvent;
 using namespace TestHarness;
 
 namespace {
-
     /*
      *  To REALLY this this code for thread-safety, use ExternallySynchronizedLock, but to verify it works
      *  without worrying about races, just use mutex.
@@ -53,19 +52,6 @@ namespace {
 }
 
 namespace {
-    void RunThreads_ (const initializer_list<Thread::Ptr>& threads)
-    {
-        for (Thread::Ptr i : threads) {
-            i.Start ();
-        }
-        for (Thread::Ptr i : threads) {
-            i.WaitForDone ();
-        }
-    }
-}
-
-namespace {
-
     template <typename ITERABLE_TYPE, typename LOCK_TYPE>
     Thread::Ptr mkIterateOverThread_ (Synchronized<ITERABLE_TYPE>* iterable, LOCK_TYPE* lock, unsigned int repeatCount)
     {
@@ -84,7 +70,6 @@ namespace {
 }
 
 namespace {
-
     template <typename ITERABLE_TYPE, typename ITERABLE_TYPE2, typename LOCK_TYPE>
     Thread::Ptr mkOverwriteThread_ (ITERABLE_TYPE* oneToKeepOverwriting, ITERABLE_TYPE2 elt1, ITERABLE_TYPE2 elt2, LOCK_TYPE* lock, unsigned int repeatCount)
     {
@@ -117,7 +102,8 @@ namespace {
             Synchronized<ITERABLE_TYPE> oneToKeepOverwriting{elt1};
             Thread::Ptr                 iterateThread   = mkIterateOverThread_ (&oneToKeepOverwriting, &lock, repeatCount);
             Thread::Ptr                 overwriteThread = mkOverwriteThread_ (&oneToKeepOverwriting, elt1, elt2, &lock, repeatCount);
-            RunThreads_ ({iterateThread, overwriteThread});
+            Thread::Start ({iterateThread, overwriteThread});
+            Thread::WaitForDone ({iterateThread, overwriteThread});
         }
         void DoIt ()
         {
@@ -164,7 +150,8 @@ namespace {
             };
             Thread::Ptr iterateThread{move (mkIterateOverThread_ (&oneToKeepOverwriting, lock, repeatCount))};
             Thread::Ptr mutateThread{Thread::New (mutateFunction)};
-            RunThreads_ ({iterateThread, mutateThread});
+            Thread::Start ({iterateThread, mutateThread});
+            Thread::WaitForDone ({iterateThread, mutateThread});
         }
         void DoIt ()
         {
