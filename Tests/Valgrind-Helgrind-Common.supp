@@ -66,11 +66,6 @@
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
    fun:__condvar_cancel_waiting
    fun:__pthread_cond_wait_common
-   fun:pthread_cond_timedwait@@GLIBC_2.3.2
-   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
-   fun:__gthread_cond_timedwait
    ...
    fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilERSt11unique_lockIS3_Ed
 }
-
-
