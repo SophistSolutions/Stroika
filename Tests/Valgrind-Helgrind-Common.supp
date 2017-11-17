@@ -52,7 +52,6 @@
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
    fun:_ZN7Stroika10Foundation9Execution8Platform5POSIX16SemWaitableEvent4WaitEv
    ...
-   fun:start_thread
 }
 {
    https://stroika.atlassian.net/browse/STK-620
