@@ -6,6 +6,12 @@
 
 #include "../../StroikaPreComp.h"
 
+#if __has_include(<filesystem>)
+#include <filesystem>
+#elif __has_include(<experimental / filesystem>)
+#include <experimental/filesystem>
+#endif
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Time/DateTime.h"
@@ -18,10 +24,22 @@
  *
  */
 
+#if !(__cpp_lib_filesystem >= 201603) && (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental / filesystem>))
+namespace std {
+    namespace filesystem {
+        using namespace std::experimental::filesystem;
+    }
+}
+#endif
+
 namespace Stroika {
     namespace Foundation {
         namespace IO {
             namespace FileSystem {
+
+#if __has_include(<filesystem>) || __has_include(<experimental / filesystem>)
+                using namespace std::filesystem;
+#endif
 
                 using Characters::String;
                 using Memory::Byte;
