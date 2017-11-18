@@ -12,7 +12,7 @@
    fun:__wcsnlen_sse4_1
    fun:wcsnrtombs
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   fun:_ZNKSt23__codecvt_abstract_baseIwc11__mbstate_tE3outERS0_PKwS4_RS4_PcS6_RS6_
+   ...
    fun:_ZNK7Stroika10Foundation10Characters6String14AsNarrowStringERKSt6localePNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
    ...
 }
@@ -22,7 +22,7 @@
    fun:__wcsnlen_sse4_1
    fun:wcsnrtombs
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   fun:_ZNKSt23__codecvt_abstract_baseIwc11__mbstate_tE3outERS0_PKwS4_RS4_PcS6_RS6_
+   ...
    fun:_ZNK7Stroika10Foundation10Characters6String14AsNarrowStringERKSt6localePNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
    ...
 }
@@ -31,7 +31,7 @@
    Memcheck:Addr32
    ...
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   fun:_ZNKSt23__codecvt_abstract_baseIwc11__mbstate_tE3outERS0_PKwS4_RS4_PcS6_RS6_
+   ...
    fun:_ZNK7Stroika10Foundation10Characters6String14AsNarrowStringERKSt6localePNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEE
    ...
 }
