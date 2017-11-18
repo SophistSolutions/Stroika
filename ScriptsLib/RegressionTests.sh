@@ -166,7 +166,7 @@ NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
 #HELGRIND
 if [ "$INCLUDE_HELGRIND_TESTS" -ne 0 ] ; then
-	#MEMCHECK: release, no block allocation
+	#HELGRIND: release, no block allocation
 	echo -n "Run-Tests VALGRIND=helgrind VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc ..."
 	echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND=helgrind VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
@@ -176,7 +176,7 @@ if [ "$INCLUDE_HELGRIND_TESTS" -ne 0 ] ; then
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN + 1))
 
-	#MEMCHECK: debug (without block alloc)
+	#HELGRIND: debug (without block alloc)
 	echo -n "Run-Tests VALGRIND=helgrind VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc ..."
 	echo "$PREFIX_OUT_LABEL" "Run-Tests VALGRIND=helgrind VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
