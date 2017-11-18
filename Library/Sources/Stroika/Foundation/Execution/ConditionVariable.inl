@@ -24,7 +24,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename MUTEX, typename CONDITION_VARIABLE>
-            Time::DurationSecondsType ConditionVariable<MUTEX, CONDITION_VARIABLE>::sThreadAbortCheckFrequency_Default{1};
+            Time::DurationSecondsType ConditionVariable<MUTEX, CONDITION_VARIABLE>::sThreadAbortCheckFrequency_Default{2.5};
 
             template <typename MUTEX, typename CONDITION_VARIABLE>
             inline void ConditionVariable<MUTEX, CONDITION_VARIABLE>::release_and_notify_one (LockType& lock)
