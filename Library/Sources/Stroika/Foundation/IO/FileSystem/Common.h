@@ -6,11 +6,13 @@
 
 #include "../../StroikaPreComp.h"
 
+// clang-format off
 #if __has_include(<filesystem>)
 #include <filesystem>
-#elif __has_include(<experimental / filesystem>)
+#elif __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
 #endif
+// clang-format on
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
@@ -24,6 +26,7 @@
  *
  */
 
+// clang-format off
 #if !(__cpp_lib_filesystem >= 201603) && (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>))
 namespace std {
     namespace filesystem {
@@ -31,15 +34,18 @@ namespace std {
     }
 }
 #endif
+// clang-format on
 
 namespace Stroika {
     namespace Foundation {
         namespace IO {
             namespace FileSystem {
 
-#if __has_include(<filesystem>) || __has_include(<experimental / filesystem>)
+// clang-format off
+#if __has_include(<filesystem>) || __has_include(<experimental/filesystem>)
                 using namespace std::filesystem;
 #endif
+                // clang-format on
 
                 using Characters::String;
                 using Memory::Byte;
