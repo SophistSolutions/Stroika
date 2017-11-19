@@ -36,7 +36,6 @@
    ...
    fun:_ZNSt17_Function_handlerIFvvEZN12_GLOBAL__N_132RegressionTest18_RWSynchronized_8Private_31Test1_MultipleConcurrentReadersEvEUlvE_E9_M_invokeERKSt9_Any_data
    ...
-   fun:start_thread
 }
 {
    RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part2
@@ -44,7 +43,6 @@
    ...
    fun:_ZNSt17_Function_handlerIFvvEZN12_GLOBAL__N_132RegressionTest18_RWSynchronized_8Private_31Test1_MultipleConcurrentReadersEvEUlvE0_E9_M_invokeERKSt9_Any_data
    ...
-   fun:start_thread
 }
 {
    Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled
