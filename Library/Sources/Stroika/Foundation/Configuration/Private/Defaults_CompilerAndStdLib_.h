@@ -378,7 +378,7 @@ ABORTING...
 #ifndef qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
-#define qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+#define qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy 0
 #endif
