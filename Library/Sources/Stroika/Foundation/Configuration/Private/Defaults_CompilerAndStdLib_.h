@@ -321,6 +321,71 @@ ABORTING...
 #endif
 
 /*
+ *  This ONLY affects arm-linux-gnueabihf-g++-7
+ *
+     LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4 ./Test44
+     =================================================================
+     ==16307==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ea13180 at pc 0x553b760d bp 0x7ea1315c sp 0x7ea13154
+     READ of size 4 at 0x7ea13180 thread T0
+     #0 0x553b760b in std::initializer_list<Stroika::Foundation::Characters::String>::begin() const /usr/arm-linux-gnueabihf/include/c++/7/initializer_list:75
+     #1 0x553b1a0f in Stroika::Foundation::Characters::String const* std::begin<Stroika::Foundation::Characters::String>(std::initializer_list<Stroika::Foundation::Characters::String>) /usr/arm-linux-gnueabihf/include/c++/7/initializer_list:90
+     #2 0x553b771b in void Stroika::Foundation::Containers::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Containers::DefaultTraits::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::DefaultEqualsComparer<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<Stroika::Foundation::Characters::String> > > >::AddAll<std::initializer_list<Stroika::Foundation::Characters::String>, void>(std::initializer_list<Stroika::Foundation::Characters::String> const&) ../../Characters/../Containers/Set.inl:138
+     #3 0x553b1aab in Stroika::Foundation::Containers::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Containers::DefaultTraits::Set<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::DefaultEqualsComparer<Stroika::Foundation::Characters::String, Stroika::Foundation::Common::ComparerWithEquals<Stroika::Foundation::Characters::String> > > >::Set(std::initializer_list<Stroika::Foundation::Characters::String> const&) ../../Characters/../Containers/Set.inl:41
+     #4 0x556b8b17 in ReadMountInfo_MTabLikeFile_ /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:135
+     #5 0x556b94b7 in ReadMountInfo_FromProcFSMounts_ /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:153
+     #6 0x556baa3f in Stroika::Foundation::IO::FileSystem::GetMountedFilesystems() /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/IO/FileSystem/MountedFilesystem.cpp:305
+     #7 0x553a6ccb in DoTest /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:140
+     #8 0x553a76a5 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:165
+     #9 0x553ed22f in Stroika::TestHarness::PrintPassOrFail(void (*)()) /home/lewis/Sandbox/Stroika-Dev/Tests/44/../TestHarness/TestHarness.cpp:81
+     #10 0x553a76eb in main /home/lewis/Sandbox/Stroika-Dev/Tests/44/Test.cpp:173
+     #11 0x762b6677 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x16677)
+
+     Address 0x7ea13180 is located in stack of thread T0
+     SUMMARY: AddressSanitizer: stack-use-after-scope /usr/arm-linux-gnueabihf/include/c++/7/initializer_list:75 in std::initializer_list<Stroika::Foundation::Characters::String>::begin() const
+     Shadow bytes around the buggy address:
+     0x2fd425e0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd425f0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42600: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42610: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42620: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     =>0x2fd42630:[f8]f8 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42640: 00 00 00 00 f8 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42650: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42660: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42670: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     0x2fd42680: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+     Shadow byte legend (one shadow byte represents 8 application bytes):
+     Addressable:           00
+     Partially addressable: 01 02 03 04 05 06 07
+     Heap left redzone:       fa
+     Freed heap region:       fd
+     Stack left redzone:      f1
+     Stack mid redzone:       f2
+     Stack right redzone:     f3
+     Stack after return:      f5
+     Stack use after scope:   f8
+     Global redzone:          f9
+     Global init order:       f6
+     Poisoned by user:        f7
+     Container overflow:      fc
+     Array cookie:            ac
+     Intra object redzone:    bb
+     ASan internal:           fe
+     Left alloca redzone:     ca
+     Right alloca redzone:    cb
+ *
+ */
+#ifndef qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
+#define qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 1)))
+#else
+#define qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy 0
+#endif
+
+#endif
+
+/*
  */
 #ifndef qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy
 
