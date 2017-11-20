@@ -81,11 +81,23 @@ namespace {
 
             void SingleProcessLargeDataSend_ ()
             {
-                Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>::New (k16MB_);
+				/*
+				 *	"Valgrind's memory management: out of memory:"
+				 *	This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
+				 */
+#if qStroika_FeatureSupported_Valgrind && qDebug
+				Streams::MemoryStream<Byte>::Ptr myStdIn = Streams::MemoryStream<Byte>::New (RUNNING_ON_VALGRIND ? k1K_ : k16MB_);
+#else
+				Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>::New (k16MB_);
+#endif
                 Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
                 ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
                 pr.Run ();
-                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
+#if qStroika_FeatureSupported_Valgrind && qDebug
+				VerifyTestResult (myStdOut.ReadAll () == (RUNNING_ON_VALGRIND? k1K_ : k16MB_));
+#else
+				VerifyTestResult (myStdOut.ReadAll () == k16MB_);
+#endif
             }
         }
         void DoTests ()
@@ -112,11 +124,23 @@ namespace {
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
                 VerifyTestResult (myStdOut.ReadNonBlocking ().IsMissing ()); // sb no data available, but NOT EOF
-                myStdIn.Write (k16MB_);
+				/*
+				 *	"Valgrind's memory management: out of memory:"
+				 *	This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
+				 */
+#if qStroika_FeatureSupported_Valgrind && qDebug
+				myStdIn.Write (RUNNING_ON_VALGRIND ? k1K_ : k16MB_);
+#else
+				myStdIn.Write (k16MB_);
+#endif
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();
                 myStdOut.CloseWrite (); // one process done, no more writes to this stream
-                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
+#if qStroika_FeatureSupported_Valgrind && qDebug
+				VerifyTestResult (myStdOut.ReadAll () == (RUNNING_ON_VALGRIND ? k1K_ : k16MB_));
+#else
+				VerifyTestResult (myStdOut.ReadAll () == k16MB_);
+#endif
             }
         }
         void DoTests ()
