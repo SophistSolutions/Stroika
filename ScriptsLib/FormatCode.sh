@@ -29,5 +29,5 @@ fi
 
 for filePattern in "${@:2}"
 do
-    $FIND $dirPattern -name $filePattern -exec sh -c "(($EXPAND --tabs=4 {} | $FORMATTER --assume-filename={} > {}.tmp) || rm -f {}.tmp && exit 1) && if cmp -s {} {}.tmp ; then rm {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
+    $FIND $dirPattern -name $filePattern -exec sh -c "$EXPAND --tabs=4 {} | $FORMATTER --assume-filename={} > {}.tmp && if cmp -s {} {}.tmp ; then rm {}.tmp; else echo Updating {} && mv {}.tmp {} ; fi" \;
 done
