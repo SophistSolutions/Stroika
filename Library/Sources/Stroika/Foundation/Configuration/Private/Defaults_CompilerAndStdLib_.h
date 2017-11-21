@@ -323,6 +323,8 @@ ABORTING...
 /*
  *  This ONLY affects arm-linux-gnueabihf-g++-7
  *
+ *	https://stroika.atlassian.net/browse/STK-631
+ *
      LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4 ./Test44
      =================================================================
      ==16307==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7ea13180 at pc 0x553b760d bp 0x7ea1315c sp 0x7ea13154

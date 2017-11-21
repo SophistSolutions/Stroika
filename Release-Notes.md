@@ -17,39 +17,12 @@ History
 
 
 
-
-
-
-
-
-
-
-
-#if 0
-
-<<<<REVIEW AND CLOSE BEFORE RELEASE>>>>
-
-    testing workaround for https://stroika.atlassian.net/browse/STK-629
-
-
-
-
-<<<<REVIEW AND CLOSE BEFORE RELEASE>>>>
-
-    https://stroika.atlassian.net/browse/STK-628 valgrind helgrind suppression
-
-
-#endif
-
      
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a222">v2.0a222x</a><br/>2017-11-20xxxx</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a222">v2.0a222</a><br/>2017-11-21</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a221...v2.0a222</li>
-		<li>XXXXXXXXXXXX</li>
-		<li>XXXXXXXXXXXX</li>
-		<li>XXXXXXXXXXXX</li>
 		<li><b>***NOTEWORTHY BUG FIX****</b>
 		fixed FloatToString () handling of large numers when you havent spefified scientific but it uses scientific anyhow;
 		so dont truncate 3.333e10 to 3.333e1 - and added regtest to check</li>
@@ -109,7 +82,10 @@ History
 				<li>document and add requires for CondtionVariable<>::wait* calls REQUIRE (and ENSURE) l.owns_lock()) - to try and address valgrind warning</li>
 				<li>Cleanups of conditionvaraible (my wrapper) class. (https://stroika.atlassian.net/browse/STK-623) - wait_until wrapper rewritten, now much cleaer</li>
 				<li>set sThreadAbortCheckFrequency_Default{2.5}</li>
-				<li> https://stroika.atlassian.net/browse/STK-629  change in WaitableEvent is not needed - pretty sure. Anlyzed docs in http://en.cppreference.com/w/cpp/thread/condition_variable and that lock doesnt seem needed</li>
+				<li>https://stroika.atlassian.net/browse/STK-629  change in WaitableEvent is not needed - pretty sure. 
+				Anlyzed docs in http://en.cppreference.com/w/cpp/thread/condition_variable and that lock doesnt seem needed</li>
+				<li>testing workaround for https://stroika.atlassian.net/browse/STK-629. This maybe a fix, or maybe just a workaround - must review and at least
+				document better before I can close.</li>
 			</ul>
 		</li>
 		<li>Docs about Sleep() functions; and used 100ms instead of .1 in etc i a bunch of places (reads nicer)</li>
@@ -132,7 +108,7 @@ History
 				<li>macos realpath build helper</li>
 				<li>losen matching on one Valgrind-Helgrind-Common.supp rule so works on debug version of code under valgrind</li>
 				<li>workaround for https://stroika.atlassian.net/browse/STK-626 - valgrind exception</li>
-				<li>another variation on https://stroika.atlassian.net/browse/STK-628 helgrind suppression rule</li>
+				<li>https://stroika.atlassian.net/browse/STK-628 helgrind suppression rule (dubious: associated lock is not held by any thread - __condvar_cancel_waiting )</li>
 				<li>helgrind RegressionTest18_RWSynchronized generalized matching in supression rule so works with more compilers</li>
 				<li>fixed FormatCode to NOT destroy files if missing clang-foramt</li>
 				<li>Lose legacy astyle support from FormatCode.sh script (just use clang-format)</li>
@@ -143,7 +119,7 @@ History
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a222-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
-				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode9,Windows-VS2k17}-2.0a222-OUT.txt</li>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Ubuntu1604,MacOS-XCode9,Windows-VS2k17}-2.0a222-OUT.txt</li>
 				<li>vc++2k17</li>
 				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
 				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
