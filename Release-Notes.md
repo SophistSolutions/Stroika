@@ -53,18 +53,7 @@ History
 		<li><b>***NOTEWORTHY BUG FIX****</b>
 		fixed FloatToString () handling of large numers when you havent spefified scientific but it uses scientific anyhow;
 		so dont truncate 3.333e10 to 3.333e1 - and added regtest to check</li>
-		<li>start experimenting with including new filesystem code into Stroika</li>
-		<li>Docs about Sleep() functions; and used 100ms instead of .1 in etc i a bunch of places (reads nicer)</li>
-		<li>updated GetMessageForMissingTool.sh for better messages under darwin/macos</li>
-		<li>ModuleGetterSetter<T, IMPL>::SynchonizedUpdate () helper</li>
-		<li>Docs Improvements
-			<ul>
-				<li>DiscreteRange</li>
-				<li>added Range<> CTOR example docs and corresponding regtest</li>
-				<li>Cleanup docs on Queue</li>
-				<li>docs about what compiler versions are supported</li>
-			</ul>
-		</li>
+		<li>start experimenting with including new std::filesystem code into Stroika</li>
 		<li>Compilers supported and Compiler Bug Workarounds
 			<ul>
 				<li>Re-instate support for gcc 5.4 because its used by Ubuntu 1604 - the current LTS Ubuntu (keep til it 1804 available)</li>
@@ -105,6 +94,7 @@ History
 				</li>
 				<li>Xerces
 					<ul>
+						<li>Use new Xerces 3.2</li>
 						<li>Xerces build process, rewrite to use cmake on windows and Unix</li>
 						<li>https://stroika.atlassian.net/browse/STK-625 - got Xerces 3.2 building/working on Windows (using cmake)- inperfect, and needs cleanup</li>
 						<li>https://stroika.atlassian.net/browse/STK-625 qFeatureFlag_PrivateOverrideOfCMake feature supported in config</li>
@@ -122,6 +112,16 @@ History
 				<li> https://stroika.atlassian.net/browse/STK-629  change in WaitableEvent is not needed - pretty sure. Anlyzed docs in http://en.cppreference.com/w/cpp/thread/condition_variable and that lock doesnt seem needed</li>
 			</ul>
 		</li>
+		<li>Docs about Sleep() functions; and used 100ms instead of .1 in etc i a bunch of places (reads nicer)</li>
+		<li>ModuleGetterSetter<T, IMPL>::SynchonizedUpdate () helper</li>
+		<li>Docs Improvements
+			<ul>
+				<li>DiscreteRange</li>
+				<li>added Range<> CTOR example docs and corresponding regtest</li>
+				<li>Cleanup docs on Queue</li>
+				<li>docs about what compiler versions are supported</li>
+			</ul>
+		</li>
 		<li>Build and Test Scripts
 			<ul>
 				<li>Fixed ScriptsLib/RunArgumentsWithCommonBuildVars.pl so exit > 0 if sub process fails (so failed compiles top compile</li>
@@ -137,6 +137,7 @@ History
 				<li>fixed FormatCode to NOT destroy files if missing clang-foramt</li>
 				<li>Lose legacy astyle support from FormatCode.sh script (just use clang-format)</li>
 				<li>workaround excessive memory/time demand of valgrind on a couple (pipe) test, and use smaller numbers on debug/valgrind runs</li>
+				<li>updated GetMessageForMissingTool.sh for better messages under darwin/macos</li>
 			</ul>
 		</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a222-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
