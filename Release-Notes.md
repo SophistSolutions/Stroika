@@ -19,6 +19,156 @@ History
 
 
 
+
+
+
+
+
+
+#if 0
+
+<<<<REVIEW AND CLOSE BEFORE RELEASE>>>>
+
+    testing workaround for https://stroika.atlassian.net/browse/STK-629
+
+
+
+
+<<<<REVIEW AND CLOSE BEFORE RELEASE>>>>
+
+    https://stroika.atlassian.net/browse/STK-628 valgrind helgrind suppression
+
+
+#endif
+
+     
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a222">v2.0a222x</a><br/>2017-11-20xxxx</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a221...v2.0a222</li>
+		<li>XXXXXXXXXXXX</li>
+		<li>XXXXXXXXXXXX</li>
+		<li>XXXXXXXXXXXX</li>
+		<li><b>***NOTEWORTHY BUG FIX****</b>
+		fixed FloatToString () handling of large numers when you havent spefified scientific but it uses scientific anyhow;
+		so dont truncate 3.333e10 to 3.333e1 - and added regtest to check</li>
+		<li>start experimenting with including new filesystem code into Stroika</li>
+		<li>Docs about Sleep() functions; and used 100ms instead of .1 in etc i a bunch of places (reads nicer)</li>
+		<li>updated GetMessageForMissingTool.sh for better messages under darwin/macos</li>
+		<li>ModuleGetterSetter<T, IMPL>::SynchonizedUpdate () helper</li>
+		<li>Docs Improvements
+			<ul>
+				<li>DiscreteRange</li>
+				<li>added Range<> CTOR example docs and corresponding regtest</li>
+				<li>Cleanup docs on Queue</li>
+				<li>docs about what compiler versions are supported</li>
+			</ul>
+		</li>
+		<li>Compilers supported and Compiler Bug Workarounds
+			<ul>
+				<li>Re-instate support for gcc 5.4 because its used by Ubuntu 1604 - the current LTS Ubuntu (keep til it 1804 available)</li>
+				<li>replace my-gcc-5.4.0-release config using ~/gcc-5.4.0 with g++-5 since gcc5 no longer compiles with latest gcc(72)</li>
+				<li>qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy and start working around, and related - use std::snprintf instead of ::snprintf for gcc5 on new ubuntu</li>
+				<li>RaspberryPi/ARM
+					<ul>
+						<li>add to raspberrypi-gcc-7 configuraiton  --append-extra-compiler-args -Wno-psabi to silence a bunch of warnings</li>
+						<li>https://stroika.atlassian.net/browse/STK-627 - suppress gcc arm warning about ABI change</li>
+						<li>rename CONFIG raspberrypi_valgrind_gcc-6_NoBlockAlloc to raspberrypi_valgrind_gcc-7_NoBlockAlloc and use arm gcc7 compiler</li>
+						<li>switch test raspberrypi-gcc-6-sanitize to raspberrypi-gcc-7-sanitize</li>
+						<li>raspberrypi-gcc-7-sanitize  configure uses --append-run-prefix</li>
+						<li>resolve https://stroika.atlassian.net/browse/STK-512 - using the configuraiton RUN_PREFIX to address the raspberrypi issue with asan LD_PRELOAD requirement</li>
+						<li>workaround qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy</li>
+					</ul>
+				</li>
+				<li>clang++
+					<ul>
+						<li>lose support for clang 3.7 and clang 3.8 (and so also los support for qCompilerAndStdLib_typeidoftemplateinlambda_Buggy and qCompilerAndStdLib_StructFieldMetaInfoOfNestedClassInTemplate_Buggy bug workarounds</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>sqlite 3.21.0</li>
+				<li>OpenSSL
+					<ul>
+						<li>OpenSSL 1.1.0g; Lose support for building openssl 1.0 (just assume 1.1 or later)</li>
+						<li>fixed bug with nmake install on windows for openssl; existed before but was hidden by RunArgumentsWithCommonBuildVars.pl ignoring subscript return errors - now fixed</li>
+					</ul>
+				</li>
+				<li>Curl
+					<ul>
+						<li>curl 7.56.1</li>
+						<li>in building libcurl, also pass along CXX/AR/RANLIB to configure</li>
+					</ul>
+				</li>
+				<li>Xerces
+					<ul>
+						<li>Xerces build process, rewrite to use cmake on windows and Unix</li>
+						<li>https://stroika.atlassian.net/browse/STK-625 - got Xerces 3.2 building/working on Windows (using cmake)- inperfect, and needs cleanup</li>
+						<li>https://stroika.atlassian.net/browse/STK-625 qFeatureFlag_PrivateOverrideOfCMake feature supported in config</li>
+						<li>CURRENT is now read-only, and we configure in subdir of IntermediateFiles</li>
+						<li>https://stroika.atlassian.net/browse/STK-43 - mark closed due to new cmake based xerces and only need to worry about (cuz we only test) building on win10</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>ConditionVariable/WaitableEvent/Synchronized
+			<ul>
+				<li>document and add requires for CondtionVariable<>::wait* calls REQUIRE (and ENSURE) l.owns_lock()) - to try and address valgrind warning</li>
+				<li>Cleanups of conditionvaraible (my wrapper) class. (https://stroika.atlassian.net/browse/STK-623) - wait_until wrapper rewritten, now much cleaer</li>
+				<li>set sThreadAbortCheckFrequency_Default{2.5}</li>
+				<li> https://stroika.atlassian.net/browse/STK-629  change in WaitableEvent is not needed - pretty sure. Anlyzed docs in http://en.cppreference.com/w/cpp/thread/condition_variable and that lock doesnt seem needed</li>
+			</ul>
+		</li>
+		<li>Build and Test Scripts
+			<ul>
+				<li>Fixed ScriptsLib/RunArgumentsWithCommonBuildVars.pl so exit > 0 if sub process fails (so failed compiles top compile</li>
+				<li>small cleanup to Library/Projects/VisualStudio.Net-2017/SetupBuildCommonVars.pl</li>
+				<li>for Tests makefile - run-tests target - lose REMOTE_RUN_PREFIX - and just use RUN_PREFIX configuration arg</li>
+				<li>have to losen up valgrind helgrind check for debug build cuz more names on stack</li>
+				<li>Added VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc configuration, and added running valgrind (memcheck and helgrind) check on it to regression tests</li>
+				<li>macos realpath build helper</li>
+				<li>losen matching on one Valgrind-Helgrind-Common.supp rule so works on debug version of code under valgrind</li>
+				<li>workaround for https://stroika.atlassian.net/browse/STK-626 - valgrind exception</li>
+				<li>another variation on https://stroika.atlassian.net/browse/STK-628 helgrind suppression rule</li>
+				<li>helgrind RegressionTest18_RWSynchronized generalized matching in supression rule so works with more compilers</li>
+				<li>fixed FormatCode to NOT destroy files if missing clang-foramt</li>
+				<li>Lose legacy astyle support from FormatCode.sh script (just use clang-format)</li>
+				<li>workaround excessive memory/time demand of valgrind on a couple (pipe) test, and use smaller numbers on debug/valgrind runs</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a222-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,MacOS-XCode9,Windows-VS2k17}-2.0a222-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
      
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a221">v2.0a221</a><br/>2017-10-25</td>
