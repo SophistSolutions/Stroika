@@ -323,7 +323,7 @@ ABORTING...
 /*
  *  This ONLY affects arm-linux-gnueabihf-g++-7
  *
- *	https://stroika.atlassian.net/browse/STK-631
+ *  https://stroika.atlassian.net/browse/STK-631
  *
      LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4 ./Test44
      =================================================================
