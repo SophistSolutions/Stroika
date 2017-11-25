@@ -1146,7 +1146,7 @@ void String::AsUTF16 (u16string* into) const
 
         // @todo FIX - WRONG but adequate for now
         for (const Character* ci = cp; ci < cp + n; ++ci) {
-            into->append (1, ci->As<char16_t> ());
+            into->append (1, static_cast<char16_t> (ci->As<char32_t> ()));
         }
     }
 }
