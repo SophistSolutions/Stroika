@@ -337,6 +337,8 @@ namespace Stroika {
                 String (const wchar_t* from, const wchar_t* to);
                 String (const Character* from, const Character* to);
                 String (const wstring& r);
+                String (const u16string& r);
+                String (const u32string& r);
                 String (const Iterable<Character>& src);
                 String (const String& from) noexcept;
                 String (String&& from) noexcept;
@@ -977,6 +979,20 @@ namespace Stroika {
                 nonvirtual void AsUTF8 (T* into) const;
                 nonvirtual string AsUTF8 () const;
                 nonvirtual void AsUTF8 (string* into) const;
+
+            public:
+                /**
+                 * Convert String losslessly into a standard C++ type u16string.
+                 */
+                nonvirtual u16string AsUTF16 () const;
+                nonvirtual void AsUTF16 (u16string* into) const;
+
+            public:
+                /**
+                 * Convert String losslessly into a standard C++ type u32string.
+                 */
+                nonvirtual u32string AsUTF32 () const;
+                nonvirtual void AsUTF32 (u32string* into) const;
 
             public:
                 /**

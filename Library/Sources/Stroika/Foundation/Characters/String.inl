@@ -139,6 +139,16 @@ namespace Stroika {
             {
                 _AssertRepValidType ();
             }
+            inline String::String (const u16string& r)
+                : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
+            {
+                _AssertRepValidType ();
+            }
+            inline String::String (const u32string& r)
+                : inherited (r.empty () ? mkEmpty_ () : mk_ (r.data (), r.data () + r.length ()))
+            {
+                _AssertRepValidType ();
+            }
             inline String::String (const char16_t* from, const char16_t* to)
                 : inherited ((from == to) ? mkEmpty_ () : mk_ (from, to))
             {
@@ -452,6 +462,18 @@ namespace Stroika {
             {
                 RequireNotNull (into);
                 AsUTF8<string> (into);
+            }
+            inline u16string String::AsUTF16 () const
+            {
+                u16string r;
+                AsUTF16 (&r);
+                return r;
+            }
+            inline u32string String::AsUTF32 () const
+            {
+                u32string r;
+                AsUTF32 (&r);
+                return r;
             }
             template <>
             inline string String::AsASCII () const

@@ -1129,6 +1129,50 @@ void String::AsUTF8 (string* into) const
     WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), kCodePage_UTF8, into);
 }
 
+void String::AsUTF16 (u16string* into) const
+{
+    RequireNotNull (into);
+    _SafeReadRepAccessor accessor{this};
+    size_t               n{accessor._ConstGetRep ()._GetLength ()};
+    const Character*     cp = accessor._ConstGetRep ().Peek ();
+    if (sizeof (wchar_t) == sizeof (char16_t)) {
+        Assert (sizeof (Character) == sizeof (char16_t));
+        const char16_t* wcp = (const char16_t*)cp;
+        into->assign (wcp, wcp + n);
+    }
+    else {
+        // @todo https://stroika.atlassian.net/browse/STK-506
+        Assert (sizeof (char16_t) != sizeof (wchar_t));
+
+        // @todo FIX - WRONG but adequate for now
+        for (const Character* ci = cp; ci < cp + n; ++ci) {
+            into->append (1, ci->As<char16_t> ());
+        }
+    }
+}
+
+void String::AsUTF32 (u32string* into) const
+{
+    RequireNotNull (into);
+    _SafeReadRepAccessor accessor{this};
+    size_t               n{accessor._ConstGetRep ()._GetLength ()};
+    const Character*     cp = accessor._ConstGetRep ().Peek ();
+    if (sizeof (wchar_t) == sizeof (char32_t)) {
+        Assert (sizeof (Character) == sizeof (char16_t));
+        const char32_t* wcp = (const char32_t*)cp;
+        into->assign (wcp, wcp + n);
+    }
+    else {
+        // @todo https://stroika.atlassian.net/browse/STK-506
+        Assert (sizeof (char32_t) != sizeof (wchar_t));
+
+        // @todo FIX - WRONG but adequate for now
+        for (const Character* ci = cp; ci < cp + n; ++ci) {
+            into->append (1, ci->As<char32_t> ());
+        }
+    }
+}
+
 void String::AsSDKString (SDKString* into) const
 {
     RequireNotNull (into);
