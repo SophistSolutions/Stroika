@@ -147,6 +147,8 @@ namespace Stroika {
 
             template <>
             wchar_t Character::As () const;
+            template <>
+            char32_t Character::As () const;
 
             /**
              *  operator indirects to Character::Compare()

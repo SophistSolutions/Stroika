@@ -60,6 +60,11 @@ namespace Stroika {
             {
                 return GetCharacterCode ();
             }
+            template <>
+            inline char32_t Character::As () const
+            {
+                return GetCharacterCode ();
+            }
             inline bool Character::IsASCII () const
             {
                 return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
