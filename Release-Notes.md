@@ -19,6 +19,44 @@ History
 
      
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a223">v2.0a223</a><br/>2017-11-26</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a222...v2.0a223</li>
+		<li>Start support for u16string and u32string CTOR and AsUTF16 and AsUTF32; char32_t support in Charcter class</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a223-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Ubuntu1604,MacOS-XCode9,Windows-VS2k17}-2.0a223-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
+     
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a222">v2.0a222</a><br/>2017-11-21</td>
 <td>
 	<ul>
