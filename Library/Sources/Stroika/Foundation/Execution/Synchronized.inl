@@ -25,16 +25,16 @@ namespace Stroika {
              ******************************** Synchronized_Traits ***************************
              ********************************************************************************
              */
-            template <typename MUTEX>
-            inline void Synchronized_Traits<MUTEX>::LOCK_SHARED (MutexType& m)
+            template <typename MUTEX, bool IS_RECURSIVE, typename READ_LOCK_TYPE, typename WRITE_LOCK_TYPE>
+            inline void Synchronized_Traits<MUTEX, IS_RECURSIVE, READ_LOCK_TYPE, WRITE_LOCK_TYPE>::LOCK_SHARED (MutexType& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::LOCK_SHARED", L"&m=%p", &m};
 #endif
                 m.lock ();
             }
-            template <typename MUTEX>
-            inline void Synchronized_Traits<MUTEX>::UNLOCK_SHARED (MutexType& m)
+            template <typename MUTEX, bool IS_RECURSIVE, typename READ_LOCK_TYPE, typename WRITE_LOCK_TYPE>
+            inline void Synchronized_Traits<MUTEX, IS_RECURSIVE, READ_LOCK_TYPE, WRITE_LOCK_TYPE>::UNLOCK_SHARED (MutexType& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::UNLOCK_SHARED", L"&m=%p", &m};
@@ -42,7 +42,7 @@ namespace Stroika {
                 m.unlock ();
             }
             template <>
-            inline void Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED (shared_timed_mutex& m)
+            inline void Synchronized_Traits<shared_timed_mutex, false, shared_lock<shared_timed_mutex>>::LOCK_SHARED (shared_timed_mutex& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED", L"&m=%p", &m};
@@ -50,7 +50,7 @@ namespace Stroika {
                 m.lock_shared ();
             }
             template <>
-            inline void Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED (shared_timed_mutex& m)
+            inline void Synchronized_Traits<shared_timed_mutex, false, shared_lock<shared_timed_mutex>>::UNLOCK_SHARED (shared_timed_mutex& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED", L"&m=%p", &m};

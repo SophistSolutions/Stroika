@@ -70,12 +70,28 @@ namespace Stroika {
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
              *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
              */
-            template <typename MUTEX = recursive_mutex>
+            template <typename MUTEX          = recursive_mutex,
+                      bool IS_RECURSIVE       = std::is_same_v<MUTEX, recursive_mutex> or std::is_same_v<MUTEX, recursive_timed_mutex>,
+                      typename READ_LOCK_TYPE = conditional_t<
+                          is_same_v<MUTEX, shared_timed_mutex>
+#if __cpp_lib_shared_mutex >= 201505
+                              or is_same_v<MUTEX, shared_mutex>
+#endif
+                          ,
+                          shared_lock<MUTEX>, unique_lock<MUTEX>>,
+                      typename WRITE_LOCK_TYPE = unique_lock<MUTEX>>
             struct Synchronized_Traits {
                 using MutexType = MUTEX;
 
                 static void LOCK_SHARED (MutexType& m);
                 static void UNLOCK_SHARED (MutexType& m);
+
+                /// PROTOTYPE - TO REPLACE LOCK_SHARED_UNLOCK_SHARED
+                using ReadLockType  = READ_LOCK_TYPE;
+                using WriteLockType = WRITE_LOCK_TYPE;
+
+                // Used internally for assertions that the synchonized object is used safely. If you mean to use differntly, specailize
+                static constexpr bool kAllowRecursive = IS_RECURSIVE;
             };
 
             /**
