@@ -71,11 +71,11 @@ namespace Stroika {
              *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
              */
             template <typename MUTEX          = recursive_mutex,
-                      bool IS_RECURSIVE       = std::is_same_v<MUTEX, recursive_mutex> or std::is_same_v<MUTEX, recursive_timed_mutex>,
+                      bool IS_RECURSIVE       = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
                       typename READ_LOCK_TYPE = conditional_t<
-                          is_same_v<MUTEX, shared_timed_mutex>
+                          is_same<MUTEX, shared_timed_mutex>::value
 #if __cpp_lib_shared_mutex >= 201505
-                              or is_same_v<MUTEX, shared_mutex>
+                              or is_same<MUTEX, shared_mutex>::value
 #endif
                           ,
                           shared_lock<MUTEX>, unique_lock<MUTEX>>,
