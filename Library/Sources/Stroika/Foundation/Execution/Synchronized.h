@@ -13,6 +13,7 @@
 #include "../Configuration/TypeHints.h"
 
 #include "Common.h"
+#include "SpinLock.h"
 
 /**
  *  \file
@@ -489,13 +490,18 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             auto operator- (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} - T{});
 
-            /**
+/**
              * QuickSynchronized will always use a mutex which is quick, and not a cancelation point. It will typically be
              * implemented using a std::mutex, or a SpinLock, whichever is faster. So - dont use this where you hold
              * onto the lock for extended periods ;-).
              */
+#if qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
+            template <typename T>
+            using QuickSynchronized = Synchronized<T, Synchronized_Traits<SpinLock>>;
+#else
             template <typename T>
             using QuickSynchronized = Synchronized<T, Synchronized_Traits<mutex>>;
+#endif
 
             /**
              * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer. Typically, using shared_timed_mutex,
