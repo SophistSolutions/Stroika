@@ -13,7 +13,7 @@ SHELL=/bin/bash
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
-PER_CONFIGURATION_BUILDS_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
+PER_CONFIGURATION_BUILDS_DIR:=$(SHELL realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
 PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost/
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
@@ -41,6 +41,7 @@ endif
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) configureAndBuild_
 
 
+### Haven't found any backup/mirrors and this only stores the last few versions. @todo - find a better backup! 
 FETCHURLS=
 FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
 
@@ -135,6 +136,7 @@ ifneq (,$(findstring 64,$(CONFIGURATION)))
 CONFIGURE_ARGS_ +=	address-model=64
 endif
 endif
+CONFIGURE_ARGS_ +=	install
 
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring and Building $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR); log2=ConfigureAndBuild.OUT..."
