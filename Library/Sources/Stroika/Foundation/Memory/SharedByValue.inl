@@ -278,7 +278,7 @@ namespace Stroika {
             template <typename... COPY_ARGS>
             inline void SharedByValue<TRAITS>::Assure1Reference (COPY_ARGS&&... copyArgs)
             {
-                if (not fSharedImpl_.use_count () == 1) {
+                if (fSharedImpl_.use_count () > 1) {
                     BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
                 }
             }
