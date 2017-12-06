@@ -93,13 +93,15 @@ check:
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 B2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)b2.exe
+B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)b2.exe
 else
 B2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)b2
+B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)b2
 endif
 
-bootstrapIfNeeded_:	$(B2)
+bootstrapIfNeeded_:	$(B2FullPath)
 
-$(B2):
+$(B2FullPath):
 	$(MAKE) --no-print-directory bootstrap_ MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)
 
 bootstrap_:
@@ -155,6 +157,6 @@ CONFIGURE_ARGS_ +=	install
 
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Configuring and Building and installing to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo b2.exe $(CONFIGURE_ARGS_) > ConfigureAndBuild.OUT)
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (sh -c "./b2.exe $(CONFIGURE_ARGS_) >> ConfigureAndBuild.OUT")
+	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo ./$(B2) $(CONFIGURE_ARGS_) > ConfigureAndBuild.OUT)
+	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (sh -c "./$(B2) $(CONFIGURE_ARGS_) >> ConfigureAndBuild.OUT")
 	@echo done
