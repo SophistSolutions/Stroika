@@ -77,6 +77,7 @@ namespace Stroika {
                 {
                 }
             };
+			constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k;
         }
     }
 }
