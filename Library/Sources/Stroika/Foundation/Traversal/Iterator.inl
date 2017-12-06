@@ -31,30 +31,29 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             **************** Iterator<T, BASE_STD_ITERATOR>::Rep_Cloner_ *******************
+             ****************** Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_ *******************
              ********************************************************************************
              */
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline typename IteratorBase::SharedPtrImplementationTemplate<typename Iterator<T, BASE_STD_ITERATOR>::IRep> Iterator<T, BASE_STD_ITERATOR>::Rep_Cloner_::Copy (const IRep& t)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline typename IteratorBase::SharedPtrImplementationTemplate<typename Iterator<T, ITERATOR_TRAITS>::IRep> Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_::Copy (const IRep& t)
             {
-                return Iterator<T, BASE_STD_ITERATOR>::Clone_ (t);
+                return Iterator<T, ITERATOR_TRAITS>::Clone_ (t);
             }
 
             /*
              ********************************************************************************
-             ************************* Iterator<T, BASE_STD_ITERATOR> ***********************
+             *************************** Iterator<T, ITERATOR_TRAITS> ***********************
              ********************************************************************************
              */
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>::Iterator (const Iterator& from)
-                : inherited ()
-                , fIterator_ (from.fIterator_)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& from)
+                : fIterator_ (from.fIterator_)
                 , fCurrent_ (from.fCurrent_)
             {
                 Require (fIterator_.cget () != nullptr or Done ()); // if not special 'auto-done' we must have legit iterator rep
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>::Iterator (const IteratorRepSharedPtr& rep)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T, ITERATOR_TRAITS>::Iterator (const IteratorRepSharedPtr& rep)
                 : fIterator_ (rep)
                 , fCurrent_ ()
             {
@@ -62,86 +61,86 @@ namespace Stroika {
                 // Reason for cast stuff is to avoid Clone if unneeded.
                 const_cast<IRep*> (rep.get ())->More (&fCurrent_, false);
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>::Iterator (ConstructionFlagForceAtEnd_)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_)
                 : fIterator_ (nullptr)
                 , fCurrent_ ()
             {
                 Assert (Done ());
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>& Iterator<T, BASE_STD_ITERATOR>::operator= (const Iterator& rhs)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
             {
                 Require (rhs.fIterator_.cget () != nullptr or rhs.Done ()); // if not special 'auto-done' we must have legit iterator rep
                 fIterator_ = rhs.fIterator_;
                 fCurrent_  = rhs.fCurrent_;
                 return *this;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline typename Iterator<T, BASE_STD_ITERATOR>::IRep& Iterator<T, BASE_STD_ITERATOR>::GetRep ()
+            template <typename T, typename ITERATOR_TRAITS>
+            inline typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::GetRep ()
             {
                 EnsureNotNull (fIterator_);
                 return *fIterator_;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline const typename Iterator<T, BASE_STD_ITERATOR>::IRep& Iterator<T, BASE_STD_ITERATOR>::GetRep () const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline const typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::GetRep () const
             {
                 EnsureNotNull (fIterator_);
                 return *fIterator_;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline T Iterator<T, BASE_STD_ITERATOR>::Current () const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline T Iterator<T, ITERATOR_TRAITS>::Current () const
             {
                 RequireNotNull (fIterator_);
                 Require (fCurrent_.IsPresent ());
                 return *fCurrent_;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline bool Iterator<T, BASE_STD_ITERATOR>::Done () const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline bool Iterator<T, ITERATOR_TRAITS>::Done () const
             {
                 return fCurrent_.IsMissing ();
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline void Iterator<T, BASE_STD_ITERATOR>::reset ()
+            template <typename T, typename ITERATOR_TRAITS>
+            inline void Iterator<T, ITERATOR_TRAITS>::reset ()
             {
                 *this = GetEmptyIterator ();
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline void Iterator<T, BASE_STD_ITERATOR>::clear ()
+            template <typename T, typename ITERATOR_TRAITS>
+            inline void Iterator<T, ITERATOR_TRAITS>::clear ()
             {
                 *this = GetEmptyIterator ();
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline IteratorOwnerID Iterator<T, BASE_STD_ITERATOR>::GetOwner () const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline IteratorOwnerID Iterator<T, ITERATOR_TRAITS>::GetOwner () const
             {
                 // We could cache this value, but its only used breaking references and in assertions, so its
                 // not clearly worth while
                 return fIterator_ == nullptr ? kUnknownIteratorOwnerID : fIterator_->GetOwner ();
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline T Iterator<T, BASE_STD_ITERATOR>::operator* () const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline T Iterator<T, ITERATOR_TRAITS>::operator* () const
             {
                 Require (not Done ());
                 RequireNotNull (fIterator_);
                 return *fCurrent_;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline auto Iterator<T, BASE_STD_ITERATOR>::operator-> () const -> const value_type*
+            template <typename T, typename ITERATOR_TRAITS>
+            inline auto Iterator<T, ITERATOR_TRAITS>::operator-> () const -> const value_type*
             {
                 Require (not Done ());
                 RequireNotNull (fIterator_);
                 return fCurrent_.peek ();
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T>& Iterator<T, BASE_STD_ITERATOR>::operator++ ()
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T>& Iterator<T, ITERATOR_TRAITS>::operator++ ()
             {
                 Require (not Done ());
                 RequireNotNull (fIterator_);
                 fIterator_->More (&fCurrent_, true);
                 return *this;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T> Iterator<T, BASE_STD_ITERATOR>::operator++ (int)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T> Iterator<T, ITERATOR_TRAITS>::operator++ (int)
             {
                 RequireNotNull (fIterator_);
                 Require (not Done ());
@@ -149,24 +148,24 @@ namespace Stroika {
                 fIterator_->More (&fCurrent_, true);
                 return tmp;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR> Iterator<T, BASE_STD_ITERATOR>::operator+ (int i) const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::operator+ (int i) const
             {
                 Require (i >= 0);
-                Iterator<T, BASE_STD_ITERATOR> tmp{*this};
+                Iterator<T, ITERATOR_TRAITS> tmp{*this};
                 while (i > 0) {
                     --i;
                     ++tmp;
                 }
                 return tmp;
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR>::operator bool () const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T, ITERATOR_TRAITS>::operator bool () const
             {
                 return not Done ();
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline bool Iterator<T, BASE_STD_ITERATOR>::Equals (const Iterator& rhs) const
+            template <typename T, typename ITERATOR_TRAITS>
+            inline bool Iterator<T, ITERATOR_TRAITS>::Equals (const Iterator& rhs) const
             {
                 Require (GetOwner () == rhs.GetOwner () or GetOwner () == kUnknownIteratorOwnerID or rhs.GetOwner () == kUnknownIteratorOwnerID);
                 /*
@@ -188,35 +187,35 @@ namespace Stroika {
                 }
                 Assert (not lDone and not rDone);
                 // assigning to local variables to ensure const version called
-                const Iterator<T, BASE_STD_ITERATOR>::IRep* lhsRep = fIterator_.cget ();
-                const Iterator<T, BASE_STD_ITERATOR>::IRep* rhsRep = rhs.fIterator_.cget ();
+                const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = fIterator_.cget ();
+                const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.cget ();
                 Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
                 return lhsRep->Equals (rhsRep);
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline typename Iterator<T, BASE_STD_ITERATOR>::IteratorRepSharedPtr Iterator<T, BASE_STD_ITERATOR>::Clone_ (const typename Iterator<T, BASE_STD_ITERATOR>::IRep& rep)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline typename Iterator<T, ITERATOR_TRAITS>::IteratorRepSharedPtr Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep)
             {
                 return rep.Clone ();
             }
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline Iterator<T, BASE_STD_ITERATOR> Iterator<T, BASE_STD_ITERATOR>::GetEmptyIterator ()
+            template <typename T, typename ITERATOR_TRAITS>
+            inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator ()
             {
-                return Iterator<T, BASE_STD_ITERATOR> (ConstructionFlagForceAtEnd_::ForceAtEnd);
+                return Iterator<T, ITERATOR_TRAITS> (ConstructionFlagForceAtEnd_::ForceAtEnd);
             }
 
             /*
              ********************************************************************************
-             ************************* Iterator operators ***********************************
+             **************************** Iterator operators ********************************
              ********************************************************************************
              */
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline bool operator== (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline bool operator== (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs)
             {
                 return lhs.Equals (rhs);
             }
 
-            template <typename T, typename BASE_STD_ITERATOR>
-            inline bool operator!= (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs)
+            template <typename T, typename ITERATOR_TRAITS>
+            inline bool operator!= (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs)
             {
                 return not lhs.Equals (rhs);
             }

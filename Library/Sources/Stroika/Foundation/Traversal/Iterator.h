@@ -149,6 +149,19 @@ namespace Stroika {
             };
 
             /**
+             *  Identical type to std::iterator<> - but duplicated here because std::iterator<> was deprecated in C++17.
+             *  We just need a handy way to capture all the defaults/properties for our iterator class.
+             */
+            template <typename CATEGORY, typename T, typename DIFF = ptrdiff_t, typename POINTER = T*, typename REFERENCE = T&>
+            struct DefaultIteratorTraits {
+                using iterator_category = CATEGORY;
+                using value_type        = T;
+                using difference_type   = DIFF;
+                using pointer           = POINTER;
+                using reference         = REFERENCE;
+            };
+
+            /**
              *  \brief
              *      An Iterator<T> is a copyable object which allows traversing the contents of some container.
              *
@@ -260,16 +273,37 @@ namespace Stroika {
              *
              *          <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              */
-            template <typename T, typename BASE_STD_ITERATOR = std::iterator<forward_iterator_tag, T>>
-            class Iterator : public BASE_STD_ITERATOR, public IteratorBase {
-            private:
-                using inherited = BASE_STD_ITERATOR;
+            template <typename T, typename ITERATOR_TRAITS = DefaultIteratorTraits<forward_iterator_tag, T>>
+            class Iterator : public IteratorBase {
+            public:
+                /**
+                 *  \brief  difference_type = typename ITERATOR_TRAITS::difference_type;
+                 */
+                using difference_type = typename ITERATOR_TRAITS::difference_type;
 
             public:
                 /**
-                 *  \brief  value_type = typename BASE_STD_ITERATOR::value_type;
+                 *  \brief  value_type = typename ITERATOR_TRAITS::value_type;
                  */
-                using value_type = typename BASE_STD_ITERATOR::value_type;
+                using value_type = typename ITERATOR_TRAITS::value_type;
+
+            public:
+                /**
+                 *  \brief  pointer = typename ITERATOR_TRAITS::pointer;
+                 */
+                using pointer = typename ITERATOR_TRAITS::pointer;
+
+            public:
+                /**
+                 *  \brief  reference = typename ITERATOR_TRAITS::reference;
+                 */
+                using reference = typename ITERATOR_TRAITS::reference;
+
+            public:
+                /**
+                 *  \brief  iterator_category = typename ITERATOR_TRAITS::iterator_category;
+                 */
+                using iterator_category = typename ITERATOR_TRAITS::iterator_category;
 
             public:
                 class IRep;
@@ -609,8 +643,8 @@ namespace Stroika {
              *          (note that for performance and thread safety reasons the iterator envelope
              *           actually passes fCurrent_ into More when implenenting ++it
              */
-            template <typename T, typename BASE_STD_ITERATOR>
-            class Iterator<T, BASE_STD_ITERATOR>::IRep {
+            template <typename T, typename ITERATOR_TRAITS>
+            class Iterator<T, ITERATOR_TRAITS>::IRep {
             protected:
                 IRep () = default;
 
@@ -618,7 +652,7 @@ namespace Stroika {
                 virtual ~IRep () = default;
 
             public:
-                using IteratorRepSharedPtr = typename Iterator<T, BASE_STD_ITERATOR>::IteratorRepSharedPtr;
+                using IteratorRepSharedPtr = typename Iterator<T, ITERATOR_TRAITS>::IteratorRepSharedPtr;
 
             public:
                 /**
@@ -664,14 +698,14 @@ namespace Stroika {
             /**
              *  \brief  operator== is a shorthand for lhs.Equals (rhs)
              */
-            template <typename T, typename BASE_STD_ITERATOR>
-            bool operator== (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
+            template <typename T, typename ITERATOR_TRAITS>
+            bool operator== (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs);
 
             /**
              *  \brief  operator== is a shorthand for not lhs.Equals (rhs)
              */
-            template <typename T, typename BASE_STD_ITERATOR>
-            bool operator!= (const Iterator<T, BASE_STD_ITERATOR>& lhs, const Iterator<T, BASE_STD_ITERATOR>& rhs);
+            template <typename T, typename ITERATOR_TRAITS>
+            bool operator!= (const Iterator<T, ITERATOR_TRAITS>& lhs, const Iterator<T, ITERATOR_TRAITS>& rhs);
 
             /**
              *  Sometimes (especially when interacting with low level code) its handy to convert an iterator
