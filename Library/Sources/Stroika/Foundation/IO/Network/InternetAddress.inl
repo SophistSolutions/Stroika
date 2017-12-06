@@ -82,7 +82,7 @@ namespace Stroika {
                     }
                 }
                 inline
-#if !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if __cpp_designators && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
@@ -92,7 +92,7 @@ namespace Stroika {
                 {
                     Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))
                 }
-#elif qPlatform_Windows && !qCompilerAndStdLib_union_designators_Buggy
+#elif qPlatform_Windows && __cpp_designators
                     , fV4_ ({{.S_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))}})
 #endif
                 {
@@ -101,12 +101,12 @@ namespace Stroika {
 
 //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
 // in left-to-right order. Network order is big-endian
-#if qPlatform_Windows && qCompilerAndStdLib_union_designators_Buggy
+#if qPlatform_Windows && !__cpp_designators
                     fV4_.s_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24));
 #endif
                 }
                 inline
-#if !qCompilerAndStdLib_union_designators_Buggy && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if __cpp_designators && !qCompilerAndStdLib_constexpr_union_variants_Buggy
                     constexpr
 #endif
                     InternetAddress::InternetAddress (IPv4AddressOctets octets)

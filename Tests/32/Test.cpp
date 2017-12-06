@@ -696,13 +696,20 @@ namespace Stroika {
     namespace Foundation {
         namespace Configuration {
             template <>
-            const EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::k = EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::BasicArrayInitializer{
+            struct DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> : EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> {
+                static constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> k{
+                    EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::BasicArrayInitializer{
+                        {
+                            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT1, L"eT1"},
+                            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT2, L"eT2"},
+                            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT3, L"eT3"},
+                            {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT4, L"eT4"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> (k)
                 {
-                    {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT1, L"eT1"},
-                    {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT2, L"eT2"},
-                    {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT3, L"eT3"},
-                    {T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_::eT4, L"eT4"},
-                }};
+                }
+            };
         }
     }
 }
@@ -1127,13 +1134,20 @@ namespace Stroika {
         namespace Configuration {
             // for ToString ()
             template <>
-            const EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k = EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{
+            struct DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> : EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> {
+                static constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> k{
+                    EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::BasicArrayInitializer{
+                        {
+                            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT1, L"eT1"},
+                            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT2, L"eT2"},
+                            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT3, L"eT3"},
+                            {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT4, L"eT4"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> (k)
                 {
-                    {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT1, L"eT1"},
-                    {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT2, L"eT2"},
-                    {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT3, L"eT3"},
-                    {T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_::eT4, L"eT4"},
-                }};
+                }
+            };
         }
     }
 }
