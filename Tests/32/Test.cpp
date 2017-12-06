@@ -710,6 +710,7 @@ namespace Stroika {
                 {
                 }
             };
+            constexpr EnumNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_> DefaultNames<T7_SAXObjectReader_BLKQCL_ReadSensors_::TunerNumberType_>::k;
         }
     }
 }
@@ -1148,6 +1149,7 @@ namespace Stroika {
                 {
                 }
             };
+            constexpr EnumNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_> DefaultNames<T11_SAXObjectReader_BLKQCL_GetFactorySettings_Tuners_::TunerNumberType_>::k;
         }
     }
 }
