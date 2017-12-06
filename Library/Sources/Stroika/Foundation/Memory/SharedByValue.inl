@@ -253,7 +253,6 @@ namespace Stroika {
                         return SharedByValue_State::eNull;
                     case 1:
                         Assert (fSharedImpl_.get () != nullptr);
-                        Assert (fSharedImpl_.unique ());
                         return SharedByValue_State::eSolo;
                     default:
                         Assert (fSharedImpl_.get () != nullptr);
@@ -268,7 +267,7 @@ namespace Stroika {
             template <typename TRAITS>
             inline bool SharedByValue<TRAITS>::unique () const
             {
-                return fSharedImpl_.unique ();
+                return fSharedImpl_.use_count () == 1;
             }
             template <typename TRAITS>
             inline unsigned int SharedByValue<TRAITS>::use_count () const
@@ -279,7 +278,7 @@ namespace Stroika {
             template <typename... COPY_ARGS>
             inline void SharedByValue<TRAITS>::Assure1Reference (COPY_ARGS&&... copyArgs)
             {
-                if (not fSharedImpl_.unique ()) {
+                if (not fSharedImpl_.use_count () == 1) {
                     BreakReferences_ (forward<COPY_ARGS> (copyArgs)...);
                 }
             }
@@ -311,7 +310,7 @@ namespace Stroika {
                 //Ensure (fSharedImpl_.unique ());
                 // technically not 100% guarantied if two threads did this at the same time, but so rare interesting if ever triggered.
                 // may need to lose this assert - maybe replace with #if qDebug DbgTrace
-                if (not fSharedImpl_.unique ()) {
+                if (not unique ()) {
                     DbgTrace ("probably a bug, but not necessarily...");
                 }
 #endif
