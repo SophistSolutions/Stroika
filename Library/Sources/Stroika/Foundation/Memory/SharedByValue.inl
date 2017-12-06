@@ -17,10 +17,10 @@ namespace Stroika {
         namespace Memory {
 
             /*
-            ********************************************************************************
-            ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
+             ********************************************************************************
+             */
             template <typename T, typename SHARED_IMLP>
             inline SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&)) noexcept
                 : fCopier (copier)
@@ -35,10 +35,10 @@ namespace Stroika {
             }
 
             /*
-            ********************************************************************************
-            *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
+             ********************************************************************************
+             */
             template <typename T, typename SHARED_IMLP>
             inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
             {
@@ -46,10 +46,10 @@ namespace Stroika {
             }
 
             /*
-            ********************************************************************************
-            ****** SharedByValue_CopySharedPtrExternallySynchronized<T,SHARED_IMLP> ********
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ****** SharedByValue_CopySharedPtrExternallySynchronized<T,SHARED_IMLP> ********
+             ********************************************************************************
+             */
             template <typename T, typename SHARED_IMLP>
             inline SHARED_IMLP SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
@@ -63,10 +63,10 @@ namespace Stroika {
             }
 
             /*
-            ********************************************************************************
-            ********* SharedByValue_CopySharedPtrAtomicSynchronized<T,SHARED_IMLP> *********
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ********* SharedByValue_CopySharedPtrAtomicSynchronized<T,SHARED_IMLP> *********
+             ********************************************************************************
+             */
             template <typename T, typename SHARED_IMLP>
             inline SHARED_IMLP SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
             {
@@ -80,10 +80,10 @@ namespace Stroika {
             }
 
             /*
-            ********************************************************************************
-            ****************************** SharedByValue<TRAITS> ***************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ****************************** SharedByValue<TRAITS> ***************************
+             ********************************************************************************
+             */
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue () noexcept
                 : fCopier_ (element_copier_type ())
