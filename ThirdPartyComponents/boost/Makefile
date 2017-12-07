@@ -49,7 +49,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/boost $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/boost $(VERSION) {$(CONFIGURATION)}:"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent bootstrapIfNeeded_
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) configureAndBuild_
@@ -158,8 +158,31 @@ endif
 endif
 CONFIGURE_ARGS_ +=	install
 
+ifndef IF_PARALLEL_MAKE_USE_NJOBS
+#no easy way to know right number...
+IF_PARALLEL_MAKE_USE_NJOBS=	-j10
+endif
+
+#on windows, we want parallel b2 make, but -j doesn't work with makefile
+ifndef FORCE_PARALLEL_b2_MAKE
+ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
+FORCE_PARALLEL_b2_MAKE=1
+else
+FORCE_PARALLEL_b2_MAKE=0
+endif
+endif
+
+ifeq ($(FORCE_PARALLEL_b2_MAKE),1)
+CONFIGURE_ARGS_ +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
+endif
+
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo ./$(B2) $(CONFIGURE_ARGS_) > ConfigureAndBuild.OUT)
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (sh -c "./$(B2) $(CONFIGURE_ARGS_) >> ConfigureAndBuild.OUT")
+	@
+	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
+	@export CFA="$(CONFIGURE_ARGS_)" && \
+	cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
+	if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
+	(echo ./$(B2) $$CFA > ConfigureAndBuild.OUT) && \
+	(sh -c "./$(B2) $$CFA >> ConfigureAndBuild.OUT")
 	@echo done
