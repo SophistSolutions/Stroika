@@ -56,7 +56,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory check-prerequisite-tools CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
