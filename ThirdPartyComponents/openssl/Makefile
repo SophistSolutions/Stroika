@@ -148,10 +148,12 @@ endif
 
 
 all:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION):"
 ifeq ($(CONFIGURATION),)
-	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
+	@for i in `../../ScriptsLib/GetConfigurations.sh` ; do\
+		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
+	done
+else
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION):"
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error PRODUCED_OUTPUT_ARTIFACTS missing)
@@ -160,6 +162,7 @@ endif
 	@#need --silent in PRODUCED_OUTPUT_ARTIFACTS to avoid 'up to date' warning
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
+endif
 
 
 $(PRODUCED_OUTPUT_ARTIFACTS):
