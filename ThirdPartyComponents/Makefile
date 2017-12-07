@@ -18,7 +18,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), use)
 	@$(MAKE) --directory cmake --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -89,7 +89,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory $@ CONFIGURATION=$$i MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -117,9 +117,9 @@ endif
 clean:
 	@#ok to call with NO CONFIG (does all)
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents:"
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika ThirdPartyComponents{$(CONFIGURATION)}:"
 endif
 	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory boost --silent $@ CONFIGURATION=$(CONFIGURATION)
@@ -138,7 +138,7 @@ clobber:
 ifeq ($(CONFIGURATION),)
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents..."
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
 endif
 	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory boost --silent $@ CONFIGURATION=$(CONFIGURATION)

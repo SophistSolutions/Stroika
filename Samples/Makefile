@@ -65,7 +65,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} Samples:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika Samples {$(CONFIGURATION)}:"
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --no-print-directory check CONFIGURATION=$(CONFIGURATION) || exit $$?;\
     done
@@ -79,7 +79,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} Samples...";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Samples {$(CONFIGURATION)} ... ";
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent clean CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
@@ -94,7 +94,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} Samples...";
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika Samples {$(CONFIGURATION)} ... ";
 	@for SUBPROJ in $(SUBPROJECTS) ; do \
 		$(MAKE) --directory $$SUBPROJ --silent clobber CONFIGURATION=$(CONFIGURATION) 2> /dev/null || true;\
     done
@@ -109,7 +109,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@$(StroikaRoot)ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika {$(CONFIGURATION)} Samples:"
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika Samples {$(CONFIGURATION)}:"
 	@$(MAKE) --no-print-directory $(SUBPROJECTS) CONFIGURATION=$(CONFIGURATION) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL) + 1))
 endif
 
