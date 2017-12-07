@@ -159,7 +159,7 @@ endif
 CONFIGURE_ARGS_ +=	install
 
 configureAndBuild_:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Configuring and Building and installing to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."
 	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo ./$(B2) $(CONFIGURE_ARGS_) > ConfigureAndBuild.OUT)
 	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (sh -c "./$(B2) $(CONFIGURE_ARGS_) >> ConfigureAndBuild.OUT")
 	@echo done
