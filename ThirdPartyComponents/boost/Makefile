@@ -80,18 +80,22 @@ endif
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
+	@#echo todo - delete just right stuff
+else
 	@echo todo - delete just right stuff
+endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
-endif
+	rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/boost/
+else
 	@rm -rf $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+endif
 
 check:
 	@echo NYI
+
+check-prerequisite-tools:
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))

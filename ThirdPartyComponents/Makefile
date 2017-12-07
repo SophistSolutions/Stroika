@@ -25,6 +25,9 @@ endif
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ActivePerl), use)
 	@$(MAKE) --directory ActivePerl --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
+ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
+	@$(MAKE) --directory boost --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ZLib), use)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
@@ -55,22 +58,25 @@ ifeq ($(CONFIGURATION),)
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking-Prerequisite Tools Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
-	@$(MAKE) --directory zlib --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory zlib --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
+	@$(MAKE) --directory boost --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_OpenSSL), 1)
-	@$(MAKE) --directory openssl --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory openssl --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_libcurl), 1)
-	@$(MAKE) --directory curl --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory curl --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_LZMA), 1)
-	@$(MAKE) --directory lzma --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory lzma --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_Xerces), 1)
-	@$(MAKE) --directory Xerces --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory Xerces --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_sqlite), 1)
-	@$(MAKE) --directory sqlite --no-print-directory check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+	@$(MAKE) --directory sqlite --silent check-prerequisite-tools CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 endif
 
@@ -86,6 +92,9 @@ else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking Stroika {$(CONFIGURATION)} ThirdPartyComponents:"
 ifeq ($(qBuildThirdPartyComponents_ZLib), 1)
 	@$(MAKE) --directory zlib --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
+	@$(MAKE) --directory boost --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(qBuildThirdPartyComponents_OpenSSL), 1)
 	@$(MAKE) --directory openssl --no-print-directory $@ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
@@ -113,6 +122,7 @@ else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
 	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory boost --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory cmake --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory zlib --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory openssl --silent $@ CONFIGURATION=$(CONFIGURATION)
@@ -131,6 +141,7 @@ else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika {$(CONFIGURATION)} ThirdPartyComponents..."
 endif
 	@$(MAKE) --directory ActivePerl --silent $@ CONFIGURATION=$(CONFIGURATION)
+	@$(MAKE) --directory boost --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory cmake --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory zlib --silent $@ CONFIGURATION=$(CONFIGURATION)
 	@$(MAKE) --directory openssl --silent $@ CONFIGURATION=$(CONFIGURATION)

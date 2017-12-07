@@ -94,6 +94,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CompilerDriver-C'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<qFeatureFlag_boost>");
+		if (defined $pps) {
+			$configuration {'qFeatureFlag_boost'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<qFeatureFlag_LibCurl>");
 		if (defined $pps) {
 			$configuration {'qFeatureFlag_LibCurl'} = $pps;

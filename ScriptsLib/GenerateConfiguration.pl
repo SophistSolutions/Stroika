@@ -77,6 +77,7 @@ my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-
 my $FEATUREFLAG_ActivePerl = undef;
 my $FEATUREFLAG_PrivateOverrideOfCMake = undef;
 my $FEATUREFLAG_LIBCURL = $LIBFEATUREFLAG_No;		#$LIBFEATUREFLAG_UseStaticTPP; tricky some places because of dependencies - resolve that first
+my $FEATUREFLAG_boost = $LIBFEATUREFLAG_UseStaticTPP;
 my $FEATUREFLAG_OpenSSL = "";
 my $FEATUREFLAG_OpenSSLExtraArgs = "";
 my $FEATUREFLAG_WinHTTP = $LIBFEATUREFLAG_No;
@@ -121,6 +122,7 @@ sub	DoHelp_
         print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
         print("	    --private-cmake-override {use|no}               /* Enables/disables use of private cmake replacement (Windows/cygwin Only) - JUST USED TO BUILD Xerces for Windows*/\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
+        print("	    --boost {build-only|use|use-system|no}          /* Enables/disables use of boost for this configuration [default use] */\n");
         print("	    --OpenSSL {build-only|use|use-system|no}        /* Enables/disables use of OpenSSL for this configuration [default use] */\n");
         print("	    --OpenSSL-ExtraArgs { purify? }                 /* Optionally configure extra OpenSSL features (see Stroika/OpenSSL makefile) */\n");
         print("	    --WinHTTP {use-system|no}                       /* Enables/disables use of WinHTTP for this configuration [default use-system on windows, and no otherwise] */\n");
@@ -616,6 +618,11 @@ sub	ParseCommandLine_Remaining_
             $var = $ARGV[$i];
             $FEATUREFLAG_LIBCURL = $var;
         }
+        elsif ((lc ($var) eq "-boost") or (lc ($var) eq "--boost")) {
+            $i++;
+            $var = $ARGV[$i];
+            $FEATUREFLAG_boost = $var;
+        }
         elsif ((lc ($var) eq "-openssl") or (lc ($var) eq "--openssl")) {
             $i++;
             $var = $ARGV[$i];
@@ -1066,6 +1073,7 @@ sub	WriteConfigFile_
 	
 	
 	print (OUT "    <qFeatureFlag_ActivePerl>$FEATUREFLAG_ActivePerl</qFeatureFlag_ActivePerl>\n");
+	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
 	print (OUT "    <qFeatureFlag_PrivateOverrideOfCMake>$FEATUREFLAG_PrivateOverrideOfCMake</qFeatureFlag_PrivateOverrideOfCMake>\n");
 	print (OUT "    <qFeatureFlag_LibCurl>$FEATUREFLAG_LIBCURL</qFeatureFlag_LibCurl>\n");
 	print (OUT "    <qFeatureFlag_OpenSSL>$FEATUREFLAG_OpenSSL</qFeatureFlag_OpenSSL>\n");
