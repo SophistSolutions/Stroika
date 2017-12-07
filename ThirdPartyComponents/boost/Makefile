@@ -129,6 +129,8 @@ CONFIGURE_ARGS_ +=	--without-filesystem
 CONFIGURE_ARGS_ +=	--without-python
 CONFIGURE_ARGS_ +=	--without-regex
 CONFIGURE_ARGS_ +=	--without-signals
+CONFIGURE_ARGS_ +=	--without-system
+CONFIGURE_ARGS_ +=	--without-wave
 
 #output verbosity
 #CONFIGURE_ARGS_ +=	--d0
