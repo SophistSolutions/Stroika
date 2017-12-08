@@ -83,8 +83,14 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.a
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ###	@todo - for 'vc141-mt-sgd' part - will need to dynamically compute this - at least the vc141 part (not sure what sgd is) --LGP 2017-12-07
+TARGET_LIB_VCTOOLS_=vc141
+ifeq (Unix,$(ENABLE_ASSERTIONS))
+TARGET_LIB_STAG_=sgd
+else
+TARGET_LIB_STAG_=s
+endif
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-vc141-mt-sgd-$(VERSION).lib
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-$(TARGET_LIB_VCTOOLS_)-mt-$(TARGET_LIB_STAG_)-$(VERSION).lib
 endif
 
 
