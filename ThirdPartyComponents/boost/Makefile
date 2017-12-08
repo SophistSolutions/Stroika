@@ -80,7 +80,7 @@ endif
 ## just a smatering of test files to see if it looks like copied
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-$(VERSION).a
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.a
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ###	@todo - for 'vc141-mt-sgd' part - will need to dynamically compute this - at least the vc141 part (not sure what sgd is) --LGP 2017-12-07
 PRODUCED_OUTPUT_ARTIFACTS+=	\
