@@ -52,7 +52,7 @@ else
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/boost $(VERSION) {$(CONFIGURATION)}:"
 	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent bootstrapIfNeeded_
-	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) configureAndBuild_
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) configureAndBuildIfNeeded_
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 endif
 
@@ -67,11 +67,18 @@ BUILDS_ROOT=../../Builds/
 ## just a smatering of test files to see if it looks like copied
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/config.hpp \
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/process.hpp \
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/process.hpp
 
 ## just a smatering of test files to see if it looks like copied
+ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-*-$(VERSION).*
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-$(VERSION).a
+endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+###	@todo - for 'vc141-mt-sgd' part - will need to dynamically compute this - at least the vc141 part (not sure what sgd is) --LGP 2017-12-07
+PRODUCED_OUTPUT_ARTIFACTS+=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-vc141-mt-sgd-$(VERSION).lib
+endif
 
 
 $(ZIPPEDFILE):
@@ -211,6 +218,12 @@ endif
 ifeq ($(FORCE_PARALLEL_b2_MAKE),1)
 CONFIGURE_ARGS_ +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
 endif
+
+configureAndBuildIfNeeded_:
+	@$(MAKE) --silent $(PRODUCED_OUTPUT_ARTIFACTS)
+
+$(PRODUCED_OUTPUT_ARTIFACTS):
+	@$(MAKE) --silent configureAndBuild_
 
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."
