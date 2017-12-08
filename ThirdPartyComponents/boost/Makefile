@@ -50,15 +50,28 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/boost $(VERSION) {$(CONFIGURATION)}:"
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent bootstrapIfNeeded_
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) configureAndBuild_
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent bootstrapIfNeeded_
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) configureAndBuild_
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 endif
 
 
 ### Haven't found any backup/mirrors and this only stores the last few versions. @todo - find a better backup! 
 FETCHURLS=
 FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
+
+
+BUILDS_ROOT=../../Builds/
+
+## just a smatering of test files to see if it looks like copied
+PRODUCED_OUTPUT_ARTIFACTS=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/config.hpp \
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/process.hpp \
+
+## just a smatering of test files to see if it looks like copied
+PRODUCED_OUTPUT_ARTIFACTS+=	\
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-*-$(VERSION).*
 
 
 $(ZIPPEDFILE):
@@ -75,15 +88,16 @@ else
 endif
 	@echo done
 
-	
-	
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@#echo todo - delete just right stuff
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/include/boost-$(VERSION)
+	@rm -f $(BUILDS_ROOT)*/ThirdPartyComponents/lib/libboost_*-$(VERSION).*
 else
-	@echo todo - delete just right stuff
+	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)
+	@rm -f $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_*-$(VERSION).*
 endif
+
 
 clean:
 ifeq ($(CONFIGURATION),)
@@ -92,10 +106,26 @@ else
 	@rm -rf $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 endif
 
+
 check:
-	@echo NYI
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
+	$(error This makefile requires a recognized ProjectPlatformSubdir)
+endif
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
+	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
+		if [ ! -e $$i ]; then\
+			$(ECHO) "      FAILED: missing $$i";\
+			exit 1;\
+		fi;\
+	done
+	@$(ECHO) " Stroika/ThirdPartyComponents/boost - [Succeeded]";
+
 
 check-prerequisite-tools:
+	@#none specific to boost
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
