@@ -23,6 +23,10 @@ VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
 
+# Needed for $(PRODUCED_OUTPUT_ARTIFACTS): rule (is there a simple way to disable parallel for just that one rule)?
+.NOTPARALLEL:
+
+
 ifneq ($(CONFIGURATION),)
 ProjectPlatformSubdir			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 IncludeDebugSymbolsInLibraries	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
