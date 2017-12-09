@@ -88,7 +88,7 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ###	@todo - for 'vc141-mt-sgd' part - will need to dynamically compute this - at least the vc141 part (not sure what sgd is) --LGP 2017-12-07
 TARGET_LIB_VCTOOLS_=vc141
-ifeq (Unix,$(ENABLE_ASSERTIONS))
+ifeq (1,$(ENABLE_ASSERTIONS))
 TARGET_LIB_STAG_=sgd
 else
 TARGET_LIB_STAG_=s
