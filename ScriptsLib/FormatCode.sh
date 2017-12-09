@@ -21,8 +21,9 @@ fi
 dirPattern=$1
 
 FORMATTER=clang-format
-if [ `hash $FORMATTER 2> /dev/null` ]; then
-   echo "Need missing formatter"
+hash $FORMATTER 2> /dev/null
+if [ $? -ne 0 ]; then
+   echo "Need missing formatter: $FORMATTER"
    exit 1
 fi
 
