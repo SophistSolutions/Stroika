@@ -128,7 +128,7 @@ endif
 
 
 all:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/xerces $(VERSION):"
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/xerces $(VERSION) {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
 	@for i in `../../ScriptsLib/GetConfigurations.sh` ; do\
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
