@@ -25,11 +25,11 @@ endif
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ActivePerl), use)
 	@$(MAKE) --directory ActivePerl --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
-ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
-	@$(MAKE) --directory boost --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
-endif
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_ZLib), use)
 	@$(MAKE) --directory zlib --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
+endif
+ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_boost), use)
+	@$(MAKE) --directory boost --no-print-directory all MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
 endif
 ifeq ($(shell perl ../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL), use)
 	@$(MAKE) --directory openssl --no-print-directory all CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))
