@@ -90,7 +90,14 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 	
 
-ORIGs $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	CURRENT
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Copying CURRENT to $@ ..."
+	@mkdir -p $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@cp -r CURRENT/* $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@$(ECHO) done
+
+
+ORIGs CURRENT:	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Extracting $(ZIPPEDFILE) to $@ ..."
 	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
@@ -109,6 +116,7 @@ else
 	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)
 	@rm -f $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_*-$(VERSION).*
 endif
+	@rm -rf CURRENT
 
 
 clean:
