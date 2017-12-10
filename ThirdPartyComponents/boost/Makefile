@@ -120,7 +120,7 @@ endif
 
 clean:
 ifeq ($(CONFIGURATION),)
-	rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/boost/
+	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/boost/
 else
 	@rm -rf $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 endif
