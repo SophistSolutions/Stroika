@@ -71,31 +71,25 @@ BUILDS_ROOT=../../Builds/
 ## just a smatering of test files to see if it looks like copied
 
 ## @todo FIX so UNIX AND WINDOWS BOTH LOSED THE boost-$(VERSION) crap!
-ifeq (Unix,$(ProjectPlatformSubdir))
+#ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/config.hpp \
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/process.hpp
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-PRODUCED_OUTPUT_ARTIFACTS=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/config.hpp \
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/process.hpp
-endif
+#else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+#PRODUCED_OUTPUT_ARTIFACTS=	\
+#	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/config.hpp \
+#	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/process.hpp
+#endif
 
 ## just a smatering of test files to see if it looks like copied
-ifeq (Unix,$(ProjectPlatformSubdir))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.a
-else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-###	@todo - for 'vc141-mt-sgd' part - will need to dynamically compute this - at least the vc141 part (not sure what sgd is) --LGP 2017-12-07
-TARGET_LIB_VCTOOLS_=vc141
-ifeq (1,$(ENABLE_ASSERTIONS))
-TARGET_LIB_STAG_=sgd
+ifeq (Unix, $(ProjectPlatformSubdir))
+LIBSUFFIX_=a
 else
-TARGET_LIB_STAG_=s
+LIBSUFFIX_=lib
 endif
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time-$(TARGET_LIB_VCTOOLS_)-mt-$(TARGET_LIB_STAG_)-$(VERSION).lib
-endif
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.$(LIBSUFFIX_)
+
 
 
 $(ZIPPEDFILE):
@@ -180,6 +174,8 @@ CONFIGURE_ARGS_=
 CONFIGURE_ARGS_ +=	link=static
 CONFIGURE_ARGS_ +=	runtime-link=static
 CONFIGURE_ARGS_ +=	threading=multi
+CONFIGURE_ARGS_ +=	--layout=system
+
 ### omit some things unlikely to be intersted (mostly cuz already adopted into STL) in (due to build speed)
 CONFIGURE_ARGS_ +=	--without-atomic
 CONFIGURE_ARGS_ +=	--without-chrono
