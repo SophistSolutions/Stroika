@@ -85,7 +85,6 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_date_time.$(LIBSUFFIX_)
 
 
-
 $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 	
