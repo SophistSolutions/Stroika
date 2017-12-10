@@ -71,15 +71,9 @@ BUILDS_ROOT=../../Builds/
 ## just a smatering of test files to see if it looks like copied
 
 ## @todo FIX so UNIX AND WINDOWS BOTH LOSED THE boost-$(VERSION) crap!
-#ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/config.hpp \
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost/process.hpp
-#else ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-#PRODUCED_OUTPUT_ARTIFACTS=	\
-#	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/config.hpp \
-#	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)/boost/process.hpp
-#endif
 
 ## just a smatering of test files to see if it looks like copied
 ifeq (Unix, $(ProjectPlatformSubdir))
