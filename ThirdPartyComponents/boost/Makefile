@@ -109,11 +109,11 @@ endif
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
-	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/include/boost-$(VERSION)
-	@rm -f $(BUILDS_ROOT)*/ThirdPartyComponents/lib/libboost_*-$(VERSION).*
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/include/boost
+	@rm -f $(BUILDS_ROOT)*/ThirdPartyComponents/lib/libboost_*
 else
-	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost-$(VERSION)
-	@rm -f $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_*-$(VERSION).*
+	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost
+	@rm -f $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_*
 endif
 	@rm -rf CURRENT
 
@@ -187,8 +187,9 @@ CONFIGURE_ARGS_ +=	--without-signals
 CONFIGURE_ARGS_ +=	--without-system
 CONFIGURE_ARGS_ +=	--without-wave
 
-#output verbosity
-#CONFIGURE_ARGS_ +=	--d0
+#output verbosity (default is -d1, but use -d0 cuz faster)
+CONFIGURE_ARGS_ +=	-d0
+#SHOW VARIABLES - CONFIGURE_ARGS_ +=	-d7
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
 CONFIGURE_ARGS_ +=	--prefix=$(PER_CONFIGURATION_BUILDS_DIR)
