@@ -324,14 +324,21 @@ time_t Time::GetLocaltimeToGMTOffset (bool applyDST)
      * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
      * timezone global var???
      */
-    struct tm tm {
+    struct tm aTm {
     };
-    tm.tm_year    = 70;
-    tm.tm_mon     = 0; // Jan
-    tm.tm_mday    = 1;
-    tm.tm_isdst   = applyDST;
-    time_t result = ::mktime (&tm);
-    Assert (result != -1);                                       // this shouldn't fail
+    aTm.tm_year = 70;
+    aTm.tm_mon  = 0; // Jan
+    aTm.tm_mday = 1;
+    constexpr bool kImplErrorUnderflow_{true}; // Only KNOWN to be needed on windows with TZ=America/New_York, but probably we should always do this
+    if (kImplErrorUnderflow_) {
+        aTm.tm_mday++;
+    }
+    aTm.tm_isdst  = applyDST;
+    time_t result = ::mktime (&aTm);
+    Assert (result != -1); // this shouldn't fail
+    if (kImplErrorUnderflow_) {
+        result -= 24 * 60 * 60;
+    }
     Ensure (-60 * 60 * 24 <= result and result <= 60 * 60 * 24); // sanity check
     return result;
 }
