@@ -546,15 +546,21 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 
 /**
  *
- n file included from /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/TimingTrace.h:10:0,
+ *  In file included from /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/TimingTrace.h:10:0,
                  from Test.cpp:10:
-/home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/../Execution/WhenTimeExceeded.h:34:68: error: field ‘fRunIfTakesTooLong’ has incomplete type ‘std::function<void(double) noexcept>’
+        /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/../Execution/WhenTimeExceeded.h:34:68: error: field ‘fRunIfTakesTooLong’ has incomplete type ‘std::function<void(double) noexcept>’
                  function<void(Time::DurationSecondsType) noexcept> fRunIfTakesTooLong;
                                                                     ^~~~~~~~~~~~~~~~~~
-In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
+    In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
                  from /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/../Characters/../Containers/../Common/Compare.h:9,
  
- &&&&&&NOW BROKEN IN VISUAL STUDIO TOO - SO I THINK MY MISUNDERSANDING NOT COMPILER BUG- DIG!!!!
+ https://stackoverflow.com/questions/38760784/how-will-c17-exception-specifier-type-system-work
+
+ *  This appears to be less of a compiler bug, and more of a language bug introduced in C++17. Wait til I better understand how
+ *  it is, or will be resolved.
+ *
+ *  Right now - as of C++17 - it appears that std::function<void() noexcept> may not be well-defined.
+ *
  */
 #ifndef qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
 
