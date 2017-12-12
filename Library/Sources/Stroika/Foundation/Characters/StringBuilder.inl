@@ -54,9 +54,69 @@ namespace Stroika {
                 RequireNotNull (s);
                 Append (s, s + ::wcslen (s));
             }
+            inline void StringBuilder::Append (const char16_t* s, const char16_t* e)
+            {
+                Require (s == e or (s != nullptr and e != nullptr));
+                Require (s <= e);
+                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                    Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
+                }
+                else {
+                    Append (String (s, e));
+                }
+            }
+            inline void StringBuilder::Append (const char16_t* s)
+            {
+                RequireNotNull (s);
+                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                    Append (reinterpret_cast<const wchar_t*> (s));
+                }
+                else {
+                    Append (String (s));
+                }
+            }
+            inline void StringBuilder::Append (const char32_t* s, const char32_t* e)
+            {
+                Require (s == e or (s != nullptr and e != nullptr));
+                Require (s <= e);
+                if (sizeof (char32_t) == sizeof (wchar_t)) {
+                    Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
+                }
+                else {
+                    Append (String (s, e));
+                }
+            }
+            inline void StringBuilder::Append (const char32_t* s)
+            {
+                RequireNotNull (s);
+                if (sizeof (char32_t) == sizeof (wchar_t)) {
+                    Append (reinterpret_cast<const wchar_t*> (s));
+                }
+                else {
+                    Append (String (s));
+                }
+            }
             inline void StringBuilder::Append (const wstring& s)
             {
                 Append (s.c_str (), s.c_str () + s.length ()); // careful about s.end () if empty
+            }
+            inline void StringBuilder::Append (const u16string& s)
+            {
+                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                    Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
+                }
+                else {
+                    Append (String (s));
+                }
+            }
+            inline void StringBuilder::Append (const u32string& s)
+            {
+                if (sizeof (char32_t) == sizeof (wchar_t)) {
+                    Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
+                }
+                else {
+                    Append (String (s));
+                }
             }
             inline void StringBuilder::Append (const String& s)
             {
@@ -71,6 +131,18 @@ namespace Stroika {
             {
                 Append (c.GetCharacterCode ());
             }
+            inline StringBuilder& StringBuilder::operator+= (const char16_t* s)
+            {
+                RequireNotNull (s);
+                Append (s);
+                return *this;
+            }
+            inline StringBuilder& StringBuilder::operator+= (const char32_t* s)
+            {
+                RequireNotNull (s);
+                Append (s);
+                return *this;
+            }
             inline StringBuilder& StringBuilder::operator+= (const wchar_t* s)
             {
                 RequireNotNull (s);
@@ -78,6 +150,16 @@ namespace Stroika {
                 return *this;
             }
             inline StringBuilder& StringBuilder::operator+= (const wstring& s)
+            {
+                Append (s);
+                return *this;
+            }
+            inline StringBuilder& StringBuilder::operator+= (const u16string& s)
+            {
+                Append (s);
+                return *this;
+            }
+            inline StringBuilder& StringBuilder::operator+= (const u32string& s)
             {
                 Append (s);
                 return *this;

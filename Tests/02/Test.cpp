@@ -1282,6 +1282,89 @@ namespace {
 }
 
 namespace {
+    void Test50_Utf8Conversions_ ()
+    {
+        {
+            VerifyTestResult (string (u8"phred") == String::FromUTF8 (string (u8"phred")).AsUTF8 ());
+            VerifyTestResult (string (u8"שלום") == String::FromUTF8 (string (u8"שלום")).AsUTF8 ());
+        }
+        {
+            VerifyTestResult (string (u8"phred") == String::FromUTF8 (u8"phred").AsUTF8 ());
+            VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8 ());
+        }
+        {
+            // Intentionally no operator+ etc stuff for utf8 because type of u8"" is same as "", so no way to overload
+        }
+    }
+}
+
+namespace {
+    void Test51_Utf16Conversions_ ()
+    {
+        {
+            VerifyTestResult (u16string (u"phred") == String (u16string (u"phred")).AsUTF16 ());
+            VerifyTestResult (u16string (u"שלום") == String (u16string (u"שלום")).AsUTF16 ());
+        }
+        {
+            VerifyTestResult (u16string (u"phred") == String (u"phred").AsUTF16 ());
+            VerifyTestResult (u16string (u"שלום") == String (u"שלום").AsUTF16 ());
+        }
+        {
+            String tmp;
+            tmp = tmp + u"phred";
+            tmp += u"שלום";
+            Verify (tmp == u"phredשלום");
+        }
+        {
+            StringBuilder tmp;
+            tmp += u"שלום";
+            Verify (tmp.str () == u"שלום");
+        }
+        {
+            StringBuilder tmp;
+            tmp.Append (u"שלום");
+            Verify (tmp.str () == u"שלום");
+            Verify (tmp.length () == 4);
+        }
+        {
+            StringBuilder tmp;
+            tmp += u"שלום";
+            Verify (tmp.str () == u"שלום");
+        }
+    }
+}
+
+namespace {
+    void Test52_Utf32Conversions_ ()
+    {
+        {
+            VerifyTestResult (u32string (U"phred") == String (u32string (U"phred")).AsUTF32 ());
+            VerifyTestResult (u32string (U"שלום") == String (u32string (U"שלום")).AsUTF32 ());
+        }
+        {
+            VerifyTestResult (u32string (U"phred") == String (U"phred").AsUTF32 ());
+            VerifyTestResult (u32string (U"שלום") == String (U"שלום").AsUTF32 ());
+        }
+        {
+            StringBuilder tmp;
+            tmp += U"שלום";
+            Verify (tmp.str () == U"שלום");
+            Verify (tmp.length () == 4);
+        }
+        {
+            StringBuilder tmp;
+            tmp.Append (U"שלום");
+            Verify (tmp.str () == U"שלום");
+        }
+        {
+            StringBuilder tmp;
+            tmp += U"שלום";
+            Verify (tmp.str () == U"שלום");
+        }
+    }
+}
+
+namespace {
 
     void DoRegressionTests_ ()
     {
@@ -1328,6 +1411,9 @@ namespace {
         Test47_SubString_ ();
         Test48_ToString_ ();
         Test49_SetOfStringCTORIssue_ ();
+        Test50_Utf8Conversions_ ();
+        Test51_Utf16Conversions_ ();
+        Test52_Utf32Conversions_ ();
     }
 }
 
