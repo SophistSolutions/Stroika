@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Characters_String_h_
@@ -78,7 +78,7 @@
  *
  *      @todo   WRITEUP THREAD SAFETY:
  *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
- *              but externally, envelope cannot be read/write or write/write at the same time). � document examples.
+ *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
  *
  *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
  *              Appends and Removes.
@@ -376,6 +376,11 @@ namespace Stroika {
             public:
                 /**
                  *  Create a String object from a 'char-based' utf-8 encoded string.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8 ());
+                 *      \endcode
                  */
                 static String FromUTF8 (const char* from);
                 static String FromUTF8 (const char* from, const char* to);

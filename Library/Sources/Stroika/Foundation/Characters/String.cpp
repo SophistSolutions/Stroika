@@ -276,7 +276,7 @@ String String::FromSDKString (const SDKChar* from, const SDKChar* to)
 #endif
 }
 
-String String::FromSDKString (const basic_string<SDKChar>& from)
+String String::FromSDKString (const SDKString& from)
 {
 // @todo FIX PERFORMANCE
 #if qTargetPlatformSDKUseswchar_t
