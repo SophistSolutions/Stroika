@@ -234,7 +234,7 @@ namespace {
             using namespace Memory;
             try {
                 Synchronized<Optional<int>> sharedValue{0};
-                static constexpr int        kMaxVal_ = qStroika_FeatureSupported_Valgrind ? 10000 : 100000;
+                static constexpr int        kMaxVal_ = qStroika_FeatureSupported_Valgrind ? 5000 : 100000;
                 Thread::Ptr                 reader   = Thread::New ([&sharedValue]() {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
