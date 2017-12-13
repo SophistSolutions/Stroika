@@ -1158,7 +1158,7 @@ void String::AsUTF32 (u32string* into) const
     size_t               n{accessor._ConstGetRep ()._GetLength ()};
     const Character*     cp = accessor._ConstGetRep ().Peek ();
     if (sizeof (wchar_t) == sizeof (char32_t)) {
-        Assert (sizeof (Character) == sizeof (char16_t));
+        Assert (sizeof (Character) == sizeof (char32_t));
         const char32_t* wcp = (const char32_t*)cp;
         into->assign (wcp, wcp + n);
     }
