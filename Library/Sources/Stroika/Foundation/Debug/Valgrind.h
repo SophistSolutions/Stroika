@@ -50,6 +50,19 @@
 #endif
 
 /**
+ *  Use Macro Stroika_Foundation_Debug_IsRunningUnderValgrind () to test if we are running under valgrind. This often
+ *  uses MUCH more memory and runs much slower (details depend on if running under memcheck or helgrind, which we blurr,
+ *  so this isn't perfect).
+ *
+ */
+#if qStroika_FeatureSupported_Valgrind
+#define Stroika_Foundation_Debug_IsRunningUnderValgrind() \
+    RUNNING_ON_VALGRIND
+#else
+#define Stroika_Foundation_Debug_IsRunningUnderValgrind() 0
+#endif
+
+/**
  *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind () on variables Helgrind should
  *  ignore.
  *

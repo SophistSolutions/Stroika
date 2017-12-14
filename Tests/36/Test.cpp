@@ -81,23 +81,16 @@ namespace {
 
             void SingleProcessLargeDataSend_ ()
             {
-/*
+                /*
                  *  "Valgrind's memory management: out of memory:"
                  *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
                  */
-#if qStroika_FeatureSupported_Valgrind && qDebug
-                Streams::MemoryStream<Byte>::Ptr myStdIn = Streams::MemoryStream<Byte>::New (RUNNING_ON_VALGRIND ? k1K_ : k16MB_);
-#else
-                Streams::MemoryStream<Byte>::Ptr myStdIn = Streams::MemoryStream<Byte>::New (k16MB_);
-#endif
+                Memory::BLOB                     testBLOB = (Stroika_Foundation_Debug_IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
+                Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>::New (testBLOB);
                 Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
                 ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
                 pr.Run ();
-#if qStroika_FeatureSupported_Valgrind && qDebug
-                VerifyTestResult (myStdOut.ReadAll () == (RUNNING_ON_VALGRIND ? k1K_ : k16MB_));
-#else
-                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
-#endif
+                VerifyTestResult (myStdOut.ReadAll () == testBLOB);
             }
         }
         void DoTests ()
@@ -124,23 +117,16 @@ namespace {
                 ProcessRunner::BackgroundProcess       bg = pr.RunInBackground ();
                 Execution::Sleep (1);
                 VerifyTestResult (myStdOut.ReadNonBlocking ().IsMissing ()); // sb no data available, but NOT EOF
-                                                                             /*
+                /*
                  *  "Valgrind's memory management: out of memory:"
                  *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
                  */
-#if qStroika_FeatureSupported_Valgrind && qDebug
-                myStdIn.Write (RUNNING_ON_VALGRIND ? k1K_ : k16MB_);
-#else
+                Memory::BLOB testBLOB = (Stroika_Foundation_Debug_IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
                 myStdIn.Write (k16MB_);
-#endif
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();
                 myStdOut.CloseWrite (); // one process done, no more writes to this stream
-#if qStroika_FeatureSupported_Valgrind && qDebug
-                VerifyTestResult (myStdOut.ReadAll () == (RUNNING_ON_VALGRIND ? k1K_ : k16MB_));
-#else
-                VerifyTestResult (myStdOut.ReadAll () == k16MB_);
-#endif
+                VerifyTestResult (myStdOut.ReadAll () == testBLOB);
             }
         }
         void DoTests ()

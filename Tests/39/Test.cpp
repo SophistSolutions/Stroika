@@ -234,7 +234,7 @@ namespace {
             using namespace Memory;
             try {
                 Synchronized<Optional<int>> sharedValue{0};
-                static constexpr int        kMaxVal_ = qStroika_FeatureSupported_Valgrind ? 5000 : 100000;
+                static constexpr int        kMaxVal_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? 1000 : 100000;
                 Thread::Ptr                 reader   = Thread::New ([&sharedValue]() {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
@@ -530,8 +530,8 @@ namespace {
             template <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
             void TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
             {
-                static constexpr size_t kIOverallRepeatCount_{(qDebug and qStroika_FeatureSupported_Valgrind) ? 50 : ((qDebug or qStroika_FeatureSupported_Valgrind) ? 100 : 1000)};
-                static constexpr int    kInnterConstantForHowMuchStuffTodo_{(qDebug and qStroika_FeatureSupported_Valgrind) ? 100 : ((qDebug or qStroika_FeatureSupported_Valgrind) ? 250 : 1000)};
+                static constexpr size_t kIOverallRepeatCount_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 50 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : 1000)};
+                static constexpr int    kInnterConstantForHowMuchStuffTodo_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 250 : 1000)};
                 Synchronized<CONTAINER> syncObj;
                 Thread::Ptr             adderThread = Thread::New (
                     [&syncObj, &addF]() {

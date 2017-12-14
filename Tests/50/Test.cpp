@@ -113,11 +113,7 @@ namespace {
 #if !qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64)
     double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
 #else
-#if qStroika_FeatureSupported_Valgrind
-    double                  sTimeMultiplier_ = .001;
-#else
-    double sTimeMultiplier_ = 1.0;
-#endif
+    double                  sTimeMultiplier_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? .001 : 1.0;
 #endif
 }
 
