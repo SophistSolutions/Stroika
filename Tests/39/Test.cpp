@@ -159,7 +159,7 @@ namespace {
             // but been fixed
             Debug::TraceContextBumper traceCtx ("IterateWhileMutatingContainer_Test_2_::DoIt ()");
 
-            const unsigned int kRepeatCount_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? 50 : 250;
+            const unsigned int kRepeatCount_ = Debug::IsRunningUnderValgrind () ? 50 : 250;
 
 #if qCompilerAndStdLib_constexpr_stdinitializer_Buggy
             static const initializer_list<int> kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
@@ -234,7 +234,7 @@ namespace {
             using namespace Memory;
             try {
                 Synchronized<Optional<int>> sharedValue{0};
-                static const int            kMaxVal_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? 1000 : 100000;
+                static const int            kMaxVal_ = Debug::IsRunningUnderValgrind () ? 1000 : 100000;
                 Thread::Ptr                 reader   = Thread::New ([&sharedValue]() {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
@@ -530,8 +530,8 @@ namespace {
             template <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
             void TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
             {
-                static const size_t kIOverallRepeatCount_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 50 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : 1000)};
-                static const int    kInnterConstantForHowMuchStuffTodo_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 250 : 1000)};
+                static const size_t     kIOverallRepeatCount_               = (qDebug and Debug::IsRunningUnderValgrind ()) ? 50 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 100 : 1000);
+                static const int        kInnterConstantForHowMuchStuffTodo_ = (qDebug and Debug::IsRunningUnderValgrind ()) ? 100 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 250 : 1000);
                 Synchronized<CONTAINER> syncObj;
                 Thread::Ptr             adderThread = Thread::New (
                     [&syncObj, &addF]() {

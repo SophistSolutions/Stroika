@@ -85,7 +85,7 @@ namespace {
                  *  "Valgrind's memory management: out of memory:"
                  *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
                  */
-                Memory::BLOB                     testBLOB = (Stroika_Foundation_Debug_IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
+                Memory::BLOB                     testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
                 Streams::MemoryStream<Byte>::Ptr myStdIn  = Streams::MemoryStream<Byte>::New (testBLOB);
                 Streams::MemoryStream<Byte>::Ptr myStdOut = Streams::MemoryStream<Byte>::New ();
                 ProcessRunner                    pr (L"cat", myStdIn, myStdOut);
@@ -121,7 +121,7 @@ namespace {
                  *  "Valgrind's memory management: out of memory:"
                  *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
                  */
-                Memory::BLOB testBLOB = (Stroika_Foundation_Debug_IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
+                Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
                 myStdIn.Write (k16MB_);
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();

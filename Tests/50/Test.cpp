@@ -113,7 +113,7 @@ namespace {
 #if !qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64)
     double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
 #else
-    double                  sTimeMultiplier_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? .001 : 1.0;
+    double                  sTimeMultiplier_ = Debug::IsRunningUnderValgrind () ? .001 : 1.0;
 #endif
 }
 
