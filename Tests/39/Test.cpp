@@ -234,7 +234,7 @@ namespace {
             using namespace Memory;
             try {
                 Synchronized<Optional<int>> sharedValue{0};
-                static constexpr int        kMaxVal_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? 1000 : 100000;
+                static const int            kMaxVal_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? 1000 : 100000;
                 Thread::Ptr                 reader   = Thread::New ([&sharedValue]() {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
