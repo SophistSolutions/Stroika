@@ -23,6 +23,7 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test1_BasicConstruction"};
                 using ELEMENT_TYPE = typename USING_MAPPING_CONTAINER::value_type;
                 USING_MAPPING_CONTAINER s;
                 applyToContainer (s);
@@ -47,7 +48,8 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                USING_MAPPING_CONTAINER m;
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test2_AddRemove"};
+                USING_MAPPING_CONTAINER   m;
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 Verify (m.Lookup (1, nullptr));
@@ -76,6 +78,7 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_3_Iteration"};
                 using KeyEqualsCompareFunctionType = typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType;
                 USING_MAPPING_CONTAINER m;
                 m.Add (1, 2);
@@ -119,8 +122,9 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION, typename VALUE_EQUALS_COMPARER_TYPE>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                USING_MAPPING_CONTAINER m;
-                USING_MAPPING_CONTAINER m2 = m;
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test4_Equals"};
+                USING_MAPPING_CONTAINER   m;
+                USING_MAPPING_CONTAINER   m2 = m;
                 m.Add (1, 88);
                 m.Add (2, 101);
                 VerifyTestResult (m.size () == 2);
@@ -142,8 +146,9 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                USING_MAPPING_CONTAINER m;
-                USING_MAPPING_CONTAINER m2 = m;
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test5_ToFromSTLMap"};
+                USING_MAPPING_CONTAINER   m;
+                USING_MAPPING_CONTAINER   m2 = m;
                 m.Add (1, 88);
                 m.Add (2, 101);
 
@@ -165,8 +170,9 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                USING_MAPPING_CONTAINER m;
-                USING_MAPPING_CONTAINER m2 = m;
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test6_AsSTLVector"};
+                USING_MAPPING_CONTAINER   m;
+                USING_MAPPING_CONTAINER   m2 = m;
                 m.Add (1, 88);
                 m.Add (2, 101);
                 VerifyTestResult (m.size () == 2);
@@ -189,7 +195,8 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                USING_MAPPING_CONTAINER c;
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test7_Keys"};
+                USING_MAPPING_CONTAINER   c;
                 for (int i = 0; i < 100; ++i) {
                     c.Add (i, i);
                 }
@@ -217,6 +224,7 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION, typename VALUE_EQUALS_COMPARER_TYPE>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_8_Iteration_With_Value_Comparer"};
                 using KeyEqualsCompareFunctionType   = typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType;
                 using ValueEqualsCompareFunctionType = VALUE_EQUALS_COMPARER_TYPE;
                 USING_MAPPING_CONTAINER m;
@@ -266,7 +274,8 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                USING_MAPPING_CONTAINER c;
+                Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test9_RetainAll"};
+                USING_MAPPING_CONTAINER   c;
                 for (int i = 0; i < 100; ++i) {
                     c.Add (i, i);
                 }
@@ -286,6 +295,7 @@ namespace CommonTests {
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_ (TEST_FUNCTION applyToContainer)
         {
+            Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_"};
             Test1_BasicConstruction::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test2_AddRemove::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
@@ -296,6 +306,7 @@ namespace CommonTests {
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void SimpleMappingTest_AllTestsRequireComparer_For_Type_ (TEST_FUNCTION applyToContainer)
         {
+            Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::SimpleMappingTest_AllTestsRequireComparer_For_Type_"};
             Test5_ToFromSTLMap::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test9_RetainAll::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
@@ -303,6 +314,7 @@ namespace CommonTests {
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void SimpleMappingTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
+            Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::SimpleMappingTest_All_For_Type"};
             SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<USING_MAPPING_CONTAINER> (applyToContainer);
             SimpleMappingTest_AllTestsRequireComparer_For_Type_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
@@ -310,6 +322,7 @@ namespace CommonTests {
         template <typename USING_MAPPING_CONTAINER, typename VALUE_EQUALS_COMPARER_TYPE, typename TEST_FUNCTION>
         void SimpleMappingTest_WhichRequiresExplcitValueComparer (TEST_FUNCTION applyToContainer)
         {
+            Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::SimpleMappingTest_WhichRequiresExplcitValueComparer"};
             Test_8_Iteration_With_Value_Comparer::DoAllTests_<USING_MAPPING_CONTAINER, TEST_FUNCTION, VALUE_EQUALS_COMPARER_TYPE> (applyToContainer);
             Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER, TEST_FUNCTION, VALUE_EQUALS_COMPARER_TYPE> (applyToContainer);
         }

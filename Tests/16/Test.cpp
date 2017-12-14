@@ -52,6 +52,7 @@ namespace {
 namespace {
     void Test2_SimpleBaseClassConversionTraitsConfusion_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
         SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float> ();
         Mapping<int, float>       xxxyy1 = Concrete::Mapping_stdmap<int, float> ();
     }
@@ -106,6 +107,7 @@ namespace {
         }
         void DoIt ()
         {
+            Debug::TraceContextBumper ctx{L"{}::Test4_MappingCTOROverloads_"};
             using namespace xPrivate_;
             Mapping<int, A> from;
 
@@ -157,6 +159,7 @@ namespace {
     namespace ExampleCTORS_Test_5_ {
         void DoTest ()
         {
+            Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_5_"};
             // From Mapping<> CTOR docs
             Collection<pair<int, int>> c;
             std::map<int, int>         m;
