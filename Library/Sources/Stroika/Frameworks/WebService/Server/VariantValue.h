@@ -68,15 +68,6 @@ namespace Stroika {
                     Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, const Optional<Iterable<String>>& namedParameters);
                     Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters);
 
-                    [[deprecated ("USE PickoutParamValuesFromBody, deprecated in v2.0a217")]] inline Mapping<String, VariantValue> PickoutParamValuesBody (Request* request, const Optional<Iterable<String>>& namedParameters)
-                    {
-                        return PickoutParamValuesFromBody (request, namedParameters);
-                    }
-                    [[deprecated ("USE PickoutParamValuesFromBody, deprecated in v2.0a217")]] inline Mapping<String, VariantValue> PickoutParamValuesBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
-                    {
-                        return PickoutParamValuesFromBody (body, bodyContentType, namedParameters);
-                    }
-
                     /**
                      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
                      *
@@ -87,11 +78,6 @@ namespace Stroika {
                      *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
                     Mapping<String, VariantValue> PickoutParamValues (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
-
-                    [[deprecated ("USE PickoutParamValues, deprecated in v2.0a217")]] inline Mapping<String, VariantValue> PickoutParamValues_NEW (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {})
-                    {
-                        return PickoutParamValues (request, namedURLParams, namedBodyParams);
-                    }
 
                     /**
                      */

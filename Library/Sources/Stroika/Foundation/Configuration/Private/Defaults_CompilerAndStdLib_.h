@@ -1339,23 +1339,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 /*
- *  This doesnt always work, but works for c++14 or later, and VS
- *  EXAMPLE:
- *
- *      struct _Deprecated_("FRED NOW DEPRECATED - USE BARNY") Fred { int a; };
- *
- *      _Deprecated_ ("as of v2.0a209 - USE CheckAccess")
- *      void     CheckFileAccess(int);
- *
- *      _Deprecated_ ("USE SocketAddress::FamilyType - deprecated v2.0a207") typedef SocketAddress::FamilyType ProtocolFamily;
-
- &&&& NOTE - _Deprecated_ macro is deprecated as of Stroika v2.0a211 - just use [[deprecated (MESSAGE)]] directly
- */
-#if !defined(_Deprecated_)
-#define _Deprecated_(MESSAGE) [[deprecated (MESSAGE)]]
-#endif
-
-/*
  *  Wrap this macro around entire declaration, as in:
  *       _DeprecatedFile_ ("DEPRECATED in v2.0a32 - use IO::FileSystem::DirectoryIterator");
  */

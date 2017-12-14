@@ -54,7 +54,7 @@
  *  uses MUCH more memory and runs much slower (details depend on if running under memcheck or helgrind, which we blurr,
  *  so this isn't perfect).
  *
- *	\note This can be called whether or not qStroika_FeatureSupported_Valgrind is defined, but it always returns false if qStroika_FeatureSupported_Valgrind is not defined.
+ *  \note This can be called whether or not qStroika_FeatureSupported_Valgrind is defined, but it always returns false if qStroika_FeatureSupported_Valgrind is not defined.
  *
  */
 bool IsRunningUnderValgrind ();
