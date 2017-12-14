@@ -305,7 +305,8 @@ namespace CommonTests {
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 {
-                    CONCRETE_CONTAINER s;
+                    Debug::TraceContextBumper ctx{L"{}::Test1_MiscStarterTests_::DoAllTests_"};
+                    CONCRETE_CONTAINER        s;
                     SimpleMultiSetTests (s, applyToContainer);
                 }
             }
@@ -315,8 +316,9 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void DoAllTests_ ()
             {
-                CONCRETE_CONTAINER s;
-                CONCRETE_CONTAINER s2 = s;
+                Debug::TraceContextBumper ctx{L"{}::Test2_Equals::DoAllTests_"};
+                CONCRETE_CONTAINER        s;
+                CONCRETE_CONTAINER        s2 = s;
                 s.Add (1);
                 s.Add (1);
                 s.Add (2);
@@ -336,6 +338,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void DoAllTests_ ()
             {
+                Debug::TraceContextBumper ctx{L"{}::Test3_Elements::DoAllTests_"};
                 {
                     using TALLY_ARCHTYPE = typename CONCRETE_CONTAINER::ArchetypeContainerType;
                     CONCRETE_CONTAINER s = {1, 2, 3, 4, 4, 4, 4};
@@ -353,6 +356,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void DoAllTests_ ()
             {
+                Debug::TraceContextBumper ctx{L"{}::Test4_UniqueElements::DoAllTests_"};
                 {
                     CONCRETE_CONTAINER s = {1, 2, 3, 4, 4, 4, 4};
                     VerifyTestResult (s.size () == 4);
@@ -365,9 +369,10 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER>
             void T1_ ()
             {
-                CONCRETE_CONTAINER s;
-                size_t             three = 3;
-                const size_t       K     = 500;
+                Debug::TraceContextBumper ctx{L"{}::Test5_Elements_Crasher_::DoAllTests_"};
+                CONCRETE_CONTAINER        s;
+                size_t                    three = 3;
+                const size_t              K     = 500;
                 for (size_t i = 1; i <= K / 50; i++) {
                     s.Add (i);
                 }
@@ -413,6 +418,7 @@ namespace CommonTests {
         template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
         void All_For_Type (TEST_FUNCTION applyToContainer)
         {
+            Debug::TraceContextBumper ctx{L"{}::All_For_Type"};
             Test1_MiscStarterTests_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
             Test2_Equals::DoAllTests_<CONCRETE_CONTAINER> ();
             Test3_Elements::DoAllTests_<CONCRETE_CONTAINER> ();

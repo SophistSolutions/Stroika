@@ -159,7 +159,7 @@ namespace {
             // but been fixed
             Debug::TraceContextBumper traceCtx ("IterateWhileMutatingContainer_Test_2_::DoIt ()");
 
-            const unsigned int kRepeatCount_ = 250;
+            const unsigned int kRepeatCount_ = Stroika_Foundation_Debug_IsRunningUnderValgrind () ? 50 : 250;
 
 #if qCompilerAndStdLib_constexpr_stdinitializer_Buggy
             static const initializer_list<int> kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};

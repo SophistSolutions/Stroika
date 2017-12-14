@@ -34,6 +34,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::DoTestForConcreteContainer_"};
         auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& t) {
             // only work todo on sorted mappings
         };

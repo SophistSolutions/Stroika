@@ -60,7 +60,8 @@ namespace {
     {
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         {
-            CONCRETE_SEQUENCE_T s;
+            Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_1_ ()");
+            CONCRETE_SEQUENCE_T       s;
             VerifyTestResult (s.size () == 0);
             s.Append (1);
             VerifyTestResult (s.size () == 1);
@@ -97,6 +98,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_2_Contains_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_2_Contains_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         {
             CONCRETE_SEQUENCE_T s;
@@ -128,6 +130,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename WELL_ORDER_COMPARER>
     void SimpleSequenceTest_3_Compare_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_3_Compare_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
 #if 0
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
@@ -153,6 +156,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_4_Equals_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_4_Equals_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
@@ -177,7 +181,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_5_RemoveAll_ ()
     {
-        CONCRETE_SEQUENCE_T s;
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_5_RemoveAll_ ()");
+        CONCRETE_SEQUENCE_T       s;
         VerifyTestResult (s.empty ());
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
@@ -198,7 +203,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_6_GetSetAt_ ()
     {
-        CONCRETE_SEQUENCE_T s;
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_6_GetSetAt_ ()");
+        CONCRETE_SEQUENCE_T       s;
         VerifyTestResult (s.empty ());
         for (size_t i = 0; i < 1000; ++i) {
             s.Append (1);
@@ -223,6 +229,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_7_IndexOf_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_7_IndexOf_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
@@ -275,6 +282,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_8_InsertAppendPrepend_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_8_InsertAppendPrepend_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
@@ -324,7 +332,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_9_Update_ ()
     {
-        CONCRETE_SEQUENCE_T s;
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_9_Update_ ()");
+        CONCRETE_SEQUENCE_T       s;
         {
             for (size_t i = 0; i < 100; ++i) {
                 s.Append (i);
@@ -357,7 +366,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_10_Remove_ ()
     {
-        CONCRETE_SEQUENCE_T s;
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_10_Remove_ ()");
+        CONCRETE_SEQUENCE_T       s;
         {
             VerifyTestResult (s.empty ());
             for (size_t i = 0; i < 100; ++i) {
@@ -424,6 +434,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_11_STLCompatWrappers_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_11_STLCompatWrappers_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         {
@@ -487,6 +498,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_12_ToFromSTLVector_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_12_ToFromSTLVector_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
@@ -511,7 +523,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_13_Initializers_ ()
     {
-        CONCRETE_SEQUENCE_T s;
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_13_Initializers_ ()");
+        CONCRETE_SEQUENCE_T       s;
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         VerifyTestResult (s.empty ());
 
@@ -545,6 +558,7 @@ namespace {
 
     void SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()");
         using Characters::String;
 #if !qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
         struct StructureFieldInfo_ {
@@ -569,7 +583,8 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T>
     void SimpleSequenceTest_15_CompareForTypesWithCompare_ ()
     {
-        CONCRETE_SEQUENCE_T tmp;
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_15_CompareForTypesWithCompare_ ()");
+        CONCRETE_SEQUENCE_T       tmp;
         tmp.Append (1);
         tmp.Append (2);
 
@@ -590,6 +605,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_T>
     void SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_16_IteratorOwnerRespectedOnCopy_ ()");
         // TESTS NEW IteratorOwner functionality - so when we make changes to shared container,
         // rep, iteration sticks to the envelope (owner)
         //
@@ -648,6 +664,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
     void SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_ ()");
         SimpleSequenceTest_5_RemoveAll_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_6_GetSetAt_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_9_Update_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
@@ -659,6 +676,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
     void SimpleSequenceTest_All_For_Type_ ()
     {
+        Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_All_For_Type_ ()");
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_1_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_2_Contains_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();

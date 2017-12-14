@@ -31,6 +31,7 @@ namespace {
 
     void Test_1_BasicRange_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test_1_BasicRange_ ()"};
         {
             Range<int> r (3, 5);
             VerifyTestResult (not r.empty ());
@@ -67,6 +68,7 @@ namespace {
 
     void Test_2_BasicDiscreteRangeIteration_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test_2_BasicDiscreteRangeIteration_"};
         {
             DiscreteRange<int> r (3, 5);
             VerifyTestResult (not r.empty ());
@@ -109,6 +111,7 @@ namespace {
 namespace {
     void Test_3_SimpleDiscreteRangeWithEnumsTest_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test_3_SimpleDiscreteRangeWithEnumsTest_"};
         enum class Color {
             red,
             blue,
@@ -184,6 +187,7 @@ namespace {
 namespace {
     void Test4_MapTest_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test4_MapTest_"};
         {
             Containers::Sequence<int> n;
             n.Append (1);
@@ -201,6 +205,7 @@ namespace {
 namespace {
     void Test5_ReduceTest_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test5_ReduceTest_"};
         {
             Containers::Sequence<int> n;
             n.Append (1);
@@ -215,6 +220,7 @@ namespace {
 namespace {
     void Test6_FunctionApplicationContext_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test6_FunctionApplicationContext_"};
         using Containers::Sequence;
 
         {
@@ -277,6 +283,7 @@ namespace {
 namespace {
     void Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test7_FunctionApplicationContextWithDiscreteRangeEtc_"};
         using Containers::Sequence;
         {
             const uint32_t kRefCheck_[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
@@ -294,6 +301,7 @@ namespace {
 namespace {
     void Test8_DiscreteRangeTestFromDocs_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test8_DiscreteRangeTestFromDocs_"};
         // From Docs in DiscreteRange<> class
         vector<int> v = DiscreteRange<int> (1, 10).Elements ().As<vector<int>> ();
         VerifyTestResult (v == vector<int> ({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
@@ -306,6 +314,7 @@ namespace {
 namespace {
     void Test9_Generators_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test9_Generators_"};
         {
             constexpr int kMin      = 1;
             constexpr int kMax      = 10;
@@ -331,6 +340,7 @@ namespace {
 namespace {
     void Test10_MakeIterableFromIterator_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test10_MakeIterableFromIterator_"};
         {
             Containers::Sequence<int> a    = {1, 3, 5, 7, 9};
             Iterator<int>             iter = a.MakeIterator ();
@@ -347,6 +357,7 @@ namespace {
 namespace {
     void Test11_GetDistanceSpanned_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test11_GetDistanceSpanned_"};
         using IntRange = Range<unsigned int>;
         IntRange foo{3, 9};
         VerifyTestResult (foo.GetDistanceSpanned () == 6);
@@ -356,6 +367,7 @@ namespace {
 namespace {
     void Test12_RangeConstExpr_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test12_RangeConstExpr_"};
         using IntRange = Range<unsigned int>;
         constexpr IntRange     kFoo_{3, 9};
         constexpr unsigned int l = kFoo_.GetLowerBound ();
@@ -370,6 +382,7 @@ namespace {
 namespace {
     void Test13_DisjointRange_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test13_DisjointRange_"};
         {
             DisjointRange<float> dr{};
             VerifyTestResult (dr.empty ());
@@ -620,6 +633,7 @@ namespace {
 namespace {
     void Test14_ToString_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test14_ToString_"};
         VerifyTestResult (Range<int> (3, 4).ToString ([](int n) { return Characters::Format (L"%d", n); }) == L"[3 ... 4)");
         VerifyTestResult (Range<int> (3, 4).ToString () == L"[3 ... 4)");
         {
@@ -639,6 +653,7 @@ namespace {
 namespace {
     void Test15_Partition_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test15_Partition_"};
         {
             using Containers::Sequence;
             using RT = Range<int>;
@@ -664,6 +679,7 @@ namespace {
 namespace {
     void Test16_LinqLikeFunctions_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test16_LinqLikeFunctions_"};
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};
             VerifyTestResult (c.Where ([](int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int>{2, 4, 6}));
@@ -743,6 +759,7 @@ namespace {
 namespace {
     void Test17_DurationRange_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::Test17_DurationRange_"};
         using Time::DurationRange;
         using Time::Duration;
 
@@ -764,6 +781,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::DoRegressionTests_"};
         Test_1_BasicRange_ ();
         Test_2_BasicDiscreteRangeIteration_ ();
         Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
