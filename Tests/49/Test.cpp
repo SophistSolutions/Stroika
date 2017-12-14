@@ -591,8 +591,8 @@ namespace {
         }
         {
             using DRT = DisjointDiscreteRange<int>;
-            DRT              dr;
-            constexpr size_t kMax_ = 10000;
+            DRT                 dr;
+            static const size_t kMax_ = Debug::IsRunningUnderValgrind () ? 1000 : 10000;
             for (int i = 0; i < kMax_; ++i) {
                 dr.Add (i);
             }

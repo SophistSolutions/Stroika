@@ -187,8 +187,9 @@ namespace {
         VerifyTestResult (s.empty ());
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
-        for (size_t i = 0; i < 1000; ++i) {
-            s.Append (i + 1000);
+        static const size_t K = Debug::IsRunningUnderValgrind () ? 200 : 1000;
+        for (size_t i = 0; i < K; ++i) {
+            s.Append (i + K);
         }
         VerifyTestResult (not s.empty ());
         s.RemoveAll ();
@@ -205,7 +206,7 @@ namespace {
     void SimpleSequenceTest_6_GetSetAt_ ()
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_6_GetSetAt_ ()");
-        static const size_t       K = Debug::IsRunningUnderValgrind () ? 200 : 1000;
+        static const size_t       K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         CONCRETE_SEQUENCE_T       s;
         VerifyTestResult (s.empty ());
         for (size_t i = 0; i < K; ++i) {
@@ -287,27 +288,28 @@ namespace {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_8_InsertAppendPrepend_ ()");
         using T = typename CONCRETE_SEQUENCE_T::value_type;
         CONCRETE_SEQUENCE_T s;
+        static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
         {
-            for (size_t i = 0; i < 1000; ++i) {
+            for (size_t i = 0; i < K; ++i) {
                 s.Append (i);
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
                 VerifyTestResult (EQUALS_COMPARER::Equals (*i, j));
             }
-            VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s.size () == K);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
         {
-            for (size_t i = 0; i < 1000; ++i) {
+            for (size_t i = 0; i < K; ++i) {
                 s.Prepend (i);
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (EQUALS_COMPARER::Equals (*i, 1000 - j - 1));
+                VerifyTestResult (EQUALS_COMPARER::Equals (*i, K - j - 1));
             }
-            VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s.size () == K);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
