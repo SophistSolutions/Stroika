@@ -122,7 +122,7 @@ namespace {
                  *  This only happens with DEBUG builds and valgrind/helgrind. So run with less memory used, and it works better.
                  */
                 Memory::BLOB testBLOB = (Debug::IsRunningUnderValgrind () && qDebug) ? k1K_ : k16MB_;
-                myStdIn.Write (k16MB_);
+                myStdIn.Write (testBLOB);
                 myStdIn.CloseWrite (); // so cat process can finish
                 bg.WaitForDone ();
                 myStdOut.CloseWrite (); // one process done, no more writes to this stream

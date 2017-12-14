@@ -146,7 +146,7 @@ namespace CommonTests {
 
                 MultiSetIteratorTests_<CONCRETE_CONTAINER> (s, applyToContainer);
 
-                static const size_t K = qDebug ? (Debug::IsRunningUnderValgrind () ? 100 : 250) : 500;
+                static const size_t K = qDebug ? (Debug::IsRunningUnderValgrind () ? 50 : 250) : 500;
 
                 VerifyTestResult (s.IsEmpty ());
                 s.Add (three);

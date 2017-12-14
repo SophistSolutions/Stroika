@@ -111,13 +111,14 @@ namespace {
             VerifyTestResult (s.empty ());
         }
         {
+            static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1000;
             CONCRETE_SEQUENCE_T s;
-            for (size_t i = 0; i < 1000; ++i) {
-                s.Append (i + 1000);
+            for (size_t i = 0; i < K; ++i) {
+                s.Append (i + K);
             }
-            for (size_t i = 0; i < 1000; ++i) {
+            for (size_t i = 0; i < K; ++i) {
                 VerifyTestResult (not s.template Contains<EQUALS_COMPARER> (i));
-                VerifyTestResult (s.template Contains<EQUALS_COMPARER> (i + 1000));
+                VerifyTestResult (s.template Contains<EQUALS_COMPARER> (i + K));
             }
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
@@ -204,18 +205,19 @@ namespace {
     void SimpleSequenceTest_6_GetSetAt_ ()
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_6_GetSetAt_ ()");
+        static const size_t       K = Debug::IsRunningUnderValgrind () ? 200 : 1000;
         CONCRETE_SEQUENCE_T       s;
         VerifyTestResult (s.empty ());
-        for (size_t i = 0; i < 1000; ++i) {
+        for (size_t i = 0; i < K; ++i) {
             s.Append (1);
             VerifyTestResult (EQUALS_COMPARER::Equals (s.GetAt (i), 1));
             VerifyTestResult (EQUALS_COMPARER::Equals (s[i], 1));
         }
-        for (size_t i = 0; i < 1000; ++i) {
+        for (size_t i = 0; i < K; ++i) {
             s.SetAt (i, 5000 + i);
             VerifyTestResult (EQUALS_COMPARER::Equals (s[i], 5000 + i));
         }
-        for (size_t i = 0; i < 1000; ++i) {
+        for (size_t i = 0; i < K; ++i) {
             VerifyTestResult (EQUALS_COMPARER::Equals (s.GetAt (i), 5000 + i));
         }
         VerifyTestResult (not s.empty ());

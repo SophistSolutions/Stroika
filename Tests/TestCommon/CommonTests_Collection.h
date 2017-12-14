@@ -129,11 +129,8 @@ namespace CommonTests {
 
                 IteratorTests_ (s);
 
-#if qDebug
-                const size_t K = 200;
-#else
-                const size_t K = 500;
-#endif
+                static const size_t K = qDebug ? (Debug::IsRunningUnderValgrind () ? 50 : 200) : 500;
+
                 size_t i;
 
                 VerifyTestResult (s.IsEmpty ());

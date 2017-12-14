@@ -159,7 +159,7 @@ namespace {
             // but been fixed
             Debug::TraceContextBumper traceCtx ("IterateWhileMutatingContainer_Test_2_::DoIt ()");
 
-            const unsigned int kRepeatCount_ = Debug::IsRunningUnderValgrind () ? 50 : 250;
+            const unsigned int kRepeatCount_ = Debug::IsRunningUnderValgrind () ? 25 : 250;
 
 #if qCompilerAndStdLib_constexpr_stdinitializer_Buggy
             static const initializer_list<int> kOrigValueInit_ = {1, 3, 4, 5, 6, 33, 12, 13};
@@ -234,7 +234,7 @@ namespace {
             using namespace Memory;
             try {
                 Synchronized<Optional<int>> sharedValue{0};
-                static const int            kMaxVal_ = Debug::IsRunningUnderValgrind () ? 1000 : 100000;
+                static const int            kMaxVal_ = Debug::IsRunningUnderValgrind () ? 100 : 100000;
                 Thread::Ptr                 reader   = Thread::New ([&sharedValue]() {
                     while (sharedValue.load () < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
