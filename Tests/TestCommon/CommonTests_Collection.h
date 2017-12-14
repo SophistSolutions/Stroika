@@ -168,7 +168,8 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                CONCRETE_CONTAINER s;
+                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test1_OldMiscBagTests_"};
+                CONCRETE_CONTAINER        s;
                 On_Container_<CONCRETE_CONTAINER> (s);
             }
         }
@@ -242,7 +243,8 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
             void DoAllTests_ (TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
-                CONCRETE_CONTAINER s;
+                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test2_TestsWithComparer_"};
+                CONCRETE_CONTAINER        s;
                 On_Container_<CONCRETE_CONTAINER> (s, applyToContainer);
             }
         }
@@ -292,6 +294,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
+                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test4_IteratorsBasics_"};
                 BasicIteratorTest_<CONCRETE_CONTAINER> ();
             }
         }
@@ -329,6 +332,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
+                Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test5_Apply_"};
                 DoIt_<CONCRETE_CONTAINER> (applyToContainer);
             }
         }
@@ -338,6 +342,7 @@ namespace CommonTests {
         template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
         void SimpleCollectionTest_Generic (TEST_FUNCTION applyToContainer)
         {
+            Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleCollectionTest_Generic"};
             Test1_OldMiscBagTests_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
             Test4_IteratorsBasics_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
             Test5_Apply_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
@@ -348,6 +353,7 @@ namespace CommonTests {
         template <typename USING_Collection_CONTAINER, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
         void SimpleCollectionTest_TestsWhichRequireEquals (TEST_FUNCTION applyToContainer)
         {
+            Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals"};
             Test2_TestsWithComparer_::DoAllTests_<USING_Collection_CONTAINER> (applyToContainer, WITH_COMPARE_EQUALS ());
         }
     }

@@ -31,6 +31,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
     {
+        Debug::TraceContextBumper ctx{L"{}::RunTests_"};
         CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> ([](const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {
         });
     }
@@ -40,6 +41,7 @@ namespace {
     namespace ExampleCTORS_Test_2_ {
         void DoTest ()
         {
+            Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_2_"};
             // From Collection<> CTOR docs
             Sequence<int>    s;
             std::vector<int> v;
