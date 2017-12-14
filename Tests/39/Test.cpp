@@ -530,8 +530,8 @@ namespace {
             template <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
             void TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
             {
-                static constexpr size_t kIOverallRepeatCount_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 50 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : 1000)};
-                static constexpr int    kInnterConstantForHowMuchStuffTodo_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 250 : 1000)};
+                static const size_t kIOverallRepeatCount_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 50 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : 1000)};
+                static const int    kInnterConstantForHowMuchStuffTodo_{(qDebug and Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 100 : ((qDebug or Stroika_Foundation_Debug_IsRunningUnderValgrind ()) ? 250 : 1000)};
                 Synchronized<CONTAINER> syncObj;
                 Thread::Ptr             adderThread = Thread::New (
                     [&syncObj, &addF]() {
