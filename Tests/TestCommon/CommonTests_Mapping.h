@@ -196,26 +196,26 @@ namespace CommonTests {
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test7_Keys"};
+                static const size_t       K = qDebug ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
                 USING_MAPPING_CONTAINER   c;
-                for (int i = 0; i < 100; ++i) {
+                for (int i = 0; i < K; ++i) {
                     c.Add (i, i);
                 }
-                VerifyTestResult (c.Keys ().length () == 100);
+                VerifyTestResult (c.Keys ().length () == K);
                 {
                     // be sure copying and iterating multiple times over the iterable doesnt produce differnt results.
                     auto keys = c.Keys ();
-                    VerifyTestResult (keys.length () == 100);
-                    VerifyTestResult (keys.length () == 100);
+                    VerifyTestResult (keys.length () == K);
                     int a = 0;
                     for (auto i : keys) {
                         a++;
                     }
-                    VerifyTestResult (a == 100);
+                    VerifyTestResult (a == K);
                     a = 0;
                     for (auto i : keys) {
                         a++;
                     }
-                    VerifyTestResult (a == 100);
+                    VerifyTestResult (a == K);
                 }
             }
         }

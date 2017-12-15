@@ -514,11 +514,17 @@ namespace {
         VerifyTestResult (Duration (L"-PT1H1S").As<time_t> () == -3601);
         VerifyTestResult (-Duration (L"-PT1H1S").As<time_t> () == 3601);
 
-        for (time_t i = -45; i < 60 * 3 * 60 + 99; ++i) {
-            VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+        {
+            static const size_t K = Debug::IsRunningUnderValgrind () ? 100 : 1;
+            for (time_t i = -45; i < 60 * 3 * 60 + 99; i += K) {
+                VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+            }
         }
-        for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += 263) {
-            VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+        {
+            static const size_t K = Debug::IsRunningUnderValgrind () ? 2630 : 263;
+            for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += K) {
+                VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
+            }
         }
         VerifyTestResult (Duration::kMin < Duration::kMax);
         VerifyTestResult (Duration::kMin != Duration::kMax);
