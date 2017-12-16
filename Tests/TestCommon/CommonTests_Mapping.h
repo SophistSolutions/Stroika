@@ -198,7 +198,7 @@ namespace CommonTests {
                 Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test7_Keys"};
                 static const size_t       K = qDebug ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
                 USING_MAPPING_CONTAINER   c;
-                for (int i = 0; i < K; ++i) {
+                for (size_t i = 0; i < K; ++i) {
                     c.Add (i, i);
                 }
                 VerifyTestResult (c.Keys ().length () == K);

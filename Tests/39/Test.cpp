@@ -535,7 +535,7 @@ namespace {
                 Synchronized<CONTAINER> syncObj;
                 Thread::Ptr             adderThread = Thread::New (
                     [&syncObj, &addF]() {
-                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                        for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
                                 addF (&syncObj.rwget ().rwref (), j);
                             }
@@ -544,7 +544,7 @@ namespace {
                     String{L"adderThread"});
                 Thread::Ptr removerThread = Thread::New (
                     [&syncObj, &remF]() {
-                        for (int i = 1; i < kIOverallRepeatCount_; ++i) {
+                        for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
                             for (int j : Traversal::DiscreteRange<int>{1, kInnterConstantForHowMuchStuffTodo_}) {
                                 remF (&syncObj.rwget ().rwref (), j);
                             }
@@ -553,16 +553,16 @@ namespace {
                     String{L"removerThread"});
                 Thread::Ptr examineThread = Thread::New (
                     [&syncObj, &examineF]() {
-                        constexpr int kMultiplierCuzThisTooFast_{10};
-                        for (int i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
+                        constexpr size_t kMultiplierCuzThisTooFast_{10};
+                        for (size_t i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
                             examineF (&syncObj.cget ().cref ());
                         }
                     },
                     String{L"examineThread"});
                 Thread::Ptr walkerThread = Thread::New (
                     [&syncObj, &iterF]() {
-                        constexpr int kMultiplierCuzThisTooFast_{7};
-                        for (int i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
+                        constexpr size_t kMultiplierCuzThisTooFast_{7};
+                        for (size_t i = 1; i < kIOverallRepeatCount_ * kMultiplierCuzThisTooFast_; ++i) {
 #if qIterationOnCopiedContainer_ThreadSafety_Buggy
                             // NOTE - this works around the bug.
                             // ANd you can ONLY do adderThread/walkerThread to reproduce the bug (and do ONLY the
