@@ -25,6 +25,7 @@ if (!defined $MAKE_INDENT_LEVEL) {
 
 
 ########### CONFIG_Variables ###############
+my $ARCH='';
 my $PROJECTPLATFORMSUBDIR='';
 
 my @useExtraCDefines;
@@ -113,6 +114,7 @@ sub	DoHelp_
     my $x = shift(@_);
     print("Usage:\n");
         print("  configure CONFIGURATION-NAME [OPTIONS]* where options can be:\n");
+        print("	    --arch {ARCH}                                   /* for high level architecture - first section of gcc -machine - e.g. x86, x86_64, arm - usually auto-detected */\n");
         print("	    --platform {PLATFORM}                           /* Specifies the ProjectPlatformSubdir (Unix, VisualStudio.Net-2017) - usually auto-detected */\n");
         print("	    --assertions { enable|disable|default }         /* Enables/disable assertion feature (setting qDebug) */\n");
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
@@ -531,6 +533,11 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $ARGV[$i];
 			$PROJECTPLATFORMSUBDIR = $var;
+		}
+		elsif (lc ($var) eq "-arch" or lc ($var) eq "--arch") {
+			$i++;
+			$var = $ARGV[$i];
+			$ARCH = $var;
 		}
 		elsif ((lc ($var) eq "-assertions") or (lc ($var) eq "--assertions")) {
 			$i++;
@@ -1029,6 +1036,21 @@ sub PostProcessOptions_ ()
 	}
 
 	$CWARNING_FLAGS .= $ADD2CWARNING_FLAGS;
+
+	if ($ARCH eq "") {
+		if ($COMPILER_DRIVER_CPlusPlus eq "") {
+			###tmphack needed for windows where we dont find the compiler variable here (SHOULD FIX THAT) @todo - LGP 2017-12-17
+			if ($configurationName =~ /64$/) {
+				$ARCH = "x86_64";
+			}
+			else {
+				$ARCH = "x86";
+			}
+		}
+		else {
+			$ARCH = trim (`./ScriptsLib/GetCompilerArch.sh $COMPILER_DRIVER_CPlusPlus`);
+		}
+	}
 }
 
 
@@ -1053,6 +1075,7 @@ sub	WriteConfigFile_
 	print (OUT "\n-->\n\n");
 	print (OUT "<Configuration>\n");
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
+	print (OUT "    <ARCH>$ARCH</ARCH>\n");
 	#print (OUT "    <Platform>$platform</Platform>\n");
 
 	print (OUT "    <CompilerDriver-C>$COMPILER_DRIVER_C</CompilerDriver-C>\n");

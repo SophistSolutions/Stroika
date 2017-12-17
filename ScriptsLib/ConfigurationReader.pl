@@ -78,6 +78,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ProjectPlatformSubdir'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<ARCH>");
+		if (defined $pps) {
+			$configuration {'ARCH'} = $pps;
+		}
 		#my $pps = ReadValue_($line, "<Platform>");
 		#if (defined $pps) {
 		#	$configuration {'Platform'} = $pps;
