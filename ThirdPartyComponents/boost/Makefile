@@ -256,7 +256,8 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."`
 	@
-	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && sed -i 's/using gcc/ using gcc : $(ARCH) : $(CC)/' project-config.jam
+	@##NB: using ; separator cuz / appears in file names (sed call)
+	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
 	@export CFA="$(CONFIGURE_ARGS_)" && \
 	cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
