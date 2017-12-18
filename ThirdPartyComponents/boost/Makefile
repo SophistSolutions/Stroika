@@ -14,7 +14,7 @@ SHELL=/bin/bash
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
-PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost/
+PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
@@ -33,6 +33,14 @@ IncludeDebugSymbolsInLibraries	=	$(shell perl ../../ScriptsLib/PrintConfiguratio
 ENABLE_ASSERTIONS				=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_ASSERTIONS)
 ENABLE_GLIBCXX_DEBUG			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_GLIBCXX_DEBUG)
 OptimizerFlag					=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) OptimizerFlag)
+ifeq (Unix,$(ProjectPlatformSubdir))
+ARCH=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ARCH)
+CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
+CXX=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C++)
+AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
+RANLIB=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) RANLIB)
+CFLAGS=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) EXTRA_COMPILER_ARGS)
+endif
 endif
 
 
@@ -45,6 +53,7 @@ else
     UNAME := $(shell uname -s)
 endif
 endif
+
 
 
 all:	
@@ -92,7 +101,7 @@ $(ZIPPEDFILE):
 $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	CURRENT
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Copying CURRENT to $@ ..."
 	@mkdir -p $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
-	@cp -r CURRENT/* $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@cp -r CURRENT/* $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/
 	@$(ECHO) done
 
 
@@ -149,10 +158,10 @@ check-prerequisite-tools:
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 B2=b2.exe
-B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)b2.exe
+B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/b2.exe
 else
 B2=b2
-B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)b2
+B2FullPath=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/b2
 endif
 
 bootstrapIfNeeded_:	$(B2FullPath)
@@ -165,7 +174,8 @@ bootstrap_:
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "./bootstrap.bat" > BOOTSTRAP.OUT)
 else
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (./bootstrap.sh > BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo "./bootstrap.sh" > BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (./bootstrap.sh >> BOOTSTRAP.OUT)
 endif
 	@echo done
 
@@ -188,7 +198,8 @@ CONFIGURE_ARGS_ +=	--without-system
 CONFIGURE_ARGS_ +=	--without-wave
 
 #output verbosity (default is -d1, but use -d0 cuz faster)
-CONFIGURE_ARGS_ +=	-d0
+#CONFIGURE_ARGS_ +=	-d0
+CONFIGURE_ARGS_ +=	-d+2
 #SHOW VARIABLES - CONFIGURE_ARGS_ +=	-d7
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
@@ -205,7 +216,7 @@ ifeq (1,$(ENABLE_GLIBCXX_DEBUG))
 CONFIGURE_ARGS_ += define=_GLIBCXX_DEBUG
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-CONFIGURE_ARGS_ += --toolset=msvc
+CONFIGURE_ARGS_ += toolset=msvc
 ### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE file
 ifneq (,$(findstring 32,$(CONFIGURATION)))
 CONFIGURE_ARGS_ +=	address-model=32
@@ -213,6 +224,8 @@ endif
 ifneq (,$(findstring 64,$(CONFIGURATION)))
 CONFIGURE_ARGS_ +=	address-model=64
 endif
+else
+CONFIGURE_ARGS_ +=	toolset=gcc-$(ARCH)
 endif
 CONFIGURE_ARGS_ +=	install
 
@@ -243,6 +256,7 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."`
 	@
+	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && sed -i 's/using gcc/ using gcc : $(ARCH) : $(CC)/' project-config.jam
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
 	@export CFA="$(CONFIGURE_ARGS_)" && \
 	cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
