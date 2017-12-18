@@ -199,8 +199,8 @@ CONFIGURE_ARGS_ +=	--without-system
 CONFIGURE_ARGS_ +=	--without-wave
 
 #output verbosity (default is -d1, but use -d0 cuz faster)
-#CONFIGURE_ARGS_ +=	-d0
-CONFIGURE_ARGS_ +=	-d+2
+CONFIGURE_ARGS_ +=	-d0
+#CONFIGURE_ARGS_ +=	-d+2
 #SHOW VARIABLES - CONFIGURE_ARGS_ +=	-d7
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
