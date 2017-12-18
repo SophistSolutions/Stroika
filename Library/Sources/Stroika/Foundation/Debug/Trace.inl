@@ -30,7 +30,6 @@ namespace Stroika {
             inline TraceContextBumper::TraceContextBumper () noexcept
 #if qDefaultTracingOn
                 : fDoEndMarker (false)
-//,fSavedContextName_ ()
 #endif
             {
 #if qDefaultTracingOn

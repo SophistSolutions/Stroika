@@ -537,7 +537,6 @@ void Emitter::DoEmit_ (const wchar_t* p, const wchar_t* e) noexcept
 #if qDefaultTracingOn
 TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
     : fDoEndMarker (true)
-//,fSavedContextName_ ()
 {
     fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
     size_t len       = min (NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
@@ -549,7 +548,6 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
 
 TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept
     : fDoEndMarker (true)
-//,fSavedContextName_ ()
 {
     try {
         va_list argsList;

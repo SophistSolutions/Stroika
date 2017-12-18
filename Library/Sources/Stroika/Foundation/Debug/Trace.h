@@ -207,7 +207,7 @@ namespace Stroika {
 
 #if qDefaultTracingOn
             public:
-                bool fDoEndMarker;
+                bool fDoEndMarker{false};
 
             public:
                 static unsigned int GetCount ();
@@ -217,8 +217,8 @@ namespace Stroika {
                 static constexpr size_t kMaxContextNameLen_{80};
 
             private:
-                wchar_t                                  fSavedContextName_[kMaxContextNameLen_];
-                Emitter::TraceLastBufferedWriteTokenType fLastWriteToken_; // used to COMBINE items into a single line if they happen quickly enuf
+                wchar_t                                  fSavedContextName_[kMaxContextNameLen_]{};
+                Emitter::TraceLastBufferedWriteTokenType fLastWriteToken_{}; // used to COMBINE items into a single line if they happen quickly enuf
 
             private:
                 static array<wchar_t, kMaxContextNameLen_> mkwtrfromascii_ (const char* contextName);
