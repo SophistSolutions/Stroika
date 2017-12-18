@@ -252,12 +252,13 @@ namespace Stroika {
                  *      fCurrentCell_ = lockedConfigData->fCell.Value (Cell::Short);
                  *      fCurrentPressure_ = lockedConfigData->fPressure.Value (Pressure::Low);
                  *
-                 *  This is equivilent (if using a recursive mutex) to (COUNTER_EXAMPLE):
+                 *  This is roughly equivilent (if using a recursive mutex) to (COUNTER_EXAMPLE):
                  *      lock_guard<Synchronized<T,TRAITS>>  critSec (fConfig_);
                  *      fCurrentCell_ = fConfig_->fCell.Value (Cell::Short);
                  *      fCurrentPressure_ = fConfig_->fPressure.Value (Pressure::Low);
                  *
-                 *  Except that the former only does the lock once, and works even with a non-recursive mutex.
+                 *  Except that this works whether using a shared_mutex or regular mutex. Also - this provides only read-only access
+                 *  (use rwget for read-write access).
                  */
                 nonvirtual ReadableReference cget () const;
 
@@ -321,6 +322,27 @@ namespace Stroika {
                     return WritableReference (&fDelegate_, &fLock_);
                 }
 
+            public:
+                /*
+                 *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
+                 *  true in the upgrade lock (since we unlock and then re-lock).
+                 *
+                 *  But other than that, this approach seems pretty usable/testable.
+                 *
+                 *  NOTE - this guarnatees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
+                 *
+                 *  @todo - MAYBE add 'ReadableReference* readReference' arg, but maybe not
+                 */
+                nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference)>& doWithWriteLock)
+                {
+                    // AssertNotNull (readReference);
+                    // Assert (readReference->fSharedLock_ == &fLock_);
+                    //Require (fLock_.owns_shared_lock ());
+                    TRAITS::UNLOCK_SHARED (fLock_);
+                    // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
+                    auto&& cleanup = Finally ([this]() { TRAITS::LOCK_SHARED (fLock_); });
+                    doWithWriteLock (WritableReference (&fDelegate_, &fLock_));
+                }
 #if 0
             public:
                 // @todo - this will try to keep the readlock in place, but doing that is not legal with C++ std stuff, so must use

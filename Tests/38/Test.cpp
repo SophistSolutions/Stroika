@@ -1068,6 +1068,48 @@ namespace {
 }
 
 namespace {
+    void RegressionTest22_SycnhonizedUpgradeLock_ ()
+    {
+        /*
+         *  The idea here is we want most of our threads to only open readonly lock, and only occasionally upgrade the lock.
+         *
+         *  BUt there can still be one special thread that always write locks
+         */
+        Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
+        RWSynchronized<bool>      isEven{true};
+        Thread::Ptr               t1 = Thread::New ([&]() {
+            while (true) {
+                Execution::CheckForThreadInterruption ();
+                auto rwLock = isEven.rwget ();
+                rwLock.store (not rwLock.load ()); // toggle back and forth
+            }
+        },
+                                      Thread::eAutoStart);
+        auto fun = [&]() {
+            while (true) {
+                Execution::CheckForThreadInterruption ();
+                auto rLock = isEven.cget ();
+                if (rLock.load ()) {
+                    isEven.Experimental_UpgradeLock2 ([&](RWSynchronized<bool>::WritableReference&& writeLock) {
+                        // MUST RECHECK writeLock.load () for now because Experimental_UpgradeLock2 () unlocks first and lets others get a crack
+                        if (writeLock.load ()) {
+                            writeLock.store (false);
+                        }
+                    });
+                    // WE CANNOT test this - because Experimental_UpgradeLock2 () releases lock before re-acuqitring readlock - but should fix that soon
+                    // so we can test this!!!
+                    //VerifyTestResult (not isEven.cget ());
+                }
+            }
+        };
+        Thread::Ptr t2 = Thread::New (fun, Thread::eAutoStart);
+        Thread::Ptr t3 = Thread::New (fun, Thread::eAutoStart);
+        Execution::Sleep (5);
+        Thread::AbortAndWaitForDone ({t1, t2, t3});
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -1102,6 +1144,7 @@ namespace {
         RegressionTest19_ThreadPoolAndBlockingQueue_::DoIt ();
         RegressionTest20_BlockingQueueWithRemoveHeadIfPossible_ ();
         RegressionTest21_BlockingQueueAbortWhileBlockedWaiting_ ();
+        RegressionTest22_SycnhonizedUpgradeLock_ ();
     }
 }
 
