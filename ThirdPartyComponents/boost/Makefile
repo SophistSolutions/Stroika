@@ -28,6 +28,7 @@ ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
 
 ifneq ($(CONFIGURATION),)
+ARCH							=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ARCH)
 ProjectPlatformSubdir			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 IncludeDebugSymbolsInLibraries	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
 ENABLE_ASSERTIONS				=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_ASSERTIONS)
@@ -218,10 +219,9 @@ endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 CONFIGURE_ARGS_ += toolset=msvc
 ### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE file
-ifneq (,$(findstring 32,$(CONFIGURATION)))
+ifeq ($(ARCH),x86)
 CONFIGURE_ARGS_ +=	address-model=32
-endif
-ifneq (,$(findstring 64,$(CONFIGURATION)))
+else ifeq ($(ARCH),x86_64)
 CONFIGURE_ARGS_ +=	address-model=64
 endif
 else

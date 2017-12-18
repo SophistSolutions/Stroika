@@ -23,6 +23,7 @@ EXTRACTED_DIRNAME=$(BASENAME)
 
 
 ifneq ($(CONFIGURATION),)
+ARCH							=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ARCH)
 ProjectPlatformSubdir			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 IncludeDebugSymbolsInLibraries	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
 ENABLE_ASSERTIONS				=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_ASSERTIONS)
@@ -283,9 +284,9 @@ endif
 #@todo fix config mechanism to have var saying 32 or 64 bits?? Or -arch?
 CMAKE_USE_GENERATOR=Unix Makefiles
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq (32,$(findstring 32,$(CONFIGURATION)))
+ifeq ($(ARCH), x86)
 CMAKE_USE_GENERATOR=Visual Studio 15 2017
-else
+else ifeq ($(ARCH), x86_64)
 CMAKE_USE_GENERATOR=Visual Studio 15 2017 Win64
 endif
 endif
