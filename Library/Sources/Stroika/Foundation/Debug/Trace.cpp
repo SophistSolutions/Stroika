@@ -540,7 +540,7 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
 //,fSavedContextName_ ()
 {
     fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s> {", contextName);
-    size_t len       = min (NEltsOf (fSavedContextName_), char_traits<wchar_t>::length (contextName));
+    size_t len       = min (NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
     char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
     *(std::end (fSavedContextName_) - 1) = '\0';
     fSavedContextName_[len]              = '\0';
@@ -556,7 +556,7 @@ TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_
         va_start (argsList, extraFmt);
         fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + ::wcslen (GetEOL<wchar_t> ()), L"<%s (%s)> {", contextName, Characters::CString::FormatV (extraFmt, argsList).c_str ());
         va_end (argsList);
-        size_t len = min (NEltsOf (fSavedContextName_), char_traits<wchar_t>::length (contextName));
+        size_t len = min (NEltsOf (fSavedContextName_) - 1, char_traits<wchar_t>::length (contextName));
         char_traits<wchar_t>::copy (fSavedContextName_, contextName, len);
         *(std::end (fSavedContextName_) - 1) = '\0';
         fSavedContextName_[len]              = '\0';
