@@ -306,6 +306,32 @@ namespace Stroika {
                  */
                 nonvirtual void unlock () const;
 
+            public:
+                // @todo - DOCUMENT that this RELEASES the read lock, so whatever values you checked need to be RECHECEKD.
+                // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesnt yet)
+                // RE-LCOK the shared_lock
+                nonvirtual WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference)
+                {
+                    AssertNotNull (readReference);
+                    AssertNotNull (readReference->fSharedLock_);
+                    if (readReference->fSharedLock_->owns_lock ()) {
+                        readReference->fSharedLock_->unlock ();
+                    }
+                    // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
+                    return WritableReference (&fDelegate_, &fLock_);
+                }
+
+#if 0
+            public:
+                // @todo - this will try to keep the readlock in place, but doing that is not legal with C++ std stuff, so must use
+                // boost upgrade-lock
+                nonvirtual Memory::Optional<WritableReference> Experimental_UpgradeLock (ReadableReference* readReference)
+                {
+                    AssertNotImplemented ();
+                    return WritableReference (&fDelegate_, &fLock_);
+                }
+#endif
+
             private:
                 T                 fDelegate_;
                 mutable MutexType fLock_;
