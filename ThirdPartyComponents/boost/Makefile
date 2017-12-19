@@ -225,7 +225,11 @@ else ifeq ($(ARCH),x86_64)
 CONFIGURE_ARGS_ +=	address-model=64
 endif
 else
+ifeq ($(shell uname -s),Darwin)
+CONFIGURE_ARGS_ +=	toolset=darwin-$(ARCH)
+else
 CONFIGURE_ARGS_ +=	toolset=gcc-$(ARCH)
+endif
 endif
 CONFIGURE_ARGS_ +=	install
 
@@ -257,7 +261,11 @@ configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."`
 	@
 	@##NB: using ; separator cuz / appears in file names (sed call)
+ifeq ($(shell uname -s),Darwin)
+	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam
+else
 	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam
+endif
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
 	@export CFA="$(CONFIGURE_ARGS_)" && \
 	cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
