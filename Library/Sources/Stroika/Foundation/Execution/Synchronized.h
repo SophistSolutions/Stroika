@@ -6,6 +6,7 @@
 
 #include "../StroikaPreComp.h"
 
+#include <functional>
 #include <mutex>
 #include <shared_mutex>
 
@@ -329,7 +330,7 @@ namespace Stroika {
                  *
                  *  But other than that, this approach seems pretty usable/testable.
                  *
-                 *  NOTE - this guarnatees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
+                 *  NOTE - this guaranties readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
                  *
                  *  @todo - MAYBE add 'ReadableReference* readReference' arg, but maybe not
                  */
