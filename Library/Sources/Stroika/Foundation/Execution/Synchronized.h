@@ -14,6 +14,7 @@
 #include "../Configuration/TypeHints.h"
 
 #include "Common.h"
+#include "Finally.h"
 #include "SpinLock.h"
 
 /**
@@ -341,7 +342,7 @@ namespace Stroika {
                     //Require (fLock_.owns_shared_lock ());
                     TRAITS::UNLOCK_SHARED (fLock_);
                     // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-                    auto&& cleanup = Finally ([this]() { TRAITS::LOCK_SHARED (fLock_); });
+                    auto&& cleanup = Execution::Finally ([this]() { TRAITS::LOCK_SHARED (fLock_); });
                     doWithWriteLock (WritableReference (&fDelegate_, &fLock_));
                 }
 #if 0
