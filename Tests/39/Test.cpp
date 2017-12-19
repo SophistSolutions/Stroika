@@ -20,6 +20,7 @@
 #include "Stroika/Foundation/Containers/SortedMultiSet.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Containers/Stack.h"
+#include "Stroika/Foundation/Execution/Sleep.h"
 #include "Stroika/Foundation/Execution/Thread.h"
 #include "Stroika/Foundation/Math/Common.h"
 #include "Stroika/Foundation/Memory/Optional.h"
@@ -234,10 +235,24 @@ namespace {
             using namespace Memory;
             try {
                 Synchronized<Optional<int>> sharedValue{0};
-                static const int            kMaxVal_ = Debug::IsRunningUnderValgrind () ? 5 : 100000;
-                Thread::Ptr                 reader   = Thread::New ([&sharedValue]() {
-                    while (sharedValue.load () < kMaxVal_) {
+                static const bool           kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+                static const int            kMaxVal_          = kRunningValgrind_ ? 5 : 100000;
+                Thread::Ptr                 reader            = Thread::New ([&sharedValue]() {
+                    Optional<int> prevValue;
+                    unsigned int  repeatCount{};
+                    while ((prevValue = sharedValue.load ()) < kMaxVal_) {
                         VerifyTestResult (sharedValue.load () <= kMaxVal_);
+                        if (kRunningValgrind_) {
+                            if (prevValue == sharedValue.load ()) {
+                                repeatCount++;
+                                if (repeatCount > 100) {
+                                    Execution::Sleep (1ms); // avoid starvation under helgrind (experiment to see if this helps).
+                                }
+                            }
+                            else {
+                                prevValue.clear ();
+                            }
+                        }
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
                 });
