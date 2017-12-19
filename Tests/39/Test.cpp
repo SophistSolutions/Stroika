@@ -247,15 +247,12 @@ namespace {
                     }
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
                 });
-                reader.Start ();
-                adder.Start ();
+                Thread::Start ({reader, adder});
                 auto&& cleanup = Execution::Finally ([&reader, &adder]() {
-                    reader.AbortAndWaitForDone ();
-                    adder.AbortAndWaitForDone ();
+                    Thread::AbortAndWaitForDone ({reader, adder});
                 });
                 // wait long time cuz of debuggers (esp valgrind) etc
-                adder.WaitForDone (15 * 60);
-                reader.WaitForDone (15 * 60);
+                Thread::WaitForDone ({reader, adder}, 15 * 60);
                 VerifyTestResult (sharedValue.load () == kMaxVal_);
             }
             catch (...) {
