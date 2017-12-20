@@ -66,12 +66,12 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             template <typename... ARGUMENT_TYPES>
             inline Synchronized<T, TRAITS>::Synchronized (ARGUMENT_TYPES&&... args)
-                : fDelegate_ (std::forward<ARGUMENT_TYPES> (args)...)
+                : fProtectedValue_ (std::forward<ARGUMENT_TYPES> (args)...)
             {
             }
             template <typename T, typename TRAITS>
             inline Synchronized<T, TRAITS>::Synchronized (const Synchronized& src)
-                : fDelegate_ (src.load ())
+                : fProtectedValue_ (src.load ())
             {
             }
             template <typename T, typename TRAITS>
@@ -79,7 +79,7 @@ namespace Stroika {
             {
                 if (&rhs != this) {
                     MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                    fDelegate_ = rhs.load ();
+                    fProtectedValue_ = rhs.load ();
                 }
                 return *this;
             }
@@ -87,7 +87,7 @@ namespace Stroika {
             inline auto Synchronized<T, TRAITS>::operator= (const T& rhs) -> Synchronized&
             {
                 MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                fDelegate_ = rhs;
+                fProtectedValue_ = rhs;
                 return *this;
             }
             template <typename T, typename TRAITS>
@@ -99,34 +99,34 @@ namespace Stroika {
             inline T Synchronized<T, TRAITS>::load () const
             {
                 shared_lock<const Synchronized<T, TRAITS>> fromCritSec{*this}; // use shared_lock if possible
-                return fDelegate_;
+                return fProtectedValue_;
             }
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::store (const T& v)
             {
                 MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                fDelegate_ = v;
+                fProtectedValue_ = v;
             }
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::store (T&& v)
             {
                 MACRO_LOCK_GUARD_CONTEXT (fLock_);
-                fDelegate_ = move (v);
+                fProtectedValue_ = move (v);
             }
             template <typename T, typename TRAITS>
             inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
             {
-                return ReadableReference (&fDelegate_, &fLock_);
+                return ReadableReference (&fProtectedValue_, &fLock_);
             }
             template <typename T, typename TRAITS>
             inline auto Synchronized<T, TRAITS>::rwget () -> WritableReference
             {
-                return WritableReference (&fDelegate_, &fLock_);
+                return WritableReference (&fProtectedValue_, &fLock_);
             }
             template <typename T, typename TRAITS>
             inline auto Synchronized<T, TRAITS>::operator-> () const -> ReadableReference
             {
-                return ReadableReference (&fDelegate_, &fLock_);
+                return ReadableReference (&fProtectedValue_, &fLock_);
             }
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::lock_shared () const

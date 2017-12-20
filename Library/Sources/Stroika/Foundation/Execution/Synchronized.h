@@ -321,7 +321,7 @@ namespace Stroika {
                         readReference->fSharedLock_->unlock ();
                     }
                     // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-                    return WritableReference (&fDelegate_, &fLock_);
+                    return WritableReference (&fProtectedValue_, &fLock_);
                 }
 
             public:
@@ -343,7 +343,7 @@ namespace Stroika {
                     TRAITS::UNLOCK_SHARED (fLock_);
                     // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
                     auto&& cleanup = Execution::Finally ([this]() { TRAITS::LOCK_SHARED (fLock_); });
-                    doWithWriteLock (WritableReference (&fDelegate_, &fLock_));
+                    doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
                 }
 #if 0
             public:
@@ -352,12 +352,12 @@ namespace Stroika {
                 nonvirtual Memory::Optional<WritableReference> Experimental_UpgradeLock (ReadableReference* readReference)
                 {
                     AssertNotImplemented ();
-                    return WritableReference (&fDelegate_, &fLock_);
+                    return WritableReference (&fProtectedValue_, &fLock_);
                 }
 #endif
 
             private:
-                T                 fDelegate_;
+                T                 fProtectedValue_;
                 mutable MutexType fLock_;
             };
 
