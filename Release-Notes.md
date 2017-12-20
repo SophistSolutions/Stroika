@@ -17,6 +17,94 @@ History
 
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a224">v2.0a224x</a><br/>2017-12-21xxxx</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a223...v2.0a224</li>
+		<li>dont depend on C++17 (still require C++14)</li>
+		<li>stdc++17: because std::iterator<> was deprecated in C++17 (crazy) - I restructured (OK improvement) Iterator<> to not subclass from it, but to duplicate the fields. And changed name its template param from BASE_STD_ITERATOR to ITERATOR_TRAITS; and added new DefaultIteratorTraits to replace std::iterator<> (basically identical)</li>
+		<li>upgrade WindowsTargetPlatformVersion from 10.0.15063.0 to 10.0.16299.0</li>
+		<li>stdc++17: shared_ptr<>::unique () now deprecated, so use use_count () == 1 instead</li>
+		<li>Fixed bug with time_t Time::GetLocaltimeToGMTOffset (bool applyDST) which only comes up on Windows in apps that have the TZ variable set.</li>
+		<li>Cleanup qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy comments</li>
+		<li>lose a few deprecated functions (PickoutParamValues_NEW, PickoutParamValuesBody, _Deprecated_</li>
+		<li>fixed slight buffer overflow bug detected by clang++ in debug builds (testing)- TraceContextBumper CTOR</li>
+		<li>Execution::Synchonized<>
+			<ul>
+				<li>QuickSynchronized use SpinLock if qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex</li>
+				<li>Extra optional parameters for Synchronized_Traits<> - recursive flag, readlock and writelock types</li>
+				<li>draft experimental (pretty incomplete) Synchonized<>::Experimental_UnlockUpgradeLock ()</li>
+				<li>Synchonized<>::Experimental_UpgradeLock2 - and regtest RegressionTest22_SycnhonizedUpgradeLock_ for it; and more docs cleanups on Synchonized</li>
+			</ul>
+		</li>
+		<li>Support Building Boost as ThirdPartyComponent
+			<ul>
+				<li>supports windows/unix/macos, and cross-compiling (though cross-compiling badly)</li>
+				<li>Still not used/referenced anywhere in Stroika, but probably will for upgrade_mutex</li>
+			</ul>
+		</li>
+		<li>Support VS2k17 15.5 release
+			<ul>
+				<li>_MS_VS_2k17_15Pt5Pt0_</li>
+				<li>Get rid of qCompilerAndStdLib_union_designators_Buggy bug define. Replace with test  for __cpp_designators</li>
+				<li>Support compiler _MS_VS_2k17_15Pt5Pt2_ 15.5.2 - and lose defines for many intermediate MSVC compilers (handled by '&lt;' sign)</li>
+			</ul>
+		</li>	
+		<li>String
+			<ul>
+				<li>better support for utf8, utf16, utf32 support in String, operator+/operator+= and StringBuilder - u, U, u8 literals</li>
+				<li>tmphack disable a couple failing string tests - and come abck and fix or document the bugs (surroate pairs I think)</li>
+			</ul>
+		</li>		
+		<li>Valgrind/Helgrind
+			<ul>
+				<li>Debug::IsRunningUnderValgrind () use to replace some use of #if qStroika_FeatureSupported_Valgrind and some explicit tests of RUNNING_ON_VALGRIND</li>
+				<li>timeout in various tests (if using helgrind), so use a smaller number to avoid helgrind failure (when built for valgrind)</li>
+				<li>tracectx calls to help find timing bottlenecks running under valgrind</li>
+				<li>maybe workaround possible thread startvation issue (speed) with helgrind - Test3_SynchronizedOptional_</li>
+				<li>(kRunningValgrind_) speed tweaks for aparent defect in helgrind</li>
+				<li>valgrind/helgrind cleanups and workaround for https://stroika.atlassian.net/browse/STK-632</li>
+			</ul>
+		</li>		
+		<li>Build/RegTests/Scripts
+			<ul>
+				<li>use -j10 by default in regtests</li>
+				<li>added gcc-6-debug-c++17  config cuz having trouble building gcc 6 on ununtu 17.10</li>
+				<li>Added GetCompilerArch.sh scipt</li>
+				<li>support Configuration ARCH field - automatically computed - but command-line overridable (e.g. --arch x86)</li>
+				<li>fixed checking for missing clang-format</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a224-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Ubuntu1604,MacOS-XCode9,Windows-VS2k17}-2.0a224-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
      
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a223">v2.0a223</a><br/>2017-11-26</td>
