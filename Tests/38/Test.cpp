@@ -921,7 +921,7 @@ namespace {
                 RWSynchronized<int>       sharedData{0};
                 unsigned int              sum1{};
                 unsigned int              sum2{};
-                static const unsigned int kRepeatCount_{kRunningValgrind_ ? 1000 : 10000};
+                static const unsigned int kRepeatCount_{kRunningValgrind_ ? 1000u : 10000u};
                 mutex                     forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
                 Thread::Ptr               t1 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } });
                 Thread::Ptr               t2 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } });
@@ -944,7 +944,7 @@ namespace {
             {
                 static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
 
-                static const unsigned int kThreadPoolSize_{kRunningValgrind_ ? 5 : 10};
+                static const unsigned int kThreadPoolSize_{kRunningValgrind_ ? 5u : 10u};
                 ThreadPool                consumerThreadPool{kThreadPoolSize_, L"consumers"};
                 ThreadPool                producerThreadPool{kThreadPoolSize_, L"producers"};
 
