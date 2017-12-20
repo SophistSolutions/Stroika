@@ -917,13 +917,14 @@ namespace {
                  *  NOTE - had to add VALGRIND SUPRESSION - RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part1
                  *  and RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part2 because of the reversed lock order.
                  */
-                RWSynchronized<int>    sharedData{0};
-                unsigned int           sum1{};
-                unsigned int           sum2{};
-                constexpr unsigned int kRepeatCount_{10000};
-                mutex                  forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
-                Thread::Ptr            t1 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } });
-                Thread::Ptr            t2 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } });
+                static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+                RWSynchronized<int>       sharedData{0};
+                unsigned int              sum1{};
+                unsigned int              sum2{};
+                static const unsigned int kRepeatCount_{kRunningValgrind_ ? 1000 : 10000};
+                mutex                     forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
+                Thread::Ptr               t1 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } });
+                Thread::Ptr               t2 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } });
                 Thread::Start ({t1, t2});
                 Thread::WaitForDone ({t1, t2});
             }
@@ -941,9 +942,11 @@ namespace {
         namespace Private_ {
             void TEST_ ()
             {
-                constexpr unsigned int kThreadPoolSize_{10};
-                ThreadPool             consumerThreadPool{kThreadPoolSize_, L"consumers"};
-                ThreadPool             producerThreadPool{kThreadPoolSize_, L"producers"};
+                static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+
+                static const unsigned int kThreadPoolSize_{kRunningValgrind_ ? 5 : 10};
+                ThreadPool                consumerThreadPool{kThreadPoolSize_, L"consumers"};
+                ThreadPool                producerThreadPool{kThreadPoolSize_, L"producers"};
 
                 enum {
                     START = 0,
@@ -954,7 +957,7 @@ namespace {
 
                 Verify (q.GetLength () == 0);
 
-                constexpr size_t kTaskCounts_ = kThreadPoolSize_ * 10;
+                static const size_t kTaskCounts_ = kRunningValgrind_ ? (kThreadPoolSize_ * 5) : (kThreadPoolSize_ * 10);
 
                 for (size_t i = 0; i < kTaskCounts_; ++i) {
                     producerThreadPool.AddTask (
