@@ -1076,16 +1076,28 @@ namespace {
          *  BUt there can still be one special thread that always write locks
          */
         Debug::TraceContextBumper ctx{"RegressionTest22_SycnhonizedUpgradeLock_"};
-        RWSynchronized<bool>      isEven{true};
-        Thread::Ptr               t1 = Thread::New ([&]() {
+
+        static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+
+        RWSynchronized<bool> isEven{true};
+        Thread::Ptr          t1 = Thread::New ([&]() {
+            unsigned int repeatCount{};
             while (true) {
                 Execution::CheckForThreadInterruption ();
                 auto rwLock = isEven.rwget ();
                 rwLock.store (not rwLock.load ()); // toggle back and forth
+                if (kRunningValgrind_) {
+                    repeatCount++;
+                    if (repeatCount > 100) {
+                        Execution::Sleep (1ms); // avoid starvation under helgrind (experiment to see if this helps).
+                        repeatCount = 0;
+                    }
+                }
             }
         },
                                       Thread::eAutoStart);
         auto fun = [&]() {
+            unsigned int repeatCount{};
             while (true) {
                 Execution::CheckForThreadInterruption ();
                 auto rLock = isEven.cget ();
@@ -1099,6 +1111,13 @@ namespace {
                     // WE CANNOT test this - because Experimental_UpgradeLock2 () releases lock before re-acuqitring readlock - but should fix that soon
                     // so we can test this!!!
                     //VerifyTestResult (not isEven.cget ());
+                }
+                if (kRunningValgrind_) {
+                    repeatCount++;
+                    if (repeatCount > 100) {
+                        Execution::Sleep (1ms); // avoid starvation under helgrind (experiment to see if this helps).
+                        repeatCount = 0;
+                    }
                 }
             }
         };

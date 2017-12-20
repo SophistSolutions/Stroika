@@ -247,6 +247,7 @@ namespace {
                                 repeatCount++;
                                 if (repeatCount > 100) {
                                     Execution::Sleep (1ms); // avoid starvation under helgrind (experiment to see if this helps).
+                                    repeatCount = 0;
                                 }
                             }
                             else {
