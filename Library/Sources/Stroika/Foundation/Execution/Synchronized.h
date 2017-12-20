@@ -335,7 +335,7 @@ namespace Stroika {
                  *
                  *  @todo - MAYBE add 'ReadableReference* readReference' arg, but maybe not
                  */
-                nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference)>& doWithWriteLock)
+                nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
                 {
                     // AssertNotNull (readReference);
                     // Assert (readReference->fSharedLock_ == &fLock_);
