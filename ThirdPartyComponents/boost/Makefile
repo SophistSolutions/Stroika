@@ -198,6 +198,9 @@ CONFIGURE_ARGS_ +=	--without-signals
 CONFIGURE_ARGS_ +=	--without-system
 CONFIGURE_ARGS_ +=	--without-wave
 
+### shorter paths avoids problems building on windows
+CONFIGURE_ARGS_ +=	--abbreviate-paths
+
 #output verbosity (default is -d1, but use -d0 cuz faster)
 CONFIGURE_ARGS_ +=	-d0
 #CONFIGURE_ARGS_ +=	-d+2
