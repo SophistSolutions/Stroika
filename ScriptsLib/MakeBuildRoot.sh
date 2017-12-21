@@ -11,9 +11,9 @@ fi
 ROOT=`realpath $ROOT`
 
 echo "$PREFIX""Linking Stroika output and configuration directories from `pwd` to $ROOT"
-if [[ `uname` =~ "CYGWIN" ]] ; then
-	echo "$PREFIX***NOTE - this may need to invoke UAC to create symbolic links***"
-fi
+REM if [[ `uname` =~ "CYGWIN" ]] ; then
+REM 	echo "$PREFIX***NOTE - this may need to invoke UAC to create symbolic links***"
+REM fi
 
 rm -rf Builds ConfigurationFiles IntermediateFiles
 
