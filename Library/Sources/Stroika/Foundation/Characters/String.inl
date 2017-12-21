@@ -434,6 +434,16 @@ namespace Stroika {
                 return r;
             }
             template <>
+            inline u16string String::As () const
+            {
+                return AsUTF16 ();
+            }
+            template <>
+            inline u32string String::As () const
+            {
+                return AsUTF32 ();
+            }
+            template <>
             inline const wchar_t* String::As () const
             {
                 _SafeReadRepAccessor accessor{this};

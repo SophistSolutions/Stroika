@@ -948,11 +948,18 @@ namespace Stroika {
 
             public:
                 /**
-                 * Convert String losslessly into a standard C++ type (right now just <wstring>,
-                 * <const wchar_t*>,<const Character*> supported)
+                 * Convert String losslessly into a standard C++ type.
                  *
-                 * For the special cases of <T=const wchar_t*>, and <T=const Character*>, the returned
-                 * result is NOT NUL-terminated.
+                 *  Supported type 'T' values include:
+                 *      o   wstring
+                 *      o   const wchar_t*
+                 *      o   const Character*
+                 *      o   u16string
+                 *      o   u32string
+                 *
+                 *  \note
+                 *      o   As<u16string> () equivilent to AsUTF16 () calll
+                 *      o   As<u32string> () equivilent to AsUTF32 () calll
                  *
                  *  \note   We tried to also have template<typename T> explicit operator T () const; - conversion operator - but
                  *          We got too frequent confusion in complex combinations of templates, like with:
@@ -1166,6 +1173,10 @@ namespace Stroika {
             const wchar_t* String::As () const;
             template <>
             const Character* String::As () const;
+            template <>
+            u16string String::As () const;
+            template <>
+            u32string String::As () const;
 
             template <>
             void String::AsUTF8 (string* into) const;
@@ -1246,6 +1257,9 @@ namespace Stroika {
                 nonvirtual Character GetAt (size_t index) const;
 
             public:
+                /**
+                 *  Ensure returns non-null and nul-charcater terminated string
+                 */
                 nonvirtual const Character* Peek () const;
 
             public:
@@ -1273,7 +1287,7 @@ namespace Stroika {
 
             protected:
                 const wchar_t* _fStart;
-                const wchar_t* _fEnd; // NOT - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
+                const wchar_t* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
 
             private:
                 friend class String;
