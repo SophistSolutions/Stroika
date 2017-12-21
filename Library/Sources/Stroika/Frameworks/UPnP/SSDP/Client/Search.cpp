@@ -56,9 +56,11 @@ public:
     }
     ~Rep_ ()
     {
-        // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-        Execution::Thread::SuppressInterruptionInContext suppressInterruption;
-        IgnoreExceptionsForCall (fThread_.AbortAndWaitForDone ());
+        if (fThread_ != nullptr) {
+            // critical we wait for finish of thread cuz it has bare 'this' pointer captured
+            Execution::Thread::SuppressInterruptionInContext suppressInterruption;
+            IgnoreExceptionsForCall (fThread_.AbortAndWaitForDone ());
+        }
     }
     void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
     {

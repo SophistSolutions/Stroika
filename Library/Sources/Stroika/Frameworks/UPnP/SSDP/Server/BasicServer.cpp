@@ -90,8 +90,12 @@ public:
     {
         fLinkMonitor_.clear ();
         Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
-        fNotifierThread_.AbortAndWaitForDone ();
-        fSearchResponderThread_.AbortAndWaitForDone ();
+        if (fNotifierThread_ != nullptr) {
+            fNotifierThread_.AbortAndWaitForDone ();
+        }
+        if (fSearchResponderThread_ != nullptr) {
+            fSearchResponderThread_.AbortAndWaitForDone ();
+        }
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
@@ -132,8 +136,12 @@ public:
         Debug::TraceContextBumper ctx ("Restarting Basic SSDP server threads");
         {
             Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
-            fNotifierThread_.AbortAndWaitForDone ();
-            fSearchResponderThread_.AbortAndWaitForDone ();
+            if (fNotifierThread_ != nullptr) {
+                fNotifierThread_.AbortAndWaitForDone ();
+            }
+            if (fSearchResponderThread_ != nullptr) {
+                fSearchResponderThread_.AbortAndWaitForDone ();
+            }
         }
         StartNotifier_ ();
         StartResponder_ ();

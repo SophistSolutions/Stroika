@@ -568,6 +568,7 @@ void Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop");
     if (fRunThread_ != nullptr) {
         fRunThread_.AbortAndWaitForDone (timeout);
+        fRunThread_ = nullptr;
     }
 }
 
@@ -577,6 +578,7 @@ void Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop");
     if (fRunThread_ != nullptr) {
         fRunThread_.AbortAndWaitForDone (timeout);
+        fRunThread_ = nullptr;
     }
 }
 

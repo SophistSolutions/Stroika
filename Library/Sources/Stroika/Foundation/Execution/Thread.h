@@ -557,7 +557,7 @@ namespace Stroika {
                  *  This call is (generally) non-blocking (may block for critical section to update status,
                  *  but does NOT block until Stop successful).
                  *
-                 *  Note that its legal to call Abort on a thread in any state - including == nullptr.
+                 *  Note that its legal to call Abort on a thread in any state - including if done (except == nullptr).
                  *  Some may just have no effect.
                  *
                  *  \req *this != nullptr       { new requirement in v2.0a221 - used to just return }
@@ -596,7 +596,7 @@ namespace Stroika {
             public:
                 /**
                  *  Wait until thread is done (use Abort to request termination) - throws if timeout
-                 *  Note that its legal to call WaitForDone on a thread in any state - including nullptr.
+                 *  Note that its legal to call WaitForDone on a thread in any state.
                  *  Some may just have no effect
                  *
                  *  @see WaitForDoneUntil ()
@@ -610,7 +610,7 @@ namespace Stroika {
             public:
                 /**
                  *  Wait until thread is done (use Abort to request termination) - throws if timeout
-                 *  Note that its legal to call WaitForDoneUntil on a thread in any state - including nullptr.
+                 *  Note that its legal to call WaitForDoneUntil on a thread in any state.
                  *  Some may just have no effect.
                  *
                  *  \note   This does a tiny bit more than waiting for the done state to be set - it also
@@ -661,10 +661,10 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \brief   Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts
+                 *  \brief  Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts
                  *
-                 *   \note   Note that its legal to call AbortAndWaitForDone on a thread in any state -
-                 *           including nullptr. Some may just have no effect
+                 *   \note  Note that its legal to call AbortAndWaitForDone on a thread in any state.
+                 *          Some may just have no effect
                  *
                  *  An example of when this is useful is if you have a thread (performing some operation on
                  *  behalf of an object - with data pointers to that object)
