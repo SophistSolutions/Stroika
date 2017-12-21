@@ -56,11 +56,6 @@
  *
  * TODO:
  *
- *      @todo   Consider having a method last() \req not empty, and returns last character. This is almost silly, but
- *              seems a commonly helpful shortcut.
- *
- *      @todo   CLEANUP (INCLUDING GOOD DOC EXAMPLES) ALL THE REGEXP CODE!! AND GOOD REGRESSION TESTS>
- *
  *      @todo   PROBALY get rid of
  *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
  *              and fofrce people to use StringBUilder. I think that maybe only mutator except operator+= which is
@@ -75,10 +70,6 @@
  *              returning a new string.
  *
  *              Weak arguemnt! BUt best I can come up with...
- *
- *      @todo   WRITEUP THREAD SAFETY:
- *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
- *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
  *
  *      @todo   Handle few remaining cases of '// @todo - NOT ENVELOPE THREADSAFE' in implementaiton - mostly on
  *              Appends and Removes.
@@ -173,13 +164,7 @@
  *
  *      @todo   Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
  *
- *      @todo   Try and get rid of the Peek () API
- *
- *              OR better document why its OK (unexpected throw stuff may make it OK).
- *
- *              Maybe also add GetRepSupportedFeatures() API? Maybe not worth it. If no - dumcument why someplace!
- *
- *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API. See/maybe use new
+ *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operator+) API. See/maybe use new
  *              Stroika Range type?
  *
  *      @todo   Migrate most of the StringUtils stuff here like:
@@ -1034,12 +1019,13 @@ namespace Stroika {
                 /**
                  *  Only defined for CHAR_TYPE=Character or wchar_t (for now).
                  *
-                 *  Lifetime is ONLY up until next method access to String, so this API is intrinsically not threadsafe.
-                 *  That is - if you call this on a String, you better not be updating the string at the same time!
-                 *
-                 *  \note THREAD-SAFETY!
+                 *  Lifetime is ONLY up until next method access to String.
                  *
                  *  @see c_str()
+                 *
+                 *  \note Design Note:
+                 *      This is eqivilent to returning pair { c_str (), c_str () + length () } - only a bit faster since all in one call.
+                 *      So long as we support c_str () returning an internal wchar_t* pointer, this adds no extra cost/constraints.
                  */
                 template <typename CHAR_TYPE>
                 nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
@@ -1255,12 +1241,6 @@ namespace Stroika {
 
             public:
                 nonvirtual Character GetAt (size_t index) const;
-
-            public:
-                /**
-                 *  Ensure returns non-null and nul-charcater terminated string
-                 */
-                nonvirtual const Character* Peek () const;
 
             public:
                 nonvirtual pair<const Character*, const Character*> GetData () const;

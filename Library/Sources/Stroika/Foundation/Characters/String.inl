@@ -32,12 +32,14 @@ namespace Stroika {
                 Require (index < GetLength ());
                 return _fStart[index];
             }
+#if 0
             inline const Character* String::_IRep::Peek () const
             {
                 Assert (_fStart <= _fEnd);
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 return (reinterpret_cast<const Character*> (_fStart));
             }
+#endif
             inline pair<const Character*, const Character*> String::_IRep::GetData () const
             {
                 Assert (_fStart <= _fEnd);
@@ -49,14 +51,14 @@ namespace Stroika {
                 RequireNotNull (bufFrom);
                 Require (bufFrom + _GetLength () >= bufTo);
                 size_t nChars = _GetLength ();
-                (void)::memcpy (bufFrom, Peek (), nChars * sizeof (Character));
+                (void)::memcpy (bufFrom, _Peek (), nChars * sizeof (Character));
             }
             inline void String::_IRep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
             {
                 RequireNotNull (bufFrom);
                 Require (bufFrom + _GetLength () >= bufTo);
                 size_t nChars = _GetLength ();
-                (void)::memcpy (bufFrom, Peek (), nChars * sizeof (Character));
+                (void)::memcpy (bufFrom, _Peek (), nChars * sizeof (Character));
             }
             inline void String::_IRep::_SetData (const wchar_t* start, const wchar_t* end)
             {
@@ -421,7 +423,7 @@ namespace Stroika {
                 RequireNotNull (into);
                 _SafeReadRepAccessor accessor{this};
                 size_t               n{accessor._ConstGetRep ()._GetLength ()};
-                const Character*     cp = accessor._ConstGetRep ().Peek ();
+                const Character*     cp = accessor._ConstGetRep ()._Peek ();
                 Assert (sizeof (Character) == sizeof (wchar_t)); // going to want to clean this up!!!    --LGP 2011-09-01
                 const wchar_t* wcp = (const wchar_t*)cp;
                 into->assign (wcp, wcp + n);
@@ -447,15 +449,13 @@ namespace Stroika {
             inline const wchar_t* String::As () const
             {
                 _SafeReadRepAccessor accessor{this};
-                // I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!   -- LGP 2011-09-01
-                return (const wchar_t*)accessor._ConstGetRep ().Peek ();
+                return (const wchar_t*)accessor._ConstGetRep ()._Peek ();
             }
             template <>
             inline const Character* String::As () const
             {
                 _SafeReadRepAccessor accessor{this};
-                // I'm not sure of the Peek() semantics, so I'm not sure this is right, but document Peek() better so this is safe!!!   -- LGP 2011-09-01
-                return (const Character*)accessor._ConstGetRep ().Peek ();
+                return accessor._ConstGetRep ()._Peek ();
             }
             template <>
             inline string String::AsUTF8 () const

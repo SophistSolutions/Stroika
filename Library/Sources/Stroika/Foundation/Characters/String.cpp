@@ -894,7 +894,7 @@ String String::SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t this
 {
     Require (from <= to);
     Require (to <= thisLen);
-    const wchar_t* start = reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ().Peek ()) + from;
+    const wchar_t* start = reinterpret_cast<const wchar_t*> (thisAccessor._ConstGetRep ()._Peek ()) + from;
     size_t         len   = to - from;
     const wchar_t* end   = start + len;
     Assert (start <= end);
@@ -1134,7 +1134,7 @@ void String::AsUTF16 (u16string* into) const
     RequireNotNull (into);
     _SafeReadRepAccessor accessor{this};
     size_t               n{accessor._ConstGetRep ()._GetLength ()};
-    const Character*     cp = accessor._ConstGetRep ().Peek ();
+    const Character*     cp = accessor._ConstGetRep ()._Peek ();
     if (sizeof (wchar_t) == sizeof (char16_t)) {
         Assert (sizeof (Character) == sizeof (char16_t));
         const char16_t* wcp = (const char16_t*)cp;
@@ -1156,7 +1156,7 @@ void String::AsUTF32 (u32string* into) const
     RequireNotNull (into);
     _SafeReadRepAccessor accessor{this};
     size_t               n{accessor._ConstGetRep ()._GetLength ()};
-    const Character*     cp = accessor._ConstGetRep ().Peek ();
+    const Character*     cp = accessor._ConstGetRep ()._Peek ();
     if (sizeof (wchar_t) == sizeof (char32_t)) {
         Assert (sizeof (Character) == sizeof (char32_t));
         const char32_t* wcp = (const char32_t*)cp;
