@@ -67,14 +67,16 @@ public:
     }
     void Start (const String& serviceType)
     {
-        fThread_.AbortAndWaitForDone ();
-        fThread_ = Execution::Thread::New ([this, serviceType]() { DoRun_ (serviceType); });
-        fThread_.SetThreadName (L"SSDP Searcher");
-        fThread_.Start ();
+        if (fThread_ != nullptr) {
+            fThread_.AbortAndWaitForDone ();
+        }
+        fThread_ = Execution::Thread::New ([this, serviceType]() { DoRun_ (serviceType); }, Execution::Thread::eAutoStart, String_Constant{L"SSDP Searcher"});
     }
     void Stop ()
     {
-        fThread_.AbortAndWaitForDone ();
+        if (fThread_ != nullptr) {
+            fThread_.AbortAndWaitForDone ();
+        }
     }
     void DoRun_ (const String& serviceType)
     {
