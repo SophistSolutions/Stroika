@@ -983,7 +983,7 @@ namespace {
 
                 // Wait for consumers to finish, and validate their side-effect - count - is correct.
                 consumerThreadPool.WaitForTasksDone ();
-                int expectedValue = ((START + END) * (END - START + 1) / 2) * kTaskCounts_;
+                int expectedValue = ((START + END) * (END - START + 1) / 2) * (int)kTaskCounts_;
                 Verify (counter == expectedValue);
             }
         }

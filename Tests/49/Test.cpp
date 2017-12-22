@@ -591,9 +591,9 @@ namespace {
         }
         {
             using DRT = DisjointDiscreteRange<int>;
-            DRT                 dr;
-            static const size_t kMax_ = Debug::IsRunningUnderValgrind () ? 1000u : 10000u;
-            for (size_t i = 0; i < kMax_; ++i) {
+            DRT                       dr;
+            static const unsigned int kMax_ = Debug::IsRunningUnderValgrind () ? 1000u : 10000u;
+            for (int i = 0; i < (int)kMax_; ++i) {
                 dr.Add (i);
             }
             VerifyTestResult (dr.SubRanges ().size () == 1);
