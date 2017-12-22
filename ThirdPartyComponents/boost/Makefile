@@ -198,8 +198,9 @@ CONFIGURE_ARGS_ +=	--without-signals
 CONFIGURE_ARGS_ +=	--without-system
 CONFIGURE_ARGS_ +=	--without-wave
 
-### shorter paths avoids problems building on windows
-CONFIGURE_ARGS_ +=	--abbreviate-paths
+### shorter paths avoids problems building on windows (abbrevpaths not enuf on windows when root dir is maybe 100 chars, so use --hash which works better)
+#CONFIGURE_ARGS_ +=	--abbreviate-paths
+CONFIGURE_ARGS_ +=	--hash
 
 #output verbosity (default is -d1, but use -d0 cuz faster)
 CONFIGURE_ARGS_ +=	-d0
