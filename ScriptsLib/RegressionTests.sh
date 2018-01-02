@@ -18,17 +18,14 @@ VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 
 
 mkdir -p Tests/HistoricalRegressionTestResults
-TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-$VER-OUT.txt
 
 
 if [ "$(uname -s)" == "Darwin" ] ; then
-    #TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode9-$VER-OUT.txt
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode9.2"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
     DO_ONLY_DEFAULT_CONFIGURATIONS=1
 fi
 if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
-    #TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-VS2k17-$VER-OUT.txt
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_VS2k17"; fi
     echo "USING VS2k17 ($USE_TEST_BASENAME)..."
     #@todo maybe augment to pass on make default-configurations call:  DEFAULT_CONFIGURATION_ARGS="--platform VisualStudio.Net-2017"
@@ -40,14 +37,15 @@ if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
 
+
+###@todo rewrite this to NOT be a one-off, but just change a few variable (defaults) and then do the code below - common code 
 if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
     echo "Doing quick regression test with default configurations only..."
     rm -rf ConfigurationFiles
     make default-configurations
-    echo - "make clobber..."
     make clobber
-    echo - "make $PARALELLMAKEFLAG all run-tests REDIR TO:  $TEST_OUT_FILE ..."
-    make $PARALELLMAKEFLAG all run-tests 2>&1 > $TEST_OUT_FILE
+    echo "make $PARALELLMAKEFLAG all run-tests REDIR TO:  $TEST_OUT_FILE ..."
+    make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE 2>&1
     echo done
     exit 0;
 fi
