@@ -34,8 +34,14 @@ CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
 echo ssh $SSH_TARGET $CMD2Exec
 ssh $SSH_TARGET "$CMD2Exec"
 
-echo ssh $SSH_TARGET "cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
-ssh $SSH_TARGET "cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
+CMD2Exec=''
+CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
+if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
+	CMD2Exec+="export EXE=Builds/Release/Test50;"
+fi
+CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RunPerformanceRegressionTests.sh"
+echo ssh $SSH_TARGET $CMD2Exec
+ssh $SSH_TARGET "$CMD2Exec"
 
 
 
