@@ -6,6 +6,7 @@
 : ${SSH_TARGET:=$LOGIN@$MACHINE}
 : ${BUILD_DIR:=Sandbox/Stroika-Remote-Build-Dir}
 : ${BRANCH:=V2-Dev}
+: ${DO_ONLY_DEFAULT_CONFIGURATIONS:=1}
 
 echo ssh $SSH_TARGET rm -rf $BUILD_DIR
 ssh $SSH_TARGET rm -rf $BUILD_DIR
@@ -24,9 +25,12 @@ fi
 #see RegressionTests.sh for this name, and why we require $USE_TEST_BASENAME set
 TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
 
-echo "Invokging remote regression tests"
-CMD2Exec='export PATH=$PATH:/usr/local/bin/&&'
-CMD2Exec=$CMD2Exec"cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
+echo "Invoking remote regression tests"
+CMD2Exec=''
+CMD2Exec+='export PATH=$PATH:/usr/local/bin/;'
+CMD2Exec+="export DO_ONLY_DEFAULT_CONFIGURATIONS=$DO_ONLY_DEFAULT_CONFIGURATIONS;"
+CMD2Exec+="export USE_TEST_BASENAME=$USE_TEST_BASENAME;"
+CMD2Exec+="cd $BUILD_DIR && ScriptsLib/RegressionTests.sh"
 echo ssh $SSH_TARGET $CMD2Exec
 ssh $SSH_TARGET "$CMD2Exec"
 
