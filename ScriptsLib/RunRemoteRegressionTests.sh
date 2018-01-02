@@ -49,5 +49,5 @@ echo "Fetching results:"
 echo scp $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
 scp $SSH_TARGET:$BUILD_DIR/$TEST_OUT_FILE Tests/HistoricalRegressionTestResults/
 
-echo scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-$USE_TEST_BASENAME.txt Tests/HistoricalPerformanceRegressionTestResults/
-scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-$USE_TEST_BASENAME.txt Tests/HistoricalPerformanceRegressionTestResults/
+echo scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/
+scp $SSH_TARGET:$BUILD_DIR/Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt Tests/HistoricalPerformanceRegressionTestResults/

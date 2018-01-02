@@ -36,6 +36,6 @@ else
 fi
 
 
-echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-$USE_TEST_BASENAME.txt ... "
-$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$VER-$USE_TEST_BASENAME.txt
+echo -n "$CMDRUN_PREFIX" "$EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt ... "
+$CMDRUN_PREFIX $EXE --x $MULTIPLIER --show > Tests/HistoricalPerformanceRegressionTestResults/PerformanceDump-$USE_TEST_BASENAME-$VER.txt
 echo "done"

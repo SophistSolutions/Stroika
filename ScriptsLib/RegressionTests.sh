@@ -137,7 +137,7 @@ fi
 
 ############## VALGRIND TESTS ################
 #MEMCHECK: release, no block allocation
-if [ "INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
+if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo -n "make CONFIGURATION=VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc VALGRIND=memcheck run-tests ..."
 	echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
