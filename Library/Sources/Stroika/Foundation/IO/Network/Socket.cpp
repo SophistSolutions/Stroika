@@ -3,6 +3,7 @@
 */
 #include "../../StroikaPreComp.h"
 
+#include "../../Characters/Format.h"
 #include "../../Characters/ToString.h"
 #include "../../IO/FileAccessException.h"
 
@@ -122,7 +123,7 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
     catch (const Execution::Platform::Windows::Exception& e) {
         if (e == WSAEACCES) {
-            Throw (StringException (L"Cannot Bind to port: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)"));
+            Throw (StringException (Characters::Format (L"Cannot Bind to port %d: WSAEACCES (probably already bound with SO_EXCLUSIVEADDRUSE)", (int)sockAddr.GetPort ())));
         }
     }
 #else
@@ -132,11 +133,11 @@ void Socket::Ptr::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
         ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&sfd, &useSockAddr]() -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
     }
     catch (const IO::FileAccessException&) {
-        Throw (StringException (L"Cannot Bind to port: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)"));
+        Throw (StringException (Characters::Format (L"Cannot Bind to port %d: EACCESS (probably already bound with SO_EXCLUSIVEADDRUSE)", (int)sockAddr.GetPort ())));
     }
 #endif
     catch (...) {
-        Throw (StringException (L"Cannot Bind to port: " + Characters::ToString (current_exception ())));
+        Throw (StringException (Characters::Format (L"Cannot Bind to port %d: %s", (int)sockAddr.GetPort (), Characters::ToString (current_exception ()).c_str ())));
     }
 }
 
