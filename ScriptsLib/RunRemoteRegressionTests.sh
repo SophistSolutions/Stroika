@@ -1,6 +1,7 @@
 #
 # Run a build and set of regression tests on the given remote machine, and pull back the built logs.
 #
+### @todo - make MACHINE a required parameter - no good default!!!
 : ${MACHINE:=lewis-Mac}
 : ${LOGIN:=lewis}
 : ${SSH_TARGET:=$LOGIN@$MACHINE}
