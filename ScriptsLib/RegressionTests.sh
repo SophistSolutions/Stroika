@@ -5,13 +5,13 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
 : ${CONTINUE:=0}
-if [ -z ${INCLUDE_VALGRIND_MEMCHECK_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ ? -eq 0 ]; then  INCLUDE_VALGRIND_MEMCHECK_TESTS=1; else  INCLUDE_VALGRIND_MEMCHECK_TESTS=0; fi; fi
-if [ -z ${INCLUDE_VALGRIND_HELGRIND_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ ? -eq 0 ]; then  INCLUDE_VALGRIND_HELGRIND_TESTS=1; else  INCLUDE_VALGRIND_HELGRIND_TESTS=0; fi; fi
-#: ${INCLUDE_VALGRIND_MEMCHECK_TESTS:=1}
-#: ${INCLUDE_VALGRIND_HELGRIND_TESTS:=1}
+if [ -z ${INCLUDE_VALGRIND_MEMCHECK_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_MEMCHECK_TESTS=1; else  INCLUDE_VALGRIND_MEMCHECK_TESTS=0; fi; fi
+if [ -z ${INCLUDE_VALGRIND_HELGRIND_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_HELGRIND_TESTS=1; else  INCLUDE_VALGRIND_HELGRIND_TESTS=0; fi; fi
 : ${INCLUDE_PERFORMANCE_TESTS:=1}
 if [ -z ${CLOBBER_FIRST+x} ] ; then if [ $CONTINUE -eq 1 ]; then  CLOBBER_FIRST=0; else  CLOBBER_FIRST=1; fi; fi
 : ${PARALELLMAKEFLAG:=-j10}
+: ${DO_ONLY_DEFAULT_CONFIGURATIONS:=0}
+: ${USE_TEST_BASENAME:=""}
 
 
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
@@ -22,34 +22,34 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Linux-$VER-
 
 
 if [ "$(uname -s)" == "Darwin" ] ; then
-    #todo - rewrite - but for now  this works
-    #LGP 2017-01-05
+    #TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode9-$VER-OUT.txt
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS-XCode9"; fi
+    echo "USING MacOS($USE_TEST_BASENAME)..."
+    DO_ONLY_DEFAULT_CONFIGURATIONS=1
+fi
+if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
+    #TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-VS2k17-$VER-OUT.txt
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows-VS2k17"; fi
+    echo "USING VS2k17 ($USE_TEST_BASENAME)..."
+    #make default-configurations DEFAULT_CONFIGURATION_ARGS="--platform VisualStudio.Net-2017"
+    DO_ONLY_DEFAULT_CONFIGURATIONS=1
+fi
 
-    echo "USING MacOS..."
-    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-MacOS-XCode9-$VER-OUT.txt
+
+if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Linux"; fi
+TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_BASENAME-$VER-OUT.txt
+
+
+if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
+    echo "Doing quick regtest with default configurations only..."
     rm -rf ConfigurationFiles
+    #make default-configurations DEFAULT_CONFIGURATION_ARGS="--platform VisualStudio.Net-2017"
     make default-configurations
     echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
     make clobber all run-tests 2>&1 > $TEST_OUT_FILE
     echo done
     exit 0;
 fi
-
-if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
-    #todo - rewrite - but for now  this works
-    #LGP 2016-07-31
-
-    echo "USING VS2k17..."
-    TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows-VS2k17-$VER-OUT.txt
-    rm -rf ConfigurationFiles
-    make default-configurations DEFAULT_CONFIGURATION_ARGS="--platform VisualStudio.Net-2017"
-    echo - "make all run-tests REDIR TO:  $TEST_OUT_FILE ..."
-    make clobber all run-tests 2>&1 > $TEST_OUT_FILE
-    echo done
-    exit 0;
-fi
-
-
 
 
 

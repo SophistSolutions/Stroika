@@ -135,6 +135,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\RunPerformanceRegressionTests.sh = ..\..\ScriptsLib\RunPerformanceRegressionTests.sh
 		..\..\ScriptsLib\RunPerfTests.bat = ..\..\ScriptsLib\RunPerfTests.bat
 		..\..\ScriptsLib\RunRemoteMacBuild.sh = ..\..\ScriptsLib\RunRemoteMacBuild.sh
+		..\..\ScriptsLib\RunRemoteRegressionTests.sh = ..\..\ScriptsLib\RunRemoteRegressionTests.sh
 		..\..\ScriptsLib\StringUtils.pl = ..\..\ScriptsLib\StringUtils.pl
 		..\..\ScriptsLib\SubstituteBackVariables.sh = ..\..\ScriptsLib\SubstituteBackVariables.sh
 		..\..\ScriptsLib\WebGet.sh = ..\..\ScriptsLib\WebGet.sh
