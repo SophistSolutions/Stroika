@@ -1180,9 +1180,10 @@ if ($onlyGenerateIfCompilerExists) {
 
 if ($generate) {
 	my $masterXMLConfigFile	=	"$configurationFiles" . "$configurationName.xml";
-	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\"...\n");
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$masterXMLConfigFile\" ... ");
 	WriteConfigFile_ ($masterXMLConfigFile);
 	system ("rm -f IntermediateFiles/APPLIED_CONFIGURATIONS");
+	print("done\n");
 }
 else {
 	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because compiler $COMPILER_DRIVER_CPlusPlus not present and configuration invoiked with --only-if-has-compiler\n");

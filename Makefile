@@ -160,13 +160,13 @@ project-files-qt-creator:	project-files-qt-creator-load
 
 
 project-files-qt-creator-load:
-	@$(ECHO) -n "Loading qt-creator project files..."
+	@$(ECHO) -n "Loading qt-creator project files ... "
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp Library/Projects/QtCreator/$$i .; done;
 	@$(ECHO) "done"
 
 
 project-files-qt-creator-save:
-	@$(ECHO) -n "Saving qt-creator project files..."
+	@$(ECHO) -n "Saving qt-creator project files ... "
 	@for i in StroikaDevRoot.config StroikaDevRoot.creator StroikaDevRoot.files StroikaDevRoot.includes; do cp $$i Library/Projects/QtCreator/ ; done;
 	@$(ECHO) "done"
 
@@ -336,7 +336,7 @@ endif
 UNAME_DASH_O_=$(shell uname -o 2>/dev/null || true)
 
 default-configurations:
-	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making default configurations...
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making default configurations:"
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
 		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
@@ -353,7 +353,7 @@ default-configurations:
 	
 
 regression-test-configurations:
-	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) Making regression-test configurations...
+	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making regression-test configurations:"
 	@rm -f ConfigurationFiles/*
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
