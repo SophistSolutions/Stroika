@@ -14,9 +14,11 @@ SHELL=/bin/bash
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
-PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost
+PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
+
+export StroikaRoot
 
 VERSION=1_65_1
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
@@ -100,14 +102,14 @@ $(ZIPPEDFILE):
 	
 
 $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	CURRENT
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Copying CURRENT to $@ ..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Copying CURRENT to $@ ... "
 	@mkdir -p $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 	@cp -r CURRENT/* $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/
 	@$(ECHO) done
 
 
 ORIGs CURRENT:	$(ZIPPEDFILE)
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Extracting $(ZIPPEDFILE) to $@ ..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Extracting $(ZIPPEDFILE) to $@ ... "
 	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
