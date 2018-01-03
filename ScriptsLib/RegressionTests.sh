@@ -39,15 +39,20 @@ TEST_OUT_FILE=Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-$USE_TEST_B
 
 
 ###@todo rewrite this to NOT be a one-off, but just change a few variable (defaults) and then do the code below - common code 
+#if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
+#    echo "Doing quick regression test with default configurations only..."
+#    rm -rf ConfigurationFiles
+#    make default-configurations
+#    make clobber
+#    echo -n "make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE ... "
+#    make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE 2>&1
+#    echo done
+#    exit 0;
+#fi
 if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
-    echo "Doing quick regression test with default configurations only..."
-    rm -rf ConfigurationFiles
-    make default-configurations
-    make clobber
-    echo -n "make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE ... "
-    make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE 2>&1
-    echo done
-    exit 0;
+	INCLUDE_VALGRIND_MEMCHECK_TESTS=0
+	INCLUDE_VALGRIND_HELGRIND_TESTS=0
+	INCLUDE_PERFORMANCE_TESTS=0
 fi
 
 
@@ -74,7 +79,11 @@ else
 	rm -f $TEST_OUT_FILE
 	echo "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT"
 	echo "$PREFIX_OUT_LABEL" "Resetting all configurations to standard regression test set (output to $TEST_OUT_FILE) - started at $STARTAT" >>$TEST_OUT_FILE 2>&1
-	make regression-test-configurations >>$TEST_OUT_FILE 2>&1
+	if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
+		make default-configurations >>$TEST_OUT_FILE 2>&1
+	else
+		make regression-test-configurations >>$TEST_OUT_FILE 2>&1
+	fi
 fi
 
 NUM_CONFIGURATIONS=`sh ScriptsLib/GetConfigurations.sh | wc -w`
@@ -113,24 +122,27 @@ echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
 
 
-RASPBERRYPI_REMOTE_MACHINE=raspberrypi
-RASPBERRYPI_REMOTE_WITH_LOGIN=lewis@$RASPBERRYPI_REMOTE_MACHINE
-echo -n "Run-Tests raspberrypi remote..."
-echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
-ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
-if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
-	STAGE_STARTAT_INT=$(date +%s)
-	make run-tests CONFIGURATION=raspberrypi-gcc-6 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-	make run-tests CONFIGURATION=raspberrypi-gcc-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-	make run-tests CONFIGURATION=raspberrypi_valgrind_gcc-7_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-	make run-tests CONFIGURATION=raspberrypi-gcc-7-sanitize REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
-	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
-else
-	echo "...skipped raspberrypi tests cuz machine not available"
-	echo "...skipped raspberrypi tests cuz machine not available">>$TEST_OUT_FILE 2>&1
-	NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
+### @todo - cleanup so have better logical test
+if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
+	RASPBERRYPI_REMOTE_MACHINE=raspberrypi
+	RASPBERRYPI_REMOTE_WITH_LOGIN=lewis@$RASPBERRYPI_REMOTE_MACHINE
+	echo -n "Run-Tests raspberrypi remote..."
+	echo "$PREFIX_OUT_LABEL" "Run-Tests raspberrypi remote..." >>$TEST_OUT_FILE 2>&1
+	ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
+	if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
+		STAGE_STARTAT_INT=$(date +%s)
+		make run-tests CONFIGURATION=raspberrypi-gcc-6 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi-gcc-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi_valgrind_gcc-7_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi-gcc-7-sanitize REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
+		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	else
+		echo "...skipped raspberrypi tests cuz machine not available"
+		echo "...skipped raspberrypi tests cuz machine not available">>$TEST_OUT_FILE 2>&1
+		NUM_PASSES_OF_REGTESTS_RUN=$(($NUM_PASSES_OF_REGTESTS_RUN - 6))
+	fi
 fi
 
 
