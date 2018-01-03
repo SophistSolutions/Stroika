@@ -49,7 +49,7 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory CONFIGURATION=$$i clean;\
 	done
 else
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Library {$(CONFIGURATION)}..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Cleaning Stroika Library {$(CONFIGURATION)} ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@test -d ../IntermediateFiles/$(CONFIGURATION)/ && find ../IntermediateFiles/$(CONFIGURATION)/Library/ -name '*.o' -exec rm -f {} \; || true
 else

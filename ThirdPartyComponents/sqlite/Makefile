@@ -168,18 +168,18 @@ endif
 
 
 check-prerequisite-tools:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for sqlite ... "
 	@$(MAKE) --no-print-directory --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
 	@$(ECHO) "done";
 
 
 
 check_prerequisites_:
-	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking required build tools..." && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
+	@{ type unzip > /dev/null; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Checking required build tools ... " && ../../ScriptsLib/GetMessageForMissingTool.sh unzip && exit 1; }
 
 
 check:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "   FAILED: missing $$i";\

@@ -100,7 +100,7 @@ endif
 
 
 doCreate:	$(ZIPPEDFILE)
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT ... ";
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
@@ -217,7 +217,7 @@ endif
 
 
 doPatching_:
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Curl...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Curl ... ";
 	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq ($(shell uname),AIX)
@@ -233,13 +233,13 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building configure tools CURRENT/BUILD-CONF-TOOLS.OUT..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building configure tools CURRENT/BUILD-CONF-TOOLS.OUT ... "
 	@mkdir -p $(INTERMEDIATEFILES_ROOT)$(CONFIGURATION)/ThirdPartyComponents $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin
 	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Configure (see CURRENT/CONFIGURE.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Configure (see CURRENT/CONFIGURE.OUT) ... "
 	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
 	@cd CURRENT && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building (see CURRENT/MAKE.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building (see CURRENT/MAKE.OUT) ... "
 	@echo $(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT
 	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" >> CURRENT/MAKE.OUT 2>&1
 	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
@@ -251,7 +251,7 @@ else
 endif
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) ".Building libcurl CURRENT into $(BUILDS_DIR)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) ".Building libcurl CURRENT into $(BUILDS_DIR) ... "
 	@rm -rf $(BUILDS_DIR)
 	@cd CURRENT && cmd /C buildconf.bat > BUILD-CONFIG.OUT
 	@cd CURRENT && rm -f *.obj *.pdb *.lib
@@ -285,7 +285,7 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for curl..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for curl ... "
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
 	@$(ECHO) "done";
 

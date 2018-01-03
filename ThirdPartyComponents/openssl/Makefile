@@ -197,7 +197,7 @@ endif
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "      FAILED: missing $$i";\
@@ -213,7 +213,7 @@ $(ZIPEDFILE):
 
 doPatch:
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching OpenSSL..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching OpenSSL ... "
 	@$(ECHO) -n .
 	@patch --quiet -p0 CURRENT/Configurations/windows-makefile.tmpl < Patches/FixQuotesInWindowsMakefileTemplate.PATCH
 	@$(ECHO) "done"
@@ -221,7 +221,7 @@ endif
 
 
 doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extracting $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extracting $(ZIPEDFILE) to CURRENT ... "
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPEDFILE) -C CURRENT --strip-components 1
@@ -252,7 +252,7 @@ doBuilds:
 	@
 	@#Run openssl configure scripts
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (output to CURRENT/CONFIG.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (output to CURRENT/CONFIG.OUT) ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd CURRENT && eval (./config -t | tail -1) $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT
 	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && ./config -t | tail -1) >> CONFIG.OUT 2>&1
@@ -267,7 +267,7 @@ endif
 	@
 	@#Do actual OpenSSL build
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT)...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ... ";
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
 endif
@@ -280,7 +280,7 @@ endif
 	@
 	@# OpenSSL build to INSTALLDIR (inside Stroika Builds)
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Installing "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "to $(BUILDS_OUTPUT_DIR), and redirecting messages to CURRENT/INSTALL.OUT"`"..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Installing "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "to $(BUILDS_OUTPUT_DIR), and redirecting messages to CURRENT/INSTALL.OUT"`" ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
 endif
@@ -294,14 +294,14 @@ endif
 	@#Run Regression Tests (unless cross compiling)
 	@
 ifeq (false,$(CrossCompiling))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt)...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... ";
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@### @todo FIX FOR WINDOWS BUILDS - not sure why all tests fail -- which is why we dont bother with diff
 	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake test 2>&1\"">> CURRENT/TEST-OUT.txt || true
 else
 	@#we get a single failure on BLOW, so ignore, minor, and should do diff of results
 	@$(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1 || true
-	export NDIFSS=`diff -c --text -b REFERENCE_TEST_OUTPUT.txt CURRENT/TEST-OUT.txt | egrep -v "^---" | egrep -c "^[!+-]"` && $(ECHO) -n "($$NDIFSS lines differ between REFERENCE_TEST_OUTPUT.txt and CURRENT/TEST.OUT)..."
+	export NDIFSS=`diff -c --text -b REFERENCE_TEST_OUTPUT.txt CURRENT/TEST-OUT.txt | egrep -v "^---" | egrep -c "^[!+-]"` && $(ECHO) -n "($$NDIFSS lines differ between REFERENCE_TEST_OUTPUT.txt and CURRENT/TEST.OUT) ... "
 endif
 	@$(ECHO) "done"
 endif

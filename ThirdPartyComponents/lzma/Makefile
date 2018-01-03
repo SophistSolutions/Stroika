@@ -101,7 +101,7 @@ check-prerequisite-tools:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for lzma..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for lzma ... "
 	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) check_prerequisites_
 	@$(ECHO) "done";
 
@@ -112,7 +112,7 @@ check_prerequisites_:
 
 
 doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extract $(ZIPEDFILE) to CURRENT..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extract $(ZIPEDFILE) to CURRENT ... "
 	@rm -rf CURRENT
 	@7za x -oCURRENT $(ZIPEDFILE) > /dev/null
 	@#DISABLE - OLD - NOT APPARNETLY NEEDEED ANYMORE - AND CHMOD -R doesnt work on macos --LGP 2017-01-03
@@ -249,7 +249,7 @@ ORIGS:	$(ZIPEDFILE)
 
 
 check:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
 	@for i in $(PRODUCED_OUTPUT_ARTIFACTS) ; do \
 		if [ ! -e $$i ]; then\
 			$(ECHO) "   FAILED: missing $$i";\

@@ -44,7 +44,7 @@ all_objs_:
 
 $(StroikaFrameworksLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
-	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh $@`..."
+	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Creating `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh $@` ... "
 	@rm -f $(StroikaFrameworksLib)
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
 		echo "      $(AR) cr $(StroikaFrameworksLib) $(ALL_OBJS)";\

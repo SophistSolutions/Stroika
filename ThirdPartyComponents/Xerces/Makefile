@@ -175,7 +175,7 @@ endif
 
 
 check-prerequisite-tools:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces ... "
 ifeq (1,$(BUILD_WITH_CMAKE))
 ifeq ($(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), no)
 	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
@@ -185,7 +185,7 @@ endif
 
 
 check:
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking..."
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking ... "
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
@@ -212,7 +212,7 @@ CURRENT:	$(ZIPPEDFILE)
 
 doCreate_:	$(ZIPPEDFILE)
 	@#### @todo FIX this code so this is not deleted/re-created each time we build!!!! -- not needed once we switch to cmake build -- LGP 2017-10-30
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT ... ";
 	@mkdir -p CURRENT && rm -rf CURRENT/*
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
@@ -226,7 +226,7 @@ endif
 doPatching_:
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (0,$(BUILD_WITH_CMAKE))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Xerces...";
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Xerces ... ";
 	@(cd CURRENT; tar xf ../Patches/VC15Projects.tar.gz --no-same-owner);
 	@$(ECHO) "done"
 endif
@@ -313,12 +313,12 @@ ifeq (1,$(BUILD_WITH_CMAKE))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Compiling (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT) ... "`
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
 else ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT) ... "
 	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
 	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
 	$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) all 2>&1 >> CURRENT/BUILD.OUT
 else
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (Log to CURRENT/BUILD.OUT)..."
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (Log to CURRENT/BUILD.OUT) ... "
 ifeq ($(CONFIGURATION),Debug-U-32)
 	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
 endif
