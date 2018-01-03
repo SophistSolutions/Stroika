@@ -152,7 +152,7 @@ endif
 			exit 1;\
 		fi;\
 	done
-	@$(ECHO) " Stroika/ThirdPartyComponents/boost - [Succeeded]";
+	@$(ECHO) " Stroika/ThirdPartyComponents/boost -   [Succeeded]";
 
 
 check-prerequisite-tools:
