@@ -264,6 +264,10 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT..."`
 	@
+	@#https://stroika.atlassian.net/browse/STK-633
+ifeq (,$(findstring CYGWIN,$(shell uname)))
+	@MAXCHAR=93 && PWD=`pwd` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}, and can be no more than $$MAXCHAR characters on windowsto avoid boost build problem" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL); fi;
+endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
 ifeq ($(shell uname -s),Darwin)
 	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam
