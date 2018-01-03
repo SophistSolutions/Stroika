@@ -1,31 +1,41 @@
 @echo off
- 
-::Windows XP doesn't have UAC so skip
-for /f "tokens=3*" %%i in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v ProductName ^| Find "ProductName"') do set WINVER=%%i %%j 
-echo %WINVER% | find "XP" > nul && goto commands
- 
-::prompt for elevation
-if "%1" == "UAC" goto elevation
-(
-  echo Set objShell = CreateObject^("Shell.Application"^)
-  echo Set objFSO = CreateObject^("Scripting.FileSystemObject"^)
-  echo strPath = objFSO.GetParentFolderName^(WScript.ScriptFullName^)
-  echo If objFSO.FileExists^("%~0"^) Then
-  echo   objShell.ShellExecute "cmd.exe", "/c """"%~0"" UAC ""%~dp0""""", "", "runas", 1
-  echo Else
-  echo   MsgBox "Script file not found"
-  echo End If
-) > "%TEMP%\UAC.vbs"
-cscript //nologo "%TEMP%\UAC.vbs"
-goto :eof
-:elevation
-del /q "%TEMP%\UAC.vbs"
- 
-:commands
-::navigate back to this script's home folder
-%~d2
-cd "%~p2"
+
+set _LINK=%1
+set _TARGET=%2
+set _DIR=%3
+
+::echo %_LINK%
+::echo %_TARGET%
+
+:: BatchGotAdmin
+:-------------------------------------
+REM  --> Check for permissions
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+
+REM --> If error flag set, we do not have admin.
+if '%errorlevel%' NEQ '0' (
+    ::echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "%_LINK% %_TARGET% %CD%", "", "runas", 1 >> "%temp%\getadmin.vbs"
+
+    cscript "%temp%\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\getadmin.vbs" ( del "%temp%\getadmin.vbs" )
+    ::pushd "%CD%"
+    ::CD /D "%~dp0"
  
 ::put your main script here
-mklink /D %1 %2
-pause
+::set
+::echo %_LINK%
+::echo %_TARGET%
+::echo %_DIR%
+cd %_DIR%
+::echo mklink /D %_LINK% %_TARGET%
+::pause 
+mklink /D %_LINK% %_TARGET%
