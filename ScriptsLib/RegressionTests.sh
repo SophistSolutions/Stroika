@@ -44,7 +44,7 @@ if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 1 ] ; then
     rm -rf ConfigurationFiles
     make default-configurations
     make clobber
-    echo "make $PARALELLMAKEFLAG all run-tests REDIR TO:  $TEST_OUT_FILE ..."
+    echo -n "make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE ... "
     make $PARALELLMAKEFLAG all run-tests > $TEST_OUT_FILE 2>&1
     echo done
     exit 0;
