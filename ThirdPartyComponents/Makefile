@@ -136,7 +136,7 @@ endif
 clobber:
 	@#ok to call with NO CONFIG (does all)
 ifeq ($(CONFIGURATION),)
-	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents..."
+	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents ... "
 else
 	@../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Clobbering Stroika ThirdPartyComponents {$(CONFIGURATION)}:"
 endif
