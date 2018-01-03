@@ -559,12 +559,14 @@ unless (-e $intermediateFiles) {
 }
 
 unless (-e $configFileCName) {
-	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$configFileCName\"...\n");
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$configFileCName\" ... ");
 	WriteStroikaConfigCHeader ();
+	print("done\n");
 }
 
 
 unless (-e $configFileMakeName) {
-	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\"...\n");
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Writing \"$configFileMakeName\" ... ");
 	WriteStroikaConfigMakeHeader ();
+	print("done\n");
 }
