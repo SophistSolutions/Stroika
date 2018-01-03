@@ -102,7 +102,7 @@ $(ZIPPEDFILE):
 	
 
 $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	CURRENT
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Copying CURRENT to $@ ... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copying CURRENT to $@ ... "`
 	@mkdir -p $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 	@cp -r CURRENT/* $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/
 	@$(ECHO) done

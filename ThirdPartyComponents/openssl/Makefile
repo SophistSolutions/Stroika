@@ -255,12 +255,12 @@ doBuilds:
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (output to CURRENT/CONFIG.OUT)..."
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd CURRENT && eval (./config -t | tail -1) $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT
-	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && ./config -t | tail -1 >> CONFIG.OUT
-	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && eval `./config -t | tail -1` $(CONFIG_ARGS) >> CONFIG.OUT;
+	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && ./config -t | tail -1 >> CONFIG.OUT 2&>1
+	@export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && eval `./config -t | tail -1` $(CONFIG_ARGS) >> CONFIG.OUT 2&>1
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "MFLAGS= MAKEFLAGS= cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > CURRENT/CONFIG.OUT
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> CURRENT/CONFIG.OUT
+	@echo "MFLAGS= MAKEFLAGS= cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > CURRENT/CONFIG.OUT 2>&1
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> CURRENT/CONFIG.OUT 2>&1
 endif
 	@$(ECHO) "done"
 	@

@@ -10,6 +10,7 @@ SHELL=/bin/bash
 
 .NOTPARALLEL:
 
+export StroikaRoot=$(shell realpath ../..)/
 
 
 
