@@ -1,0 +1,1405 @@
+)))- Resetting all configurations to standard regression test set (output to Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows_VS2k17-2.0a225-OUT.txt) - started at Wed Jan  3 22:16:28 EST 2018
+Making default configurations:
+   Writing "ConfigurationFiles/Debug-U-32.xml" ... done
+   Writing "ConfigurationFiles/Debug-U-64.xml" ... done
+   Writing "ConfigurationFiles/Release-DbgMemLeaks-U-32.xml" ... done
+   Writing "ConfigurationFiles/Release-Logging-U-32.xml" ... done
+   Writing "ConfigurationFiles/Release-Logging-U-64.xml" ... done
+   Writing "ConfigurationFiles/Release-U-32.xml" ... done
+   Writing "ConfigurationFiles/Release-U-64.xml" ... done
+)))- Building configurations (7):
+   Debug-U-32
+   Debug-U-64
+   Release-DbgMemLeaks-U-32
+   Release-Logging-U-32
+   Release-Logging-U-64
+   Release-U-32
+   Release-U-64
+Make clobber
+Stroika Clobber:
+   Clobbering Stroika ThirdPartyComponents ... done
+)))- Make all (-j10)...
+Checking for installed tools:
+   sed is /usr/bin/sed
+   wget is /usr/bin/wget
+   perl is /usr/bin/perl
+   tar is /usr/bin/tar
+   patch is /usr/bin/patch
+   tr is /usr/bin/tr
+   pkg-config is /usr/bin/pkg-config
+   realpath is /usr/bin/realpath
+   dos2unix is /usr/bin/dos2unix
+   unix2dos is /usr/bin/unix2dos
+   All Required-Always Tools Present
+Checking Prerequisites for Stroika:
+   Applying configuration {Debug-U-32}:
+      Writing "IntermediateFiles/Debug-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Debug-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Debug-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Debug-U-64}:
+      Writing "IntermediateFiles/Debug-U-64/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Debug-U-64/Configuration.mk" ... done
+      Writing "IntermediateFiles/Debug-U-64/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-DbgMemLeaks-U-32}:
+      Writing "IntermediateFiles/Release-DbgMemLeaks-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-DbgMemLeaks-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-DbgMemLeaks-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-Logging-U-32}:
+      Writing "IntermediateFiles/Release-Logging-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-Logging-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-Logging-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-Logging-U-64}:
+      Writing "IntermediateFiles/Release-Logging-U-64/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-Logging-U-64/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-Logging-U-64/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-U-32}:
+      Writing "IntermediateFiles/Release-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-U-64}:
+      Writing "IntermediateFiles/Release-U-64/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-U-64/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-U-64/Stroika-Current-Version.h" ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Debug-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Debug-U-64}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-DbgMemLeaks-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-Logging-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-Logging-U-64}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-U-64}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+Building Stroika all {Debug-U-32}:
+   Building Stroika ThirdPartyComponents {Debug-U-32}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-32}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-32}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-32}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_65_1 {Debug-U-32}:
+         Extracting ../Origs-Cache/boost_1_65_1.tar.gz to CURRENT ... done
+         Copying CURRENT to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build to {StroikaRoot}Builds/Debug-U-32/ThirdPartyComponents; log2={StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-32}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Debug-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-32}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Debug-U-32}:
+         Creating CURRENT ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3210000 {Debug-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Debug-U-32}:
+      Building Stroika-Foundation:
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(629): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1479): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1826): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\String.cpp(424): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(88): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(82): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Debug-U-32}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Debug-U-32}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Association:
+      Test 10: Foundation::Containers::Bag:
+      Test 11: Foundation::Containers::Bijection:
+      Test 12: Foundation::Containers::Collection:
+      Test 13: Foundation::Containers::DataHyperRectangle:
+      Test 14: Foundation::Containers::Deque:
+      Test 15: Foundation::Containers::KeyedCollection:
+      Test 16: Foundation::Containers::Mapping:
+      Test 17: Foundation::Containers::MultiSet:
+      Test 18: Foundation::Containers::PriorityQueue:
+      Test 19: Foundation::Containers::Queue:
+      Test 20: Foundation::Containers::Sequence:
+      Test 21: Foundation::Containers::Set:
+      Test 22: Foundation::Containers::SortedAssociation:
+      Test 23: Foundation::Containers::SortedCollection:
+      Test 24: Foundation::Containers::SortedMapping:
+      Test 25: Foundation::Containers::SortedMultiSet:
+      Test 26: Foundation::Containers::SortedSet:
+      Test 27: Foundation::Containers::Stack:
+      Test 28: Foundation::Containers::STL:
+      Test 29: Foundation::Cryptography:
+      Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 31: Foundation::DataExchange::ObjectVariantMapper:
+      Test 32: Foundation::DataExchange::XML::SaxParser:
+      Test 33: Foundation::DataExchange::Other:
+      Test 34: Foundation::Database:
+      Test 35: Foundation::Execution::Exceptions:
+      Test 36: Foundation::Execution::ProcessRunner:
+      Test 37: Foundation::Execution::Signals:
+      Test 38: Foundation::Execution::Threads:
+      Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 40: Foundation::Execution::Other:
+      Test 41: Foundation::IO::Network:
+      Test 42: Foundation::IO::Network::HTTP:
+      Test 43: Foundation::IO::Network::Transfer:
+      Test 44: Foundation::IO::Other:
+      Test 45: Foundation::Math:
+      Test 46: Foundation::Memory:
+      Test 47: Foundation::Streams:
+      Test 48: Foundation::Time:
+      Test 49: Foundation::Traversal:
+      Test 50: Foundation::PERFORMANCE:
+c:\sandbox\stroika\devroot\tests\50\test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+c:\sandbox\stroika\devroot\tests\50\test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+c:\sandbox\stroika\devroot\tests\50\test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+c:\sandbox\stroika\devroot\tests\50\test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+c:\sandbox\stroika\devroot\tests\50\test.cpp(1204): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+   Building Stroika Samples {Debug-U-32}:
+      Building Samples/ArchiveUtility:
+      Building Samples/SimpleLedTest:
+      Building Samples/SSDPServer:
+      Building Samples/SSDPClient:
+      Building Samples/SystemPerformanceClient:
+      Building Samples/Traceroute:
+      Building Samples/WebServer:
+      Building Samples/SimpleService:
+which: no doxygen in (/cygdrive/c/Windows/system32:/cygdrive/c/Windows:/cygdrive/c/Windows/System32/Wbem:/cygdrive/c/Windows/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE))
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Debug-U-32}:
+      Checking Stroika ThirdPartyComponents {Debug-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Debug-U-32}:      [SUCCEEDED]
+      Checking Stroika Tools {Debug-U-32}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Debug-U-32}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Association :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Bag :  [SUCCEEDED]
+         Test 11: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 13: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 14: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 15: Foundation::Containers::KeyedCollection :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 17: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 18: Foundation::Containers::PriorityQueue :  [SUCCEEDED]
+         Test 19: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 20: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 21: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 22: Foundation::Containers::SortedAssociation :  [SUCCEEDED]
+         Test 23: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 24: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 25: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 26: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 27: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 28: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 29: Foundation::Cryptography :  [SUCCEEDED]
+         Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 31: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 32: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 33: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 34: Foundation::Database :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 36: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 37: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 38: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 39: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 40: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 41: Foundation::IO::Network :  [SUCCEEDED]
+         Test 42: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 43: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 44: Foundation::IO::Other :  [SUCCEEDED]
+         Test 45: Foundation::Math :  [SUCCEEDED]
+         Test 46: Foundation::Memory :  [SUCCEEDED]
+         Test 47: Foundation::Streams :  [SUCCEEDED]
+         Test 48: Foundation::Time :  [SUCCEEDED]
+         Test 49: Foundation::Traversal :  [SUCCEEDED]
+         Test 50: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Debug-U-32}:
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/SimpleLedTest...            [SUCCEEDED]
+         Checking Samples/SimpleService...            [SUCCEEDED]
+         Checking Samples/SSDPClient...               [SUCCEEDED]
+         Checking Samples/SSDPServer...               [SUCCEEDED]
+         Checking Samples/SystemPerformanceClient...  [SUCCEEDED]
+         Checking Samples/Traceroute...               [SUCCEEDED]
+         Checking Samples/WebServer...                [SUCCEEDED]
+Building Stroika all {Debug-U-64}:
+   Building Stroika ThirdPartyComponents {Debug-U-64}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-64}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-64}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-64}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_65_1 {Debug-U-64}:
+         Copying CURRENT to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build to {StroikaRoot}Builds/Debug-U-64/ThirdPartyComponents; log2={StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-64}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Debug-U-64/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-64}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Debug-U-64}:
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3210000 {Debug-U-64}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Debug-U-64}:
+      Building Stroika-Foundation:
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(629): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1479): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1826): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\String.cpp(424): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(88): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(82): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Debug-U-64}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Debug-U-64}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Association:
+      Test 10: Foundation::Containers::Bag:
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(317,5): error MSB3491: Could not write lines to file "C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\..\..\..\IntermediateFiles\Debug-U-64\Library\Foundation\Stroika-.5AFC8E54.tlog\Stroika-Foundation.lastbuildstate". The process cannot access the file 'C:\Sandbox\Stroika\DevRoot\IntermediateFiles\Debug-U-64\Library\Foundation\Stroika-.5AFC8E54.tlog\Stroika-Foundation.lastbuildstate' because it is being used by another process. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+make[3]: *** [Makefile:144: 01] Error 1
+make[3]: *** Waiting for unfinished jobs....
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(298,5): error MSB3501: Could not read lines from file "C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\..\..\..\IntermediateFiles\Debug-U-64\Library\Foundation\Stroika-.5AFC8E54.tlog\Stroika-Foundation.lastbuildstate". The process cannot access the file 'C:\Sandbox\Stroika\DevRoot\IntermediateFiles\Debug-U-64\Library\Foundation\Stroika-.5AFC8E54.tlog\Stroika-Foundation.lastbuildstate' because it is being used by another process. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+make[3]: *** [Makefile:144: 10] Error 1
+make[2]: *** [Makefile:133: tests] Error 2
+make[1]: *** [Makefile:196: tests] Error 2
+make: *** [Makefile:57: all] Error 2
+done (in 85 minutes)
+)))- Run-Tests ALL...
+Stroika/Run-All-Tests {Debug-U-32}:
+Building Stroika ThirdPartyComponents {Debug-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_65_1 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3210000 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Debug-U-32}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Debug-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Association:
+   Test 10: Foundation::Containers::Bag:
+   Test 11: Foundation::Containers::Bijection:
+   Test 12: Foundation::Containers::Collection:
+   Test 13: Foundation::Containers::DataHyperRectangle:
+   Test 14: Foundation::Containers::Deque:
+   Test 15: Foundation::Containers::KeyedCollection:
+   Test 16: Foundation::Containers::Mapping:
+   Test 17: Foundation::Containers::MultiSet:
+   Test 18: Foundation::Containers::PriorityQueue:
+   Test 19: Foundation::Containers::Queue:
+   Test 20: Foundation::Containers::Sequence:
+   Test 21: Foundation::Containers::Set:
+   Test 22: Foundation::Containers::SortedAssociation:
+   Test 23: Foundation::Containers::SortedCollection:
+   Test 24: Foundation::Containers::SortedMapping:
+   Test 25: Foundation::Containers::SortedMultiSet:
+   Test 26: Foundation::Containers::SortedSet:
+   Test 27: Foundation::Containers::Stack:
+   Test 28: Foundation::Containers::STL:
+   Test 29: Foundation::Cryptography:
+   Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 31: Foundation::DataExchange::ObjectVariantMapper:
+   Test 32: Foundation::DataExchange::XML::SaxParser:
+   Test 33: Foundation::DataExchange::Other:
+   Test 34: Foundation::Database:
+   Test 35: Foundation::Execution::Exceptions:
+   Test 36: Foundation::Execution::ProcessRunner:
+   Test 37: Foundation::Execution::Signals:
+   Test 38: Foundation::Execution::Threads:
+   Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 40: Foundation::Execution::Other:
+   Test 41: Foundation::IO::Network:
+   Test 42: Foundation::IO::Network::HTTP:
+   Test 43: Foundation::IO::Network::Transfer:
+   Test 44: Foundation::IO::Other:
+   Test 45: Foundation::Math:
+   Test 46: Foundation::Memory:
+   Test 47: Foundation::Streams:
+   Test 48: Foundation::Time:
+   Test 49: Foundation::Traversal:
+   Test 50: Foundation::PERFORMANCE:
+Running Stroka Tests {Debug-U-32}:
+   [Succeeded]  (0  seconds)  [01]  Foundation::Caching  (../Builds/Debug-U-32/Test01/Test01.exe)
+   [Succeeded]  (2  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Debug-U-32/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Debug-U-32/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Debug-U-32/Test04/Test04.exe)
+   [Succeeded]  (1  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Debug-U-32/Test05/Test05.exe)
+   [Succeeded]  (1  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Debug-U-32/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Debug-U-32/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Debug-U-32/Test08/Test08.exe)
+   [Succeeded]  (2  seconds)  [09]  Foundation::Containers::Association  (../Builds/Debug-U-32/Test09/Test09.exe)
+   [Succeeded]  (1  seconds)  [10]  Foundation::Containers::Bag  (../Builds/Debug-U-32/Test10/Test10.exe)
+   [Succeeded]  (1  seconds)  [11]  Foundation::Containers::Bijection  (../Builds/Debug-U-32/Test11/Test11.exe)
+   [Succeeded]  (14 seconds)  [12]  Foundation::Containers::Collection  (../Builds/Debug-U-32/Test12/Test12.exe)
+   [Succeeded]  (0  seconds)  [13]  Foundation::Containers::DataHyperRectangle  (../Builds/Debug-U-32/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::Deque  (../Builds/Debug-U-32/Test14/Test14.exe)
+   [Succeeded]  (0  seconds)  [15]  Foundation::Containers::KeyedCollection  (../Builds/Debug-U-32/Test15/Test15.exe)
+   [Succeeded]  (2  seconds)  [16]  Foundation::Containers::Mapping  (../Builds/Debug-U-32/Test16/Test16.exe)
+   [Succeeded]  (26 seconds)  [17]  Foundation::Containers::MultiSet  (../Builds/Debug-U-32/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::PriorityQueue  (../Builds/Debug-U-32/Test18/Test18.exe)
+   [Succeeded]  (0  seconds)  [19]  Foundation::Containers::Queue  (../Builds/Debug-U-32/Test19/Test19.exe)
+   [Succeeded]  (26 seconds)  [20]  Foundation::Containers::Sequence  (../Builds/Debug-U-32/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::Set  (../Builds/Debug-U-32/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::SortedAssociation  (../Builds/Debug-U-32/Test22/Test22.exe)
+   [Succeeded]  (6  seconds)  [23]  Foundation::Containers::SortedCollection  (../Builds/Debug-U-32/Test23/Test23.exe)
+   [Succeeded]  (1  seconds)  [24]  Foundation::Containers::SortedMapping  (../Builds/Debug-U-32/Test24/Test24.exe)
+   [Succeeded]  (21 seconds)  [25]  Foundation::Containers::SortedMultiSet  (../Builds/Debug-U-32/Test25/Test25.exe)
+   [Succeeded]  (0  seconds)  [26]  Foundation::Containers::SortedSet  (../Builds/Debug-U-32/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::Containers::Stack  (../Builds/Debug-U-32/Test27/Test27.exe)
+   [Succeeded]  (1  seconds)  [28]  Foundation::Containers::STL  (../Builds/Debug-U-32/Test28/Test28.exe)
+   [Succeeded]  (1  seconds)  [29]  Foundation::Cryptography  (../Builds/Debug-U-32/Test29/Test29.exe)
+   [Succeeded]  (2  seconds)  [30]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Debug-U-32/Test30/Test30.exe)
+   [Succeeded]  (2  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Debug-U-32/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::DataExchange::XML::SaxParser  (../Builds/Debug-U-32/Test32/Test32.exe)
+   [Succeeded]  (1  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/Debug-U-32/Test33/Test33.exe)
+   [Succeeded]  (14 seconds)  [34]  Foundation::Database  (../Builds/Debug-U-32/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (../Builds/Debug-U-32/Test35/Test35.exe)
+   [Succeeded]  (33 seconds)  [36]  Foundation::Execution::ProcessRunner  (../Builds/Debug-U-32/Test36/Test36.exe)
+   [Succeeded]  (2  seconds)  [37]  Foundation::Execution::Signals  (../Builds/Debug-U-32/Test37/Test37.exe)
+   [Succeeded]  (86 seconds)  [38]  Foundation::Execution::Threads  (../Builds/Debug-U-32/Test38/Test38.exe)
+   [Succeeded]  (25 seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Debug-U-32/Test39/Test39.exe)
+   [Succeeded]  (1  seconds)  [40]  Foundation::Execution::Other  (../Builds/Debug-U-32/Test40/Test40.exe)
+   [Succeeded]  (1  seconds)  [41]  Foundation::IO::Network  (../Builds/Debug-U-32/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/Debug-U-32/Test42/Test42.exe)
+   [Succeeded]  (12 seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/Debug-U-32/Test43/Test43.exe)
+   [Succeeded]  (1  seconds)  [44]  Foundation::IO::Other  (../Builds/Debug-U-32/Test44/Test44.exe)
+   [Succeeded]  (1  seconds)  [45]  Foundation::Math  (../Builds/Debug-U-32/Test45/Test45.exe)
+   [Succeeded]  (0  seconds)  [46]  Foundation::Memory  (../Builds/Debug-U-32/Test46/Test46.exe)
+   [Succeeded]  (0  seconds)  [47]  Foundation::Streams  (../Builds/Debug-U-32/Test47/Test47.exe)
+   [Succeeded]  (32 seconds)  [48]  Foundation::Time  (../Builds/Debug-U-32/Test48/Test48.exe)
+   [Succeeded]  (9  seconds)  [49]  Foundation::Traversal  (../Builds/Debug-U-32/Test49/Test49.exe)
+   [Succeeded]  (104 seconds)  [50]  Foundation::PERFORMANCE  (../Builds/Debug-U-32/Test50/Test50.exe)
+Stroika/Run-All-Tests {Debug-U-64}:
+Building Stroika ThirdPartyComponents {Debug-U-64}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-64}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-64}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_65_1 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3210000 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Debug-U-64}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Debug-U-64}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Association:
+   Test 10: Foundation::Containers::Bag:
+   Test 11: Foundation::Containers::Bijection:
+   Test 12: Foundation::Containers::Collection:
+   Test 13: Foundation::Containers::DataHyperRectangle:
+   Test 14: Foundation::Containers::Deque:
+   Test 15: Foundation::Containers::KeyedCollection:
+   Test 16: Foundation::Containers::Mapping:
+   Test 17: Foundation::Containers::MultiSet:
+   Test 18: Foundation::Containers::PriorityQueue:
+   Test 19: Foundation::Containers::Queue:
+   Test 20: Foundation::Containers::Sequence:
+   Test 21: Foundation::Containers::Set:
+   Test 22: Foundation::Containers::SortedAssociation:
+   Test 23: Foundation::Containers::SortedCollection:
+   Test 24: Foundation::Containers::SortedMapping:
+   Test 25: Foundation::Containers::SortedMultiSet:
+   Test 26: Foundation::Containers::SortedSet:
+   Test 27: Foundation::Containers::Stack:
+   Test 28: Foundation::Containers::STL:
+   Test 29: Foundation::Cryptography:
+   Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 31: Foundation::DataExchange::ObjectVariantMapper:
+   Test 32: Foundation::DataExchange::XML::SaxParser:
+   Test 33: Foundation::DataExchange::Other:
+   Test 34: Foundation::Database:
+   Test 35: Foundation::Execution::Exceptions:
+   Test 36: Foundation::Execution::ProcessRunner:
+   Test 37: Foundation::Execution::Signals:
+   Test 38: Foundation::Execution::Threads:
+   Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 40: Foundation::Execution::Other:
+   Test 41: Foundation::IO::Network:
+   Test 42: Foundation::IO::Network::HTTP:
+   Test 43: Foundation::IO::Network::Transfer:
+   Test 44: Foundation::IO::Other:
+   Test 45: Foundation::Math:
+   Test 46: Foundation::Memory:
+   Test 47: Foundation::Streams:
+   Test 48: Foundation::Time:
+   Test 49: Foundation::Traversal:
+   Test 50: Foundation::PERFORMANCE:
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1204): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+Running Stroka Tests {Debug-U-64}:
+   [Succeeded]  (0  seconds)  [01]  Foundation::Caching  (../Builds/Debug-U-64/Test01/Test01.exe)
+   [Succeeded]  (0  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Debug-U-64/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Debug-U-64/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Debug-U-64/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Debug-U-64/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Debug-U-64/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Debug-U-64/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Debug-U-64/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Association  (../Builds/Debug-U-64/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Bag  (../Builds/Debug-U-64/Test10/Test10.exe)
+   [Succeeded]  (1  seconds)  [11]  Foundation::Containers::Bijection  (../Builds/Debug-U-64/Test11/Test11.exe)
+   [Succeeded]  (6  seconds)  [12]  Foundation::Containers::Collection  (../Builds/Debug-U-64/Test12/Test12.exe)
+   [Succeeded]  (0  seconds)  [13]  Foundation::Containers::DataHyperRectangle  (../Builds/Debug-U-64/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::Deque  (../Builds/Debug-U-64/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::KeyedCollection  (../Builds/Debug-U-64/Test15/Test15.exe)
+   [Succeeded]  (1  seconds)  [16]  Foundation::Containers::Mapping  (../Builds/Debug-U-64/Test16/Test16.exe)
+   [Succeeded]  (16 seconds)  [17]  Foundation::Containers::MultiSet  (../Builds/Debug-U-64/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::PriorityQueue  (../Builds/Debug-U-64/Test18/Test18.exe)
+   [Succeeded]  (0  seconds)  [19]  Foundation::Containers::Queue  (../Builds/Debug-U-64/Test19/Test19.exe)
+   [Succeeded]  (17 seconds)  [20]  Foundation::Containers::Sequence  (../Builds/Debug-U-64/Test20/Test20.exe)
+   [Succeeded]  (1  seconds)  [21]  Foundation::Containers::Set  (../Builds/Debug-U-64/Test21/Test21.exe)
+   [Succeeded]  (1  seconds)  [22]  Foundation::Containers::SortedAssociation  (../Builds/Debug-U-64/Test22/Test22.exe)
+   [Succeeded]  (3  seconds)  [23]  Foundation::Containers::SortedCollection  (../Builds/Debug-U-64/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Containers::SortedMapping  (../Builds/Debug-U-64/Test24/Test24.exe)
+   [Succeeded]  (14 seconds)  [25]  Foundation::Containers::SortedMultiSet  (../Builds/Debug-U-64/Test25/Test25.exe)
+   [Succeeded]  (0  seconds)  [26]  Foundation::Containers::SortedSet  (../Builds/Debug-U-64/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::Containers::Stack  (../Builds/Debug-U-64/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::Containers::STL  (../Builds/Debug-U-64/Test28/Test28.exe)
+   [Succeeded]  (1  seconds)  [29]  Foundation::Cryptography  (../Builds/Debug-U-64/Test29/Test29.exe)
+   [Succeeded]  (1  seconds)  [30]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Debug-U-64/Test30/Test30.exe)
+   [Succeeded]  (2  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Debug-U-64/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::DataExchange::XML::SaxParser  (../Builds/Debug-U-64/Test32/Test32.exe)
+   [Succeeded]  (1  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/Debug-U-64/Test33/Test33.exe)
+   [Succeeded]  (12 seconds)  [34]  Foundation::Database  (../Builds/Debug-U-64/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (../Builds/Debug-U-64/Test35/Test35.exe)
+   [Succeeded]  (24 seconds)  [36]  Foundation::Execution::ProcessRunner  (../Builds/Debug-U-64/Test36/Test36.exe)
+   [Succeeded]  (1  seconds)  [37]  Foundation::Execution::Signals  (../Builds/Debug-U-64/Test37/Test37.exe)
+   [Succeeded]  (85 seconds)  [38]  Foundation::Execution::Threads  (../Builds/Debug-U-64/Test38/Test38.exe)
+   [Succeeded]  (16 seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Debug-U-64/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Execution::Other  (../Builds/Debug-U-64/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::IO::Network  (../Builds/Debug-U-64/Test41/Test41.exe)
+   [Succeeded]  (1  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/Debug-U-64/Test42/Test42.exe)
+   [Succeeded]  (6  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/Debug-U-64/Test43/Test43.exe)
+   [Succeeded]  (0  seconds)  [44]  Foundation::IO::Other  (../Builds/Debug-U-64/Test44/Test44.exe)
+   [Succeeded]  (0  seconds)  [45]  Foundation::Math  (../Builds/Debug-U-64/Test45/Test45.exe)
+   [Succeeded]  (0  seconds)  [46]  Foundation::Memory  (../Builds/Debug-U-64/Test46/Test46.exe)
+   [Succeeded]  (0  seconds)  [47]  Foundation::Streams  (../Builds/Debug-U-64/Test47/Test47.exe)
+   [Succeeded]  (29 seconds)  [48]  Foundation::Time  (../Builds/Debug-U-64/Test48/Test48.exe)
+   [Succeeded]  (7  seconds)  [49]  Foundation::Traversal  (../Builds/Debug-U-64/Test49/Test49.exe)
+   [Succeeded]  (54 seconds)  [50]  Foundation::PERFORMANCE  (../Builds/Debug-U-64/Test50/Test50.exe)
+Stroika/Run-All-Tests {Release-DbgMemLeaks-U-32}:
+Building Stroika ThirdPartyComponents {Release-DbgMemLeaks-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-DbgMemLeaks-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-DbgMemLeaks-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-DbgMemLeaks-U-32}:
+      Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+      Patching ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ ...done
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_65_1 {Release-DbgMemLeaks-U-32}:
+      Copying CURRENT to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/boost ... done
+      Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+      Config+Build to {StroikaRoot}Builds/Release-DbgMemLeaks-U-32/ThirdPartyComponents; log2={StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-DbgMemLeaks-U-32}:
+      Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+      Patching OpenSSL ... .done
+      Configuring (output to CURRENT/CONFIG.OUT) ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Installing to {StroikaRoot}Builds/Release-DbgMemLeaks-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+      Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-DbgMemLeaks-U-32}:
+      Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+      Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Release-DbgMemLeaks-U-32}:
+      Configuring (Log to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+      Compiling (Log to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3210000 {Release-DbgMemLeaks-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-DbgMemLeaks-U-32}:
+   Building Stroika-Foundation:
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(629): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1479): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1826): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\String.cpp(424): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(88): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(82): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-DbgMemLeaks-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Association:
+   Test 10: Foundation::Containers::Bag:
+   Test 11: Foundation::Containers::Bijection:
+   Test 12: Foundation::Containers::Collection:
+   Test 13: Foundation::Containers::DataHyperRectangle:
+   Test 14: Foundation::Containers::Deque:
+   Test 15: Foundation::Containers::KeyedCollection:
+   Test 16: Foundation::Containers::Mapping:
+   Test 17: Foundation::Containers::MultiSet:
+   Test 18: Foundation::Containers::PriorityQueue:
+   Test 19: Foundation::Containers::Queue:
+   Test 20: Foundation::Containers::Sequence:
+   Test 21: Foundation::Containers::Set:
+   Test 22: Foundation::Containers::SortedAssociation:
+   Test 23: Foundation::Containers::SortedCollection:
+   Test 24: Foundation::Containers::SortedMapping:
+   Test 25: Foundation::Containers::SortedMultiSet:
+   Test 26: Foundation::Containers::SortedSet:
+   Test 27: Foundation::Containers::Stack:
+   Test 28: Foundation::Containers::STL:
+   Test 29: Foundation::Cryptography:
+   Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 31: Foundation::DataExchange::ObjectVariantMapper:
+   Test 32: Foundation::DataExchange::XML::SaxParser:
+   Test 33: Foundation::DataExchange::Other:
+   Test 34: Foundation::Database:
+   Test 35: Foundation::Execution::Exceptions:
+   Test 36: Foundation::Execution::ProcessRunner:
+   Test 37: Foundation::Execution::Signals:
+   Test 38: Foundation::Execution::Threads:
+   Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 40: Foundation::Execution::Other:
+   Test 41: Foundation::IO::Network:
+   Test 42: Foundation::IO::Network::HTTP:
+   Test 43: Foundation::IO::Network::Transfer:
+   Test 44: Foundation::IO::Other:
+   Test 45: Foundation::Math:
+   Test 46: Foundation::Memory:
+   Test 47: Foundation::Streams:
+   Test 48: Foundation::Time:
+   Test 49: Foundation::Traversal:
+   Test 50: Foundation::PERFORMANCE:
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1204): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+Running Stroka Tests {Release-DbgMemLeaks-U-32}:
+   [Succeeded]  (0  seconds)  [01]  Foundation::Caching  (../Builds/Release-DbgMemLeaks-U-32/Test01/Test01.exe)
+   [Succeeded]  (0  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-DbgMemLeaks-U-32/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-DbgMemLeaks-U-32/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-DbgMemLeaks-U-32/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-DbgMemLeaks-U-32/Test05/Test05.exe)
+   [Succeeded]  (1  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-DbgMemLeaks-U-32/Test06/Test06.exe)
+   [Succeeded]  (1  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-DbgMemLeaks-U-32/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-DbgMemLeaks-U-32/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Association  (../Builds/Release-DbgMemLeaks-U-32/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Bag  (../Builds/Release-DbgMemLeaks-U-32/Test10/Test10.exe)
+   [Succeeded]  (0  seconds)  [11]  Foundation::Containers::Bijection  (../Builds/Release-DbgMemLeaks-U-32/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Collection  (../Builds/Release-DbgMemLeaks-U-32/Test12/Test12.exe)
+   [Succeeded]  (0  seconds)  [13]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-DbgMemLeaks-U-32/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::Deque  (../Builds/Release-DbgMemLeaks-U-32/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::KeyedCollection  (../Builds/Release-DbgMemLeaks-U-32/Test15/Test15.exe)
+   [Succeeded]  (0  seconds)  [16]  Foundation::Containers::Mapping  (../Builds/Release-DbgMemLeaks-U-32/Test16/Test16.exe)
+   [Succeeded]  (0  seconds)  [17]  Foundation::Containers::MultiSet  (../Builds/Release-DbgMemLeaks-U-32/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::PriorityQueue  (../Builds/Release-DbgMemLeaks-U-32/Test18/Test18.exe)
+   [Succeeded]  (0  seconds)  [19]  Foundation::Containers::Queue  (../Builds/Release-DbgMemLeaks-U-32/Test19/Test19.exe)
+   [Succeeded]  (1  seconds)  [20]  Foundation::Containers::Sequence  (../Builds/Release-DbgMemLeaks-U-32/Test20/Test20.exe)
+   [Succeeded]  (1  seconds)  [21]  Foundation::Containers::Set  (../Builds/Release-DbgMemLeaks-U-32/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::SortedAssociation  (../Builds/Release-DbgMemLeaks-U-32/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::SortedCollection  (../Builds/Release-DbgMemLeaks-U-32/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Containers::SortedMapping  (../Builds/Release-DbgMemLeaks-U-32/Test24/Test24.exe)
+   [Succeeded]  (1  seconds)  [25]  Foundation::Containers::SortedMultiSet  (../Builds/Release-DbgMemLeaks-U-32/Test25/Test25.exe)
+   [Succeeded]  (0  seconds)  [26]  Foundation::Containers::SortedSet  (../Builds/Release-DbgMemLeaks-U-32/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::Containers::Stack  (../Builds/Release-DbgMemLeaks-U-32/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::Containers::STL  (../Builds/Release-DbgMemLeaks-U-32/Test28/Test28.exe)
+   [Succeeded]  (1  seconds)  [29]  Foundation::Cryptography  (../Builds/Release-DbgMemLeaks-U-32/Test29/Test29.exe)
+   [Succeeded]  (0  seconds)  [30]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-DbgMemLeaks-U-32/Test30/Test30.exe)
+   [Succeeded]  (0  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-DbgMemLeaks-U-32/Test31/Test31.exe)
+   [Succeeded]  (0  seconds)  [32]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-DbgMemLeaks-U-32/Test32/Test32.exe)
+   [Succeeded]  (0  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/Release-DbgMemLeaks-U-32/Test33/Test33.exe)
+   [Succeeded]  (9  seconds)  [34]  Foundation::Database  (../Builds/Release-DbgMemLeaks-U-32/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (../Builds/Release-DbgMemLeaks-U-32/Test35/Test35.exe)
+   [Succeeded]  (10 seconds)  [36]  Foundation::Execution::ProcessRunner  (../Builds/Release-DbgMemLeaks-U-32/Test36/Test36.exe)
+   [Succeeded]  (1  seconds)  [37]  Foundation::Execution::Signals  (../Builds/Release-DbgMemLeaks-U-32/Test37/Test37.exe)
+   [Succeeded]  (81 seconds)  [38]  Foundation::Execution::Threads  (../Builds/Release-DbgMemLeaks-U-32/Test38/Test38.exe)
+   [Succeeded]  (19 seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-DbgMemLeaks-U-32/Test39/Test39.exe)
+   [Succeeded]  (1  seconds)  [40]  Foundation::Execution::Other  (../Builds/Release-DbgMemLeaks-U-32/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::IO::Network  (../Builds/Release-DbgMemLeaks-U-32/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/Release-DbgMemLeaks-U-32/Test42/Test42.exe)
+   [Succeeded]  (2  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/Release-DbgMemLeaks-U-32/Test43/Test43.exe)
+   [Succeeded]  (0  seconds)  [44]  Foundation::IO::Other  (../Builds/Release-DbgMemLeaks-U-32/Test44/Test44.exe)
+   [Succeeded]  (1  seconds)  [45]  Foundation::Math  (../Builds/Release-DbgMemLeaks-U-32/Test45/Test45.exe)
+   [Succeeded]  (0  seconds)  [46]  Foundation::Memory  (../Builds/Release-DbgMemLeaks-U-32/Test46/Test46.exe)
+   [Succeeded]  (0  seconds)  [47]  Foundation::Streams  (../Builds/Release-DbgMemLeaks-U-32/Test47/Test47.exe)
+   [Succeeded]  (1  seconds)  [48]  Foundation::Time  (../Builds/Release-DbgMemLeaks-U-32/Test48/Test48.exe)
+   [Succeeded]  (0  seconds)  [49]  Foundation::Traversal  (../Builds/Release-DbgMemLeaks-U-32/Test49/Test49.exe)
+   [Succeeded]  (348 seconds)  [50]  Foundation::PERFORMANCE  (../Builds/Release-DbgMemLeaks-U-32/Test50/Test50.exe)
+Stroika/Run-All-Tests {Release-Logging-U-32}:
+Building Stroika ThirdPartyComponents {Release-Logging-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-Logging-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-Logging-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-Logging-U-32}:
+      Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+      Patching ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ ...done
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_65_1 {Release-Logging-U-32}:
+      Copying CURRENT to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/boost ... done
+      Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+      Config+Build to {StroikaRoot}Builds/Release-Logging-U-32/ThirdPartyComponents; log2={StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-Logging-U-32}:
+      Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+      Patching OpenSSL ... .done
+      Configuring (output to CURRENT/CONFIG.OUT) ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Installing to {StroikaRoot}Builds/Release-Logging-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+      Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-Logging-U-32}:
+      Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+      Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Release-Logging-U-32}:
+      Configuring (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+      Compiling (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3210000 {Release-Logging-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-Logging-U-32}:
+   Building Stroika-Foundation:
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(629): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1479): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1826): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\String.cpp(424): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(88): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(82): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-Logging-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Association:
+   Test 10: Foundation::Containers::Bag:
+   Test 11: Foundation::Containers::Bijection:
+   Test 12: Foundation::Containers::Collection:
+   Test 13: Foundation::Containers::DataHyperRectangle:
+   Test 14: Foundation::Containers::Deque:
+   Test 15: Foundation::Containers::KeyedCollection:
+   Test 16: Foundation::Containers::Mapping:
+   Test 17: Foundation::Containers::MultiSet:
+   Test 18: Foundation::Containers::PriorityQueue:
+   Test 19: Foundation::Containers::Queue:
+   Test 20: Foundation::Containers::Sequence:
+   Test 21: Foundation::Containers::Set:
+   Test 22: Foundation::Containers::SortedAssociation:
+   Test 23: Foundation::Containers::SortedCollection:
+   Test 24: Foundation::Containers::SortedMapping:
+   Test 25: Foundation::Containers::SortedMultiSet:
+   Test 26: Foundation::Containers::SortedSet:
+   Test 27: Foundation::Containers::Stack:
+   Test 28: Foundation::Containers::STL:
+   Test 29: Foundation::Cryptography:
+   Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 31: Foundation::DataExchange::ObjectVariantMapper:
+   Test 32: Foundation::DataExchange::XML::SaxParser:
+   Test 33: Foundation::DataExchange::Other:
+   Test 34: Foundation::Database:
+   Test 35: Foundation::Execution::Exceptions:
+   Test 36: Foundation::Execution::ProcessRunner:
+   Test 37: Foundation::Execution::Signals:
+   Test 38: Foundation::Execution::Threads:
+   Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 40: Foundation::Execution::Other:
+   Test 41: Foundation::IO::Network:
+   Test 42: Foundation::IO::Network::HTTP:
+   Test 43: Foundation::IO::Network::Transfer:
+   Test 44: Foundation::IO::Other:
+   Test 45: Foundation::Math:
+   Test 46: Foundation::Memory:
+   Test 47: Foundation::Streams:
+   Test 48: Foundation::Time:
+   Test 49: Foundation::Traversal:
+   Test 50: Foundation::PERFORMANCE:
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1204): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+Running Stroka Tests {Release-Logging-U-32}:
+   [Succeeded]  (0  seconds)  [01]  Foundation::Caching  (../Builds/Release-Logging-U-32/Test01/Test01.exe)
+   [Succeeded]  (1  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-Logging-U-32/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-Logging-U-32/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-Logging-U-32/Test04/Test04.exe)
+   [Succeeded]  (1  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-Logging-U-32/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-Logging-U-32/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-Logging-U-32/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-Logging-U-32/Test08/Test08.exe)
+   [Succeeded]  (1  seconds)  [09]  Foundation::Containers::Association  (../Builds/Release-Logging-U-32/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Bag  (../Builds/Release-Logging-U-32/Test10/Test10.exe)
+   [Succeeded]  (0  seconds)  [11]  Foundation::Containers::Bijection  (../Builds/Release-Logging-U-32/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Collection  (../Builds/Release-Logging-U-32/Test12/Test12.exe)
+   [Succeeded]  (1  seconds)  [13]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-Logging-U-32/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::Deque  (../Builds/Release-Logging-U-32/Test14/Test14.exe)
+   [Succeeded]  (0  seconds)  [15]  Foundation::Containers::KeyedCollection  (../Builds/Release-Logging-U-32/Test15/Test15.exe)
+   [Succeeded]  (1  seconds)  [16]  Foundation::Containers::Mapping  (../Builds/Release-Logging-U-32/Test16/Test16.exe)
+   [Succeeded]  (0  seconds)  [17]  Foundation::Containers::MultiSet  (../Builds/Release-Logging-U-32/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::PriorityQueue  (../Builds/Release-Logging-U-32/Test18/Test18.exe)
+   [Succeeded]  (1  seconds)  [19]  Foundation::Containers::Queue  (../Builds/Release-Logging-U-32/Test19/Test19.exe)
+   [Succeeded]  (1  seconds)  [20]  Foundation::Containers::Sequence  (../Builds/Release-Logging-U-32/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::Set  (../Builds/Release-Logging-U-32/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::SortedAssociation  (../Builds/Release-Logging-U-32/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::SortedCollection  (../Builds/Release-Logging-U-32/Test23/Test23.exe)
+   [Succeeded]  (1  seconds)  [24]  Foundation::Containers::SortedMapping  (../Builds/Release-Logging-U-32/Test24/Test24.exe)
+   [Succeeded]  (1  seconds)  [25]  Foundation::Containers::SortedMultiSet  (../Builds/Release-Logging-U-32/Test25/Test25.exe)
+   [Succeeded]  (0  seconds)  [26]  Foundation::Containers::SortedSet  (../Builds/Release-Logging-U-32/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::Containers::Stack  (../Builds/Release-Logging-U-32/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::Containers::STL  (../Builds/Release-Logging-U-32/Test28/Test28.exe)
+   [Succeeded]  (0  seconds)  [29]  Foundation::Cryptography  (../Builds/Release-Logging-U-32/Test29/Test29.exe)
+   [Succeeded]  (0  seconds)  [30]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-Logging-U-32/Test30/Test30.exe)
+   [Succeeded]  (1  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-Logging-U-32/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-Logging-U-32/Test32/Test32.exe)
+   [Succeeded]  (0  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/Release-Logging-U-32/Test33/Test33.exe)
+   [Succeeded]  (10 seconds)  [34]  Foundation::Database  (../Builds/Release-Logging-U-32/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (../Builds/Release-Logging-U-32/Test35/Test35.exe)
+   [Succeeded]  (13 seconds)  [36]  Foundation::Execution::ProcessRunner  (../Builds/Release-Logging-U-32/Test36/Test36.exe)
+   [Succeeded]  (2  seconds)  [37]  Foundation::Execution::Signals  (../Builds/Release-Logging-U-32/Test37/Test37.exe)
+   [Succeeded]  (82 seconds)  [38]  Foundation::Execution::Threads  (../Builds/Release-Logging-U-32/Test38/Test38.exe)
+   [Succeeded]  (82 seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-Logging-U-32/Test39/Test39.exe)
+   [Succeeded]  (1  seconds)  [40]  Foundation::Execution::Other  (../Builds/Release-Logging-U-32/Test40/Test40.exe)
+   [Succeeded]  (1  seconds)  [41]  Foundation::IO::Network  (../Builds/Release-Logging-U-32/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/Release-Logging-U-32/Test42/Test42.exe)
+   [Succeeded]  (2  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/Release-Logging-U-32/Test43/Test43.exe)
+   [Succeeded]  (0  seconds)  [44]  Foundation::IO::Other  (../Builds/Release-Logging-U-32/Test44/Test44.exe)
+   [Succeeded]  (0  seconds)  [45]  Foundation::Math  (../Builds/Release-Logging-U-32/Test45/Test45.exe)
+   [Succeeded]  (1  seconds)  [46]  Foundation::Memory  (../Builds/Release-Logging-U-32/Test46/Test46.exe)
+   [Succeeded]  (1  seconds)  [47]  Foundation::Streams  (../Builds/Release-Logging-U-32/Test47/Test47.exe)
+   [Succeeded]  (2  seconds)  [48]  Foundation::Time  (../Builds/Release-Logging-U-32/Test48/Test48.exe)
+   [Succeeded]  (1  seconds)  [49]  Foundation::Traversal  (../Builds/Release-Logging-U-32/Test49/Test49.exe)
+   [Succeeded]  (287 seconds)  [50]  Foundation::PERFORMANCE  (../Builds/Release-Logging-U-32/Test50/Test50.exe)
+Stroika/Run-All-Tests {Release-Logging-U-64}:
+Building Stroika ThirdPartyComponents {Release-Logging-U-64}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-Logging-U-64}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-Logging-U-64}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-Logging-U-64}:
+      Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+      Patching ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ ...done
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_65_1 {Release-Logging-U-64}:
+      Copying CURRENT to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/boost ... done
+      Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+      Config+Build to {StroikaRoot}Builds/Release-Logging-U-64/ThirdPartyComponents; log2={StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-Logging-U-64}:
+      Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+      Patching OpenSSL ... .done
+      Configuring (output to CURRENT/CONFIG.OUT) ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Installing to {StroikaRoot}Builds/Release-Logging-U-64/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+      Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-Logging-U-64}:
+      Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+      Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Release-Logging-U-64}:
+      Configuring (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+      Compiling (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3210000 {Release-Logging-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-Logging-U-64}:
+   Building Stroika-Foundation:
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(629): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1479): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1826): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\String.cpp(424): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(88): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(82): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-Logging-U-64}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Association:
+   Test 10: Foundation::Containers::Bag:
+   Test 11: Foundation::Containers::Bijection:
+   Test 12: Foundation::Containers::Collection:
+   Test 13: Foundation::Containers::DataHyperRectangle:
+   Test 14: Foundation::Containers::Deque:
+   Test 15: Foundation::Containers::KeyedCollection:
+   Test 16: Foundation::Containers::Mapping:
+   Test 17: Foundation::Containers::MultiSet:
+   Test 18: Foundation::Containers::PriorityQueue:
+   Test 19: Foundation::Containers::Queue:
+   Test 20: Foundation::Containers::Sequence:
+   Test 21: Foundation::Containers::Set:
+   Test 22: Foundation::Containers::SortedAssociation:
+   Test 23: Foundation::Containers::SortedCollection:
+   Test 24: Foundation::Containers::SortedMapping:
+   Test 25: Foundation::Containers::SortedMultiSet:
+   Test 26: Foundation::Containers::SortedSet:
+   Test 27: Foundation::Containers::Stack:
+   Test 28: Foundation::Containers::STL:
+   Test 29: Foundation::Cryptography:
+   Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 31: Foundation::DataExchange::ObjectVariantMapper:
+   Test 32: Foundation::DataExchange::XML::SaxParser:
+   Test 33: Foundation::DataExchange::Other:
+   Test 34: Foundation::Database:
+   Test 35: Foundation::Execution::Exceptions:
+   Test 36: Foundation::Execution::ProcessRunner:
+   Test 37: Foundation::Execution::Signals:
+   Test 38: Foundation::Execution::Threads:
+   Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 40: Foundation::Execution::Other:
+   Test 41: Foundation::IO::Network:
+   Test 42: Foundation::IO::Network::HTTP:
+   Test 43: Foundation::IO::Network::Transfer:
+   Test 44: Foundation::IO::Other:
+   Test 45: Foundation::Math:
+   Test 46: Foundation::Memory:
+   Test 47: Foundation::Streams:
+   Test 48: Foundation::Time:
+   Test 49: Foundation::Traversal:
+   Test 50: Foundation::PERFORMANCE:
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1204): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+Running Stroka Tests {Release-Logging-U-64}:
+   [Succeeded]  (0  seconds)  [01]  Foundation::Caching  (../Builds/Release-Logging-U-64/Test01/Test01.exe)
+   [Succeeded]  (0  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-Logging-U-64/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-Logging-U-64/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-Logging-U-64/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-Logging-U-64/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-Logging-U-64/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-Logging-U-64/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-Logging-U-64/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Association  (../Builds/Release-Logging-U-64/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Bag  (../Builds/Release-Logging-U-64/Test10/Test10.exe)
+   [Succeeded]  (0  seconds)  [11]  Foundation::Containers::Bijection  (../Builds/Release-Logging-U-64/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Collection  (../Builds/Release-Logging-U-64/Test12/Test12.exe)
+   [Succeeded]  (1  seconds)  [13]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-Logging-U-64/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::Deque  (../Builds/Release-Logging-U-64/Test14/Test14.exe)
+   [Succeeded]  (0  seconds)  [15]  Foundation::Containers::KeyedCollection  (../Builds/Release-Logging-U-64/Test15/Test15.exe)
+   [Succeeded]  (0  seconds)  [16]  Foundation::Containers::Mapping  (../Builds/Release-Logging-U-64/Test16/Test16.exe)
+   [Succeeded]  (1  seconds)  [17]  Foundation::Containers::MultiSet  (../Builds/Release-Logging-U-64/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::PriorityQueue  (../Builds/Release-Logging-U-64/Test18/Test18.exe)
+   [Succeeded]  (0  seconds)  [19]  Foundation::Containers::Queue  (../Builds/Release-Logging-U-64/Test19/Test19.exe)
+   [Succeeded]  (0  seconds)  [20]  Foundation::Containers::Sequence  (../Builds/Release-Logging-U-64/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::Set  (../Builds/Release-Logging-U-64/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::SortedAssociation  (../Builds/Release-Logging-U-64/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::SortedCollection  (../Builds/Release-Logging-U-64/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Containers::SortedMapping  (../Builds/Release-Logging-U-64/Test24/Test24.exe)
+   [Succeeded]  (0  seconds)  [25]  Foundation::Containers::SortedMultiSet  (../Builds/Release-Logging-U-64/Test25/Test25.exe)
+   [Succeeded]  (1  seconds)  [26]  Foundation::Containers::SortedSet  (../Builds/Release-Logging-U-64/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::Containers::Stack  (../Builds/Release-Logging-U-64/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::Containers::STL  (../Builds/Release-Logging-U-64/Test28/Test28.exe)
+   [Succeeded]  (0  seconds)  [29]  Foundation::Cryptography  (../Builds/Release-Logging-U-64/Test29/Test29.exe)
+   [Succeeded]  (1  seconds)  [30]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-Logging-U-64/Test30/Test30.exe)
+   [Succeeded]  (1  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-Logging-U-64/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-Logging-U-64/Test32/Test32.exe)
+   [Succeeded]  (0  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/Release-Logging-U-64/Test33/Test33.exe)
+   [Succeeded]  (11 seconds)  [34]  Foundation::Database  (../Builds/Release-Logging-U-64/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (../Builds/Release-Logging-U-64/Test35/Test35.exe)
+   [Succeeded]  (10 seconds)  [36]  Foundation::Execution::ProcessRunner  (../Builds/Release-Logging-U-64/Test36/Test36.exe)
+   [Succeeded]  (1  seconds)  [37]  Foundation::Execution::Signals  (../Builds/Release-Logging-U-64/Test37/Test37.exe)
+   [Succeeded]  (80 seconds)  [38]  Foundation::Execution::Threads  (../Builds/Release-Logging-U-64/Test38/Test38.exe)
+   [Succeeded]  (3  seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-Logging-U-64/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Execution::Other  (../Builds/Release-Logging-U-64/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::IO::Network  (../Builds/Release-Logging-U-64/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/Release-Logging-U-64/Test42/Test42.exe)
+   [Succeeded]  (3  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/Release-Logging-U-64/Test43/Test43.exe)
+   [Succeeded]  (1  seconds)  [44]  Foundation::IO::Other  (../Builds/Release-Logging-U-64/Test44/Test44.exe)
+   [Succeeded]  (0  seconds)  [45]  Foundation::Math  (../Builds/Release-Logging-U-64/Test45/Test45.exe)
+   [Succeeded]  (0  seconds)  [46]  Foundation::Memory  (../Builds/Release-Logging-U-64/Test46/Test46.exe)
+   [Succeeded]  (0  seconds)  [47]  Foundation::Streams  (../Builds/Release-Logging-U-64/Test47/Test47.exe)
+   [Succeeded]  (1  seconds)  [48]  Foundation::Time  (../Builds/Release-Logging-U-64/Test48/Test48.exe)
+   [Succeeded]  (0  seconds)  [49]  Foundation::Traversal  (../Builds/Release-Logging-U-64/Test49/Test49.exe)
+   [Succeeded]  (45 seconds)  [50]  Foundation::PERFORMANCE  (../Builds/Release-Logging-U-64/Test50/Test50.exe)
+Stroika/Run-All-Tests {Release-U-32}:
+Building Stroika ThirdPartyComponents {Release-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-U-32}:
+      Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+      Patching ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ ...done
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_65_1 {Release-U-32}:
+      Copying CURRENT to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/boost ... done
+      Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+      Config+Build to {StroikaRoot}Builds/Release-U-32/ThirdPartyComponents; log2={StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-U-32}:
+      Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+      Patching OpenSSL ... .done
+      Configuring (output to CURRENT/CONFIG.OUT) ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Installing to {StroikaRoot}Builds/Release-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+      Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-U-32}:
+      Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+      Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Release-U-32}:
+      Configuring (Log to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+      Compiling (Log to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3210000 {Release-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-U-32}:
+   Building Stroika-Foundation:
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(629): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1479): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1826): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\String.cpp(424): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(88): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(82): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Association:
+   Test 10: Foundation::Containers::Bag:
+   Test 11: Foundation::Containers::Bijection:
+   Test 12: Foundation::Containers::Collection:
+   Test 13: Foundation::Containers::DataHyperRectangle:
+   Test 14: Foundation::Containers::Deque:
+   Test 15: Foundation::Containers::KeyedCollection:
+   Test 16: Foundation::Containers::Mapping:
+   Test 17: Foundation::Containers::MultiSet:
+   Test 18: Foundation::Containers::PriorityQueue:
+   Test 19: Foundation::Containers::Queue:
+   Test 20: Foundation::Containers::Sequence:
+   Test 21: Foundation::Containers::Set:
+   Test 22: Foundation::Containers::SortedAssociation:
+   Test 23: Foundation::Containers::SortedCollection:
+   Test 24: Foundation::Containers::SortedMapping:
+   Test 25: Foundation::Containers::SortedMultiSet:
+   Test 26: Foundation::Containers::SortedSet:
+   Test 27: Foundation::Containers::Stack:
+   Test 28: Foundation::Containers::STL:
+   Test 29: Foundation::Cryptography:
+   Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 31: Foundation::DataExchange::ObjectVariantMapper:
+   Test 32: Foundation::DataExchange::XML::SaxParser:
+   Test 33: Foundation::DataExchange::Other:
+   Test 34: Foundation::Database:
+   Test 35: Foundation::Execution::Exceptions:
+   Test 36: Foundation::Execution::ProcessRunner:
+   Test 37: Foundation::Execution::Signals:
+   Test 38: Foundation::Execution::Threads:
+   Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 40: Foundation::Execution::Other:
+   Test 41: Foundation::IO::Network:
+   Test 42: Foundation::IO::Network::HTTP:
+   Test 43: Foundation::IO::Network::Transfer:
+   Test 44: Foundation::IO::Other:
+   Test 45: Foundation::Math:
+   Test 46: Foundation::Memory:
+   Test 47: Foundation::Streams:
+   Test 48: Foundation::Time:
+   Test 49: Foundation::Traversal:
+   Test 50: Foundation::PERFORMANCE:
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1204): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+Running Stroka Tests {Release-U-32}:
+   [Succeeded]  (1  seconds)  [01]  Foundation::Caching  (../Builds/Release-U-32/Test01/Test01.exe)
+   [Succeeded]  (0  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-U-32/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-U-32/Test03/Test03.exe)
+   [Succeeded]  (1  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-U-32/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-U-32/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-U-32/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-U-32/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-U-32/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Association  (../Builds/Release-U-32/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Bag  (../Builds/Release-U-32/Test10/Test10.exe)
+   [Succeeded]  (1  seconds)  [11]  Foundation::Containers::Bijection  (../Builds/Release-U-32/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Collection  (../Builds/Release-U-32/Test12/Test12.exe)
+   [Succeeded]  (0  seconds)  [13]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-U-32/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::Deque  (../Builds/Release-U-32/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::KeyedCollection  (../Builds/Release-U-32/Test15/Test15.exe)
+   [Succeeded]  (0  seconds)  [16]  Foundation::Containers::Mapping  (../Builds/Release-U-32/Test16/Test16.exe)
+   [Succeeded]  (0  seconds)  [17]  Foundation::Containers::MultiSet  (../Builds/Release-U-32/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::PriorityQueue  (../Builds/Release-U-32/Test18/Test18.exe)
+   [Succeeded]  (1  seconds)  [19]  Foundation::Containers::Queue  (../Builds/Release-U-32/Test19/Test19.exe)
+   [Succeeded]  (1  seconds)  [20]  Foundation::Containers::Sequence  (../Builds/Release-U-32/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::Set  (../Builds/Release-U-32/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::SortedAssociation  (../Builds/Release-U-32/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::SortedCollection  (../Builds/Release-U-32/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Containers::SortedMapping  (../Builds/Release-U-32/Test24/Test24.exe)
+   [Succeeded]  (1  seconds)  [25]  Foundation::Containers::SortedMultiSet  (../Builds/Release-U-32/Test25/Test25.exe)
+   [Succeeded]  (1  seconds)  [26]  Foundation::Containers::SortedSet  (../Builds/Release-U-32/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::Containers::Stack  (../Builds/Release-U-32/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::Containers::STL  (../Builds/Release-U-32/Test28/Test28.exe)
+   [Succeeded]  (0  seconds)  [29]  Foundation::Cryptography  (../Builds/Release-U-32/Test29/Test29.exe)
+   [Succeeded]  (1  seconds)  [30]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-U-32/Test30/Test30.exe)
+   [Succeeded]  (1  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-U-32/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-U-32/Test32/Test32.exe)
+   [Succeeded]  (1  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/Release-U-32/Test33/Test33.exe)
+   [Succeeded]  (12 seconds)  [34]  Foundation::Database  (../Builds/Release-U-32/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (../Builds/Release-U-32/Test35/Test35.exe)
+   [Succeeded]  (9  seconds)  [36]  Foundation::Execution::ProcessRunner  (../Builds/Release-U-32/Test36/Test36.exe)
+   [Succeeded]  (1  seconds)  [37]  Foundation::Execution::Signals  (../Builds/Release-U-32/Test37/Test37.exe)
+   [Succeeded]  (81 seconds)  [38]  Foundation::Execution::Threads  (../Builds/Release-U-32/Test38/Test38.exe)
+   [Succeeded]  (30 seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-U-32/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Execution::Other  (../Builds/Release-U-32/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::IO::Network  (../Builds/Release-U-32/Test41/Test41.exe)
+   [Succeeded]  (1  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/Release-U-32/Test42/Test42.exe)
+   [Succeeded]  (2  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/Release-U-32/Test43/Test43.exe)
+   [Succeeded]  (0  seconds)  [44]  Foundation::IO::Other  (../Builds/Release-U-32/Test44/Test44.exe)
+   [Succeeded]  (0  seconds)  [45]  Foundation::Math  (../Builds/Release-U-32/Test45/Test45.exe)
+   [Succeeded]  (0  seconds)  [46]  Foundation::Memory  (../Builds/Release-U-32/Test46/Test46.exe)
+   [Succeeded]  (0  seconds)  [47]  Foundation::Streams  (../Builds/Release-U-32/Test47/Test47.exe)
+   [Succeeded]  (1  seconds)  [48]  Foundation::Time  (../Builds/Release-U-32/Test48/Test48.exe)
+   [Succeeded]  (0  seconds)  [49]  Foundation::Traversal  (../Builds/Release-U-32/Test49/Test49.exe)
+   [Succeeded]  (274 seconds)  [50]  Foundation::PERFORMANCE  (../Builds/Release-U-32/Test50/Test50.exe)
+Stroika/Run-All-Tests {Release-U-64}:
+Building Stroika ThirdPartyComponents {Release-U-64}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-U-64}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-U-64}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-U-64}:
+      Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+      Patching ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ ...done
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_65_1 {Release-U-64}:
+      Copying CURRENT to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/boost ... done
+      Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+      Config+Build to {StroikaRoot}Builds/Release-U-64/ThirdPartyComponents; log2={StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-U-64}:
+      Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+      Patching OpenSSL ... .done
+      Configuring (output to CURRENT/CONFIG.OUT) ... done
+      Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+      Installing to {StroikaRoot}Builds/Release-U-64/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+      Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-U-64}:
+      Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+      Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.0 {Release-U-64}:
+      Configuring (Log to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+      Compiling (Log to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+      Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3210000 {Release-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-U-64}:
+   Building Stroika-Foundation:
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(629): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1479): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1826): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1828): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp(1838): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Characters\String.cpp(424): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(88): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp(442): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(28): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp(82): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-U-64}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Association:
+   Test 10: Foundation::Containers::Bag:
+   Test 11: Foundation::Containers::Bijection:
+   Test 12: Foundation::Containers::Collection:
+   Test 13: Foundation::Containers::DataHyperRectangle:
+   Test 14: Foundation::Containers::Deque:
+   Test 15: Foundation::Containers::KeyedCollection:
+   Test 16: Foundation::Containers::Mapping:
+   Test 17: Foundation::Containers::MultiSet:
+   Test 18: Foundation::Containers::PriorityQueue:
+   Test 19: Foundation::Containers::Queue:
+   Test 20: Foundation::Containers::Sequence:
+   Test 21: Foundation::Containers::Set:
+   Test 22: Foundation::Containers::SortedAssociation:
+   Test 23: Foundation::Containers::SortedCollection:
+   Test 24: Foundation::Containers::SortedMapping:
+   Test 25: Foundation::Containers::SortedMultiSet:
+   Test 26: Foundation::Containers::SortedSet:
+   Test 27: Foundation::Containers::Stack:
+   Test 28: Foundation::Containers::STL:
+   Test 29: Foundation::Cryptography:
+   Test 30: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 31: Foundation::DataExchange::ObjectVariantMapper:
+   Test 32: Foundation::DataExchange::XML::SaxParser:
+   Test 33: Foundation::DataExchange::Other:
+   Test 34: Foundation::Database:
+   Test 35: Foundation::Execution::Exceptions:
+   Test 36: Foundation::Execution::ProcessRunner:
+   Test 37: Foundation::Execution::Signals:
+   Test 38: Foundation::Execution::Threads:
+   Test 39: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 40: Foundation::Execution::Other:
+   Test 41: Foundation::IO::Network:
+   Test 42: Foundation::IO::Network::HTTP:
+   Test 43: Foundation::IO::Network::Transfer:
+   Test 44: Foundation::IO::Other:
+   Test 45: Foundation::Math:
+   Test 46: Foundation::Memory:
+   Test 47: Foundation::Streams:
+   Test 48: Foundation::Time:
+   Test 49: Foundation::Traversal:
+   Test 50: Foundation::PERFORMANCE:
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1145): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1188): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::codecvt_utf8': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+..\..\..\50\Test.cpp(1204): warning C4996: 'std::codecvt_utf8<wchar_t,1114111,0>::result': warning STL4017: std::wbuffer_convert, std::wstring_convert, and the <codecvt> header (containing std::codecvt_mode, std::codecvt_utf8, std::codecvt_utf16, and std::codecvt_utf8_utf16) are deprecated in C++17. (The std::codecvt class template is NOT deprecated.) The C++ Standard doesn't provide equivalent non-deprecated functionality; consider using MultiByteToWideChar() and WideCharToMultiByte() from <Windows.h> instead. You can define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. [C:\Sandbox\Stroika\DevRoot\Tests\Projects\VisualStudio.Net-2017\50\Test50.vcxproj]
+Running Stroka Tests {Release-U-64}:
+   [Succeeded]  (1  seconds)  [01]  Foundation::Caching  (../Builds/Release-U-64/Test01/Test01.exe)
+   [Succeeded]  (0  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-U-64/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-U-64/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-U-64/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-U-64/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-U-64/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-U-64/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-U-64/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Association  (../Builds/Release-U-64/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Bag  (../Builds/Release-U-64/Test10/Test10.exe)
+   [Succeeded]  (0  seconds)  [11]  Foundation::Containers::Bijection  (../Builds/Release-U-64/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Collection  (../Builds/Release-U-64/Test12/Test12.exe)
+   [Succeeded]  (0  seconds)  [13]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-U-64/Test13/Test13.exe)
+   [Succeeded]  (1  seconds)  [14]  Foundation::Containers::Deque  (../Builds/Release-U-64/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::KeyedCollection  (../Builds/Release-U-64/Test15/Test15.exe)
+   [Succeeded]  (1  seconds)  [16]  Foundation::Containers::Mapping  (../Builds/Release-U-64/Test16/Test16.exe)
+   [Succeeded]  (1  seconds)  [17]  Foundation::Containers::MultiSet  (../Builds/Release-U-64/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::PriorityQueue  (../Builds/Release-U-64/Test18/Test18.exe)
+   [Succeeded]  (0  seconds)  [19]  Foundation::Containers::Queue  (../Builds/Release-U-64/Test19/Test19.exe)
+   [Succeeded]  (0  seconds)  [20]  Foundation::Containers::Sequence  (../Builds/Release-U-64/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::Set  (../Builds/Release-U-64/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::SortedAssociation  (../Builds/Release-U-64/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::SortedCollection  (../Builds/Release-U-64/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Containers::SortedMapping  (../Builds/Release-U-64/Test24/Test24.exe)
+   [Succeeded]  (1  seconds)  [25]  Foundation::Containers::SortedMultiSet  (../Builds/Release-U-64/Test25/Test25.exe)
+   [Succeeded]  (0  seconds)  [26]  Foundation::Containers::SortedSet  (../Builds/Release-U-64/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::Containers::Stack  (../Builds/Release-U-64/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::Containers::STL  (../Builds/Release-U-64/Test28/Test28.exe)
+   [Succeeded]  (1  seconds)  [29]  Foundation::Cryptography  (../Builds/Release-U-64/Test29/Test29.exe)
+   [Succeeded]  (1  seconds)  [30]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-U-64/Test30/Test30.exe)
+   [Succeeded]  (1  seconds)  [31]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-U-64/Test31/Test31.exe)
+   [Succeeded]  (0  seconds)  [32]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-U-64/Test32/Test32.exe)
+   [Succeeded]  (0  seconds)  [33]  Foundation::DataExchange::Other  (../Builds/Release-U-64/Test33/Test33.exe)
+   [Succeeded]  (10 seconds)  [34]  Foundation::Database  (../Builds/Release-U-64/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Exceptions  (../Builds/Release-U-64/Test35/Test35.exe)
+   [Succeeded]  (13 seconds)  [36]  Foundation::Execution::ProcessRunner  (../Builds/Release-U-64/Test36/Test36.exe)
+   [Succeeded]  (2  seconds)  [37]  Foundation::Execution::Signals  (../Builds/Release-U-64/Test37/Test37.exe)
+   [Succeeded]  (116 seconds)  [38]  Foundation::Execution::Threads  (../Builds/Release-U-64/Test38/Test38.exe)
+   [Succeeded]  (9  seconds)  [39]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-U-64/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Execution::Other  (../Builds/Release-U-64/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::IO::Network  (../Builds/Release-U-64/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::IO::Network::HTTP  (../Builds/Release-U-64/Test42/Test42.exe)
+   [Succeeded]  (2  seconds)  [43]  Foundation::IO::Network::Transfer  (../Builds/Release-U-64/Test43/Test43.exe)
+   [Succeeded]  (1  seconds)  [44]  Foundation::IO::Other  (../Builds/Release-U-64/Test44/Test44.exe)
+   [Succeeded]  (1  seconds)  [45]  Foundation::Math  (../Builds/Release-U-64/Test45/Test45.exe)
+   [Succeeded]  (1  seconds)  [46]  Foundation::Memory  (../Builds/Release-U-64/Test46/Test46.exe)
+   [Succeeded]  (1  seconds)  [47]  Foundation::Streams  (../Builds/Release-U-64/Test47/Test47.exe)
+   [Succeeded]  (2  seconds)  [48]  Foundation::Time  (../Builds/Release-U-64/Test48/Test48.exe)
+   [Succeeded]  (0  seconds)  [49]  Foundation::Traversal  (../Builds/Release-U-64/Test49/Test49.exe)
+   [Succeeded]  (65 seconds)  [50]  Foundation::PERFORMANCE  (../Builds/Release-U-64/Test50/Test50.exe)
+done (in 309 minutes)
+)))- Skipping valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=0
+)))- Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=0
+)))- Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_VALGRIND_HELGRIND_TESTS=0
+)))- Regression Tests Summary:
+   350 items succeeded (AS expected 7 * 50)
+   0 items failed (expected 0)
+   0 items warned (expected 5)
+   0 core dumps (expected 0)
+   0 valgrind output lines (apx 0 errors (expected 0)
+)))- Finished at Thu Jan  4 04:57:41 EST 2018  (401 minutes)
