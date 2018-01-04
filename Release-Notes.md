@@ -19,6 +19,128 @@ History
 
   
 <tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a224">v2.0a225x</a><br/>2018-01-04x</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a224...v2.0a225</li>
+		<li>xxxxx</li>
+		<li>xxxxx</li>
+		<li>xxxxx</li>
+		<li>xxxxx</li>
+		<li>SSDP Client thread mangaement = new API - must check for nullptr</li>
+		<li>cosmetic cleanups on Thread code - docs - and more caseful use of if != nulltr call smartptr method</li>
+		<li>tweak signed/unsigned int types to avoid compiler warnings</li>
+		<li>improve Bind error message on fail to Bind (socket)</li>
+		<li>Fixes to ScriptsLib/MakeDirectorySymbolicLink.sh (effectively) - rewrote ScriptsLib/RunMKLinkViaUAC.bat
+    so now I think works. Issue was %1/%2 not passed through the way it was before</li>
+		<li>xxxxx
+			<ul>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>xxxxx
+			<ul>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>xxxxx
+			<ul>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>xxxxx
+			<ul>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>xxxxx
+			<ul>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>Minor String class changes
+			<ul>
+				<li>Get rid of String::IRep::Peek() method - and a few related cleanusp/doc improvments (todo items review)</li>
+				<li>String::As<> template supports u16string and u32string</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>Build/Makefile Misc
+			<ul>
+				<li>--abbreviate-paths on Boost makefile, and warnings for https://stroika.atlassian.net/browse/STK-633</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>RegressionTest script refactor/rename
+			<ul>
+				<li>Documentation/Regression-Tests.md</li>
+				<li>refactored RegressionTests.sh script so more of the common code done on small regression tests</li>
+				<li>Fixes for RunPerformanceRegressionTests.sh to adapt to recent RunREmote script changes</li>
+				<li>Lose obsolete ScriptsLib/RunPerfTests.bat</li>
+				<li>Lose obsolete ScriptsLib/RunRemoteMacBuild.sh (use MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.2 ./ScriptsLib/RunRemoteRegressionTests.sh instead)</li>
+				<li>more parameterization of RegressionTests.sh and new RunRemoteRegressionTests.sh (eventually to replace RunRemoteMac)</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>Makefile and other Script output formatting tweaks (cosmetic)
+			<ul>
+				<li>script and makefile output tweaks (space around ..., more use of substitute-vars, etc)</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+				<li>xxxxx</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a224-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Ubuntu1604,MacOS-XCode9,Windows-VS2k17}-2.0a224-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+  
+<tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a224">v2.0a224</a><br/>2017-12-21</td>
 <td>
 	<ul>
