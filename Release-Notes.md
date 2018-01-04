@@ -19,83 +19,13 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a224">v2.0a225x</a><br/>2018-01-04x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a225">v2.0a225</a><br/>2018-01-04</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a224...v2.0a225</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>xxxxx</li>
-		<li>SSDP Client thread mangaement = new API - must check for nullptr</li>
-		<li>cosmetic cleanups on Thread code - docs - and more caseful use of if != nulltr call smartptr method</li>
-		<li>tweak signed/unsigned int types to avoid compiler warnings</li>
 		<li>improve Bind error message on fail to Bind (socket)</li>
 		<li>Fixes to ScriptsLib/MakeDirectorySymbolicLink.sh (effectively) - rewrote ScriptsLib/RunMKLinkViaUAC.bat
-    so now I think works. Issue was %1/%2 not passed through the way it was before</li>
-		<li>xxxxx
-			<ul>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxx
-			<ul>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxx
-			<ul>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxx
-			<ul>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>xxxxx
-			<ul>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>Minor String class changes
-			<ul>
-				<li>Get rid of String::IRep::Peek() method - and a few related cleanusp/doc improvments (todo items review)</li>
-				<li>String::As<> template supports u16string and u32string</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-			</ul>
-		</li>
-		<li>Build/Makefile Misc
-			<ul>
-				<li>--abbreviate-paths on Boost makefile, and warnings for https://stroika.atlassian.net/browse/STK-633</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-			</ul>
-		</li>
+    so now I think works</li>
 		<li>RegressionTest script refactor/rename
 			<ul>
 				<li>Documentation/Regression-Tests.md</li>
@@ -104,22 +34,31 @@ History
 				<li>Lose obsolete ScriptsLib/RunPerfTests.bat</li>
 				<li>Lose obsolete ScriptsLib/RunRemoteMacBuild.sh (use MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.2 ./ScriptsLib/RunRemoteRegressionTests.sh instead)</li>
 				<li>more parameterization of RegressionTests.sh and new RunRemoteRegressionTests.sh (eventually to replace RunRemoteMac)</li>
-				<li>xxxxx</li>
 			</ul>
 		</li>
+		<li>Minor String class changes
+			<ul>
+				<li>Get rid of String::IRep::Peek() method - and a few related cleanusp/doc improvments (todo items review)</li>
+				<li>String::As<> template supports u16string and u32string</li>
+			</ul>
+		</li>
+		<li>Build/Makefile Misc
+			<ul>
+				<li>--abbreviate-paths on Boost makefile, and warnings for https://stroika.atlassian.net/browse/STK-633</li>
+			</ul>
+		</li>
+		<li>SSDP Client thread mangaement = new API - must check for nullptr</li>
+		<li>cosmetic cleanups on Thread code - docs - and more caseful use of if != nulltr call smartptr method</li>
+		<li>tweak signed/unsigned int types to avoid compiler warnings</li>
 		<li>Makefile and other Script output formatting tweaks (cosmetic)
 			<ul>
 				<li>script and makefile output tweaks (space around ..., more use of substitute-vars, etc)</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
-				<li>xxxxx</li>
 			</ul>
 		</li>
-		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-2.0a224-{Windows-x86-vs2k17,linux-gcc-7.2.0-x64,MacOS-x86-XCode9}.txt</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a225.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
-				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Linux,Ubuntu1604,MacOS-XCode9,Windows-VS2k17}-2.0a224-OUT.txt</li>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a225-OUT.txt</li>
 				<li>vc++2k17</li>
 				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
 				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
@@ -138,6 +77,9 @@ History
 	</ul>
 </td>
 </tr>
+
+
+
 
   
 <tr>
