@@ -25,14 +25,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::_IRep::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsReamining)
+            Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::_IRep::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining)
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                 if (intoStart == nullptr) {
-                    return elementsReamining;
+                    return elementsRemaining;
                 }
                 else {
-                    return elementsReamining == 0 ? 0 : Read (intoStart, intoEnd); // safe to call beacuse this cannot block - there are elements available
+                    return elementsRemaining == 0 ? 0 : Read (intoStart, intoEnd); // safe to call beacuse this cannot block - there are elements available
                 }
             }
 

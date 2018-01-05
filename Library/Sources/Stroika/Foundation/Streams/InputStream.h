@@ -570,6 +570,13 @@ namespace Stroika {
                  *          return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, NUMBER_OF_ELTS_DEFINITELY_AVAILABLE)
                  *      \endcode
                  *
+                 *  For trickier cases, where the upstream source may block, a helpful pattern is:
+                 *      \code
+                 *          do code to check if anything upstream is avaialble - like ::select () - or fUpstream.ReadNonBlocking() and if we find no
+                 *          data, return {} and if we find at least n bytes avail, set NUMBER_OF_ELTS_DEFINITELY_AVAILABLE = n and fallthrough...
+                 *          return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, NUMBER_OF_ELTS_DEFINITELY_AVAILABLE)
+                 *      \endcode
+                 *
                  *  A legal (but not very useful) implementation would be:
                  *      \code
                  *          return {};  // no data KNOWN to be available - you must make blocking call to find out!
@@ -589,7 +596,7 @@ namespace Stroika {
                  *  The only 'hitch' is that the _IRep subtype using this must know the number of elements available, and pass that in.
                  *  All that really matters is if this is 0 or 1, but best if you can pass in the actual value.
                  */
-                nonvirtual Memory::Optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsReamining);
+                nonvirtual Memory::Optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining);
             };
         }
     }
