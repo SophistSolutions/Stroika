@@ -60,7 +60,12 @@ elif [ $TOOL == "realpath" ] ; then
 		echo -n ": try apt-get install coreutils"
 	fi
 elif [ $TOOL == "node" ] ; then
-	echo -n ": try apt-get install nodejs-legacy"
+	if [ $DistroBasedOn == "cygwin" ] ; then
+		echo -n ": try installing https://nodejs.org/en/ msi installer"
+	fi
+	else 
+		echo -n ": try apt-get install nodejs-legacy"
+	fi
 else
 	if [ `uname -s` == "Darwin" ] ; then
 		echo -n ": try brew install $TOOL"
