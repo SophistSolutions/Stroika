@@ -105,11 +105,16 @@ protected:
     }
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
-        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API -- INCOMPLETE IMPL
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
-        WeakAssert (false);
-        // @todo - FIX TO REALLY CHECK
+        auto critSec{make_unique_lock (fCriticalSection_)};
+        // See if data already in fReadDataBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
+        if (fOffset_ < fBufferFilledUpValidBytes_) {
+            return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
+        }
+        if (Memory::Optional<size_t> n = fSource_.ReadNonBlocking ()) {
+            return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, *n);
+        }
         return {};
     }
     virtual SeekOffsetType GetReadOffset () const override

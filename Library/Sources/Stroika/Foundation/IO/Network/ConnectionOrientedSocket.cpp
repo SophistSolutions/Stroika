@@ -110,6 +110,7 @@ namespace {
                 }
 #else
                 AssertNotImplemented ();
+                return {};
 #endif
             }
             virtual void Write (const Byte* start, const Byte* end) override

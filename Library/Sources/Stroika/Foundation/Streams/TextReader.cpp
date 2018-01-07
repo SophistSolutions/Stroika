@@ -130,11 +130,37 @@ protected:
 
     virtual Optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
-        // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
-        Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
+        Require ((intoStart == intoEnd) or (intoStart != nullptr));
+        Require ((intoStart == intoEnd) or (intoEnd != nullptr));
         Require (IsOpenRead ());
-        WeakAssert (false);
-        // @todo - FIX TO REALLY CHECK
+        // Plan:
+        //      o   ReadNonBlocking upstream
+        //      o   save existing decode state
+        //      o   decode and see if at least one character
+        //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
+        Memory::SmallStackBuffer<Byte> inBuf{10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
+        Optional<size_t>               inBytes = fSource_.ReadNonBlocking (begin (inBuf), end (inBuf));
+        if (inBytes) {
+            if (*inBytes == 0) {
+                return 0; // EOF - other than zero read bytes COULD mean unknown if EOF or not
+            }
+            const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
+            const char* endB   = firstB + *inBytes;
+            Assert (endB <= reinterpret_cast<const char*> (end (inBuf)));
+            const char* cursorB = firstB;
+#if qMaintainingMBShiftStateNotWorking_
+            mbstate_t mbState_ = mbstate_t{};
+#else
+            mbstate_t mbState_ = fMBState_;
+#endif
+            wchar_t                       outChar;
+            wchar_t*                      outCursor = &outChar;
+            codecvt_utf8<wchar_t>::result r         = fCharConverter_.in (mbState_, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
+            // we could read one byte upstream, but not ENOUGH to get a full character output!
+            if (outCursor != &outChar) {
+                return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 1);
+            }
+        }
         return {};
     }
 

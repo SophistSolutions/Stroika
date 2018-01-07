@@ -143,37 +143,42 @@ public:
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-        try {
-#if qPlatform_Windows && 0
-            // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - INCOMPLETE IMPL
-            int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
-            if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
-                ;
-            auto&& cleanup = Execution::Finally ([this]() noexcept {
-                fcntl (fFD_, F_SETFL, oldFileFlags);
-            });
+#if qPlatform_Windows
+        /*
+             *  For now, assume all FILE reads are already non-blocking. Not sure about this.
+             *
+             *  COULD use intptr_t _get_osfhandle (int fd);
+             *  to use Windows APIs, but those all seem to require the file to be opened a special way to do async reads.
+             *
+             *  Tried:
+             *      int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
+             *      if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
+             *          ;
+             *      auto&& cleanup = Execution::Finally ([this]() noexcept {
+             *          fcntl (fFD_, F_SETFL, oldFileFlags);
+             *      });
+             *
+             *  but windows doesn't appear to support fcntl()
+             */
+        return Read (intoStart, intoEnd);
 #elif qPlatform_POSIX
-            pollfd pollData{fFD_, POLLIN, 0};
-            int    pollResult = Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
-            Assert (pollResult >= 0);
-            if (pollResult == 0) {
-                return {}; // if no data available, return {}
+        pollfd pollData{fFD_, POLLIN, 0};
+        int    pollResult = Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInterruption ([&]() { return ::poll (&pollData, 1, 0); }));
+        Assert (pollResult >= 0);
+        if (pollResult == 0) {
+            return {}; // if no data available, return {}
+        }
+        else {
+            // we don't know how much is available, but at least one byte. If not actually reading, just return 1
+            if (intoStart == nullptr) {
+                return 1;
             }
             else {
-                // we don't know how much is available, but at least one byte. If not actually reading, just return 1
-                if (intoStart == nullptr) {
-                    return 1;
-                }
-                else {
-                    // if there is data available, read as much as you can...
-                    return Read (intoStart, intoEnd);
-                }
+                // if there is data available, read as much as you can...
+                return Read (intoStart, intoEnd);
             }
-#endif
         }
-        Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eRead);
-        WeakAssert (false);
-        // @todo - FIX TO REALLY CHECK
+#endif
         return {};
     }
     virtual Streams::SeekOffsetType GetReadOffset () const override
