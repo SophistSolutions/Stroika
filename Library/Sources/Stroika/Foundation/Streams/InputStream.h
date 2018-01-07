@@ -474,20 +474,20 @@ namespace Stroika {
 
             protected:
                 /**
-                *  \brief protected access to underlying stream smart pointer
-                */
+                 *  \brief protected access to underlying stream smart pointer
+                 */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 
             protected:
                 /**
-                * \req *this != nullptr
-                */
+                 * \req *this != nullptr
+                 */
                 nonvirtual const _IRep& _GetRepConstRef () const;
 
             protected:
                 /**
-                * \req *this != nullptr
-                */
+                 * \req *this != nullptr
+                 */
                 nonvirtual _IRep& _GetRepRWRef () const;
             };
 
