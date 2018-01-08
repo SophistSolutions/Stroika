@@ -49,10 +49,13 @@ namespace {
     using Memory::Byte;
     struct MyCompressionStream_ : InputStream<Byte>::Ptr {
         struct BaseRep_ : public InputStream<Byte>::_IRep {
-            static constexpr size_t                 CHUNK = 16384;
+        private:
+            static constexpr size_t CHUNK_ = 16384;
+
+        public:
             Streams::InputStream<Memory::Byte>::Ptr fInStream_;
             z_stream                                fZStream_;
-            Byte                                    fInBuf_[CHUNK];
+            Byte                                    fInBuf_[CHUNK_];
             SeekOffsetType                          _fSeekOffset{};
             BaseRep_ (const Streams::InputStream<Memory::Byte>::Ptr& in)
                 : fInStream_ (in)
@@ -187,8 +190,14 @@ namespace {
                     return pulledOut;
                 }
 #else
+                // while nothing available to output, try getting more from input stream until we cannot (either cuz {} or EOF)
+                // and then report accordingly
+                //
                 // INCOMPLETE - tricky... most common cases easy, but edges hard...
-                if (fZStream_.avail_out == 0) {
+                //&&&& issues are:
+                //>> wrong meaning for available_out - we have no output buffer
+                //  >> need output buffer for this API, since could pass in no argument buffer (OK to be one byte in that case)
+                while (fZStream_.avail_out == 0) {
                     if (fZStream_.avail_in == 0) {
                         if (Memory::Optional<size_t> tmpAvail = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
                         }
