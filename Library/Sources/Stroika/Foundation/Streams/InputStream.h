@@ -286,6 +286,9 @@ namespace Stroika {
                  *      BLOCKING until data is available, but can return with fewer bytes than bufSize
                  *      without prejudice about how much more is available.
                  *
+                 *      So if you call first with ReadNonBlocking() to assure there is some data available (at least one element) you can
+                 *      call Read (BUFSTART,BUFFEND) with as big a buffer as you want, and it won't block.
+                 *
                  *  All overloads:
                  *      It is legal to call Read () if its already returned EOF, but then it MUST return EOF again.
                  *
