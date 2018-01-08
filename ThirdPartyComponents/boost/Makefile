@@ -268,7 +268,7 @@ configureAndBuild_:
 	@
 	@#https://stroika.atlassian.net/browse/STK-633
 ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}, and can be no more than $$MAXCHAR characters on windowsto avoid boost build problem" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL); fi;
+	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}, and can be no more than $$MAXCHAR characters on windows to avoid boost build problem" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL); fi;
 endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
 ifeq ($(shell uname -s),Darwin)
