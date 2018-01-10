@@ -90,12 +90,13 @@
 #define _MS_VS_2k17_15Pt3Pt2_ 191125507
 #define _MS_VS_2k17_15Pt5Pt0_ 191225830
 #define _MS_VS_2k17_15Pt5Pt2_ 191225831
+#define _MS_VS_2k17_15Pt5Pt3_ 191225834
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
 #elif _MSC_VER <= 1912
 // check which sub-version of MSVC2k17
-#if _MSC_FULL_VER > _MS_VS_2k17_15Pt5Pt2_
+#if _MSC_FULL_VER > _MS_VS_2k17_15Pt5Pt3_
 // @todo figure out how to add arg to message
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version ( #_MSC_FULL_VER ) of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -173,7 +174,8 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 // still broken in _MS_VS_2k17_15Pt3Pt2_ - BUT MUCH MORE SUBTLY - WEBSERVER APP CRASHES (USES OPTIONAL) - AT RUNTIME - (at least debug build) - SO TEST WEBSERVER SAMPLE
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy 0
 #endif
@@ -228,7 +230,8 @@ ABORTING...
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -246,7 +249,8 @@ ABORTING...
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
@@ -403,7 +407,8 @@ Or on MacOS Clang
 // now link error in _MS_VS_2k17_15Pt3Pt2_
 // still broken (warnigns about second def ignored) - _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -455,7 +460,8 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
 #endif
@@ -549,7 +555,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #elif defined(_MSC_VER)
 // first broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy 0
 #endif
@@ -586,7 +593,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy 0
 #endif
@@ -610,7 +618,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -758,7 +767,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -928,7 +938,8 @@ Compiling regtests for Median/OrderBy...
 // still broken in _MS_VS_2k17_15Pt3Pt2_
 // still broken in _MS_VS_2k17_15Pt5Pt0_
 // Assume broken in _MS_VS_2k17_15Pt5Pt2_
-#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt2_)
+// Assume broken in _MS_VS_2k17_15Pt5Pt3_
+#define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt5Pt3_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
 #endif
