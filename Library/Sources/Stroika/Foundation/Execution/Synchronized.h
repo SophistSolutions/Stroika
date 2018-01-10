@@ -331,7 +331,7 @@ namespace Stroika {
                  *
                  *  But other than that, this approach seems pretty usable/testable.
                  *
-                 *  NOTE - this guaranties readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
+                 *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
                  *
                  *  @todo - MAYBE add 'ReadableReference* readReference' arg, but maybe not
                  */

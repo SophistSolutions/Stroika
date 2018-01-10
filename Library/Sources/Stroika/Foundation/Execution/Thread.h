@@ -185,7 +185,7 @@ namespace Stroika {
              *      As its crucial to understand this in the API, we document each such function with ***Cancelation Point*** in its doc header.
              *      For example, the Sleep() overloads are cancelation points.
              *
-             *      Equally important to understand, is when a function guaranties its NOT a cancelation point - which we will document
+             *      Equally important to understand, is when a function guarantees its NOT a cancelation point - which we will document
              *      with ***Not Cancelation Point***, and typically also noexcept. The DbgTrace () calls fall into this category.
              *
              *      \note An API marked *** Cancelation Point *** will always CheckForThreadInterruption () at least once (or equivilent check)
