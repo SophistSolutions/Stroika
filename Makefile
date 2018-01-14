@@ -271,7 +271,6 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type dos2unix 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh dos2unix && exit 1)"
 	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n && sh -c "(type unix2dos 2> /dev/null) || (ScriptsLib/GetMessageForMissingTool.sh unix2dos && exit 1)"
 endif
-	@ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "All Required-Always Tools Present"
 	@mkdir -p IntermediateFiles
 	@touch IntermediateFiles/PREREQUISITE_TOOLS_CHECKED_ALL
 
