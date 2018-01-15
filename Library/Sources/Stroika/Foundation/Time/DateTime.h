@@ -113,6 +113,10 @@ namespace Stroika {
              *          static de-initializaiton.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
+             *  \note   time_t is always assumed to be in UTC, because according to http://en.cppreference.com/w/c/chrono/time_t
+             *          Although not defined by the C standard, this is almost always an integral value holding the number
+             *          of seconds (not counting leap seconds) since 00:00, Jan 1 1970 UTC
              */
             class DateTime {
             public:
@@ -133,6 +137,7 @@ namespace Stroika {
                  *      our default interpretation of a FILETIME structure as as UTC.
                  *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
                  *
+                 *  \note DateTime (time_t unixEpochTime) returns a datetime in UTC
                  */
                 constexpr DateTime () noexcept;
                 constexpr DateTime (const DateTime& src) = default;
@@ -141,7 +146,7 @@ namespace Stroika {
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
                 constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
-                explicit DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                explicit DateTime (time_t unixEpochTime) noexcept;
                 explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
 #if qPlatform_POSIX
                 explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;

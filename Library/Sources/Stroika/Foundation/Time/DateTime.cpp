@@ -159,17 +159,17 @@ const DateTime DateTime::kMax = DateTime_kMax;
 constexpr DateTime DateTime_kMin;
 constexpr DateTime DateTime_kMax;
 
-DateTime::DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz) noexcept
-    : fTimezone_ (tz)
+DateTime::DateTime (time_t unixEpochTime) noexcept
+    : fTimezone_ (Timezone::kUTC)
     , fDate_ ()
     , fTimeOfDay_ ()
 {
     struct tm tmTime {
     };
 #if qPlatform_Windows
-    (void)::_gmtime64_s (&tmTime, &unixTime);
+    (void)::_gmtime64_s (&tmTime, &unixEpochTime);
 #else
-    (void)::gmtime_r (&unixTime, &tmTime);
+    (void)::gmtime_r (&unixEpochTime, &tmTime);
 #endif
     fDate_      = Date (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday));
     fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
