@@ -126,6 +126,12 @@ namespace Stroika {
                 static const Timezone                   kLocalTime;
                 static const Memory::Optional<Timezone> kUnknown;
             };
+            namespace {
+                struct _HACK_2_TEST_4_static_assert_ {
+                    uint32_t a;
+                };
+            }
+            static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_), "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
 
             /**
              *  @see Timezone::kUnknown :  to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy

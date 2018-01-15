@@ -23,13 +23,11 @@ namespace Stroika {
                 : fTZ_ (tz)
                 , fBiasInMinutesFromUTC_ (0)
             {
-                static_assert (sizeof (Timezone) == sizeof (uint32_t)); // make sure full struct as small as possible
             }
             inline constexpr Timezone::Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC)
                 : fTZ_ (TZ_::eFixedOffsetBias)
                 , fBiasInMinutesFromUTC_ (biasInMinutesFromUTC)
             {
-                static_assert (sizeof (Timezone) == sizeof (uint32_t)); // make sure full struct as small as possible
             }
             inline constexpr bool Timezone::operator== (const Timezone& rhs) const
             {
