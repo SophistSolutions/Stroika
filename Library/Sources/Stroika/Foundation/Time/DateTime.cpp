@@ -31,12 +31,18 @@ using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Time;
 
+namespace {
+    constexpr int kSecondsPerMinute_ = 60;
+    constexpr int kSecondsPerHour_   = 60 * kSecondsPerMinute_;
+    constexpr int kSecondsPerDay_    = 24 * kSecondsPerHour_;
+}
+
 /*
-*  Subtle implementation note:
-*    http://www.cplusplus.com/reference/ctime/tm/
-*
-*          tm.year is years  since 1900!
-*/
+ *  Subtle implementation note:
+ *    http://www.cplusplus.com/reference/ctime/tm/
+ *
+ *          tm.year is years  since 1900!
+ */
 
 #if qPlatform_Windows
 namespace {
@@ -98,6 +104,44 @@ namespace {
         return st;
     }
 #endif
+}
+
+namespace {
+    // @todo add error checking - so returns -1 outside UNIX EPOCH TIME
+    static time_t mkgmtime_ (const struct tm* ptm)
+    {
+        // On GLIBC systems, could use _mkgmtime64  - https://github.com/leelwh/clib/blob/master/c/mktime64.c
+        // Based on https://stackoverflow.com/questions/12353011/how-to-convert-a-utc-date-time-to-a-time-t-in-c
+        constexpr int kDaysOfMonth_[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        auto isLeapYear                 = [](short year) -> bool {
+            if (year % 4 != 0)
+                return false;
+            if (year % 100 != 0)
+                return true;
+            return (year % 400) == 0;
+        };
+
+        time_t secs = 0;
+        // tm_year is years since 1900
+        int year = ptm->tm_year + 1900;
+        for (int y = 1970; y < year; ++y) {
+            secs += (isLeapYear (y) ? 366 : 365) * kSecondsPerDay_;
+        }
+        // tm_mon is month from 0..11
+        for (int m = 0; m < ptm->tm_mon; ++m) {
+            secs += kDaysOfMonth_[m] * kSecondsPerDay_;
+            if (m == 1 && isLeapYear (year))
+                secs += kSecondsPerDay_;
+        }
+        secs += (ptm->tm_mday - 1) * kSecondsPerDay_;
+        secs += ptm->tm_hour * kSecondsPerHour_;
+        secs += ptm->tm_min * kSecondsPerMinute_;
+        secs += ptm->tm_sec;
+#if qCompilerAndStdLib_Supported_mkgmtime64
+        Assert (_mkgmtime64 (const_cast<struct tm*> (ptm)) == secs);
+#endif
+        return secs;
+    }
 }
 
 /*
@@ -243,12 +287,14 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                     tz = Timezone::kUTC; // really wrong - should map given time to UTC??? - check HR value ETC
                 }
                 else {
-                    tz = Timezone::kLocalTime; // really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
+                    tz = Timezone (tzHr * 60 + tzMn);
+                    //tz = Timezone::kLocalTime; // really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
                 }
-
+#if 0
                 // CHECK TZ
                 // REALLY - must check TZ - but must adjust value if currentmachine timezone differs from one found in file...
                 // not sure what todo if READ tz doesn't match localtime? Maybe convert to GMT??
+#endif
             }
             else {
                 tz = Timezone::kLocalTime;
@@ -301,7 +347,7 @@ DateTime DateTime::Parse (const String& rep, LCID lcid)
 DateTime DateTime::AsLocalTime () const
 {
     if (GetTimezone () == Timezone::kUTC) {
-        DateTime tmp = AddSeconds (-GetLocaltimeToGMTOffset (*this));
+        DateTime tmp = AddSeconds (fTimezone_->GetOffset (fDate_, fTimeOfDay_));
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime);
     }
     else {
@@ -316,7 +362,7 @@ DateTime DateTime::AsUTC () const
         return *this;
     }
     else {
-        DateTime tmp = AddSeconds (GetLocaltimeToGMTOffset (*this));
+        DateTime tmp = fTimezone_.IsMissing () ? *this : AddSeconds (-fTimezone_->GetOffset (fDate_, fTimeOfDay_));
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC);
     }
 }
@@ -371,12 +417,12 @@ String DateTime::Format (PrintFormat pf) const
         } break;
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             /*
-                 *  Not sure what todo here - becaue I'm not sure its locale neutral to put the date first, but thats
-                 *  what we do in Format (locale) anyhow - with the format string was pass in.
-                 *
-                 *  Good enuf for now...
-                 *      -- LGP 2013-03-02
-                 */
+             *  Not sure what todo here - becaue I'm not sure its locale neutral to put the date first, but thats
+             *  what we do in Format (locale) anyhow - with the format string was pass in.
+             *
+             *  Good enuf for now...
+             *      -- LGP 2013-03-02
+             */
             String dateStr{fDate_.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped)};
             return fTimeOfDay_.empty () ? dateStr : (dateStr + L" " + fTimeOfDay_.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped));
         }
@@ -386,15 +432,17 @@ String DateTime::Format (PrintFormat pf) const
             String timeStr = fTimeOfDay_.Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
             if (not timeStr.empty ()) {
                 r += Characters::String_Constant (L"T") + timeStr;
-                if (GetTimezone () == Timezone::kUTC) {
-                    r += String_Constant (L"Z");
-                }
-                else {
-                    time_t tzBias     = -GetLocaltimeToGMTOffset (IsDaylightSavingsTime (*this));
-                    int    minuteBias = abs (static_cast<int> (tzBias)) / 60;
-                    int    hrs        = minuteBias / 60;
-                    int    mins       = minuteBias - hrs * 60;
-                    r += ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
+                if (fTimezone_) {
+                    if (fTimezone_ == Timezone::kUTC) {
+                        r += String_Constant (L"Z");
+                    }
+                    else {
+                        auto tzBias     = fTimezone_->GetOffset (fDate_, fTimeOfDay_);
+                        int  minuteBias = abs (static_cast<int> (tzBias)) / 60;
+                        int  hrs        = minuteBias / 60;
+                        int  mins       = minuteBias - hrs * 60;
+                        r += ::Format (L"%s%.2d:%.2d", (tzBias < 0 ? L"-" : L"+"), hrs, mins);
+                    }
                 }
             }
             return r;
@@ -470,25 +518,21 @@ Date::JulianRepType DateTime::DaysSince () const
 template <>
 time_t DateTime::As () const
 {
+    DateTime  useDT = this->AsUTC (); // time_t defined in UTC
+    Date      d     = useDT.GetDate ();
+    TimeOfDay tod   = useDT.GetTimeOfDay ();
     struct tm tm {
     };
-    tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;
-    tm.tm_mon                          = static_cast<int> (fDate_.GetMonth ()) - 1;
-    tm.tm_mday                         = static_cast<int> (fDate_.GetDayOfMonth ());
-    unsigned int totalSecondsRemaining = fTimeOfDay_.GetAsSecondsCount ();
+    tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
+    tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
+    tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
+    unsigned int totalSecondsRemaining = tod.GetAsSecondsCount ();
     tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;
     tm.tm_min = totalSecondsRemaining / 60;
     totalSecondsRemaining -= tm.tm_min * 60;
     tm.tm_sec     = totalSecondsRemaining;
-    time_t result = ::mktime (&tm); // from http://en.cppreference.com/w/cpp/chrono/c/mktime - -1 returned on error
-    if (result != -1) {
-        /*
-         * This is PURELY to correct for the fact that mktime() uses the current timezone - and has NOTHING todo with the timezone assocaited with the given
-         * DateTime() object.
-         */
-        result -= Time::GetLocaltimeToGMTOffset (false);
-    }
+    time_t result = mkgmtime_ (&tm);
     // NB: This CAN return -1 - if outside unix EPOCH time
     return result;
 }

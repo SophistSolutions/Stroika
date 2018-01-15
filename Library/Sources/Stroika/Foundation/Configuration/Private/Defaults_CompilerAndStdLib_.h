@@ -23,7 +23,7 @@
 #define kStrokia_Foundation_Configuration_cplusplus_14 201402
 
 /**
- * note: not sure rihgt number - but this is what is used by g++ 7.0
+ * According to https://en.wikipedia.org/wiki/C%2B%2B17 - 201703
  */
 #define kStrokia_Foundation_Configuration_cplusplus_17 201703
 
@@ -1067,6 +1067,18 @@ eq_result
 #define qCompilerAndStdLib_SFINAEWithStdPairOpLess_Buggy 0
 #endif
 
+#endif
+
+/**
+ // _mkgmtime64 not portable, but seems to be defined everywhere I've tried - add a qSupported if/when needed
+ https://msdn.microsoft.com/en-us/library/2093ets1.aspx
+ */
+#if !defined(qCompilerAndStdLib_Supported_mkgmtime64)
+#if defined(_MSC_VER)
+#define qCompilerAndStdLib_Supported_mkgmtime64 1
+#else
+#define qCompilerAndStdLib_Supported_mkgmtime64 0
+#endif
 #endif
 
 /**

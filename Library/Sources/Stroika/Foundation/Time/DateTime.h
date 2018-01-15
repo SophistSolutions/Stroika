@@ -94,7 +94,7 @@ namespace Stroika {
              *
              *      DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
              *
-             *      There are 3 possabilities for timezone - LOCALTIME, GMT, and UNKNOWN.
+             *      Timezone may be "unknown" (missing), or a Timezone object (@see Timezone).
              *
              *      'empty' concept:
              *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number
