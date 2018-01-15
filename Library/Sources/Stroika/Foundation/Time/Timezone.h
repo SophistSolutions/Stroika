@@ -32,7 +32,9 @@ namespace Stroika {
     namespace Foundation {
         namespace Time {
 
+            class Date;
             class DateTime;
+            class TimeOfDay;
 
             /**
              *  Information about the current system timezone setting.
@@ -118,6 +120,22 @@ namespace Stroika {
                 nonvirtual Timezone& operator= (Timezone&& rhs) = default;
 
             public:
+                /**
+                 *  Depending on the form of the timezone, the offset from UTC could depned on the date (cuz of daylight savings time)
+                 *
+                 *  \note returns minutes
+                 */
+                nonvirtual BiasInMinutesFromUTCType GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const;
+
+            public:
+                /**
+                 *  Depending on the form of the timezone, the offset from UTC could depned on the date (cuz of daylight savings time)
+                 *
+                 *  \note returns seconds
+                 */
+                nonvirtual make_signed<time_t>::type GetOffset (const Date& date, const TimeOfDay& tod) const;
+
+            public:
                 nonvirtual constexpr bool operator== (const Timezone& rhs) const;
                 nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
 
@@ -152,6 +170,7 @@ namespace Stroika {
             /**
              * Checks if the given DateTime is daylight savings time
              */
+            bool IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
             bool IsDaylightSavingsTime (const DateTime& d);
 
             /**

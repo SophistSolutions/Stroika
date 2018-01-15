@@ -29,6 +29,24 @@ namespace Stroika {
                 , fBiasInMinutesFromUTC_ (biasInMinutesFromUTC)
             {
             }
+            inline Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
+            {
+                switch (fTZ_) {
+                    case TZ_::eUTC:
+                        return 0;
+                    case TZ_::eFixedOffsetBias:
+                        return fBiasInMinutesFromUTC_;
+                    case TZ_::eLocalTime:
+                        return static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset (IsDaylightSavingsTime (date, tod)));
+                    default:
+                        AssertNotReached ();
+                        return 0;
+                }
+            }
+            inline make_signed<time_t>::type Timezone::GetOffset (const Date& date, const TimeOfDay& tod) const
+            {
+                return 60 * GetBiasInMinutesFromUTCType (date, tod);
+            }
             inline constexpr bool Timezone::operator== (const Timezone& rhs) const
             {
                 return fTZ_ == rhs.fTZ_ and fBiasInMinutesFromUTC_ == rhs.fBiasInMinutesFromUTC_;
