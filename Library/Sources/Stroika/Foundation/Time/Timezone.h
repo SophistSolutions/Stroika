@@ -100,15 +100,17 @@ namespace Stroika {
                     : fTZ_ (tz)
                 {
                 }
-                Timezone () = delete;
-                //  constexpr Timezone (const Timezone& src) = default;
-                //  constexpr Timezone (Timezone&& src) = default;
+
+            public:
+                Timezone ()                              = delete;
+                constexpr Timezone (const Timezone& src) = default;
+                constexpr Timezone (Timezone&& src)      = default;
 
             public:
                 /**
                  */
-                //  nonvirtual Timezone& operator= (const Timezone& rhs) = default;
-                //  nonvirtual Timezone& operator= (Timezone&& rhs) = default;
+                nonvirtual Timezone& operator= (const Timezone& rhs) = default;
+                nonvirtual Timezone& operator= (Timezone&& rhs) = default;
 
             public:
                 bool operator== (const Timezone& rhs) const { return fTZ_ == rhs.fTZ_; }
