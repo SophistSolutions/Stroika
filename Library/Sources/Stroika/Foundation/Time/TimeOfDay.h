@@ -148,8 +148,6 @@ namespace Stroika {
             public:
                 /**
                  *  TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
-                 *
-                 *  @see TimeOfDay_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
                 static const TimeOfDay kMin;
 
@@ -157,8 +155,6 @@ namespace Stroika {
                 /**
                  *  TimeOfDay::kMax is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
                  *  not like 'end' - one past the last legal value.
-                 *
-                 *  @see TimeOfDay_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
                 static const TimeOfDay kMax;
 
