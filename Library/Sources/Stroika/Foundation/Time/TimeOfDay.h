@@ -162,6 +162,12 @@ namespace Stroika {
                  */
                 static const TimeOfDay kMax;
 
+#if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+            public:
+                static constexpr TimeOfDay kMin_Test{0};
+                static constexpr TimeOfDay kMax_Test{kMaxSecondsPerDay - 1};
+#endif
+
             public:
                 class FormatException;
 
