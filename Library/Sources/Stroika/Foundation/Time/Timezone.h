@@ -91,15 +91,23 @@ namespace Stroika {
              */
             class Timezone {
             private:
-                enum class TZ_ {
+                enum class TZ_ : uint16_t {
                     eLocalTime,
                     eUTC,
+                    eFixedOffsetBias
                 };
-                TZ_ fTZ_;
                 constexpr Timezone (TZ_ tz) noexcept;
 
             public:
-                Timezone ()                              = delete;
+                using BiasInMinutesFromUTCType = int16_t;
+
+            private:
+                TZ_                      fTZ_ : 16;
+                BiasInMinutesFromUTCType fBiasInMinutesFromUTC_ : 16;
+
+            public:
+                Timezone () = delete;
+                constexpr Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC);
                 constexpr Timezone (const Timezone& src) = default;
                 constexpr Timezone (Timezone&& src)      = default;
 

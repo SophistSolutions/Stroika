@@ -21,15 +21,23 @@ namespace Stroika {
              */
             inline constexpr Timezone::Timezone (TZ_ tz) noexcept
                 : fTZ_ (tz)
+                , fBiasInMinutesFromUTC_ (0)
             {
+                static_assert (sizeof (Timezone) == sizeof (uint32_t)); // make sure full struct as small as possible
+            }
+            inline constexpr Timezone::Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC)
+                : fTZ_ (TZ_::eFixedOffsetBias)
+                , fBiasInMinutesFromUTC_ (biasInMinutesFromUTC)
+            {
+                static_assert (sizeof (Timezone) == sizeof (uint32_t)); // make sure full struct as small as possible
             }
             inline constexpr bool Timezone::operator== (const Timezone& rhs) const
             {
-                return fTZ_ == rhs.fTZ_;
+                return fTZ_ == rhs.fTZ_ and fBiasInMinutesFromUTC_ == rhs.fBiasInMinutesFromUTC_;
             }
             inline constexpr bool Timezone::operator!= (const Timezone& rhs) const
             {
-                return fTZ_ != rhs.fTZ_;
+                return fTZ_ != rhs.fTZ_ or fBiasInMinutesFromUTC_ != rhs.fBiasInMinutesFromUTC_;
             }
 #if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
             constexpr const Timezone                   Timezone::kUTC{Timezone::TZ_::eUTC};
