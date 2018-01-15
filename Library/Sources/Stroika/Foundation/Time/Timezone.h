@@ -96,10 +96,7 @@ namespace Stroika {
                     eUTC,
                 };
                 TZ_ fTZ_;
-                constexpr Timezone (TZ_ tz) noexcept
-                    : fTZ_ (tz)
-                {
-                }
+                constexpr Timezone (TZ_ tz) noexcept;
 
             public:
                 Timezone ()                              = delete;
@@ -113,8 +110,8 @@ namespace Stroika {
                 nonvirtual Timezone& operator= (Timezone&& rhs) = default;
 
             public:
-                bool operator== (const Timezone& rhs) const { return fTZ_ == rhs.fTZ_; }
-                bool operator!= (const Timezone& rhs) const { return fTZ_ != rhs.fTZ_; }
+                nonvirtual constexpr bool operator== (const Timezone& rhs) const;
+                nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
 
             public:
                 static const Timezone                   kUTC;
@@ -153,10 +150,10 @@ namespace Stroika {
 }
 
 /*
-********************************************************************************
-***************************** Implementation Details ***************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 #include "Timezone.inl"
 
 #endif /*_Stroika_Foundation_Time_Timezone_h_*/

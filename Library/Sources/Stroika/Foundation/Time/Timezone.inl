@@ -14,11 +14,23 @@ namespace Stroika {
     namespace Foundation {
         namespace Time {
 
-/*
+            /*
              ********************************************************************************
              *********************************** Timezone ***********************************
              ********************************************************************************
              */
+            inline constexpr Timezone::Timezone (TZ_ tz) noexcept
+                : fTZ_ (tz)
+            {
+            }
+            inline constexpr bool Timezone::operator== (const Timezone& rhs) const
+            {
+                return fTZ_ == rhs.fTZ_;
+            }
+            inline constexpr bool Timezone::operator!= (const Timezone& rhs) const
+            {
+                return fTZ_ != rhs.fTZ_;
+            }
 #if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
             constexpr const Timezone                   Timezone::kUTC{Timezone::TZ_::eUTC};
             constexpr const Timezone                   Timezone::kLocalTime{Timezone::TZ_::eLocalTime};
