@@ -168,7 +168,7 @@ namespace Stroika {
             String GetTimezone (const DateTime& d);
 
             /**
-             * Checks if the given DateTime is daylight savings time
+             * Checks if the given DateTime is daylight savings time (in the current locale)
              */
             bool IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
             bool IsDaylightSavingsTime (const DateTime& d);

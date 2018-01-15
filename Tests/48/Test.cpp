@@ -592,9 +592,11 @@ namespace {
          * see any good portbale way to change that (setenv (TZ) doest work on visual studio.net 2010).
          *
          * This test wont always work, but at least for now seems to work on the systems i test on.
+         *
+         *  @see https://stroika.atlassian.net/browse/STK-634
          */
         {
-            DateTime n     = DateTime (Date (Year (2011), MonthOfYear::eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()));
+            DateTime n     = DateTime (Date (Year (2011), MonthOfYear::eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime);
             bool     isDst = IsDaylightSavingsTime (n);
             DateTime n2    = n.AddDays (180);
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.

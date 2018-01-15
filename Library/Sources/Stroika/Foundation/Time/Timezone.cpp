@@ -30,6 +30,30 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Time;
 
+namespace {
+    tm Date2TM_ (const Date& d, const TimeOfDay& tod)
+    {
+        struct tm tm {
+        };
+        tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
+        tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
+        tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
+        unsigned int totalSecondsRemaining = tod.GetAsSecondsCount ();
+        tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
+        totalSecondsRemaining -= tm.tm_hour * 60 * 60;
+        Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60 * 60); // cuz would have gone into hours
+        tm.tm_min = totalSecondsRemaining / 60;
+        totalSecondsRemaining -= tm.tm_min * 60;
+        Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60); // cuz would have gone into minutes
+        tm.tm_sec   = totalSecondsRemaining;
+        tm.tm_isdst = -1;
+        Ensure (0 <= tm.tm_hour and tm.tm_hour <= 23);
+        Ensure (0 <= tm.tm_min and tm.tm_min <= 59);
+        Ensure (0 <= tm.tm_sec and tm.tm_sec <= 59);
+        return tm;
+    }
+}
+
 /*
  ********************************************************************************
  ********************************* Time::Timezone *******************************
@@ -265,47 +289,9 @@ String Time::GetTimezone (const DateTime& d)
  *********************** Time::IsDaylightSavingsTime ****************************
  ********************************************************************************
  */
-
-namespace {
-    tm Date2TM_ (const Date& d, const TimeOfDay& tod)
-    {
-        struct tm tm {
-        };
-        tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
-        tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
-        tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
-        unsigned int totalSecondsRemaining = tod.GetAsSecondsCount ();
-        tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
-        totalSecondsRemaining -= tm.tm_hour * 60 * 60;
-        Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60 * 60); // cuz would have gone into hours
-        tm.tm_min = totalSecondsRemaining / 60;
-        totalSecondsRemaining -= tm.tm_min * 60;
-        Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60); // cuz would have gone into minutes
-        tm.tm_sec   = totalSecondsRemaining;
-        tm.tm_isdst = -1;
-        Ensure (0 <= tm.tm_hour and tm.tm_hour <= 23);
-        Ensure (0 <= tm.tm_min and tm.tm_min <= 59);
-        Ensure (0 <= tm.tm_sec and tm.tm_sec <= 59);
-        return tm;
-    }
-}
-
 bool Time::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
 {
-    // @todo CLEANUP/COMBINE!!!
     struct tm asTM = Date2TM_ (date, tod);
-    // See calc below
-    asTM.tm_isdst = -1;
-    if (::mktime (&asTM) == -1) {
-        return false;
-    }
-    else {
-        return asTM.tm_isdst >= 1;
-    }
-}
-bool Time::IsDaylightSavingsTime (const DateTime& d)
-{
-    struct tm asTM = d.As<struct tm> ();
     /*
      *  From http://pubs.opengroup.org/onlinepubs/7908799/xsh/mktime.html:
      *
@@ -336,6 +322,18 @@ bool Time::IsDaylightSavingsTime (const DateTime& d)
     }
     else {
         return asTM.tm_isdst >= 1;
+    }
+}
+
+bool Time::IsDaylightSavingsTime (const DateTime& d)
+{
+    struct tm asTM = d.As<struct tm> ();
+    if (d.GetTimezone () == Timezone::kLocalTime) {
+        return IsDaylightSavingsTime (d.GetDate (), d.GetTimeOfDay ());
+    }
+    else {
+        AssertNotImplemented (); // maybe OK to just assume false given CURRENT (as of 2018-01-15) design of Timezone, but hope to expand soon!
+        return false;
     }
 }
 
