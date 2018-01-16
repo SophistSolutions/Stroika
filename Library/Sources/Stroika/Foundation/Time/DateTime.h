@@ -114,9 +114,10 @@ namespace Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              *
-             *  \note   time_t is always assumed to be in UTC, because according to http://en.cppreference.com/w/c/chrono/time_t
-             *          Although not defined by the C standard, this is almost always an integral value holding the number
-             *          of seconds (not counting leap seconds) since 00:00, Jan 1 1970 UTC
+             *  \note   In the DateTime code, time_t is always assumed to be in UTC, because according to http://en.cppreference.com/w/c/chrono/time_t:
+             *              Although not defined by the C standard, this is almost always an integral 
+             *              value holding the number of seconds (not counting leap seconds) 
+             *              since 00:00, Jan 1 1970 UTC
              */
             class DateTime {
             public:
@@ -127,10 +128,8 @@ namespace Stroika {
                  *
                  *  To change TO a target timezone, use AsUTC () or AsLocalTime ().
                  *
-                 *  explicit DateTime (time_t unixTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept
-                 *      UNIX epoch time is inheritently timezone independent. However, the tz argumet tells
-                 *      the CTOR what timezone to assocaiate with the DateTime object once constructed, and if localtime
-                 *      or unknown it will convert it to a localtime value.
+                 *  explicit DateTime (time_t unixEpochTime) noexcept
+                 *      Creates a DateTime object in UTC, using UNIX Epoch time.
                  *
                  *  explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::kUTC) noexcept;
                  *      Most windows APIs return filetimes in UTC (or so it appears). Because of this,
@@ -343,51 +342,65 @@ namespace Stroika {
                  *  NB: Intentionally NOT defined for TimeOfDay () - cuz it wouldn't make sense. A DateTime IS a Date, but its not a TimeOfDay. Time of day just
                  *  logically extends Date with extra (TOD) information.
                  *
-                 *  NB: This function result is TIMEZONE AGNOSTIC (always? at least for time_t - but assume for EVERYTHING unless documented otherwise) -- LGP 2012-05-01.
+                 *  \note  As<time_t> Returns seconds since midnight 1970 UTC (UNIX 'Epoch time')
                  */
                 template <typename T>
                 nonvirtual T As () const;
 
             public:
-                nonvirtual constexpr Date GetDate () const noexcept; // careful of timezone issues? (always in current timezone - I guess)
-
-            public:
-                nonvirtual constexpr TimeOfDay GetTimeOfDay () const noexcept; // ditto
+                /**
+                 *  returns the Date part of the DateTime object (in this datetime's timezone).
+                 */
+                nonvirtual constexpr Date GetDate () const noexcept;
 
             public:
                 /**
-                 * Add the given amount of time to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
-                 * for timezone issues. It doesn't modify this.
+                 *  returns the TimeOfDay part of the DateTime object (in this datetime's timezone).
+                 */
+                nonvirtual constexpr TimeOfDay GetTimeOfDay () const noexcept;
+
+            public:
+                /**
+                 *  Add the given amount of time to construct a new DateTime object. This funtion does NOT change 
+                 *  the timezone value nor adjust for timezone issues. 
+                 *
+                 *  Add doesn't modify *this.
                  */
                 nonvirtual DateTime Add (const Duration& d) const;
 
             public:
                 /**
-                 * Add the given number of days to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
-                 * for timezone issues. It doesn't modify this.
+                 *  Add the given number of days to construct a new DateTime object. This funtion does NOT change 
+                 *  the timezone value nor adjust for timezone issues. 
+                 *
+                 *  AddDays doesn't modify this.
                  */
                 nonvirtual DateTime AddDays (int days) const;
 
             public:
                 /**
-                 * Add the given number of seconds to construct a new DateTime object. This funtion does NOT change the timezone value nor adjust
-                 * for timezone issues. It doesn't modify this.
+                 *  Add the given number of seconds to construct a new DateTime object. This funtion does NOT change 
+                 *  the timezone value nor adjust for timezone issues. 
+                 *
+                 *  AddSeconds doesn't modify this.
                  */
                 nonvirtual DateTime AddSeconds (int64_t seconds) const;
 
             public:
                 /**
-                 *  Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
+                 *  Returns the difference between the two DateTime records. This can then be easily converted to 
+                 *  seconds, or days, or whatever.
                  */
                 nonvirtual Duration Difference (const DateTime& rhs) const;
 
             public:
                 /**
-                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-                 *  this comparison function - see the notes about 'empty' in the class description.
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the 
+                 *  purpose of this comparison function - see the notes about 'empty' in the class description.
                  *
-                 *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily considered different. If either one is
-                 *  unknown, they will both be treated as the same timezone. Otherwise, they will BOTH be converted to GMT, and compared as GMT.
+                 *  Also note - if the datetimes differ in their GetTimeZone() value, they are not necessarily 
+                 *  considered different. If either one is unknown, they will both be treated as the same timezone. 
+                 *  Otherwise, they will BOTH be converted to GMT, and compared as GMT.
                  */
                 nonvirtual int Compare (const DateTime& rhs) const;
 
@@ -396,9 +409,6 @@ namespace Stroika {
                 Date                       fDate_;
                 TimeOfDay                  fTimeOfDay_;
             };
-            /**
-             *  Returns seconds since midnight 1970 (its independent of timezone). This is UNIX 'Epoch time'.
-             */
             template <>
             time_t DateTime::As () const;
             template <>

@@ -275,6 +275,40 @@ ABORTING...
 #endif
 
 /*
+ *
+ In file included from ./../IO/FileSystem/../../Time/DateTime.h:480:
+ ./../Debug/../Execution/../Time/DateTime.inl:54:49: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
+ inline constexpr DateTime DateTime::min ()
+ ^
+ ./../Debug/../Execution/../Time/DateTime.inl:56:24: note: non-constexpr constructor 'DateTime' cannot be used in a constant expression
+ return DateTime{Date::min (), TimeOfDay::min (), Timezone_kUnknown};
+ ^
+ ./../IO/FileSystem/../../Time/DateTime.h:144:17: note: declared here
+ DateTime (DateTime&& src)                = default;
+ ^
+ In file included from SystemConfiguration.cpp:35:
+ In file included from ./../IO/FileSystem/FileSystem.h:12:
+ In file included from ./../IO/FileSystem/../../Time/DateTime.h:480:
+ ./../Debug/../Execution/../Time/DateTime.inl:58:49: error: constexpr function never produces a constant expression [-Winvalid-constexpr]
+ inline constexpr DateTime DateTime::max ()
+ ^
+ ./../Debug/../Execution/../Time/DateTime.inl:60:24: note: non-constexpr constructor 'DateTime' cannot be used in a constant expression
+ return DateTime{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
+ ^
+ */
+#ifndef qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#else
+#define qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy 0
+#endif
+
+#endif
+
+/*
  *  This ONLY affects arm-linux-gnueabihf-g++-7
  *
  *  https://stroika.atlassian.net/browse/STK-631

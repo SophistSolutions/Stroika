@@ -53,11 +53,21 @@ namespace Stroika {
             }
             inline constexpr DateTime DateTime::min ()
             {
+#if qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy
+                constexpr DateTime kMin_{Date::min (), TimeOfDay::min (), Timezone_kUnknown};
+                return kMin_;
+#else
                 return DateTime{Date::min (), TimeOfDay::min (), Timezone_kUnknown};
+#endif
             }
             inline constexpr DateTime DateTime::max ()
             {
+#if qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy
+                constexpr DateTime KMax_{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
+                return kMax_;
+#else
                 return DateTime{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
+#endif
             }
             inline constexpr bool DateTime::empty () const noexcept
             {
