@@ -213,7 +213,7 @@ namespace Stroika {
                  *
                  *  @see DateTime_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static const DateTime kMin;
+                [[deprecated ("use min ()")]] static const DateTime kMin;
 
             public:
                 /*
@@ -221,7 +221,23 @@ namespace Stroika {
                  *
                  *  @see DateTime_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static const DateTime kMax;
+                [[deprecated ("use max ()")]] static const DateTime kMax;
+
+            public:
+                /**
+                 *  DateTime::min () is the first date this DateTime class supports representing.
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+                static constexpr DateTime min ();
+
+            public:
+                /**
+                 * DateTime::max () is the last date this DateTime class supports representing.
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+                static constexpr DateTime max ();
 
             public:
                 nonvirtual Memory::Optional<Timezone> GetTimezone () const noexcept;
@@ -397,15 +413,6 @@ namespace Stroika {
 #endif
             template <>
             Date DateTime::As () const;
-
-            /*
-             *  HACKS to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy.
-             *
-             *  Will be deprecated when that is fixed
-             *
-             *      constexpr       DateTime   DateTime_kMin;
-             *      constexpr       DateTime   DateTime_kMax;
-             */
 
             /**
              *  operator indirects to DateTime::Compare()

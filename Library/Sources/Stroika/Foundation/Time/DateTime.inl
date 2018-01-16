@@ -51,6 +51,14 @@ namespace Stroika {
                 , fTimeOfDay_{timeOfDay}
             {
             }
+            inline constexpr DateTime DateTime::min ()
+            {
+                return DateTime{Date::min (), TimeOfDay::min ()};
+            }
+            inline constexpr DateTime DateTime::max ()
+            {
+                return DateTime{Date::max (), TimeOfDay::max ()};
+            }
             inline constexpr bool DateTime::empty () const noexcept
             {
                 // Risky change so late in the game - but this logic seems wrong (and causes some trouble).
@@ -88,11 +96,11 @@ namespace Stroika {
                 return Format ();
             }
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            constexpr DateTime DateTime_kMin{Date_kMin, TimeOfDay_kMin};
-            constexpr DateTime DateTime_kMax{Date_kMax, TimeOfDay_kMax};
+            constexpr DateTime DateTime_kMin{Date::min (), TimeOfDay::min ()}; //[[deprecated ("use min ()")]]
+            constexpr DateTime DateTime_kMax{Date::max (), TimeOfDay::max ()}; //[[deprecated ("use min ()")]]
 #else
-            constexpr DateTime DateTime::kMin{Date::kMin, TimeOfDay::kMin};
-            constexpr DateTime DateTime::kMax{Date::kMax, TimeOfDay::kMax};
+            constexpr DateTime DateTime::kMin{Date::min (), TimeOfDay::min ()}; //[[deprecated ("use min ()")]]
+            constexpr DateTime DateTime::kMax{Date::max (), TimeOfDay::max ()}; //[[deprecated ("use min ()")]]
 #endif
 
             /*

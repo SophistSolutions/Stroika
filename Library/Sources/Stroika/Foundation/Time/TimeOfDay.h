@@ -151,7 +151,7 @@ namespace Stroika {
                  *
                  *  @see TimeOfDay_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static const TimeOfDay kMin;
+                [[deprecated ("use min ()")]] static const TimeOfDay kMin;
 
             public:
                 /**
@@ -160,13 +160,24 @@ namespace Stroika {
                  *
                  *  @see TimeOfDay_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
-                static const TimeOfDay kMax;
+                [[deprecated ("use max ()")]] static const TimeOfDay kMax;
 
-#if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
             public:
-                static constexpr TimeOfDay kMin_Test{0};
-                static constexpr TimeOfDay kMax_Test{kMaxSecondsPerDay - 1};
-#endif
+                /**
+                 *  min () is the first date this TimeOfDay class supports representing.
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+                static constexpr TimeOfDay min ();
+
+            public:
+                /**
+                 *  max () is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
+                 *  not like 'end' - one past the last legal value.
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+                static constexpr TimeOfDay max ();
 
             public:
                 class FormatException;
@@ -270,15 +281,6 @@ namespace Stroika {
                  */
                 static const FormatException kThe;
             };
-
-            /*
-             *  HACKS to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy.
-             *
-             *  Will be deprecated when that is fixed
-             *
-             *      constexpr       TimeOfDay   TimeOfDay_kMin;
-             *      constexpr       TimeOfDay   TimeOfDay_kMax;
-             */
 
             /**
              *  operator indirects to TimeOfDay::Compare()

@@ -144,7 +144,7 @@ namespace {
             VerifyTestResult (t2.GetHours () == 23);
             VerifyTestResult (t2.GetMinutes () == 59);
             VerifyTestResult (t2.GetSeconds () == 59);
-            VerifyTestResult (t2 == TimeOfDay::kMax);
+            VerifyTestResult (t2 == TimeOfDay::max ());
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
@@ -221,7 +221,7 @@ namespace {
         try {
             Date d = Date::Parse (L"09/14/1752", locale::classic ());
             VerifyTestResult (not d.empty ());
-            VerifyTestResult (d == Date::kMin);
+            VerifyTestResult (d == Date::min ());
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
             TestRoundTripFormatThenParseNoChange_ (d);
         }
@@ -236,7 +236,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            Date d = Date::kMin;
+            Date d = Date::min ();
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not(DateTime::Now ().GetDate () < d));
@@ -255,8 +255,8 @@ namespace {
         {
             wstring testCase = L"7/4/1776";
             VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) == Date::Parse (testCase, locale::classic ()));
-            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) < Date::kMax);
-            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) >= Date::kMin);
+            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) < Date::max ());
+            VerifyTestResult (Date::Parse (testCase, LOCALE_USER_DEFAULT) >= Date::min ());
         }
         {
             wstring testCase = L"7/4/2076";
@@ -270,12 +270,12 @@ namespace {
             VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript).Format (Date::PrintFormat::eJavascript) == L"11/01/2001");
         }
         {
-            VerifyTestResult (Date::kMin < Date::kMax);
-            VerifyTestResult (Date::kMin <= Date::kMax);
-            VerifyTestResult (not(Date::kMin > Date::kMax));
-            VerifyTestResult (not(Date::kMin >= Date::kMax));
-            TestRoundTripFormatThenParseNoChange_ (Date::kMin);
-            TestRoundTripFormatThenParseNoChange_ (Date::kMax);
+            VerifyTestResult (Date::min () < Date::max ());
+            VerifyTestResult (Date::min () <= Date::max ());
+            VerifyTestResult (not(Date::min () > Date::max ()));
+            VerifyTestResult (not(Date::min () >= Date::max ()));
+            TestRoundTripFormatThenParseNoChange_ (Date::min ());
+            TestRoundTripFormatThenParseNoChange_ (Date::max ());
         }
         {
 #if !qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
@@ -318,7 +318,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
-            DateTime d = DateTime::kMin;
+            DateTime d = DateTime::min ();
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
@@ -658,8 +658,8 @@ namespace {
             DateRange d2 = DateRange::FullRange ();
             VerifyTestResult (d1.empty ());
             VerifyTestResult (not d2.empty ());
-            VerifyTestResult (d2.GetLowerBound () == Date::kMin);
-            VerifyTestResult (d2.GetUpperBound () == Date::kMax);
+            VerifyTestResult (d2.GetLowerBound () == Date::min ());
+            VerifyTestResult (d2.GetUpperBound () == Date::max ());
         }
         {
             DateRange    dr{Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5)), Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6))};
@@ -709,8 +709,8 @@ namespace {
             DateTimeRange d2 = DateTimeRange::FullRange ();
             VerifyTestResult (d1.empty ());
             VerifyTestResult (not d2.empty ());
-            VerifyTestResult (d2.GetLowerBound () == DateTime::kMin);
-            VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
+            VerifyTestResult (d2.GetLowerBound () == DateTime::min ());
+            VerifyTestResult (d2.GetUpperBound () == DateTime::max ());
         }
         {
             DateTimeRange d1{DateTime (Date (Year (2000), MonthOfYear::eApril, DayOfMonth (20))), DateTime (Date (Year (2000), MonthOfYear::eApril, DayOfMonth (22)))};

@@ -41,6 +41,14 @@ namespace Stroika {
                 Assert (empty () or fTime_ < kMaxSecondsPerDay);
 #endif
             }
+            inline constexpr TimeOfDay TimeOfDay::min ()
+            {
+                return TimeOfDay{0};
+            }
+            inline constexpr TimeOfDay TimeOfDay::max ()
+            {
+                return TimeOfDay{kMaxSecondsPerDay - 1};
+            }
             inline constexpr bool TimeOfDay::empty () const
             {
                 return fTime_ == static_cast<unsigned int> (-1);
@@ -87,12 +95,8 @@ namespace Stroika {
                     return rhs.empty () ? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
                 }
             }
-            constexpr TimeOfDay TimeOfDay_kMin{0};
-            constexpr TimeOfDay TimeOfDay_kMax{TimeOfDay::kMaxSecondsPerDay - 1};
-#if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            constexpr TimeOfDay TimeOfDay::kMin{0};
-            constexpr TimeOfDay TimeOfDay::kMax{TimeOfDay::kMaxSecondsPerDay - 1};
-#endif
+            [[deprecated ("use TimeOfDay::min ()")]] constexpr TimeOfDay TimeOfDay_kMin{0};
+            [[deprecated ("use TimeOfDay::max ()")]] constexpr TimeOfDay TimeOfDay_kMax{TimeOfDay::kMaxSecondsPerDay - 1};
 
             /*
              ********************************************************************************

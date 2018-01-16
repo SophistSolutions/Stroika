@@ -142,12 +142,20 @@ namespace Stroika {
             {
                 return this->AddDays (-daysOffset);
             }
+            inline constexpr Date Date::min ()
+            {
+                return Date{kMinJulianRep};
+            }
+            inline constexpr Date Date::max ()
+            {
+                return Date{UINT_MAX - 1};
+            }
 
-            constexpr Date Date_kMin{Date::JulianRepType (Date::kMinJulianRep)};
-            constexpr Date Date_kMax{Date::JulianRepType (UINT_MAX - 1)};
+            [[deprecated ("use min ()")]] constexpr Date Date_kMin{Date::JulianRepType (Date::kMinJulianRep)};
+            [[deprecated ("use max ()")]] constexpr Date Date_kMax{Date::JulianRepType (UINT_MAX - 1)};
 #if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            constexpr Date Date::kMin{Date::JulianRepType (Date::kMinJulianRep)};
-            constexpr Date Date::kMax{Date::JulianRepType (UINT_MAX - 1)};
+            [[deprecated ("use min ()")]] constexpr Date Date::kMin{Date::JulianRepType (Date::kMinJulianRep)};
+            [[deprecated ("use max ()")]] constexpr Date Date::kMax{Date::JulianRepType (UINT_MAX - 1)};
 #endif
 
             /*

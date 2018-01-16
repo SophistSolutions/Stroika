@@ -209,14 +209,16 @@ const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
  ********************************************************************************
  */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const TimeOfDay TimeOfDay::kMin = TimeOfDay_kMin;
-const TimeOfDay TimeOfDay::kMax = TimeOfDay_kMax;
+//[[deprecated ("use TimeOfDay::min ()")]]const TimeOfDay TimeOfDay::kMin = TimeOfDay_kMin;
+//[[deprecated ("use TimeOfDay::max ()")]]const TimeOfDay TimeOfDay::kMax = TimeOfDay_kMax;
 #else
 //constexpr   TimeOfDay   TimeOfDay::kMin;
 //constexpr   TimeOfDay   TimeOfDay::kMax;
 #endif
-constexpr TimeOfDay TimeOfDay_kMin;
-constexpr TimeOfDay TimeOfDay_kMax;
+const TimeOfDay                                              TimeOfDay::kMin = TimeOfDay::min (); //[[deprecated ("use TimeOfDay::min ()")]]
+const TimeOfDay                                              TimeOfDay::kMax = TimeOfDay::max (); //[[deprecated ("use TimeOfDay::max ()")]]
+[[deprecated ("use TimeOfDay::min ()")]] constexpr TimeOfDay TimeOfDay_kMin;
+[[deprecated ("use TimeOfDay::max ()")]] constexpr TimeOfDay TimeOfDay_kMax;
 
 TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
@@ -234,12 +236,12 @@ TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
             int secs   = 0;
             DISABLE_COMPILER_MSC_WARNING_START (4996) // MSVC SILLY WARNING ABOUT USING swscanf_s
             if (::swscanf (rep.c_str (), L"%d:%d:%d", &hour, &minute, &secs) >= 2) {
-                hour   = max (hour, 0);
-                hour   = min (hour, 23);
-                minute = max (minute, 0);
-                minute = min (minute, 59);
-                secs   = max (secs, 0);
-                secs   = min (secs, 59);
+                hour   = std::max (hour, 0);
+                hour   = std::min (hour, 23);
+                minute = std::max (minute, 0);
+                minute = std::min (minute, 59);
+                secs   = std::max (secs, 0);
+                secs   = std::min (secs, 59);
                 return TimeOfDay ((hour * 60 + minute) * 60 + secs);
             }
             DISABLE_COMPILER_MSC_WARNING_END (4996)
