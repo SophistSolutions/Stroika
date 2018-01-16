@@ -297,6 +297,9 @@ ABORTING...
  ./../Debug/../Execution/../Time/DateTime.inl:60:24: note: non-constexpr constructor 'DateTime' cannot be used in a constant expression
  return DateTime{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
  ^
+ *
+ *  NOTE: I think issue is that clang uses DateTime&& CTOR to copy the DateTime object and gcc is using copy CTOR, and
+ *  copy-ctor is constexpr.
  */
 #ifndef qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy
 
