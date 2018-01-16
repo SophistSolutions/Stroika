@@ -460,7 +460,7 @@ namespace Stroika {
             {
             }
             template <typename T, typename TRAITS>
-            inline Optional<T, TRAITS>::Optional (Optional&& from)
+            inline constexpr Optional<T, TRAITS>::Optional (Optional&& from)
                 : fStorage_{(lock_guard<MutexBase_>{from}, move (from.fStorage_))}
             {
                 Assert (not from.has_value ());

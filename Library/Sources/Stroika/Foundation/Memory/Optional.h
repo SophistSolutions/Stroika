@@ -374,7 +374,7 @@ namespace Stroika {
                 constexpr Optional () = default;
                 constexpr Optional (nullopt_t);
                 constexpr Optional (const Optional& from);
-                Optional (Optional&& from);
+                constexpr Optional (Optional&& from);
                 /*
                  *  Note - in C++17, std::optional checks
                  *      std::is_convertible<const T2&, T>::value
