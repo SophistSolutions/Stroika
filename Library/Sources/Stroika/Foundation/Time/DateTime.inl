@@ -53,11 +53,11 @@ namespace Stroika {
             }
             inline constexpr DateTime DateTime::min ()
             {
-                return DateTime{Date::min (), TimeOfDay::min ()};
+                return DateTime{Date::min (), TimeOfDay::min (), Timezone_kUnknown};
             }
             inline constexpr DateTime DateTime::max ()
             {
-                return DateTime{Date::max (), TimeOfDay::max ()};
+                return DateTime{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
             }
             inline constexpr bool DateTime::empty () const noexcept
             {
