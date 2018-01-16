@@ -135,7 +135,7 @@ namespace Stroika {
                  */
                 constexpr DateTime () noexcept;
                 constexpr DateTime (const DateTime& src) = default;
-                DateTime (DateTime&& src)                = default;
+                constexpr DateTime (DateTime&& src)      = default;
                 constexpr DateTime (const Date& d) noexcept;
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
