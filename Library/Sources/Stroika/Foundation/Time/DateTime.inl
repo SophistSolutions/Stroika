@@ -63,7 +63,7 @@ namespace Stroika {
             inline constexpr DateTime DateTime::max ()
             {
 #if qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy
-                constexpr DateTime KMax_{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
+                constexpr DateTime kMax_{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
                 return kMax_;
 #else
                 return DateTime{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
