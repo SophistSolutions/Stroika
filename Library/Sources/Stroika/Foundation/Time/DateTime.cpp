@@ -149,15 +149,10 @@ namespace {
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const DateTime DateTime::kMin = DateTime::min ();
-const DateTime DateTime::kMax = DateTime::max ();
-#else
-//constexpr   DateTime    DateTime::kMin;
-//constexpr   DateTime    DateTime::kMax;
-#endif
-constexpr DateTime DateTime_kMin;
-constexpr DateTime DateTime_kMax;
+const DateTime     DateTime::kMin = DateTime::min (); // deprecated
+const DateTime     DateTime::kMax = DateTime::max (); // deprecated
+constexpr DateTime DateTime_kMin;                     // deprecated
+constexpr DateTime DateTime_kMax;                     // deprecated
 
 DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_ (Timezone::kUTC)

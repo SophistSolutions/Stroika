@@ -188,9 +188,10 @@ namespace Stroika {
 
             public:
                 /**
-                 *  If the date is empty - this is empty (no date with a time doesn't make much sense as a
-                 *  DateTime - use TimeOfDay by itself if thats what you want).
-                 *  Timezone is ignored for the purpose of 'empty' check.
+                 *  If the date is empty - this DateTime is empty.
+                 *
+                 *  Timezone, and TimeOfDay are ignored for the purpose of 'empty' check (because empty tz means unknown, and empty tod
+                 *  just means all day or time part unspecified).
                  */
                 nonvirtual constexpr bool empty () const noexcept;
 
@@ -209,16 +210,12 @@ namespace Stroika {
             public:
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
-                 *
-                 *  @see DateTime_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
                 [[deprecated ("use min ()")]] static const DateTime kMin;
 
             public:
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
-                 *
-                 *  @see DateTime_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
                 [[deprecated ("use max ()")]] static const DateTime kMax;
 

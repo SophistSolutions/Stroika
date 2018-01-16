@@ -25,13 +25,7 @@
  *
  * TODO:
  *
- *      @todo   Cleanup Min/Max stuff for enums in Date class and do EnumNames support for them.
- *
- *      @todo   See if Year should maybe be based on uint16_t.
- *
- *      @todo   Maybe get rid of eFirstDayOfWeek/eLastDayOfWeek, and eFirstDayOfMonth/...
- *              Instead just use DayOfWeek::eSTART, ... etc.. standardized way of naming
- *              these things - already redundant.
+ *		@todo	Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using Optional instead
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
@@ -97,23 +91,25 @@ namespace Stroika {
             using Characters::String;
 
             /**
+             *  \note   Configuration::DefaultNames<> supported
              */
             enum class DayOfWeek : uint8_t {
-                eMonday         = 1,
-                eTuesday        = 2,
-                eWednesday      = 3,
-                eThursday       = 4,
-                eFriday         = 5,
-                eSaturday       = 6,
-                eSunday         = 7,
-                eFirstDayOfWeek = eMonday,
-                eLastDayOfWeek  = eSunday,
+                eMonday    = 1,
+                eTuesday   = 2,
+                eWednesday = 3,
+                eThursday  = 4,
+                eFriday    = 5,
+                eSaturday  = 6,
+                eSunday    = 7,
+                //eFirstDayOfWeek = eMonday,    // deprecated - use eSTART
+                //eLastDayOfWeek  = eSunday,// deprecated - use eEND
 
-                Stroika_Define_Enum_Bounds (eFirstDayOfWeek, eLastDayOfWeek)
+                Stroika_Define_Enum_Bounds (eMonday, eSunday)
             };
 
             /**
-             */
+            *  \note   Configuration::DefaultNames<> supported
+            */
             enum class MonthOfYear : uint8_t {
                 eEmptyMonthOfYear = 0, // only zero if date empty
                 eJanuary          = 1,
@@ -128,10 +124,10 @@ namespace Stroika {
                 eOctober          = 10,
                 eNovember         = 11,
                 eDecember         = 12,
-                eFirstMonthOfYear = eJanuary,
-                eLastMonthOfYear  = eDecember,
+                //eFirstMonthOfYear = eJanuary,// deprecated - use eSTART
+                //eLastMonthOfYear  = eDecember,// deprecated - use eEND
 
-                Stroika_Define_Enum_Bounds (eFirstMonthOfYear, eLastMonthOfYear)
+                Stroika_Define_Enum_Bounds (eJanuary, eDecember)
             };
 
             /**
@@ -169,10 +165,10 @@ namespace Stroika {
                 e29,
                 e30,
                 e31,
-                eFirstDayOfMonth = 1,
-                eLastDayOfMonth  = 31,
+                //eFirstDayOfMonth = 1,// deprecated - use eSTART
+                // eLastDayOfMonth  = 31,// deprecated - use e
 
-                Stroika_Define_Enum_Bounds (eFirstDayOfMonth, eLastDayOfMonth)
+                Stroika_Define_Enum_Bounds (e1, e31)
             };
 
             /**
@@ -271,6 +267,8 @@ namespace Stroika {
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 *
+                 *  \note   Configuration::DefaultNames<> supported
                  */
                 enum class ParseFormat : uint8_t {
                     eCurrentLocale,
@@ -297,15 +295,11 @@ namespace Stroika {
                 /*
                  *  Date::kMin is the first date this Date class supports representing.
                  *  Defined constexpr if compiler supports.
-                 *
-                 *  @see Date_kMin to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
                 [[deprecated ("use min ()")]] static const Date kMin;
 
                 /*
                  * Date::kMax is the last date this Date class supports representing.
-                 *
-                 *  @see Date_kMax to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
                  */
                 [[deprecated ("use max ()")]] static const Date kMax;
 
@@ -325,6 +319,15 @@ namespace Stroika {
                  *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
                 static constexpr Date max ();
+
+#if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+            public:
+                /*
+                 *  @todo - if we can ever get this working, this is better than the min(), max() API.
+                 */
+                static constexpr Date kMin{kMinJulianRep};
+                static constexpr Date kMax{UINT_MAX - 1};
+#endif
 
             public:
                 /**
@@ -363,6 +366,8 @@ namespace Stroika {
                  *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of leading zero's,
                  *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
                  *      year.
+                 *
+                 *  \note   Configuration::DefaultNames<> supported
                  */
                 enum class PrintFormat : uint8_t {
                     eCurrentLocale,

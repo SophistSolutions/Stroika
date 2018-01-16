@@ -27,13 +27,8 @@ namespace Stroika {
             namespace Private_ {
                 using namespace Traversal;
                 struct DateTimeRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<DateTime, Openness::eClosed, Openness::eClosed, Time::Duration, Time::Duration> {
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-                    static constexpr DateTime kLowerBound{DateTime_kMin};
-                    static constexpr DateTime kUpperBound{DateTime_kMax};
-#else
-                    static constexpr DateTime kLowerBound{DateTime::kMin};
-                    static constexpr DateTime kUpperBound{DateTime::kMax};
-#endif
+                    static constexpr DateTime kLowerBound{DateTime::min ()};
+                    static constexpr DateTime kUpperBound{DateTime::max ()};
                 };
             }
 

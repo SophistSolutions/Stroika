@@ -71,13 +71,6 @@ namespace Stroika {
             }
             inline constexpr bool DateTime::empty () const noexcept
             {
-                // Risky change so late in the game - but this logic seems wrong (and causes some trouble).
-                // DateTime is NOT empty just because date part is empty. We CAN use a DateTime record to store JUST a time!
-                //      -- LGP 2006-04-26
-                //          return fDate_.empty () and fTimeOfDay_.empty ();
-                //
-                // Maybe also risky - but see my comments in the header for this funciton. I Think it DOES make sense to treat the DateTime as empty
-                // if the Date part is empty...
                 return fDate_.empty ();
             }
             inline constexpr Date DateTime::GetDate () const noexcept
@@ -105,13 +98,8 @@ namespace Stroika {
             {
                 return Format ();
             }
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
             constexpr DateTime DateTime_kMin{Date::min (), TimeOfDay::min ()}; //[[deprecated ("use min ()")]]
             constexpr DateTime DateTime_kMax{Date::max (), TimeOfDay::max ()}; //[[deprecated ("use min ()")]]
-#else
-            constexpr DateTime DateTime::kMin{Date::min (), TimeOfDay::min ()}; //[[deprecated ("use min ()")]]
-            constexpr DateTime DateTime::kMax{Date::max (), TimeOfDay::max ()}; //[[deprecated ("use min ()")]]
-#endif
 
             /*
              ********************************************************************************

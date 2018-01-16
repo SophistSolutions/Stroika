@@ -138,15 +138,6 @@ Date::FormatException::FormatException ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-//[[deprecated ("use min ()")]]const Date Date::kMin = Date_kMin;
-//[[deprecated ("use max ()")]]const Date Date::kMax = Date_kMax;
-#else
-//constexpr   Date    Date::kMin;
-//constexpr   Date    Date::kMax;
-#endif
-//cconstexpr Date Date_kMin;
-//cconstexpr Date Date_kMax;
 constexpr Date Date::kMin; //[[deprecated ("use min ()")]]
 constexpr Date Date::kMax; //[[deprecated ("use min ()")]]
 

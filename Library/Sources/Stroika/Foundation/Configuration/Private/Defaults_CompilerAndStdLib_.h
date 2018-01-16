@@ -258,6 +258,8 @@ ABORTING...
 #endif
 
 /*
+@ see https://stroika.atlassian.net/browse/STK-635
+
 @DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
 */
 #ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
@@ -388,8 +390,9 @@ ABORTING...
 #endif
 
 /*
-@DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
+@DESCRIPTION:   
 
+@see https://stroika.atlassian.net/browse/STK-635
 
 http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
      A static data member of literal type can be declared in the
@@ -400,29 +403,11 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
     contain an initializer.
 
 
-    VERY unsure about the right way todo this - and if its a compiler bug or a me bug but I spent hours trying every combo I could find
+@see also qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy - which provides another possible workaround 
+http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
+that doesnt work (duplicate definitions - works in a single file but not across multiple files)
 
-    ERROR MESSAGE ON SOME (so far all) LINKERS:
-        multiple definition of `Stroika::Foundation::Time::TimeOfDay::kMin ETC
 
-    EG:
-    warning LNK4006: "public: static class Stroika::Foundation::Time::DateTime co.... already defined in IO-FileSystem-Common.obj; second definition ignored
-
-    (.text+0x0): multiple definition of `Stroika::Foundation::Time::DateTime::kMax'
-
-        1>DataExchange-XML-WriterUtils.obj : warning LNK4006: "public: static class Stroika::Foundation::Time::Timezone const Stroika::Foundation::Time::Timezone::kUTC" (?kUTC@Timezone@Time@Foundation@Stroika@@2V1234@B) already defined in IO-FileSystem-Common.obj; second definition ignored
-        1>DataExchange-XML-WriterUtils.obj : warning LNK4006: "public: static class Stroika::Foundation::Time::Timezone const Stroika::Foundation::Time::Timezone::kLocalTime" (?kLocalTime@Timezone@Time@Foundation@Stroika@@2V1234@B) already defined in IO-FileSystem-Common.obj; second definition ignored
-        1>DataExchange-XML-WriterUtils.obj : warning LNK4006: "public: static class Stroika::Foundation::Memory::Optional<class Stroika::Foundation::Time::Timezone,struct Stroika::Foundation::Memory::Optional_Traits_Inplace_Storage<class Stroika::Foundation::Time::Timezone> > const Stroika::Foundation::Time::Timezone::kUnknown" (?kUnknown@Timezone@Time@Foundation@Stroika@@2V?$Optional@VTimezone@Time@Foundation@Stroika@@U?$Optional_Traits_Inplace_Storage@VTimezone@Time@Foundation@Stroika@@@Memory@34@@Memory@34@B) already defined in IO-FileSystem-Common.obj; second definition ignored
-
-Or on MacOS Clang
-    duplicate symbol __ZN7Stroika10Foundation4Time8DateTime4kMaxE in:
-    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Trace.o)
-    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Timezone.o)
-    duplicate symbol __ZN7Stroika10Foundation4Time8Timezone8kUnknownE in:
-    ...
-    duplicate symbol __ZN7Stroika10Foundation4Time9TimeOfDay4kMaxE in:
-    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(Trace.o)
-    /Users/lewis/Sandbox/StroikaDev/Builds/Debug/Stroika-Foundation.a(WellKnownLocations.o)
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 

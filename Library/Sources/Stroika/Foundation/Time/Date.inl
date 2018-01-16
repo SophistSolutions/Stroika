@@ -151,12 +151,8 @@ namespace Stroika {
                 return Date{UINT_MAX - 1};
             }
 
-            [[deprecated ("use min ()")]] constexpr Date Date_kMin{Date::JulianRepType (Date::kMinJulianRep)};
-            [[deprecated ("use max ()")]] constexpr Date Date_kMax{Date::JulianRepType (UINT_MAX - 1)};
-#if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            [[deprecated ("use min ()")]] constexpr Date Date::kMin{Date::JulianRepType (Date::kMinJulianRep)};
-            [[deprecated ("use max ()")]] constexpr Date Date::kMax{Date::JulianRepType (UINT_MAX - 1)};
-#endif
+            [[deprecated ("use Date::min ()")]] constexpr Date Date_kMin{Date::JulianRepType (Date::kMinJulianRep)};
+            [[deprecated ("use Date::max ()")]] constexpr Date Date_kMax{Date::JulianRepType (UINT_MAX - 1)};
 
             /*
              ********************************************************************************
@@ -187,6 +183,84 @@ namespace Stroika {
             {
                 return lhs.Compare (rhs) > 0;
             }
+        }
+    }
+}
+namespace Stroika {
+    namespace Foundation {
+        namespace Configuration {
+            template <>
+            struct DefaultNames<Stroika::Foundation::Time::DayOfWeek> : EnumNames<Stroika::Foundation::Time::DayOfWeek> {
+                static constexpr EnumNames<Stroika::Foundation::Time::DayOfWeek> k{
+                    EnumNames<Stroika::Foundation::Time::DayOfWeek>::BasicArrayInitializer{
+                        {
+                            {Stroika::Foundation::Time::DayOfWeek::eMonday, L"Monday"},
+                            {Stroika::Foundation::Time::DayOfWeek::eTuesday, L"Tuesday"},
+                            {Stroika::Foundation::Time::DayOfWeek::eWednesday, L"Wednesday"},
+                            {Stroika::Foundation::Time::DayOfWeek::eThursday, L"Thursday"},
+                            {Stroika::Foundation::Time::DayOfWeek::eFriday, L"Friday"},
+                            {Stroika::Foundation::Time::DayOfWeek::eSaturday, L"Saturday"},
+                            {Stroika::Foundation::Time::DayOfWeek::eSunday, L"Sunday"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Stroika::Foundation::Time::DayOfWeek> (k)
+                {
+                }
+            };
+            template <>
+            struct DefaultNames<Stroika::Foundation::Time::MonthOfYear> : EnumNames<Stroika::Foundation::Time::MonthOfYear> {
+                static constexpr EnumNames<Stroika::Foundation::Time::MonthOfYear> k{
+                    EnumNames<Stroika::Foundation::Time::MonthOfYear>::BasicArrayInitializer{
+                        {
+                            {Stroika::Foundation::Time::MonthOfYear::eJanuary, L"January"},
+                            {Stroika::Foundation::Time::MonthOfYear::eFebruary, L"February"},
+                            {Stroika::Foundation::Time::MonthOfYear::eMarch, L"March"},
+                            {Stroika::Foundation::Time::MonthOfYear::eApril, L"April"},
+                            {Stroika::Foundation::Time::MonthOfYear::eMay, L"May"},
+                            {Stroika::Foundation::Time::MonthOfYear::eJune, L"June"},
+                            {Stroika::Foundation::Time::MonthOfYear::eJuly, L"July"},
+                            {Stroika::Foundation::Time::MonthOfYear::eAugust, L"August"},
+                            {Stroika::Foundation::Time::MonthOfYear::eSeptember, L"September"},
+                            {Stroika::Foundation::Time::MonthOfYear::eOctober, L"October"},
+                            {Stroika::Foundation::Time::MonthOfYear::eNovember, L"November"},
+                            {Stroika::Foundation::Time::MonthOfYear::eDecember, L"December"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Stroika::Foundation::Time::MonthOfYear> (k)
+                {
+                }
+            };
+            template <>
+            struct DefaultNames<Stroika::Foundation::Time::Date::ParseFormat> : EnumNames<Stroika::Foundation::Time::Date::ParseFormat> {
+                static constexpr EnumNames<Stroika::Foundation::Time::Date::ParseFormat> k{
+                    EnumNames<Stroika::Foundation::Time::Date::ParseFormat>::BasicArrayInitializer{
+                        {
+                            {Stroika::Foundation::Time::Date::ParseFormat::eCurrentLocale, L"Current-Locale"},
+                            {Stroika::Foundation::Time::Date::ParseFormat::eISO8601, L"ISO-8601"},
+                            {Stroika::Foundation::Time::Date::ParseFormat::eXML, L"XML"},
+                            {Stroika::Foundation::Time::Date::ParseFormat::eJavascript, L"Javascript"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Stroika::Foundation::Time::Date::ParseFormat> (k)
+                {
+                }
+            };
+            template <>
+            struct DefaultNames<Stroika::Foundation::Time::Date::PrintFormat> : EnumNames<Stroika::Foundation::Time::Date::PrintFormat> {
+                static constexpr EnumNames<Stroika::Foundation::Time::Date::PrintFormat> k{
+                    EnumNames<Stroika::Foundation::Time::Date::PrintFormat>::BasicArrayInitializer{
+                        {
+                            {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale, L"Current-Locale"},
+                            {Stroika::Foundation::Time::Date::PrintFormat::eISO8601, L"ISO-8601"},
+                            {Stroika::Foundation::Time::Date::PrintFormat::eXML, L"XML"},
+                            {Stroika::Foundation::Time::Date::PrintFormat::eJavascript, L"Javascript"},
+                            {Stroika::Foundation::Time::Date::PrintFormat::eCurrentLocale_WithZerosStripped, L"Current-Locale-With-Zeros-Stripped"},
+                        }}};
+                DefaultNames ()
+                    : EnumNames<Stroika::Foundation::Time::Date::PrintFormat> (k)
+                {
+                }
+            };
         }
     }
 }
