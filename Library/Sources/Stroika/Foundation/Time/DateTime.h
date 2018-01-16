@@ -31,6 +31,8 @@
  *
  * TODO:
  *
+ *      @todo   Need DefaultNames<> for enums in DateTime module
+ *
  *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
  *              Be careful about overflow in underlying types like Date and TimeOfDay() however.
  *
@@ -39,10 +41,6 @@
  *
  *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
  *              de-supporting.
- *
- *      @todo   Current logic for TIMEZONE conversion is questionable. When we output to XML,
- *              we output the timezone offset of the currnet timezone and the daylight savingstime
- *              value as of that date. But when we read date - we ignore the offset (assume its localetime).
  *
  *      @todo   We sometimes store datetime internally as localetime, and sometimes as UTC. Maybe we
  *              should alway use UTC? If we use localtime and the timezone changes while we are running
@@ -106,11 +104,8 @@ namespace Stroika {
              *
              *  <<<CONSIDERING MAYBE REQUIRING>>>
              *          Also note that if empty () - BOTH the date and timeofday parts of the DateTime must be empty, and
-             *          the value of timezone is undefined.
+             *          the value of timezone is undefined. That way, d.empty () iff d == DateTime ()
              *  <<</CONSIDERING MAYBE REQUIRING>>>
-             *
-             *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
-             *          static de-initializaiton.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              *

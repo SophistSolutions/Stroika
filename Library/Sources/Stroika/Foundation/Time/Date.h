@@ -25,7 +25,7 @@
  *
  * TODO:
  *
- *		@todo	Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using Optional instead
+ *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using Optional instead
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???

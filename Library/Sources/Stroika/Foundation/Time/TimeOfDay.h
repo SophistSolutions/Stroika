@@ -25,6 +25,8 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
+ *      @todo   Need DefaultNames<> for enums in TimeOfDay module
+ *
  *      @todo   Consider having some way to support double as TimeOfDay (or maybe float). Dont want the
  *              complexity of the chrono code, but some of the power ;-). Not sure how to compromise.
  *
@@ -110,8 +112,8 @@ namespace Stroika {
                  *  And the first hour (1pm) is hour 0, so TimeOfDay (2, 0, 0) is 3am.
                  */
                 constexpr TimeOfDay ();
-                TimeOfDay (const TimeOfDay&)          = default;
-                constexpr TimeOfDay (TimeOfDay&& src) = default;
+                constexpr TimeOfDay (const TimeOfDay&) = default;
+                constexpr TimeOfDay (TimeOfDay&& src)  = default;
                 constexpr explicit TimeOfDay (uint32_t t);
                 explicit TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
 

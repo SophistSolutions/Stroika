@@ -290,7 +290,7 @@ namespace Stroika {
 
             public:
                 /**
-                 * DateTime::kMax is the largest duration this Duration class supports representing.
+                 * Duration::kMax is the largest duration this Duration class supports representing.
                  */
                 static const Duration& kMax;
 
