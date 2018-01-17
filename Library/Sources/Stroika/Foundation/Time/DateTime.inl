@@ -22,13 +22,13 @@ namespace Stroika {
              ********************************************************************************
              */
             inline constexpr DateTime::DateTime () noexcept
-                : fTimezone_{Timezone_kUnknown}
+                : fTimezone_{Timezone::Unknown ()}
                 , fDate_ ()
                 , fTimeOfDay_ ()
             {
             }
             inline constexpr DateTime::DateTime (const Date& d) noexcept
-                : fTimezone_{Timezone_kUnknown}
+                : fTimezone_{Timezone::Unknown ()}
                 , fDate_ (d)
                 , fTimeOfDay_ ()
             {
@@ -53,11 +53,11 @@ namespace Stroika {
             }
             inline constexpr DateTime DateTime::min ()
             {
-                return DateTime{Date::min (), TimeOfDay::min (), Timezone_kUnknown};
+                return DateTime{Date::min (), TimeOfDay::min (), Timezone::Unknown ()};
             }
             inline constexpr DateTime DateTime::max ()
             {
-                return DateTime{Date::max (), TimeOfDay::max (), Timezone_kUnknown};
+                return DateTime{Date::max (), TimeOfDay::max (), Timezone::Unknown ()};
             }
             inline constexpr bool DateTime::empty () const noexcept
             {

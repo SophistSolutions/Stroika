@@ -29,6 +29,18 @@ namespace Stroika {
                 , fBiasInMinutesFromUTC_ (biasInMinutesFromUTC)
             {
             }
+            inline constexpr Timezone Timezone::UTC ()
+            {
+                return Timezone{TZ_::eUTC};
+            }
+            inline constexpr Timezone Timezone::LocalTime ()
+            {
+                return Timezone{TZ_::eLocalTime};
+            }
+            inline constexpr Memory::Optional<Timezone> Timezone::Unknown ()
+            {
+                return {};
+            }
             inline Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
             {
                 switch (fTZ_) {
@@ -55,11 +67,6 @@ namespace Stroika {
             {
                 return fTZ_ != rhs.fTZ_ or fBiasInMinutesFromUTC_ != rhs.fBiasInMinutesFromUTC_;
             }
-#if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            constexpr const Timezone                   Timezone::kUTC{Timezone::TZ_::eUTC};
-            constexpr const Timezone                   Timezone::kLocalTime{Timezone::TZ_::eLocalTime};
-            constexpr const Memory::Optional<Timezone> Timezone::kUnknown{};
-#endif
         }
     }
 }

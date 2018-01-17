@@ -155,7 +155,7 @@ constexpr DateTime DateTime_kMin;                     // deprecated
 constexpr DateTime DateTime_kMax;                     // deprecated
 
 DateTime::DateTime (time_t unixEpochTime) noexcept
-    : fTimezone_ (Timezone::kUTC)
+    : fTimezone_ (Timezone::UTC ())
     , fDate_ ()
     , fTimeOfDay_ ()
 {
@@ -279,20 +279,14 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             Optional<Timezone> tz;
             if (tzKnown) {
                 if (tzUTC) {
-                    tz = Timezone::kUTC; // really wrong - should map given time to UTC??? - check HR value ETC
+                    tz = Timezone::UTC ();
                 }
                 else {
                     tz = Timezone (tzHr * 60 + tzMn);
-                    //tz = Timezone::kLocalTime; // really wrong -- we're totally ignoring the TZ +xxx info! Not sure what todo with it though...
                 }
-#if 0
-                // CHECK TZ
-                // REALLY - must check TZ - but must adjust value if currentmachine timezone differs from one found in file...
-                // not sure what todo if READ tz doesn't match localtime? Maybe convert to GMT??
-#endif
             }
             else {
-                tz = Timezone::kLocalTime;
+                tz = Timezone::LocalTime ();
             }
             return DateTime (d, t, tz);
         } break;
@@ -341,9 +335,9 @@ DateTime DateTime::Parse (const String& rep, LCID lcid)
 
 DateTime DateTime::AsLocalTime () const
 {
-    if (GetTimezone () == Timezone::kUTC) {
+    if (GetTimezone () == Timezone::UTC ()) {
         DateTime tmp = AddSeconds (fTimezone_->GetOffset (fDate_, fTimeOfDay_));
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kLocalTime);
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::LocalTime ());
     }
     else {
         // treat BOTH unknown and localetime as localtime
@@ -353,12 +347,12 @@ DateTime DateTime::AsLocalTime () const
 
 DateTime DateTime::AsUTC () const
 {
-    if (GetTimezone () == Timezone::kUTC) {
+    if (GetTimezone () == Timezone::UTC ()) {
         return *this;
     }
     else {
         DateTime tmp = fTimezone_.IsMissing () ? *this : AddSeconds (-fTimezone_->GetOffset (fDate_, fTimeOfDay_));
-        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::kUTC);
+        return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
     }
 }
 
@@ -367,7 +361,7 @@ DateTime DateTime::Now () noexcept
 #if qPlatform_Windows
     SYSTEMTIME st{};
     ::GetLocalTime (&st);
-    return DateTime (st, Timezone::kLocalTime);
+    return DateTime (st, Timezone::LocalTime ());
 #elif qPlatform_POSIX
     // time() returns the time since the Epoch (00:00:00 UTC, January 1, 1970), measured in seconds.
     // Convert to LocalTime - just for symetry with the windows version (and cuz our API spec say so)
@@ -397,7 +391,7 @@ DurationSecondsType DateTime::ToTickCount () const
 
 DateTime DateTime::FromTickCount (DurationSecondsType tickCount)
 {
-    Assert (GetTimeZeroOffset_ ().GetTimezone () == Timezone::kLocalTime);
+    Assert (GetTimeZeroOffset_ ().GetTimezone () == Timezone::LocalTime ());
     return GetTimeZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount));
 }
 
@@ -428,7 +422,7 @@ String DateTime::Format (PrintFormat pf) const
             if (not timeStr.empty ()) {
                 r += Characters::String_Constant (L"T") + timeStr;
                 if (fTimezone_) {
-                    if (fTimezone_ == Timezone::kUTC) {
+                    if (fTimezone_ == Timezone::UTC ()) {
                         r += String_Constant (L"Z");
                     }
                     else {
@@ -658,7 +652,7 @@ int DateTime::Compare (const DateTime& rhs) const
         }
     }
     Assert (not empty () and not rhs.empty ());
-    if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone_kUnknown) or (rhs.GetTimezone () == Timezone_kUnknown)) {
+    if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
         int cmp = GetDate ().Compare (rhs.GetDate ());
         if (cmp == 0) {
             cmp = GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());

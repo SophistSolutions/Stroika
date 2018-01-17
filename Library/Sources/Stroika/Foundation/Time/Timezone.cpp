@@ -60,9 +60,13 @@ namespace {
  ********************************************************************************
  */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const Timezone                   Timezone::kLocalTime{Timezone::TZ_::eLocalTime};
-const Timezone                   Timezone::kUTC{Timezone::TZ_::eUTC};
-const Memory::Optional<Timezone> Timezone::kUnknown{};
+const Timezone                   Timezone::kLocalTime{Timezone::LocalTime ()};
+const Timezone                   Timezone::kUTC{Timezone::UTC ()};
+const Memory::Optional<Timezone> Timezone::kUnknown{Timezone::Unknown ()};
+#else
+constexpr Timezone                   Timezone::kLocalTime;
+constexpr Timezone                   Timezone::kUTC;
+constexpr Memory::Optional<Timezone> Timezone::kUnknown;
 #endif
 
 /*

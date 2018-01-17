@@ -103,10 +103,6 @@ namespace Stroika {
             public:
                 using BiasInMinutesFromUTCType = int16_t;
 
-            private:
-                TZ_                      fTZ_ : 16;
-                BiasInMinutesFromUTCType fBiasInMinutesFromUTC_ : 16;
-
             public:
                 Timezone () = delete;
                 constexpr Timezone (BiasInMinutesFromUTCType biasInMinutesFromUTC);
@@ -118,6 +114,64 @@ namespace Stroika {
                  */
                 nonvirtual Timezone& operator= (const Timezone& rhs) = default;
                 nonvirtual Timezone& operator= (Timezone&& rhs) = default;
+
+            public:
+                /**
+                 *  Returns Timezone object in UTC timezone.
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+                static constexpr Timezone UTC ();
+
+            public:
+                /**
+                 *  Returns Timezone object in localtime timezone.
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+                static constexpr Timezone LocalTime ();
+
+            public:
+                /**
+                 *  Returns Timezone object in localtime timezone.
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+                static constexpr Memory::Optional<Timezone> Unknown ();
+
+            public:
+/**
+                 *  @see Timezone::UTC ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const Timezone kUTC;
+#else
+                static constexpr Timezone kUTC{TZ_::eUTC};
+#endif
+
+            public:
+/**
+                 *  @see Timezone::LocalTime ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 */
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const Timezone kLocalTime;
+#else
+                static constexpr Timezone kLocalTime{TZ_::eLocalTime};
+#endif
+
+            public:
+                /**
+                 *  @see Timezone::Unknown ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
+                 *        BUT - this is trickier than the others cuz its not even Timezone but a type derived from it. Could be nice if it
+                 *        worked!
+                 */
+                static const Memory::Optional<Timezone> kUnknown;
 
             public:
                 /**
@@ -139,10 +193,9 @@ namespace Stroika {
                 nonvirtual constexpr bool operator== (const Timezone& rhs) const;
                 nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
 
-            public:
-                static const Timezone                   kUTC;
-                static const Timezone                   kLocalTime;
-                static const Memory::Optional<Timezone> kUnknown;
+            private:
+                TZ_                      fTZ_ : 16;
+                BiasInMinutesFromUTCType fBiasInMinutesFromUTC_ : 16;
             };
             namespace {
                 struct _HACK_2_TEST_4_static_assert_ {
@@ -154,7 +207,7 @@ namespace Stroika {
             /**
              *  @see Timezone::kUnknown :  to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
              */
-            constexpr Memory::Optional<Timezone> Timezone_kUnknown{};
+            [[deprecated ("use Timezone::Unknown ()")]] constexpr Memory::Optional<Timezone> Timezone_kUnknown{};
 
             /**
              * Returns the string (in what format???) identifying the current system timezone.

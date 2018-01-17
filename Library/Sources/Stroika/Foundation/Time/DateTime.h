@@ -126,7 +126,7 @@ namespace Stroika {
                  *  explicit DateTime (time_t unixEpochTime) noexcept
                  *      Creates a DateTime object in UTC, using UNIX Epoch time.
                  *
-                 *  explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::kUTC) noexcept;
+                 *  explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::UTC ()) noexcept;
                  *      Most windows APIs return filetimes in UTC (or so it appears). Because of this,
                  *      our default interpretation of a FILETIME structure as as UTC.
                  *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
@@ -139,15 +139,15 @@ namespace Stroika {
                 constexpr DateTime (const Date& d) noexcept;
                 DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
-                constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
                 explicit DateTime (time_t unixEpochTime) noexcept;
-                explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
 #if qPlatform_POSIX
-                explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
-                explicit DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz = Timezone_kUnknown) noexcept;
+                explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+                explicit DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
 #elif qPlatform_Windows
-                explicit DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz = Timezone::kLocalTime) noexcept;
-                explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::kUTC) noexcept;
+                explicit DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz = Timezone::LocalTime ()) noexcept;
+                explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::UTC ()) noexcept;
 #endif
 
             public:
