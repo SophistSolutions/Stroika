@@ -54,6 +54,17 @@ namespace {
     }
 }
 
+namespace {
+    bool IsDaylightSavingsTime_ (const Date& date, const TimeOfDay& tod);
+    bool IsDaylightSavingsTime_ (const DateTime& d);
+
+    /**
+    * Return the number of seconds which must be added to a LocalTime value to get GMT.
+    */
+    time_t GetLocaltimeToGMTOffset_ (bool applyDST);
+    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime);
+}
+
 /*
  ********************************************************************************
  ********************************* Time::Timezone *******************************
@@ -68,6 +79,32 @@ constexpr Timezone                   Timezone::kLocalTime;
 constexpr Timezone                   Timezone::kUTC;
 constexpr Memory::Optional<Timezone> Timezone::kUnknown;
 #endif
+
+Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
+{
+    switch (fTZ_) {
+        case TZ_::eUTC:
+            return 0;
+        case TZ_::eFixedOffsetBias:
+            return fBiasInMinutesFromUTC_;
+        case TZ_::eLocalTime:
+            return static_cast<BiasInMinutesFromUTCType> (-GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (date, tod)));
+        default:
+            AssertNotReached ();
+            return 0;
+    }
+}
+
+Memory::Optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
+{
+    // @todo - fix for other (not fixed) timezones - like America/NewYork
+    if (fTZ_ == TZ_::eLocalTime) {
+        return IsDaylightSavingsTime (date, tod);
+    }
+    else {
+        return {};
+    }
+}
 
 /*
  ********************************************************************************
@@ -139,10 +176,10 @@ TimeZoneInformationType Time::GetTimezoneInfo ()
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
     result.fStandardTime.fAbbreviation                = String::FromNarrowSDKString (tzname[0]);
     result.fStandardTime.fName                        = String::FromNarrowSDKString (tzname[0]);
-    result.fStandardTime.fBiasInMinutesFromUTC        = -Time::GetLocaltimeToGMTOffset (false) / 60;
+    result.fStandardTime.fBiasInMinutesFromUTC        = -Time::GetLocaltimeToGMTOffset_ (false) / 60;
     result.fDaylightSavingsTime.fAbbreviation         = String::FromNarrowSDKString (tzname[1]);
     result.fDaylightSavingsTime.fName                 = String::FromNarrowSDKString (tzname[1]);
-    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = -Time::GetLocaltimeToGMTOffset (true) / 60;
+    result.fDaylightSavingsTime.fBiasInMinutesFromUTC = -Time::GetLocaltimeToGMTOffset_ (true) / 60;
 #elif qPlatform_Windows
     using Containers::Mapping;
     using Common::KeyValuePair;
@@ -276,7 +313,7 @@ String Time::GetTimezone (bool applyDST)
     return tzInfo.StandardName;
 #elif qPlatform_POSIX
     // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
-    return String::FromSDKString (IsDaylightSavingsTime (DateTime::Now ()) ? tzname[1] : tzname[0]);
+    return String::FromSDKString (IsDaylightSavingsTime_ (DateTime::Now ()) ? tzname[1] : tzname[0]);
 #else
     AssertNotImplemented ();
     return String ();
@@ -285,18 +322,19 @@ String Time::GetTimezone (bool applyDST)
 
 String Time::GetTimezone (const DateTime& d)
 {
-    return GetTimezone (IsDaylightSavingsTime (d));
+    return GetTimezone (IsDaylightSavingsTime_ (d));
 }
 
 /*
  ********************************************************************************
- *********************** Time::IsDaylightSavingsTime ****************************
+ **************************** IsDaylightSavingsTime_ ****************************
  ********************************************************************************
  */
-bool Time::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
-{
-    struct tm asTM = Date2TM_ (date, tod);
-    /*
+namespace {
+    bool IsDaylightSavingsTime_ (const Date& date, const TimeOfDay& tod)
+    {
+        struct tm asTM = Date2TM_ (date, tod);
+        /*
      *  From http://pubs.opengroup.org/onlinepubs/7908799/xsh/mktime.html:
      *
      *      A positive or 0 value for tm_isdst causes mktime() to presume initially that Daylight Savings Time, respectively,
@@ -319,35 +357,52 @@ bool Time::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
      *
      *  APPEARS to work since... --LGP 2011-10-15
      */
-    asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
-    // https://stroika.atlassian.net/browse/STK-515  only works back to 1970 (Unix epoch time) - else assume NOT daylight savings time
-    if (::mktime (&asTM) == -1) {
-        return false;
+        asTM.tm_isdst = -1; // force calc of correct daylight savings time flag
+        // https://stroika.atlassian.net/browse/STK-515  only works back to 1970 (Unix epoch time) - else assume NOT daylight savings time
+        if (::mktime (&asTM) == -1) {
+            return false;
+        }
+        else {
+            return asTM.tm_isdst >= 1;
+        }
     }
-    else {
-        return asTM.tm_isdst >= 1;
-    }
-}
 
-bool Time::IsDaylightSavingsTime (const DateTime& d)
-{
-    struct tm asTM = d.As<struct tm> ();
-    if (d.GetTimezone () == Timezone::kLocalTime) {
-        return IsDaylightSavingsTime (d.GetDate (), d.GetTimeOfDay ());
-    }
-    else {
-        AssertNotImplemented (); // maybe OK to just assume false given CURRENT (as of 2018-01-15) design of Timezone, but hope to expand soon!
-        return false;
+    bool IsDaylightSavingsTime_ (const DateTime& d)
+    {
+        struct tm asTM = d.As<struct tm> ();
+        if (d.GetTimezone () == Timezone::kLocalTime) {
+            return IsDaylightSavingsTime_ (d.GetDate (), d.GetTimeOfDay ());
+        }
+        else {
+            AssertNotImplemented (); // maybe OK to just assume false given CURRENT (as of 2018-01-15) design of Timezone, but hope to expand soon!
+            return false;
+        }
     }
 }
 
 /*
  ********************************************************************************
- ********************* Time::GetLocaltimeToGMTOffset ****************************
+ *********************** Time::IsDaylightSavingsTime ****************************
  ********************************************************************************
  */
-time_t Time::GetLocaltimeToGMTOffset (bool applyDST)
+bool Time::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
 {
+    return IsDaylightSavingsTime_ (date, tod);
+}
+
+bool Time::IsDaylightSavingsTime (const DateTime& d)
+{
+    return IsDaylightSavingsTime_ (d);
+}
+
+/*
+ ********************************************************************************
+ ********************* GetLocaltimeToGMTOffset_ ****************************
+ ********************************************************************************
+ */
+namespace {
+    time_t GetLocaltimeToGMTOffset_ (bool applyDST)
+    {
 #if 0
     // WRONG - but COULD use this API - but not sure needed
 #if qPlatform_Windows
@@ -360,30 +415,46 @@ time_t Time::GetLocaltimeToGMTOffset (bool applyDST)
 #endif
 #endif
 
-    /*
+        /*
      * COULD this be cached? It SHOULD be - but what about when the timezone changes? there maybe a better way to compute this using the
      * timezone global var???
      */
-    struct tm aTm {
-    };
-    aTm.tm_year = 70;
-    aTm.tm_mon  = 0; // Jan
-    aTm.tm_mday = 1;
-    constexpr bool kImplErrorUnderflow_{true}; // Only KNOWN to be needed on windows with TZ=America/New_York, but probably we should always do this
-    if (kImplErrorUnderflow_) {
-        aTm.tm_mday++;
+        struct tm aTm {
+        };
+        aTm.tm_year = 70;
+        aTm.tm_mon  = 0; // Jan
+        aTm.tm_mday = 1;
+        constexpr bool kImplErrorUnderflow_{true}; // Only KNOWN to be needed on windows with TZ=America/New_York, but probably we should always do this
+        if (kImplErrorUnderflow_) {
+            aTm.tm_mday++;
+        }
+        aTm.tm_isdst  = applyDST;
+        time_t result = ::mktime (&aTm);
+        Assert (result != -1); // this shouldn't fail
+        if (kImplErrorUnderflow_) {
+            result -= 24 * 60 * 60;
+        }
+        Ensure (-60 * 60 * 24 <= result and result <= 60 * 60 * 24); // sanity check
+        return result;
     }
-    aTm.tm_isdst  = applyDST;
-    time_t result = ::mktime (&aTm);
-    Assert (result != -1); // this shouldn't fail
-    if (kImplErrorUnderflow_) {
-        result -= 24 * 60 * 60;
+
+    time_t GetLocaltimeToGMTOffset_ (const DateTime& forTime)
+    {
+        return GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (forTime));
     }
-    Ensure (-60 * 60 * 24 <= result and result <= 60 * 60 * 24); // sanity check
-    return result;
+}
+
+/*
+ ********************************************************************************
+ ********************* Time::GetLocaltimeToGMTOffset ****************************
+ ********************************************************************************
+ */
+time_t Time::GetLocaltimeToGMTOffset (bool applyDST)
+{
+    return GetLocaltimeToGMTOffset_ (applyDST);
 }
 
 time_t Time::GetLocaltimeToGMTOffset (const DateTime& forTime)
 {
-    return GetLocaltimeToGMTOffset (IsDaylightSavingsTime (forTime));
+    return GetLocaltimeToGMTOffset_ (forTime);
 }

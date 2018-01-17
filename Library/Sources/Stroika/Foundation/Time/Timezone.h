@@ -18,8 +18,6 @@
  *
  * TODO:
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
- *
  *      @todo   MAYBE use http://www.iana.org/time-zones/repository/releases/tzdata2015b.tar.gz and code - and have part of
  *              thirdpartylibs, and then compile the zone file there, and reference that somehow here? Or add something
  *              to that code to generate our own table which we can #include? Maybe add BuildTools (like Tools) - and
@@ -76,10 +74,6 @@ namespace Stroika {
             TimeZoneInformationType GetTimezoneInfo ();
 
             /**
-             *  \brief EARLY ROUGH DRAFT
-             *
-             *      \note   USELESS without corresponding changes to DateTime code.
-             *
              * OLD OBSOLETE DOCS FROM OLD TIMEZONE:
              *
              *  Most of the time applications will utilize localtime. But occasionally its useful to use
@@ -190,6 +184,12 @@ namespace Stroika {
                 nonvirtual make_signed<time_t>::type GetOffset (const Date& date, const TimeOfDay& tod) const;
 
             public:
+                /**
+                 *  For some kinds of timezones, there is no way to know (e.g. +4:00), but return true if known true, and false if known false.
+                 */
+                nonvirtual Memory::Optional<bool> IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
+
+            public:
                 nonvirtual constexpr bool operator== (const Timezone& rhs) const;
                 nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
 
@@ -223,14 +223,14 @@ namespace Stroika {
             /**
              * Checks if the given DateTime is daylight savings time (in the current locale)
              */
-            bool IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
-            bool IsDaylightSavingsTime (const DateTime& d);
+            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
+            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool IsDaylightSavingsTime (const DateTime& d);
 
             /**
              * Return the number of seconds which must be added to a LocalTime value to get GMT.
              */
-            time_t GetLocaltimeToGMTOffset (bool applyDST);
-            time_t GetLocaltimeToGMTOffset (const DateTime& forTime);
+            [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t GetLocaltimeToGMTOffset (bool applyDST);
+            [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t GetLocaltimeToGMTOffset (const DateTime& forTime);
         }
     }
 }
