@@ -138,8 +138,13 @@ Date::FormatException::FormatException ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-constexpr Date Date::kMin; //[[deprecated ("use min ()")]]
-constexpr Date Date::kMax; //[[deprecated ("use min ()")]]
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+const Date Date::kMin{Date::min ()};
+const Date Date::kMax{Date::max ()};
+#else
+constexpr Date Date::kMin;
+constexpr Date Date::kMax;
+#endif
 
 constexpr Date::JulianRepType Date::kMinJulianRep;
 constexpr Date::JulianRepType Date::kEmptyJulianRep;

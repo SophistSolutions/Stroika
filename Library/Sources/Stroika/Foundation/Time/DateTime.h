@@ -203,16 +203,32 @@ namespace Stroika {
                 static Date GetToday () noexcept;
 
             public:
-                /*
+/*
                  * DateTime::kMin is the first date this DateTime class supports representing.
+                 *
+                 *  @see constexpr DateTime::min ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
-                [[deprecated ("use min ()")]] static const DateTime kMin;
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const DateTime kMin;
+#else
+                static constexpr DateTime kMin{Date::min (), TimeOfDay::min (), Timezone::Unknown ()};
+#endif
 
             public:
-                /*
-                 * DateTime::kMin is the first date this DateTime class supports representing.
+/*
+                 * DateTime::kMax is the last date this DateTime class supports representing.
+                 *
+                 *  @see constexpr DateTime::max ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
-                [[deprecated ("use max ()")]] static const DateTime kMax;
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const DateTime kMax;
+#else
+                static constexpr DateTime kMax{Date::max (), TimeOfDay::max (), Timezone::Unknown ()};
+#endif
 
             public:
                 /**

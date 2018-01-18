@@ -373,7 +373,6 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
 that doesnt work (duplicate definitions - works in a single file but not across multiple files)
 
-
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 

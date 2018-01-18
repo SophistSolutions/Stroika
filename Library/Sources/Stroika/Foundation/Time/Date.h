@@ -292,16 +292,32 @@ namespace Stroika {
 #endif
 
             public:
-                /*
+/*
                  *  Date::kMin is the first date this Date class supports representing.
-                 *  Defined constexpr if compiler supports.
+                 *
+                 *  @see constexpr Date::min ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
-                [[deprecated ("use min ()")]] static const Date kMin;
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const Date kMin;
+#else
+                static constexpr Date kMin{kMinJulianRep};
+#endif
 
-                /*
+            public:
+/*
                  * Date::kMax is the last date this Date class supports representing.
+                 *
+                 *  @see constexpr Date::max ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
-                [[deprecated ("use max ()")]] static const Date kMax;
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const Date kMax;
+#else
+                static constexpr Date kMax{UINT_MAX - 1};
+#endif
 
             public:
                 /**
@@ -319,15 +335,6 @@ namespace Stroika {
                  *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
                 static constexpr Date max ();
-
-#if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-            public:
-                /*
-                 *  @todo - if we can ever get this working, this is better than the min(), max() API.
-                 */
-                static constexpr Date kMin{kMinJulianRep};
-                static constexpr Date kMax{UINT_MAX - 1};
-#endif
 
             public:
                 /**
