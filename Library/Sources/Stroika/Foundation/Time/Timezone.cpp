@@ -302,7 +302,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
  ********************************************************************************
  */
 DISABLE_COMPILER_MSC_WARNING_START (4996)
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated - declarations\""); 
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\""); 
 String Time::GetTimezone ()
 {
     return GetTimezone (DateTime::Now ());
