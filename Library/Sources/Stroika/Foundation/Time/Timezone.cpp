@@ -108,10 +108,10 @@ Memory::Optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const 
 
 /*
  ********************************************************************************
- ***************************** Time::GetTimezoneInfo ****************************
+ ********************** Time::GetCurrentLocaleTimezoneInfo **********************
  ********************************************************************************
  */
-TimeZoneInformationType Time::GetTimezoneInfo ()
+TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
 {
     TimeZoneInformationType result;
 #if qPlatform_POSIX
@@ -294,11 +294,14 @@ TimeZoneInformationType Time::GetTimezoneInfo ()
     return result;
 }
 
+#if 1
+// DEPRECATED
 /*
  ********************************************************************************
  ********************************* Time::GetTimezone ****************************
  ********************************************************************************
  */
+DISABLE_COMPILER_MSC_WARNING_START (4996)
 String Time::GetTimezone ()
 {
     return GetTimezone (DateTime::Now ());
@@ -323,6 +326,8 @@ String Time::GetTimezone (const DateTime& d)
 {
     return GetTimezone (IsDaylightSavingsTime_ (d));
 }
+DISABLE_COMPILER_MSC_WARNING_END (4996)
+#endif
 
 /*
  ********************************************************************************

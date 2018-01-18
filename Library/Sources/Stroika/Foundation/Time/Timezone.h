@@ -71,7 +71,12 @@ namespace Stroika {
 
             /**
              */
-            TimeZoneInformationType GetTimezoneInfo ();
+            TimeZoneInformationType GetCurrentLocaleTimezoneInfo ();
+
+            [[deprecated ("use GetCurrentLocaleTimezoneInfo ()")]] inline TimeZoneInformationType GetTimezoneInfo ()
+            {
+                return GetCurrentLocaleTimezoneInfo ();
+            }
 
             /**
              * OLD OBSOLETE DOCS FROM OLD TIMEZONE:
@@ -216,9 +221,9 @@ namespace Stroika {
              *
              *  @todo CLARIFY and think through better, but this is at least a start..
              */
-            String GetTimezone ();
-            String GetTimezone (bool applyDST);
-            String GetTimezone (const DateTime& d);
+            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fStandardTime.fNameor fDaylightSavingsTime if currentlt DST")]] String GetTimezone ();
+            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo (). {fDaylightSavingsTime OR fStandardTime}")]] String GetTimezone (bool applyDST);
+            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fDaylightSavingsTime OR fStandardTime")]] String GetTimezone (const DateTime& d);
 
             /**
              * Checks if the given DateTime is daylight savings time (in the current locale)
