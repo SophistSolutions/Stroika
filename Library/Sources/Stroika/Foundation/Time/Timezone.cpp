@@ -290,7 +290,6 @@ TimeZoneInformationType Time::GetTimezoneInfo ()
     result.fID                                        = kWinDoze2OlsonName_.LookupValue (tzInfo.StandardName, tzInfo.StandardName);
 #else
     AssertNotImplemented ();
-    return String ();
 #endif
     return result;
 }
