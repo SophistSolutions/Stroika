@@ -8,6 +8,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Configuration/Locale.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -376,6 +377,30 @@ namespace {
                 DateTime dt = DateTime::FromTickCount (ds);
                 VerifyTestResult (Math::NearlyEquals (dt, DateTime::FromTickCount (dt.ToTickCount ())));
                 VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1)); // crazy large epsilon for now because we represent datetime to nearest second
+            }
+        }
+        {
+            // https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
+            {
+                const Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
+                const TimeOfDay kTOD_  = TimeOfDay (10, 21, 32);
+                DateTime        td     = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
+                DateTime        tdu    = td.AsUTC ();
+                Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+            }
+            {
+                const Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
+                const TimeOfDay kTOD_  = TimeOfDay (10, 21, 32);
+                DateTime        td     = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
+                DateTime        tdu    = td.AsUTC ();
+                Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
+            }
+            {
+                const Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
+                const TimeOfDay kTOD_  = TimeOfDay (10, 21, 32);
+                DateTime        td     = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
+                DateTime        tdu    = td.AsUTC ();
+                Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
             }
         }
     }

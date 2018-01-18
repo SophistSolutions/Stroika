@@ -269,8 +269,19 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                 tzUTC   = true;
             }
             else {
-                nItems  = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d-%d:%d", &year, &month, &day, &hour, &minute, &second, &tzHr, &tzMn);
-                tzKnown = (nItems >= 7);
+                wchar_t plusMinusChar{};
+                nItems  = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d%c%d:%d", &year, &month, &day, &hour, &minute, &second, &plusMinusChar, &tzHr, &tzMn);
+                tzKnown = (nItems >= 9) and (plusMinusChar == '+' or plusMinusChar == '-');
+                if (not tzKnown and nItems >= 6) {
+                    nItems = ::swscanf (rep.c_str (), L"%d-%d-%dT%d:%d:%d%c%2d%2d", &year, &month, &day, &hour, &minute, &second, &plusMinusChar, &tzHr, &tzMn);
+                }
+                tzKnown = (nItems >= 8) and (plusMinusChar == '+' or plusMinusChar == '-');
+                if (tzKnown) {
+                    if (plusMinusChar == '-') {
+                        tzHr = -tzHr;
+                        tzMn = -tzMn;
+                    }
+                }
             }
             DISABLE_COMPILER_MSC_WARNING_END (4996)
             Date      d;
