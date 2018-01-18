@@ -274,6 +274,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  return true if known true, and false if known false, and {} otherwise.
+                 */
+                nonvirtual Memory::Optional<bool> IsDaylightSavingsTime () const;
+
+            public:
+                /**
                  *  \brief  PrintFormat is a representation which a datetime can be transformed into
                  *
                  *  eCurrentLocale

@@ -596,20 +596,20 @@ namespace {
          *  @see https://stroika.atlassian.net/browse/STK-634
          */
         {
-            DateTime n     = DateTime (Date (Year (2011), MonthOfYear::eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::kLocalTime);
-            bool     isDst = IsDaylightSavingsTime (n);
-            DateTime n2    = n.AddDays (180);
+            DateTime               n     = DateTime (Date (Year (2011), MonthOfYear::eDecember, DayOfMonth (30)), TimeOfDay::Parse (L"1 pm", locale::classic ()), Timezone::LocalTime ());
+            Memory::Optional<bool> isDst = n.IsDaylightSavingsTime ();
+            DateTime               n2    = n.AddDays (180);
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
             //VerifyTestResult (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
-            if (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2)) {
+            if (n.IsDaylightSavingsTime () != n2.IsDaylightSavingsTime ()) {
                 int breakhere = 1;
             }
         }
         {
-            DateTime n     = DateTime::Now ();
-            bool     isDst = IsDaylightSavingsTime (n);
-            DateTime n2    = n.AddDays (60);
-            if (IsDaylightSavingsTime (n) == IsDaylightSavingsTime (n2)) {
+            DateTime               n     = DateTime::Now ();
+            Memory::Optional<bool> isDst = n.IsDaylightSavingsTime ();
+            DateTime               n2    = n.AddDays (60);
+            if (n.IsDaylightSavingsTime () == n2.IsDaylightSavingsTime ()) {
                 int breakhere = 1;
             }
         }

@@ -99,7 +99,7 @@ Memory::Optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const 
 {
     // @todo - fix for other (not fixed) timezones - like America/NewYork
     if (fTZ_ == TZ_::eLocalTime) {
-        return IsDaylightSavingsTime (date, tod);
+        return IsDaylightSavingsTime_ (date, tod);
     }
     else {
         return {};

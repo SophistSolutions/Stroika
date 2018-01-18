@@ -395,6 +395,14 @@ DateTime DateTime::FromTickCount (DurationSecondsType tickCount)
     return GetTimeZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount));
 }
 
+Memory::Optional<bool> DateTime::IsDaylightSavingsTime () const
+{
+    if (Optional<Timezone> otz = GetTimezone ()) {
+        return otz->IsDaylightSavingsTime (GetDate (), GetTimeOfDay ());
+    }
+    return {};
+}
+
 String DateTime::Format (PrintFormat pf) const
 {
     if (empty ()) {
