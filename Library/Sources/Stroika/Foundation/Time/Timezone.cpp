@@ -302,6 +302,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
  ********************************************************************************
  */
 DISABLE_COMPILER_MSC_WARNING_START (4996)
+DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated - declarations\""); 
 String Time::GetTimezone ()
 {
     return GetTimezone (DateTime::Now ());
@@ -326,6 +327,7 @@ String Time::GetTimezone (const DateTime& d)
 {
     return GetTimezone (IsDaylightSavingsTime_ (d));
 }
+DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated - declarations\"");
 DISABLE_COMPILER_MSC_WARNING_END (4996)
 #endif
 
