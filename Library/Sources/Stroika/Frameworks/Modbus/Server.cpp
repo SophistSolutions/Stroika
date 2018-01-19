@@ -303,11 +303,12 @@ namespace {
                         }
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t        responseLen    = static_cast<uint8_t> (quantity); // OK cuz validated in checkedReadHelperPayload2Shorts
-                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
+                            uint8_t        responseLen    = static_cast<uint8_t> (quantity * sizeof (results[0])); // (responseLen in bytes) OK cuz validated in checkedReadHelperPayload2Shorts
+                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * sizeof (uint16_t));
+                            Assert (responseLen != 0);
+                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
@@ -333,11 +334,12 @@ namespace {
                         }
                         {
                             // Response ready - format, toNetwork, and write
-                            uint8_t        responseLen    = static_cast<uint8_t> (quantity); // OK cuz validated in checkedReadHelperPayload2Shorts
-                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + 2 * responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
+                            uint8_t        responseLen    = static_cast<uint8_t> (quantity * sizeof (results[0])); // (responseLen in bytes) OK cuz validated in checkedReadHelperPayload2Shorts
+                            MBAPHeaderIsh_ responseHeader = MBAPHeaderIsh_{requestHeader.fTransactionID, requestHeader.fProtocolID, static_cast<uint16_t> (MBAPHeaderIsh_::kExtraLengthFromThisHeaderAccountedInPayloadLength + sizeof (responseLen) + responseLen), requestHeader.fUnitID, requestHeader.fFunctionCode};
                             out.WriteRaw (ToNetwork_ (responseHeader));
                             out.WriteRaw (responseLen);
-                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen * 2);
+                            Assert (responseLen != 0);
+                            out.Write (reinterpret_cast<const Byte*> (results.begin ()), reinterpret_cast<const Byte*> (results.begin ()) + responseLen);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                             DbgTrace (L"Sent response: header=%s, responseLen=%d", Characters::ToString (responseHeader).c_str (), responseLen);
 #endif
