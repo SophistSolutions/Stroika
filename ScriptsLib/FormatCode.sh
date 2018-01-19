@@ -1,5 +1,18 @@
 #!/bin/bash
 
+##
+## USAGE:
+##		ScriptsLib/FormatCode.sh DIRECTORY [WILDCARD PATTERNS]+
+##
+## EXAMPLE USAGE
+##		ScriptsLib/FormatCode.sh Library *.h *.inl *.cpp
+##		ScriptsLib/FormatCode.sh Library/Sources/Stroika/Foundation/Execution NullMutex.h
+##
+##	NOTE ALSO - can override default clang settings with
+##		Configuration/.SourceCodeFormatOverrides.sh
+##
+
+
 EXPAND=/usr/bin/expand
 if [[ `uname` =~ "CYGWIN" ]] ; then
 	EXPAND=/bin/expand
