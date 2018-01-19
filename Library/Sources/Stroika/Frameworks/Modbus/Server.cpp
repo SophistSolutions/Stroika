@@ -218,8 +218,8 @@ namespace {
                 switch (requestHeader.fFunctionCode) {
                     case FunctionCodeType_::kReadCoils_: {
                         /*
-                             *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 12
-                             */
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 12
+                         */
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).second;
                         Assert (quantity >= 1);
@@ -252,8 +252,8 @@ namespace {
                     } break;
                     case FunctionCodeType_::kReadDiscreteInputs_: {
                         /*
-                             *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 13
-                             */
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 13
+                         */
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d0).second;
                         Assert (quantity >= 1);
@@ -285,8 +285,8 @@ namespace {
                     } break;
                     case FunctionCodeType_::kReadHoldingResisters_: {
                         /*
-                             *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 15
-                             */
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 15
+                         */
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).second;
                         Assert (quantity >= 1);
@@ -315,8 +315,8 @@ namespace {
                     } break;
                     case FunctionCodeType_::kReadInputRegister_: {
                         /*
-                             *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16
-                             */
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 16
+                         */
                         uint16_t startingAddress = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).first;
                         uint16_t quantity        = checkedReadHelperPayload2Shorts (requestPayload, 1, 0x7d).second;
                         Assert (quantity >= 1);
@@ -345,8 +345,8 @@ namespace {
                     } break;
                     case FunctionCodeType_::kWriteSingleCoil_: {
                         /*
-                             *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 17
-                             */
+                         *  From http://www.modbus.org/docs/Modbus_Application_Protocol_V1_1b.pdf - page 17
+                         */
                         uint16_t outputAddress = checkedReadHelperPayload2Shorts (requestPayload, 0, 0xff00).first;
                         uint16_t value         = checkedReadHelperPayload2Shorts (requestPayload, 0, 0xff00).second;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
