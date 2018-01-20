@@ -1409,7 +1409,7 @@ namespace {
                 }
                 static bool IsValidPID_ (pid_t p)
                 {
-                    return static_cast<make_signed<pid_t>::type> (p) > 0;
+                    return static_cast<make_signed_t<pid_t>> (p) > 0;
                 }
                 Set<pid_t> GetAllProcessIDs_ () const
                 {

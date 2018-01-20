@@ -54,7 +54,7 @@ namespace Stroika {
             }
             inline constexpr int Version::Compare (const Version& rhs) const
             {
-                return make_signed<Binary32BitFullVersionType>::type (AsFullVersionNum ()) - make_signed<Binary32BitFullVersionType>::type (rhs.AsFullVersionNum ());
+                return make_signed_t<Binary32BitFullVersionType> (AsFullVersionNum ()) - make_signed_t<Binary32BitFullVersionType> (rhs.AsFullVersionNum ());
             }
             inline constexpr bool Version::operator< (const Version& rhs) const
             {

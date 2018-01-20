@@ -190,7 +190,7 @@ namespace Stroika {
                  *
                  *  \note returns seconds
                  */
-                nonvirtual make_signed<time_t>::type GetOffset (const Date& date, const TimeOfDay& tod) const;
+                nonvirtual make_signed_t<time_t> GetOffset (const Date& date, const TimeOfDay& tod) const;
 
             public:
                 /**

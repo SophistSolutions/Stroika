@@ -41,7 +41,7 @@ namespace Stroika {
             {
                 return {};
             }
-            inline make_signed<time_t>::type Timezone::GetOffset (const Date& date, const TimeOfDay& tod) const
+            inline make_signed_t<time_t> Timezone::GetOffset (const Date& date, const TimeOfDay& tod) const
             {
                 return 60 * GetBiasInMinutesFromUTCType (date, tod);
             }

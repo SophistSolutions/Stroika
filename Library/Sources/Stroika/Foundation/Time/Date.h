@@ -230,7 +230,7 @@ namespace Stroika {
                 using JulianRepType = unsigned int;
 
             public:
-                using SignedJulianRepType = make_signed<JulianRepType>::type;
+                using SignedJulianRepType = make_signed_t<JulianRepType>;
 
             public:
                 static constexpr JulianRepType kMinJulianRep = 2361222; // This number corresponds to 1752-09-14
@@ -422,7 +422,7 @@ namespace Stroika {
                  *  In the special case where Date is 'empty' - the starting reference (for adding dayCount)
                  *  is DateTime::GetToday ();
                  */
-                nonvirtual Date AddDays (make_signed<JulianRepType>::type dayCount) const;
+                nonvirtual Date AddDays (make_signed_t<JulianRepType> dayCount) const;
 
             public:
                 /**
