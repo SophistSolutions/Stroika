@@ -21,6 +21,7 @@ BreakConstructorInitializersBeforeComma : true
 #ColumnLimit:     160
 ColumnLimit:     0
 Cpp11BracedListStyle : true
+FixNamespaceComments: false
 IndentWidth: 4
 IndentCaseLabels: true
 KeepEmptyLinesAtTheStartOfBlocks: true
