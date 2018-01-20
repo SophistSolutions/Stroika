@@ -169,7 +169,7 @@ namespace Stroika {
 #if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 return (lhs < rhs) ? -1 : ((lhs == rhs) ? 0 : 1);
 #else
-                //using ST = typename make_signed_t<INTEGERLIKETYPE>;   // could do this and then diff
+                //using ST = make_signed_t<INTEGERLIKETYPE>;   // could do this and then diff
                 //return static_cast<ST> (lhs) - static_cast<ST> (rhs);
                 if (lhs < rhs) {
                     return -1;
