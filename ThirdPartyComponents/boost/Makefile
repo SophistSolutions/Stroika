@@ -66,9 +66,7 @@ ifeq ($(CONFIGURATION),)
 	done
 else
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/boost $(VERSION) {$(CONFIGURATION)}:"
-	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
-	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent bootstrapIfNeeded_
-	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) configureAndBuildIfNeeded_
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 endif
 
@@ -157,6 +155,17 @@ endif
 
 check-prerequisite-tools:
 	@#none specific to boost
+
+
+
+$(PRODUCED_OUTPUT_ARTIFACTS):
+ifeq ($(CONFIGURATION),)
+	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+endif
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) --silent bootstrapIfNeeded_
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) configureAndBuild_
+
 
 
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
@@ -257,11 +266,6 @@ ifeq ($(FORCE_PARALLEL_b2_MAKE),1)
 CONFIGURE_ARGS_ +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
 endif
 
-configureAndBuildIfNeeded_:
-	@$(MAKE) --silent $(PRODUCED_OUTPUT_ARTIFACTS)
-
-$(PRODUCED_OUTPUT_ARTIFACTS):
-	@$(MAKE) --silent configureAndBuild_
 
 configureAndBuild_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Config+Build to $(PER_CONFIGURATION_BUILDS_DIR); log2=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/ConfigureAndBuild.OUT"` "... "
