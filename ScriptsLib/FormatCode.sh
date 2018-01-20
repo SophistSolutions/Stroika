@@ -13,7 +13,7 @@
 ##
 
 
-EXPAND=/usr/bin/expand
+EXPAND="${EXPAND:-/usr/bin/expand}"
 if [[ `uname` =~ "CYGWIN" ]] ; then
 	EXPAND=/bin/expand
 fi
@@ -33,7 +33,7 @@ fi
 
 dirPattern=$1
 
-FORMATTER=clang-format
+FORMATTER="${FORMATTER:-clang-format}"
 hash $FORMATTER 2> /dev/null
 if [ $? -ne 0 ]; then
    echo "Need missing formatter: $FORMATTER"
