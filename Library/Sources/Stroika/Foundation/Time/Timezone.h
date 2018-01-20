@@ -18,12 +18,14 @@
  *
  * TODO:
  *
- *      @todo   MAYBE use http://www.iana.org/time-zones/repository/releases/tzdata2015b.tar.gz and code - and have part of
- *              thirdpartylibs, and then compile the zone file there, and reference that somehow here? Or add something
- *              to that code to generate our own table which we can #include? Maybe add BuildTools (like Tools) - and
- *              there no dependnecies on stroika (execept makefile part) - and build code which we use to boostrap stroika
- *              building file in intermediatefiles which we #incldue as initailzied data for timezone module
+ *      @todo   https://stroika.atlassian.net/browse/STK-636
+ *              Enhance Timezone class to support real timezones (e.g. American/NewYork) and handle all the cases
+ *              of mapping offsets (applying all teh rules for differnt dates)
  *
+ *              Could use boost or  http://www.iana.org/time-zones/repository/releases/tzdata2015b.tar.gz  or other.
+ *
+ *              But good news - I think I have API right now. Just construct a Timezone object with enum or data read from file
+ *              and can be used as is throughtout rest of DateTime code (well, TimeZoneInformationType probably needs changes).
  */
 
 namespace Stroika {
@@ -70,6 +72,7 @@ namespace Stroika {
             };
 
             /**
+             *  \brief return a summary of information about the currently configured default timezone on this system.
              */
             TimeZoneInformationType GetCurrentLocaleTimezoneInfo ();
 
@@ -79,16 +82,17 @@ namespace Stroika {
             }
 
             /**
-             * OLD OBSOLETE DOCS FROM OLD TIMEZONE:
+             *  The Timezone class represents what one would think of as a timezone - mostly.
              *
-             *  Most of the time applications will utilize localtime. But occasionally its useful to use
-             *  different timezones, and our approach to this is to simply convert everything to GMT.
+             *  But - it only supports these timezones:
+             *      o   UTC
+             *      o   LocalTime () special - whatever timezone this computer is in
+             *      o   Fixed Offset from UTC (suitable for reading and writing ISO8601 times)
              *
-             *  eUnknown - for the most part - is treated as if it were localtime (except with compare).
-             *  However - the "Kind" function returns Unknown in case your application wants to treat it
-             *  differently.
+             *  But it currently does NOT support the notion of timezone like American/NewYork (unless that happens to be localtime)
+             *  That feature may be eventually added - https://stroika.atlassian.net/browse/STK-636
              *
-             *  @todo see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
+             *  @see https://msdn.microsoft.com/en-us/library/system.timezone(v=vs.110).aspx
              */
             class Timezone {
             private:
@@ -195,7 +199,13 @@ namespace Stroika {
                 nonvirtual Memory::Optional<bool> IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
 
             public:
+                /**
+                 */
                 nonvirtual constexpr bool operator== (const Timezone& rhs) const;
+
+            public:
+                /**
+                 */
                 nonvirtual constexpr bool operator!= (const Timezone& rhs) const;
 
             private:
@@ -209,31 +219,12 @@ namespace Stroika {
             }
             static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_), "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
 
-            /**
-             *  @see Timezone::kUnknown :  to workaround qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-             */
-            [[deprecated ("use Timezone::Unknown ()")]] constexpr Memory::Optional<Timezone> Timezone_kUnknown{};
-
-            /**
-             * Returns the string (in what format???) identifying the current system timezone.
-             *
-             *  On UNIX, this amounts to TZ environment variable???Or tz from locale?
-             *
-             *  @todo CLARIFY and think through better, but this is at least a start..
-             */
+            [[deprecated ("use Timezone::Unknown ()")]] constexpr Memory::Optional<Timezone>                                                   Timezone_kUnknown{};
             [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fStandardTime.fNameor fDaylightSavingsTime if currentlt DST")]] String GetTimezone ();
             [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo (). {fDaylightSavingsTime OR fStandardTime}")]] String GetTimezone (bool applyDST);
             [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fDaylightSavingsTime OR fStandardTime")]] String GetTimezone (const DateTime& d);
-
-            /**
-             * Checks if the given DateTime is daylight savings time (in the current locale)
-             */
             [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
             [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool IsDaylightSavingsTime (const DateTime& d);
-
-            /**
-             * Return the number of seconds which must be added to a LocalTime value to get GMT.
-             */
             [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t GetLocaltimeToGMTOffset (bool applyDST);
             [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t GetLocaltimeToGMTOffset (const DateTime& forTime);
         }
