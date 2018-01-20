@@ -25,8 +25,8 @@ namespace Stroika {
         namespace DataExchange {
             namespace Compression {
 
-                using Memory::Byte;
                 using Memory::BLOB;
+                using Memory::Byte;
                 using Streams::InputStream;
 
                 /**

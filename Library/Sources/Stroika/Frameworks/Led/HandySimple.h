@@ -67,7 +67,7 @@ namespace Stroika {
 
             public:
                 nonvirtual Led_Color GetWatermarkColor () const;
-                nonvirtual void SetWatermarkColor (const Led_Color& c);
+                nonvirtual void      SetWatermarkColor (const Led_Color& c);
 
             private:
                 Led_Color fWatermarkColor;

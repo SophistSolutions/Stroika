@@ -15,9 +15,9 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::XML;
 
-using Memory::Byte;
 using Characters::Character;
 using Characters::String_Constant;
+using Memory::Byte;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1

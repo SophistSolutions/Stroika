@@ -386,7 +386,7 @@ namespace Stroika {
             template <typename KEY, typename VALUE, typename TRAITS>
             auto LRUCache<KEY, VALUE, TRAITS>::Elements () const -> Containers::Mapping<KEY, VALUE, Containers::DefaultTraits::Mapping<KEY, VALUE, KeyEqualsCompareFunctionType>>
             {
-                lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+                lock_guard<const Debug::AssertExternallySynchronizedLock>                                                     critSec{*this};
                 Containers::Mapping<KEY, VALUE, Containers::DefaultTraits::Mapping<KEY, VALUE, KeyEqualsCompareFunctionType>> result;
                 for (auto i : fRealCache_) {
                     if (i) {

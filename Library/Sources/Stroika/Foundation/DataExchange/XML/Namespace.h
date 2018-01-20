@@ -37,7 +37,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual vector<NamespaceDefinition> GetNamespaces () const;
-                    nonvirtual void SetNamespaces (const vector<NamespaceDefinition>& namespaces);
+                    nonvirtual void                        SetNamespaces (const vector<NamespaceDefinition>& namespaces);
 
                 public:
                     nonvirtual void Add (const wstring& uri, const wstring& prefix = wstring ());

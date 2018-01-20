@@ -530,7 +530,7 @@ namespace Stroika {
                     RequireNotNull (_fData);
                     RequireNotNull (this->_fCurrent);
                     size_t i = 0;
-                    for (const Link *l = _fData->_fHead; l != this->_fCurrent; l = l->fNext, ++i) {
+                    for (const Link* l = _fData->_fHead; l != this->_fCurrent; l = l->fNext, ++i) {
                         AssertNotNull (l);
                     }
                     return i;

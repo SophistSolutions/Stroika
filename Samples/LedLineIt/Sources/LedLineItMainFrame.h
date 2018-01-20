@@ -66,7 +66,7 @@ public:
     CToolBar  fToolBar;
 
 protected:
-    afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+    afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
 
 protected:

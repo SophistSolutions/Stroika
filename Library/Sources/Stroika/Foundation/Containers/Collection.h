@@ -299,10 +299,10 @@ namespace Stroika {
                 using _CollectionRepSharedPtr = typename Collection<T>::_CollectionRepSharedPtr;
 
             public:
-                virtual _CollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual void Add (ArgByValueType<T> item)                                              = 0;
-                virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
-                virtual void Remove (const Iterator<T>& i) = 0;
+                virtual _CollectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const    = 0;
+                virtual void                    Add (ArgByValueType<T> item)                              = 0;
+                virtual void                    Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
+                virtual void                    Remove (const Iterator<T>& i)                             = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

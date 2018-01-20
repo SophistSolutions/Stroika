@@ -24,11 +24,11 @@ public:
 
 public:
     nonvirtual TextInteractor::SearchParameters GetSearchParameters () const;
-    nonvirtual void SetSearchParameters (const TextInteractor::SearchParameters& searchParameters);
+    nonvirtual void                             SetSearchParameters (const TextInteractor::SearchParameters& searchParameters);
 
 public:
     nonvirtual const CDockState& GetDocBarState () const;
-    nonvirtual void SetDocBarState (const CDockState& dockState);
+    nonvirtual void              SetDocBarState (const CDockState& dockState);
 
 public:
     nonvirtual bool GetSmartCutAndPaste () const;
@@ -48,7 +48,7 @@ public:
                                 eSyntaxColoringCPlusPlus = 2,
                                 eSyntaxColoringVB        = 3 }; //NB CANNOT CHANGE VALUES LIGHTLY - WRITTEN TO REGISTRY!
     nonvirtual SyntaxColoringOption GetSyntaxColoringOption () const;
-    nonvirtual void SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption);
+    nonvirtual void                 SetSyntaxColoringOption (SyntaxColoringOption syntaxColoringOption);
 #endif
 
 #if qPlatform_Windows
@@ -59,7 +59,7 @@ public:
 
 public:
     nonvirtual Led_FontSpecification GetDefaultNewDocFont () const;
-    nonvirtual void SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
+    nonvirtual void                  SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
 };
 
 /*

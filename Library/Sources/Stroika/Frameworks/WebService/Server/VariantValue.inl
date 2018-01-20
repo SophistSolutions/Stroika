@@ -224,9 +224,9 @@ namespace Stroika {
                         Require (paramNames.size () == 1);
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                            VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-                            Mapping<String, VariantValue> allArgsMap = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-                            Sequence<VariantValue> vvs;
+                            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
+                            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
+                            Sequence<VariantValue>        vvs;
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
@@ -240,9 +240,9 @@ namespace Stroika {
                         Require (paramNames.size () == 2);
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                            VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-                            Mapping<String, VariantValue> allArgsMap = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-                            Sequence<VariantValue> vvs;
+                            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
+                            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
+                            Sequence<VariantValue>        vvs;
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
@@ -256,9 +256,9 @@ namespace Stroika {
                         Require (paramNames.size () == 3);
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                            VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-                            Mapping<String, VariantValue> allArgsMap = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-                            Sequence<VariantValue> vvs;
+                            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
+                            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
+                            Sequence<VariantValue>        vvs;
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
@@ -272,9 +272,9 @@ namespace Stroika {
                         Require (paramNames.size () == 4);
                         return [=](WebServer::Message* m) {
                             ExpectedMethod (m->PeekRequest (), webServiceDescription);
-                            VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
-                            Mapping<String, VariantValue> allArgsMap = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
-                            Sequence<VariantValue> vvs;
+                            VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
+                            Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
+                            Sequence<VariantValue>        vvs;
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }

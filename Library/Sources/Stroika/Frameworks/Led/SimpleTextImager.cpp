@@ -241,8 +241,8 @@ size_t SimpleTextImager::CountRowDifference (RowReference lhs, RowReference rhs)
     size_t           rhsMarkerStart = rhsPM->GetStart ();
     bool             leftSmaller    = ((lhsMarkerStart < rhsMarkerStart) or
                         ((lhsMarkerStart == rhsMarkerStart)));
-    RowReference firstRowRef = leftSmaller ? lhs : rhs;
-    RowReference lastRowRef  = leftSmaller ? rhs : lhs;
+    RowReference     firstRowRef    = leftSmaller ? lhs : rhs;
+    RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
 
     size_t rowsGoneBy = 0;
     for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {

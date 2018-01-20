@@ -154,7 +154,7 @@ namespace Stroika {
                     }
                     virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock>     critSec{fData_};
                         const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);

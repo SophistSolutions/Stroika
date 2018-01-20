@@ -33,7 +33,7 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
     Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (10 * 1024);
-    const wchar_t* useFormat = format;
+    const wchar_t*                               useFormat = format;
 #if !qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
     wchar_t newFormat[5 * 1024];
     {

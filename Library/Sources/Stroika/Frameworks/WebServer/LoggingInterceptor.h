@@ -33,7 +33,7 @@ namespace Stroika {
                     Time::DurationSecondsType fStartedAt{};
                 };
                 virtual shared_ptr<MessageInstance> Started (Message* m);
-                virtual void Completed (const shared_ptr<MessageInstance>& messageInstance) noexcept = 0;
+                virtual void                        Completed (const shared_ptr<MessageInstance>& messageInstance) noexcept = 0;
             };
 
             /**

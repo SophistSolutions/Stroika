@@ -26,11 +26,11 @@ using namespace Stroika::Foundation;
 using Characters::String;
 using Containers::Sequence;
 using Execution::BlockingQueue;
-using Execution::Thread;
 using Execution::Finally;
+using Execution::RWSynchronized;
 using Execution::SpinLock;
 using Execution::Synchronized;
-using Execution::RWSynchronized;
+using Execution::Thread;
 using Execution::ThreadPool;
 using Execution::WaitableEvent;
 
@@ -416,7 +416,7 @@ namespace {
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
                     }
                 });
-                Thread::Ptr writerThread = Thread::New ([&]() {
+                Thread::Ptr                                writerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
@@ -725,15 +725,15 @@ namespace {
         WaitableEvent                              we1{WaitableEvent::eAutoReset};
         WaitableEvent                              we2{WaitableEvent::eAutoReset};
         static constexpr Time::DurationSecondsType kMaxWaitTime_{5.0};
-        Thread::Ptr                                t1 = Thread::New ([&we1]() {
+        Thread::Ptr                                t1      = Thread::New ([&we1]() {
             Execution::Sleep (kMaxWaitTime_); // wait long enough that we are pretty sure t2 will always trigger before we do
             we1.Set ();
         });
-        Thread::Ptr t2 = Thread::New ([&we2]() {
+        Thread::Ptr                                t2      = Thread::New ([&we2]() {
             Execution::Sleep (0.1);
             we2.Set ();
         });
-        Time::DurationSecondsType startAt = Time::GetTickCount ();
+        Time::DurationSecondsType                  startAt = Time::GetTickCount ();
         t1.Start ();
         t2.Start ();
         /*
@@ -754,16 +754,16 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
         // EXPERIMENTAL
-        WaitableEvent we1{WaitableEvent::eAutoReset};
-        WaitableEvent we2{WaitableEvent::eAutoReset};
-        bool          w1Fired = false;
-        bool          w2Fired = false;
-        Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired]() {
+        WaitableEvent             we1{WaitableEvent::eAutoReset};
+        WaitableEvent             we2{WaitableEvent::eAutoReset};
+        bool                      w1Fired = false;
+        bool                      w2Fired = false;
+        Thread::Ptr               t1      = Thread::New ([&we1, &w1Fired]() {
             Execution::Sleep (0.5);
             w1Fired = true;
             we1.Set ();
         });
-        Thread::Ptr t2 = Thread::New ([&we2, &w2Fired]() {
+        Thread::Ptr               t2      = Thread::New ([&we2, &w2Fired]() {
             Execution::Sleep (0.1);
             w2Fired = true;
             we2.Set ();
@@ -794,7 +794,7 @@ namespace {
                 sum += i;
             }
         });
-        Thread::Ptr t2 = Thread::New ([&lock, &sum]() {
+        Thread::Ptr               t2  = Thread::New ([&lock, &sum]() {
             for (int i = 0; i < 100; ++i) {
                 Execution::Sleep (0.001);
                 lock_guard<SpinLock> critSec (lock);
@@ -1088,7 +1088,7 @@ namespace {
         // most likely helgrind bug - hopefully fixed soon.
         if (not kRunningValgrind_) {
             RWSynchronized<bool> isEven{true};
-            Thread::Ptr          t1 = Thread::New ([&]() {
+            Thread::Ptr          t1  = Thread::New ([&]() {
                 while (true) {
                     Execution::CheckForThreadInterruption ();
                     auto rwLock = isEven.rwget ();
@@ -1096,7 +1096,7 @@ namespace {
                 }
             },
                                           Thread::eAutoStart);
-            auto fun = [&]() {
+            auto                 fun = [&]() {
                 while (true) {
                     Execution::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();

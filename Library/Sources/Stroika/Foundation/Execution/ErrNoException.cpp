@@ -86,8 +86,7 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
     return justErrnoNumberMessage;
 }
 
-[[noreturn]] void errno_ErrorException::Throw (Execution::errno_t error)
-{
+[[noreturn]] void errno_ErrorException::Throw (Execution::errno_t error) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{L"errno_ErrorException::Throw", L"error = %d", error};
 #endif

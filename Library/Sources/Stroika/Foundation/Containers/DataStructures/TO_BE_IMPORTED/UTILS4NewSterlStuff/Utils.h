@@ -12,8 +12,8 @@
 
 #include "../../Shared/Headers/Config.h"
 
-extern size_t RandomSize_t (size_t first = 1, size_t last = size_t (-1));
-extern size_t NormallyDistributedRandomNumber (size_t first, size_t last);
+extern size_t        RandomSize_t (size_t first = 1, size_t last = size_t (-1));
+extern size_t        NormallyDistributedRandomNumber (size_t first, size_t last);
 extern std::mt19937& GetRandomNumberEngine ();
 
 struct Timer {

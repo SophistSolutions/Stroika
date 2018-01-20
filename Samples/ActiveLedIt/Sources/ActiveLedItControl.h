@@ -102,19 +102,19 @@ protected:
 public:
     virtual void OnDraw (CDC* pdc, const CRect& rcBounds, const CRect& rcInvalid) override;
     virtual void OnDrawMetafile (CDC* pDC, const CRect& rcBounds) override;
-    afx_msg BOOL OnEraseBkgnd (CDC* pDC);
-    virtual void DoPropExchange (CPropExchange* pPX) override;
+    afx_msg BOOL  OnEraseBkgnd (CDC* pDC);
+    virtual void  DoPropExchange (CPropExchange* pPX) override;
     virtual void  OnResetState () override;
     virtual DWORD GetControlFlags () override;
-    virtual void OnGetControlInfo (LPCONTROLINFO pControlInfo) override;
-    virtual BOOL PreTranslateMessage (MSG* pMsg) override;
-    virtual void AddFrameLevelUI () override;
-    virtual void RemoveFrameLevelUI () override;
-    virtual BOOL OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClipRect) override;
-    virtual BOOL OnGetNaturalExtent (DWORD /* dwAspect */, LONG /* lindex */,
-                                     DVTARGETDEVICE* /* ptd */, HDC /* hicTargetDev */,
-                                     DVEXTENTINFO* /* pExtentInfo */, LPSIZEL /* psizel */
-                                     ) override;
+    virtual void  OnGetControlInfo (LPCONTROLINFO pControlInfo) override;
+    virtual BOOL  PreTranslateMessage (MSG* pMsg) override;
+    virtual void  AddFrameLevelUI () override;
+    virtual void  RemoveFrameLevelUI () override;
+    virtual BOOL  OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClipRect) override;
+    virtual BOOL  OnGetNaturalExtent (DWORD /* dwAspect */, LONG /* lindex */,
+                                      DVTARGETDEVICE* /* ptd */, HDC /* hicTargetDev */,
+                                      DVEXTENTINFO* /* pExtentInfo */, LPSIZEL /* psizel */
+                                      ) override;
 
 private:
     struct OnCreateExtras {
@@ -152,7 +152,7 @@ protected:
 
     // Reflect to OWNED window, since we have two separate windows. If we ever merge these, then most of this reflecting code can die.
 protected:
-    afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+    afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnWindowPosChanged (WINDOWPOS* lpwndpos);
     afx_msg void OnSetFocus (CWnd* pOldWnd);
 
@@ -208,13 +208,13 @@ protected:
     afx_msg void SetBufferTextCRLF (LPCTSTR text);
     afx_msg BSTR GetBufferTextAsRTF ();
     afx_msg string GetBufferTextAsRTF_ ();
-    afx_msg void SetBufferTextAsRTF (LPCTSTR text);
+    afx_msg void   SetBufferTextAsRTF (LPCTSTR text);
     afx_msg BSTR GetBufferTextAsHTML ();
     afx_msg void SetBufferTextAsHTML (LPCTSTR text);
     afx_msg VARIANT GetBufferTextAsDIB ();
     afx_msg long    GetBufferLength ();
     afx_msg long    GetMaxLength ();
-    afx_msg void SetMaxLength (long maxLength);
+    afx_msg void    SetMaxLength (long maxLength);
     afx_msg BOOL GetSupportContextMenu ();
     afx_msg void SetSupportContextMenu (BOOL bNewValue);
     afx_msg BOOL OLE_GetHideDisabledContextMenuItems ();
@@ -241,14 +241,14 @@ protected:
     afx_msg BOOL OLE_GetShowHidableText ();
     afx_msg void OLE_SetShowHidableText (BOOL bNewValue);
     afx_msg OLE_COLOR OLE_GetHidableTextColor ();
-    afx_msg void OLE_SetHidableTextColor (OLE_COLOR color);
+    afx_msg void      OLE_SetHidableTextColor (OLE_COLOR color);
     afx_msg BOOL OLE_GetHidableTextColored ();
     afx_msg void OLE_SetHidableTextColored (BOOL bNewValue);
 
     // Spell checking
 protected:
     afx_msg VARIANT OLE_GetSpellChecker ();
-    afx_msg void OLE_SetSpellChecker (VARIANT& newValue);
+    afx_msg void    OLE_SetSpellChecker (VARIANT& newValue);
 
 private:
     IDispatch*                fSpellChecker;
@@ -267,9 +267,9 @@ private:
 
 protected:
     afx_msg VARIANT OLE_GetContextMenu ();
-    afx_msg void OLE_SetContextMenu (VARIANT& newValue);
+    afx_msg void    OLE_SetContextMenu (VARIANT& newValue);
     afx_msg VARIANT OLE_GetToolbarList ();
-    afx_msg void OLE_SetToolbarList (VARIANT& newValue);
+    afx_msg void    OLE_SetToolbarList (VARIANT& newValue);
     afx_msg VARIANT OLE_GetBuiltinCommands ();
     afx_msg VARIANT OLE_GetPredefinedMenus ();
     afx_msg IDispatch* OLE_GetDefaultContextMenu ();
@@ -277,7 +277,7 @@ protected:
     afx_msg IDispatch* OLE_MakeNewPopupMenuItem ();
     afx_msg IDispatch* OLE_MakeNewUserMenuItem ();
     afx_msg IDispatch* OLE_MakeNewAcceleratorElement ();
-    afx_msg void OLE_InvokeCommand (const VARIANT& command);
+    afx_msg void       OLE_InvokeCommand (const VARIANT& command);
     afx_msg BOOL OLE_CommandEnabled (const VARIANT& command);
     afx_msg BOOL OLE_CommandChecked (const VARIANT& command);
     afx_msg IDispatch* OLE_MakeNewToolbarList ();
@@ -291,7 +291,7 @@ protected:
     nonvirtual CComPtr<IDispatch> MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName);
     afx_msg IDispatch* OLE_MakeBuiltinToolbarItem (LPCOLESTR builtinToolbarItemName);
     afx_msg VARIANT OLE_GetAcceleratorTable ();
-    afx_msg void OLE_SetAcceleratorTable (VARIANT& newValue);
+    afx_msg void    OLE_SetAcceleratorTable (VARIANT& newValue);
 
 private:
     struct ToolBarIconSpec {
@@ -331,7 +331,7 @@ protected:
     afx_msg BSTR GetSelTextAsHTML ();
     afx_msg void SetSelTextAsHTML (LPCTSTR text);
     afx_msg OLE_COLOR GetSelColor ();
-    afx_msg void SetSelColor (OLE_COLOR color);
+    afx_msg void      SetSelColor (OLE_COLOR color);
     afx_msg BSTR GetSelFontFace ();
     afx_msg void SetSelFontFace (LPCTSTR fontFace);
     afx_msg long GetSelFontSize ();
@@ -423,8 +423,8 @@ protected:
 
 private:
     nonvirtual Led_FileFormat GuessFormatFromName (LPCTSTR name);
-    nonvirtual void DoReadFile (LPCTSTR filename, Memory::SmallStackBuffer<char>* buffer, size_t* size);
-    nonvirtual void WriteBytesToFile (LPCTSTR filename, const void* buffer, size_t size);
+    nonvirtual void           DoReadFile (LPCTSTR filename, Memory::SmallStackBuffer<char>* buffer, size_t* size);
+    nonvirtual void           WriteBytesToFile (LPCTSTR filename, const void* buffer, size_t size);
 
     // Dispatch and event IDs
 public:

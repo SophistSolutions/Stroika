@@ -182,8 +182,8 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     result.fDaylightSavingsTime.fName                 = String::FromNarrowSDKString (tzname[1]);
     result.fDaylightSavingsTime.fBiasInMinutesFromUTC = -GetLocaltimeToGMTOffset_ (true) / 60;
 #elif qPlatform_Windows
-    using Containers::Mapping;
     using Common::KeyValuePair;
+    using Containers::Mapping;
     // Table from Stering around 2015-05-01
     static const Mapping<String, String> kWinDoze2OlsonName_ = {
         KeyValuePair<String, String>{String_Constant{L"Afghanistan Standard Time"}, String_Constant{L"Asia/Kabul"}},

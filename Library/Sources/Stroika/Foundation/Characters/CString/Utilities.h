@@ -40,9 +40,9 @@ namespace Stroika {
              */
             namespace CString {
 
+                using std::basic_string;
                 using std::string;
                 using std::wstring;
-                using std::basic_string;
 
                 /**
                  *  \brief  Measure the length of the argument c-string (NUL-terminated string).
@@ -135,15 +135,15 @@ namespace Stroika {
                  *
                  *  @see qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
                  */
-                string FormatV (const char* format, va_list argsList);
+                string  FormatV (const char* format, va_list argsList);
                 wstring FormatV (const wchar_t* format, va_list argsList);
-                string Format (const char* format, ...);
+                string  Format (const char* format, ...);
                 wstring Format (const wchar_t* format, ...);
 
                 /**
                  *  @see String::LimitLength()
                  */
-                string LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
+                string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
                 wstring LimitLength (const wstring& str, size_t maxLen, bool keepLeft = true);
 
                 /**
@@ -162,7 +162,7 @@ namespace Stroika {
                  *  This could be generalized to accomodate TRIM/merge with TRIM, but it sometimes used to trim other
                  *  characters (like trailing CRLF, or trailing '.').
                  */
-                string StripTrailingCharIfAny (const string& s, char c);
+                string  StripTrailingCharIfAny (const string& s, char c);
                 wstring StripTrailingCharIfAny (const wstring& s, wchar_t c);
 
                 /**

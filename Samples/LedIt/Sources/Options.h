@@ -27,12 +27,12 @@ public:
 
 public:
     nonvirtual SearchParameters GetSearchParameters () const;
-    nonvirtual void SetSearchParameters (const SearchParameters& searchParameters);
+    nonvirtual void             SetSearchParameters (const SearchParameters& searchParameters);
 
 #if qPlatform_Windows
 public:
     nonvirtual const CDockState& GetDocBarState () const;
-    nonvirtual void SetDocBarState (const CDockState& dockState);
+    nonvirtual void              SetDocBarState (const CDockState& dockState);
 #endif
 
 public:
@@ -67,7 +67,7 @@ public:
 
 public:
     nonvirtual Led_FontSpecification GetDefaultNewDocFont () const;
-    nonvirtual void SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
+    nonvirtual void                  SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont);
 };
 
 /*

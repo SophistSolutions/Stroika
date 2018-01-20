@@ -565,7 +565,7 @@ namespace std {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
-        auto                 critSec{make_unique_lock (Memory::Private_::sSharedPtrCopyLock_)};
+        auto critSec{make_unique_lock (Memory::Private_::sSharedPtrCopyLock_)};
 #endif
         Stroika::Foundation::Memory::SharedPtr<T> result = *copyFrom;
         return result;
@@ -583,7 +583,7 @@ namespace std {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
         MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
 #else
-        auto                 critSec{make_unique_lock (Memory::Private_::sSharedPtrCopyLock_)};
+        auto critSec{make_unique_lock (Memory::Private_::sSharedPtrCopyLock_)};
 #endif
         storeTo->swap (o);
     }

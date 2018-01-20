@@ -100,8 +100,8 @@ namespace Stroika {
                  *  always delete iff registered.
                  */
             public:
-                virtual void AddMarkerOwner (MarkerOwner* owner);
-                virtual void RemoveMarkerOwner (MarkerOwner* owner);
+                virtual void     AddMarkerOwner (MarkerOwner* owner);
+                virtual void     RemoveMarkerOwner (MarkerOwner* owner);
                 nonvirtual const vector<MarkerOwner*>& GetMarkerOwners () const noexcept;
 
             private:
@@ -236,7 +236,7 @@ namespace Stroika {
                             And it is required that the start/end values be within the valid marker
                             range for this buffer.</p>
                 */
-                virtual void SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept = 0;
+                virtual void    SetMarkerRange (Marker* marker, size_t start, size_t end) noexcept = 0;
                 nonvirtual void SetMarkerStart (Marker* marker, size_t start) noexcept;
                 nonvirtual void SetMarkerEnd (Marker* marker, size_t end) noexcept;
                 nonvirtual void SetMarkerLength (Marker* marker, size_t length) noexcept;
@@ -312,7 +312,7 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Note - owner can be any valid MarkerOwner, or @'TextStore::kAnyMarkerOwner'.</p>
                 */
                 static const MarkerOwner* kAnyMarkerOwner;
-                virtual void CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const = 0;
+                virtual void              CollectAllMarkersInRangeInto (size_t from, size_t to, const MarkerOwner* owner, MarkerSink& output) const = 0;
 
                 // Related helpers
                 //  _OrSurroundings () versions include markers which overlapped just barely on an edge
@@ -360,7 +360,7 @@ namespace Stroika {
 
             public:
                 nonvirtual shared_ptr<TextBreaks> GetTextBreaker () const;
-                nonvirtual void SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
+                nonvirtual void                   SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
 
             private:
                 mutable shared_ptr<TextBreaks> fTextBreaker;

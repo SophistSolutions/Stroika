@@ -178,18 +178,18 @@ namespace Stroika {
 
                 private:
                     struct PerInstanceData_ {
-                        String     fObjectName_;
-                        String     fInstance_;
-                        PDH_HQUERY fQuery_{}; // @todo use Synchronized<> on this as a locker
+                        String                        fObjectName_;
+                        String                        fInstance_;
+                        PDH_HQUERY                    fQuery_{}; // @todo use Synchronized<> on this as a locker
                         Mapping<String, PDH_HCOUNTER> fCounters_{};
 
                         PerInstanceData_ (const String& objectName, const String& instance, const Iterable<String>& counterNames);
                         PerInstanceData_ () = delete;
                         ~PerInstanceData_ ();
 
-                        void AddCounter (const String& counterName);
-                        double GetCurrentValue (const String& counterName);
-                        Optional<double> PeekCurrentValue (const String& counterName);
+                        void                    AddCounter (const String& counterName);
+                        double                  GetCurrentValue (const String& counterName);
+                        Optional<double>        PeekCurrentValue (const String& counterName);
                         Mapping<String, double> GetCurrentValues (const String& counterName);
                     };
                     // Note - be careful not to ever copy fInstanceData_ since uses shared_ptr and would end up with two

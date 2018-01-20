@@ -902,9 +902,9 @@ namespace Stroika {
              *
              *  Any call to this routine is a 'cancelation point'.
              */
-            void                   CheckForThreadInterruption ();
+            void CheckForThreadInterruption ();
             template <unsigned int kEveryNTimes>
-            void                   CheckForThreadInterruption ();
+            void CheckForThreadInterruption ();
 
 /*
              *  Avoid interference with Windows SDK headers. I hate macros

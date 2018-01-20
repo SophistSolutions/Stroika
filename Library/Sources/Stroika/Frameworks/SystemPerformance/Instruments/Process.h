@@ -64,13 +64,13 @@ namespace Stroika {
                         /*
                          *   on windows, this is in the form of username@domain if a domain is present
                          */
-                        Optional<String> fUserName;
-                        Optional<String> fCommandLine;
-                        Optional<String> fCurrentWorkingDirectory;
+                        Optional<String>                  fUserName;
+                        Optional<String>                  fCommandLine;
+                        Optional<String>                  fCurrentWorkingDirectory;
                         Optional<Mapping<String, String>> fEnvironmentVariables;
-                        Optional<String>         fEXEPath;
-                        Optional<String>         fRoot; // chroot
-                        Optional<Time::DateTime> fProcessStartedAt;
+                        Optional<String>                  fEXEPath;
+                        Optional<String>                  fRoot; // chroot
+                        Optional<Time::DateTime>          fProcessStartedAt;
 
                         /**
                          *  Based on

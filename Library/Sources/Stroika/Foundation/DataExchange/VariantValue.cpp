@@ -751,8 +751,8 @@ int VariantValue::Compare (const VariantValue& rhs) const
             // same iff all elts same
             Mapping<String, VariantValue> lhsM{As<Mapping<String, VariantValue>> ()};
             Mapping<String, VariantValue> rhsM{rhs.As<Mapping<String, VariantValue>> ()};
-            auto li = lhsM.begin ();
-            auto ri = rhsM.begin ();
+            auto                          li = lhsM.begin ();
+            auto                          ri = rhsM.begin ();
             for (; li != lhsM.end (); ++li, ++ri) {
                 if (ri == rhsM.end ()) {
                     return -1;

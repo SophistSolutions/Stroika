@@ -126,8 +126,8 @@ public:
     Node* FindNearest (KeyType key, std::vector<Node*>& links) const;
 
 private:
-    void ShrinkHeadLinksIfNeeded ();
-    void GrowHeadLinksIfNeeded (size_t newSize, Node* nodeToPointTo);
+    void   ShrinkHeadLinksIfNeeded ();
+    void   GrowHeadLinksIfNeeded (size_t newSize, Node* nodeToPointTo);
     size_t DetermineLinkHeight () const;
 
     size_t fLength;

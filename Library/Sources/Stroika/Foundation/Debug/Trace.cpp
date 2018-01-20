@@ -55,7 +55,7 @@ CompileTimeFlagChecker_SOURCE (Stroika::Foundation::Debug, qDefaultTracingOn, qD
 namespace {
     // This is MOSTLY to remove NEWLINES from the MIDDLE of a message - replace with kBadChar.
     const char kBadChar_ = ' ';
-    void SquishBadCharacters_ (string* s)
+    void       SquishBadCharacters_ (string* s)
     {
         RequireNotNull (s);
         size_t end = s->length ();
@@ -602,7 +602,7 @@ TraceContextBumper::~TraceContextBumper ()
 auto TraceContextBumper::mkwtrfromascii_ (const char* contextName) -> array<wchar_t, kMaxContextNameLen_>
 {
     array<wchar_t, kMaxContextNameLen_> r;
-    auto ci = contextName;
+    auto                                ci = contextName;
     for (; *ci != '\0'; ++ci) {
         Require (isascii (*ci));
         size_t i = ci - contextName;

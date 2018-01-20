@@ -686,19 +686,54 @@ const Led_Color Led_Color::kAqua      = Led_Color::kCyan;    // same according t
  */
 #if qPlatform_MacOS
 const Pattern Led_Pen::kWhitePattern = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
 };
 const Pattern Led_Pen::kLightGrayPattern = {
-    0x88, 0x22, 0x88, 0x22, 0x88, 0x22, 0x88, 0x22,
+    0x88,
+    0x22,
+    0x88,
+    0x22,
+    0x88,
+    0x22,
+    0x88,
+    0x22,
 };
 const Pattern Led_Pen::kGrayPattern = {
-    0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55,
+    0xaa,
+    0x55,
+    0xaa,
+    0x55,
+    0xaa,
+    0x55,
+    0xaa,
+    0x55,
 };
 const Pattern Led_Pen::kDarkGrayPattern = {
-    0x77, 0xdd, 0x77, 0xdd, 0x77, 0xdd, 0x77, 0xdd,
+    0x77,
+    0xdd,
+    0x77,
+    0xdd,
+    0x77,
+    0xdd,
+    0x77,
+    0xdd,
 };
 const Pattern Led_Pen::kBlackPattern = {
-    0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
+    0xff,
 };
 #endif
 
@@ -1209,7 +1244,7 @@ Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable)
     , fFontMappingCache ()
 {
     int screen = DefaultScreen (display);
-    fGC        = ::XCreateGC (display, drawable, 0, nullptr);
+    fGC = ::XCreateGC (display, drawable, 0, nullptr);
     ::XSetForeground (display, fGC, BlackPixel (display, screen));
     ::XSetBackground (display, fGC, WhitePixel (display, screen));
     XSetGraphicsExposures (display, fGC, true);
@@ -1343,7 +1378,7 @@ void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Co
             srcMoveRect.top -= scrollVBy;
             exposedRect.top = exposedRect.bottom + scrollVBy;
         }
-        XGCValues           prevValues;
+        XGCValues prevValues;
         const unsigned long kSavedAttrs = GCGraphicsExposures;
         (void)::memset (&prevValues, 0, sizeof (prevValues));
         ::XGetGCValues (fDisplay, fGC, kSavedAttrs, &prevValues);
@@ -1361,15 +1396,15 @@ void Led_Tablet_::ScrollBitsAndInvalRevealed (const Led_Rect& windowRect, Led_Co
 #if 1
         XEvent event;
         (void)::memset (&event, 0, sizeof (event));
-        event.type               = Expose;
+        event.type = Expose;
         event.xexpose.send_event = true;
-        event.xexpose.display    = fDisplay;
-        event.xexpose.window     = fDrawable;
-        event.xexpose.x          = (int)exposedRect.GetLeft ();
-        event.xexpose.y          = (int)exposedRect.GetTop ();
-        event.xexpose.width      = (int)exposedRect.GetWidth ();
-        event.xexpose.height     = (int)exposedRect.GetHeight ();
-        event.xexpose.count      = 0;
+        event.xexpose.display = fDisplay;
+        event.xexpose.window = fDrawable;
+        event.xexpose.x = (int)exposedRect.GetLeft ();
+        event.xexpose.y = (int)exposedRect.GetTop ();
+        event.xexpose.width = (int)exposedRect.GetWidth ();
+        event.xexpose.height = (int)exposedRect.GetHeight ();
+        event.xexpose.count = 0;
         Verify (::XSendEvent (fDisplay, fDrawable, false, ExposureMask, &event) != 0);
 #else
         ::XClearArea (fDisplay, fDrawable, (int)exposedRect.GetLeft (), (int)exposedRect.GetTop (),
@@ -1446,8 +1481,8 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
     Led_Distance kMaxTextWidthResult = kRunning32BitGDI ? 0x7fffffff : 0x7fff;
     if (IsPrinting ()) {
         // See SPR#0435
-        SIZE ve             = GetViewportExt ();
-        SIZE we             = GetWindowExt ();
+        SIZE ve = GetViewportExt ();
+        SIZE we = GetWindowExt ();
         kMaxTextWidthResult = ::MulDiv (kMaxTextWidthResult, we.cx, ve.cx) - 1;
     }
 #elif qXWindows
@@ -1532,7 +1567,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
 
 #if qTryScriptToCPX
                 for (size_t j = 0; j < charsThisTime; j++) {
-                    int leadingEdge  = 0;
+                    int leadingEdge = 0;
                     int trailingEdge = 0;
                     Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, false, &leadingEdge) == S_OK);
                     Verify (sUniscribeDLL.ScriptStringCPtoX (ssa, j, true, &trailingEdge) == S_OK);
@@ -1684,7 +1719,7 @@ void Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
 #if qTryToOptimizeLongUNISCRIBEScriptOutCalls
             const size_t kMaxCharsToDrawAtATime = 500;
 #endif
-            size_t       len                    = nextTabAt - textCursor;
+            size_t len = nextTabAt - textCursor;
             if (len == 0) {
                 goto Succeeded; // UNISCRIBE barfs on zero-length strings. Nothing todo anyhow...
             }
@@ -1695,7 +1730,7 @@ void Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
                 SCRIPT_STATE scriptState;
                 memset (&scriptState, 0, sizeof (scriptState));
                 scriptState.fOverrideDirection = true; // I THINK This is how I say already in display order
-                scriptState.fInhibitSymSwap    = true;
+                scriptState.fInhibitSymSwap = true;
 
                 const Led_tChar* thisChunkPtr = textCursor;
                 for (size_t thisChunkLen = len; thisChunkLen > 0;) {
@@ -1729,8 +1764,8 @@ void Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
                         Verify (::GetViewportOrgEx (m_hAttribDC, &vpOrg));
                         POINT wOrg;
                         Verify (::GetWindowOrgEx (m_hAttribDC, &wOrg));
-                        int   deviceWidth = GetDeviceCaps (HORZRES);
-                        POINT x           = vpOrg;
+                        int deviceWidth = GetDeviceCaps (HORZRES);
+                        POINT x = vpOrg;
                         x.x += deviceWidth;
                         Verify (::DPtoLP (m_hAttribDC, &x, 1));
                         if (x.x < outputAt.h + int(widthSoFar) - hScrollOffset) {
@@ -1772,13 +1807,13 @@ void Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
              */
 #if qUseGetCharPlacementToImage && qWideCharacters
             {
-                size_t                            len = nextTabAt - textCursor;
+                size_t len = nextTabAt - textCursor;
                 Memory::SmallStackBuffer<wchar_t> glyphs (len);
-                GCP_RESULTSW                      gcpResult;
+                GCP_RESULTSW gcpResult;
                 memset (&gcpResult, 0, sizeof (gcpResult));
                 gcpResult.lStructSize = sizeof (GCP_RESULTS);
-                gcpResult.lpGlyphs    = glyphs;
-                gcpResult.nGlyphs     = len;
+                gcpResult.lpGlyphs = glyphs;
+                gcpResult.nGlyphs = len;
                 if (::GetCharacterPlacementW (m_hDC, textCursor, len, 0, &gcpResult, GCP_GLYPHSHAPE | GCP_LIGATE) != 0) {
                     Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, gcpResult.lpGlyphs, gcpResult.nGlyphs, nullptr));
                     goto Succeeded_But_Need_To_Adjust_Width;
@@ -1788,7 +1823,7 @@ void Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
 
 #if qUseFakeTTGetWPlacementToImage && qWideCharacters
             {
-                size_t                            len = nextTabAt - textCursor;
+                size_t len = nextTabAt - textCursor;
                 Memory::SmallStackBuffer<wchar_t> glyphs (len);
                 if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs) != 0) {
                     Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, glyphs, len, nullptr));
@@ -1830,10 +1865,10 @@ void Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, 
         Led_Point cursor = Led_Point (outputAt.v + precomputedFontMetrics.GetAscent (), outputAt.h - hScrollOffset) - fDrawableOrigin; // ascent - goto baseline...
         XTextItem item;
         memset (&item, 0, sizeof (item));
-        item.chars  = const_cast<char*> (textCursor);
+        item.chars = const_cast<char*> (textCursor);
         item.nchars = nextTabAt - textCursor;
-        item.delta  = 0;
-        item.font   = None;
+        item.delta = 0;
+        item.font = None;
         ::XDrawText (fDisplay, fDrawable, fGC, cursor.h + widthSoFar, cursor.v, &item, 1);
         Led_ThrowIfNull (fCachedFontInfo);
         widthSoFar += ::XTextWidth (const_cast<XFontStruct*> (fCachedFontInfo), item.chars, item.nchars);
@@ -1876,11 +1911,11 @@ void Led_Tablet_::SetBackColor (const Led_Color& backColor)
     else {
         XColor bgColorDef;
         memset (&bgColorDef, 0, sizeof (bgColorDef));
-        bgColorDef.red   = backColor.GetRed ();
+        bgColorDef.red = backColor.GetRed ();
         bgColorDef.green = backColor.GetGreen ();
-        bgColorDef.blue  = backColor.GetBlue ();
-        Colormap cmap    = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
-        Status   s       = XAllocColor (fDisplay, cmap, &bgColorDef);
+        bgColorDef.blue = backColor.GetBlue ();
+        Colormap cmap = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
+        Status s = XAllocColor (fDisplay, cmap, &bgColorDef);
         if (s == 0) {
             ::XSetBackground (fDisplay, fGC, WhitePixel (fDisplay, DefaultScreen (fDisplay)));
         }
@@ -1908,11 +1943,11 @@ void Led_Tablet_::SetForeColor (const Led_Color& foreColor)
     else {
         XColor fgColorDef;
         memset (&fgColorDef, 0, sizeof (fgColorDef));
-        fgColorDef.red   = foreColor.GetRed ();
+        fgColorDef.red = foreColor.GetRed ();
         fgColorDef.green = foreColor.GetGreen ();
-        fgColorDef.blue  = foreColor.GetBlue ();
-        Colormap cmap    = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
-        Status   s       = ::XAllocColor (fDisplay, cmap, &fgColorDef);
+        fgColorDef.blue = foreColor.GetBlue ();
+        Colormap cmap = DefaultColormap (fDisplay, DefaultScreen (fDisplay));
+        Status s = ::XAllocColor (fDisplay, cmap, &fgColorDef);
         if (s == 0) {
             ::XSetForeground (fDisplay, fGC, BlackPixel (fDisplay, DefaultScreen (fDisplay)));
         }
@@ -1937,23 +1972,23 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
         GDI_RGBForeColor (eraseColor.GetOSRep ());
         ::FillRect (&qdEraser, &Led_Pen::kBlackPattern);
 #elif qPlatform_Windows
-        Led_Rect             eraser = eraseRect;
-        Led_Brush            backgroundBrush (eraseColor.GetOSRep ());
+        Led_Rect eraser = eraseRect;
+        Led_Brush backgroundBrush (eraseColor.GetOSRep ());
         Led_Win_Obj_Selector pen (this, ::GetStockObject (NULL_PEN));
         Led_Win_Obj_Selector brush (this, backgroundBrush);
         eraser.right++; // lovely - windows doesn't count last pixel... See Docs for Rectangle() and rephrase!!!
         eraser.bottom++;
         Rectangle (AsRECT (eraser));
 #elif qXWindows
-        XGCValues           prevValues;
+        XGCValues prevValues;
         const unsigned long kSavedAttrs = GCForeground;
-        Colormap            cmap        = DefaultColormap (fDisplay, 0);
-        XColor              fgColorDef;
+        Colormap cmap = DefaultColormap (fDisplay, 0);
+        XColor fgColorDef;
         memset (&fgColorDef, 0, sizeof (fgColorDef));
-        fgColorDef.red   = eraseColor.GetRed ();
+        fgColorDef.red = eraseColor.GetRed ();
         fgColorDef.green = eraseColor.GetGreen ();
-        fgColorDef.blue  = eraseColor.GetBlue ();
-        Status s         = ::XAllocColor (fDisplay, cmap, &fgColorDef);
+        fgColorDef.blue = eraseColor.GetBlue ();
+        Status s = ::XAllocColor (fDisplay, cmap, &fgColorDef);
         if (s != 0) {
             ::XSetForeground (fDisplay, fGC, fgColorDef.pixel);
         }
@@ -2011,7 +2046,7 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Colo
             fRecolorHelper->DoRecolor (hilightArea);
 #else
             static RecolorHelper* recolorHelper = nullptr;
-            recolorHelper                       = RecolorHelper::CheckCacheAndReconstructIfNeeded (recolorHelper,
+            recolorHelper = RecolorHelper::CheckCacheAndReconstructIfNeeded (recolorHelper,
                                                                              m_hDC, Led_Size (hilightArea.GetHeight (), hilightArea.GetWidth ()),
                                                                              hilightBackColor, hilightForeColor, oldBackColor, oldForeColor);
             recolorHelper->DoRecolor (hilightArea);
@@ -2022,7 +2057,7 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Colo
          *  Quick and dirty primitive version. Should probably take into account backColor/foreColor args.
          *          --  LGP 2001-04-30
          */
-        XGCValues           prevValues;
+        XGCValues prevValues;
         const unsigned long kSavedAttrs = GCFunction | GCForeground | GCBackground;
         (void)::memset (&prevValues, 0, sizeof (prevValues));
         ::XGetGCValues (fDisplay, fGC, kSavedAttrs, &prevValues);
@@ -2084,9 +2119,9 @@ Led_FontMetrics Led_Tablet_::GetFontMetrics () const
     Led_FontMetrics::PlatformSpecific result;
     memset (&result, 0, sizeof (result));
     Led_ThrowIfNull (fCachedFontInfo);
-    result.fAscent       = fCachedFontInfo->ascent;
-    result.fDescent      = fCachedFontInfo->descent;
-    result.fLeading      = 0; // NOT SURE WHAT THIS IS in X-terminology. Maybe just not supported in XFonts? - LGP 2001-05-07
+    result.fAscent = fCachedFontInfo->ascent;
+    result.fDescent = fCachedFontInfo->descent;
+    result.fLeading = 0; // NOT SURE WHAT THIS IS in X-terminology. Maybe just not supported in XFonts? - LGP 2001-05-07
     result.fMaxCharWidth = fCachedFontInfo->max_bounds.width;
     return result;
 #endif
@@ -2519,7 +2554,7 @@ Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Dis
     }
 #elif qXWindows
     Led_Size pixmapSize = fOffscreenRect.GetSize ();
-    fOffscreenRect      = currentRowRect;
+    fOffscreenRect = currentRowRect;
     fOffscreenRect.bottom += extraToAddToBottomOfRect;
     if (fPixmap == 0 or pixmapSize != fOffscreenRect.GetSize ()) {
         // Destroy old pixmap, and create new one
@@ -2553,8 +2588,8 @@ Led_Tablet OffscreenTablet::PrepareRect (const Led_Rect& currentRowRect, Led_Dis
                                    fOffscreenRect.GetWidth (), fOffscreenRect.GetHeight (), depth);
         Assert (fPixmap != 0);
         try {
-            fOffscreenTablet                    = new OT (fOrigTablet->fDisplay, fPixmap);
-            fOffscreenTablet->fColormap         = fOrigTablet->fColormap;
+            fOffscreenTablet = new OT (fOrigTablet->fDisplay, fPixmap);
+            fOffscreenTablet->fColormap = fOrigTablet->fColormap;
             fOffscreenTablet->fFontMappingCache = fOrigTablet->fFontMappingCache;
         }
         catch (...) {
@@ -2631,18 +2666,18 @@ Led_InstalledFonts::Led_InstalledFonts (
     vector<Led_SDK_String>::iterator rest = unique (fFontNames.begin (), fFontNames.end ());
     fFontNames.erase (rest, fFontNames.end ()); // remove the duplicates
 #elif qXWindows
-    int         fontListSize = 0;
-    char**      fontList     = ::XListFonts (display, "*", 200000, &fontListSize);
+    int fontListSize = 0;
+    char** fontList = ::XListFonts (display, "*", 200000, &fontListSize);
     set<string> fontNames;
     for (int i = 0; i < fontListSize; ++i) {
         string longFontName = fontList[i];
-        string tmp          = longFontName;
+        string tmp = longFontName;
         if (tmp.length () > 0 and tmp[0] == '-') {
             size_t nextDash = tmp.find ('-', 1);
             if (nextDash != string::npos and nextDash > 1) {
                 tmp = tmp.substr (nextDash + 1);
             }
-            nextDash              = tmp.find ('-'); // OK - even if end of string
+            nextDash = tmp.find ('-'); // OK - even if end of string
             string fontFamilyName = tmp.substr (0, nextDash);
             if (not fontFamilyName.empty ()) {
                 fontNames.insert (fontFamilyName);
@@ -2650,7 +2685,7 @@ Led_InstalledFonts::Led_InstalledFonts (
         }
     }
     ::XFreeFontNames (fontList);
-    fontList   = nullptr;
+    fontList = nullptr;
     fFontNames = vector<string> (fontNames.begin (), fontNames.end ());
 #else
     Assert (false); // NYI for other platforms
@@ -2723,8 +2758,8 @@ void Led_GDIGlobals::InvalidateGlobals ()
      */
     //const int kResToUse   =   75;
     const int kResToUse = 100;
-    fLogPixelsH         = kResToUse;
-    fLogPixelsV         = kResToUse;
+    fLogPixelsH = kResToUse;
+    fLogPixelsV = kResToUse;
 #endif
 }
 
@@ -2967,7 +3002,7 @@ Led_IME::Led_IME ()
 #ifdef _UNICODE
     const char IMEPROCNAME[] = "SendIMEMessageExW";
 #else
-    const char     IMEPROCNAME[]               = "SendIMEMessageExA";
+    const char IMEPROCNAME[] = "SendIMEMessageExA";
 #endif
     HINSTANCE hNLS = ::GetModuleHandle (_T ("USER32.DLL"));
     if (hNLS != nullptr) {
@@ -3397,7 +3432,7 @@ static BOOL GetFontFormat4Subtable (
     HDC     hdc,              // DC with TrueType font
     LPCMAP4 pFormat4Subtable, // destination buffer
     DWORD   dwOffset          // Offset within font
-    )
+)
 {
     DWORD  dwResult;
     USHORT length;
@@ -3430,7 +3465,7 @@ static BOOL GetFontFormat4Subtable (
 
 static USHORT GetFontFormat4CharCount (
     LPCMAP4 pFormat4 // pointer to a valid Format4 subtable
-    )
+)
 {
     USHORT i,
         *pendCount     = GetEndCountArray ((LPBYTE)pFormat4),
@@ -3478,7 +3513,7 @@ static BOOL GetTTUnicodeCoverage (
     LPCMAP4 pBuffer,  // Properly allocated buffer
     DWORD   cbSize,   // Size of properly allocated buffer
     DWORD*  pcbNeeded // size of buffer needed
-    )
+)
 /*
     if cbSize is to small or zero, or if pBuffer is nullptr the function
     will fail and return the required buffer size in *pcbNeeded.
@@ -3600,7 +3635,7 @@ static BOOL FindFormat4Segment (
     LPCMAP4 pTable, // a valid Format4 subtable buffer
     USHORT  ch,     // Unicode character to search for
     USHORT* piSeg   // out: index of segment containing ch
-    )
+)
 /*
     if the Unicode character ch is not contained in one of the
     segments the function returns FALSE.
@@ -3661,7 +3696,7 @@ static USHORT GetTTUnicodeCharCount (
 static USHORT GetTTUnicodeGlyphIndex (
     HDC    hdc, // DC with a TrueType font selected
     USHORT ch   // Unicode character to convert to Index
-    )
+)
 /*
     When the TrueType font contains a glyph for ch, the
     function returns the glyph index for that character.

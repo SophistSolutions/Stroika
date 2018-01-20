@@ -73,7 +73,7 @@ namespace Stroika {
                  *  is optional (defaulting to the safer, but slower - true).
                  */
                 SpinLock (BarrierFlag barrier = BarrierFlag::eDEFAULT);
-                SpinLock (const SpinLock&)    = delete;
+                SpinLock (const SpinLock&) = delete;
 
 #if qStroika_FeatureSupported_Valgrind
             public:

@@ -106,7 +106,7 @@ namespace Stroika {
                 nonvirtual void DoDidCoaleceCalls (const vector<void*>& infos) const noexcept;
 
             protected:
-                nonvirtual void AccumulateMarkerForDeletion (PartitionMarker* m);
+                nonvirtual void                 AccumulateMarkerForDeletion (PartitionMarker* m);
                 MarkerMortuary<PartitionMarker> fMarkersToBeDeleted;
 
             protected:
@@ -116,7 +116,7 @@ namespace Stroika {
                 // Trivial TextStore wrappers...
             public:
                 nonvirtual size_t GetEnd () const;
-                nonvirtual void CopyOut (size_t from, size_t count, Led_tChar* buffer) const;
+                nonvirtual void   CopyOut (size_t from, size_t count, Led_tChar* buffer) const;
 
             public:
                 nonvirtual PartitionMarker* GetFirstPartitionMarker () const;
@@ -190,9 +190,9 @@ namespace Stroika {
             class Partition::PartitionWatcher {
             public:
                 virtual void AboutToSplit (PartitionMarker* pm, size_t at, void** infoRecord) const noexcept = 0;
-                virtual void DidSplit (void* infoRecord) const noexcept = 0;
-                virtual void AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept = 0;
-                virtual void DidCoalece (void* infoRecord) const noexcept = 0;
+                virtual void DidSplit (void* infoRecord) const noexcept                                      = 0;
+                virtual void AboutToCoalece (PartitionMarker* pm, void** infoRecord) const noexcept          = 0;
+                virtual void DidCoalece (void* infoRecord) const noexcept                                    = 0;
             };
 
             /*
@@ -257,7 +257,7 @@ namespace Stroika {
                 virtual Led_Distance CalcSegmentSize (size_t from, size_t to) const override;
 
             public:
-                virtual void GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const override;
+                virtual void   GetRowRelativeCharLoc (size_t charLoc, Led_Distance* lhs, Led_Distance* rhs) const override;
                 virtual size_t GetRowRelativeCharAtLoc (Led_Coordinate hOffset, size_t rowStart) const override;
 
             private:

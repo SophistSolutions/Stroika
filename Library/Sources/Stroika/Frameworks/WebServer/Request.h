@@ -119,9 +119,9 @@ namespace Stroika {
                 Streams::InputStream<Memory::Byte>::Ptr fInputStream_;
 
             private:
-                String           fHTTPVersion_;
-                String           fMethod_;
-                IO::Network::URL fURL_;
+                String                  fHTTPVersion_;
+                String                  fMethod_;
+                IO::Network::URL        fURL_;
                 Mapping<String, String> fHeaders_;
 
             public:

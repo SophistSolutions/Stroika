@@ -167,7 +167,7 @@ namespace Stroika {
                  * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
                  */
                 nonvirtual Memory::Optional<String> GetWorkingDirectory ();
-                nonvirtual void SetWorkingDirectory (const Memory::Optional<String>& d);
+                nonvirtual void                     SetWorkingDirectory (const Memory::Optional<String>& d);
 
             public:
                 /**
@@ -177,22 +177,22 @@ namespace Stroika {
                  *  the running subprocess.
                  */
                 nonvirtual Streams::InputStream<Byte>::Ptr GetStdIn () const;
-                nonvirtual void SetStdIn (const Streams::InputStream<Byte>::Ptr& in);
-                nonvirtual void SetStdIn (const Memory::BLOB& in);
+                nonvirtual void                            SetStdIn (const Streams::InputStream<Byte>::Ptr& in);
+                nonvirtual void                            SetStdIn (const Memory::BLOB& in);
 
             public:
                 /**
                  *  If empty, stdout will not be captured (redirected to /dev/null)
                  */
                 nonvirtual Streams::OutputStream<Byte>::Ptr GetStdOut () const;
-                nonvirtual void SetStdOut (const Streams::OutputStream<Byte>::Ptr& out);
+                nonvirtual void                             SetStdOut (const Streams::OutputStream<Byte>::Ptr& out);
 
             public:
                 /**
                  *  If empty, stderr will not be captured (redirected to /dev/null)
                  */
                 nonvirtual Streams::OutputStream<Byte>::Ptr GetStdErr () const;
-                nonvirtual void SetStdErr (const Streams::OutputStream<Byte>::Ptr& err);
+                nonvirtual void                             SetStdErr (const Streams::OutputStream<Byte>::Ptr& err);
 
             public:
                 /**
@@ -285,7 +285,7 @@ namespace Stroika {
 #if qPlatform_POSIX
                 static String mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig);
 #elif qPlatform_Windows
-                static String mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err);
+                static String           mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err);
 #endif
             private:
                 String fCmdLine_;

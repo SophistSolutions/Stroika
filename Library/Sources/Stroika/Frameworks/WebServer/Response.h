@@ -79,7 +79,7 @@ namespace Stroika {
                  * SetContentType () requires GetState () == eInProgress
                  */
                 nonvirtual InternetMediaType GetContentType () const;
-                nonvirtual void SetContentType (const InternetMediaType& contentType);
+                nonvirtual void              SetContentType (const InternetMediaType& contentType);
 
             public:
                 /*
@@ -96,7 +96,7 @@ namespace Stroika {
                  *          TotalBytesWritten == 0
                  */
                 nonvirtual Characters::CodePage GetCodePage () const;
-                nonvirtual void SetCodePage (Characters::CodePage codePage);
+                nonvirtual void                 SetCodePage (Characters::CodePage codePage);
 
             public:
                 enum class State : uint8_t {
@@ -257,12 +257,12 @@ namespace Stroika {
                 String                                           fStatusOverrideReason_;
                 Streams::OutputStream<Byte>::Ptr                 fUnderlyingOutStream_;
                 Streams::BufferedOutputStream<Memory::Byte>::Ptr fUseOutStream_;
-                Mapping<String, String> fHeaders_;
-                InternetMediaType    fContentType_;
-                Characters::CodePage fCodePage_;
-                vector<Byte>         fBytes_;
-                ContentSizePolicy    fContentSizePolicy_;
-                uint64_t             fContentSize_; // only  maintained for some fContentSizePolicy_ values
+                Mapping<String, String>                          fHeaders_;
+                InternetMediaType                                fContentType_;
+                Characters::CodePage                             fCodePage_;
+                vector<Byte>                                     fBytes_;
+                ContentSizePolicy                                fContentSizePolicy_;
+                uint64_t                                         fContentSize_; // only  maintained for some fContentSizePolicy_ values
             };
         }
     }

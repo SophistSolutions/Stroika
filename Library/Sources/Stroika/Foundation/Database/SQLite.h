@@ -40,8 +40,8 @@ namespace Stroika {
                 using Containers::Mapping;
                 using Containers::Sequence;
                 using DataExchange::VariantValue;
-                using Memory::Optional;
                 using IO::Network::URL;
+                using Memory::Optional;
 
                 /**
                  *  @todo - probably move to common area - for all DB stuff - not specific to SQLite (maybe have folder for "SQL")

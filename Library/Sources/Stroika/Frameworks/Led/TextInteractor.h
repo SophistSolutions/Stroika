@@ -80,7 +80,7 @@ namespace Stroika {
                  */
             public:
                 nonvirtual CommandHandler* GetCommandHandler () const;
-                virtual void SetCommandHandler (CommandHandler* commandHandler);
+                virtual void               SetCommandHandler (CommandHandler* commandHandler);
 
             private:
                 CommandHandler* fCommandHandler;
@@ -104,8 +104,8 @@ namespace Stroika {
                 // (These names appear in text of undo menu item)
             public:
                 static const CommandNames& GetCommandNames ();
-                static void SetCommandNames (const CommandNames& cmdNames);
-                static CommandNames MakeDefaultCommandNames ();
+                static void                SetCommandNames (const CommandNames& cmdNames);
+                static CommandNames        MakeDefaultCommandNames ();
 
             private:
                 static CommandNames sCommandNames;
@@ -153,7 +153,7 @@ namespace Stroika {
             public:
                 class DialogSupport;
                 static DialogSupport& GetDialogSupport ();
-                static void SetDialogSupport (DialogSupport* ds);
+                static void           SetDialogSupport (DialogSupport* ds);
 
             private:
                 static DialogSupport* sDialogSupport;
@@ -192,14 +192,14 @@ namespace Stroika {
 
             public:
                 virtual SearchParameters GetSearchParameters () const;
-                virtual void SetSearchParameters (const SearchParameters& sp);
+                virtual void             SetSearchParameters (const SearchParameters& sp);
 
             private:
                 static ReplaceParameters sReplaceParameters;
 
             public:
                 virtual ReplaceParameters GetReplaceParameters () const;
-                virtual void SetReplaceParameters (const ReplaceParameters& rp);
+                virtual void              SetReplaceParameters (const ReplaceParameters& rp);
 
             protected:
                 virtual vector<Led_tString> MergeRecentFindStrings (const Led_tString& s, const vector<Led_tString>& oldRecents);
@@ -210,7 +210,7 @@ namespace Stroika {
 
             public:
                 nonvirtual SpellCheckEngine* GetSpellCheckEngine () const;
-                nonvirtual void SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine);
+                nonvirtual void              SetSpellCheckEngine (SpellCheckEngine* spellCheckEngine);
 
             private:
                 SpellCheckEngine* fSpellCheckEngine;
@@ -323,13 +323,13 @@ namespace Stroika {
 
             public:
                 nonvirtual unsigned GetCurClickCount () const;
-                nonvirtual void SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt);
+                nonvirtual void     SetCurClickCount (unsigned curClickCount, Foundation::Time::DurationSecondsType lastClickAt);
 
             protected:
                 nonvirtual void IncrementCurClickCount (Foundation::Time::DurationSecondsType lastClickAt);
                 nonvirtual void UpdateClickCount (Foundation::Time::DurationSecondsType clickAtTime, const Led_Point& clickAtLocation);
-                virtual bool ClickTimesAreCloseForDoubleClick (Foundation::Time::DurationSecondsType thisClick);
-                virtual bool PointsAreCloseForDoubleClick (const Led_Point& p);
+                virtual bool    ClickTimesAreCloseForDoubleClick (Foundation::Time::DurationSecondsType thisClick);
+                virtual bool    PointsAreCloseForDoubleClick (const Led_Point& p);
 
             private:
                 unsigned                              fClickCount;
@@ -394,14 +394,14 @@ namespace Stroika {
                  *  Overrides to add optional UpdateMode argument.
                  */
             public:
-                virtual void SetSelection (size_t start, size_t end) override;
+                virtual void    SetSelection (size_t start, size_t end) override;
                 nonvirtual void SetSelection (size_t start, size_t end, UpdateMode updateMode);
                 nonvirtual void SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode = eDefaultUpdate);
                 nonvirtual void ScrollByIfRoom (ptrdiff_t downBy, UpdateMode updateMode = eDefaultUpdate);
                 nonvirtual void ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate);
                 nonvirtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont, UpdateMode updateMode = eDefaultUpdate);
                 nonvirtual void SetWindowRect (const Led_Rect& windowRect, UpdateMode updateMode = eDefaultUpdate);
-                virtual void SetHScrollPos (Led_Coordinate hScrollPos) override;
+                virtual void    SetHScrollPos (Led_Coordinate hScrollPos) override;
                 nonvirtual void SetHScrollPos (Led_Coordinate hScrollPos, UpdateMode updateMode);
 
                 /*
@@ -439,8 +439,8 @@ namespace Stroika {
                     eIndeterminateInteractiveUpdateMode
                 };
                 nonvirtual InteractiveUpdadeMode GetInteractiveUpdateMode () const;
-                nonvirtual void SetInteractiveUpdateMode (InteractiveUpdadeMode interactive);
-                nonvirtual bool CheckIfCurrentUpdateIsInteractive () const;
+                nonvirtual void                  SetInteractiveUpdateMode (InteractiveUpdadeMode interactive);
+                nonvirtual bool                  CheckIfCurrentUpdateIsInteractive () const;
 
             private:
                 InteractiveUpdadeMode fInteractiveUpdadeMode;
@@ -599,7 +599,7 @@ namespace Stroika {
 
             public:
                 nonvirtual shared_ptr<FlavorPackageInternalizer> GetInternalizer () const;
-                nonvirtual void SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
+                nonvirtual void                                  SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
 
             private:
                 shared_ptr<FlavorPackageInternalizer> fInternalizer;
@@ -615,7 +615,7 @@ namespace Stroika {
 
             public:
                 nonvirtual shared_ptr<FlavorPackageExternalizer> GetExternalizer () const;
-                nonvirtual void SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
+                nonvirtual void                                  SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
 
             private:
                 shared_ptr<FlavorPackageExternalizer> fExternalizer;
@@ -639,7 +639,7 @@ namespace Stroika {
                                      eScrollBarAsNeeded,
                                      eScrollBarAlways };
                 nonvirtual ScrollBarType GetScrollBarType (VHSelect vh) const;
-                virtual void SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType);
+                virtual void             SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType);
 
             protected:
                 nonvirtual void SetScrollBarType_ (VHSelect vh, ScrollBarType scrollBarType);
@@ -781,11 +781,11 @@ namespace Stroika {
                 using CommandNumber = TextInteractor::CommandNumber;
 
             public:
-                virtual CommandNumber GetCmdID () const         = 0;
-                virtual bool          GetEnabled () const       = 0;
-                virtual void SetEnabled (bool enabled)          = 0;
-                virtual void SetChecked (bool checked)          = 0;
-                virtual void SetText (const Led_SDK_Char* text) = 0;
+                virtual CommandNumber GetCmdID () const                  = 0;
+                virtual bool          GetEnabled () const                = 0;
+                virtual void          SetEnabled (bool enabled)          = 0;
+                virtual void          SetChecked (bool checked)          = 0;
+                virtual void          SetText (const Led_SDK_Char* text) = 0;
             };
 
             /*
@@ -937,7 +937,7 @@ namespace Stroika {
 
             private:
                 TemporarilySetUpdateMode (const TemporarilySetUpdateMode&); // DONT
-                void operator= (const TemporarilySetUpdateMode&);           // DONT
+                void         operator= (const TemporarilySetUpdateMode&);   // DONT
                 static void* operator new (size_t);                         // DONT
             };
 
@@ -1004,9 +1004,9 @@ namespace Stroika {
                 static CommandNumberMapping<TARGET_COMMAND_NUMBER>& Get ();
 
             public:
-                nonvirtual void AddAssociation (TARGET_COMMAND_NUMBER externalCommandNumber, CommandNumber internalCommandNumber);
-                nonvirtual void AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd);
-                virtual CommandNumber Lookup (TARGET_COMMAND_NUMBER tcn) const;
+                nonvirtual void               AddAssociation (TARGET_COMMAND_NUMBER externalCommandNumber, CommandNumber internalCommandNumber);
+                nonvirtual void               AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd);
+                virtual CommandNumber         Lookup (TARGET_COMMAND_NUMBER tcn) const;
                 virtual TARGET_COMMAND_NUMBER ReverseLookup (CommandNumber cmdNum) const;
 
             private:
@@ -1035,9 +1035,9 @@ namespace Stroika {
             public:
                 virtual CommandNumber GetCmdID () const override;
                 virtual bool          GetEnabled () const override;
-                virtual void SetEnabled (bool enabled) override;
-                virtual void SetChecked (bool checked) override;
-                virtual void SetText (const Led_SDK_Char* text) override;
+                virtual void          SetEnabled (bool enabled) override;
+                virtual void          SetChecked (bool checked) override;
+                virtual void          SetText (const Led_SDK_Char* text) override;
 
             public:
                 CommandNumber  fCommandNumber;

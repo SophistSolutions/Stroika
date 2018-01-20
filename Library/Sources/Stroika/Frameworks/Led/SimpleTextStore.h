@@ -37,8 +37,8 @@ namespace Stroika {
 
             public:
                 virtual size_t GetLength () const noexcept override;
-                virtual void CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept override;
-                virtual void ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) override;
+                virtual void   CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept override;
+                virtual void   ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) override;
 
             protected:
                 nonvirtual void InsertAfter_ (const Led_tChar* what, size_t howMany, size_t after);

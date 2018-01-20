@@ -113,7 +113,7 @@ namespace {
 #if !qDebug && defined(_MSC_VER) && defined(WIN32) && !defined(_WIN64)
     double sTimeMultiplier_ = 5.0; // default larger so on reg-tests we get more consistent percentages
 #else
-    double                  sTimeMultiplier_ = Debug::IsRunningUnderValgrind () ? .001 : 1.0;
+    double sTimeMultiplier_ = Debug::IsRunningUnderValgrind () ? .001 : 1.0;
 #endif
 }
 
@@ -177,7 +177,7 @@ namespace {
         DurationSecondsType m = Math::Median (times.begin (), times.end ());
         return m * kNParts2Divide_; // this should provide a more stable estimate than the total time
 #else
-        DurationSecondsType start            = Time::GetTickCount ();
+        DurationSecondsType start = Time::GetTickCount ();
         // volatile attempt to avoid this being optimized away on gcc --LGP 2014-02-17
         for (volatile unsigned int i = 0; i < runCount; ++i) {
             t ();
@@ -190,8 +190,8 @@ namespace {
     bool Tester (String           testName,
                  function<void()> baselineT, String baselineTName,
                  function<void()> compareWithT, String compareWithTName,
-                 unsigned int runCount,
-                 double       warnIfPerformanceScoreHigherThan,
+                 unsigned int                                                                                                                                                                                   runCount,
+                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
 #if qDebug
@@ -215,8 +215,8 @@ namespace {
     bool Tester (String              testName,
                  DurationSecondsType baselineTime,
                  function<void()> compareWithT, String compareWithTName,
-                 unsigned int runCount,
-                 double       warnIfPerformanceScoreHigherThan,
+                 unsigned int                                                                                                                                                                                   runCount,
+                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
 #if qDebug
@@ -240,9 +240,9 @@ namespace {
 
     void Tester (String           testName,
                  function<void()> compareWithT, String compareWithTName,
-                 unsigned int runCount,
-                 double       warnIfPerformanceScoreHigherThan,
-                 Set<String>* failedTestAccumulator,
+                 unsigned int                                                                                                                                                                                   runCount,
+                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
+                 Set<String>*                                                                                                                                                                                   failedTestAccumulator,
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
         DurationSecondsType baselineTime = 1 / double(runCount);
@@ -253,9 +253,9 @@ namespace {
     void Tester (String           testName,
                  function<void()> baselineT, String baselineTName,
                  function<void()> compareWithT, String compareWithTName,
-                 unsigned int runCount,
-                 double       warnIfPerformanceScoreHigherThan,
-                 Set<String>* failedTestAccumulator,
+                 unsigned int                                                                                                                                                                                   runCount,
+                 double                                                                                                                                                                                         warnIfPerformanceScoreHigherThan,
+                 Set<String>*                                                                                                                                                                                   failedTestAccumulator,
                  function<void(String testName, String baselineTName, String compareWithTName, double warnIfPerformanceScoreHigherThan, DurationSecondsType baselineTime, DurationSecondsType compareWithTime)> printResults = DEFAULT_TEST_PRINTER)
     {
         if (Tester (testName, baselineT, baselineTName, compareWithT, compareWithTName, static_cast<unsigned int> (sTimeMultiplier_ * runCount), warnIfPerformanceScoreHigherThan, printResults)) {
@@ -424,7 +424,7 @@ namespace {
     namespace Test_MutexVersusSharedPtrCopy_MUTEXT_PRIVATE_ {
         mutex Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_mutex;
         int   Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int = 1;
-        void Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (function<void(int*)> doInsideLock)
+        void  Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK (function<void(int*)> doInsideLock)
         {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
@@ -434,7 +434,7 @@ namespace {
             doInsideLock (&Test_MutexVersusSharedPtrCopy_MUTEXT_LOCK_int);
         }
         shared_ptr<int> Test_MutexVersusSharedPtrCopy_sharedPtrCase = shared_ptr<int> (new int(1));
-        void Test_MutexVersusSharedPtrCopy_SharedPtrCopy (function<void(int*)> doInsideLock)
+        void            Test_MutexVersusSharedPtrCopy_SharedPtrCopy (function<void(int*)> doInsideLock)
         {
             // This is to String class locking. We want to know if copying the shared_ptr rep is faster,
             // or just using a mutex
@@ -477,7 +477,7 @@ namespace {
     namespace Test_stdsharedptr_VERSUS_MemorySharedPtr_PRIVATE_ {
         int             COUNTER             = 1;
         shared_ptr<int> s_stdSharedPtr2Copy = shared_ptr<int> (new int(1));
-        void Test_stdsharedptr_use_ (function<void(int*)> doInsideLock)
+        void            Test_stdsharedptr_use_ (function<void(int*)> doInsideLock)
         {
             shared_ptr<int> tmp = s_stdSharedPtr2Copy;
             doInsideLock (tmp.get ());
@@ -487,7 +487,7 @@ namespace {
             s_stdSharedPtr2Copy = shared_ptr<int> (new int(1));
         }
         SharedPtr<int> s_MemorySharedPtr2Copy = SharedPtr<int> (new int(1));
-        void Test_MemorySharedPtr_use_ (function<void(int*)> doInsideLock)
+        void           Test_MemorySharedPtr_use_ (function<void(int*)> doInsideLock)
         {
             SharedPtr<int> tmp = s_MemorySharedPtr2Copy;
             doInsideLock (tmp.get ());
@@ -537,13 +537,13 @@ namespace {
     namespace Test_MutexVersusSpinLock_MUTEXT_PRIVATE_ {
         mutex s_Mutex_;
         int   sCnt2Add_ = 1;
-        void Test_MutexVersusSpinLock_MUTEXT_LOCK (function<void(int*)> doInsideLock)
+        void  Test_MutexVersusSpinLock_MUTEXT_LOCK (function<void(int*)> doInsideLock)
         {
             lock_guard<mutex> critSec (s_Mutex_);
             doInsideLock (&sCnt2Add_);
         }
         SpinLock s_SpinLock_;
-        void Test_MutexVersusSpinLock_SPINLOCK_LOCK (function<void(int*)> doInsideLock)
+        void     Test_MutexVersusSpinLock_SPINLOCK_LOCK (function<void(int*)> doInsideLock)
         {
             lock_guard<SpinLock> critSec (s_SpinLock_);
             doInsideLock (&sCnt2Add_);
@@ -766,7 +766,9 @@ namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
         //static  array<Byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
         static Byte kCArr_4k_[4 * 1024] = {
-            0x1, 0x2, 0x3,
+            0x1,
+            0x2,
+            0x3,
         };
 
         template <typename BLOBISH_IMPL>
@@ -1143,7 +1145,7 @@ namespace {
 namespace {
     namespace Test_UTF82WString_ {
         static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
-        void Test_UTF82WString_win32API (const char* s, const char* e)
+        void                               Test_UTF82WString_win32API (const char* s, const char* e)
         {
             wstring tmp;
             NarrowStringToWide (s, e, kCodePage_UTF8, &tmp);
@@ -1188,7 +1190,7 @@ namespace {
         static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
         constexpr wchar_t                  kS1_[] = L"asdbf asdkfja sdflkja ls;dkfja s;ldkfj aslkd;fj alksdfj alskdfj aslk;df;j as;lkdfj aslk;dfj asl;dkfj asdf";
         constexpr wchar_t                  kS2_[] = L"z\u00df\u6c34\U0001d10b";
-        void Test_WString2UTF8_win32API (const wchar_t* s, const wchar_t* e)
+        void                               Test_WString2UTF8_win32API (const wchar_t* s, const wchar_t* e)
         {
             string tmp;
             WideStringToNarrow (s, e, kCodePage_UTF8, &tmp);

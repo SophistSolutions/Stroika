@@ -963,7 +963,7 @@ namespace Stroika {
                  *  leaves 'into' in an undefined (but safe) state.
                  */
                 nonvirtual string AsNarrowString (const locale& l) const;
-                nonvirtual void AsNarrowString (const locale& l, string* into) const;
+                nonvirtual void   AsNarrowString (const locale& l, string* into) const;
 
             public:
                 /**
@@ -975,33 +975,33 @@ namespace Stroika {
                 template <typename T>
                 nonvirtual void AsUTF8 (T* into) const;
                 nonvirtual string AsUTF8 () const;
-                nonvirtual void AsUTF8 (string* into) const;
+                nonvirtual void   AsUTF8 (string* into) const;
 
             public:
                 /**
                  * Convert String losslessly into a standard C++ type u16string.
                  */
                 nonvirtual u16string AsUTF16 () const;
-                nonvirtual void AsUTF16 (u16string* into) const;
+                nonvirtual void      AsUTF16 (u16string* into) const;
 
             public:
                 /**
                  * Convert String losslessly into a standard C++ type u32string.
                  */
                 nonvirtual u32string AsUTF32 () const;
-                nonvirtual void AsUTF32 (u32string* into) const;
+                nonvirtual void      AsUTF32 (u32string* into) const;
 
             public:
                 /**
                  */
                 nonvirtual SDKString AsSDKString () const;
-                nonvirtual void AsSDKString (SDKString* into) const;
+                nonvirtual void      AsSDKString (SDKString* into) const;
 
             public:
                 /**
                  */
                 nonvirtual string AsNarrowSDKString () const;
-                nonvirtual void AsNarrowSDKString (string* into) const;
+                nonvirtual void   AsNarrowSDKString (string* into) const;
 
             public:
                 /**
@@ -1013,7 +1013,7 @@ namespace Stroika {
                 template <typename T>
                 nonvirtual void AsASCII (T* into) const;
                 nonvirtual string AsASCII () const;
-                nonvirtual void AsASCII (string* into) const;
+                nonvirtual void   AsASCII (string* into) const;
 
             public:
                 /**
@@ -1148,7 +1148,7 @@ namespace Stroika {
 
             public:
                 friend wostream& operator<< (wostream& out, const String& s);
-                friend String operator+ (const wchar_t* lhs, const String& rhs);
+                friend String    operator+ (const wchar_t* lhs, const String& rhs);
             };
 
             template <>
@@ -1185,7 +1185,7 @@ namespace Stroika {
             class String::_IRep
                 : public Iterable<Character>::_IRep
 #if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                  ,
+                ,
                   public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<String::_IRep>
 #endif
             {
@@ -1234,9 +1234,9 @@ namespace Stroika {
                 // Overrides for Iterable<Character>
             public:
                 virtual Traversal::Iterator<Character> MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
-                virtual size_t GetLength () const override;
-                virtual bool   IsEmpty () const override;
-                virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                virtual size_t                         GetLength () const override;
+                virtual bool                           IsEmpty () const override;
+                virtual void                           Apply (_APPLY_ARGTYPE doToElement) const override;
                 virtual Traversal::Iterator<Character> FindFirstThat (_APPLYUNTIL_ARGTYPE, Traversal::IteratorOwnerID suggestedOwner) const override;
 
             public:

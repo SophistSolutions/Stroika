@@ -246,15 +246,15 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 namespace Private_ {
-                    long long int String2Int_ (const string& s);
-                    long long int String2Int_ (const char* s);
-                    long long int String2Int_ (const wchar_t* s);
-                    long long int String2Int_ (const wstring& s);
+                    long long int          String2Int_ (const string& s);
+                    long long int          String2Int_ (const char* s);
+                    long long int          String2Int_ (const wchar_t* s);
+                    long long int          String2Int_ (const wstring& s);
                     unsigned long long int String2UInt_ (const string& s);
                     unsigned long long int String2UInt_ (const char* s);
                     unsigned long long int String2UInt_ (const wchar_t* s);
                     unsigned long long int String2UInt_ (const wstring& s);
-                    inline long long int String2Int_ (const char* s)
+                    inline long long int   String2Int_ (const char* s)
                     {
                         return String2Int_ (string (s));
                     }

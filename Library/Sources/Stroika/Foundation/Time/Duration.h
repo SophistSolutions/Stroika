@@ -315,7 +315,7 @@ namespace Stroika {
             private:
                 using InternalNumericFormatType_ = double;
                 static InternalNumericFormatType_ ParseTime_ (const string& s);
-                static string UnParseTime_ (InternalNumericFormatType_ t);
+                static string                     UnParseTime_ (InternalNumericFormatType_ t);
 
             private:
                 friend Stroika::Foundation::Time::Private_::Duration_ModuleData_;

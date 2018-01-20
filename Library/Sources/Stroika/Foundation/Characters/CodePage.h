@@ -41,9 +41,9 @@ namespace Stroika {
     namespace Foundation {
         namespace Characters {
 
+            using std::basic_string;
             using std::string;
             using std::wstring;
-            using std::basic_string;
             class String;
 
             using Memory::Byte;
@@ -297,7 +297,7 @@ namespace Stroika {
                 // (These names appear in text of undo menu item)
             public:
                 static CodePageNames GetCodePageNames ();
-                static void SetCodePageNames (const CodePageNames& cmdNames);
+                static void          SetCodePageNames (const CodePageNames& cmdNames);
                 static CodePageNames MakeDefaultCodePageNames ();
 
             private:
@@ -325,23 +325,23 @@ namespace Stroika {
                 wstring f50220;
             };
 
-            void WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
-            void WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
-            string WideStringToNarrow (const wstring& ws, CodePage codePage);
-            void NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
-            void NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult);
+            void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
+            void    WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
+            string  WideStringToNarrow (const wstring& ws, CodePage codePage);
+            void    NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
+            void    NarrowStringToWide (const string& s, CodePage codePage, wstring* intoResult);
             wstring NarrowStringToWide (const string& s, CodePage codePage);
 
-            string WideStringToUTF8 (const wstring& ws);
-            void UTF8StringToWide (const char* s, wstring* intoStr);
-            void UTF8StringToWide (const string& s, wstring* intoStr);
+            string  WideStringToUTF8 (const wstring& ws);
+            void    UTF8StringToWide (const char* s, wstring* intoStr);
+            void    UTF8StringToWide (const string& s, wstring* intoStr);
             wstring UTF8StringToWide (const char* ws);
             wstring UTF8StringToWide (const string& ws);
 
             wstring ASCIIStringToWide (const string& s);
-            string WideStringToASCII (const wstring& s);
+            string  WideStringToASCII (const wstring& s);
 
-            wstring MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+            wstring      MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
             vector<Byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
 
             /**

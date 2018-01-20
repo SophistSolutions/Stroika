@@ -146,7 +146,7 @@ namespace Stroika {
                 virtual void PostNcDestroy () override;
 #elif defined(_WIN32)
                 virtual LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct) override;
-                virtual void OnNCDestroy_Msg () override;
+                virtual void    OnNCDestroy_Msg () override;
 #endif
 #endif
 
@@ -190,7 +190,7 @@ namespace Stroika {
 #if qPlatform_Windows && defined(_MFC_VER)
             public:
                 virtual void PostNcDestroy () override;
-                virtual int OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message) override;
+                virtual int  OnMouseActivate (CWnd* pDesktopWnd, UINT nHitTest, UINT message) override;
 #endif
 
 #if qPlatform_Windows && defined(_MFC_VER)

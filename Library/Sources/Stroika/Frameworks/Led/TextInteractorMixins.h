@@ -71,9 +71,9 @@ namespace Stroika {
                     TextInteractor::ScrollSoShowing (markerPos, andTryToShowMarkerPos, updateMode);
                 }
 #else
-                using TextInteractor::SetWindowRect;
                 using TextInteractor::ScrollByIfRoom;
                 using TextInteractor::ScrollSoShowing;
+                using TextInteractor::SetWindowRect;
 #endif
             };
 

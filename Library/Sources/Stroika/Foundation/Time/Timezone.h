@@ -222,12 +222,12 @@ namespace Stroika {
 
             [[deprecated ("use Timezone::Unknown ()")]] constexpr Memory::Optional<Timezone>                                                   Timezone_kUnknown{};
             [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fStandardTime.fNameor fDaylightSavingsTime if currentlt DST")]] String GetTimezone ();
-            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo (). {fDaylightSavingsTime OR fStandardTime}")]] String GetTimezone (bool applyDST);
-            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fDaylightSavingsTime OR fStandardTime")]] String GetTimezone (const DateTime& d);
-            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
-            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool IsDaylightSavingsTime (const DateTime& d);
-            [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t GetLocaltimeToGMTOffset (bool applyDST);
-            [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t GetLocaltimeToGMTOffset (const DateTime& forTime);
+            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo (). {fDaylightSavingsTime OR fStandardTime}")]] String                   GetTimezone (bool applyDST);
+            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fDaylightSavingsTime OR fStandardTime")]] String                       GetTimezone (const DateTime& d);
+            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool                                                        IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
+            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime ()")]] bool                                                        IsDaylightSavingsTime (const DateTime& d);
+            [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t                                                                GetLocaltimeToGMTOffset (bool applyDST);
+            [[deprecated ("use - Timezone::LocalTime ().GetOffset ()")]] time_t                                                                GetLocaltimeToGMTOffset (const DateTime& forTime);
         }
     }
 }

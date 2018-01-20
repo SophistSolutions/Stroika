@@ -538,7 +538,7 @@ namespace Stroika {
                     RequireNotNull (fromObjOfTypeT);
                     FromObjectMapperType<KEY_TYPE>   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
                     FromObjectMapperType<VALUE_TYPE> valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
-                    Mapping<String, VariantValue> m;
+                    Mapping<String, VariantValue>    m;
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *fromObjOfTypeT) {
                         m.Add (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
                     }
@@ -548,7 +548,7 @@ namespace Stroika {
                     RequireNotNull (intoObjOfTypeT);
                     ToObjectMapperType<KEY_TYPE>   keyMapper{mapper.ToObjectMapper<KEY_TYPE> ()};
                     ToObjectMapperType<VALUE_TYPE> valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
-                    Mapping<String, VariantValue> m{d.As<Mapping<String, VariantValue>> ()};
+                    Mapping<String, VariantValue>  m{d.As<Mapping<String, VariantValue>> ()};
                     intoObjOfTypeT->clear ();
                     for (Common::KeyValuePair<String, VariantValue> p : m) {
                         intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper.ToObject<VALUE_TYPE> (valueMapper, p.fValue));

@@ -242,7 +242,7 @@ namespace Stroika {
                     }
                     else {
                         Link* prev = nullptr;
-                        for (Link *link = _fHead; link != nullptr; prev = link, link = link->fNext) {
+                        for (Link* link = _fHead; link != nullptr; prev = link, link = link->fNext) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (link->fItem, item)) {
                                 AssertNotNull (prev); // cuz otherwise we would have hit it in first case!
                                 prev->fNext = link->fNext;
@@ -669,7 +669,7 @@ namespace Stroika {
                     Require (not(Done ()));
                     Invariant ();
                     size_t n = 0;
-                    for (const Link *l = _fData->_fHead; l != this->_fCurrent; l = l->fNext, ++n) {
+                    for (const Link* l = _fData->_fHead; l != this->_fCurrent; l = l->fNext, ++n) {
                         AssertNotNull (l);
                     }
                     return n;

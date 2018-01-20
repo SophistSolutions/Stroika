@@ -40,7 +40,7 @@ public:
 private:
     map<wstring, UINT> fName2Num;
     map<UINT, wstring> fNum2Name;
-    UINT fNextUserCmdNum;
+    UINT               fNextUserCmdNum;
 };
 
 struct BuiltinCmdSpec {
@@ -398,7 +398,7 @@ public:
 
 public:
     static ActiveLedIt_BuiltinCommand* mk (const BuiltinCmdSpec& cmdSpec);
-    void SetName (const wstring& name) { fName = name; }
+    void                               SetName (const wstring& name) { fName = name; }
 
 public:
     DECLARE_NO_REGISTRY ()
@@ -687,7 +687,7 @@ string mkFontNameCMDName (const Led_SDK_String& fName);
 
 CComPtr<IDispatch> GenerateBuiltinCommandsObject ();
 
-WORD CmdObjOrName2Num (const VARIANT& cmdObjOrName);
+WORD    CmdObjOrName2Num (const VARIANT& cmdObjOrName);
 wstring CmdNum2Name (WORD cmdNum);
 
 /*

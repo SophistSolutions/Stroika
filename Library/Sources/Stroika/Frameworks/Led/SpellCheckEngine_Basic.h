@@ -67,7 +67,7 @@ namespace Stroika {
                 nonvirtual bool LookupWordHelper_ (const Led_tString& checkWord, Led_tString* matchedWordResult) const;
 
             protected:
-                virtual bool OtherStringToIgnore (const Led_tString& checkWord);
+                virtual bool    OtherStringToIgnore (const Led_tString& checkWord);
                 nonvirtual bool OtherStringToIgnore_AllPunctuation (const Led_tString& checkWord);
                 nonvirtual bool OtherStringToIgnore_Sentinals (const Led_tString& checkWord);
                 nonvirtual bool OtherStringToIgnore_Number (const Led_tString& checkWord);
@@ -90,7 +90,7 @@ namespace Stroika {
 
             public:
                 nonvirtual shared_ptr<TextBreaks> GetTextBreaker () const;
-                nonvirtual void SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
+                nonvirtual void                   SetTextBreaker (const shared_ptr<TextBreaks>& textBreaker);
 
             private:
                 mutable shared_ptr<TextBreaks> fTextBreaker;
@@ -109,7 +109,7 @@ namespace Stroika {
 
             public:
                 nonvirtual vector<const Dictionary*> GetDictionaries () const;
-                nonvirtual void SetDictionaries (const vector<const Dictionary*>& dictionaries);
+                nonvirtual void                      SetDictionaries (const vector<const Dictionary*>& dictionaries);
 
             private:
                 vector<const Dictionary*> fDictionaries;
@@ -143,9 +143,9 @@ namespace Stroika {
                 virtual ~Dictionary ();
 
             public:
-                virtual const Led_tChar* GetTextBase () const = 0;
-                virtual const Led_tChar* GetTextEnd () const  = 0;
-                virtual void GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const = 0;
+                virtual const Led_tChar* GetTextBase () const                                                 = 0;
+                virtual const Led_tChar* GetTextEnd () const                                                  = 0;
+                virtual void             GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const = 0;
             };
 
             class SpellCheckEngine_Basic::EditableDictionary : public SpellCheckEngine_Basic::Dictionary {
@@ -164,7 +164,7 @@ namespace Stroika {
             public:
                 virtual const Led_tChar* GetTextBase () const override;
                 virtual const Led_tChar* GetTextEnd () const override;
-                virtual void GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
+                virtual void             GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
 
             public:
                 nonvirtual void ReadFromBuffer (const Led_tChar* readOnlyRAMDictStart, const Led_tChar* readOnlyRAMDictEnd);
@@ -198,7 +198,7 @@ namespace Stroika {
             public:
                 virtual const Led_tChar* GetTextBase () const override;
                 virtual const Led_tChar* GetTextEnd () const override;
-                virtual void GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
+                virtual void             GetInfoBlocks (const InfoBlock** start, const InfoBlock** end) const override;
 
             private:
                 CompiledDictionaryData fData;
@@ -251,7 +251,7 @@ namespace Stroika {
 
             public:
                 nonvirtual const Dictionary* GetMainDictionary () const;
-                nonvirtual void SetMainDictionary (const Dictionary* mainDictionary);
+                nonvirtual void              SetMainDictionary (const Dictionary* mainDictionary);
 
             private:
                 const Dictionary* fMainDictionary;
@@ -263,7 +263,7 @@ namespace Stroika {
                 using UDDictionaryName = Led_SDK_String;
 #endif
                 nonvirtual UDDictionaryName GetUserDictionary () const;
-                nonvirtual void SetUserDictionary (const UDDictionaryName& userDictionary);
+                nonvirtual void             SetUserDictionary (const UDDictionaryName& userDictionary);
 
             private:
                 UDDictionaryName    fUDName;

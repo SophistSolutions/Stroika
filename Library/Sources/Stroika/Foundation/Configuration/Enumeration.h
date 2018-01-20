@@ -81,7 +81,7 @@ namespace Stroika {
              *
              */
             template <typename ENUM>
-            constexpr  make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned (ENUM e);
+            constexpr make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned (ENUM e);
 
             /**
              *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
@@ -105,7 +105,7 @@ namespace Stroika {
             template <typename ENUM>
             constexpr typename make_unsigned<typename underlying_type<ENUM>::type>::type OffsetFromStart (ENUM e);
             template <typename ENUM>
-            constexpr ENUM OffsetFromStart ( make_unsigned_t<typename underlying_type<ENUM>::type> offset);
+            constexpr ENUM OffsetFromStart (make_unsigned_t<typename underlying_type<ENUM>::type> offset);
 
 /**
              *  \def Stroika_Define_Enum_Bounds

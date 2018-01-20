@@ -39,7 +39,7 @@ struct Comparer<T*> {
 template <>
 struct Comparer<short> {
     typedef short VType;
-    static int Compare (VType v1, VType v2)
+    static int    Compare (VType v1, VType v2)
     {
         return (v1 - v2);
     }
@@ -48,7 +48,7 @@ struct Comparer<short> {
 template <>
 struct Comparer<int> {
     typedef int VType;
-    static int Compare (VType v1, VType v2)
+    static int  Compare (VType v1, VType v2)
     {
         return (v1 - v2);
     }

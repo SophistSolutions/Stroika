@@ -297,7 +297,7 @@ namespace Stroika {
             }
             inline String String::InsertAt (const String& s, size_t at) const
             {
-                _SafeReadRepAccessor copyAccessor{this};
+                _SafeReadRepAccessor                     copyAccessor{this};
                 pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
                 return InsertAt (d.first, d.second, at);
             }
@@ -309,9 +309,9 @@ namespace Stroika {
             {
                 Require (from <= to);
                 if (from != to) {
-                    _SafeReadRepAccessor thisAccessor{this};
+                    _SafeReadRepAccessor                     thisAccessor{this};
                     pair<const Character*, const Character*> lhsD = thisAccessor._ConstGetRep ().GetData ();
-                    *this = String (
+                    *this                                         = String (
                         mk_ (
                             reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second),
                             from, to));
@@ -323,7 +323,7 @@ namespace Stroika {
             }
             inline void String::Append (const String& s)
             {
-                _SafeReadRepAccessor rhsAccessor{&s};
+                _SafeReadRepAccessor                     rhsAccessor{&s};
                 pair<const Character*, const Character*> rhsD = rhsAccessor._ConstGetRep ().GetData ();
                 Append (reinterpret_cast<const wchar_t*> (rhsD.first), reinterpret_cast<const wchar_t*> (rhsD.second));
             }
@@ -528,7 +528,7 @@ namespace Stroika {
             template <>
             inline pair<const wchar_t*, const wchar_t*> String::GetData () const
             {
-                _SafeReadRepAccessor accessor{this};
+                _SafeReadRepAccessor                     accessor{this};
                 pair<const Character*, const Character*> p = accessor._ConstGetRep ().GetData ();
                 return pair<const wchar_t*, const wchar_t*> (reinterpret_cast<const wchar_t*> (p.first), reinterpret_cast<const wchar_t*> (p.second));
             }
@@ -581,36 +581,36 @@ namespace Stroika {
             }
             inline int String::Compare (const String& rhs, CompareOptions co) const
             {
-                _SafeReadRepAccessor accessor{this};
+                _SafeReadRepAccessor                     accessor{this};
                 pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
-                _SafeReadRepAccessor rhsAccessor{&rhs};
+                _SafeReadRepAccessor                     rhsAccessor{&rhs};
                 pair<const Character*, const Character*> r = rhsAccessor._ConstGetRep ().GetData ();
                 return Character::Compare (l.first, l.second, r.first, r.second, co);
             }
             inline int String::Compare (const Character* rhs, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                _SafeReadRepAccessor accessor{this};
+                _SafeReadRepAccessor                     accessor{this};
                 pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)), co);
             }
             inline int String::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
             {
-                _SafeReadRepAccessor accessor{this};
+                _SafeReadRepAccessor                     accessor{this};
                 pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
                 return Character::Compare (l.first, l.second, rhsStart, rhsEnd, co);
             }
             inline int String::Compare (const wchar_t* rhs, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                _SafeReadRepAccessor accessor{this};
+                _SafeReadRepAccessor                     accessor{this};
                 pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs), co);
             }
             inline int String::Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
-                _SafeReadRepAccessor accessor{this};
+                _SafeReadRepAccessor                     accessor{this};
                 pair<const Character*, const Character*> l = accessor._ConstGetRep ().GetData ();
                 return Character::Compare (l.first, l.second, reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
             }

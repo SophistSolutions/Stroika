@@ -31,9 +31,9 @@ namespace Stroika {
                     using inherited = typename Sequence<T>::_IRep;
 
                 public:
-                    virtual void   Compact ()                      = 0;
-                    virtual size_t GetCapacity () const            = 0;
-                    virtual void SetCapacity (size_t slotsAlloced) = 0;
+                    virtual void   Compact ()                        = 0;
+                    virtual size_t GetCapacity () const              = 0;
+                    virtual void   SetCapacity (size_t slotsAlloced) = 0;
                 };
 
                 /*

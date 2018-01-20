@@ -39,7 +39,7 @@ namespace Stroika {
 #if qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
             SpinLock SharedStaticData<T>::sMutex_;
 #else
-            mutex          SharedStaticData<T>::sMutex_;
+            mutex SharedStaticData<T>::sMutex_;
 #endif
 
             template <typename T>
@@ -51,7 +51,7 @@ namespace Stroika {
 #if qCompilerAndStdLib_make_unique_lock_IsSlow
                 MACRO_LOCK_GUARD_CONTEXT (sMutex_);
 #else
-                auto       critSec{make_unique_lock (sMutex_)};
+                auto critSec{make_unique_lock (sMutex_)};
 #endif
                 ++sCountUses_;
                 if (sCountUses_ == 1) {

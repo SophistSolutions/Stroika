@@ -38,9 +38,9 @@ namespace Stroika {
 
             using namespace Stroika::Foundation;
             using Characters::String;
+            using IO::Network::ConnectionOrientedSocket;
             using IO::Network::Socket;
             using IO::Network::SocketAddress;
-            using IO::Network::ConnectionOrientedSocket;
 
             /**
              *  This class is a useful helper for managing a set of connections. You can start it and stop it

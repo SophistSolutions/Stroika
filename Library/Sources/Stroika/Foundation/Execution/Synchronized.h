@@ -439,7 +439,7 @@ namespace Stroika {
                  *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
                  *          more clear.
                  */
-                nonvirtual       T* operator-> ();
+                nonvirtual T*    operator-> ();
                 nonvirtual const T* operator-> () const;
 
             public:

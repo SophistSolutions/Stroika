@@ -28,10 +28,10 @@ public:
     ~LedItViewController ();
 
 public:
-    virtual void OnBrowseHelpCommand ()        = 0;
-    virtual void OnAboutBoxCommand ()          = 0;
-    virtual void ForceUIActive ()              = 0;
-    virtual void FireOLEEvent (DISPID eventID) = 0;
+    virtual void OnBrowseHelpCommand ()                            = 0;
+    virtual void OnAboutBoxCommand ()                              = 0;
+    virtual void ForceUIActive ()                                  = 0;
+    virtual void FireOLEEvent (DISPID eventID)                     = 0;
     virtual void FireOLEEvent (DISPID dispid, BYTE* pbParams, ...) = 0;
 #if qFunnyDisplayInDesignMode
     virtual bool IsInDesignMode () const            = 0;
@@ -48,8 +48,8 @@ public:
     nonvirtual void FireMouseMove (short nButton, short nShiftState, OLE_XPOS_PIXELS x, OLE_YPOS_PIXELS y);
     nonvirtual void FireClick ();
     nonvirtual void FireDblClick ();
-    virtual void FireUpdateUserCommand (const wstring& internalCmdName, VARIANT_BOOL* enabled, VARIANT_BOOL* checked, wstring* name) = 0;
-    virtual void FireUserCommand (const wstring& internalCmdName) = 0;
+    virtual void    FireUpdateUserCommand (const wstring& internalCmdName, VARIANT_BOOL* enabled, VARIANT_BOOL* checked, wstring* name) = 0;
+    virtual void    FireUserCommand (const wstring& internalCmdName)                                                                    = 0;
 
 public:
     ChunkedArrayTextStore                 fTextStore;
@@ -148,7 +148,7 @@ public:
 
 protected:
     virtual SearchParameters GetSearchParameters () const override;
-    virtual void SetSearchParameters (const SearchParameters& sp) override;
+    virtual void             SetSearchParameters (const SearchParameters& sp) override;
 
 public:
     virtual void SetSelection (size_t start, size_t end) override;
@@ -286,8 +286,8 @@ public:
 #if qDemoMode
 class DemoModeAlerter {
 public:
-    static void ShowAlert (HWND parentWnd = 0);
-    static void ShowAlertIfItsBeenAWhile (HWND parentWnd = 0);
+    static void        ShowAlert (HWND parentWnd = 0);
+    static void        ShowAlertIfItsBeenAWhile (HWND parentWnd = 0);
     static int         sNextWarningAfter;
     static const float kTimeBetweenWarnings; // n SECONDs minimum delay between warnings
 };

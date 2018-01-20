@@ -846,7 +846,7 @@ BOOL ActiveLedItControl::OnSetObjectRects (LPCRECT lprcPosRect, LPCRECT lprcClip
 BOOL ActiveLedItControl::OnGetNaturalExtent (DWORD /* dwAspect */, LONG /* lindex */,
                                              DVTARGETDEVICE* /* ptd */, HDC /* hicTargetDev */,
                                              DVEXTENTINFO* /*pExtentInfo*/, LPSIZEL /*psizel*/
-                                             )
+)
 {
     // Tried overriding this to address teh funny size of the AL widget when inserted into
     // LedIt 3.1a6x. Its a very small issue. BUt - for whatever reason - this method never
@@ -1382,8 +1382,8 @@ long ActiveLedItControl::OLE_FindReplace (long searchFrom, const VARIANT& findTe
     Led_tString replaceStr = replaceText.bstrVal;
 #else
     USES_CONVERSION;
-    Led_tString       findStr     = OLE2A (findText.bstrVal);
-    Led_tString       replaceStr  = OLE2A (replaceText.bstrVal);
+    Led_tString findStr    = OLE2A (findText.bstrVal);
+    Led_tString replaceStr = OLE2A (replaceText.bstrVal);
 #endif
     return fEditor.OLE_FindReplace (searchFrom, findStr, replaceStr, wrapSearch, wholeWordSearch, caseSensativeSearch);
 }

@@ -40,7 +40,7 @@ namespace Stroika {
 
                     Memory::BLOB DecodeBase64 (const string& s);
                     Memory::BLOB DecodeBase64 (const Characters::String& s);
-                    void DecodeBase64 (const string& s, const Streams::OutputStream<Memory::Byte>::Ptr& out);
+                    void         DecodeBase64 (const string& s, const Streams::OutputStream<Memory::Byte>::Ptr& out);
 
                     enum class LineBreak : uint8_t { eLF_LB,
                                                      eCRLF_LB,

@@ -749,7 +749,7 @@ VARIANT Led::CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar
             for (size_t i = 0; i < nElts; ++i) {
                 ::VariantInit (&vptr[i]);
                 Led_ThrowIfNull (vptr[i].bstrVal = ::SysAllocString (strsStart[i]));
-                vptr[i].vt                       = VT_VARIANT;
+                vptr[i].vt = VT_VARIANT;
             }
         }
         else {

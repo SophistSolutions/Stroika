@@ -131,7 +131,7 @@ namespace Stroika {
 
                     public:
                         virtual size_t current_offset () const override;
-                        virtual void seek_to (size_t to) override;
+                        virtual void   seek_to (size_t to) override;
                         virtual size_t read (void* buffer, size_t bytes) override;
                         virtual size_t read1 (char* c) override;
 #if qPlatform_MacOS
@@ -162,7 +162,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual shared_ptr<BadInputHandler> GetBadInputHandler () const;
-                    nonvirtual void SetBadInputHandler (const shared_ptr<BadInputHandler>& badInputHandler);
+                    nonvirtual void                        SetBadInputHandler (const shared_ptr<BadInputHandler>& badInputHandler);
 
                 private:
                     shared_ptr<BadInputHandler> fBadInputHandler;
@@ -443,14 +443,14 @@ namespace Stroika {
                     virtual size_t GetEmbeddingMarkerPosOffset () const = 0;
 
                 public:
-                    virtual Led_Justification   GetJustification () const;
-                    virtual StandardTabStopList GetStandardTabStopList () const;
-                    virtual Led_TWIPS           GetFirstIndent () const;
-                    virtual void GetMargins (Led_TWIPS* lhs, Led_TWIPS* rhs) const;
-                    virtual Led_TWIPS       GetSpaceBefore () const;
-                    virtual Led_TWIPS       GetSpaceAfter () const;
-                    virtual Led_LineSpacing GetLineSpacing () const;
-                    virtual void GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const;
+                    virtual Led_Justification      GetJustification () const;
+                    virtual StandardTabStopList    GetStandardTabStopList () const;
+                    virtual Led_TWIPS              GetFirstIndent () const;
+                    virtual void                   GetMargins (Led_TWIPS* lhs, Led_TWIPS* rhs) const;
+                    virtual Led_TWIPS              GetSpaceBefore () const;
+                    virtual Led_TWIPS              GetSpaceAfter () const;
+                    virtual Led_LineSpacing        GetLineSpacing () const;
+                    virtual void                   GetListStyleInfo (ListStyle* listStyle, unsigned char* indentLevel) const;
                     virtual Led_tChar              GetSoftLineBreakCharacter () const;
                     virtual DiscontiguousRun<bool> GetHidableTextRuns () const;
                 };
@@ -564,11 +564,11 @@ namespace Stroika {
                         ,
                         Handle resourceHandle = nullptr
 #endif
-                        );
+                    );
 
                 public:
                     virtual size_t current_offset () const override;
-                    virtual void seek_to (size_t to) override;
+                    virtual void   seek_to (size_t to) override;
                     virtual size_t read (void* buffer, size_t bytes) override;
                     virtual size_t read1 (char* c) override;
 #if qPlatform_MacOS
@@ -731,12 +731,12 @@ namespace Stroika {
                         ,
                         Handle resourceHandle = nullptr
 #endif
-                        );
+                    );
                     virtual ~StyledTextIOSrcStream_FileDescriptor ();
 
                 public:
                     virtual size_t current_offset () const override;
-                    virtual void seek_to (size_t to) override;
+                    virtual void   seek_to (size_t to) override;
                     virtual size_t read (void* buffer, size_t bytes) override;
 #if qPlatform_MacOS
                     virtual Handle GetAUXResourceHandle () const override;
@@ -744,7 +744,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual size_t GetBufferSize () const;
-                    nonvirtual void SetBufferSize (size_t bufSize); // set to zero for unbuffered IO
+                    nonvirtual void   SetBufferSize (size_t bufSize); // set to zero for unbuffered IO
                 private:
                     nonvirtual void ReadInWindow (size_t startAt); // zero based startAt
 
@@ -779,8 +779,8 @@ namespace Stroika {
 
                 public:
                     virtual size_t current_offset () const override;
-                    virtual void seek_to (size_t to) override;
-                    virtual void write (const void* buffer, size_t bytes) override;
+                    virtual void   seek_to (size_t to) override;
+                    virtual void   write (const void* buffer, size_t bytes) override;
 
                     nonvirtual const void* PeekAtData () const;
                     nonvirtual size_t GetLength () const;
@@ -806,12 +806,12 @@ namespace Stroika {
 
                 public:
                     virtual size_t current_offset () const override;
-                    virtual void seek_to (size_t to) override;
-                    virtual void write (const void* buffer, size_t bytes) override;
+                    virtual void   seek_to (size_t to) override;
+                    virtual void   write (const void* buffer, size_t bytes) override;
 
                 public:
                     nonvirtual size_t GetBufferSize () const;
-                    nonvirtual void SetBufferSize (size_t bufSize); // set to zero for unbuffered IO
+                    nonvirtual void   SetBufferSize (size_t bufSize); // set to zero for unbuffered IO
 
                     // This is done automatically on DTOR, but we cannot throw exceptions out of there, so if you want
                     // to be sure exception is thrown if this operation fails, call this EXPLICITLY.

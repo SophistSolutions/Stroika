@@ -44,10 +44,10 @@ namespace Stroika {
                 void ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription);
 
                 struct DocsOptions {
-                    String fH1Text = L"Operations";
+                    String                  fH1Text = L"Operations";
                     Mapping<String, String> fVariables2Substitute;
-                    String              fCSSSection = kDefaultCSSSection;
-                    static const String kDefaultCSSSection;
+                    String                  fCSSSection = kDefaultCSSSection;
+                    static const String     kDefaultCSSSection;
                 };
                 void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = DocsOptions{});
             }

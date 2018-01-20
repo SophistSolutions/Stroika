@@ -29,21 +29,21 @@ namespace Stroika {
         namespace UPnP {
             namespace SSDP {
 
-                using Foundation::Memory::Optional;
-                using Foundation::Memory::BLOB;
                 using Foundation::Characters::String;
                 using Foundation::Characters::String_Constant;
                 using Foundation::Containers::Mapping;
                 using Foundation::IO::Network::URL;
+                using Foundation::Memory::BLOB;
+                using Foundation::Memory::Optional;
 
                 /**
                  */
                 struct Advertisement {
-                    Optional<bool> fAlive; // else Bye notification, or empty if neither
-                    String         fUSN;
-                    URL            fLocation;
-                    String         fServer;
-                    String         fTarget; // usually ST header (or NT for notify)
+                    Optional<bool>          fAlive; // else Bye notification, or empty if neither
+                    String                  fUSN;
+                    URL                     fLocation;
+                    String                  fServer;
+                    String                  fTarget; // usually ST header (or NT for notify)
                     Mapping<String, String> fRawHeaders;
 
                     /**

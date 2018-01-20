@@ -139,7 +139,7 @@ namespace Stroika {
                  */
             public:
                 nonvirtual Led_FontSpecification GetDefaultFont () const;
-                virtual void SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont);
+                virtual void                     SetDefaultFont (const Led_IncrementalFontSpecification& defaultFont);
 
             protected:
                 nonvirtual void SetDefaultFont_ (const Led_IncrementalFontSpecification& defaultFont);
@@ -245,7 +245,7 @@ namespace Stroika {
                  */
             public:
                 nonvirtual Led_Rect GetWindowRect () const;
-                virtual void SetWindowRect (const Led_Rect& windowRect);
+                virtual void        SetWindowRect (const Led_Rect& windowRect);
 
             protected:
                 nonvirtual void SetWindowRect_ (const Led_Rect& windowRect);
@@ -398,7 +398,7 @@ namespace Stroika {
                  */
             public:
                 nonvirtual Led_Coordinate GetHScrollPos () const;
-                virtual void SetHScrollPos (Led_Coordinate hScrollPos);
+                virtual void              SetHScrollPos (Led_Coordinate hScrollPos);
 
             protected:
                 nonvirtual void SetHScrollPos_ (Led_Coordinate hScrollPos);
@@ -438,7 +438,7 @@ namespace Stroika {
 
             public:
                 nonvirtual Led_TWIPS GetSelectionGoalColumn () const;
-                nonvirtual void SetSelectionGoalColumn (Led_TWIPS selectionGoalColumn);
+                nonvirtual void      SetSelectionGoalColumn (Led_TWIPS selectionGoalColumn);
 
             private:
                 Led_TWIPS fSelectionGoalColumn;
@@ -503,7 +503,7 @@ namespace Stroika {
                  */
             public:
                 nonvirtual bool GetSelectionShown () const;
-                virtual void SetSelectionShown (bool shown);
+                virtual void    SetSelectionShown (bool shown);
 
             private:
                 bool fSelectionShown;
@@ -511,8 +511,8 @@ namespace Stroika {
             public:
                 nonvirtual size_t GetSelectionStart () const;
                 nonvirtual size_t GetSelectionEnd () const;
-                nonvirtual void GetSelection (size_t* start, size_t* end) const;
-                virtual void SetSelection (size_t start, size_t end);
+                nonvirtual void   GetSelection (size_t* start, size_t* end) const;
+                virtual void      SetSelection (size_t start, size_t end);
 
             protected:
                 nonvirtual void SetSelection_ (size_t start, size_t end);
@@ -661,7 +661,7 @@ namespace Stroika {
                  */
             public:
                 virtual vector<Led_Rect> GetSelectionWindowRects (size_t from, size_t to) const;
-                virtual void GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to) const;
+                virtual void             GetSelectionWindowRegion (Led_Region* r, size_t from, size_t to) const;
 
             public:
                 /*
@@ -711,8 +711,8 @@ namespace Stroika {
                                          eMaxDefaultColorIndex };
                 nonvirtual Led_Color* GetDefaultTextColor (DefaultColorIndex dci) const;
                 nonvirtual Led_Color GetEffectiveDefaultTextColor (DefaultColorIndex dci) const;
-                nonvirtual void ClearDefaultTextColor (DefaultColorIndex dci);
-                nonvirtual void SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor);
+                nonvirtual void      ClearDefaultTextColor (DefaultColorIndex dci);
+                nonvirtual void      SetDefaultTextColor (DefaultColorIndex dci, const Led_Color& textColor);
 
             private:
                 Led_Color* fDefaultColorIndex[eMaxDefaultColorIndex];
@@ -734,16 +734,16 @@ namespace Stroika {
                 virtual void DrawInterLineSpace (Led_Distance interlineSpace, Led_Tablet tablet, Led_Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
 
             protected:
-                virtual bool ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
-                virtual void ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Led_tChar* copyText, size_t nTChars) const;
+                virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const;
+                virtual void   ReplaceMappedDisplayCharacters (const Led_tChar* srcText, Led_tChar* copyText, size_t nTChars) const;
                 virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const;
-                virtual void PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const;
+                virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const;
 
             protected:
-                static bool ContainsMappedDisplayCharacters_HelperForChar (const Led_tChar* text, size_t nTChars, Led_tChar charToMap);
-                static void ReplaceMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToMap, Led_tChar charToMapTo);
+                static bool   ContainsMappedDisplayCharacters_HelperForChar (const Led_tChar* text, size_t nTChars, Led_tChar charToMap);
+                static void   ReplaceMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToMap, Led_tChar charToMapTo);
                 static size_t RemoveMappedDisplayCharacters_HelperForChar (Led_tChar* copyText, size_t nTChars, Led_tChar charToRemove);
-                static void PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars, Led_tChar charToRemove);
+                static void   PatchWidthRemoveMappedDisplayCharacters_HelperForChar (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars, Led_tChar charToRemove);
 
             protected:
                 virtual void DrawSegment (Led_Tablet tablet,
@@ -985,7 +985,7 @@ namespace Stroika {
 
             public:
                 nonvirtual void Draw (bool printing = false);
-                virtual void Draw (const Led_Rect& subsetToDraw, bool printing) override;
+                virtual void    Draw (const Led_Rect& subsetToDraw, bool printing) override;
 
             protected:
                 virtual Led_Tablet AcquireTablet () const override;
@@ -999,9 +999,9 @@ namespace Stroika {
 
             public:
                 nonvirtual Led_Color GetBackgroundColor () const;
-                nonvirtual void SetBackgroundColor (Led_Color c);
-                nonvirtual bool GetBackgroundTransparent () const;
-                nonvirtual void SetBackgroundTransparent (bool transparent);
+                nonvirtual void      SetBackgroundColor (Led_Color c);
+                nonvirtual bool      GetBackgroundTransparent () const;
+                nonvirtual void      SetBackgroundTransparent (bool transparent);
 
             private:
                 TEXTSTORE  fTextStore;

@@ -812,7 +812,7 @@ void TextStore::DoDidUpdateCalls (const UpdateInfo& updateInfo, Marker* const* m
 #else
     {
         vector<Marker*>::const_reverse_iterator start = markers.rbegin ();
-        vector<Marker*>::const_reverse_iterator end   = markers.rend ();
+        vector<Marker*>::const_reverse_iterator end = markers.rend ();
         for (auto i = start; i != end; ++i) {
             (*i)->DidUpdateText (updateInfo);
             Assert (GetMarkerOwners () == markerOwners);

@@ -59,7 +59,7 @@ namespace {
 #endif
         }
         {
-            using RT = RangeTraits::ExplicitRangeTraits_Integral<int, -3, 100, Openness::eClosed, Openness::eClosed, int, unsigned int>;
+            using RT         = RangeTraits::ExplicitRangeTraits_Integral<int, -3, 100, Openness::eClosed, Openness::eClosed, int, unsigned int>;
             Range<int, RT> x = Range<int, RT>::FullRange ();
             VerifyTestResult (x.GetLowerBound () == -3);
             VerifyTestResult (x.GetUpperBound () == 100);
@@ -287,7 +287,7 @@ namespace {
         using Containers::Sequence;
         {
             const uint32_t kRefCheck_[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97};
-            auto isPrimeCheck           = [](uint32_t n) -> bool { return Math::IsPrime (n); };
+            auto           isPrimeCheck = [](uint32_t n) -> bool { return Math::IsPrime (n); };
             for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100).Elements ()).Filter<uint32_t> (isPrimeCheck)) {
                 VerifyTestResult (Math::IsPrime (i));
             }
@@ -713,8 +713,8 @@ namespace {
             VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int>{4, 5, 6}));
         }
         {
-            using Containers::Set;
             using Containers::Sequence;
+            using Containers::Set;
             Sequence<int> a{1, 3, 5, 7, 9};
             a = Sequence<int>{a.Skip (2)}; // https://stroika.atlassian.net/browse/STK-532 - crash
             VerifyTestResult ((a == Sequence<int>{5, 7, 9}));
@@ -760,8 +760,8 @@ namespace {
     void Test17_DurationRange_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::Test17_DurationRange_"};
-        using Time::DurationRange;
         using Time::Duration;
+        using Time::DurationRange;
 
         {
             DurationRange a{Duration ("PT.5S"), Duration ("PT2M")};

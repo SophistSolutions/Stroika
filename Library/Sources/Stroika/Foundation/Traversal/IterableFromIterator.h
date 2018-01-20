@@ -104,9 +104,9 @@ namespace Stroika {
 
                 public:
                     virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t GetLength () const override;
-                    virtual bool   IsEmpty () const override;
-                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual size_t      GetLength () const override;
+                    virtual bool        IsEmpty () const override;
+                    virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
@@ -126,9 +126,9 @@ namespace Stroika {
 #endif
                 public:
                     virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t GetLength () const override;
-                    virtual bool   IsEmpty () const override;
-                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual size_t      GetLength () const override;
+                    virtual bool        IsEmpty () const override;
+                    virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };
@@ -144,9 +144,9 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    virtual size_t GetLength () const override;
-                    virtual bool   IsEmpty () const override;
-                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual size_t      GetLength () const override;
+                    virtual bool        IsEmpty () const override;
+                    virtual void        Apply (_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override;
                 };
             };

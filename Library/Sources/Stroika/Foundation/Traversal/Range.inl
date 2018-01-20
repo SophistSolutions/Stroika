@@ -208,10 +208,7 @@ namespace Stroika {
             inline constexpr bool Range<T, TRAITS>::Contains (Configuration::ArgByValueType<T> r) const
             {
 #if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                return empty () ? false : (
-                                              (fBegin_ < r and r < fEnd_) or
-                                              (fBeginOpenness_ == Openness::eClosed and r == fBegin_) or
-                                              (fEndOpenness_ == Openness::eClosed and r == fEnd_));
+                return empty () ? false : ((fBegin_ < r and r < fEnd_) or (fBeginOpenness_ == Openness::eClosed and r == fBegin_) or (fEndOpenness_ == Openness::eClosed and r == fEnd_));
 #else
                 if (empty ()) {
                     return false;
@@ -331,8 +328,8 @@ namespace Stroika {
                 if (rhs.empty ()) {
                     return *this;
                 }
-                T l = min (GetLowerBound (), rhs.GetLowerBound ());
-                T r = max (GetUpperBound (), rhs.GetUpperBound ());
+                T                l = min (GetLowerBound (), rhs.GetLowerBound ());
+                T                r = max (GetUpperBound (), rhs.GetUpperBound ());
                 Range<T, TRAITS> result;
                 if (l <= r) {
                     // lhs/rhs ends are closed iff BOTH lhs/rhs contains that point

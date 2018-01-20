@@ -67,7 +67,7 @@ namespace {
 
 void SampleAppServiceRep::MainLoop (const std::function<void()>& startedCB)
 {
-/*
+    /*
      *  The lifetime of the service roughly matches the lifetime of this MainLoop. Terminating the service (myService --stop)
      *  will cause a Thread::AbortException to be sent to this MainLoop, so that it unwinds.
      *

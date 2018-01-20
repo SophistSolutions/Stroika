@@ -153,9 +153,9 @@ namespace Stroika {
                         nonvirtual void TwoPhaseIteratorPatcherPass2 (Link* newI);
 
                     protected:
-//const Link*              fPrev;      // keep extra previous link for fast patchremove
-// Nil implies fCurrent == fData->fFirst or its invalid,
-// and must be recomputed (it was removed itself)...
+                        //const Link*              fPrev;      // keep extra previous link for fast patchremove
+                        // Nil implies fCurrent == fData->fFirst or its invalid,
+                        // and must be recomputed (it was removed itself)...
 
 #if qDebug
                     protected:

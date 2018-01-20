@@ -62,9 +62,9 @@ namespace {
                 VerifyTestResult ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
 
                 {
+                    using Memory::Byte;
                     using Streams::InputStream;
                     using Streams::TextReader;
-                    using Memory::Byte;
                     VerifyTestResult (reader.GetData (L"sample_zip/TODO.txt").size () == 243);
                     VerifyTestResult (reader.GetData (L"sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     VerifyTestResult (reader.GetData (L"sample_zip/Common-Valgrind.supp").size () == 1661);
@@ -105,9 +105,9 @@ namespace {
 
                 VerifyTestResult ((reader.GetContainedFiles () == Containers::Set<String>{L"sample_zip/BlockAllocation-Valgrind.supp", L"sample_zip/Common-Valgrind.supp", L"sample_zip/TODO.txt", L"sample_zip/Tests-Description.txt"}));
                 {
+                    using Memory::Byte;
                     using Streams::InputStream;
                     using Streams::TextReader;
-                    using Memory::Byte;
                     VerifyTestResult (reader.GetData (L"sample_zip/TODO.txt").size () == 243);
                     VerifyTestResult (reader.GetData (L"sample_zip/BlockAllocation-Valgrind.supp").size () == 4296);
                     VerifyTestResult (reader.GetData (L"sample_zip/Common-Valgrind.supp").size () == 1661);
@@ -410,13 +410,13 @@ namespace Test_05_ParseRegressionTest_1_ {
                 "        }"
                 "    }"
                 "}";
-            VariantValue v = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+            VariantValue               v  = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
             VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::Type::eMap);
             map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
-            outputMap[L"MaxFiles"] = 123456789;
-            mv[L"Output"]          = outputMap;
-            v                      = mv;
+            outputMap[L"MaxFiles"]               = 123456789;
+            mv[L"Output"]                        = outputMap;
+            v                                    = mv;
 
             string jsonExampleWithUpdatedMaxFilesReference;
             {
@@ -487,7 +487,7 @@ namespace Test_05_ParseRegressionTest_3_ {
                 "        }"
                 "    }"
                 "}";
-            VariantValue v = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+            VariantValue                  v  = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
             VerifyTestResult (mv[L"T1"].GetType () == VariantValue::Type::eString);
             VerifyTestResult (mv[L"T1"] == String ());
@@ -626,7 +626,7 @@ namespace {
                 }
                 {
                     DataExchange::Variant::XML::Writer w;
-                    map<wstring, VariantValue> mv;
+                    map<wstring, VariantValue>         mv;
                     mv[L"MaxFiles"]                      = VariantValue (405);
                     VariantValue                     v   = VariantValue (mv);
                     Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
@@ -758,7 +758,7 @@ namespace {
     namespace Write2JSONSThenRead2JSONsWithSharedStream_ {
         namespace Private_ {
             static VariantValue kTestVariant_ = Mapping<String, VariantValue>{pair<String, VariantValue>{L"a", 3}, pair<String, VariantValue>{L"b", 99}};
-            void WriteJSON_ (const Streams::OutputStream<Byte>::Ptr& out)
+            void                WriteJSON_ (const Streams::OutputStream<Byte>::Ptr& out)
             {
                 using namespace DataExchange::Variant::JSON;
                 const Writer::Options kOptions_{false};

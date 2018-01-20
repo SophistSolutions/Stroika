@@ -332,7 +332,7 @@ namespace Stroika {
                         nonvirtual const FontTableEntry* LookupEntryByNumber (int fontNumber);           // return nullptr if not present
                         nonvirtual const FontTableEntry* LookupEntryByName (const Led_SDK_String& name); // return nullptr if not present
                         nonvirtual FontTableEntry Add (const FontTableEntry& newEntry);                  // ignores the fFNum, and supplies its own! - returns same entry but with revised fFNum
-                        nonvirtual int FindSmallestUnusedFontNumber () const;
+                        nonvirtual int            FindSmallestUnusedFontNumber () const;
 
                     public:
                         vector<FontTableEntry> fEntries;
@@ -346,7 +346,7 @@ namespace Stroika {
                     public:
                         nonvirtual Led_Color LookupColor (size_t colorNumber) const;  // throws if not present
                         nonvirtual size_t LookupColor (const Led_Color& color) const; // asserts if not present
-                        nonvirtual int EnterColor (const Led_Color& color);           // LookupColor, and if not present, add it. Either way, return index
+                        nonvirtual int    EnterColor (const Led_Color& color);        // LookupColor, and if not present, add it. Either way, return index
 
                     public:
                         vector<Led_Color> fEntries;
@@ -406,10 +406,10 @@ namespace Stroika {
                     public:
                         static const Led_PrivateEmbeddingTag kEmbeddingTag;
 
-                        virtual void PostCreateSpecifyExtraInfo (Led_TWIPS_Point size) = 0;
-                        virtual Led_SDK_String GetObjClassName () const                = 0;
-                        virtual void DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData) = 0;
-                        virtual Led_Size GetSize () = 0;
+                        virtual void           PostCreateSpecifyExtraInfo (Led_TWIPS_Point size)       = 0;
+                        virtual Led_SDK_String GetObjClassName () const                                = 0;
+                        virtual void           DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData) = 0;
+                        virtual Led_Size       GetSize ()                                              = 0;
                     };
                 };
 
@@ -476,7 +476,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual Led_FontSpecification GetPlainFont () const;
-                    nonvirtual void SetPlainFont (const Led_FontSpecification& fsp);
+                    nonvirtual void                  SetPlainFont (const Led_FontSpecification& fsp);
 
                 private:
                     Led_FontSpecification fPlainFont;
@@ -585,14 +585,14 @@ namespace Stroika {
 
                 protected:
                     nonvirtual void CheckIfAboutToStartBody (ReaderContext& readerContext);
-                    virtual void AboutToStartBody (ReaderContext& readerContext);
+                    virtual void    AboutToStartBody (ReaderContext& readerContext);
 
                 protected:
                     virtual RTFIO::FontTableEntry ReadInFontTablesEntry ();
-                    virtual void ReadInObjectSubGroupEntry (ReaderContext& readerContext, vector<char>* data, size_t* resultFoundAt);
-                    virtual void ReadObjData (vector<char>* data);
-                    virtual void ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data);
-                    virtual void ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data);
+                    virtual void                  ReadInObjectSubGroupEntry (ReaderContext& readerContext, vector<char>* data, size_t* resultFoundAt);
+                    virtual void                  ReadObjData (vector<char>* data);
+                    virtual void                  ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data);
+                    virtual void                  ConstructLedEmebddingFromRTFInfo (ReaderContext& readerContext, size_t nBytes, const void* data);
 
                 protected:
                     enum ImageFormat {
@@ -606,8 +606,8 @@ namespace Stroika {
                         eBITMAP,                      // device dependent bitmap
                         eDefaultImageFormat = eBITMAP //  according to RTF 1.5 spec - "The \wbitmap control word is optional. If no other picture type is specified, the picture is assumed to be a Windows bitmap"
                     };
-                    virtual void ReadPictData (vector<char>* data);
-                    virtual void ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData);
+                    virtual void     ReadPictData (vector<char>* data);
+                    virtual void     ReadTopLevelPictData (Led_TWIPS_Point* shownSize, ImageFormat* imageFormat, Led_TWIPS_Point* bmSize, vector<char>* objData);
                     virtual Led_DIB* ConstructDIBFromData (Led_TWIPS_Point shownSize, ImageFormat imageFormat, Led_TWIPS_Point bmSize, size_t nBytes, const void* data);
 #if qPlatform_Windows
                     virtual Led_DIB* ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF);
@@ -621,7 +621,7 @@ namespace Stroika {
                     nonvirtual unsigned char GetNextRTFHexByte () const;
                     nonvirtual string ReadInGroupAndSave ();
                     nonvirtual void   SkipToEndOfCurrentGroup ();
-                    nonvirtual void ScanForwardFor (const char* setOfChars); // stop when next char is a member of 'setOfChars'
+                    nonvirtual void   ScanForwardFor (const char* setOfChars); // stop when next char is a member of 'setOfChars'
                     // (nb: doesn't look at current/prev chars - just FOLLOWING ones
                     // (at eof returns no error, but does return)
                     nonvirtual bool SearchForwardFor (const char* searchFor, size_t maxCharsToExamine = size_t (-1));
@@ -667,7 +667,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual CodePage GetCurrentInputCharSetEncoding () const;
-                    nonvirtual void UseInputCharSetEncoding (CodePage codePage);
+                    nonvirtual void     UseInputCharSetEncoding (CodePage codePage);
 
                 private:
                     CodePage fCurrentInputCharSetEncoding;
@@ -678,7 +678,7 @@ namespace Stroika {
 #if !qWideCharacters
                 public:
                     nonvirtual CodePage GetCurrentOutputCharSetEncoding () const;
-                    nonvirtual void UseOutputCharSetEncoding (CodePage codePage);
+                    nonvirtual void     UseOutputCharSetEncoding (CodePage codePage);
 
                 private:
                     CodePage fCurrentOutputCharSetEncoding;
@@ -708,7 +708,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual Destination_& GetDestination () const;
-                    virtual void SetDestination (Destination_* destination);
+                    virtual void             SetDestination (Destination_* destination);
 
                 private:
                     Destination_* fCurrentDestination;
@@ -767,7 +767,7 @@ namespace Stroika {
                     };
 
                 public:
-                    virtual void AppendText (const Led_tChar* text, size_t nTChars) = 0;
+                    virtual void AppendText (const Led_tChar* text, size_t nTChars)            = 0;
                     virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding)  = 0;
                     virtual void AppendSoftLineBreak ()                                        = 0;
                     virtual void EndParagraph ()                                               = 0;
@@ -783,31 +783,31 @@ namespace Stroika {
                     virtual void SetSpaceBetweenLinesMult (bool multipleLineSpacing)           = 0;
                     virtual void SetTextHidden (bool hidden)                                   = 0;
                     virtual void SetInTable (bool inTable)                                     = 0;
-                    virtual void EndRow (bool forceEmit = false) = 0;
-                    virtual void EndCell (bool forceEmit = false)                 = 0;
-                    virtual void SetListStyle (ListStyle listStyle)               = 0;
-                    virtual void SetListIndentLevel (unsigned char indentLevel)   = 0;
-                    virtual void SetTableBorderColor (Led_Color c)                = 0;
-                    virtual void SetCellX (Led_TWIPS cellx)                       = 0;
-                    virtual void SetCellBackColor (const Led_Color& c)            = 0;
-                    virtual void Call_trowd ()                                    = 0;
-                    virtual void Set_trleft (Led_TWIPS t)                         = 0;
-                    virtual void SetDefaultCellMarginsForRow_top (Led_TWIPS t)    = 0;
-                    virtual void SetDefaultCellMarginsForRow_left (Led_TWIPS t)   = 0;
-                    virtual void SetDefaultCellMarginsForRow_bottom (Led_TWIPS t) = 0;
-                    virtual void SetDefaultCellMarginsForRow_right (Led_TWIPS t)  = 0;
-                    virtual void SetDefaultCellSpacingForRow_top (Led_TWIPS t)    = 0;
-                    virtual void SetDefaultCellSpacingForRow_left (Led_TWIPS t)   = 0;
-                    virtual void SetDefaultCellSpacingForRow_bottom (Led_TWIPS t) = 0;
-                    virtual void SetDefaultCellSpacingForRow_right (Led_TWIPS t)  = 0;
+                    virtual void EndRow (bool forceEmit = false)                               = 0;
+                    virtual void EndCell (bool forceEmit = false)                              = 0;
+                    virtual void SetListStyle (ListStyle listStyle)                            = 0;
+                    virtual void SetListIndentLevel (unsigned char indentLevel)                = 0;
+                    virtual void SetTableBorderColor (Led_Color c)                             = 0;
+                    virtual void SetCellX (Led_TWIPS cellx)                                    = 0;
+                    virtual void SetCellBackColor (const Led_Color& c)                         = 0;
+                    virtual void Call_trowd ()                                                 = 0;
+                    virtual void Set_trleft (Led_TWIPS t)                                      = 0;
+                    virtual void SetDefaultCellMarginsForRow_top (Led_TWIPS t)                 = 0;
+                    virtual void SetDefaultCellMarginsForRow_left (Led_TWIPS t)                = 0;
+                    virtual void SetDefaultCellMarginsForRow_bottom (Led_TWIPS t)              = 0;
+                    virtual void SetDefaultCellMarginsForRow_right (Led_TWIPS t)               = 0;
+                    virtual void SetDefaultCellSpacingForRow_top (Led_TWIPS t)                 = 0;
+                    virtual void SetDefaultCellSpacingForRow_left (Led_TWIPS t)                = 0;
+                    virtual void SetDefaultCellSpacingForRow_bottom (Led_TWIPS t)              = 0;
+                    virtual void SetDefaultCellSpacingForRow_right (Led_TWIPS t)               = 0;
 
                 public:
                     virtual void Flush () = 0;
                     virtual void Done ()  = 0;
 
                 public:
-                    virtual Context GetContext () const        = 0;
-                    virtual void SetContext (const Context& c) = 0;
+                    virtual Context GetContext () const           = 0;
+                    virtual void    SetContext (const Context& c) = 0;
                 };
 
                 /*
@@ -870,14 +870,14 @@ namespace Stroika {
 
                 public:
                     virtual Context GetContext () const override;
-                    virtual void SetContext (const Context& c) override;
+                    virtual void    SetContext (const Context& c) override;
 
                 private:
                     nonvirtual void ApplyContext (const Context& c);
 
                 public:
                     nonvirtual size_t current_offset () const;
-                    nonvirtual void InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner);
+                    nonvirtual void   InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner);
 
                 private:
                     nonvirtual void AppendText_ (const Led_tChar* text, size_t nTChars);
@@ -969,7 +969,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual CodePage GetCurrentOutputCharSetEncoding () const;
-                    nonvirtual void UseOutputCharSetEncoding (CodePage codePage);
+                    nonvirtual void     UseOutputCharSetEncoding (CodePage codePage);
 
                 private:
                     CodePage fCurrentOutputCharSetEncoding;
@@ -977,7 +977,7 @@ namespace Stroika {
 #if !qWideCharacters
                 public:
                     nonvirtual CodePage GetCurrentInputCharSetEncoding () const;
-                    nonvirtual void UseInputCharSetEncoding (CodePage codePage);
+                    nonvirtual void     UseInputCharSetEncoding (CodePage codePage);
 
                 private:
                     CodePage fCurrentInputCharSetEncoding;
@@ -988,7 +988,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual const vector<pair<string, wchar_t>>& GetCharactersSavedByName () const;
-                    nonvirtual void SetCharactersSavedByName (const vector<pair<string, wchar_t>>& charactersSavedByName);
+                    nonvirtual void                                 SetCharactersSavedByName (const vector<pair<string, wchar_t>>& charactersSavedByName);
 
                 private:
                     vector<pair<string, wchar_t>> fCharactersSavedByName;
@@ -1005,20 +1005,20 @@ namespace Stroika {
                     using Table = StyledTextIOWriter::SrcStream::Table;
 
                 protected:
-                    virtual void WriteHeader (WriterContext& writerContext);
-                    virtual void WriteBody (WriterContext& writerContext);
-                    virtual void WriteBodyCharacter (WriterContext& writerContext, Led_tChar c);
+                    virtual void    WriteHeader (WriterContext& writerContext);
+                    virtual void    WriteBody (WriterContext& writerContext);
+                    virtual void    WriteBodyCharacter (WriterContext& writerContext, Led_tChar c);
                     nonvirtual void WritePlainUnicodeCharCharacterHelper (wchar_t c);
                     nonvirtual void WriteHexCharHelper (unsigned char c);
-                    virtual void WriteStartParagraph (WriterContext& writerContext);
-                    virtual void WriteTable (WriterContext& writerContext, Table* table);
-                    virtual bool PossiblyWriteUnknownRTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-                    virtual bool PossiblyWriteOLERTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-                    virtual bool PossiblyWritePICTEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-                    virtual void WritePrivatLedEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
-                    virtual void WriteTag (const char* tagStr);
-                    virtual void WriteTagNValue (const char* tagStr, int value);
-                    virtual void WriteHexCharDataBlock (size_t nBytes, const void* resultData);
+                    virtual void    WriteStartParagraph (WriterContext& writerContext);
+                    virtual void    WriteTable (WriterContext& writerContext, Table* table);
+                    virtual bool    PossiblyWriteUnknownRTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+                    virtual bool    PossiblyWriteOLERTFEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+                    virtual bool    PossiblyWritePICTEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+                    virtual void    WritePrivatLedEmbedding (WriterContext& writerContext, SimpleEmbeddedObjectStyleMarker* embedding);
+                    virtual void    WriteTag (const char* tagStr);
+                    virtual void    WriteTagNValue (const char* tagStr, int value);
+                    virtual void    WriteHexCharDataBlock (size_t nBytes, const void* resultData);
                     nonvirtual void WriteRTFHexByte (unsigned char theByte);
 
                 protected:
@@ -1093,7 +1093,7 @@ namespace Stroika {
                     size_t                                      fCharsToSkip;
                 };
 
-/*
+                /*
                  ********************************************************************************
                  ***************************** Implementation Details ***************************
                  ********************************************************************************

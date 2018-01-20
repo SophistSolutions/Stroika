@@ -70,7 +70,7 @@ namespace Stroika {
                      *  the semantics of Queue().
                      */
                     nonvirtual size_t GetCapacity () const;
-                    nonvirtual void SetCapacity (size_t slotsAlloced);
+                    nonvirtual void   SetCapacity (size_t slotsAlloced);
 
                 public:
                     /**

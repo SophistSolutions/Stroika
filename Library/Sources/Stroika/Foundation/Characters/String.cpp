@@ -30,8 +30,8 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
-using Traversal::IteratorOwnerID;
 using Traversal::Iterator;
+using Traversal::IteratorOwnerID;
 
 namespace {
     class String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep {
@@ -430,13 +430,13 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
 
 String String::Concatenate (const String& rhs) const
 {
-    _SafeReadRepAccessor thisAccessor{this};
-    pair<const Character*, const Character*> lhsD = thisAccessor._ConstGetRep ().GetData ();
-    size_t lhsLen = lhsD.second - lhsD.first;
+    _SafeReadRepAccessor                     thisAccessor{this};
+    pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
+    size_t                                   lhsLen = lhsD.second - lhsD.first;
     if (lhsLen == 0) {
         return rhs;
     }
-    _SafeReadRepAccessor rhsAccessor{&rhs};
+    _SafeReadRepAccessor                     rhsAccessor{&rhs};
     pair<const Character*, const Character*> rhsD = rhsAccessor._ConstGetRep ().GetData ();
     if (rhsD.first == rhsD.second) {
         return *this;
@@ -450,9 +450,9 @@ String String::Concatenate (const String& rhs) const
 String String::Concatenate (const wchar_t* appendageCStr) const
 {
     RequireNotNull (appendageCStr);
-    _SafeReadRepAccessor thisAccessor{this};
-    pair<const Character*, const Character*> lhsD = thisAccessor._ConstGetRep ().GetData ();
-    size_t lhsLen = lhsD.second - lhsD.first;
+    _SafeReadRepAccessor                     thisAccessor{this};
+    pair<const Character*, const Character*> lhsD   = thisAccessor._ConstGetRep ().GetData ();
+    size_t                                   lhsLen = lhsD.second - lhsD.first;
     if (lhsLen == 0) {
         return String (appendageCStr);
     }
@@ -485,9 +485,9 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
     if (from == to) {
         return *this;
     }
-    _SafeReadRepAccessor copyAccessor{this};
-    pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
-    auto sRep = MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
+    _SafeReadRepAccessor                     copyAccessor{this};
+    pair<const Character*, const Character*> d    = copyAccessor._ConstGetRep ().GetData ();
+    auto                                     sRep = MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
     sRep->InsertAt (from, to, at);
     return String (move (sRep));
 }
@@ -509,7 +509,7 @@ String String::RemoveAt (size_t from, size_t to) const
     }
     else {
         pair<const Character*, const Character*> d = accessor._ConstGetRep ().GetData ();
-        const wchar_t* p = reinterpret_cast<const wchar_t*> (d.first);
+        const wchar_t*                           p = reinterpret_cast<const wchar_t*> (d.first);
         return String (mk_ (p, p + from, p + to, p + length));
     }
 }
@@ -740,9 +740,9 @@ bool String::StartsWith (const String& subString, CompareOptions co) const
 #if qDebug
     bool referenceResult = (SubString (0, subString.GetLength ()).Compare (subString, co) == 0); // this check isnt threadsafe - redo
 #endif
-    const Character* subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData = accessor._ConstGetRep ().GetData ();
-    bool result = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
+    const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
+    pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
+    bool                                     result      = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
     Assert (result == referenceResult);
     return result;
 }
@@ -769,9 +769,9 @@ bool String::EndsWith (const String& subString, CompareOptions co) const
 #if qDebug
     bool referenceResult = (SubString (thisStrLen - subStrLen, thisStrLen).Compare (subString, co) == 0); // this check isnt threadsafe - redo
 #endif
-    const Character* subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
-    pair<const Character*, const Character*> thisData = accessor._ConstGetRep ().GetData ();
-    bool result = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
+    const Character*                         subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
+    pair<const Character*, const Character*> thisData    = accessor._ConstGetRep ().GetData ();
+    bool                                     result      = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
     Assert (result == referenceResult);
     return result;
 }
@@ -1124,7 +1124,7 @@ template <>
 void String::AsUTF8 (string* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor accessor{this};
+    _SafeReadRepAccessor                     accessor{this};
     pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
     WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), kCodePage_UTF8, into);
 }
@@ -1176,7 +1176,7 @@ void String::AsUTF32 (u32string* into) const
 void String::AsSDKString (SDKString* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor accessor{this};
+    _SafeReadRepAccessor                     accessor{this};
     pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
 #if qTargetPlatformSDKUseswchar_t
     into->assign (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second));
@@ -1188,7 +1188,7 @@ void String::AsSDKString (SDKString* into) const
 void String::AsNarrowSDKString (string* into) const
 {
     RequireNotNull (into);
-    _SafeReadRepAccessor accessor{this};
+    _SafeReadRepAccessor                     accessor{this};
     pair<const Character*, const Character*> lhsD = accessor._ConstGetRep ().GetData ();
     WideStringToNarrow (reinterpret_cast<const wchar_t*> (lhsD.first), reinterpret_cast<const wchar_t*> (lhsD.second), GetDefaultSDKCodePage (), into);
 }
@@ -1232,7 +1232,7 @@ wostream& Characters::operator<< (wostream& out, const String& s)
 {
     // Tried two impls, but first empirically appears quicker.
     // HOWERVER - THIS IS INTRINSICALLY NOT THREASDAFE (if s changed while another thread writin it)
-    String::_SafeReadRepAccessor thisAccessor{&s};
+    String::_SafeReadRepAccessor             thisAccessor{&s};
     pair<const Character*, const Character*> p = thisAccessor._ConstGetRep ().GetData ();
     out.write (reinterpret_cast<const wchar_t*> (p.first), p.second - p.first);
     return out;
@@ -1246,11 +1246,11 @@ wostream& Characters::operator<< (wostream& out, const String& s)
 String Characters::operator+ (const wchar_t* lhs, const String& rhs)
 {
     RequireNotNull (lhs);
-    String::_SafeReadRepAccessor rhsAccessor{&rhs};
-    pair<const Character*, const Character*> rhsD = rhsAccessor._ConstGetRep ().GetData ();
-    size_t lhsLen   = ::wcslen (lhs);
-    size_t totalLen = lhsLen + (rhsD.second - rhsD.first);
-    auto   sRep     = String::MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
+    String::_SafeReadRepAccessor             rhsAccessor{&rhs};
+    pair<const Character*, const Character*> rhsD     = rhsAccessor._ConstGetRep ().GetData ();
+    size_t                                   lhsLen   = ::wcslen (lhs);
+    size_t                                   totalLen = lhsLen + (rhsD.second - rhsD.first);
+    auto                                     sRep     = String::MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
     if (rhsD.first != rhsD.second) {
         sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     }

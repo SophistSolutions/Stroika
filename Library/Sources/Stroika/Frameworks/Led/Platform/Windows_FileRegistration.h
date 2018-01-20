@@ -95,7 +95,7 @@ namespace Stroika {
                     nonvirtual bool RegisteredToSomeoneElse () const;
                     nonvirtual void ApplyChangesSilently ();
                     virtual bool    CheckUserSaysOKToUpdate () const;
-                    virtual void ExpandVariables (Led_SDK_String* valWithVars) const;
+                    virtual void    ExpandVariables (Led_SDK_String* valWithVars) const;
 
                 private:
                     HINSTANCE                          fHINSTANCE;

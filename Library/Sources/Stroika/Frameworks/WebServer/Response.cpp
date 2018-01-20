@@ -180,7 +180,7 @@ Mapping<String, String> Response::GetSpecialHeaders () const
 Mapping<String, String> Response::GetEffectiveHeaders () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    Mapping<String, String> tmp = GetSpecialHeaders ();
+    Mapping<String, String>                             tmp = GetSpecialHeaders ();
     switch (GetContentSizePolicy ()) {
         case ContentSizePolicy::eAutoCompute:
         case ContentSizePolicy::eExact: {

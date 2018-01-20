@@ -223,7 +223,7 @@ namespace {
 #if qXMLDBTrackAllocs
                 return fAllocator.Deallocate (p);
 #else
-                ::operator delete (p);
+                ::       operator delete (p);
 #endif
             }
         }

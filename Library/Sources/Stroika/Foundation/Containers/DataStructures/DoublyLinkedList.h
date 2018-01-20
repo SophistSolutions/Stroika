@@ -305,8 +305,8 @@ namespace Stroika {
                 protected:
                 public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
                     const DoublyLinkedList<T, TRAITS>* _fData;
-                    const Link* _fCurrent;
-                    bool        _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
+                    const Link*                        _fCurrent;
+                    bool                               _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
 #if qDebug
                 protected:

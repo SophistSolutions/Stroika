@@ -31,8 +31,8 @@ namespace Stroika {
     namespace Foundation {
         namespace Debug {
 
-            using Characters::SDKString;
             using Characters::SDKChar;
+            using Characters::SDKString;
 
 /**
              *  If qTraceToFile is set true, then DbgTrace () and other Trace calls all go both to the usual debugger output

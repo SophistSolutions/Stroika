@@ -152,9 +152,9 @@ namespace Stroika {
                     // Message Map Hook Functions (these must hook into whatever message map mechanism you are using - either WndProc or MFC / ATL Message Maps)
                 protected:
                     virtual LRESULT OnCreate_Msg (LPCREATESTRUCT createStruct);
-                    virtual void OnPaint_Msg ();
-                    virtual void OnSize_Msg ();
-                    virtual void OnChar_Msg (UINT nChar, LPARAM lKeyData);
+                    virtual void    OnPaint_Msg ();
+                    virtual void    OnSize_Msg ();
+                    virtual void    OnChar_Msg (UINT nChar, LPARAM lKeyData);
 #if qWideCharacters
                     virtual LRESULT OnUniChar_Msg (WPARAM nChar, LPARAM lParam);
 #endif
@@ -184,7 +184,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual Led_TWIPS_Rect GetDefaultWindowMargins () const;
-                    nonvirtual void SetDefaultWindowMargins (const Led_TWIPS_Rect& defaultWindowMargins);
+                    nonvirtual void           SetDefaultWindowMargins (const Led_TWIPS_Rect& defaultWindowMargins);
 
                 private:
                     Led_TWIPS_Rect fDefaultWindowMargins;
@@ -247,7 +247,7 @@ namespace Stroika {
 
                 protected:
                     virtual Led_Tablet AcquireTablet () const override;
-                    virtual void ReleaseTablet (Led_Tablet tablet) const override;
+                    virtual void       ReleaseTablet (Led_Tablet tablet) const override;
 
                 private:
                     Led_Tablet          fUpdateTablet;    // assigned in stack-based fasion during update/draw calls.
@@ -307,15 +307,15 @@ namespace Stroika {
                     virtual void SetScrollBarType (VHSelect vh, ScrollBarType scrollBarType) override;
 
                 protected:
-                    virtual bool ShouldUpdateHScrollBar () const;
-                    virtual bool ShouldUpdateVScrollBar () const;
-                    virtual bool TypeAndScrollInfoSBVisible (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo) const;
+                    virtual bool       ShouldUpdateHScrollBar () const;
+                    virtual bool       ShouldUpdateVScrollBar () const;
+                    virtual bool       TypeAndScrollInfoSBVisible (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo) const;
                     virtual SCROLLINFO GetHScrollInfo (UINT nMask = SIF_ALL) const;
-                    virtual void SetHScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw = true);
-                    nonvirtual void SetHScrollInfo (const SCROLLINFO& scrollInfo, bool redraw = true);
+                    virtual void       SetHScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw = true);
+                    nonvirtual void    SetHScrollInfo (const SCROLLINFO& scrollInfo, bool redraw = true);
                     virtual SCROLLINFO GetVScrollInfo (UINT nMask = SIF_ALL) const;
-                    virtual void SetVScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw = true);
-                    nonvirtual void SetVScrollInfo (const SCROLLINFO& scrollInfo, bool redraw = true);
+                    virtual void       SetVScrollInfo (ScrollBarType scrollbarAppears, const SCROLLINFO& scrollInfo, bool redraw = true);
+                    nonvirtual void    SetVScrollInfo (const SCROLLINFO& scrollInfo, bool redraw = true);
 
                 public:
                     virtual void InvalidateScrollBarParameters () override;
@@ -1342,7 +1342,7 @@ namespace Stroika {
 #if qScrollTextDuringThumbTracking
                                 newPos = scrollInfo.nTrackPos;
 #else
-                                newPos  = scrollInfo.nPos;
+                                newPos = scrollInfo.nPos;
 #endif
                                 newPos = min (newPos, GetLength ());
 

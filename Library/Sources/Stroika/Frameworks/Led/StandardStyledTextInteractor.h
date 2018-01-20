@@ -85,14 +85,14 @@ namespace Stroika {
                 // (These names appear in text of undo menu item)
             public:
                 static const CommandNames& GetCommandNames ();
-                static void SetCommandNames (const CommandNames& cmdNames);
-                static CommandNames MakeDefaultCommandNames ();
+                static void                SetCommandNames (const CommandNames& cmdNames);
+                static CommandNames        MakeDefaultCommandNames ();
 
             private:
 #if qRuntimeCrashMaybeCodeGenBugWithAppStartupBug
                 static CommandNames& sCommandNames ();
 #else
-                static CommandNames     sCommandNames;
+                static CommandNames sCommandNames;
 #endif
 
             protected:
@@ -148,7 +148,7 @@ namespace Stroika {
                 using TextInteractor::SetSelection;
 #endif
             protected:
-                virtual bool InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount) override;
+                virtual bool    InteractiveReplaceEarlyPostReplaceHook (size_t withWhatCharCount) override;
                 nonvirtual void SetSelection_ (size_t start, size_t end); // simply refills fEmptySelectionStyle
             private:
                 bool                  fEmptySelectionStyleSuppressMode;
@@ -157,7 +157,7 @@ namespace Stroika {
             public:
                 nonvirtual Led_FontSpecification GetEmptySelectionStyle () const;
                 nonvirtual void                  SetEmptySelectionStyle ();
-                nonvirtual void SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec);
+                nonvirtual void                  SetEmptySelectionStyle (Led_FontSpecification newEmptyFontSpec);
 
             public:
                 nonvirtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const;
@@ -205,19 +205,19 @@ namespace Stroika {
             public:
                 // if fontSpec is nullptr, use default. Probably later we will return and update the fontspec with
                 // ApplyStyle
-                virtual size_t current_offset () const override;
-                virtual void AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) override;
-                virtual void ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
+                virtual size_t                current_offset () const override;
+                virtual void                  AppendText (const Led_tChar* text, size_t nTChars, const Led_FontSpecification* fontSpec) override;
+                virtual void                  ApplyStyle (size_t from, size_t to, const vector<StandardStyledTextImager::InfoSummaryRecord>& styleRuns) override;
                 virtual Led_FontSpecification GetDefaultFontSpec () const override;
-                virtual void InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
-                virtual void AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
-                virtual void AppendSoftLineBreak () override;
-                virtual void InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
-                virtual void Flush () override;
+                virtual void                  InsertEmbeddingForExistingSentinal (SimpleEmbeddedObjectStyleMarker* embedding, size_t at) override;
+                virtual void                  AppendEmbedding (SimpleEmbeddedObjectStyleMarker* embedding) override;
+                virtual void                  AppendSoftLineBreak () override;
+                virtual void                  InsertMarker (Marker* m, size_t at, size_t length, MarkerOwner* markerOwner) override;
+                virtual void                  Flush () override;
 
             public:
                 nonvirtual size_t GetInsertionStart () const;
-                nonvirtual void SetInsertionStart (size_t insertionStart);
+                nonvirtual void   SetInsertionStart (size_t insertionStart);
                 nonvirtual size_t GetOriginalStart () const;
                 nonvirtual size_t GetCachedTextSize () const;
 
@@ -270,15 +270,15 @@ namespace Stroika {
                 StandardStyledTextIOSrcStream (StandardStyledTextImager* textImager, size_t selectionStart = 0, size_t selectionEnd = kBadIndex);
 
             public:
-                virtual size_t readNTChars (Led_tChar* intoBuf, size_t maxTChars) override;
-                virtual size_t current_offset () const override;
-                virtual void seek_to (size_t to) override;
-                virtual size_t                    GetTotalTextLength () const override;
-                virtual vector<InfoSummaryRecord> GetStyleInfo (size_t from, size_t len) const override;
+                virtual size_t                                   readNTChars (Led_tChar* intoBuf, size_t maxTChars) override;
+                virtual size_t                                   current_offset () const override;
+                virtual void                                     seek_to (size_t to) override;
+                virtual size_t                                   GetTotalTextLength () const override;
+                virtual vector<InfoSummaryRecord>                GetStyleInfo (size_t from, size_t len) const override;
                 virtual vector<SimpleEmbeddedObjectStyleMarker*> CollectAllEmbeddingMarkersInRange (size_t from, size_t to) const override;
-                virtual Table* GetTableAt (size_t at) const override;
-                virtual void SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const override;
-                virtual size_t GetEmbeddingMarkerPosOffset () const override;
+                virtual Table*                                   GetTableAt (size_t at) const override;
+                virtual void                                     SummarizeFontAndColorTable (set<Led_SDK_String>* fontNames, set<Led_Color>* colorsUsed) const override;
+                virtual size_t                                   GetEmbeddingMarkerPosOffset () const override;
 
             public:
                 nonvirtual size_t GetCurOffset () const;
@@ -388,7 +388,7 @@ namespace Stroika {
 
             public:
                 virtual size_t GetLength () const override;
-                virtual void InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override;
+                virtual void   InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override;
 
             private:
                 Led_FontSpecification fSavedStyle;

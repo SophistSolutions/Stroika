@@ -47,9 +47,9 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ENUM>
-            inline constexpr  make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned ()
+            inline constexpr make_unsigned_t<typename underlying_type<ENUM>::type> GetDistanceSpanned ()
             {
-                return static_cast< make_unsigned_t<typename underlying_type<ENUM>::type>> (ENUM::eCOUNT);
+                return static_cast<make_unsigned_t<typename underlying_type<ENUM>::type>> (ENUM::eCOUNT);
             }
 
             /*
@@ -73,13 +73,13 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ENUM>
-            inline constexpr  make_unsigned_t<typename underlying_type<ENUM>::type> OffsetFromStart (ENUM e)
+            inline constexpr make_unsigned_t<typename underlying_type<ENUM>::type> OffsetFromStart (ENUM e)
             {
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
 // https://stroika.atlassian.net/browse/STK-549
 //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
 #endif
-                return static_cast< make_unsigned_t<typename underlying_type<ENUM>::type>> (ToInt (e) - ToInt (ENUM::eSTART));
+                return static_cast<make_unsigned_t<typename underlying_type<ENUM>::type>> (ToInt (e) - ToInt (ENUM::eSTART));
             }
             template <typename ENUM>
             inline constexpr ENUM OffsetFromStart (make_unsigned_t<typename underlying_type<ENUM>::type> offset)
@@ -215,7 +215,7 @@ namespace Stroika {
             inline constexpr void EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
             {
                 Require (static_cast<size_t> (ENUM_TYPE::eCOUNT) == fEnumNames_.size ());
-                using IndexType =  make_unsigned_t<typename underlying_type<ENUM_TYPE>::type>;
+                using IndexType = make_unsigned_t<typename underlying_type<ENUM_TYPE>::type>;
                 for (IndexType i = 0; i < static_cast<IndexType> (ENUM_TYPE::eCOUNT); ++i) {
                     Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
                 }

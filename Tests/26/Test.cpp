@@ -29,7 +29,7 @@ namespace {
     {
         typedef typename CONCRETE_CONTAINER::value_type T;
         typedef typename CONCRETE_CONTAINER::TraitsType TraitsType;
-        auto testFunc = [](const SortedSet<T, TraitsType>& s) {
+        auto                                            testFunc = [](const SortedSet<T, TraitsType>& s) {
             // verify in sorted order
             Memory::Optional<T> last;
             for (T i : s) {
@@ -83,14 +83,14 @@ namespace {
 
         struct MySimpleClassWithoutComparisonOperators_CompareEquals_ {
             typedef SimpleClassWithoutComparisonOperators value_type;
-            static bool Equals (value_type v1, value_type v2)
+            static bool                                   Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
         struct MySimpleClassWithoutComparisonOperators_Comparer_ {
             typedef SimpleClassWithoutComparisonOperators value_type;
-            static bool Equals (value_type v1, value_type v2)
+            static bool                                   Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }

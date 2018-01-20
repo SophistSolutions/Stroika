@@ -19,8 +19,8 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-            using Characters::SDKString;
             using Characters::SDKChar;
+            using Characters::SDKString;
 
 #if qPlatform_Windows
             using DLLHandle   = HMODULE;

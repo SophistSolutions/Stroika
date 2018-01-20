@@ -74,11 +74,11 @@ public:
 
 public:
     virtual DurationSecondsType GetTimeout () const override;
-    virtual void SetTimeout (DurationSecondsType timeout) override;
-    virtual URL  GetURL () const override;
-    virtual void SetURL (const URL& url) override;
-    virtual void     Close () override;
-    virtual Response Send (const Request& request) override;
+    virtual void                SetTimeout (DurationSecondsType timeout) override;
+    virtual URL                 GetURL () const override;
+    virtual void                SetURL (const URL& url) override;
+    virtual void                Close () override;
+    virtual Response            Send (const Request& request) override;
 
 private:
     nonvirtual void MakeHandleIfNeeded_ ();
@@ -96,14 +96,14 @@ private:
     nonvirtual size_t ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes);
 
 private:
-    void*        fCurlHandle_{nullptr};
-    URL          fURL_;
-    bool         fDidCustomMethod_{false};
-    vector<Byte> fUploadData_;
-    size_t       fUploadDataCursor_{};
-    vector<Byte> fResponseData_;
+    void*                   fCurlHandle_{nullptr};
+    URL                     fURL_;
+    bool                    fDidCustomMethod_{false};
+    vector<Byte>            fUploadData_;
+    size_t                  fUploadDataCursor_{};
+    vector<Byte>            fResponseData_;
     Mapping<String, String> fResponseHeaders_;
-    curl_slist* fSavedHeaders_{nullptr};
+    curl_slist*             fSavedHeaders_{nullptr};
 };
 #endif
 

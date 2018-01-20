@@ -26,8 +26,8 @@ namespace Stroika {
         namespace DataExchange {
             namespace Archive {
 
-                using Containers::Set;
                 using Characters::String;
+                using Containers::Set;
                 using Memory::BLOB;
 
                 /**
@@ -69,8 +69,8 @@ namespace Stroika {
                  */
                 class Reader::_IRep {
                 public:
-                    virtual Set<String> GetContainedFiles () const      = 0;
-                    virtual BLOB GetData (const String& fileName) const = 0;
+                    virtual Set<String> GetContainedFiles () const             = 0;
+                    virtual BLOB        GetData (const String& fileName) const = 0;
                 };
             }
         }

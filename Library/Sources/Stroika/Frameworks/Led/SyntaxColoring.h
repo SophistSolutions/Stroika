@@ -41,7 +41,7 @@ namespace Stroika {
             */
             class SyntaxAnalyzer {
             public:
-                virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const = 0;
+                virtual void AdjustLookBackRange (TextStore* ts, size_t* lookBackStart, size_t* lookBackTo) const                                                                               = 0;
                 virtual void AddMarkers (TextStore* ts, TextInteractor* interactor, MarkerOwner* owner, size_t lookBackStart, size_t lookBackTo, vector<Marker*>* appendNewMarkersToList) const = 0;
             };
 

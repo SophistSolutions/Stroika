@@ -211,7 +211,7 @@ namespace Stroika {
                  */
                 static BLOB AttachApplicationLifetime (const Byte* start, const Byte* end);
                 template <size_t SIZE>
-                static BLOB      AttachApplicationLifetime (const Byte (&data)[SIZE]);
+                static BLOB AttachApplicationLifetime (const Byte (&data)[SIZE]);
 
             public:
                 /**
@@ -356,9 +356,9 @@ namespace Stroika {
                 : public std::enable_shared_from_this<BLOB::_IRep>
 #endif
             {
-                _IRep ()             = default;
-                _IRep (const _IRep&) = delete;
-                virtual ~_IRep ()    = default;
+                _IRep ()                                                  = default;
+                _IRep (const _IRep&)                                      = delete;
+                virtual ~_IRep ()                                         = default;
                 virtual pair<const Byte*, const Byte*> GetBounds () const = 0;
 
                 nonvirtual const _IRep& operator= (const _IRep&) = delete;

@@ -231,9 +231,9 @@ namespace Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void Add (T item) = 0;
+                virtual void Add (T item)                              = 0;
                 virtual void Update (const Iterator<T>& i, T newValue) = 0;
-                virtual void Remove (const Iterator<T>& i) = 0;
+                virtual void Remove (const Iterator<T>& i)             = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

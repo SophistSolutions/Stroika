@@ -158,16 +158,16 @@ namespace Stroika {
                  *  Window/Scrolling support.
                  */
             public:
-                virtual size_t GetTopRowInWindow () const override;
-                virtual size_t GetTotalRowsInWindow () const override;
-                virtual size_t GetLastRowInWindow () const override;
-                virtual void SetTopRowInWindow (size_t newTopRow) override;
+                virtual size_t    GetTopRowInWindow () const override;
+                virtual size_t    GetTotalRowsInWindow () const override;
+                virtual size_t    GetLastRowInWindow () const override;
+                virtual void      SetTopRowInWindow (size_t newTopRow) override;
                 virtual size_t    GetMarkerPositionOfStartOfWindow () const override;
                 virtual size_t    GetMarkerPositionOfEndOfWindow () const override;
                 virtual size_t    GetMarkerPositionOfStartOfLastRowOfWindow () const override;
                 virtual ptrdiff_t CalculateRowDeltaFromCharDeltaFromTopOfWindow (long deltaChars) const override;
                 virtual ptrdiff_t CalculateCharDeltaFromRowDeltaFromTopOfWindow (ptrdiff_t deltaRows) const override;
-                virtual void ScrollByIfRoom (ptrdiff_t downByRows); // if downBy negative then up
+                virtual void      ScrollByIfRoom (ptrdiff_t downByRows); // if downBy negative then up
                 // OK to ask to scroll further
                 // than allowed - return true
                 // if any scrolling (not necesarily
@@ -178,7 +178,7 @@ namespace Stroika {
             protected:
                 nonvirtual RowReference GetTopRowReferenceInWindow () const;
                 nonvirtual RowReference GetLastRowReferenceInWindow () const;
-                virtual void SetTopRowInWindow (RowReference row);
+                virtual void            SetTopRowInWindow (RowReference row);
 
             protected:
                 nonvirtual void SetTopRowInWindow_ (RowReference row); // just sets the fields without any hook functions
@@ -195,18 +195,18 @@ namespace Stroika {
 
             public:
                 virtual Led_Rect GetCharLocation (size_t afterPosition) const override;
-                virtual size_t GetCharAtLocation (const Led_Point& where) const override;
+                virtual size_t   GetCharAtLocation (const Led_Point& where) const override;
                 virtual Led_Rect GetCharWindowLocation (size_t afterPosition) const override;
-                virtual size_t GetCharAtWindowLocation (const Led_Point& where) const override;
+                virtual size_t   GetCharAtWindowLocation (const Led_Point& where) const override;
 
             public:
-                virtual size_t GetStartOfRow (size_t rowNumber) const override;
-                virtual size_t GetStartOfRowContainingPosition (size_t charPosition) const override;
-                virtual size_t GetEndOfRow (size_t rowNumber) const override;
-                virtual size_t GetEndOfRowContainingPosition (size_t charPosition) const override;
-                virtual size_t GetRealEndOfRow (size_t rowNumber) const override;
-                virtual size_t GetRealEndOfRowContainingPosition (size_t charPosition) const override;
-                virtual size_t GetRowContainingPosition (size_t charPosition) const override;
+                virtual size_t   GetStartOfRow (size_t rowNumber) const override;
+                virtual size_t   GetStartOfRowContainingPosition (size_t charPosition) const override;
+                virtual size_t   GetEndOfRow (size_t rowNumber) const override;
+                virtual size_t   GetEndOfRowContainingPosition (size_t charPosition) const override;
+                virtual size_t   GetRealEndOfRow (size_t rowNumber) const override;
+                virtual size_t   GetRealEndOfRowContainingPosition (size_t charPosition) const override;
+                virtual size_t   GetRowContainingPosition (size_t charPosition) const override;
                 virtual size_t   GetRowCount () const override;
                 virtual Led_Rect GetCharLocationRowRelativeByPosition (size_t afterPosition, size_t positionOfTopRow, size_t maxRowsToCheck) const override;
 
@@ -239,18 +239,18 @@ namespace Stroika {
 
             protected:
                 virtual Led_Rect GetCharLocationRowRelative (size_t afterPosition, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
-                virtual size_t GetCharAtLocationRowRelative (const Led_Point& where, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
+                virtual size_t   GetCharAtLocationRowRelative (const Led_Point& where, RowReference topRow, size_t maxRowsToCheck = UINT_MAX) const;
 
             public:
                 nonvirtual Led_Distance GetInterLineSpace () const;
-                nonvirtual void SetInterLineSpace (Led_Distance interlineSpace);
+                nonvirtual void         SetInterLineSpace (Led_Distance interlineSpace);
 
             private:
                 Led_Distance fInterlineSpace;
 
             public:
                 virtual Led_Distance GetInterLineSpace (PartitionMarker* pm) const;
-                virtual void ChangedInterLineSpace (PartitionMarker* pm);
+                virtual void         ChangedInterLineSpace (PartitionMarker* pm);
 
                 // Hook to invalidate cached info based on fontmetrics
             public:
@@ -269,7 +269,7 @@ namespace Stroika {
 
             private:
                 nonvirtual RowReference AdjustPotentialTopRowReferenceSoWholeWindowUsed (const RowReference& potentialTopRow);
-                nonvirtual bool PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow);
+                nonvirtual bool         PositionWouldFitInWindowWithThisTopRow (size_t markerPos, const RowReference& newTopRow);
 
             private:
                 PartitionMarker* fTopLinePartitionMarkerInWindow;
@@ -283,10 +283,10 @@ namespace Stroika {
             protected:
                 nonvirtual size_t GetTotalRowsInWindow_ () const;
                 nonvirtual void   InvalidateTotalRowsInWindow ();
-                virtual size_t ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const;
+                virtual size_t    ComputeRowsThatWouldFitInWindowWithTopRow (const RowReference& newTopRow) const;
 
             protected:
-                virtual bool ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
+                virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
                 virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
 
             private:

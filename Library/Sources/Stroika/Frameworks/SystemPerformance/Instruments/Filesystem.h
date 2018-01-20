@@ -34,8 +34,8 @@ namespace Stroika {
             namespace Instruments {
                 namespace Filesystem {
 
-                    using Memory::Optional;
                     using DataExchange::ObjectVariantMapper;
+                    using Memory::Optional;
 
                     using IO::FileSystem::BlockDeviceKind;
 

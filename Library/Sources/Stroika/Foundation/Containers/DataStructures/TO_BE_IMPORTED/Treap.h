@@ -149,19 +149,19 @@ public:
 #if qDebug
     void        ListAll () const;
     static void ValidateBranch (Node* n, size_t& count);
-    void ValidateAll () const;
+    void        ValidateAll () const;
 #endif
 
 private:
     size_t fLength;
-//      size_t  fFindOptimizeChance;
+    //      size_t  fFindOptimizeChance;
 
 #if qKeepADTStatistics
 public:
     mutable size_t fCompares;
     mutable size_t fRotations;
 
-    size_t CalcHeight (size_t* totalHeight = nullptr) const;
+    size_t        CalcHeight (size_t* totalHeight = nullptr) const;
     static size_t CalcNodeHeight (Node* n, size_t height, size_t* totalHeight);
 #endif
 };

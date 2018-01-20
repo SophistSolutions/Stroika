@@ -53,7 +53,7 @@ namespace Stroika {
 
                     public:
                         nonvirtual SerializationConfiguration GetConfiguration () const;
-                        nonvirtual void SetConfiguration (const SerializationConfiguration& config);
+                        nonvirtual void                       SetConfiguration (const SerializationConfiguration& config);
 
                     private:
                         nonvirtual const Rep_& GetRep_ () const;

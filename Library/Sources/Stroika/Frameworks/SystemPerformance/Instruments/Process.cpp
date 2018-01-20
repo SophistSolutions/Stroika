@@ -1260,11 +1260,11 @@ namespace {
         PWSTR  Buffer;
     };
     struct PROCESS_BASIC_INFORMATION {
-        PVOID Reserved1;
+        PVOID          Reserved1;
         PVOID /*PPEB*/ PebBaseAddress;
-        PVOID     Reserved2[2];
-        ULONG_PTR UniqueProcessId;
-        PVOID     Reserved3;
+        PVOID          Reserved2[2];
+        ULONG_PTR      UniqueProcessId;
+        PVOID          Reserved3;
     };
     PVOID GetPebAddress_ (HANDLE ProcessHandle)
     {
@@ -1429,7 +1429,7 @@ namespace {
                     if (fThreadCntMap_.IsMissing ()) {
                         const SYSTEM_PROCESS_INFORMATION* start = GetProcessInfo ();
                         const SYSTEM_PROCESS_INFORMATION* end   = start + fActualNumElts_;
-                        Mapping<pid_t, unsigned int> tmp;
+                        Mapping<pid_t, unsigned int>      tmp;
                         for (const SYSTEM_PROCESS_INFORMATION* i = start; i < end; ++i) {
 
                             pid_t pid = reinterpret_cast<pid_t> (i->UniqueProcessId);
@@ -1448,13 +1448,13 @@ namespace {
                     }
                     return *fThreadCntMap_;
                 }
-                unsigned int fActualNumElts_;
+                unsigned int                                   fActualNumElts_;
                 mutable Optional<Mapping<pid_t, unsigned int>> fThreadCntMap_;
             };
             AllSysInfo_     allSysInfo;
             Iterable<pid_t> allPids = allSysInfo.GetAllProcessIDs_ ();
 #else
-            Iterable<pid_t>               allPids                               = GetAllProcessIDs_ ();
+            Iterable<pid_t> allPids = GetAllProcessIDs_ ();
 #endif
 
 #if qUseCreateToolhelp32SnapshotToCountThreads
@@ -1660,7 +1660,7 @@ namespace {
                 }
             }
             {
-                const ULONG ProcessBasicInformation = 0;
+                const ULONG ProcessBasicInformation                                                                                                                                                   = 0;
                 static LONG (WINAPI * NtQueryInformationProcess) (HANDLE ProcessHandle, ULONG ProcessInformationClass, PVOID ProcessInformation, ULONG ProcessInformationLength, PULONG ReturnLength) = (LONG (WINAPI*) (HANDLE, ULONG, PVOID, ULONG, PULONG))::GetProcAddress (::LoadLibraryA ("NTDLL.DLL"), "NtQueryInformationProcess");
                 if (NtQueryInformationProcess) {
                     ULONG_PTR pbi[6];
@@ -1677,8 +1677,8 @@ namespace {
                                 const int kUserProcParamsOffset_ = 0x20;
                                 const int kCmdLineOffset_        = 112;
 #else
-                                const int kUserProcParamsOffset_                = 0x10;
-                                const int kCmdLineOffset_                       = 0x40;
+                                const int kUserProcParamsOffset_ = 0x10;
+                                const int kCmdLineOffset_        = 0x40;
 #endif
                                 /* get the address of ProcessParameters */
                                 if (not::ReadProcessMemory (hProcess, (PCHAR)pebAddress + kUserProcParamsOffset_, &rtlUserProcParamsAddress, sizeof (PVOID), NULL)) {
@@ -1716,7 +1716,7 @@ namespace {
                     auto&& cleanup = Execution::Finally ([processToken]() noexcept {
                         Verify (::CloseHandle (processToken));
                     });
-                    DWORD nlen{};
+                    DWORD  nlen{};
                     // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
                     //          TokenUser
@@ -1740,13 +1740,13 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-          ,
+        ,
           CapturerWithContext_Linux_
 #elif qPlatform_Windows
-          ,
+        ,
           CapturerWithContext_Windows_
 #else
-          ,
+        ,
           CapturerWithContext_COMMON_
 #endif
     {

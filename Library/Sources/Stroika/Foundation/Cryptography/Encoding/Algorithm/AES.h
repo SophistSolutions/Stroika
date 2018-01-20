@@ -58,14 +58,14 @@ namespace Stroika {
                     /**
                      */
                     Streams::InputStream<Memory::Byte>::Ptr DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Memory::Byte>::Ptr& in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+                    Memory::BLOB                            DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 #if qHasFeature_OpenSSL
                     /**
                      */
                     Streams::InputStream<Memory::Byte>::Ptr EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Memory::Byte>::Ptr& in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+                    Memory::BLOB                            EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 #if qHasFeature_OpenSSL

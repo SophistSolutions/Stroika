@@ -194,8 +194,8 @@ namespace {
         }
         Instruments::Network::Info capture_ ()
         {
-            using Instruments::Network::InterfaceInfo;
             using Instruments::Network::Info;
+            using Instruments::Network::InterfaceInfo;
 
             Collection<InterfaceInfo> interfaceResults;
             IOStatistics              accumSummary;
@@ -283,7 +283,7 @@ namespace {
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const String_Constant                           kProcFileName_{L"/proc/net/netstat"};
             // Note - /procfs files always unseekable
-            bool firstTime = true;
+            bool                    firstTime = true;
             Mapping<String, size_t> labelMap;
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -315,9 +315,9 @@ namespace {
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             static const String_Constant                           kProcFileName_{L"/proc/net/snmp"};
             // Note - /procfs files always unseekable
-            bool firstTime = true;
+            bool                    firstTime = true;
             Mapping<String, size_t> labelMap;
-            Optional<uint64_t> totalTCPSegments;
+            Optional<uint64_t>      totalTCPSegments;
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
@@ -404,9 +404,9 @@ namespace {
         }
         Instruments::Network::Info capture_ ()
         {
-            using IO::Network::Interface;
-            using Instruments::Network::InterfaceInfo;
             using Instruments::Network::Info;
+            using Instruments::Network::InterfaceInfo;
+            using IO::Network::Interface;
 
             Info                      result;
             Collection<InterfaceInfo> interfaceResults;
@@ -499,10 +499,10 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_POSIX
-          ,
+        ,
           CapturerWithContext_POSIX_
 #elif qPlatform_Windows
-          ,
+        ,
           CapturerWithContext_Windows_
 #endif
     {

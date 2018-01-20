@@ -118,9 +118,9 @@ namespace Stroika {
                 nonvirtual void RunDirectly ();
 
             private:
-                ControlParams             fPIDParams_;
-                Time::DurationSecondsType fTimeDelta_; // time between loop iterations
-                function<ValueType ()>    fMeasureFunction_;
+                ControlParams               fPIDParams_;
+                Time::DurationSecondsType   fTimeDelta_; // time between loop iterations
+                function<ValueType ()>      fMeasureFunction_;
                 function<void(ValueType o)> fOutputFunction_;
                 struct UpdatableParams_ {
                     ValueType fSetPoint_  = {};

@@ -35,7 +35,7 @@ namespace {
     void DoTestForConcreteContainer_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::DoTestForConcreteContainer_"};
-        auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& t) {
+        auto                      extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& t) {
             // only work todo on sorted mappings
         };
         CommonTests::MultiSetTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);

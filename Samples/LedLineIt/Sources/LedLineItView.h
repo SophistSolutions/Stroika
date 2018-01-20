@@ -73,7 +73,7 @@ protected:
 
 public:
     nonvirtual size_t GetCurUserLine () const;
-    nonvirtual void SetCurUserLine (size_t newCurLine); // OK if bad line given
+    nonvirtual void   SetCurUserLine (size_t newCurLine); // OK if bad line given
 
 public:
     virtual void UpdateScrollBars () override;
@@ -132,7 +132,7 @@ public:
 
 protected:
     virtual SearchParameters GetSearchParameters () const override;
-    virtual void SetSearchParameters (const SearchParameters& sp) override;
+    virtual void             SetSearchParameters (const SearchParameters& sp) override;
 
 protected:
     afx_msg void OnSetFocus (CWnd* pOldWnd);

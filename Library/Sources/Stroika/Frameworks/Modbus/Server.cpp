@@ -212,9 +212,9 @@ namespace {
                     Throw (StringException (L"Illegal short MBAP request length"));
                 }
 
-                Memory::BLOB requestPayload = in.ReadAll (requestHeader.GetPayloadLength ());
-                auto zeroToOneBased         = [](uint16_t i) -> uint16_t { return i + 1; };
-                auto oneBasedToZeroBased    = [](uint16_t i) -> uint16_t { return i - 1; };
+                Memory::BLOB requestPayload      = in.ReadAll (requestHeader.GetPayloadLength ());
+                auto         zeroToOneBased      = [](uint16_t i) -> uint16_t { return i + 1; };
+                auto         oneBasedToZeroBased = [](uint16_t i) -> uint16_t { return i - 1; };
                 switch (requestHeader.fFunctionCode) {
                     case FunctionCodeType_::kReadCoils_: {
                         /*

@@ -253,7 +253,7 @@ private:
 
 private:
     Synchronized<Mapping<SignalID, Set<SignalHandler>>> fHandlers_;
-    bool fHanlderAvailable_[NSIG]{}; // if true post to blocking q
+    bool                                                fHanlderAvailable_[NSIG]{}; // if true post to blocking q
 private:
     /*
      *  Instead of maintaining an acutal Q, just maintain a count of number of signals recieved for each signal number.

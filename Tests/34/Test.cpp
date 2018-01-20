@@ -185,7 +185,7 @@ namespace {
         {
             using namespace PRIVATE_;
             TraceContextBumper ctx ("ScanDB::DB::RunTest");
-            auto test = [](PRIVATE_::DB& db, unsigned nTimesRanBefore) {
+            auto               test = [](PRIVATE_::DB& db, unsigned nTimesRanBefore) {
                 db.fDB_->Exec (L"select * from ScanTypes;");
                 {
                     Statement s{db.fDB_.get (), L"select * from ScanTypes;"};

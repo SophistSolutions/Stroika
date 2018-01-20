@@ -45,9 +45,9 @@ namespace Stroika {
                      *      @todo maybe reconsider?
                      */
                     struct Request {
-                        String fMethod;
+                        String                  fMethod;
                         Mapping<String, String> fOverrideHeaders;
-                        BLOB fData; // usually empty, but provided for some methods like POST
+                        BLOB                    fData; // usually empty, but provided for some methods like POST
 
                         /**
                          *  Scans fOverrideHeaders

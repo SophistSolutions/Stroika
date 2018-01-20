@@ -81,7 +81,7 @@ namespace {
 #elif qPlatform_Windows
                 ///tmpahcl - a good start
                 //return ::_read (fSD_, intoStart, intoEnd - intoStart);
-                int flags        = 0;
+                int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
                 return static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags))); // rough attempt...
 #else
@@ -158,9 +158,9 @@ namespace {
                     [this, maxSendAtATime](const Byte* start, const Byte* end) -> size_t {
                         Require (static_cast<size_t> (end - start) <= maxSendAtATime);
                         Assert ((end - start) < numeric_limits<int>::max ());
-                        int len   = static_cast<int> (end - start);
+                        int len = static_cast<int> (end - start);
                         int flags = 0;
-                        int n     = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
+                        int n = ::send (fSD_, reinterpret_cast<const char*> (start), len, flags);
                         ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (n);
                         Assert (0 <= n and n <= (end - start));
                         return static_cast<size_t> (n);
@@ -226,7 +226,7 @@ namespace {
                 if (keepAliveOptions.fEnabled and (keepAliveOptions.fTimeIdleBeforeSendingKeepalives or keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes)) {
                     tcp_keepalive alive{keepAliveOptions.fEnabled};
                     // from https://msdn.microsoft.com/en-us/library/windows/desktop/dd877220(v=vs.85).aspx - "The default settings when a TCP socket is initialized sets the keep-alive timeout to 2 hours and the keep-alive interval to 1 second"
-                    alive.keepalivetime     = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.Value (2 * 60 * 60) * 1000.0);
+                    alive.keepalivetime = Math::Round<ULONG> (keepAliveOptions.fTimeIdleBeforeSendingKeepalives.Value (2 * 60 * 60) * 1000.0);
                     alive.keepaliveinterval = Math::Round<ULONG> (keepAliveOptions.fTimeBetweenIndividualKeepaliveProbes.Value (1) * 1000.0);
                     DWORD dwBytesRet{};
                     if (::WSAIoctl (fSD_, SIO_KEEPALIVE_VALS, &alive, sizeof (alive), NULL, 0, &dwBytesRet, NULL, NULL) == SOCKET_ERROR) {

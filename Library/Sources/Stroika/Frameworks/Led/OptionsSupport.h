@@ -82,7 +82,7 @@ namespace Stroika {
 #if qPlatform_MacOS
                 int fResFile;
 #elif qPlatform_Windows
-                HKEY fKey;
+                HKEY         fKey;
 #endif
             };
 

@@ -57,8 +57,8 @@ namespace Stroika {
 Logger Logger::sThe_;
 
 struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
-    bool                          fBufferingEnabled_{false};
-    Synchronized<IAppenderRepPtr> fAppender_;
+    bool                                          fBufferingEnabled_{false};
+    Synchronized<IAppenderRepPtr>                 fAppender_;
     BlockingQueue<pair<Logger::Priority, String>> fOutMsgQ_;
     // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
     // race at end of Flush_()
@@ -67,13 +67,13 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
 
     struct LastMsg_ {
         pair<Logger::Priority, String> fLastMsgSent_{};
-        Time::DurationSecondsType fLastSentAt{};
-        unsigned int              fRepeatCount_{};
+        Time::DurationSecondsType      fLastSentAt{};
+        unsigned int                   fRepeatCount_{};
     };
     Synchronized<LastMsg_> fLastMsg_;
 
-    Synchronized<Execution::Thread::Ptr> fBookkeepingThread_;
-    atomic<Time::DurationSecondsType>    fMaxWindow_{};
+    Synchronized<Execution::Thread::Ptr>                                    fBookkeepingThread_;
+    atomic<Time::DurationSecondsType>                                       fMaxWindow_{};
     Synchronized<Cache::CallerStalenessCache<pair<Priority, String>, bool>> fMsgSentMaybeSuppressed_;
 
     Rep_ ()

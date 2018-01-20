@@ -92,11 +92,11 @@ public:
 
 public:
     virtual DurationSecondsType GetTimeout () const override;
-    virtual void SetTimeout (DurationSecondsType timeout) override;
-    virtual URL  GetURL () const override;
-    virtual void SetURL (const URL& url) override;
-    virtual void     Close () override;
-    virtual Response Send (const Request& request) override;
+    virtual void                SetTimeout (DurationSecondsType timeout) override;
+    virtual URL                 GetURL () const override;
+    virtual void                SetURL (const URL& url) override;
+    virtual void                Close () override;
+    virtual Response            Send (const Request& request) override;
 
 private:
     nonvirtual void AssureHasSessionHandle_ (const String& userAgent);
@@ -176,8 +176,8 @@ void Connection_WinHTTP::Rep_::Close ()
 
 Response Connection_WinHTTP::Rep_::Send (const Request& request)
 {
-    BLOB data; // usually empty, but provided for some methods like POST
-    Mapping<String, String> headers;
+    BLOB                              data; // usually empty, but provided for some methods like POST
+    Mapping<String, String>           headers;
     HTTP::Status                      status{};
     Optional<Response::SSLResultInfo> serverEndpointSSLInfo;
 
@@ -190,7 +190,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
      * when called within HealthFrameWorks - for example.
      *
      */
-    String userAgent = fOptions_.fUserAgent;
+    String                  userAgent     = fOptions_.fUserAgent;
     Mapping<String, String> useHeadersMap = request.fOverrideHeaders;
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP

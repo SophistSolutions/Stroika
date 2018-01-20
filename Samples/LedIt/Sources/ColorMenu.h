@@ -24,7 +24,7 @@ public:
     static COLORREF GetColor (UINT id);
 
     static Led_Color FontCmdToColor (UINT cmd);
-    static UINT FontColorToCmd (Led_Color color);
+    static UINT      FontColorToCmd (Led_Color color);
 
 public:
     virtual void DrawItem (LPDRAWITEMSTRUCT lpDIS) override;

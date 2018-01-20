@@ -359,8 +359,8 @@ C:
     ~ / .rcinfo
 #endif
     IO::FileSystem::Ptr::Components result;
-    using Traversal::Iterator;
     using Characters::Character;
+    using Traversal::Iterator;
 
 #if qPlatform_Windows
     bool isUNCName      = fileName.length () > 2 and fileName.StartsWith (L"\\\\");
@@ -370,7 +370,7 @@ C:
 #if qPlatform_Windows
     const Set<Character> kSlashChars_ = {'\\', '/'};
 #else
-    const Set<Character>          kSlashChars_ = {'/'};
+    const Set<Character> kSlashChars_ = {'/'};
 #endif
     Sequence<String> rawComponents = fileName.Tokenize (kSlashChars_, false);
     Iterator<String> i             = rawComponents.begin ();

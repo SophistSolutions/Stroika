@@ -19,8 +19,8 @@
 // abstract callback API
 class FormatToolbarOwner {
 public:
-    virtual Led_IncrementalFontSpecification GetCurFont () const          = 0;
-    virtual void SetCurFont (const Led_IncrementalFontSpecification& fsp) = 0;
+    virtual Led_IncrementalFontSpecification GetCurFont () const                                      = 0;
+    virtual void                             SetCurFont (const Led_IncrementalFontSpecification& fsp) = 0;
 };
 
 class FormatToolbar : public CToolBar {
@@ -51,7 +51,7 @@ public:
 
     public:
         virtual BOOL PreTranslateMessage (MSG* pMsg);
-        afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+        afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
         DECLARE_MESSAGE_MAP ()
     };
 
@@ -68,7 +68,7 @@ public:
 
         virtual void DrawItem (LPDRAWITEMSTRUCT lpDIS) override;
         virtual void MeasureItem (LPMEASUREITEMSTRUCT lpMIS) override;
-        virtual int CompareItem (LPCOMPAREITEMSTRUCT lpCIS) override;
+        virtual int  CompareItem (LPCOMPAREITEMSTRUCT lpCIS) override;
         DECLARE_MESSAGE_MAP ()
     };
 
@@ -81,10 +81,10 @@ public:
     public:
         nonvirtual void EnumFontSizes (CDC& dc, LPCTSTR pFontName);
         static BOOL FAR PASCAL EnumSizeCallBack (LOGFONT FAR* lplf, LPNEWTEXTMETRIC lpntm, int FontType, LPVOID lpv);
-        nonvirtual void TwipsToPointString (LPTSTR lpszBuf, int nTwips);
-        nonvirtual void SetTwipSize (int nSize);
-        nonvirtual int  GetTwipSize ();
-        nonvirtual void InsertSize (int nSize);
+        nonvirtual void        TwipsToPointString (LPTSTR lpszBuf, int nTwips);
+        nonvirtual void        SetTwipSize (int nSize);
+        nonvirtual int         GetTwipSize ();
+        nonvirtual void        InsertSize (int nSize);
     };
 
 public:
@@ -98,7 +98,7 @@ public:
 protected:
     virtual void OnUpdateCmdUI (CFrameWnd* pTarget, BOOL bDisableIfNoHndler) override;
 
-    afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+    afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnFontNameKillFocus ();
     afx_msg void OnFontSizeKillFocus ();
     afx_msg void OnFontSizeDropDown ();

@@ -38,8 +38,8 @@ namespace Stroika {
         namespace IO {
             namespace FileSystem {
 
-                using Characters::String;
                 using Characters::SDKString;
+                using Characters::String;
                 using Time::DateTime;
 
                 /**

@@ -14,9 +14,9 @@ namespace Stroika {
     namespace Foundation {
         namespace Characters {
 
+            using std::basic_string;
             using std::string;
             using std::wstring;
-            using std::basic_string;
 
             /**
              */

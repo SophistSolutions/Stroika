@@ -29,10 +29,10 @@ namespace Stroika {
             namespace Variant {
                 namespace CharacterDelimitedLines {
 
-                    using Containers::Sequence;
-                    using Containers::Set;
                     using Characters::Character;
                     using Characters::String;
+                    using Containers::Sequence;
+                    using Containers::Set;
                     using Traversal::Iterable;
 
                     /**

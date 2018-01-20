@@ -15,11 +15,11 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
+using Characters::Character;
+using Characters::String;
 using Characters::String_Constant;
 using Containers::Sequence;
 using Containers::Set;
-using Characters::Character;
-using Characters::String;
 using Memory::Byte;
 using Traversal::Iterable;
 

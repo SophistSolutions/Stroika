@@ -98,10 +98,10 @@ namespace Stroika {
 
                 class Writer::_IRep {
                 public:
-                    virtual _SharedPtrIRep Clone () const                = 0;
-                    virtual String         GetDefaultFileSuffix () const = 0;
-                    virtual void Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)          = 0;
-                    virtual void Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out) = 0;
+                    virtual _SharedPtrIRep Clone () const                                                                              = 0;
+                    virtual String         GetDefaultFileSuffix () const                                                               = 0;
+                    virtual void           Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)          = 0;
+                    virtual void           Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out) = 0;
                 };
             }
         }

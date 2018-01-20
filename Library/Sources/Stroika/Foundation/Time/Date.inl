@@ -85,7 +85,7 @@ namespace Stroika {
                 : fJulianDateRep_ (jday_ (month, day, year))
             {
             }
-			inline constexpr Date::JulianRepType Date::GetJulianRep () const
+            inline constexpr Date::JulianRepType Date::GetJulianRep () const
             {
                 return fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_;
             }

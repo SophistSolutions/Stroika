@@ -216,9 +216,9 @@ namespace Stroika {
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
                 nonvirtual Memory::Optional<value_type> Lookup (ArgByValueType<KeyType> key) const;
-                nonvirtual bool Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const;
-                nonvirtual bool Lookup (ArgByValueType<KeyType> key, value_type* item) const;
-                nonvirtual bool Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
+                nonvirtual bool                         Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const;
+                nonvirtual bool                         Lookup (ArgByValueType<KeyType> key, value_type* item) const;
+                nonvirtual bool                         Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
 
             public:
                 /**
@@ -279,7 +279,7 @@ namespace Stroika {
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual bool Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const = 0;
-                virtual void Remove (ArgByValueType<KEY_TYPE> key) = 0;
+                virtual void Remove (ArgByValueType<KEY_TYPE> key)                                          = 0;
             };
         }
     }

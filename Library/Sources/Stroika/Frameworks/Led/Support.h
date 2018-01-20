@@ -53,13 +53,13 @@ namespace Stroika {
 
             using Foundation::Memory::Byte;
 
-/*
+            /*
              **************** Compiler/Lib bug workarounds... **************
              */
 
 #if qSTLTemplatesErroniouslyRequireOpLessCuzOfOverExpanding
 #define STLOpLessDeclare_BWA(T)      \
-    \
+                                     \
 public:                              \
     friend bool operator< (T, T)     \
     {                                \
@@ -72,7 +72,7 @@ public:                              \
 
 #if qSTLTemplatesErroniouslyRequireOpEqualsCuzOfOverExpanding
 #define STLOpEqualDeclare_BWA(T)     \
-    \
+                                     \
 public:                              \
     friend bool operator== (T, T)    \
     {                                \
@@ -131,7 +131,7 @@ public:                              \
 #if qSingleByteCharacters
             using Led_tChar = char;
 #elif qMultiByteCharacters
-            using Led_tChar         = char;
+            using Led_tChar = char;
 #elif qWideCharacters
             using Led_tChar = wchar_t;
 #else
@@ -243,7 +243,7 @@ public:                              \
 #endif
 
             wstring ACP2WideString (const string& s);
-            string Wide2ACPString (const wstring& s);
+            string  Wide2ACPString (const wstring& s);
 
             /*
             @METHOD:        Led_ANSI2SDKString
@@ -422,20 +422,20 @@ public:                              \
             */
             void Led_ThrowIfNull (void* p);
 
-            short Led_ByteSwapFromMac (short src);
+            short          Led_ByteSwapFromMac (short src);
             unsigned short Led_ByteSwapFromMac (unsigned short src);
 
-            short Led_ByteSwapFromWindows (short src);
+            short          Led_ByteSwapFromWindows (short src);
             unsigned short Led_ByteSwapFromWindows (unsigned short src);
-            long Led_ByteSwapFromWindows (long src);
-            unsigned long Led_ByteSwapFromWindows (unsigned long src);
+            long           Led_ByteSwapFromWindows (long src);
+            unsigned long  Led_ByteSwapFromWindows (unsigned long src);
 
-            void Led_USHORTToBuf (unsigned short u, unsigned short* realBuf);
+            void           Led_USHORTToBuf (unsigned short u, unsigned short* realBuf);
             unsigned short Led_BufToUSHORT (const unsigned short* realBuf);
-            void Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf);
-            unsigned long Led_BufToULONG (const unsigned long* buf);
-            void Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf);
-            unsigned int Led_BufToULONG (const unsigned int* buf);
+            void           Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf);
+            unsigned long  Led_BufToULONG (const unsigned long* buf);
+            void           Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf);
+            unsigned int   Led_BufToULONG (const unsigned int* buf);
 
             // These functions do NOT null terminate.
             // they both return the number of bytes in the target text based on conversion from
@@ -475,7 +475,7 @@ public:                              \
             // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
             // fall back on application-heap-zone if no tmp memory
             Handle Led_DoNewHandle (size_t n);
-            void Led_CheckSomeLocalHeapRAMAvailable (size_t n = 1024); // only to avoid MacOS crashes on toolbox calls with little RAM left
+            void   Led_CheckSomeLocalHeapRAMAvailable (size_t n = 1024); // only to avoid MacOS crashes on toolbox calls with little RAM left
 #endif
 
 #if qPlatform_MacOS || qPlatform_Windows
@@ -569,7 +569,7 @@ public:                              \
              *  of the mbtye character.
              */
             const Led_tChar* Led_FindPrevOrEqualCharBoundary (const Led_tChar* start, const Led_tChar* guessedEnd);
-            Led_tChar* Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd);
+            Led_tChar*       Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd);
 #endif
 
             /*
@@ -581,14 +581,14 @@ public:                              \
             @METHOD:        Led_NextChar
             @DESCRIPTION:   <p>See @'Led_tChar'</p>
             */
-            Led_tChar* Led_NextChar (Led_tChar* fromHere);
+            Led_tChar*       Led_NextChar (Led_tChar* fromHere);
             const Led_tChar* Led_NextChar (const Led_tChar* fromHere);
 
             /*
             @METHOD:        Led_PreviousChar
             @DESCRIPTION:   <p>See @'Led_tChar'</p>
             */
-            Led_tChar* Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere);
+            Led_tChar*       Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere);
             const Led_tChar* Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere);
 
             /*
@@ -597,8 +597,8 @@ public:                              \
             */
             bool ValidateTextForCharsetConformance (const Led_tChar* text, size_t length); // just return true or false - no other diagnostics
 
-            unsigned Led_DigitCharToNumber (char digitChar);  // require input is valid decimal digit
-            char Led_NumberToDigitChar (unsigned digitValue); // require input is valid decimal digit value
+            unsigned Led_DigitCharToNumber (char digitChar);      // require input is valid decimal digit
+            char     Led_NumberToDigitChar (unsigned digitValue); // require input is valid decimal digit value
 
             bool Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase = true);
             bool Led_CasedStringsEqual (const string& lhs, const string& rhs, bool ignoreCase = true);
@@ -652,7 +652,7 @@ public:                              \
 #if qPlatform_MacOS
                 Handle fOSClipHandle;
 #elif qPlatform_Windows
-                HANDLE           fOSClipHandle;
+                HANDLE         fOSClipHandle;
 #endif
                 void* fLockedData;
             };
@@ -663,7 +663,7 @@ public:                              \
 #if qXWindows
             extern void (*gBeepNotifyCallBackProc) ();
             unsigned long LedTickCount2XTime (float ledTickCount);
-            void SyncronizeLedXTickCount (unsigned long xTickCount);
+            void          SyncronizeLedXTickCount (unsigned long xTickCount);
 #endif
 
 #if qPlatform_Windows
@@ -807,10 +807,10 @@ public:                              \
                 // Use this for more low level extensions of the DDE support...
                 static DWORD    sDDEMLInstance; //  The DDEML instance identifier.
                 static HDDEDATA CALLBACK SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/);
-                static const char* SkipToNextArgument (const char* pFormat);
-                static HSZ ClientArguments (const char* pFormat, ...);
-                static char* ExtractArgument (HSZ hszArgs, int iArg);
-                static void ServerReturned (HDDEDATA hArgs, const char* pFormat, ...);
+                static const char*       SkipToNextArgument (const char* pFormat);
+                static HSZ               ClientArguments (const char* pFormat, ...);
+                static char*             ExtractArgument (HSZ hszArgs, int iArg);
+                static void              ServerReturned (HDDEDATA hArgs, const char* pFormat, ...);
 #endif
             };
 
@@ -869,7 +869,7 @@ public:                              \
             }
 #endif
 
-/*
+            /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
@@ -1373,7 +1373,7 @@ namespace Stroika {
 #else
                 const Led_tChar*, size_t
 #endif
-                )
+            )
             {
 #if qMultiByteCharacters
                 return (Led_IsValidMultiByteString (text, length));

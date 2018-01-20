@@ -25,7 +25,7 @@ namespace Stroika {
 
                     using Characters::String;
 
-                    uid_t UserName2UID (const String& name);
+                    uid_t  UserName2UID (const String& name);
                     String uid_t2UserName (uid_t uid);
 
                     // This returns the uid of the actual original user - not the effectvie permissions

@@ -24,10 +24,10 @@ using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
 
 using Characters::String;
-using Containers::Sequence;
-using Memory::Optional;
 using Client::Listener;
 using Client::Search;
+using Containers::Sequence;
+using Memory::Optional;
 
 namespace {
     mutex kStdOutMutex_; // If the listener impl uses multiple listen threads, prevent display from getting messed up

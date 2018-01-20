@@ -43,8 +43,8 @@ using namespace std;
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Service;
 
-using Containers::Sequence;
 using Characters::String_Constant;
+using Containers::Sequence;
 using Execution::SignalHandler;
 using Execution::SignalHandlerRegistry;
 using Execution::Thread;

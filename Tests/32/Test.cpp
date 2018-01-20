@@ -241,7 +241,7 @@ namespace {
         struct Person_ {
             String firstName;
             String lastName;
-            bool operator== (const Person_& rhs) const { return firstName == rhs.firstName and lastName == rhs.lastName; }
+            bool   operator== (const Person_& rhs) const { return firstName == rhs.firstName and lastName == rhs.lastName; }
         };
         Memory::BLOB mkdata_ ()
         {
@@ -556,15 +556,15 @@ namespace {
             Mapping<TunerNumberType_, CurrentType_> TunerTECCurrent;
         };
         struct SensorDataType_ {
-            Optional<TunerNumberType_> ActiveLaser;
-            Optional<WaveNumberType_>  ActiveLaserWaveNumber;
-            Optional<TemperatureType_> DetectorTemperature;
-            Optional<TemperatureType_> OpticsTemperature;
-            Optional<TemperatureType_> ExternalTemperature1;
+            Optional<TunerNumberType_>                  ActiveLaser;
+            Optional<WaveNumberType_>                   ActiveLaserWaveNumber;
+            Optional<TemperatureType_>                  DetectorTemperature;
+            Optional<TemperatureType_>                  OpticsTemperature;
+            Optional<TemperatureType_>                  ExternalTemperature1;
             Mapping<TunerNumberType_, TemperatureType_> LaserTemperatures;
             Mapping<TunerNumberType_, CurrentType_>     LaserCurrents;
             Mapping<TunerNumberType_, TemperatureType_> MirrorTemperatures;
-            Optional<TECPowerConsumptionStatsType_> TECPowerConsumptionStats;
+            Optional<TECPowerConsumptionStatsType_>     TECPowerConsumptionStats;
         };
         Memory::BLOB mkdata_ ()
         {

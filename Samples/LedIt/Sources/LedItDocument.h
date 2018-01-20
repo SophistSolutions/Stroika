@@ -66,8 +66,8 @@ public:
 
 public:
     virtual Boolean ObeyCommand (CommandT inCommand, void* ioParam) override;
-    virtual void FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark,
-                                    UInt16& outMark, Str255 outName) override;
+    virtual void    FindCommandStatus (CommandT inCommand, Boolean& outEnabled, Boolean& outUsesMark,
+                                       UInt16& outMark, Str255 outName) override;
 
     nonvirtual void OnSaveACopyAsCommand ();
 
@@ -96,7 +96,7 @@ public:
 
 public:
     static FileFormat sHiddenDocOpenArg;
-    virtual BOOL OnOpenDocument (LPCTSTR lpszPathName) override;
+    virtual BOOL      OnOpenDocument (LPCTSTR lpszPathName) override;
 
 protected:
     virtual COleServerItem* OnGetEmbeddedItem () override;

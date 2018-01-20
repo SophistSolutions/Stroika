@@ -56,7 +56,7 @@ namespace Stroika {
                      * This optional API allows pre-reserving space as an optimization.
                      */
                     nonvirtual size_t GetCapacity () const;
-                    nonvirtual void SetCapacity (size_t slotsAlloced);
+                    nonvirtual void   SetCapacity (size_t slotsAlloced);
 
                 public:
                     /**

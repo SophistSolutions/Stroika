@@ -45,8 +45,8 @@ namespace Stroika {
                     virtual IteratorRepSharedPtr Clone () const override;
 #endif
                     virtual IteratorOwnerID GetOwner () const override;
-                    virtual void More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool Equals (const IRep* rhs) const override;
+                    virtual void            More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool            Equals (const IRep* rhs) const override;
                 };
                 DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
             };
@@ -60,8 +60,8 @@ namespace Stroika {
                     Rep (const Iterator<T>& delegateTo);
                     virtual IteratorRepSharedPtr Clone () const override;
                     virtual IteratorOwnerID      GetOwner () const override;
-                    virtual void More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool Equals (const IRep* rhs) const override;
+                    virtual void                 More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool                 Equals (const IRep* rhs) const override;
                 };
             };
         }

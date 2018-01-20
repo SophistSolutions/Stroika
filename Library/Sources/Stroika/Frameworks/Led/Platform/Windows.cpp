@@ -54,7 +54,7 @@ namespace Stroika {
                     virtual void                                  StartSpendTimeCalls () override;
                     virtual void                                  TerminateSpendTimeCalls () override;
                     virtual Foundation::Time::DurationSecondsType GetSuggestedFrequency () const override;
-                    virtual void SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
+                    virtual void                                  SetSuggestedFrequency (Foundation::Time::DurationSecondsType suggestedFrequency) override;
 
                 protected:
                     nonvirtual void OnTimer_Msg (UINT_PTR nEventID, TIMERPROC* proc);

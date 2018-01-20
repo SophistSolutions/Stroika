@@ -113,7 +113,7 @@ namespace {
         // On GLIBC systems, could use _mkgmtime64  - https://github.com/leelwh/clib/blob/master/c/mktime64.c
         // Based on https://stackoverflow.com/questions/12353011/how-to-convert-a-utc-date-time-to-a-time-t-in-c
         constexpr int kDaysOfMonth_[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        auto isLeapYear                 = [](short year) -> bool {
+        auto          isLeapYear        = [](short year) -> bool {
             if (year % 4 != 0)
                 return false;
             if (year % 100 != 0)

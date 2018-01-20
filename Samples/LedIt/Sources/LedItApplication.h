@@ -170,9 +170,9 @@ public:
     virtual void ShowAboutBox () override;
 
     virtual Boolean ObeyCommand (CommandT inCommand, void* ioParam = nil) override;
-    virtual void FindCommandStatus (CommandT inCommand,
-                                    Boolean& outEnabled, Boolean& outUsesMark,
-                                    UInt16& outMark, Str255 outName) override;
+    virtual void    FindCommandStatus (CommandT inCommand,
+                                       Boolean& outEnabled, Boolean& outUsesMark,
+                                       UInt16& outMark, Str255 outName) override;
 
 public:
     nonvirtual void OnHelpMenuCommand ();
@@ -196,8 +196,8 @@ private:
     float fLastLowMemWarnAt;
 
 public:
-    virtual void OpenDocument (FSSpec* inMacFSSpec) override;
-    virtual void OpenDocument (FSSpec* inMacFSSpec, FileFormat format) override;
+    virtual void          OpenDocument (FSSpec* inMacFSSpec) override;
+    virtual void          OpenDocument (FSSpec* inMacFSSpec, FileFormat format) override;
     virtual LModelObject* MakeNewDocument () override;
 
 public:
@@ -205,7 +205,7 @@ public:
 
 private:
     static pascal Boolean SFGetDlgModalFilter (DialogPtr dialog, EventRecord* theEvent, short* itemHit, void* myData);
-    static pascal short SFGetDlgHook (short item, DialogPtr dialog, void* myData);
+    static pascal short   SFGetDlgHook (short item, DialogPtr dialog, void* myData);
 #endif
 
 #if qXWindows

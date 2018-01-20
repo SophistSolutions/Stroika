@@ -46,8 +46,8 @@ namespace Stroika {
 
             using namespace Stroika::Foundation;
 
-            using Characters::String;
             using Characters::RegularExpression;
+            using Characters::String;
             using Containers::Sequence;
             using IO::Network::URL;
             using Memory::Optional;

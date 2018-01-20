@@ -19,9 +19,9 @@ using namespace Stroika::Foundation::DataExchange;
 
 namespace {
     // VERY CRUDDY (but close to what we use in HF) impl - to get started...
-    Execution::SpinLock sCritSec_; // lock needed here to keep map and sequence in sync
+    Execution::SpinLock                                     sCritSec_; // lock needed here to keep map and sequence in sync
     Mapping<String, AtomManager_Default::AtomInternalType>* sMap_;
-    Sequence<String>* sSeq_;
+    Sequence<String>*                                       sSeq_;
 }
 
 /*

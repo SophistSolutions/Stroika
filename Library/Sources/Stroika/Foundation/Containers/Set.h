@@ -385,13 +385,13 @@ namespace Stroika {
                 using _SetRepSharedPtr = typename Set<T, TRAITS>::_SetRepSharedPtr;
 
             public:
-                virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual bool Equals (const _IRep& rhs) const                                    = 0;
-                virtual bool Contains (ArgByValueType<T> item) const                            = 0;
-                virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const               = 0;
-                virtual void Add (ArgByValueType<T> item)                                       = 0;
-                virtual void Remove (ArgByValueType<T> item)                                    = 0;
-                virtual void Remove (const Iterator<T>& i)                                      = 0;
+                virtual _SetRepSharedPtr    CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual bool                Equals (const _IRep& rhs) const                        = 0;
+                virtual bool                Contains (ArgByValueType<T> item) const                = 0;
+                virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const                  = 0;
+                virtual void                Add (ArgByValueType<T> item)                           = 0;
+                virtual void                Remove (ArgByValueType<T> item)                        = 0;
+                virtual void                Remove (const Iterator<T>& i)                          = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

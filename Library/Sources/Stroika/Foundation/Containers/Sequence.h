@@ -551,14 +551,14 @@ namespace Stroika {
             public:
                 virtual _SequenceRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
                 // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
-                virtual T GetAt (size_t i) const = 0;
-                virtual void SetAt (size_t i, ArgByValueType<T> item) = 0;
-                virtual size_t IndexOf (const Iterator<T>& i) const = 0;
-                virtual void Remove (const Iterator<T>& i)          = 0;
-                virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
+                virtual T      GetAt (size_t i) const                                    = 0;
+                virtual void   SetAt (size_t i, ArgByValueType<T> item)                  = 0;
+                virtual size_t IndexOf (const Iterator<T>& i) const                      = 0;
+                virtual void   Remove (const Iterator<T>& i)                             = 0;
+                virtual void   Update (const Iterator<T>& i, ArgByValueType<T> newValue) = 0;
                 // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
                 virtual void Insert (size_t at, const T* from, const T* to) = 0;
-                virtual void Remove (size_t from, size_t to) = 0;
+                virtual void Remove (size_t from, size_t to)                = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

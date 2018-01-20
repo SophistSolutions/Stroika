@@ -259,8 +259,8 @@ StandardMacPictureStyleMarker::StandardMacPictureStyleMarker (const Led_Picture*
 #if qPlatform_MacOS
     fPictureHandle = (PictureHandle)Led_DoNewHandle (picSize);
 #elif qPlatform_Windows
-    fPictureSize                                                = picSize;
-    fPictureHandle                                              = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
+    fPictureSize   = picSize;
+    fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Led_ThrowIfNull (fPictureHandle);
 #endif
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
@@ -583,7 +583,7 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
     imager->DrawSegment_ (tablet, fsp, from, from + displayText.length (), TextLayoutBlock_Basic (displayText.c_str (), displayText.c_str () + displayText.length ()),
                           drawInto, useBaseLine, pixelsDrawn);
 #else
-    Led_Distance     width                                       = 0;
+    Led_Distance width = 0;
     MeasureSegmentWidth (imager, runElement, from, to, text, &width);
     width -= 2 * kDefaultEmbeddingMargin.h;
     Led_Distance height = MeasureSegmentHeight (imager, runElement, from, to) - 2 * kDefaultEmbeddingMargin.v;
@@ -943,8 +943,8 @@ StandardMacPictureWithURLStyleMarker::StandardMacPictureWithURLStyleMarker (cons
 #if qPlatform_MacOS
     fPictureHandle = (StandardMacPictureStyleMarker::PictureHandle)Led_DoNewHandle (picSize);
 #elif qPlatform_Windows
-    fPictureSize                                = picSize;
-    fPictureHandle                              = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
+    fPictureSize   = picSize;
+    fPictureHandle = ::GlobalAlloc (GMEM_MOVEABLE, picSize);
     Led_ThrowIfNull (fPictureHandle);
 #endif
     {
@@ -1351,7 +1351,7 @@ StandardUnknownTypeStyleMarker::StandardUnknownTypeStyleMarker (Led_ClipFormat f
         unique_ptr<Led_DIB> x = unique_ptr<Led_DIB> (Led_CloneDIB (dib));
         fDisplayDIB           = x;
 #else
-        fDisplayDIB                                         = unique_ptr<Led_DIB> (Led_CloneDIB (dib));
+        fDisplayDIB = unique_ptr<Led_DIB> (Led_CloneDIB (dib));
 #endif
     }
     fShownSize = CalcDefaultShownSize ();
@@ -1400,7 +1400,7 @@ Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
     RequireNotNull (sUnknownPict);
     Led_Size pixelSize = Led_GetDIBImageSize (sUnknownPict);
 #elif qXWindows
-    Led_Size         pixelSize                               = Led_Size (10, 10); //  X-TMP-HACK-LGP2000-06-13
+    Led_Size pixelSize = Led_Size (10, 10);                            //  X-TMP-HACK-LGP2000-06-13
 #endif
 
     return Led_TWIPS_Point (Led_CvtScreenPixelsToTWIPSV (pixelSize.v), Led_CvtScreenPixelsToTWIPSH (pixelSize.h));

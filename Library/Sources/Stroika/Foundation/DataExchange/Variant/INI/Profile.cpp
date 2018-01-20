@@ -22,7 +22,7 @@ using Characters::String_Constant;
 
 Profile INI::Convert (VariantValue v)
 {
-    Profile profile;
+    Profile                       profile;
     Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> (); // throws if format mismatch
     for (KeyValuePair<String, VariantValue> kvi : mv) {
         if (kvi.fValue.GetType () == VariantValue::Type::eMap) {

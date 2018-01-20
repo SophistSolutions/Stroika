@@ -84,8 +84,8 @@ namespace Stroika {
                 /**
                  */
                 InterceptorChain (const Sequence<Interceptor>& interceptors = {});
-                InterceptorChain (const InterceptorChain&)                  = default;
-                InterceptorChain (InterceptorChain&&)                       = default;
+                InterceptorChain (const InterceptorChain&) = default;
+                InterceptorChain (InterceptorChain&&)      = default;
 
             protected:
                 InterceptorChain (const shared_ptr<_IRep>& rep);

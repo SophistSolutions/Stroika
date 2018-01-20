@@ -82,8 +82,8 @@ namespace Stroika {
 
 #if qHasFeature_OpenSSL
                 using Cryptography::OpenSSL::CipherAlgorithm;
-                using Cryptography::OpenSSL::DigestAlgorithm;
                 using Cryptography::OpenSSL::DerivedKey;
+                using Cryptography::OpenSSL::DigestAlgorithm;
 #endif
 
 #if qHasFeature_OpenSSL

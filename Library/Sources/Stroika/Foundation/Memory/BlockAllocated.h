@@ -106,8 +106,8 @@ namespace Stroika {
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)                                                                                                    \
     static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }                        \
     static void* operator new (size_t n, int, const char*, int) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); } \
-    static void operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }                              \
-    static void operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }
+    static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }                             \
+    static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }
 #else
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
@@ -142,7 +142,7 @@ namespace Stroika {
 #if qAllowBlockAllocation
 #define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)                   \
     static void* operator new (size_t n) { return ::operator new (n); } \
-    static void operator delete (void* p) { ::operator delete (p); }
+    static void  operator delete (void* p) { ::operator delete (p); }
 #else
 #define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif

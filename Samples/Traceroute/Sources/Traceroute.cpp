@@ -41,7 +41,7 @@ int main (int argc, const char* argv[])
     unsigned int          sampleCount = 3;
     static const Duration kInterSampleTime_{"PT.1S"};
     size_t                packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
-    auto usage = [](const Optional<String>& extraArg = {}) {
+    auto                  usage      = [](const Optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
         }

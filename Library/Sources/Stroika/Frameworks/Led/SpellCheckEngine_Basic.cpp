@@ -77,7 +77,7 @@ namespace {
 #if qBasicString_Missing_CompareOverload_T
             bool answer = _Right.compare (fBase + _Left.fIndex, 0, _Left.fWordLen) > 0;
 #else
-            bool    answer      = _Right.compare (0, _Right.length (), fBase + _Left.fIndex, _Left.fWordLen) > 0;
+            bool answer = _Right.compare (0, _Right.length (), fBase + _Left.fIndex, _Left.fWordLen) > 0;
 #endif
 #if qDebug
             Led_tString left = Led_tString (fBase + _Left.fIndex, fBase + _Left.fIndex + _Left.fWordLen);
@@ -1107,7 +1107,7 @@ void SpellCheckEngine_Basic_Simple::SetUserDictionary (const UDDictionaryName& u
     memset (&zero, 0, sizeof (zero));
     bool noUD = (::memcmp (&userDictionary, &zero, sizeof (zero)) == 0);
 #else
-    bool            noUD        = userDictionary.length () == 0;
+    bool noUD = userDictionary.length () == 0;
 #endif
     delete fUD;
     fUD = NULL;

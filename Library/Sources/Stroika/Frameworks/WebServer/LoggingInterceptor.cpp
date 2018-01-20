@@ -64,7 +64,7 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
         }
         fLogger_->Completed (logID);
     }
-    shared_ptr<ILogHandler> fLogger_;
+    shared_ptr<ILogHandler>                                                              fLogger_;
     Execution::Synchronized<Mapping<Message*, shared_ptr<ILogHandler::MessageInstance>>> fOngoingMessages_;
 };
 

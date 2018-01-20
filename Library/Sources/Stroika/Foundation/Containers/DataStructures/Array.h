@@ -137,13 +137,13 @@ namespace Stroika {
                     nonvirtual Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs);
 
                 public:
-                    nonvirtual T GetAt (size_t i) const;
+                    nonvirtual T    GetAt (size_t i) const;
                     nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
                     nonvirtual T& operator[] (size_t i);
                     nonvirtual T operator[] (size_t i) const;
 
                     nonvirtual size_t GetLength () const;
-                    nonvirtual void SetLength (size_t newLength, ArgByValueType<T> fillValue);
+                    nonvirtual void   SetLength (size_t newLength, ArgByValueType<T> fillValue);
 
                     nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
                     nonvirtual void RemoveAt (size_t index);
@@ -162,7 +162,7 @@ namespace Stroika {
                      * of arrays so that they dont waste time in Realloc's.
                      */
                     nonvirtual size_t GetCapacity () const;
-                    nonvirtual void SetCapacity (size_t slotsAlloced);
+                    nonvirtual void   SetCapacity (size_t slotsAlloced);
 
                     nonvirtual void Compact ();
 
@@ -234,8 +234,8 @@ namespace Stroika {
                 public:
                     nonvirtual T Current () const;           //  Error to call if Done (), otherwise OK
                     nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
-                    nonvirtual bool More (T* current, bool advance);
-                    nonvirtual bool Done () const;
+                    nonvirtual bool   More (T* current, bool advance);
+                    nonvirtual bool   Done () const;
 
                 public:
                     nonvirtual void SetIndex (size_t i);

@@ -92,7 +92,7 @@ namespace {
 #if qDebug
         const int kLoopEnd = 1000;
 #else
-        const int kLoopEnd = 2000;
+        const int kLoopEnd      = 2000;
 #endif
 
         void StressTest1_ (String big)

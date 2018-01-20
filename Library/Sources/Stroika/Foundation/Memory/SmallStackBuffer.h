@@ -209,10 +209,24 @@ namespace Stroika {
 #if qDebug
             private:
                 static constexpr Byte kGuard1_[8] = {
-                    0x45, 0x23, 0x12, 0x56, 0x99, 0x76, 0x12, 0x55,
+                    0x45,
+                    0x23,
+                    0x12,
+                    0x56,
+                    0x99,
+                    0x76,
+                    0x12,
+                    0x55,
                 };
                 static constexpr Byte kGuard2_[8] = {
-                    0x15, 0x32, 0xa5, 0x16, 0x11, 0x7a, 0x90, 0x10,
+                    0x15,
+                    0x32,
+                    0xa5,
+                    0x16,
+                    0x11,
+                    0x7a,
+                    0x90,
+                    0x10,
                 };
 #endif
 

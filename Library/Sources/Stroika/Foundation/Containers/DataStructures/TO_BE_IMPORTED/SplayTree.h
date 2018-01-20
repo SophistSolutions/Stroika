@@ -90,13 +90,13 @@ public:
         requests may want to reduce the splay chance further, to avoid unnecessary rotations near the top of the tree.
     */
     nonvirtual SplayType GetSplayType () const;
-    nonvirtual void SetSplayType (SplayType newSplayType);
+    nonvirtual void      SetSplayType (SplayType newSplayType);
 
     // for expert users. If you know the details of your distribution, you can set custom height weights optimal to usage. The weights
     // represent the chance in 10000 that a node at a height one greater than the weight index will splay. The last weight
     // is also used for any nodes with heights greater than the weight lists size.
     static const std::vector<size_t>& GetHeightWeights (SplayType st);
-    static void SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights);
+    static void                       SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights);
 
 public:
     struct Node {
@@ -149,7 +149,7 @@ public:
 public:
 #if qDebug
     nonvirtual void ListAll () const;
-    static void ValidateBranch (Node* n, size_t& count);
+    static void     ValidateBranch (Node* n, size_t& count);
     nonvirtual void ValidateAll () const;
 #endif
 

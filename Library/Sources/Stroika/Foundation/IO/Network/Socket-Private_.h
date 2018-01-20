@@ -179,9 +179,9 @@ namespace Stroika {
                                     *                      an attempt to use the SIO_GET_BROADCAST_ADDRESS IOCTL was made on an IPv6 socket
                                     *                      or an attempt to use the TCP SIO_KEEPALIVE_VALS IOCTL was made on a datagram socket.
                                     */
-                                DWORD            dwBytesRet;
+                                DWORD dwBytesRet;
                                 sockaddr_storage bcast;
-                                bool             isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
+                                bool isV6 = (WSAIoctl (this->GetNativeSocket (), SIO_GET_BROADCAST_ADDRESS, NULL, 0, &bcast, sizeof (bcast), &dwBytesRet, NULL, NULL) == SOCKET_ERROR);
                                 if (isV6) {
                                     Assert (::WSAGetLastError () == WSAENOPROTOOPT);
                                 }

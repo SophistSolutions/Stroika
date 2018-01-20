@@ -39,7 +39,7 @@ namespace Stroika {
                     struct get_Compare_result {
                     private:
                         template <typename X>
-                        static auto check (X const& x) -> decltype (declval<X> ().Compare (declval<X> ()));
+                        static auto                 check (X const& x) -> decltype (declval<X> ().Compare (declval<X> ()));
                         static substitution_failure check (...);
 
                     public:
@@ -96,7 +96,7 @@ namespace Stroika {
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
-                static constexpr int Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+                static constexpr int  Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
                 static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
                 {
 #if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy

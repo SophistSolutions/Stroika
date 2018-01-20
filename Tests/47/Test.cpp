@@ -242,7 +242,7 @@ namespace {
                     }
                 },
                                                     Thread::eAutoStart);
-                Thread::Ptr producer = Thread::New ([&]() {
+                Thread::Ptr                           producer = Thread::New ([&]() {
                     for (unsigned int i = kStartWith; i <= kUpToInclusive_; i++) {
                         pipe.Write (i);
                     };

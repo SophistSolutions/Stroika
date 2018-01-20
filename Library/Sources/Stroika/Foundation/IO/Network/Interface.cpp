@@ -260,17 +260,17 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
     ULONG                          family = AF_UNSPEC; // Both IPv4 and IPv6 addresses
     Memory::SmallStackBuffer<Byte> buf;
 Again:
-    ULONG                 ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
-    PIP_ADAPTER_ADDRESSES pAddresses  = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());
+    ULONG ulOutBufLen = static_cast<ULONG> (buf.GetSize ());
+    PIP_ADAPTER_ADDRESSES pAddresses = reinterpret_cast<PIP_ADAPTER_ADDRESSES> (buf.begin ());
     // NB: we use GetAdapaterAddresses () instead of GetInterfaceInfo  () so we get non-ipv4 addresses
     DWORD dwRetVal = ::GetAdaptersAddresses (family, flags, nullptr, pAddresses, &ulOutBufLen);
     if (dwRetVal == NO_ERROR) {
         for (PIP_ADAPTER_ADDRESSES currAddresses = pAddresses; currAddresses != nullptr; currAddresses = currAddresses->Next) {
             Interface newInterface;
-            String    adapterName{String::FromNarrowSDKString (currAddresses->AdapterName)};
+            String adapterName{String::FromNarrowSDKString (currAddresses->AdapterName)};
             newInterface.fInternalInterfaceID = adapterName;
-            newInterface.fFriendlyName        = currAddresses->FriendlyName;
-            newInterface.fDescription         = currAddresses->Description;
+            newInterface.fFriendlyName = currAddresses->FriendlyName;
+            newInterface.fDescription = currAddresses->Description;
             switch (currAddresses->IfType) {
                 case IF_TYPE_SOFTWARE_LOOPBACK:
                     newInterface.fType = Interface::Type::eLoopback;
@@ -322,7 +322,7 @@ Again:
             }
 
 #if (NTDDI_VERSION >= NTDDI_WIN6)
-            newInterface.fTransmitSpeedBaud    = currAddresses->TransmitLinkSpeed;
+            newInterface.fTransmitSpeedBaud = currAddresses->TransmitLinkSpeed;
             newInterface.fReceiveLinkSpeedBaud = currAddresses->ReceiveLinkSpeed;
 #endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_ && 0

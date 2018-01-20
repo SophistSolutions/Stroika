@@ -316,8 +316,8 @@ namespace {
 #define ZCLOSE64(filefunc, filestream) ((*((filefunc).zfile_func64.zclose_file)) ((filefunc).zfile_func64.opaque, filestream))
 #define ZERROR64(filefunc, filestream) ((*((filefunc).zfile_func64.zerror_file)) ((filefunc).zfile_func64.opaque, filestream))
 
-    voidpf call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void* filename, int mode);
-    long call_zseek64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream, ZPOS64_T offset, int origin);
+    voidpf   call_zopen64 (const zlib_filefunc64_32_def* pfilefunc, const void* filename, int mode);
+    long     call_zseek64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream, ZPOS64_T offset, int origin);
     ZPOS64_T call_ztell64 (const zlib_filefunc64_32_def* pfilefunc, voidpf filestream);
 
     void fill_zlib_filefunc64_32_def_from_filefunc32 (zlib_filefunc64_32_def* p_filefunc64_32, const zlib_filefunc_def* p_filefunc32);
@@ -644,7 +644,7 @@ namespace {
 
     /* Get the current file offset */
     ZPOS64_T unzGetOffset64 (unzFile file);
-    uLong unzGetOffset (unzFile file);
+    uLong    unzGetOffset (unzFile file);
 
     /* Set the current file offset */
     int unzSetOffset64 (unzFile file, ZPOS64_T pos);
@@ -1266,12 +1266,12 @@ namespace {
 
             /* total number of entries in the central dir on this disk */
             if (unz64local_getShort (&us.z_filefunc, us.filestream, &uL) != UNZ_OK)
-                err            = UNZ_ERRNO;
+                err = UNZ_ERRNO;
             us.gi.number_entry = uL;
 
             /* total number of entries in the central dir */
             if (unz64local_getShort (&us.z_filefunc, us.filestream, &uL) != UNZ_OK)
-                err         = UNZ_ERRNO;
+                err = UNZ_ERRNO;
             number_entry_CD = uL;
 
             if ((number_entry_CD != us.gi.number_entry) ||
@@ -1281,13 +1281,13 @@ namespace {
 
             /* size of the central directory */
             if (unz64local_getLong (&us.z_filefunc, us.filestream, &uL) != UNZ_OK)
-                err             = UNZ_ERRNO;
+                err = UNZ_ERRNO;
             us.size_central_dir = uL;
 
             /* offset of start of central directory with respect to the
                 starting disk number */
             if (unz64local_getLong (&us.z_filefunc, us.filestream, &uL) != UNZ_OK)
-                err               = UNZ_ERRNO;
+                err = UNZ_ERRNO;
             us.offset_central_dir = uL;
 
             /* zipfile comment length */
@@ -1463,11 +1463,11 @@ namespace {
             err = UNZ_ERRNO;
 
         if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
-            err                   = UNZ_ERRNO;
+            err = UNZ_ERRNO;
         file_info.compressed_size = uL;
 
         if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
-            err                     = UNZ_ERRNO;
+            err = UNZ_ERRNO;
         file_info.uncompressed_size = uL;
 
         if (unz64local_getShort (&s->z_filefunc, s->filestream, &file_info.size_filename) != UNZ_OK)
@@ -1490,7 +1490,7 @@ namespace {
 
         // relative offset of local header
         if (unz64local_getLong (&s->z_filefunc, s->filestream, &uL) != UNZ_OK)
-            err                           = UNZ_ERRNO;
+            err = UNZ_ERRNO;
         file_info_internal.offset_curfile = uL;
 
         lSeek += file_info.size_filename;
@@ -1682,7 +1682,7 @@ namespace {
         err                   = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
                                                       &s->cur_file_info_internal,
                                                       NULL, 0, NULL, 0, NULL, 0);
-        s->current_file_ok = (err == UNZ_OK);
+        s->current_file_ok    = (err == UNZ_OK);
         return err;
     }
 
@@ -1708,7 +1708,7 @@ namespace {
         s->pos_in_central_dir += SIZECENTRALDIRITEM + s->cur_file_info.size_filename +
                                  s->cur_file_info.size_file_extra + s->cur_file_info.size_file_comment;
         s->num_file++;
-        err = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
+        err                = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
                                                       &s->cur_file_info_internal,
                                                       NULL, 0, NULL, 0, NULL, 0);
         s->current_file_ok = (err == UNZ_OK);
@@ -1938,7 +1938,7 @@ namespace {
         *piSizeVar += (uInt)size_filename;
 
         if (unz64local_getShort (&s->z_filefunc, s->filestream, &size_extra_field) != UNZ_OK)
-            err                   = UNZ_ERRNO;
+            err = UNZ_ERRNO;
         *poffset_local_extrafield = s->cur_file_info_internal.offset_curfile +
                                     SIZEZIPLOCALHEADER + size_filename;
         *psize_local_extrafield = (uInt)size_extra_field;
@@ -2574,7 +2574,7 @@ namespace {
         err                   = unz64local_GetCurrentFileInfoInternal_ (file, &s->cur_file_info,
                                                       &s->cur_file_info_internal,
                                                       NULL, 0, NULL, 0, NULL, 0);
-        s->current_file_ok = (err == UNZ_OK);
+        s->current_file_ok    = (err == UNZ_OK);
         return err;
     }
 

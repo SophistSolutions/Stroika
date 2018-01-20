@@ -17,7 +17,7 @@ namespace Stroika {
 
             namespace Private_ {
                 unsigned long long int String2UInt_ (const String& s);
-                long long int String2Int_ (const String& s);
+                long long int          String2Int_ (const String& s);
                 DISABLE_COMPILER_MSC_WARNING_START (4018)
                 template <typename T>
                 T String2IntOrUInt_ (const String& s)

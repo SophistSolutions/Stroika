@@ -426,14 +426,14 @@ namespace Stroika {
                  */
                 class Socket::_IRep {
                 public:
-                    virtual ~_IRep ()                                                      = default;
-                    virtual void Shutdown (ShutdownTarget shutdownTarget)                  = 0;
-                    virtual void                                 Close ()                  = 0;
-                    virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const  = 0;
-                    virtual SocketAddress::FamilyType            GetAddressFamily () const = 0;
-                    virtual PlatformNativeHandle                 GetNativeSocket () const  = 0;
-                    virtual void getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
-                    virtual void setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
+                    virtual ~_IRep ()                                                                                                          = default;
+                    virtual void                                 Shutdown (ShutdownTarget shutdownTarget)                                      = 0;
+                    virtual void                                 Close ()                                                                      = 0;
+                    virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const                                                      = 0;
+                    virtual SocketAddress::FamilyType            GetAddressFamily () const                                                     = 0;
+                    virtual PlatformNativeHandle                 GetNativeSocket () const                                                      = 0;
+                    virtual void                                 getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;
+                    virtual void                                 setsockopt (int level, int optname, const void* optval, socklen_t optvallen)  = 0;
                 };
             }
         }

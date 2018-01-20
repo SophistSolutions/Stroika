@@ -76,13 +76,13 @@ namespace Stroika {
                 virtual TextStore* PeekAtTextStore () const override;
 
             public:
-                virtual bool InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
-                                                    size_t from, size_t to);
+                virtual bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage,
+                                                       size_t from, size_t to);
                 nonvirtual bool InternalizeFlavor_TEXT (ReaderFlavorPackage& flavorPackage,
                                                         size_t from, size_t to);
-                virtual bool InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage,
-                                                     size_t from, size_t to);
-                virtual bool InternalizeFlavor_FILEData (
+                virtual bool    InternalizeFlavor_FILE (ReaderFlavorPackage& flavorPackage,
+                                                        size_t from, size_t to);
+                virtual bool    InternalizeFlavor_FILEData (
 #if qPlatform_MacOS
                     const FSSpec* fileName,
 #elif qPlatform_Windows || qXWindows
@@ -120,7 +120,7 @@ namespace Stroika {
             class ReaderFlavorPackage {
             public:
                 nonvirtual bool GetFlavorAvailable_TEXT () const;
-                virtual bool GetFlavorAvailable (Led_ClipFormat clipFormat) const = 0;
+                virtual bool    GetFlavorAvailable (Led_ClipFormat clipFormat) const = 0;
 
             public:
                 /*
@@ -150,7 +150,7 @@ namespace Stroika {
             */
             class ReaderClipboardFlavorPackage : public ReaderFlavorPackage {
             public:
-                virtual bool GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
+                virtual bool   GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
                 virtual size_t GetFlavorSize (Led_ClipFormat clipFormat) const override;
                 virtual size_t ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const override;
 #if qXWindows
@@ -193,7 +193,7 @@ namespace Stroika {
 
                 //  ReaderFlavorPackage
             public:
-                virtual bool GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
+                virtual bool   GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
                 virtual size_t GetFlavorSize (Led_ClipFormat clipFormat) const override;
                 virtual size_t ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const override;
 

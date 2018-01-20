@@ -41,7 +41,7 @@ namespace Stroika {
 #if qOverrideDefaultSentinalValue
             const Led_tChar kEmbeddingSentinalChar = qOverrideDefaultSentinalValue;
 #else
-            const Led_tChar           kEmbeddingSentinalChar = '\0';
+            const Led_tChar kEmbeddingSentinalChar = '\0';
 #endif
 
             // Its up to you in your application for each one of these you want to support to add a line such
@@ -94,19 +94,19 @@ namespace Stroika {
                 };
 
             public:
-                nonvirtual void AddAssoc (Assoc assoc);
-                nonvirtual void AddAssoc (const char* embeddingTag,
-                                          SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len));
-                nonvirtual void AddAssoc (Led_ClipFormat clipFormat, const char* embeddingTag,
-                                          SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len),
-                                          SimpleEmbeddedObjectStyleMarker* (*packageReader) (ReaderFlavorPackage& flavorPackage));
-                nonvirtual void AddAssoc (const Led_ClipFormat* clipFormats, size_t clipFormatCount, const char* embeddingTag,
-                                          SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len),
-                                          SimpleEmbeddedObjectStyleMarker* (*packageReader) (ReaderFlavorPackage& flavorPackage));
+                nonvirtual void  AddAssoc (Assoc assoc);
+                nonvirtual void  AddAssoc (const char* embeddingTag,
+                                           SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len));
+                nonvirtual void  AddAssoc (Led_ClipFormat clipFormat, const char* embeddingTag,
+                                           SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len),
+                                           SimpleEmbeddedObjectStyleMarker* (*packageReader) (ReaderFlavorPackage& flavorPackage));
+                nonvirtual void  AddAssoc (const Led_ClipFormat* clipFormats, size_t clipFormatCount, const char* embeddingTag,
+                                           SimpleEmbeddedObjectStyleMarker* (*memReader) (const char* embeddingTag, const void* data, size_t len),
+                                           SimpleEmbeddedObjectStyleMarker* (*packageReader) (ReaderFlavorPackage& flavorPackage));
                 nonvirtual const vector<Assoc>& GetAssocList () const;
-                nonvirtual void SetAssocList (const vector<Assoc>& assocList);
-                nonvirtual void AddStandardTypes ();
-                nonvirtual bool Lookup (const char* embeddingTag, Assoc* result) const;
+                nonvirtual void                 SetAssocList (const vector<Assoc>& assocList);
+                nonvirtual void                 AddStandardTypes ();
+                nonvirtual bool                 Lookup (const char* embeddingTag, Assoc* result) const;
 
             private:
                 vector<Assoc> fAssocList;
@@ -152,9 +152,9 @@ namespace Stroika {
                 public:
                     virtual void write (const void* buffer, size_t bytes) = 0;
                 };
-                virtual const char* GetTag () const                                  = 0;
-                virtual void Write (SinkStream& sink)                                = 0;
-                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) = 0;
+                virtual const char* GetTag () const                                         = 0;
+                virtual void        Write (SinkStream& sink)                                = 0;
+                virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) = 0;
 
                 // Click in embedding processing
                 // HandleClick () by default, does nothing on single click, and on double click calls Open method - which in turn by
@@ -169,9 +169,9 @@ namespace Stroika {
                                         eOpenCmdNum       = eMinPrivateCmdNum,
                                         eMaxPrivateCmdNum = 100 };
                 virtual vector<PrivateCmdNumber> GetCmdNumbers () const;
-                virtual bool IsCmdEnabled (PrivateCmdNumber cmd) const;
-                virtual Led_SDK_String GetCmdText (PrivateCmdNumber cmd);
-                virtual void DoCommand (PrivateCmdNumber cmd);
+                virtual bool                     IsCmdEnabled (PrivateCmdNumber cmd) const;
+                virtual Led_SDK_String           GetCmdText (PrivateCmdNumber cmd);
+                virtual void                     DoCommand (PrivateCmdNumber cmd);
 
             public:
                 struct CommandNames;
@@ -182,8 +182,8 @@ namespace Stroika {
                 // (These names appear in text of undo menu item)
             public:
                 static const CommandNames& GetCommandNames ();
-                static void SetCommandNames (const CommandNames& cmdNames);
-                static CommandNames MakeDefaultCommandNames ();
+                static void                SetCommandNames (const CommandNames& cmdNames);
+                static CommandNames        MakeDefaultCommandNames ();
 
             private:
                 static CommandNames sCommandNames;
@@ -236,18 +236,18 @@ namespace Stroika {
                                                               // to this member.
 #endif
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
                 virtual const char* GetTag () const override;
-                virtual void Write (SinkStream& sink) override;
-                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+                virtual void        Write (SinkStream& sink) override;
+                virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
             public:
                 nonvirtual PictureHandle GetPictureHandle () const;
@@ -294,18 +294,18 @@ namespace Stroika {
 #endif
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
                 virtual const char* GetTag () const override;
-                virtual void Write (SinkStream& sink) override;
-                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+                virtual void        Write (SinkStream& sink) override;
+                virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
             public:
                 nonvirtual const Led_DIB* GetDIBData () const;
@@ -363,29 +363,29 @@ namespace Stroika {
 #endif
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
                 virtual const char* GetTag () const override;
-                virtual void Write (SinkStream& sink) override;
-                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+                virtual void        Write (SinkStream& sink) override;
+                virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
             public:
                 virtual bool HandleOpen () override;
 
             public:
                 virtual vector<PrivateCmdNumber> GetCmdNumbers () const override;
-                virtual bool IsCmdEnabled (PrivateCmdNumber cmd) const override;
+                virtual bool                     IsCmdEnabled (PrivateCmdNumber cmd) const override;
 
             public:
                 nonvirtual const Led_URLD& GetURLData () const;
-                nonvirtual void SetURLData (const Led_URLD& urlData);
+                nonvirtual void            SetURLData (const Led_URLD& urlData);
 
             private:
                 Led_URLD fURLData;
@@ -415,25 +415,25 @@ namespace Stroika {
                 static SimpleEmbeddedObjectStyleMarker* mk (ReaderFlavorPackage& flavorPackage);
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
                 virtual const char* GetTag () const override;
-                virtual void Write (SinkStream& sink) override;
-                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+                virtual void        Write (SinkStream& sink) override;
+                virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
             public:
                 virtual bool HandleOpen () override;
 
             public:
                 virtual vector<PrivateCmdNumber> GetCmdNumbers () const override;
-                virtual bool IsCmdEnabled (PrivateCmdNumber cmd) const override;
+                virtual bool                     IsCmdEnabled (PrivateCmdNumber cmd) const override;
 
             private:
                 Led_URLD fURLData;
@@ -442,7 +442,7 @@ namespace Stroika {
                 nonvirtual StandardMacPictureStyleMarker::PictureHandle GetPictureHandle () const;
                 nonvirtual size_t GetPictureByteSize () const;
                 nonvirtual const Led_URLD& GetURLData () const;
-                nonvirtual void SetURLData (const Led_URLD& urlData);
+                nonvirtual void            SetURLData (const Led_URLD& urlData);
 
             private:
                 StandardMacPictureStyleMarker::PictureHandle fPictureHandle;
@@ -470,25 +470,25 @@ namespace Stroika {
                 static SimpleEmbeddedObjectStyleMarker* mk (ReaderFlavorPackage& flavorPackage);
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
                 virtual const char* GetTag () const override;
-                virtual void Write (SinkStream& sink) override;
-                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+                virtual void        Write (SinkStream& sink) override;
+                virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
             public:
                 virtual bool HandleOpen () override;
 
             public:
                 virtual vector<PrivateCmdNumber> GetCmdNumbers () const override;
-                virtual bool IsCmdEnabled (PrivateCmdNumber cmd) const override;
+                virtual bool                     IsCmdEnabled (PrivateCmdNumber cmd) const override;
 
             public:
                 nonvirtual const Led_DIB* GetDIBData () const;
@@ -498,7 +498,7 @@ namespace Stroika {
 
             public:
                 nonvirtual const Led_URLD& GetURLData () const;
-                nonvirtual void SetURLData (const Led_URLD& urlData);
+                nonvirtual void            SetURLData (const Led_URLD& urlData);
 
             private:
                 Led_URLD fURLData;
@@ -534,22 +534,22 @@ namespace Stroika {
 #endif
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
                 virtual const char* GetTag () const override;
-                virtual void Write (SinkStream& sink) override;
-                virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+                virtual void        Write (SinkStream& sink) override;
+                virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
             public:
                 nonvirtual Led_TWIPS_Point GetShownSize () const;
-                nonvirtual void SetShownSize (Led_TWIPS_Point size);
+                nonvirtual void            SetShownSize (Led_TWIPS_Point size);
                 nonvirtual Led_TWIPS_Point CalcDefaultShownSize ();
                 static Led_TWIPS_Point     CalcStaticDefaultShownSize ();
 
@@ -716,7 +716,7 @@ namespace Stroika {
                 return ::GetHandleSize (Handle (fPictureHandle));
 #elif qPlatform_Windows
                 return fPictureSize; // cannot use ::GlobalSize () since that sometimes returns result larger than
-// actual picture size (rounds up)
+                                     // actual picture size (rounds up)
 #endif
             }
 #endif

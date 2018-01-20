@@ -41,7 +41,7 @@ namespace Stroika {
                 // Allocate throws bad_alloc () on failure to allocate
             public:
                 virtual void* Allocate (size_t size) = 0;
-                virtual void Deallocate (void* p)    = 0;
+                virtual void  Deallocate (void* p)   = 0;
             };
 
             /**
@@ -50,7 +50,7 @@ namespace Stroika {
             class SimpleAllocator_CallLIBCMallocFree : public AbstractGeneralPurposeAllocator {
             public:
                 virtual void* Allocate (size_t size) override;
-                virtual void Deallocate (void* p) override;
+                virtual void  Deallocate (void* p) override;
             };
 
             /**
@@ -59,7 +59,7 @@ namespace Stroika {
             class SimpleAllocator_CallLIBCNewDelete : public AbstractGeneralPurposeAllocator {
             public:
                 virtual void* Allocate (size_t size) override;
-                virtual void Deallocate (void* p) override;
+                virtual void  Deallocate (void* p) override;
             };
 
             /**
@@ -115,7 +115,7 @@ namespace Stroika {
             public:
                 nonvirtual pointer allocate (size_type nElements);
                 nonvirtual pointer allocate (size_type nElements, const void* ptr);
-                nonvirtual void deallocate (pointer ptr, size_type sz);
+                nonvirtual void    deallocate (pointer ptr, size_type sz);
 
             public:
                 nonvirtual void construct (pointer p);
@@ -149,7 +149,7 @@ namespace Stroika {
 
             public:
                 virtual void* Allocate (size_t size) override;
-                virtual void Deallocate (void* p) override;
+                virtual void  Deallocate (void* p) override;
 
             public:
                 nonvirtual size_t GetNetAllocationCount () const;
@@ -177,7 +177,7 @@ namespace Stroika {
 
             public:
                 virtual void* Allocate (size_t size) override;
-                virtual void Deallocate (void* p) override;
+                virtual void  Deallocate (void* p) override;
 
             public:
                 nonvirtual size_t GetNetAllocationCount () const;
@@ -195,7 +195,7 @@ namespace Stroika {
 
             public:
                 nonvirtual Snapshot GetSnapshot () const;
-                nonvirtual void DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot ());
+                nonvirtual void     DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot ());
 
             private:
                 mutable recursive_mutex          fCritSection_;

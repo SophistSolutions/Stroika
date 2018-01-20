@@ -142,8 +142,8 @@ namespace Stroika {
                 size_t           rhsMarkerStart = rhsPM->GetStart ();
                 bool             leftSmaller    = ((lhsMarkerStart < rhsMarkerStart) or
                                     ((lhsMarkerStart == rhsMarkerStart) and lhs.GetSubRow () <= rhs.GetSubRow ()));
-                RowReference firstRowRef = leftSmaller ? lhs : rhs;
-                RowReference lastRowRef  = leftSmaller ? rhs : lhs;
+                RowReference     firstRowRef    = leftSmaller ? lhs : rhs;
+                RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
 
                 size_t rowsGoneBy = 0;
                 for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
@@ -177,8 +177,8 @@ namespace Stroika {
                 size_t           rhsMarkerStart = rhsPM->GetStart ();
                 bool             leftSmaller    = ((lhsMarkerStart < rhsMarkerStart) or
                                     ((lhsMarkerStart == rhsMarkerStart) and lhs.GetSubRow () <= rhs.GetSubRow ()));
-                RowReference firstRowRef = leftSmaller ? lhs : rhs;
-                RowReference lastRowRef  = leftSmaller ? rhs : lhs;
+                RowReference     firstRowRef    = leftSmaller ? lhs : rhs;
+                RowReference     lastRowRef     = leftSmaller ? rhs : lhs;
 
                 size_t rowsGoneBy = 0;
                 for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
@@ -451,8 +451,8 @@ namespace Stroika {
                 RGBColor oldForeColor = GDI_GetForeColor ();
                 RGBColor oldBackColor = GDI_GetBackColor ();
 #elif qPlatform_Windows
-                Led_Win_Obj_Selector          pen (tablet, ::GetStockObject (NULL_PEN));
-                Led_Win_Obj_Selector          brush (tablet, ::GetStockObject (NULL_BRUSH));
+                Led_Win_Obj_Selector pen (tablet, ::GetStockObject (NULL_PEN));
+                Led_Win_Obj_Selector brush (tablet, ::GetStockObject (NULL_BRUSH));
 #endif
 
                 /*
@@ -1061,8 +1061,8 @@ namespace Stroika {
                         fSubRowInTopLineInWindow = lastRow;
                     }
 #else
-                    bool                      pmNotWrapped = (fTopLinePartitionMarkerInWindow->fPixelHeightCache == Led_Distance (-1));
-                    size_t                    lastRow      = GetPartitionElementCacheInfo (fTopLinePartitionMarkerInWindow).GetLastRow ();
+                    bool   pmNotWrapped = (fTopLinePartitionMarkerInWindow->fPixelHeightCache == Led_Distance (-1));
+                    size_t lastRow      = GetPartitionElementCacheInfo (fTopLinePartitionMarkerInWindow).GetLastRow ();
                     if (fSubRowInTopLineInWindow > lastRow) {
                         fSubRowInTopLineInWindow = lastRow;
                     }

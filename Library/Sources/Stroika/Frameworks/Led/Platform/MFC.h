@@ -122,10 +122,10 @@ namespace Stroika {
 #define qMFCRequiresCWndLeftmostBaseClass 1
 #endif
 
-                CPoint AsCPoint (Led_Point p);
+                CPoint    AsCPoint (Led_Point p);
                 Led_Point AsLedPoint (CPoint p);
 
-                CRect AsCRect (Led_Rect r);
+                CRect    AsCRect (Led_Rect r);
                 Led_Rect AsLedRect (CRect r);
 
                 CSize AsCSize (Led_Size s);
@@ -217,7 +217,7 @@ namespace Stroika {
 
                     // Window message hooks NEEDED to get basic editor functionality
                 protected:
-                    afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+                    afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
                     afx_msg void OnPaint ();
                     afx_msg BOOL OnSetCursor (CWnd* pWnd, UINT nHitTest, UINT message);
                     afx_msg UINT OnGetDlgCode ();
@@ -226,14 +226,14 @@ namespace Stroika {
                     afx_msg LRESULT OnIMEChar (WPARAM wParam, LPARAM lParam);
                     afx_msg LRESULT OnIME_COMPOSITION (WPARAM wParam, LPARAM lParam);
                     afx_msg LRESULT OnIME_ENDCOMPOSITION (WPARAM wParam, LPARAM lParam);
-                    afx_msg void OnKeyDown (UINT nChar, UINT nRepCnt, UINT /*nFlags*/);
-                    afx_msg void OnMouseMove (UINT /*nFlags*/, CPoint oPoint);
-                    afx_msg void OnLButtonDown (UINT nFlags, CPoint oPoint);
-                    afx_msg void OnLButtonUp (UINT /*nFlags*/, CPoint oPoint);
-                    afx_msg void OnLButtonDblClk (UINT /*nFlags*/, CPoint oPoint);
-                    afx_msg void OnSetFocus (CWnd* pOldWnd);
-                    afx_msg void OnKillFocus (CWnd* pNewWnd);
-                    afx_msg void OnSize (UINT nType, int cx, int cy);
+                    afx_msg void    OnKeyDown (UINT nChar, UINT nRepCnt, UINT /*nFlags*/);
+                    afx_msg void    OnMouseMove (UINT /*nFlags*/, CPoint oPoint);
+                    afx_msg void    OnLButtonDown (UINT nFlags, CPoint oPoint);
+                    afx_msg void    OnLButtonUp (UINT /*nFlags*/, CPoint oPoint);
+                    afx_msg void    OnLButtonDblClk (UINT /*nFlags*/, CPoint oPoint);
+                    afx_msg void    OnSetFocus (CWnd* pOldWnd);
+                    afx_msg void    OnKillFocus (CWnd* pNewWnd);
+                    afx_msg void    OnSize (UINT nType, int cx, int cy);
                     afx_msg BOOL OnEraseBkgnd (CDC* pDC);
                     afx_msg void OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
                     afx_msg void OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -244,7 +244,7 @@ namespace Stroika {
                     // Disambiguate mixins
                 public:
                     virtual Led_Rect GetWindowRect () const;
-                    nonvirtual void GetWindowRect (LPRECT lpRect) const;
+                    nonvirtual void  GetWindowRect (LPRECT lpRect) const;
 
                 public:
                     nonvirtual DWORD GetStyle () const;
@@ -281,15 +281,15 @@ namespace Stroika {
                     nonvirtual void SetModify (BOOL bModified = TRUE);
                     nonvirtual void GetRect (LPRECT lpRect) const;
                     nonvirtual DWORD GetSel () const;
-                    nonvirtual void GetSel (int& nStartChar, int& nEndChar) const;
-                    nonvirtual int GetLine (int nIndex, LPTSTR lpszBuffer) const;
-                    nonvirtual int GetLine (int nIndex, LPTSTR lpszBuffer, int nMaxLength) const;
-                    nonvirtual void EmptyUndoBuffer ();
+                    nonvirtual void  GetSel (int& nStartChar, int& nEndChar) const;
+                    nonvirtual int   GetLine (int nIndex, LPTSTR lpszBuffer) const;
+                    nonvirtual int   GetLine (int nIndex, LPTSTR lpszBuffer, int nMaxLength) const;
+                    nonvirtual void  EmptyUndoBuffer ();
                     nonvirtual BOOL FmtLines (BOOL bAddEOL);
                     nonvirtual void LimitText (int nChars = 0);
-                    nonvirtual int LineFromChar (int nIndex = -1) const;
-                    nonvirtual int LineIndex (int nLine = -1) const;
-                    nonvirtual int LineLength (int nLine = -1) const;
+                    nonvirtual int  LineFromChar (int nIndex = -1) const;
+                    nonvirtual int  LineIndex (int nLine = -1) const;
+                    nonvirtual int  LineLength (int nLine = -1) const;
                     nonvirtual void LineScroll (int nLines, int nChars = 0);
                     nonvirtual void ReplaceSel (LPCTSTR lpszNewText);
                     nonvirtual void SetPasswordChar (TCHAR ch);
@@ -306,7 +306,7 @@ namespace Stroika {
                     nonvirtual void Cut ();
                     nonvirtual void Paste ();
                     nonvirtual BOOL SetReadOnly (BOOL bReadOnly = TRUE);
-                    nonvirtual int GetFirstVisibleLine () const;
+                    nonvirtual int  GetFirstVisibleLine () const;
                     nonvirtual TCHAR GetPasswordChar () const;
                 };
 
@@ -391,7 +391,7 @@ namespace Stroika {
                     // (These names appear in text of undo menu item)
                 public:
                     static const CommandNames& GetCommandNames ();
-                    static void SetCommandNames (const CommandNames& cmdNames);
+                    static void                SetCommandNames (const CommandNames& cmdNames);
 
                 private:
                     static CommandNames sCommandNames;
@@ -404,7 +404,7 @@ namespace Stroika {
 
                     // mouse down tracking... and drag and drop...
                 protected:
-                    virtual bool IsADragSelect (Led_Point clickedWhere) const;
+                    virtual bool    IsADragSelect (Led_Point clickedWhere) const;
                     nonvirtual void HandleDragSelect (UINT nFlags, CPoint oPoint);
                     nonvirtual void HandleSharedDragOverUpdateSelCode ();
                     nonvirtual DROPEFFECT HelperDragEnter (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point);
@@ -481,8 +481,8 @@ namespace Stroika {
 
                     // CEditView storage methods.
                 public:
-                    virtual void DeleteContents ();
-                    virtual void Serialize (CArchive& ar);
+                    virtual void    DeleteContents ();
+                    virtual void    Serialize (CArchive& ar);
                     nonvirtual void SerializeRaw (CArchive& ar);
                     nonvirtual void ReadFromArchive (CArchive& ar, UINT nLen);
                     nonvirtual void WriteToArchive (CArchive& ar);
@@ -491,13 +491,13 @@ namespace Stroika {
                     afx_msg void OnPaint ();
                     virtual void OnDraw (CDC* pDC) override;
                     afx_msg void OnLButtonDown (UINT nFlags, CPoint oPoint);
-                    afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+                    afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
                     afx_msg void OnVScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
                     afx_msg void OnHScroll (UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 
                 public:
                     nonvirtual Led_TWIPS_Rect GetPrintMargins () const;
-                    nonvirtual void SetPrintMargins (const Led_TWIPS_Rect& printMargins);
+                    nonvirtual void           SetPrintMargins (const Led_TWIPS_Rect& printMargins);
 
                 private:
                     Led_TWIPS_Rect fPrintMargins;
@@ -538,8 +538,8 @@ namespace Stroika {
                 protected:
                     virtual DROPEFFECT OnDragEnter (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point) override;
                     virtual DROPEFFECT OnDragOver (COleDataObject* pDataObject, DWORD dwKeyState, CPoint point) override;
-                    virtual BOOL OnDrop (COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point) override;
-                    virtual void OnDragLeave () override;
+                    virtual BOOL       OnDrop (COleDataObject* pDataObject, DROPEFFECT dropEffect, CPoint point) override;
+                    virtual void       OnDragLeave () override;
 
                 public:
                     virtual void InvalidateScrollBarParameters () override;
@@ -625,11 +625,11 @@ namespace Stroika {
                 public:
                     afx_msg void OnChar (UINT nChar, UINT nRepCnt, UINT nFlags);
                     afx_msg LRESULT OnIMEChar (WPARAM wParam, LPARAM lParam);
-                    afx_msg void OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags);
+                    afx_msg void    OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags);
                     afx_msg LRESULT OnMsgPaste (WPARAM wParam, LPARAM lParam);
-                    afx_msg void OnLButtonDown (UINT nFlags, CPoint oPoint);
-                    afx_msg void OnLButtonUp (UINT /*nFlags*/, CPoint oPoint);
-                    afx_msg void OnLButtonDblClk (UINT /*nFlags*/, CPoint oPoint);
+                    afx_msg void    OnLButtonDown (UINT nFlags, CPoint oPoint);
+                    afx_msg void    OnLButtonUp (UINT /*nFlags*/, CPoint oPoint);
+                    afx_msg void    OnLButtonDblClk (UINT /*nFlags*/, CPoint oPoint);
                     afx_msg BOOL OnCmdMsg (UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
 
                 protected:
@@ -670,7 +670,7 @@ namespace Stroika {
                 public:
                     Led_MFCReaderDAndDFlavorPackage (COleDataObject* dataObject);
 
-                    virtual bool GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
+                    virtual bool   GetFlavorAvailable (Led_ClipFormat clipFormat) const override;
                     virtual size_t GetFlavorSize (Led_ClipFormat clipFormat) const override;
                     virtual size_t ReadFlavorData (Led_ClipFormat clipFormat, size_t bufSize, void* buf) const override;
 
@@ -706,7 +706,7 @@ namespace Stroika {
 
 #if qSupportDrawTextGetTextExtent
                 CSize Led_GetTextExtent (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap);
-                void Led_DrawText (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap);
+                void  Led_DrawText (CDC* cdc, const Led_tString& text, CRect r, bool wordWrap);
 #endif
 
                 /*
@@ -730,9 +730,9 @@ namespace Stroika {
                 public:
                     virtual CommandNumber GetCmdID () const override;
                     virtual bool          GetEnabled () const override;
-                    virtual void SetEnabled (bool enabled) override;
-                    virtual void SetChecked (bool checked) override;
-                    virtual void SetText (const Led_SDK_Char* text) override;
+                    virtual void          SetEnabled (bool enabled) override;
+                    virtual void          SetChecked (bool checked) override;
+                    virtual void          SetText (const Led_SDK_Char* text) override;
 
                 public:
                     operator CCmdUI* ();

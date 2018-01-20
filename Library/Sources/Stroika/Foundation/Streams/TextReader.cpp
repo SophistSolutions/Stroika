@@ -87,7 +87,7 @@ protected:
             mbstate_t                     mbState_ = mbstate_t{};
             codecvt_utf8<wchar_t>::result r        = fCharConverter_.in (mbState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
 #else
-            codecvt_utf8<wchar_t>::result r              = fCharConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
+            codecvt_utf8<wchar_t>::result r = fCharConverter_.in (fMBState_, firstB, endB, cursorB, std::begin (outBuf), std::end (outBuf), outCursor);
 #endif
             Assert (std::begin (outBuf) <= outCursor and outCursor <= std::end (outBuf));
             switch (r) {
@@ -103,7 +103,7 @@ protected:
                         goto again;
                     }
 #else
-                    size_t                thisReadNBytes = fSource_.Read (begin (inBuf), begin (inBuf) + 1);
+                    size_t thisReadNBytes = fSource_.Read (begin (inBuf), begin (inBuf) + 1);
                     if (thisReadNBytes != 0) {
                         inBytes = thisReadNBytes;
                         goto again;

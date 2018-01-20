@@ -68,7 +68,7 @@ namespace Stroika {
                 AdoptRep_ (const AdoptRep_&) = delete;
                 AdoptRep_ (const Byte* start, const Byte* end);
                 ~AdoptRep_ ();
-                AdoptRep_& operator= (const AdoptRep_&) = delete;
+                AdoptRep_&                             operator= (const AdoptRep_&) = delete;
                 virtual pair<const Byte*, const Byte*> GetBounds () const override;
 
                 DECLARE_USE_BLOCK_ALLOCATION (AdoptRep_);
@@ -81,7 +81,7 @@ namespace Stroika {
                 AdoptAppLifetimeRep_ ()                            = delete;
                 AdoptAppLifetimeRep_ (const AdoptAppLifetimeRep_&) = delete;
                 AdoptAppLifetimeRep_ (const Byte* start, const Byte* end);
-                AdoptAppLifetimeRep_& operator= (const AdoptAppLifetimeRep_&) = delete;
+                AdoptAppLifetimeRep_&                  operator= (const AdoptAppLifetimeRep_&) = delete;
                 virtual pair<const Byte*, const Byte*> GetBounds () const override;
 
                 DECLARE_USE_BLOCK_ALLOCATION (AdoptAppLifetimeRep_);
@@ -187,7 +187,7 @@ namespace Stroika {
                 return BLOB{_MakeSharedPtr<AdoptAppLifetimeRep_> (start, end)};
             }
             template <size_t SIZE>
-            inline BLOB      BLOB::AttachApplicationLifetime (const Byte (&data)[SIZE])
+            inline BLOB BLOB::AttachApplicationLifetime (const Byte (&data)[SIZE])
             {
                 return AttachApplicationLifetime (Containers::Start (data), Containers::Start (data) + SIZE);
             }
@@ -196,7 +196,7 @@ namespace Stroika {
             {
                 RequireNotNull (into);
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                pair<const Byte*, const Byte*> tmp = fRep_->GetBounds ();
+                pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
                 Assert (tmp.first <= tmp.second);
                 into->clear ();
                 into->insert (into->begin (), tmp.first, tmp.second);
@@ -219,7 +219,7 @@ namespace Stroika {
             template <>
             inline pair<const Byte*, const Byte*> BLOB::As () const
             {
-                pair<const Byte*, const Byte*> result;
+                pair<const Byte*, const Byte*>                      result;
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 As<pair<const Byte*, const Byte*>> (&result);
                 return result;
@@ -227,7 +227,7 @@ namespace Stroika {
             inline bool BLOB::empty () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                pair<const Byte*, const Byte*> tmp = fRep_->GetBounds ();
+                pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
                 Assert (tmp.first <= tmp.second);
                 return tmp.first == tmp.second;
             }
@@ -244,7 +244,7 @@ namespace Stroika {
             inline size_t BLOB::GetSize () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                pair<const Byte*, const Byte*> tmp = fRep_->GetBounds ();
+                pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
                 Assert (tmp.first <= tmp.second);
                 return tmp.second - tmp.first;
             }
@@ -275,10 +275,10 @@ namespace Stroika {
                 if (fRep_ == rhs.fRep_) {
                     return true; // cheap optimization for not super uncommon case
                 }
-                pair<const Byte*, const Byte*> l = fRep_->GetBounds ();
-                pair<const Byte*, const Byte*> r = rhs.fRep_->GetBounds ();
-                size_t lSize = l.second - l.first;
-                size_t rSize = r.second - r.first;
+                pair<const Byte*, const Byte*> l     = fRep_->GetBounds ();
+                pair<const Byte*, const Byte*> r     = rhs.fRep_->GetBounds ();
+                size_t                         lSize = l.second - l.first;
+                size_t                         rSize = r.second - r.first;
                 if (lSize != rSize) {
                     return false;
                 }

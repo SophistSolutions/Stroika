@@ -25,8 +25,8 @@ namespace Stroika {
         namespace Cryptography {
             namespace Digest {
 
-                using Memory::Byte;
                 using Memory::BLOB;
+                using Memory::Byte;
 
                 namespace Algorithm {
 

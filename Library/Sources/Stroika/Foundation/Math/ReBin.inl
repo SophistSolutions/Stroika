@@ -178,7 +178,7 @@ namespace Stroika {
                     using namespace Traversal;
                     using BucketIndexType = typename SRC_DATA_DESCRIPTOR::BucketIndexType;
 
-/*
+                    /*
                      *  OLD OBSOLETE Algorithm:
                      *      Two iterators - one marking (start/end of target buckets), and one marking current
                      *      src bucket. Iterate over outer buckets. Move contents to new bucket. And adjust new

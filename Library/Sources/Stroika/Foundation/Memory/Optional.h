@@ -645,7 +645,7 @@ namespace Stroika {
                     ConstHolder_ (ConstHolder_&& from);
                     ConstHolder_& operator= (const ConstHolder_&) = delete;
                     ConstHolder_& operator= (T) = delete;
-                    const T* operator-> () const;
+                    const T*      operator-> () const;
                     operator const T& () const;
                     const T& operator* () const;
                 };
@@ -659,7 +659,7 @@ namespace Stroika {
                     MutableHolder_ (MutableHolder_&& from);
                     MutableHolder_& operator= (const MutableHolder_&) = delete;
                     MutableHolder_& operator= (T) = delete;
-                    T* operator-> ();
+                    T*              operator-> ();
                     operator T& ();
                     T& operator* ();
                 };

@@ -49,11 +49,11 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::SystemPerformance;
 using namespace Stroika::Frameworks::SystemPerformance::Instruments::Filesystem;
 
-using Characters::String_Constant;
 using Characters::String2Int;
-using Time::DurationSecondsType;
+using Characters::String_Constant;
 using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
+using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -360,8 +360,8 @@ namespace {
         void ReadAndApplyProcFS_diskstats_ (Mapping<MountedFilesystemNameType, MountedFilesystemInfoType>* volumes)
         {
             try {
-                Mapping<dev_t, PerfStats_> diskStats = ReadProcFS_diskstats_ ();
-                DurationSecondsType timeSinceLastMeasure = Time::GetTickCount () - GetLastCaptureAt ();
+                Mapping<dev_t, PerfStats_> diskStats            = ReadProcFS_diskstats_ ();
+                DurationSecondsType        timeSinceLastMeasure = Time::GetTickCount () - GetLastCaptureAt ();
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : *volumes) {
                     MountedFilesystemInfoType vi = i.fValue;
                     if (vi.fDeviceOrVolumeName.IsPresent ()) {
@@ -468,8 +468,8 @@ namespace {
         Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> RunDF_POSIX_ ()
         {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
-            ProcessRunner                    pr{L"/bin/df -k -P"};
-            Streams::MemoryStream<Byte>::Ptr useStdOut = Streams::MemoryStream<Byte>::New ();
+            ProcessRunner                                                 pr{L"/bin/df -k -P"};
+            Streams::MemoryStream<Byte>::Ptr                              useStdOut = Streams::MemoryStream<Byte>::New ();
             pr.SetStdOut (useStdOut);
             std::exception_ptr runException;
             try {
@@ -588,7 +588,7 @@ namespace {
         Mapping<dev_t, PerfStats_> ReadProcFS_diskstats_ ()
         {
             using Characters::String2Float;
-            Mapping<dev_t, PerfStats_> result;
+            Mapping<dev_t, PerfStats_>                             result;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             const String_Constant                                  kProcMemInfoFileName_{L"/proc/diskstats"};
             // Note - /procfs files always unseekable
@@ -982,13 +982,13 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-          ,
+        ,
           CapturerWithContext_Linux_
 #elif qPlatform_Windows
-          ,
+        ,
           CapturerWithContext_Windows_
 #else
-          ,
+        ,
           CapturerWithContext_COMMON_
 #endif
     {

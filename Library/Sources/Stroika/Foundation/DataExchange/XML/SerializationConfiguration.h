@@ -44,7 +44,7 @@ namespace Stroika {
                     //
                     // If provided - must be a valid xml element name (ncname?)
                     nonvirtual Optional<String> GetDocumentElementName () const;
-                    nonvirtual void SetDocumentElementName (const Optional<String>& n);
+                    nonvirtual void             SetDocumentElementName (const Optional<String>& n);
 
                 public:
                     // NOTE - defaults to "Array"
@@ -56,7 +56,7 @@ namespace Stroika {
                     // the future this can be better handled infering data from the schema.
                     // but for now - with the current implementation - this is needed.
                     nonvirtual Optional<String> GetArrayElementName () const;
-                    nonvirtual void SetArrayElementName (const Optional<String>& n);
+                    nonvirtual void             SetArrayElementName (const Optional<String>& n);
 
                 private:
                     String fDocumentElementName_; // internally empty string for missing

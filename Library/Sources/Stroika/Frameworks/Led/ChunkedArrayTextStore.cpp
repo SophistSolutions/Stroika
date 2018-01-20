@@ -35,10 +35,10 @@ public:
 public:
     nonvirtual size_t GetLength () const noexcept;
     nonvirtual size_t GetBytesCanAccommodate () const noexcept;
-    nonvirtual void CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept;
+    nonvirtual void   CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept;
     nonvirtual const Led_tChar* PeekAfter (size_t charPos) const noexcept;
-    nonvirtual void InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept;
-    nonvirtual void DeleteAfter (size_t howMany, size_t after) noexcept;
+    nonvirtual void             InsertAfter (const Led_tChar* what, size_t howMany, size_t after) noexcept;
+    nonvirtual void             DeleteAfter (size_t howMany, size_t after) noexcept;
 
 private:
     size_t    fTotalTcharsUsed;
@@ -140,11 +140,11 @@ public:
     virtual size_t       GetStart () const override;
     virtual size_t       GetEnd () const override;
     virtual size_t       GetLength () const override;
-    virtual void GetStartEnd (size_t* start, size_t* end) const override;
+    virtual void         GetStartEnd (size_t* start, size_t* end) const override;
 
     nonvirtual void AddToChildList (Marker* marker);
     nonvirtual size_t CountChildren () const;
-    nonvirtual bool CountChildrenMoreThan (size_t n) const; // return true iff at least n children
+    nonvirtual bool   CountChildrenMoreThan (size_t n) const; // return true iff at least n children
 
     // NB: As far as I know - ordering in this linked list doesn't matter.
     // Consider replacing it with a lhs/rhs child pointers and stricly having binary tree?
@@ -1048,7 +1048,7 @@ Again:
     size_t specificInsideMarkerChildCount = 0; // use in PossiblyAddHackMarkers optimization below
 #endif
     Marker* prevMarker = NULL;
-    for (Marker *curChild = OurStuff (specificInsideMarker)->fFirstSubMarker; curChild != NULL;
+    for (Marker* curChild = OurStuff (specificInsideMarker)->fFirstSubMarker; curChild != NULL;
          (prevMarker = curChild), (curChild = OurStuff (curChild)->fNextSubMarker)) {
         Assert (marker != curChild);
 
@@ -1668,7 +1668,7 @@ void ChunkedArrayTextStore::AdjustMarkersForInsertAfter1 (size_t after, size_t h
     SmallStackBuffer<Marker*> stack (0);
 
     Marker* mi = NULL; // declared up here instead of down below to avoid MSVC 2.1 compiler bug.
-// LGP 950527
+    // LGP 950527
 
 RoutineTop:
     /*

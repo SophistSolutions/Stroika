@@ -292,8 +292,8 @@ namespace Stroika {
                  */
                 function<Optional<value_type> (value_type)> backwardNext = [this](value_type i) { return GetPrevious (i); };
                 function<Optional<value_type> (value_type)> forwardNext  = [this](value_type i) { return GetNext (i); };
-                value_type                                                                  i{seedPosition};
-                Optional<value_type>                                                        o{ScanTil_ (testF, forwardFirst ? forwardNext : backwardNext, i)};
+                value_type                                  i{seedPosition};
+                Optional<value_type>                        o{ScanTil_ (testF, forwardFirst ? forwardNext : backwardNext, i)};
                 if (o) {
                     // then we found a value scanning back for which testF is true
                     i = *o;

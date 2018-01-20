@@ -59,7 +59,7 @@ public:
         int   GetHorzPosPix ();
         CRect GetHitRectPix ();
         void  DrawFocusLine ();
-        void SetTrack (BOOL b);
+        void  SetTrack (BOOL b);
 
         HBITMAP m_hbm;
         HBITMAP m_hbmMask;
@@ -90,8 +90,8 @@ public:
         virtual void SetAlignment (int nAlign);
         virtual void SetRuler (RulerBar* pRuler);
         virtual void SetBounds (int nMin, int nMax);
-        int GetMin ();
-        int GetMax ();
+        int          GetMin ();
+        int          GetMax ();
 
     protected:
         RulerItem  m_secondary;
@@ -148,12 +148,12 @@ private:
 
     // Implementation
 public:
-    virtual void DoPaint (CDC* pDC);
+    virtual void  DoPaint (CDC* pDC);
     virtual CSize CalcFixedLayout (BOOL bStretch, BOOL bHorz);
-    void ClientToRuler (CPoint& pt) { pt.Offset (-m_cxLeftBorder + m_nScroll, -m_cyTopBorder); }
-    void ClientToRuler (CRect& rect) { rect.OffsetRect (-m_cxLeftBorder + m_nScroll, -m_cyTopBorder); }
-    void RulerToClient (CPoint& pt) { pt.Offset (m_cxLeftBorder - m_nScroll, m_cyTopBorder); }
-    void RulerToClient (CRect& rect) { rect.OffsetRect (m_cxLeftBorder - m_nScroll, m_cyTopBorder); }
+    void          ClientToRuler (CPoint& pt) { pt.Offset (-m_cxLeftBorder + m_nScroll, -m_cyTopBorder); }
+    void          ClientToRuler (CRect& rect) { rect.OffsetRect (-m_cxLeftBorder + m_nScroll, -m_cyTopBorder); }
+    void          RulerToClient (CPoint& pt) { pt.Offset (m_cxLeftBorder - m_nScroll, m_cyTopBorder); }
+    void          RulerToClient (CRect& rect) { rect.OffsetRect (m_cxLeftBorder - m_nScroll, m_cyTopBorder); }
 
     int XTwipsToClient (int nT) { return MulDiv (nT, m_logx, 1440) + m_cxLeftBorder - m_nScroll; }
     int XClientToTwips (int nC) { return MulDiv (nC - m_cxLeftBorder + m_nScroll, 1440, m_logx); }
@@ -166,27 +166,27 @@ public:
 
 protected:
     virtual void OnUpdateCmdUI (CFrameWnd* pTarget, BOOL bDisableIfNoHndler);
-    void CreateGDIObjects ();
-    void DrawFace (CDC& dc);
-    void DrawTickMarks (CDC& dC);
-    void DrawNumbers (CDC& dc, int nInc, int nTPU);
-    void DrawDiv (CDC& dc, int nInc, int nLargeDiv, int nLength);
-    void DrawTabs (CDC& dc);
-    void FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf);
-    void FillInParaFormat (PARAFORMAT& pf);
-    void       SortTabs ();
-    void       SetMarginBounds ();
-    RulerItem* GetFreeTab ();
-    LedItView* GetView ();
+    void         CreateGDIObjects ();
+    void         DrawFace (CDC& dc);
+    void         DrawTickMarks (CDC& dC);
+    void         DrawNumbers (CDC& dc, int nInc, int nTPU);
+    void         DrawDiv (CDC& dc, int nInc, int nLargeDiv, int nLength);
+    void         DrawTabs (CDC& dc);
+    void         FillInParaFormat (WordProcessor::IncrementalParagraphInfo& pf);
+    void         FillInParaFormat (PARAFORMAT& pf);
+    void         SortTabs ();
+    void         SetMarginBounds ();
+    RulerItem*   GetFreeTab ();
+    LedItView*   GetView ();
 
     CTabRulerItem* GetHitTabPix (CPoint pt);
-    afx_msg void OnLButtonDown (UINT nFlags, CPoint point);
-    afx_msg void OnLButtonUp (UINT nFlags, CPoint point);
-    afx_msg void OnMouseMove (UINT nFlags, CPoint point);
-    afx_msg void OnSysColorChange ();
-    afx_msg void OnWindowPosChanging (WINDOWPOS FAR* lpwndpos);
-    afx_msg void OnShowWindow (BOOL bShow, UINT nStatus);
-    afx_msg void OnWindowPosChanged (WINDOWPOS FAR* lpwndpos);
+    afx_msg void   OnLButtonDown (UINT nFlags, CPoint point);
+    afx_msg void   OnLButtonUp (UINT nFlags, CPoint point);
+    afx_msg void   OnMouseMove (UINT nFlags, CPoint point);
+    afx_msg void   OnSysColorChange ();
+    afx_msg void   OnWindowPosChanging (WINDOWPOS FAR* lpwndpos);
+    afx_msg void   OnShowWindow (BOOL bShow, UINT nStatus);
+    afx_msg void   OnWindowPosChanged (WINDOWPOS FAR* lpwndpos);
     afx_msg LRESULT OnSizeParent (WPARAM wParam, LPARAM lParam);
     DECLARE_MESSAGE_MAP ()
 private:

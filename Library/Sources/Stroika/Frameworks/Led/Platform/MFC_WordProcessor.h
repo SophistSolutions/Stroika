@@ -172,34 +172,34 @@ namespace Stroika {
                     virtual BOOL OnChangeItemPosition (const CRect& rectPos) override;
 
                 public:
-                    virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                              size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                              Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                    virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                      const Led_tChar* text,
-                                                      Led_Distance*    distanceResults) const override;
+                    virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                      Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                    virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                              const Led_tChar* text,
+                                                              Led_Distance*    distanceResults) const override;
                     virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
-                    virtual void DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
-                    virtual bool HandleOpen () override;
+                    virtual void         DidUpdateText (const MarkerOwner::UpdateInfo& updateInfo) noexcept override;
+                    virtual bool         HandleOpen () override;
 
                 public:
                     virtual vector<PrivateCmdNumber> GetCmdNumbers () const override;
-                    virtual bool IsCmdEnabled (PrivateCmdNumber cmd) const override;
+                    virtual bool                     IsCmdEnabled (PrivateCmdNumber cmd) const override;
 
                 private:
                     Led_Size fSize;
 
                     // Support RTFIO::RTFOLEEmbedding API
                 public:
-                    virtual void PostCreateSpecifyExtraInfo (Led_TWIPS_Point size) override;
+                    virtual void           PostCreateSpecifyExtraInfo (Led_TWIPS_Point size) override;
                     virtual Led_SDK_String GetObjClassName () const override;
-                    virtual void DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData) override;
-                    virtual Led_Size GetSize () override;
+                    virtual void           DoWriteToOLE1Stream (size_t* nBytes, Byte** resultData) override;
+                    virtual Led_Size       GetSize () override;
 
                 public:
                     virtual const char* GetTag () const override;
-                    virtual void Write (SinkStream& sink) override;
-                    virtual void ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
+                    virtual void        Write (SinkStream& sink) override;
+                    virtual void        ExternalizeFlavors (WriterFlavorPackage& flavorPackage) override;
 
                     virtual void Serialize (CArchive& ar) override;
 

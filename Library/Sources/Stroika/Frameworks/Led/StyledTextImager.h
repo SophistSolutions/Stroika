@@ -81,11 +81,11 @@ namespace Stroika {
             protected:
                 // Must OVERRIDE Draw/Measure text routines so style runs get hooked in and have some effect
                 // when this class is mixed in.
-                virtual void DrawSegment (Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                                  Led_Distance* distanceResults) const override;
+                virtual void         DrawSegment (Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
+                                                          Led_Distance* distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const override;
                 virtual Led_Distance MeasureSegmentBaseLine (size_t from, size_t to) const override;
 
@@ -270,12 +270,12 @@ namespace Stroika {
                 virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const;
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
                 virtual Led_Distance MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
             };
@@ -360,12 +360,12 @@ namespace Stroika {
                 virtual RunElement MungeRunElement (const RunElement& inRunElt) const;
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
                 virtual Led_Distance MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
             };

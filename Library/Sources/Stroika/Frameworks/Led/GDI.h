@@ -308,8 +308,8 @@ namespace Stroika {
                 nonvirtual POINT_TYPE GetBotRight () const;
                 nonvirtual POINT_TYPE GetOrigin () const;
                 nonvirtual SIZE_TYPE GetSize () const;
-                nonvirtual bool Contains (POINT_TYPE p) const;
-                nonvirtual bool Contains (THIS_TYPE r) const;
+                nonvirtual bool      Contains (POINT_TYPE p) const;
+                nonvirtual bool      Contains (THIS_TYPE r) const;
 
                 nonvirtual void SetOrigin (POINT_TYPE p);
                 nonvirtual void SetTop (CoordinateType top);
@@ -822,11 +822,11 @@ namespace Stroika {
             public:
                 // string/name wrapper. Trivial for PC, and for Mac - converts between name under NUMBER ID
                 nonvirtual Led_SDK_String GetFontName () const;
-                nonvirtual void SetFontName (const Led_SDK_String& fontName);
+                nonvirtual void           SetFontName (const Led_SDK_String& fontName);
 
                 // FontName info
                 nonvirtual FontNameSpecifier GetFontNameSpecifier () const;
-                nonvirtual void SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier);
+                nonvirtual void              SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier);
 
                 // Style info
                 nonvirtual bool GetStyle_Plain () const; // special composite of all other styles...
@@ -845,7 +845,7 @@ namespace Stroika {
                                         eSuperscript,
                                         eNoSubOrSuperscript };
                 nonvirtual SubOrSuperScript GetStyle_SubOrSuperScript () const;
-                nonvirtual void SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
+                nonvirtual void             SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
 #if qPlatform_MacOS
                 nonvirtual bool GetStyle_Outline () const;
@@ -865,14 +865,14 @@ namespace Stroika {
 #endif
 
                 nonvirtual unsigned short GetPointSize () const;
-                nonvirtual void SetPointSize (unsigned short pointSize);
+                nonvirtual void           SetPointSize (unsigned short pointSize);
 #if qPlatform_Windows
                 nonvirtual long PeekAtTMHeight () const;        // Speed tweek
                 nonvirtual void PokeAtTMHeight (long tmHeight); // ditto
 #endif
 
                 nonvirtual Led_Color GetTextColor () const;
-                nonvirtual void SetTextColor (const Led_Color& textColor);
+                nonvirtual void      SetTextColor (const Led_Color& textColor);
 
             public:
 #if qPlatform_MacOS
@@ -880,13 +880,13 @@ namespace Stroika {
                 nonvirtual void SetOSRep (short fontID, short fontSize, Style fontStyle);
 #elif qPlatform_Windows
                 nonvirtual LOGFONT GetOSRep () const;
-                nonvirtual void GetOSRep (LOGFONT* logFont) const;
-                nonvirtual void SetOSRep (LOGFONT logFont);
-                nonvirtual void LightSetOSRep (LOGFONT logFont);
+                nonvirtual void    GetOSRep (LOGFONT* logFont) const;
+                nonvirtual void    SetOSRep (LOGFONT logFont);
+                nonvirtual void    LightSetOSRep (LOGFONT logFont);
 #elif qXWindows
                 static string mkOSRep (const string& foundry, const string& family, const string& weight, const string& slant, const string& pointSize);
                 nonvirtual string GetOSRep () const;
-                nonvirtual void SetFromOSRep (const string& osRep);
+                nonvirtual void   SetFromOSRep (const string& osRep);
 #endif
 
             public:
@@ -899,7 +899,7 @@ namespace Stroika {
                 short fFontSize;
                 Style fFontStyle;
 #elif qPlatform_Windows
-                LOGFONT         fFontInfo; // Could make this MUCH smaller on windows - do for future release!
+                LOGFONT            fFontInfo; // Could make this MUCH smaller on windows - do for future release!
 #elif qXWindows
                 FontNameSpecifier fFontFamily;
                 bool              fBold : 1;
@@ -958,8 +958,8 @@ namespace Stroika {
                 nonvirtual FontNameSpecifier GetFontNameSpecifier () const;
                 nonvirtual bool              GetFontNameSpecifier_Valid () const;
                 nonvirtual void              InvalidateFontNameSpecifier ();
-                nonvirtual void SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier);
-                nonvirtual void SetFontName (const Led_SDK_String& fontName);
+                nonvirtual void              SetFontNameSpecifier (FontNameSpecifier fontNameSpecifier);
+                nonvirtual void              SetFontName (const Led_SDK_String& fontName);
 
                 // Style info
                 nonvirtual bool GetStyle_Plain () const; // special composite of all other styles...
@@ -985,7 +985,7 @@ namespace Stroika {
                 nonvirtual SubOrSuperScript GetStyle_SubOrSuperScript () const;
                 nonvirtual bool             GetStyle_SubOrSuperScript_Valid () const;
                 nonvirtual void             InvalidateStyle_SubOrSuperScript ();
-                nonvirtual void SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
+                nonvirtual void             SetStyle_SubOrSuperScript (SubOrSuperScript subOrSuperScript);
 
 #if qPlatform_MacOS
                 nonvirtual bool GetStyle_Outline () const;
@@ -1008,10 +1008,10 @@ namespace Stroika {
                 nonvirtual void InvalidateStyle_Extended ();
                 nonvirtual void SetStyle_Extended (bool isExtended);
 #elif qPlatform_Windows
-                nonvirtual bool GetStyle_Strikeout () const;
-                nonvirtual bool GetStyle_Strikeout_Valid () const;
-                nonvirtual void InvalidateStyle_Strikeout ();
-                nonvirtual void SetStyle_Strikeout (bool isStrikeout);
+                nonvirtual bool    GetStyle_Strikeout () const;
+                nonvirtual bool    GetStyle_Strikeout_Valid () const;
+                nonvirtual void    InvalidateStyle_Strikeout ();
+                nonvirtual void    SetStyle_Strikeout (bool isStrikeout);
 #endif
 
                 /*
@@ -1023,7 +1023,7 @@ namespace Stroika {
                 nonvirtual unsigned short GetPointSize () const;
                 nonvirtual bool           GetPointSize_Valid () const;
                 nonvirtual void           InvalidatePointSize ();
-                nonvirtual void SetPointSize (unsigned short pointSize);
+                nonvirtual void           SetPointSize (unsigned short pointSize);
 #if qPlatform_Windows
                 nonvirtual void PokeAtTMHeight (long tmHeight); // ditto
 #endif
@@ -1031,12 +1031,12 @@ namespace Stroika {
                 nonvirtual short GetPointSizeIncrement () const;
                 nonvirtual bool  GetPointSizeIncrement_Valid () const;
                 nonvirtual void  InvalidatePointSizeIncrement ();
-                nonvirtual void SetPointSizeIncrement (short pointSizeIncrement);
+                nonvirtual void  SetPointSizeIncrement (short pointSizeIncrement);
 
                 nonvirtual Led_Color GetTextColor () const;
                 nonvirtual bool      GetTextColor_Valid () const;
                 nonvirtual void      InvalidateTextColor ();
-                nonvirtual void SetTextColor (const Led_Color& textColor);
+                nonvirtual void      SetTextColor (const Led_Color& textColor);
 
             public:
 #if qPlatform_MacOS
@@ -1044,12 +1044,12 @@ namespace Stroika {
                 nonvirtual void SetOSRep (short fontID, short fontSize, Style fontStyle); // marks all attribs as valid
 #elif qPlatform_Windows
                 nonvirtual LOGFONT GetOSRep () const;
-                nonvirtual void GetOSRep (LOGFONT* logFont) const;
-                nonvirtual void SetOSRep (LOGFONT logFont); // marks all attribs as valid
-                nonvirtual void LightSetOSRep (LOGFONT logFont);
-                nonvirtual bool GetDidSetOSRepCallFlag () const; // special flag indicating user did SetOSRep() cuz that
-                                                                 // sets things valid that we don't have special 'valid' flags
-                                                                 // for. Makes MergeIn() just copy flat out!
+                nonvirtual void    GetOSRep (LOGFONT* logFont) const;
+                nonvirtual void    SetOSRep (LOGFONT logFont); // marks all attribs as valid
+                nonvirtual void    LightSetOSRep (LOGFONT logFont);
+                nonvirtual bool    GetDidSetOSRepCallFlag () const; // special flag indicating user did SetOSRep() cuz that
+                                                                    // sets things valid that we don't have special 'valid' flags
+                                                                    // for. Makes MergeIn() just copy flat out!
 #endif
 
             public:
@@ -1151,10 +1151,10 @@ namespace Stroika {
             Led_Rect operator- (const Led_Rect& lhs, const Led_Point& rhs);
             Led_Rect operator+ (Led_Point p, Led_Rect r);
             Led_Rect operator+ (Led_Rect r, Led_Point p);
-            bool Intersect (const Led_Rect& lhs, const Led_Rect& rhs);
-            bool Intersect (const Led_Rect& lhs, const Led_Region& rhs);
-            bool Intersect (const Led_Region& lhs, const Led_Rect& rhs);
-            bool Intersect (const Led_Region& lhs, const Led_Region& rhs);
+            bool     Intersect (const Led_Rect& lhs, const Led_Rect& rhs);
+            bool     Intersect (const Led_Rect& lhs, const Led_Region& rhs);
+            bool     Intersect (const Led_Region& lhs, const Led_Rect& rhs);
+            bool     Intersect (const Led_Region& lhs, const Led_Region& rhs);
 
             Led_Rect Intersection (const Led_Rect& lhs, const Led_Rect& rhs);
             Led_Rect operator* (const Led_Rect& lhs, const Led_Rect& rhs);
@@ -1168,28 +1168,28 @@ namespace Stroika {
 
 #if qPlatform_MacOS
             Led_Point AsLedPoint (Point p);
-            Point AsQDPoint (Led_Point p);
-            Led_Rect AsLedRect (Rect r);
-            Rect AsQDRect (Led_Rect r);
-            Led_Size AsLedSize (Point s);
-            Point GetRectOrigin (const Rect& r);
-            Point GetRectSize (const Rect& r);
-            short GetRectHeight (const Rect& r);
-            short GetRectWidth (const Rect& r);
+            Point     AsQDPoint (Led_Point p);
+            Led_Rect  AsLedRect (Rect r);
+            Rect      AsQDRect (Led_Rect r);
+            Led_Size  AsLedSize (Point s);
+            Point     GetRectOrigin (const Rect& r);
+            Point     GetRectSize (const Rect& r);
+            short     GetRectHeight (const Rect& r);
+            short     GetRectWidth (const Rect& r);
 #elif qPlatform_Windows
             Led_Point AsLedPoint (POINT p);
-            POINT AsPOINT (Led_Point p);
-            Led_Rect AsLedRect (RECT r);
-            RECT AsRECT (Led_Rect p);
-            SIZE AsSIZE (Led_Size s);
-            Led_Size AsLedSize (SIZE s);
+            POINT     AsPOINT (Led_Point p);
+            Led_Rect  AsLedRect (RECT r);
+            RECT      AsRECT (Led_Rect p);
+            SIZE      AsSIZE (Led_Size s);
+            Led_Size  AsLedSize (SIZE s);
 #elif qXWindows
             Led_Rect AsLedRect (const XRectangle& r);
             XRectangle AsXRect (const Led_Rect& r);
 #endif
 
-            Led_TWIPS Led_CvtScreenPixelsToTWIPSV (Led_Coordinate from);
-            Led_TWIPS Led_CvtScreenPixelsToTWIPSH (Led_Coordinate from);
+            Led_TWIPS      Led_CvtScreenPixelsToTWIPSV (Led_Coordinate from);
+            Led_TWIPS      Led_CvtScreenPixelsToTWIPSH (Led_Coordinate from);
             Led_Coordinate Led_CvtScreenPixelsFromTWIPSV (Led_TWIPS from);
             Led_Coordinate Led_CvtScreenPixelsFromTWIPSH (Led_TWIPS from);
 
@@ -1336,7 +1336,7 @@ namespace Stroika {
                 nonvirtual HFONT SelectObject (HFONT hFont);
 #endif
                 nonvirtual POINT SetWindowOrg (int x, int y);
-                nonvirtual int GetDeviceCaps (int nIndex) const;
+                nonvirtual int   GetDeviceCaps (int nIndex) const;
                 nonvirtual BOOL Attach (HDC hDC, OwnDCControl ownsDC = eOwnsDC);
                 nonvirtual HDC Detach ();
 #elif qXWindows
@@ -1412,10 +1412,10 @@ namespace Stroika {
 
             public:
                 nonvirtual Led_Region GetClip () const;
-                nonvirtual bool GetClip (Led_Region* r) const;
-                nonvirtual void SetClip ();
-                nonvirtual void SetClip (const Led_Rect& clipTo);
-                nonvirtual void SetClip (const Led_Region& clipTo);
+                nonvirtual bool       GetClip (Led_Region* r) const;
+                nonvirtual void       SetClip ();
+                nonvirtual void       SetClip (const Led_Rect& clipTo);
+                nonvirtual void       SetClip (const Led_Region& clipTo);
 
             public:
                 nonvirtual Led_FontMetrics GetFontMetrics () const;
@@ -1435,10 +1435,10 @@ namespace Stroika {
                 mutable Led_Distance fLogPixelsH;
 #elif qXWindows
             private:
-                Display*             fDisplay;
-                Drawable             fDrawable;
-                GC                   fGC;
-                Colormap             fColormap;
+                Display* fDisplay;
+                Drawable fDrawable;
+                GC fGC;
+                Colormap fColormap;
                 mutable XFontStruct* fCachedFontInfo;
                 map<string, string> fFontMappingCache;
 #endif
@@ -1520,7 +1520,7 @@ namespace Stroika {
 
             public:
                 nonvirtual void DeleteObject ();
-                nonvirtual operator HBITMAP () const;
+                nonvirtual      operator HBITMAP () const;
 
             public:
                 nonvirtual Led_Size GetImageSize () const;
@@ -1549,7 +1549,7 @@ namespace Stroika {
             public:
                 nonvirtual void Setup (Led_Tablet origTablet);
                 nonvirtual Led_Tablet PrepareRect (const Led_Rect& currentRowRect, Led_Distance extraToAddToBottomOfRect = 0);
-                nonvirtual void BlastBitmapToOrigTablet ();
+                nonvirtual void       BlastBitmapToOrigTablet ();
 
             private:
                 class OT : public Led_Tablet_ {
@@ -1631,8 +1631,8 @@ namespace Stroika {
              *  (and perhaps always) we only support this for the 68K code.
              */
 #if qPlatform_MacOS
-            void GDI_RGBForeColor (const RGBColor& color);
-            void GDI_RGBBackColor (const RGBColor& color);
+            void     GDI_RGBForeColor (const RGBColor& color);
+            void     GDI_RGBBackColor (const RGBColor& color);
             RGBColor GDI_GetForeColor ();
             RGBColor GDI_GetBackColor ();
 #endif
@@ -1663,20 +1663,20 @@ namespace Stroika {
             };
 #endif
 
-            short Led_GetMacPictTop (const Led_Picture* picture);
-            short Led_GetMacPictLeft (const Led_Picture* picture);
-            short Led_GetMacPictBottom (const Led_Picture* picture);
-            short Led_GetMacPictRight (const Led_Picture* picture);
-            short Led_GetMacPictWidth (const Led_Picture* picture);
-            short Led_GetMacPictHeight (const Led_Picture* picture);
+            short    Led_GetMacPictTop (const Led_Picture* picture);
+            short    Led_GetMacPictLeft (const Led_Picture* picture);
+            short    Led_GetMacPictBottom (const Led_Picture* picture);
+            short    Led_GetMacPictRight (const Led_Picture* picture);
+            short    Led_GetMacPictWidth (const Led_Picture* picture);
+            short    Led_GetMacPictHeight (const Led_Picture* picture);
             Led_Size Led_GetMacPictSize (const Led_Picture* picture);
 #if qPlatform_MacOS
-            short Led_GetMacPictTop (const Led_Picture* const* picture);
-            short Led_GetMacPictLeft (const Led_Picture* const* picture);
-            short Led_GetMacPictBottom (const Led_Picture* const* picture);
-            short Led_GetMacPictRight (const Led_Picture* const* picture);
-            short Led_GetMacPictWidth (const Led_Picture* const* picture);
-            short Led_GetMacPictHeight (const Led_Picture* const* picture);
+            short    Led_GetMacPictTop (const Led_Picture* const* picture);
+            short    Led_GetMacPictLeft (const Led_Picture* const* picture);
+            short    Led_GetMacPictBottom (const Led_Picture* const* picture);
+            short    Led_GetMacPictRight (const Led_Picture* const* picture);
+            short    Led_GetMacPictWidth (const Led_Picture* const* picture);
+            short    Led_GetMacPictHeight (const Led_Picture* const* picture);
             Led_Size Led_GetMacPictSize (const Led_Picture* const* picture);
 #endif
 
@@ -1734,11 +1734,11 @@ namespace Stroika {
             */
             using Led_DIB = BITMAPINFO;
 
-            Led_Size Led_GetDIBImageSize (const Led_DIB* dib);
-            size_t Led_GetDIBPalletByteCount (const Led_DIB* dib);
-            size_t Led_GetDIBImageRowByteCount (const Led_DIB* dib);
-            size_t Led_GetDIBImageByteCount (const Led_DIB* dib);
-            Led_DIB* Led_CloneDIB (const Led_DIB* dib);
+            Led_Size    Led_GetDIBImageSize (const Led_DIB* dib);
+            size_t      Led_GetDIBPalletByteCount (const Led_DIB* dib);
+            size_t      Led_GetDIBImageRowByteCount (const Led_DIB* dib);
+            size_t      Led_GetDIBImageByteCount (const Led_DIB* dib);
+            Led_DIB*    Led_CloneDIB (const Led_DIB* dib);
             const void* Led_GetDIBBitsPointer (const Led_DIB* dib);
 
 #if qPlatform_Windows
@@ -2674,7 +2674,7 @@ namespace Stroika {
                 Verify (::SelectClipRgn (*this, nullptr) != ERROR);
 #elif qXWindows
                 static Led_Rect kWideOpened = Led_Rect (-10000, -10000, 20000, 20000);
-                XRectangle      xrectangle  = AsXRect (kWideOpened);
+                XRectangle xrectangle = AsXRect (kWideOpened);
                 ::XSetClipRectangles (fDisplay, fGC, 0, 0, &xrectangle, 1, Unsorted);
 #else
                 Assert (false); // NYI
@@ -3016,10 +3016,10 @@ namespace Stroika {
             inline XRectangle AsXRect (const Led_Rect& r)
             {
                 XRectangle newR;
-                newR.x      = r.GetLeft ();
-                newR.y      = r.GetTop ();
+                newR.x = r.GetLeft ();
+                newR.y = r.GetTop ();
                 newR.height = r.GetHeight ();
-                newR.width  = r.GetWidth ();
+                newR.width = r.GetWidth ();
                 return newR;
             }
 #endif
@@ -3443,8 +3443,8 @@ namespace Stroika {
                 fFontInfo.lfUnderline = false;
                 fFontInfo.lfStrikeOut = false;
 #elif qXWindows
-                fBold      = false;
-                fItalics   = false;
+                fBold = false;
+                fItalics = false;
                 fUnderline = false;
 #endif
             }

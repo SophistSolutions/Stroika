@@ -36,8 +36,8 @@ using namespace Stroika::Foundation::Traversal;
 #if qPlatform_Windows
 using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
-using Execution::ThrowIfError_errno_t;
 using Execution::ThrowErrNoIfNull;
+using Execution::ThrowIfError_errno_t;
 using Memory::Optional;
 
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -

@@ -82,9 +82,9 @@ namespace Stroika {
                 nonvirtual const MARKERINFO& GetInfo (size_t charAfterPos) const;
                 nonvirtual MarkerVector GetInfoMarkers (size_t charAfterPos, size_t nTCharsFollowing) const;
                 nonvirtual vector<pair<MARKERINFO, size_t>> GetInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
-                virtual void SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const INCREMENTALMARKERINFO& infoForMarkers);
-                virtual void SetInfos (size_t charAfterPos, const vector<pair<INCREMENTALMARKERINFO, size_t>>& infoForMarkers);
-                nonvirtual void SetInfos2 (size_t charAfterPos, const vector<pair<MARKERINFO, size_t>>& infoForMarkers);
+                virtual void                                SetInfo (size_t charAfterPos, size_t nTCharsFollowing, const INCREMENTALMARKERINFO& infoForMarkers);
+                virtual void                                SetInfos (size_t charAfterPos, const vector<pair<INCREMENTALMARKERINFO, size_t>>& infoForMarkers);
+                nonvirtual void                             SetInfos2 (size_t charAfterPos, const vector<pair<MARKERINFO, size_t>>& infoForMarkers);
 
             protected:
                 nonvirtual void SetInfoInnerLoop (
@@ -95,9 +95,9 @@ namespace Stroika {
                     TextStore::SimpleUpdater**   updater);
 
             protected:
-                virtual void ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing);
+                virtual void    ConstrainSetInfoArgs (size_t* charAfterPos, size_t* nTCharsFollowing);
                 nonvirtual void NoteCoverRangeDirtied (size_t from, size_t to);
-                virtual void NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers);
+                virtual void    NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers);
 
             public:
                 virtual void AboutToUpdateText (const UpdateInfo& updateInfo) override;
@@ -306,7 +306,7 @@ namespace Stroika {
             inline vector<pair<MARKERINFO, size_t>>
             MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::GetInfo (size_t charAfterPos, size_t nTCharsFollowing) const
             {
-                MarkerVector markers = GetInfoMarkers (charAfterPos, nTCharsFollowing);
+                MarkerVector                     markers = GetInfoMarkers (charAfterPos, nTCharsFollowing);
                 vector<pair<MARKERINFO, size_t>> result;
                 for (auto i = markers.begin (); i != markers.end (); ++i) {
                     // Simply append makerinfo's, but be careful on the endpoints. We have have cut one or both endpoints off slightly

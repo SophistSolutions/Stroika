@@ -177,8 +177,8 @@ namespace Stroika {
                 class BlockAllocationPool_ {
                 public:
                     static void* Allocate (size_t n);
-                    static void Deallocate (void* p) noexcept;
-                    static void Compact ();
+                    static void  Deallocate (void* p) noexcept;
+                    static void  Compact ();
 
                 private:
 // make op new inline for MOST important case
@@ -286,7 +286,7 @@ namespace Stroika {
 #endif
             }
             template <size_t SIZE>
-            void             Private_::BlockAllocationPool_<SIZE>::Compact ()
+            void Private_::BlockAllocationPool_<SIZE>::Compact ()
             {
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 // cannot compact lock-free - no biggie
@@ -371,7 +371,7 @@ namespace Stroika {
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
             std::atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
 #else
-            void*     Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
+            void* Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
 #endif
 
             /*
@@ -382,8 +382,8 @@ namespace Stroika {
             template <typename T>
             inline void* BlockAllocator<T>::Allocate (size_t n)
             {
-                using Private_::BlockAllocationPool_;
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
+                using Private_::BlockAllocationPool_;
                 Require (n == sizeof (T));
                 Arg_Unused (n); // n only used for debuggging, avoid compiler warning
 #if qAllowBlockAllocation
@@ -398,8 +398,8 @@ namespace Stroika {
             template <typename T>
             inline void BlockAllocator<T>::Deallocate (void* p) noexcept
             {
-                using Private_::BlockAllocationPool_;
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
+                using Private_::BlockAllocationPool_;
 #if qAllowBlockAllocation
                 if (p != nullptr) {
                     BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
@@ -411,8 +411,8 @@ namespace Stroika {
             template <typename T>
             void BlockAllocator<T>::Compact ()
             {
-                using Private_::BlockAllocationPool_;
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
+                using Private_::BlockAllocationPool_;
 #if qAllowBlockAllocation
                 BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
 #endif

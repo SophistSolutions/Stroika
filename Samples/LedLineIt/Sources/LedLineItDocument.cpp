@@ -18,13 +18,13 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks::Led;
 
+using Stroika::Foundation::Characters::CodePageConverter;
 using Stroika::Foundation::Characters::CodePagePrettyNameMapper;
+using Stroika::Foundation::Characters::CodePagesGuesser;
 using Stroika::Foundation::Characters::kCodePage_INVALID;
 using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE;
-using Stroika::Foundation::Characters::kCodePage_UTF7;
 using Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE_BIGENDIAN;
-using Stroika::Foundation::Characters::CodePageConverter;
-using Stroika::Foundation::Characters::CodePagesGuesser;
+using Stroika::Foundation::Characters::kCodePage_UTF7;
 using Stroika::Foundation::Memory::SmallStackBuffer;
 
 // special exception handling just for MFC library implementation
@@ -506,8 +506,8 @@ void LedLineItDocument::Serialize (CArchive& ar)
             nBytesToWrite = outCharCnt;
             char* buffp   = static_cast<char*> (buf3_);
 #else
-            char*     buffp         = static_cast<char*> (buf2);
-            size_t    nBytesToWrite = charsToWrite;
+            char* buffp = static_cast<char*> (buf2);
+            size_t nBytesToWrite = charsToWrite;
 #endif
             ar.Write (buffp, nBytesToWrite);
         }
@@ -540,7 +540,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
         result[nLen]     = '\0'; // assure NUL-Term
         Led_tChar* buffp = static_cast<Led_tChar*> (result);
 #else
-        Led_tChar*    buffp         = static_cast<char*> (buf);
+        Led_tChar* buffp = static_cast<char*> (buf);
 #endif
 
         nLen = Led_NormalizeTextToNL (buffp, nLen, buffp, nLen);

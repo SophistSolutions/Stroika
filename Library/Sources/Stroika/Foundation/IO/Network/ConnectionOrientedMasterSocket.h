@@ -154,9 +154,9 @@ namespace Stroika {
                  */
                 class ConnectionOrientedMasterSocket::_IRep : public Socket::_IRep {
                 public:
-                    virtual ~_IRep ()                               = default;
-                    virtual void Listen (unsigned int backlog)      = 0;
-                    virtual ConnectionOrientedSocket::Ptr Accept () = 0;
+                    virtual ~_IRep ()                                                   = default;
+                    virtual void                          Listen (unsigned int backlog) = 0;
+                    virtual ConnectionOrientedSocket::Ptr Accept ()                     = 0;
                 };
             }
         }

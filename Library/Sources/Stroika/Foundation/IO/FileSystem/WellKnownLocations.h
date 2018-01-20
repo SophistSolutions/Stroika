@@ -31,8 +31,8 @@ namespace Stroika {
         namespace IO {
             namespace FileSystem {
 
-                using Characters::String;
                 using Characters::SDKString;
+                using Characters::String;
 
                 /**
                  *  These WellKnownLocations routines always return a valid directory (if createIfNotPresent)

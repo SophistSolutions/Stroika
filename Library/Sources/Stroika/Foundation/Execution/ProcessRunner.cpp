@@ -469,7 +469,7 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
         else {
             Synchronized<Memory::Optional<ProcessResultType>> pr;
             auto&&                                            cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
-            Thread::Ptr                                       t = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
+            Thread::Ptr                                       t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
             t.WaitForDone (timeout);
             t.ThrowIfDoneWithException ();
         }

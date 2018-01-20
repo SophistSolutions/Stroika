@@ -519,7 +519,7 @@ Led_Distance PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
     size_t startOfRow = GetStartOfRowContainingPosition (from);
     Require (GetEndOfRowContainingPosition (startOfRow) >= to); //  WE REQUIRE from/to be contained within a single row!!!
 
-    MeasureTextCache::CacheElt ce = fMeasureTextCache->LookupValue (pm, startOfRow, [this](PartitionMarker* pm, size_t startOfRow) {
+    MeasureTextCache::CacheElt ce                = fMeasureTextCache->LookupValue (pm, startOfRow, [this](PartitionMarker* pm, size_t startOfRow) {
         MeasureTextCache::CacheElt newCE{MeasureTextCache::CacheElt::COMPARE_ITEM (pm, startOfRow)};
         size_t                     rowEnd = GetEndOfRowContainingPosition (startOfRow);
         size_t                     rowLen = rowEnd - startOfRow;
@@ -527,7 +527,7 @@ Led_Distance PartitioningTextImager::CalcSegmentSize_CACHING (size_t from, size_
         CalcSegmentSize_FillIn (startOfRow, rowEnd, newCE.fMeasurementsCache);
         return newCE;
     });
-    const Led_Distance* measurementsCache = ce.fMeasurementsCache;
+    const Led_Distance*        measurementsCache = ce.fMeasurementsCache;
 
     Assert (to > startOfRow);                                                                 // but from could be == startOfRow, so must be careful of that...
     Assert (to - startOfRow - 1 < (GetEndOfRowContainingPosition (startOfRow) - startOfRow)); // now buffer overflows!

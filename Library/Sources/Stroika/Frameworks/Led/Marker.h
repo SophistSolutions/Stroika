@@ -146,7 +146,7 @@ namespace Stroika {
                 nonvirtual size_t FindPreviousCharacter (size_t beforePos) const;
                 nonvirtual size_t GetLength () const;
                 nonvirtual size_t GetEnd () const;
-                nonvirtual void CopyOut (size_t from, size_t count, Led_tChar* buffer) const;
+                nonvirtual void   CopyOut (size_t from, size_t count, Led_tChar* buffer) const;
 #if qMultiByteCharacters
             public:
                 nonvirtual void Assert_CharPosDoesNotSplitCharacter (size_t charPos) const;
@@ -223,7 +223,7 @@ namespace Stroika {
                 nonvirtual size_t GetEnd () const;
                 nonvirtual size_t GetLength () const;
                 nonvirtual MarkerOwner* GetOwner () const;
-                nonvirtual void GetRange (size_t* start, size_t* end) const;
+                nonvirtual void         GetRange (size_t* start, size_t* end) const;
 
                 /*
                  *  Considered having one notification method since this would be more efficient - but
@@ -272,11 +272,11 @@ namespace Stroika {
                 virtual ~HookData ();
 
             public:
-                virtual MarkerOwner* GetOwner () const  = 0;
-                virtual size_t       GetStart () const  = 0;
-                virtual size_t       GetEnd () const    = 0;
-                virtual size_t       GetLength () const = 0;
-                virtual void GetStartEnd (size_t* start, size_t* end) const = 0;
+                virtual MarkerOwner* GetOwner () const                              = 0;
+                virtual size_t       GetStart () const                              = 0;
+                virtual size_t       GetEnd () const                                = 0;
+                virtual size_t       GetLength () const                             = 0;
+                virtual void         GetStartEnd (size_t* start, size_t* end) const = 0;
             };
 
             /*
@@ -359,7 +359,7 @@ namespace Stroika {
                 nonvirtual size_t GetStart () const;
                 nonvirtual size_t GetEnd () const;
                 nonvirtual size_t GetLength () const;
-                nonvirtual void GetLocation (size_t* from, size_t* to) const;
+                nonvirtual void   GetLocation (size_t* from, size_t* to) const;
 
             public:
                 virtual TextStore* PeekAtTextStore () const override;
@@ -631,7 +631,7 @@ namespace Stroika {
 
                     // NB: No exceptions can happen in any of this - all these deletes allocate no memory (LGP 950415)
                     MARKER* const* markersToBeDeleted_ = &fMarkersToBeDeleted.front ();
-                    Marker* const* markersToBeDeleted  = (Marker * const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
+                    Marker* const* markersToBeDeleted  = (Marker* const*)markersToBeDeleted_; // need cast - but safe - cuz array of MARKER* and looking for Marker* - safe cuz const array!
 
                     textStore.RemoveMarkers (markersToBeDeleted, fMarkersToBeDeleted.size ());
                     for (size_t i = 0; i < fMarkersToBeDeleted.size (); i++) {

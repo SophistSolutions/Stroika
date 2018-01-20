@@ -50,8 +50,8 @@ using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
 
-using Characters::String_Constant;
 using Characters::SDKChar;
+using Characters::String_Constant;
 using Characters::StringBuilder;
 using Memory::Byte;
 using Memory::Optional;
@@ -223,9 +223,9 @@ SystemConfiguration::BootInformation Configuration::GetSystemConfiguration_BootI
              *  From https://www.centos.org/docs/5/html/5.1/Deployment_Guide/s2-proc-uptime.html
              *      "The first number is the total number of seconds the system has been up"
              */
-            using Streams::TextReader;
-            using IO::FileSystem::FileInputStream;
             using Characters::String2Int;
+            using IO::FileSystem::FileInputStream;
+            using Streams::TextReader;
             for (String line : TextReader::New (FileInputStream::New (kProcUptimeFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
                 Sequence<String> t = line.Tokenize ();
                 if (t.size () >= 2) {
@@ -282,9 +282,9 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
     CPU result;
 #if qPlatform_Linux
     {
-        using Streams::TextReader;
-        using IO::FileSystem::FileInputStream;
         using Characters::String2Int;
+        using IO::FileSystem::FileInputStream;
+        using Streams::TextReader;
         const String_Constant kProcCPUInfoFileName_{L"/proc/cpuinfo"};
         /*
         * Example 1:
@@ -921,7 +921,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             }
         }
 #elif qPlatform_Windows
-        tmp.fTokenName       = String_Constant (L"Windows");
+        tmp.fTokenName = String_Constant (L"Windows");
         /*
          *  Microslop declares this deprecated, but then fails to provide a reasonable alternative.
          *
@@ -981,7 +981,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             Assert (sizeof (void*) == 8);
             tmp.fBits = 64;
         }
-        tmp.fPreferedInstallerTechnology           = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
+        tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eMSI;
 #else
         AssertNotImplemented ();
 #endif

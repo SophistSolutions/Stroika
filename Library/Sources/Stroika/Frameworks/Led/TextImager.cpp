@@ -314,7 +314,7 @@ void TextImager::InvalidateAllCaches ()
     delete fCachedFont;
     fCachedFont = nullptr;
 #else
-    fCachedFontValid                               = false;
+    fCachedFontValid = false;
 #endif
 }
 
@@ -466,7 +466,7 @@ Led_FontSpecification TextImager::GetStaticDefaultFont ()
         sDefaultFont.SetPointSize (::GetScriptVariable (smCurrentScript, smScriptAppFondSize));
         sDefaultFont.SetStyle_Plain ();
 #elif qPlatform_Windows
-        sDefaultFont                               = GetStaticDefaultFont (DEFAULT_CHARSET);
+        sDefaultFont = GetStaticDefaultFont (DEFAULT_CHARSET);
 #elif qXWindows
         {
             sDefaultFont.SetFontNameSpecifier ("times");
@@ -1326,7 +1326,7 @@ vector<Led_Rect> TextImager::GetSelectionWindowRects (size_t from, size_t to) co
 #if 1
         TextLayoutBlock_Copy text = GetTextLayoutBlock (startOfRow, endOfRow);
 #else
-        size_t                              rowLen = endOfRow - startOfRow;
+        size_t rowLen = endOfRow - startOfRow;
         Memory::SmallStackBuffer<Led_tChar> rowBuf (rowLen);
         CopyOut (startOfRow, rowLen, rowBuf);
         TextLayoutBlock_Basic text (rowBuf, rowBuf + rowLen);

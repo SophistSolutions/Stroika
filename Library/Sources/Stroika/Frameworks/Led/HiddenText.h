@@ -71,14 +71,14 @@ namespace Stroika {
 
             public:
                 nonvirtual shared_ptr<FlavorPackageInternalizer> GetInternalizer () const;
-                nonvirtual void SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
+                nonvirtual void                                  SetInternalizer (const shared_ptr<FlavorPackageInternalizer>& i);
 
             private:
                 shared_ptr<FlavorPackageInternalizer> fInternalizer;
 
             public:
                 nonvirtual shared_ptr<FlavorPackageExternalizer> GetExternalizer () const;
-                nonvirtual void SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
+                nonvirtual void                                  SetExternalizer (const shared_ptr<FlavorPackageExternalizer>& e);
 
             private:
                 shared_ptr<FlavorPackageExternalizer> fExternalizer;
@@ -210,14 +210,14 @@ namespace Stroika {
                 virtual int GetPriority () const override;
 
             protected:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text,
-                                          const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine,
-                                          Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement,
-                                                  size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text,
+                                                  const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine,
+                                                  Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement,
+                                                          size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement,
                                                            size_t from, size_t to) const override;
 
@@ -287,9 +287,9 @@ namespace Stroika {
 
             public:
                 nonvirtual Led_Color GetColor () const;
-                nonvirtual void SetColor (const Led_Color& color);
-                nonvirtual bool GetColored () const;
-                nonvirtual void SetColored (bool colored);
+                nonvirtual void      SetColor (const Led_Color& color);
+                nonvirtual bool      GetColored () const;
+                nonvirtual void      SetColored (bool colored);
 
             protected:
                 nonvirtual void FixupSubMarkers ();

@@ -163,7 +163,7 @@ namespace Stroika {
 
             public:
                 nonvirtual Led_tString GetText () const;
-                nonvirtual void SetText (const Led_tString& t);
+                nonvirtual void        SetText (const Led_tString& t);
 
             public:
                 SimpleTextStore          fTextStore;
@@ -201,11 +201,11 @@ namespace Stroika {
 
             public:
                 nonvirtual Led_tString GetText () const;
-                nonvirtual void SetText (const Led_tString& t);
+                nonvirtual void        SetText (const Led_tString& t);
 
             public:
                 nonvirtual vector<Led_tString> GetPopupItems () const;
-                nonvirtual void SetPopupItems (const vector<Led_tString>& pi);
+                nonvirtual void                SetPopupItems (const vector<Led_tString>& pi);
 
             private:
                 vector<Led_tString> fPopupItems;
@@ -363,13 +363,13 @@ namespace Stroika {
             public:
 #if qPlatform_MacOS || qPlatform_Windows || (qXWindows && qUseGTKForLedStandardDialogs)
                 nonvirtual Led_SDK_String GetItemText (DialogItemID itemID) const;
-                nonvirtual void SetItemText (DialogItemID itemID, const Led_SDK_String& text);
-                nonvirtual void SelectItemText (DialogItemID itemID, size_t from = 0, size_t to = static_cast<size_t> (-1));
-                nonvirtual bool GetItemChecked (DialogItemID itemID) const;
-                nonvirtual void SetItemChecked (DialogItemID itemID, bool checked);
-                nonvirtual bool GetItemEnabled (DialogItemID itemID) const;
-                nonvirtual void SetItemEnabled (DialogItemID itemID, bool enabled);
-                nonvirtual void SetFocusedItem (DialogItemID itemID);
+                nonvirtual void           SetItemText (DialogItemID itemID, const Led_SDK_String& text);
+                nonvirtual void           SelectItemText (DialogItemID itemID, size_t from = 0, size_t to = static_cast<size_t> (-1));
+                nonvirtual bool           GetItemChecked (DialogItemID itemID) const;
+                nonvirtual void           SetItemChecked (DialogItemID itemID, bool checked);
+                nonvirtual bool           GetItemEnabled (DialogItemID itemID) const;
+                nonvirtual void           SetItemEnabled (DialogItemID itemID, bool enabled);
+                nonvirtual void           SetFocusedItem (DialogItemID itemID);
 #endif
 
             private:
@@ -380,7 +380,7 @@ namespace Stroika {
 #if qPlatform_MacOS
             public:
                 nonvirtual DialogPtr GetDialogPtr () const;
-                nonvirtual void SetDialogPtr (DialogPtr d);
+                nonvirtual void      SetDialogPtr (DialogPtr d);
 
             private:
                 DialogPtr fDialogPtr;
@@ -394,21 +394,21 @@ namespace Stroika {
 #elif qXWindows && qUseGTKForLedStandardDialogs
             public:
                 nonvirtual GtkWidget* GetWindow () const;
-                nonvirtual void SetWindow (GtkWidget* w);
+                nonvirtual void       SetWindow (GtkWidget* w);
 
             private:
                 GtkWidget* fWindow;
 
             public:
                 nonvirtual GtkWidget* GetOKButton () const;
-                nonvirtual void SetOKButton (GtkWidget* okButton);
+                nonvirtual void       SetOKButton (GtkWidget* okButton);
 
             private:
                 GtkWidget* fOKButton;
 
             public:
                 nonvirtual GtkWidget* GetCancelButton () const;
-                nonvirtual void SetCancelButton (GtkWidget* cancelButton);
+                nonvirtual void       SetCancelButton (GtkWidget* cancelButton);
 
             private:
                 GtkWidget* fCancelButton;
@@ -417,7 +417,7 @@ namespace Stroika {
 #if qPlatform_MacOS
             protected:
                 static pascal Boolean StaticEventFilter (DialogPtr dialog, EventRecord* eventRecord, short* itemHit);
-                virtual bool EventFilter (DialogPtr dialog, EventRecord* eventRecord, short* itemHit);
+                virtual bool          EventFilter (DialogPtr dialog, EventRecord* eventRecord, short* itemHit);
 #endif
 
 #if qPlatform_Windows
@@ -1448,11 +1448,11 @@ namespace Stroika {
                 virtual void DoIgnoreAll () override { fDelegate.DoIgnoreAll (); }
                 virtual void DoChange (const Led_tString& changeTo) override { fDelegate.DoChange (changeTo); }
                 virtual void DoChangeAll (const Led_tString& changeTo) override { fDelegate.DoChangeAll (changeTo); }
-                virtual bool                                 AddToDictionaryEnabled () const override { return fDelegate.AddToDictionaryEnabled (); }
+                virtual bool AddToDictionaryEnabled () const override { return fDelegate.AddToDictionaryEnabled (); }
                 virtual void AddToDictionary (const Led_tString& newWord) override { fDelegate.AddToDictionary (newWord); }
                 virtual void LookupOnWeb (const Led_tString& word) override { fDelegate.LookupOnWeb (word); }
-                virtual bool                                 OptionsDialogEnabled () const override { return fDelegate.OptionsDialogEnabled (); }
-                virtual void                                 OptionsDialog () override { fDelegate.OptionsDialog (); }
+                virtual bool OptionsDialogEnabled () const override { return fDelegate.OptionsDialogEnabled (); }
+                virtual void OptionsDialog () override { fDelegate.OptionsDialog (); }
 
             private:
                 DEL& fDelegate;
@@ -1460,7 +1460,7 @@ namespace Stroika {
 #endif
 #endif
 
-/*
+            /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************

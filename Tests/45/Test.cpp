@@ -205,9 +205,9 @@ namespace {
         }
         {
             // Sample from Block tuner calibration code
-            constexpr double NominalPhiNeutralAngle = 0.541052;
-            constexpr double NominalGrooveSpacing   = 1.00E-05;
-            static constexpr Common::KeyValuePair<double, unsigned int> kCalData_[] = {
+            constexpr double                                            NominalPhiNeutralAngle = 0.541052;
+            constexpr double                                            NominalGrooveSpacing   = 1.00E-05;
+            static constexpr Common::KeyValuePair<double, unsigned int> kCalData_[]            = {
                 {797.4, 24568},
                 {800.2, 24714},
                 {803.1, 24860},
@@ -296,9 +296,9 @@ namespace {
                     return sb.str ();
                 }
             };
-            static constexpr double kDACcountMax_ = 65536;
-            static constexpr double k32K          = kDACcountMax_ / 2;
-            auto WaveNumber2Wavelength_           = [](double wn) -> double {
+            static constexpr double kDACcountMax_          = 65536;
+            static constexpr double k32K                   = kDACcountMax_ / 2;
+            auto                    WaveNumber2Wavelength_ = [](double wn) -> double {
                 return 0.01 / wn;
             };
             auto MDrive2WaveLength = [](const K_Constants_& constants, double mirrorDriveValue) -> double {
@@ -312,7 +312,7 @@ namespace {
             Sequence<double> initialGuess{-4.5 / 210 * 1000 * Math::kPi / 180, NominalPhiNeutralAngle};
             K_Constants_     mdKConstants = {};
             mdKConstants.tunerInfoD       = NominalGrooveSpacing;
-            auto fitFun = [=](const K_Constants_& parameters) {
+            auto fitFun                   = [=](const K_Constants_& parameters) {
                 double result{};
                 size_t nEntries{NEltsOf (kCalData_)};
                 for (auto i : kCalData_) {

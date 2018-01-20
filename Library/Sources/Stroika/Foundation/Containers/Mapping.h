@@ -263,9 +263,9 @@ namespace Stroika {
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
                 nonvirtual Memory::Optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
-                nonvirtual bool Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const;
-                nonvirtual bool Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
-                nonvirtual bool Lookup (ArgByValueType<key_type> key, nullptr_t) const;
+                nonvirtual bool                          Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const;
+                nonvirtual bool                          Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
+                nonvirtual bool                          Lookup (ArgByValueType<key_type> key, nullptr_t) const;
 
             public:
                 /**
@@ -462,7 +462,7 @@ namespace Stroika {
             class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep
                 : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep
 #if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                  ,
+                ,
                   public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep>
 #endif
             {
@@ -476,15 +476,15 @@ namespace Stroika {
                 using _MappingRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_MappingRepSharedPtr;
 
             public:
-                virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual Iterable<key_type>    Keys () const                                         = 0;
-                virtual Iterable<mapped_type> MappedValues () const                                 = 0;
+                virtual _MappingRepSharedPtr  CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual Iterable<key_type>    Keys () const                                          = 0;
+                virtual Iterable<mapped_type> MappedValues () const                                  = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual bool Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const = 0;
                 virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)           = 0;
-                virtual void Remove (ArgByValueType<KEY_TYPE> key) = 0;
-                virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) = 0;
+                virtual void Remove (ArgByValueType<KEY_TYPE> key)                                            = 0;
+                virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)            = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

@@ -261,8 +261,8 @@ namespace Stroika {
                             nonvirtual String ToString () const;
 
                         private:
-                            Options          fOptions_;
-                            Optional<String> fExplicitAuthToken_;
+                            Options                        fOptions_;
+                            Optional<String>               fExplicitAuthToken_;
                             Optional<pair<String, String>> fUsernamePassword_;
                         };
 #else
@@ -341,8 +341,8 @@ namespace Stroika {
                         nonvirtual String ToString () const;
 
                     private:
-                        Options          fOptions_;
-                        Optional<String> fExplicitAuthToken_;
+                        Options                        fOptions_;
+                        Optional<String>               fExplicitAuthToken_;
                         Optional<pair<String, String>> fUsernamePassword_;
                     };
 #endif
@@ -359,12 +359,12 @@ namespace Stroika {
                         nonvirtual _IRep& operator= (const _IRep&) = delete;
 
                     public:
-                        virtual URL  GetURL () const                          = 0;
-                        virtual void SetURL (const URL& url)                  = 0;
-                        virtual DurationSecondsType GetTimeout () const       = 0;
-                        virtual void SetTimeout (DurationSecondsType timeout) = 0;
-                        virtual void     Close ()                             = 0;
-                        virtual Response Send (const Request& r)              = 0;
+                        virtual URL                 GetURL () const                          = 0;
+                        virtual void                SetURL (const URL& url)                  = 0;
+                        virtual DurationSecondsType GetTimeout () const                      = 0;
+                        virtual void                SetTimeout (DurationSecondsType timeout) = 0;
+                        virtual void                Close ()                                 = 0;
+                        virtual Response            Send (const Request& r)                  = 0;
                     };
                 }
             }

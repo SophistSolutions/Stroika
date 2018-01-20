@@ -1123,10 +1123,10 @@ namespace Stroika {
                  *      I think its good enough that particular subtypes - where tracking an owner makes sense and
                  *      is useful, we be done. And when not useful, it can be optimized away.
                  */
-                virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const = 0;
-                virtual size_t GetLength () const                                       = 0;
-                virtual bool   IsEmpty () const                                         = 0;
-                virtual void Apply (_APPLY_ARGTYPE doToElement) const                   = 0;
+                virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const                       = 0;
+                virtual size_t      GetLength () const                                                        = 0;
+                virtual bool        IsEmpty () const                                                          = 0;
+                virtual void        Apply (_APPLY_ARGTYPE doToElement) const                                  = 0;
                 virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE, IteratorOwnerID suggestedOwner) const = 0;
 
             protected:

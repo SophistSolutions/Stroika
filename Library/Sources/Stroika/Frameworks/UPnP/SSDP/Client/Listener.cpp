@@ -179,7 +179,7 @@ public:
     }
 
 private:
-    recursive_mutex fCritSection_;
+    recursive_mutex                                      fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                fSockets_;
     Execution::Thread::Ptr                               fThread_;

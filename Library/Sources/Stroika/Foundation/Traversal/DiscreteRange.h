@@ -74,7 +74,7 @@ namespace Stroika {
                 /**
                  */
                 template <typename T>
-                struct DefaultDiscreteRangeTraits_Integral : ExplicitDiscreteRangeTraits<T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T{} - T{}),  make_unsigned_t<decltype (T{} - T{})>> {
+                struct DefaultDiscreteRangeTraits_Integral : ExplicitDiscreteRangeTraits<T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T{} - T{}), make_unsigned_t<decltype (T{} - T{})>> {
                 };
 
                 /**

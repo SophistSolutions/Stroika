@@ -75,7 +75,7 @@ namespace Stroika {
         template <typename T>                                                                                                                     \
         struct NAME##_result_impl {                                                                                                               \
             template <typename X>                                                                                                                 \
-            static auto check (const X&                                     x) -> decltype (XTEST);                                               \
+            static auto                                                     check (const X& x) -> decltype (XTEST);                               \
             static Stroika::Foundation::Configuration::substitution_failure check (...);                                                          \
             using type = decltype (check (declval<T> ()));                                                                                        \
         };                                                                                                                                        \

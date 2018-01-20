@@ -248,8 +248,8 @@ namespace {
         static inline POSIXSysTimeCaptureContext_ GetSysTimes_ ()
         {
             POSIXSysTimeCaptureContext_ result;
-            using IO::FileSystem::FileInputStream;
             using Characters::String2Float;
+            using IO::FileSystem::FileInputStream;
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{' ', '\t'}};
             const String_Constant                                  kFileName_{L"/proc/stat"};
             // Note - /procfs files always unseekable
@@ -434,13 +434,13 @@ namespace {
     struct CapturerWithContext_
         : Debug::AssertExternallySynchronizedLock
 #if qPlatform_Linux
-          ,
+        ,
           CapturerWithContext_Linux_
 #elif qPlatform_Windows
-          ,
+        ,
           CapturerWithContext_Windows_
 #else
-          ,
+        ,
           CapturerWithContext_COMMON_
 #endif
     {

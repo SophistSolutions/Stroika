@@ -262,16 +262,16 @@ namespace Stroika {
                  */
                 class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
                 public:
-                    virtual ~_IRep ()                                    = default;
-                    virtual void Connect (const SocketAddress& sockAddr) = 0;
-                    virtual size_t Read (Byte* intoStart, Byte* intoEnd)                              = 0;
-                    virtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) = 0;
-                    virtual void Write (const Byte* start, const Byte* end)                           = 0;
-                    virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const                               = 0;
-                    virtual Optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const             = 0;
-                    virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
-                    virtual KeepAliveOptions GetKeepAlives () const                                                    = 0;
-                    virtual void SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
+                    virtual ~_IRep ()                                                                                                                  = default;
+                    virtual void                                 Connect (const SocketAddress& sockAddr)                                               = 0;
+                    virtual size_t                               Read (Byte* intoStart, Byte* intoEnd)                                                 = 0;
+                    virtual Memory::Optional<size_t>             ReadNonBlocking (Byte* intoStart, Byte* intoEnd)                                      = 0;
+                    virtual void                                 Write (const Byte* start, const Byte* end)                                            = 0;
+                    virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const                                                               = 0;
+                    virtual Optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                             = 0;
+                    virtual void                                 SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
+                    virtual KeepAliveOptions                     GetKeepAlives () const                                                                = 0;
+                    virtual void                                 SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
                 };
             }
         }

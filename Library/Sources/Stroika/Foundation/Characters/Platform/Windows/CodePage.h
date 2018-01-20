@@ -25,17 +25,17 @@ namespace Stroika {
             namespace Platform {
                 namespace Windows {
 
+                    using std::basic_string;
                     using std::string;
                     using std::wstring;
-                    using std::basic_string;
 
                     using Characters::CodePage;
 
                     void WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
                     void NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
 
-                    string BSTRStringToUTF8 (const BSTR bstr);
-                    BSTR UTF8StringToBSTR (const char* ws);
+                    string  BSTRStringToUTF8 (const BSTR bstr);
+                    BSTR    UTF8StringToBSTR (const char* ws);
                     wstring BSTR2wstring (BSTR b);
                     wstring BSTR2wstring (VARIANT b);
 

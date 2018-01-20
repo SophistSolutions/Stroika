@@ -864,7 +864,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
 #if qPlatform_MacOS
         const CodePage kInternalCodePageToMapTo = kCodePage_MAC;
 #else
-        const CodePage     kInternalCodePageToMapTo   = kCodePage_ANSI;
+        const CodePage kInternalCodePageToMapTo = kCodePage_ANSI;
 #endif
 #endif
         if (refName[0] == '#') {
@@ -1209,7 +1209,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_a (bool start, const char* tex
                 buf[outCharCnt] = '\0';
                 Led_URLD urld   = Led_URLD (tagValue.c_str (), buf);
 #else
-                Led_URLD   urld                       = Led_URLD (tagValue.c_str (), fHiddenTextAccumulation.c_str ());
+                Led_URLD urld = Led_URLD (tagValue.c_str (), fHiddenTextAccumulation.c_str ());
 #endif
                 GetSinkStream ().AppendEmbedding ((assoc.fReadFromMemory) (StandardURLStyleMarker::kEmbeddingTag, urld.PeekAtURLD (), urld.GetURLDLength ()));
             }
@@ -2119,7 +2119,7 @@ const vector<StyledTextIOWriter_HTML::EntityRefMapEntry>& StyledTextIOWriter_HTM
                 HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "lt" and
                 HTMLInfo::sDefaultEntityRefMapTable[i].fEntityRefName != "quot"
 
-                ) {
+            ) {
                 continue;
             }
 #endif
@@ -2600,7 +2600,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
                               "\" size=\"" + Led_NumberToDigitChar (HTMLInfo::RealFontSizeToHTMLFontSize (newOne.GetPointSize ())) +
                               "\" color=" + PrintColorString (newOne.GetTextColor ())
 #endif
-                          );
+            );
         }
         if (newOne.GetStyle_Bold () and not IsTagOnStack (writerContext, "b")) {
             WriteOpenTag (writerContext, "b");

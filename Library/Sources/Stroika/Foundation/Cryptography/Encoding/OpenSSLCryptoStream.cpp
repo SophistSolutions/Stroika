@@ -225,11 +225,11 @@ public:
     }
 
 private:
-    mutable recursive_mutex fCriticalSection_;
+    mutable recursive_mutex                                            fCriticalSection_;
     Memory::SmallStackBuffer<Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH> fOutBuf_;
-    Byte*                  fOutBufStart_;
-    Byte*                  fOutBufEnd_;
-    InputStream<Byte>::Ptr fRealIn_;
+    Byte*                                                              fOutBufStart_;
+    Byte*                                                              fOutBufEnd_;
+    InputStream<Byte>::Ptr                                             fRealIn_;
 };
 #endif
 
@@ -287,8 +287,8 @@ public:
         Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
         Require (IsOpenWrite ());
         Memory::SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (_GetMinOutBufSize (end - start));
-        auto   critSec{Execution::make_unique_lock (fCriticalSection_)};
-        size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
+        auto                                                        critSec{Execution::make_unique_lock (fCriticalSection_)};
+        size_t                                                      nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
     }

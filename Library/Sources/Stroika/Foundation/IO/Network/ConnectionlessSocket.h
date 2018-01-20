@@ -188,14 +188,14 @@ namespace Stroika {
                 public:
                     virtual ~_IRep () = default;
 
-                    virtual void SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
-                    virtual size_t ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
-                    virtual void JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)  = 0;
-                    virtual void LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
-                    virtual uint8_t GetMulticastTTL () const          = 0;
-                    virtual void SetMulticastTTL (uint8_t ttl)        = 0;
-                    virtual bool GetMulticastLoopMode () const        = 0;
-                    virtual void SetMulticastLoopMode (bool loopMode) = 0;
+                    virtual void    SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr)                                            = 0;
+                    virtual size_t  ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress, Time::DurationSecondsType timeout) = 0;
+                    virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)                                 = 0;
+                    virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)                                = 0;
+                    virtual uint8_t GetMulticastTTL () const                                                                                              = 0;
+                    virtual void    SetMulticastTTL (uint8_t ttl)                                                                                         = 0;
+                    virtual bool    GetMulticastLoopMode () const                                                                                         = 0;
+                    virtual void    SetMulticastLoopMode (bool loopMode)                                                                                  = 0;
                 };
             }
         }

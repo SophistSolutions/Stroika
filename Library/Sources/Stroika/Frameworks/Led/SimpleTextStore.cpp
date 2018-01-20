@@ -30,7 +30,7 @@ public:
     virtual size_t       GetStart () const override;
     virtual size_t       GetEnd () const override;
     virtual size_t       GetLength () const override;
-    virtual void GetStartEnd (size_t* start, size_t* end) const override;
+    virtual void         GetStartEnd (size_t* start, size_t* end) const override;
 
     size_t       fStart;
     size_t       fLength;

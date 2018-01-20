@@ -30,7 +30,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName)
 #if qPlatform_Windows
     Execution::Platform::Windows::ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
 #else
-    fModule     = LoadDLL (dllName);
+    fModule = LoadDLL (dllName);
 #endif
 }
 

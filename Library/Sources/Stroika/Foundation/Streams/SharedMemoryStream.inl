@@ -77,7 +77,7 @@ namespace Stroika {
                     Require (intoStart < intoEnd);
                     Require (IsOpenRead ());
                     size_t nRequested = intoEnd - intoStart;
-                //bool   mustWaitForData{false};    // dont think we need that cuz fMoreDataWaiter_ being set does same thing
+                    //bool   mustWaitForData{false};    // dont think we need that cuz fMoreDataWaiter_ being set does same thing
 
                 tryAgain:
                     // if (mustWaitForData) {

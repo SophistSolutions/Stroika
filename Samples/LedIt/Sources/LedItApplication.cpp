@@ -782,14 +782,14 @@ LedItApplication::LedItApplication ()
 
 #if 1
         /* Add a vertical scrollbar to the text widget */
-        GtkAdjustment* vAdj       = fTextEditor->GetAdjustmentObject (TextInteractor::v);
-        GtkWidget*     vscrollbar = gtk_vscrollbar_new (vAdj);
+        GtkAdjustment* vAdj = fTextEditor->GetAdjustmentObject (TextInteractor::v);
+        GtkWidget* vscrollbar = gtk_vscrollbar_new (vAdj);
         gtk_table_attach (GTK_TABLE (table), vscrollbar, 1, 2, 0, 1, static_cast<GtkAttachOptions> (GTK_FILL), static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL), 0, 0);
         gtk_widget_show (vscrollbar);
 
         /* Add a horizontal scrollbar to the text widget */
-        GtkAdjustment* hAdj       = fTextEditor->GetAdjustmentObject (TextInteractor::h);
-        GtkWidget*     hscrollbar = gtk_hscrollbar_new (hAdj);
+        GtkAdjustment* hAdj = fTextEditor->GetAdjustmentObject (TextInteractor::h);
+        GtkWidget* hscrollbar = gtk_hscrollbar_new (hAdj);
         gtk_table_attach (GTK_TABLE (table), hscrollbar, 0, 1, 1, 2, static_cast<GtkAttachOptions> (GTK_EXPAND | GTK_SHRINK | GTK_FILL), static_cast<GtkAttachOptions> (GTK_FILL), 0, 0);
         gtk_widget_show (hscrollbar);
 #endif
@@ -1618,9 +1618,9 @@ void LedItApplication::HandleBadAllocException () noexcept
         errorDialog.DoModal ();
 #elif qPlatform_MacOS
         // ALSO, FREE ANY MEMORY WE CAN...
-        TArray<LDocument*>&        docList = LDocument::GetDocumentList ();
+        TArray<LDocument*>& docList = LDocument::GetDocumentList ();
         TArrayIterator<LDocument*> iterator (docList);
-        LDocument*                 theDoc = NULL;
+        LDocument* theDoc = NULL;
         while (iterator.Next (theDoc)) {
             AssertMember (theDoc, LedItDocument);
             LedItDocument* d = dynamic_cast<LedItDocument*> (theDoc);

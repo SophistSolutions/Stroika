@@ -175,9 +175,9 @@ namespace Stroika {
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
                 nonvirtual Memory::Optional<ValueType> Lookup (KeyType key) const;
-                nonvirtual bool Lookup (KeyType key, Memory::Optional<ValueType>* item) const;
-                nonvirtual bool Lookup (KeyType key, ValueType* item) const;
-                nonvirtual bool Lookup (KeyType key, nullptr_t) const;
+                nonvirtual bool                        Lookup (KeyType key, Memory::Optional<ValueType>* item) const;
+                nonvirtual bool                        Lookup (KeyType key, ValueType* item) const;
+                nonvirtual bool                        Lookup (KeyType key, nullptr_t) const;
 
             public:
                 /**
@@ -339,9 +339,9 @@ namespace Stroika {
                 virtual Iterable<KeyType> Keys () const = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual bool Lookup (KeyType key, Memory::Optional<ValueType>* item) const = 0;
-                virtual void Add (KeyType key, ValueType newElt)                           = 0;
-                virtual void Remove (KeyType key) = 0;
+                virtual bool Lookup (KeyType key, Memory::Optional<ValueType>* item) const  = 0;
+                virtual void Add (KeyType key, ValueType newElt)                            = 0;
+                virtual void Remove (KeyType key)                                           = 0;
                 virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

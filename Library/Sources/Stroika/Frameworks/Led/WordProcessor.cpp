@@ -5009,7 +5009,7 @@ void WordProcessorTextIOSinkStream::Flush ()
     // Flush the cached hidable text info
     {
         vector<pair<size_t, size_t>> hidePairs;
-        size_t curInsert = whereToInsert;
+        size_t                       curInsert = whereToInsert;
         for (auto i = fHidableTextRuns.begin (); i != fHidableTextRuns.end (); ++i) {
             if ((*i).fData) {
                 hidePairs.push_back (pair<size_t, size_t> (curInsert, curInsert + (*i).fElementLength));
@@ -7870,7 +7870,7 @@ void WordProcessor::Table::EmbeddedTableWordProcessor::OnPasteCommand_After ()
 
 void WordProcessor::Table::EmbeddedTableWordProcessor::DrawRowHilight (Led_Tablet /*tablet*/, const Led_Rect& /*currentRowRect*/, const Led_Rect& /*invalidRowRect*/,
                                                                        const TextLayoutBlock& /*text*/, size_t /*rowStart*/, size_t /*rowEnd*/
-                                                                       )
+)
 {
     // Do nothing... - taken care if via owning Table and OVERRIDE of GetRowHilightRects
 }

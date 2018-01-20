@@ -75,7 +75,7 @@ namespace Stroika {
                 };
 
                 nonvirtual Led_FontSpecification GetStyleInfo (size_t charAfterPos) const;
-                nonvirtual vector<InfoSummaryRecord>
+                nonvirtual                       vector<InfoSummaryRecord>
                 GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const;
                 nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo);
                 nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
@@ -102,7 +102,7 @@ namespace Stroika {
                 // macstyle routines to get/set 'styl' resources for range of text...
             public:
                 static vector<InfoSummaryRecord> Convert (const ScrpSTElement* teScrapFmt, size_t nElts);
-                static void Convert (const vector<InfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt); // Assumed pre-alloced and same legnth as fromLedStyleRuns
+                static void                      Convert (const vector<InfoSummaryRecord>& fromLedStyleRuns, ScrpSTElement* teScrapFmt); // Assumed pre-alloced and same legnth as fromLedStyleRuns
 #endif
 
             public:
@@ -122,7 +122,7 @@ namespace Stroika {
 
             public:
                 nonvirtual StyleDatabasePtr GetStyleDatabase () const;
-                nonvirtual void SetStyleDatabase (const StyleDatabasePtr& styleDatabase);
+                nonvirtual void             SetStyleDatabase (const StyleDatabasePtr& styleDatabase);
 
             protected:
                 virtual void HookStyleDatabaseChanged ();
@@ -155,18 +155,18 @@ namespace Stroika {
                 StandardStyleMarker (const Led_FontSpecification& styleInfo = TextImager::GetStaticDefaultFont ());
 
             public:
-                virtual void DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
-                                          Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
-                virtual void MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const override;
+                virtual void         DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
+                                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) override;
+                virtual void         MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
+                                                          const Led_tChar* text,
+                                                          Led_Distance*    distanceResults) const override;
                 virtual Led_Distance MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
                 virtual Led_Distance MeasureSegmentBaseLine (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const override;
 
             public:
                 nonvirtual Led_FontSpecification GetInfo () const;
-                nonvirtual void SetInfo (const Led_FontSpecification& fsp);
+                nonvirtual void                  SetInfo (const Led_FontSpecification& fsp);
 
             public:
                 Led_FontSpecification fFontSpecification;
@@ -182,10 +182,10 @@ namespace Stroika {
                 using inherited = MarkerOwner;
 
             public:
-                virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const = 0;
-                virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo) = 0;
-                nonvirtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
-                virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) = 0;
+                virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const                                              = 0;
+                virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo) = 0;
+                nonvirtual void                   SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const vector<InfoSummaryRecord>& styleInfos);
+                virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) = 0;
 
                 // Debug support
             public:
@@ -219,8 +219,8 @@ namespace Stroika {
 
             public:
                 virtual vector<InfoSummaryRecord> GetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing) const override;
-                virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo) override;
-                virtual void SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) override;
+                virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, const Led_IncrementalFontSpecification& styleInfo) override;
+                virtual void                      SetStyleInfo (size_t charAfterPos, size_t nTCharsFollowing, size_t nStyleInfos, const InfoSummaryRecord* styleInfos) override;
 
 #if qDebug
             protected:

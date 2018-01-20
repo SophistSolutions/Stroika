@@ -41,8 +41,8 @@ namespace Stroika {
             struct AtomManager_Default {
                 typedef ptrdiff_t                 AtomInternalType;
                 static constexpr AtomInternalType kEmpty = -1;
-                static AtomInternalType Intern (const String& s);
-                static String Extract (AtomInternalType atomI);
+                static AtomInternalType           Intern (const String& s);
+                static String                     Extract (AtomInternalType atomI);
             };
 
             /**

@@ -80,8 +80,8 @@ namespace {
         const bool kWrite2FileAsWell_ = true; // just for debugging
 
         struct SharedContactsConfig_ {
-            bool     fEnabled;
-            DateTime fLastSynchronizedAt;
+            bool                      fEnabled;
+            DateTime                  fLastSynchronizedAt;
             Mapping<String, String>   fThisPHRsIDToSharedContactID;
             Bijection<String, String> fThisPHRsIDToSharedContactID2;
 
@@ -511,11 +511,11 @@ namespace {
         struct SharedContactsConfig_ {
             int                   fInt1;
             Memory::Optional<int> fInt2;
-            Mapping<int, int> fMapping1;
-            Sequence<int> fSequence1;
-            int           fBasicArray1[5];
-            Set<int>      fSet1_;
-            vector<int>   fVector1_;
+            Mapping<int, int>     fMapping1;
+            Sequence<int>         fSequence1;
+            int                   fBasicArray1[5];
+            Set<int>              fSet1_;
+            vector<int>           fVector1_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
@@ -638,13 +638,13 @@ namespace {
         struct SharedContactsConfig_ {
             int                   fInt1;
             Memory::Optional<int> fInt2;
-            Mapping<int, int> fMapping1;
-            Sequence<int>    fSequence1;
-            int              fBasicArray1[5];
-            Set<int>         fSet1_;
-            vector<int>      fVector1_;
-            IO::Network::URL fURL1_;
-            IO::Network::URL fURL2_;
+            Mapping<int, int>     fMapping1;
+            Sequence<int>         fSequence1;
+            int                   fBasicArray1[5];
+            Set<int>              fSet1_;
+            vector<int>           fVector1_;
+            IO::Network::URL      fURL1_;
+            IO::Network::URL      fURL2_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
@@ -726,7 +726,7 @@ namespace {
             uint8_t red;
             uint8_t green;
             uint8_t blue;
-            bool operator== (const RGBColor& rhs) const { return red == rhs.red and green == rhs.green and blue == rhs.blue; }
+            bool    operator== (const RGBColor& rhs) const { return red == rhs.red and green == rhs.green and blue == rhs.blue; }
         };
 
         ObjectVariantMapper mapper;

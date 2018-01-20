@@ -87,7 +87,7 @@ namespace Stroika {
             template <typename T, typename SHARED_IMLP>
             struct SharedByValue_CopySharedPtrExternallySynchronized {
                 static SHARED_IMLP Load (const SHARED_IMLP& copyFrom);
-                static void Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
+                static void        Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
 
             /**
@@ -99,7 +99,7 @@ namespace Stroika {
             template <typename T, typename SHARED_IMLP>
             struct SharedByValue_CopySharedPtrAtomicSynchronized {
                 static SHARED_IMLP Load (const SHARED_IMLP& copyFrom);
-                static void Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
+                static void        Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
             };
 
 /**
@@ -221,7 +221,7 @@ namespace Stroika {
                  *              You can always safely use the copy overload.
                  */
                 nonvirtual const element_type* operator-> () const;
-                nonvirtual       element_type* operator-> ();
+                nonvirtual element_type* operator-> ();
 
             public:
                 /**
@@ -233,7 +233,7 @@ namespace Stroika {
                  *              You can always safely use the copy overload.
                  */
                 nonvirtual const element_type& operator* () const;
-                nonvirtual       element_type& operator* ();
+                nonvirtual element_type& operator* ();
 
             public:
                 /**

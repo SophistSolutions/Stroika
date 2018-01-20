@@ -100,7 +100,7 @@ namespace Stroika {
                 Invariant ();
                 return *this;
             }
-            template <typename T, size_t   BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
             {
                 Invariant ();
@@ -162,22 +162,22 @@ namespace Stroika {
                 }
                 Invariant ();
             }
-            template <typename T, size_t                            BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::iterator SmallStackBuffer<T, BUF_SIZE>::begin ()
             {
                 return fPointer_;
             }
-            template <typename T, size_t                            BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::iterator SmallStackBuffer<T, BUF_SIZE>::end ()
             {
                 return fPointer_ + fSize_;
             }
-            template <typename T, size_t                                  BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::const_iterator SmallStackBuffer<T, BUF_SIZE>::begin () const
             {
                 return fPointer_;
             }
-            template <typename T, size_t                                  BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::const_iterator SmallStackBuffer<T, BUF_SIZE>::end () const
             {
                 return fPointer_ + fSize_;
@@ -212,13 +212,13 @@ namespace Stroika {
                 Ensure (fSize_ <= capacity ());
                 return fSize_;
             }
-            template <typename T, size_t                             BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::reference SmallStackBuffer<T, BUF_SIZE>::at (size_t i)
             {
                 Require (i < fSize_);
                 return *(fPointer_ + i);
             }
-            template <typename T, size_t                                   BUF_SIZE>
+            template <typename T, size_t BUF_SIZE>
             inline typename SmallStackBuffer<T, BUF_SIZE>::const_reference SmallStackBuffer<T, BUF_SIZE>::at (size_t i) const
             {
                 Require (i < fSize_);

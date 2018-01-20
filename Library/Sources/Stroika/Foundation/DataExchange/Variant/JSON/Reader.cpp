@@ -17,10 +17,10 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
 using Characters::Character;
+using Characters::String_Constant;
 using Characters::StringBuilder;
 using Memory::Byte;
 using Memory::Optional;
-using Characters::String_Constant;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -134,7 +134,7 @@ namespace {
 
     // 'in' is positioned to the second character of number (first passed as arg), and we read, leaving in positioned just after end of number
     static constexpr Character kDash_{'-'};
-    VariantValue Reader_Number_ (wchar_t initialChar, const Streams::InputStream<Character>::Ptr& in)
+    VariantValue               Reader_Number_ (wchar_t initialChar, const Streams::InputStream<Character>::Ptr& in)
     {
         Require (in != nullptr);
         Require (initialChar == '-' or iswdigit (initialChar));

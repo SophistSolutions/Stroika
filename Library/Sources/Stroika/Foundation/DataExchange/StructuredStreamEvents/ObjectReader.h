@@ -529,10 +529,10 @@ namespace Stroika {
                         ClassReader (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, T* vp);
 
                     public:
-                        virtual void Activated (Context& r) override;
+                        virtual void                         Activated (Context& r) override;
                         virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
-                        virtual void HandleTextInside (const String& text) override;
-                        virtual void Deactivating () override;
+                        virtual void                         HandleTextInside (const String& text) override;
+                        virtual void                         Deactivating () override;
 
                     public:
                         /**
@@ -544,10 +544,10 @@ namespace Stroika {
                         nonvirtual ReaderFromVoidStarFactory LookupFactoryForName_ (const Name& name) const;
 
                     private:
-                        Traversal::Iterable<StructFieldInfo> fFieldDescriptions_;
-                        Context*                             fActiveContext_{};
-                        T*                                   fValuePtr_{};
-                        Mapping<Name, StructFieldMetaInfo> fFieldNameToTypeMap_;
+                        Traversal::Iterable<StructFieldInfo>  fFieldDescriptions_;
+                        Context*                              fActiveContext_{};
+                        T*                                    fValuePtr_{};
+                        Mapping<Name, StructFieldMetaInfo>    fFieldNameToTypeMap_;
                         Memory::Optional<StructFieldMetaInfo> fValueFieldMetaInfo_;
                         shared_ptr<IElementConsumer>          fValueFieldConsumer_;
                         bool                                  fThrowOnUnrecongizedelts_{false}; // else ignore
@@ -613,9 +613,9 @@ namespace Stroika {
                         ListOfObjectsReader (CONTAINER_OF_T* v, const Name& memberElementName);
 
                     public:
-                        virtual void Activated (Context& r) override;
+                        virtual void                         Activated (Context& r) override;
                         virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
-                        virtual void Deactivating () override;
+                        virtual void                         Deactivating () override;
 
                     public:
                         /**
@@ -637,10 +637,10 @@ namespace Stroika {
                     class MixinReader : public IElementConsumer {
                     public:
                         struct MixinEltTraits {
-                            ReaderFromVoidStarFactory fReaderFactory;
-                            function<bool(const Name& name)> fReadsName                             = [](const Name& name) { return true; };
-                            function<bool()>                                             fReadsText = []() { return true; };
-                            function<Byte*(T*)>                                          fAddressOfSubElementFetcher;
+                            ReaderFromVoidStarFactory        fReaderFactory;
+                            function<bool(const Name& name)> fReadsName = [](const Name& name) { return true; };
+                            function<bool()>                 fReadsText = []() { return true; };
+                            function<Byte*(T*)>              fAddressOfSubElementFetcher;
 
                             static const function<Byte*(T*)> kDefaultAddressOfSubElementFetcher;
 
@@ -656,10 +656,10 @@ namespace Stroika {
                         MixinReader (T* vp, const Traversal::Iterable<MixinEltTraits>& mixins);
 
                     public:
-                        virtual void Activated (Context& r) override;
+                        virtual void                         Activated (Context& r) override;
                         virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
-                        virtual void HandleTextInside (const String& text) override;
-                        virtual void Deactivating () override;
+                        virtual void                         HandleTextInside (const String& text) override;
+                        virtual void                         Deactivating () override;
 
                     public:
                         /**
@@ -691,10 +691,10 @@ namespace Stroika {
                         RangeReader (T* intoVal, const pair<Name, Name>& pairNames = kDefaultBoundsNames);
 
                     public:
-                        virtual void Activated (Context& r) override;
+                        virtual void                         Activated (Context& r) override;
                         virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
-                        virtual void HandleTextInside (const String& text) override;
-                        virtual void Deactivating () override;
+                        virtual void                         HandleTextInside (const String& text) override;
+                        virtual void                         Deactivating () override;
 
                     public:
                         /**
@@ -708,7 +708,7 @@ namespace Stroika {
                             range_value_type_ fLowerBound{};
                             range_value_type_ fUpperBound{};
                         };
-                        pair<Name, Name> fPairNames;
+                        pair<Name, Name>             fPairNames;
                         T*                           fValue_{};
                         RangeData_                   fProxyValue_{};
                         shared_ptr<IElementConsumer> fActualReader_{};
@@ -808,10 +808,10 @@ namespace Stroika {
                         RepeatedElementReader (ContainerType* v, const Name& readonlyThisName);
 
                     public:
-                        virtual void Activated (Context& r) override;
+                        virtual void                         Activated (Context& r) override;
                         virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override;
-                        virtual void HandleTextInside (const String& text) override;
-                        virtual void Deactivating () override;
+                        virtual void                         HandleTextInside (const String& text) override;
+                        virtual void                         Deactivating () override;
 
                     public:
                         /**
@@ -825,9 +825,9 @@ namespace Stroika {
                     private:
                         ContainerType*                              fValuePtr_{};
                         Memory::Optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
-                        function<bool(Name)> fReadThisName_{[](const Name& n) { return true; }};
-                        ElementType                  fProxyValue_{};
-                        shared_ptr<IElementConsumer> fActiveSubReader_{};
+                        function<bool(Name)>                        fReadThisName_{[](const Name& n) { return true; }};
+                        ElementType                                 fProxyValue_{};
+                        shared_ptr<IElementConsumer>                fActiveSubReader_{};
                     };
 
                     /**

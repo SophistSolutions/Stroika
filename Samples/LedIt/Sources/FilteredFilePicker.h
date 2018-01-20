@@ -38,9 +38,9 @@ public:
 #if qUseNavServices
 protected:
     static pascal void StaticNavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams, NavCallBackUserData ioUserData);
-    virtual void NavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams);
+    virtual void       NavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams);
     static pascal Boolean StaticNavObjectFilterProc (AEDesc* theItem, void* info, void* callBackUD, NavFilterModes filterMode);
-    virtual bool NavObjectFilterProc (AEDesc* theItem, void* info, NavFilterModes filterMode);
+    virtual bool          NavObjectFilterProc (AEDesc* theItem, void* info, NavFilterModes filterMode);
 
 protected:
     NavDialogRef fCurDialog;
@@ -74,7 +74,7 @@ public:
 #if qUseNavServices
 protected:
     static pascal void StaticNavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams, NavCallBackUserData ioUserData);
-    virtual void NavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams);
+    virtual void       NavEventProc (NavEventCallbackMessage inSelector, NavCBRecPtr ioParams);
 
 protected:
     NavDialogRef fCurDialog;

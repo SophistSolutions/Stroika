@@ -190,9 +190,9 @@ namespace Stroika {
 
             public:
                 virtual _StackRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual void Push (ArgByValueType<T> item)                                        = 0;
-                virtual T Pop ()                                                                  = 0;
-                virtual T Top () const                                                            = 0;
+                virtual void               Push (ArgByValueType<T> item)                          = 0;
+                virtual T                  Pop ()                                                 = 0;
+                virtual T                  Top () const                                           = 0;
             };
 
             /**

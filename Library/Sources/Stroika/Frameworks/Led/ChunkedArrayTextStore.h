@@ -104,8 +104,8 @@ namespace Stroika {
 
             public:
                 virtual size_t GetLength () const noexcept override;
-                virtual void CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept override;
-                virtual void ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) override;
+                virtual void   CopyOut (size_t from, size_t count, Led_tChar* buffer) const noexcept override;
+                virtual void   ReplaceWithoutUpdate (size_t from, size_t to, const Led_tChar* withWhat, size_t withWhatCount) override;
 
             public:
                 virtual void AddMarker (Marker* marker, size_t lhs, size_t length, MarkerOwner* owner) override;
@@ -142,7 +142,7 @@ namespace Stroika {
                 nonvirtual void PossiblyAddHackMarkers (Marker* insideMarker);
                 nonvirtual void RemoveMarker1 (Marker* marker);
                 nonvirtual Marker* AddHackMarkerHelper_ (Marker* insideMarker, size_t start, size_t length);
-                nonvirtual void LoseIfUselessHackMarker (Marker* potentiallyUselessHackMarker);
+                nonvirtual void    LoseIfUselessHackMarker (Marker* potentiallyUselessHackMarker);
 
             private:
                 nonvirtual void InsertAfter_ (const Led_tChar* what, size_t howMany, size_t after);

@@ -97,8 +97,8 @@ namespace Stroika {
                 template <typename INDEX, typename... REST_OF_INDEXES>
                 struct TemporarySliceReference_ {
                     const DataHyperRectangle<T, INDEXES...>& fCube;
-                    tuple<REST_OF_INDEXES...> fSliceIdxes;
-                    T operator[] (INDEX i) const
+                    tuple<REST_OF_INDEXES...>                fSliceIdxes;
+                    T                                        operator[] (INDEX i) const
                     {
                         return fCube.GetAt (i, std::forward<REST_OF_INDEXES> (fSliceIdxes)...);
                     }
@@ -166,9 +166,9 @@ namespace Stroika {
                 using _DataHyperRectangleRepSharedPtr = typename DataHyperRectangle<T, INDEXES...>::_DataHyperRectangleRepSharedPtr;
 
             public:
-                virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual T    GetAt (INDEXES... indexes) const                                                  = 0;
-                virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
+                virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const         = 0;
+                virtual T                               GetAt (INDEXES... indexes) const                               = 0;
+                virtual void                            SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
             };
 
 #if 0

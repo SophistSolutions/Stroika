@@ -241,7 +241,7 @@ namespace Stroika {
                     nonvirtual LRUCache_& operator= (const LRUCache_&) = delete;
 
                     nonvirtual size_t GetMaxCacheSize () const;
-                    nonvirtual void SetMaxCacheSize (size_t maxCacheSize);
+                    nonvirtual void   SetMaxCacheSize (size_t maxCacheSize);
 
                     struct CacheElement_;
                     struct CacheIterator;

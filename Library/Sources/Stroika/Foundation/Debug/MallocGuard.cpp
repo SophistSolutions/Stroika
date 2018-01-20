@@ -25,10 +25,40 @@ using Memory::Byte;
 #if qStroika_Foundation_Debug_MallocGuard
 namespace {
     constexpr array<Byte, 16> kMallocGuardHeader_BASE_{
-        0xf3, 0xfa, 0x0b, 0x93, 0x48, 0x50, 0x46, 0xe6, 0x22, 0xf1, 0xfa, 0xc0, 0x9a, 0x0b, 0xeb, 0x23,
+        0xf3,
+        0xfa,
+        0x0b,
+        0x93,
+        0x48,
+        0x50,
+        0x46,
+        0xe6,
+        0x22,
+        0xf1,
+        0xfa,
+        0xc0,
+        0x9a,
+        0x0b,
+        0xeb,
+        0x23,
     };
     constexpr array<Byte, 16> kMallocGuardFooter_BASE_{
-        0x07, 0x41, 0xa4, 0x2b, 0xba, 0x97, 0xcb, 0x38, 0x46, 0x1e, 0x3c, 0x42, 0x3c, 0x5f, 0x0c, 0x80,
+        0x07,
+        0x41,
+        0xa4,
+        0x2b,
+        0xba,
+        0x97,
+        0xcb,
+        0x38,
+        0x46,
+        0x1e,
+        0x3c,
+        0x42,
+        0x3c,
+        0x5f,
+        0x0c,
+        0x80,
     };
 
     using GuradBytes_ = array<Byte, qStroika_Foundation_Debug_MallocGuard_GuardSize>;
@@ -57,7 +87,16 @@ namespace {
 sDoInit_x_;
 #endif
     constexpr Byte kDeadMansLand_[] = {
-        0x1d, 0xb6, 0x20, 0x27, 0x43, 0x7a, 0x3d, 0x1a, 0x13, 0x65,
+        0x1d,
+        0xb6,
+        0x20,
+        0x27,
+        0x43,
+        0x7a,
+        0x3d,
+        0x1a,
+        0x13,
+        0x65,
     };
 
     struct alignas (alignof (long double)) Header_ {
@@ -143,7 +182,7 @@ sDoInit_x_;
      */
     volatile void*  sFreeList_[100];
     volatile void** sFreeList_NextFreeI_ = &sFreeList_[0];
-    void Add2FreeList_ (void* p)
+    void            Add2FreeList_ (void* p)
     {
         *sFreeList_NextFreeI_ = p;
         volatile void** next  = sFreeList_NextFreeI_ + 1;
@@ -223,11 +262,11 @@ sDoInit_x_;
 
 #if qStroika_Foundation_Debug_MallocGuard
 
-extern "C" void __libc_free (void* __ptr);
+extern "C" void  __libc_free (void* __ptr);
 extern "C" void* __libc_malloc (size_t __size);
 extern "C" void* __libc_realloc (void* __ptr, size_t __size);
 extern "C" void* __libc_calloc (size_t __nmemb, size_t __size);
-extern "C" void __libc_free (void* __ptr);
+extern "C" void  __libc_free (void* __ptr);
 
 extern "C" void* calloc (size_t __nmemb, size_t __size)
 {

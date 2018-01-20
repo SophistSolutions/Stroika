@@ -165,8 +165,8 @@ BLOB BLOB::Hex (const char* s, const char* e)
 int BLOB::Compare (const BLOB& rhs) const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    pair<const Byte*, const Byte*> l = fRep_->GetBounds ();
-    pair<const Byte*, const Byte*> r = rhs.fRep_->GetBounds ();
+    pair<const Byte*, const Byte*>                      l = fRep_->GetBounds ();
+    pair<const Byte*, const Byte*>                      r = rhs.fRep_->GetBounds ();
 
     size_t lSize        = l.second - l.first;
     size_t rSize        = r.second - r.first;

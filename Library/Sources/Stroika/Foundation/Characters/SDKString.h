@@ -48,10 +48,10 @@ namespace Stroika {
              */
             wstring NarrowSDKStringToWide (const string& s);
 
-            string SDKString2NarrowSDK (const SDKString& s);
+            string    SDKString2NarrowSDK (const SDKString& s);
             SDKString NarrowSDK2SDKString (const string& s);
 
-            wstring SDKString2Wide (const SDKString& s);
+            wstring   SDKString2Wide (const SDKString& s);
             SDKString Wide2SDKString (const wstring& s);
 
             SDKString ToSDKString (const string& s);

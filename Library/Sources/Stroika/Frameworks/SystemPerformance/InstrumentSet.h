@@ -30,7 +30,7 @@ namespace Stroika {
                         static bool Equals (const Instrument& l, const Instrument& r);
                     };
                     struct WellOrderCompareFunctionType {
-                        static int Compare (const Instrument& l, const Instrument& r);
+                        static int  Compare (const Instrument& l, const Instrument& r);
                         static bool Equals (const Instrument& l, const Instrument& r);
                     };
 

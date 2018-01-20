@@ -40,11 +40,11 @@ namespace Stroika {
                      *  @todo maybe have struct with fields - unnamedprofile, and collection of named sections?
                      */
                     struct Profile {
-                        Section fUnnamedSection;
+                        Section                  fUnnamedSection;
                         Mapping<String, Section> fNamedSections;
                     };
 
-                    Profile Convert (VariantValue v);
+                    Profile      Convert (VariantValue v);
                     VariantValue Convert (Profile p);
                 }
             }

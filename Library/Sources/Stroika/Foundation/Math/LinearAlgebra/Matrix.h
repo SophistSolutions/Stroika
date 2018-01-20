@@ -70,7 +70,7 @@ namespace Stroika {
                     struct ReadOnlyTemporaryRowReference_ {
                         const Matrix<T>& fMatrix;
                         size_t           fRow;
-                        T operator[] (size_t column) const
+                        T                operator[] (size_t column) const
                         {
                             return fMatrix.GetAt (fRow, column);
                         }

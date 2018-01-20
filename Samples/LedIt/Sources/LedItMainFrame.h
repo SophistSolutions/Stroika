@@ -31,7 +31,7 @@ public:
 
 public:
     virtual Led_IncrementalFontSpecification GetCurFont () const override;
-    virtual void SetCurFont (const Led_IncrementalFontSpecification& fsp) override;
+    virtual void                             SetCurFont (const Led_IncrementalFontSpecification& fsp) override;
 
 protected:
     afx_msg void OnCharColor ();
@@ -43,7 +43,7 @@ private:
     RulerBar       fRulerBar;
 
 protected:
-    afx_msg int OnCreate (LPCREATESTRUCT lpCreateStruct);
+    afx_msg int  OnCreate (LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnClose ();
     afx_msg void OnInitMenuPopup (CMenu* pPopupMenu, UINT nIndex, BOOL bSysMenu);
     DECLARE_MESSAGE_MAP ()

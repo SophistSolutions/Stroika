@@ -305,7 +305,7 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 #if qSingleByteCharacters || qWideCharacters
     Led_tChar thisChar = startOfText[textOffsetToStartLookingForWord];
 #elif qMultiByteCharacters
-    Led_tChar                      thisChar[2] = {startOfText[textOffsetToStartLookingForWord], Led_IsLeadByte (startOfText[textOffsetToStartLookingForWord]) ? startOfText[textOffsetToStartLookingForWord + 1] : '\0'};
+    Led_tChar thisChar[2] = {startOfText[textOffsetToStartLookingForWord], Led_IsLeadByte (startOfText[textOffsetToStartLookingForWord]) ? startOfText[textOffsetToStartLookingForWord + 1] : '\0'};
 #endif
 
     bool             isSpaceChar    = IsASCIISpace (thisChar);
@@ -331,7 +331,7 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
 #if qSingleByteCharacters || qWideCharacters
             Led_tChar thisChar = *cur;
 #elif qMultiByteCharacters
-            Led_tChar              thisChar[2] = {*cur, Led_IsLeadByte (*cur) ? *(cur + 1) : '\0'};
+            Led_tChar thisChar[2] = {*cur, Led_IsLeadByte (*cur) ? *(cur + 1) : '\0'};
 #endif
 
             CharacterClasses charClass = CharToCharacterClass (startOfText, lengthOfText, cur);

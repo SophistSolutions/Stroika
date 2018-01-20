@@ -835,7 +835,7 @@ void StyledTextFlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFrom
 #if qPlatform_MacOS
     const FSSpec* fileName,
 #elif qPlatform_Windows || qXWindows
-    const Led_SDK_Char*                    fileName,
+    const Led_SDK_Char* fileName,
 #endif
     Led_ClipFormat* suggestedClipFormat,
     CodePage*       suggestedCodePage)

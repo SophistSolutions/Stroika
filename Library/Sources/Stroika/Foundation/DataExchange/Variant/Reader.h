@@ -89,10 +89,10 @@ namespace Stroika {
 
                 class Reader::_IRep {
                 public:
-                    virtual _SharedPtrIRep Clone () const                                                  = 0;
-                    virtual String         GetDefaultFileSuffix () const                                   = 0;
-                    virtual VariantValue Read (const Streams::InputStream<Memory::Byte>::Ptr& in)          = 0;
-                    virtual VariantValue Read (const Streams::InputStream<Characters::Character>::Ptr& in) = 0;
+                    virtual _SharedPtrIRep Clone () const                                                    = 0;
+                    virtual String         GetDefaultFileSuffix () const                                     = 0;
+                    virtual VariantValue   Read (const Streams::InputStream<Memory::Byte>::Ptr& in)          = 0;
+                    virtual VariantValue   Read (const Streams::InputStream<Characters::Character>::Ptr& in) = 0;
                 };
             }
         }

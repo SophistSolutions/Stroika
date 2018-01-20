@@ -68,7 +68,7 @@ namespace Stroika {
             bool DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const
             {
                 // @todo could be more efficient
-                DisjointRange<T, RANGE_TYPE> intersection = Intersection (rhs);
+                DisjointRange<T, RANGE_TYPE>     intersection = Intersection (rhs);
                 Containers::Sequence<RANGE_TYPE> sr{intersection.SubRanges ()};
                 return sr.size () == 1 and sr[0] == rhs;
             }
@@ -216,7 +216,7 @@ namespace Stroika {
                         };
 
                         Iterator<RangeType> startI = fSubRanges_.FindFirstThat ([rStart](const RangeType& r) -> bool { return r.GetLowerBound () >= rStart or r.Contains (rStart); });
-                        bool extendedRange{false};
+                        bool                extendedRange{false};
                         if (startI == fSubRanges_.end ()) {
                             if (sNoisyDebugTrace_) {
                                 DbgTrace ("Appending subrange cuz this is past the rest: %f/%f",

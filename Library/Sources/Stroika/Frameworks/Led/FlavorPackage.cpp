@@ -200,7 +200,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
             Verify (::DragQueryFile (hdrop, 0, realFileName, nChars + 1) == nChars);
             ::GlobalFree (hdrop);
         }
-        Led_ClipFormat  suggestedClipFormat = kBadClipFormat; // no guess - examine text later
+        Led_ClipFormat suggestedClipFormat = kBadClipFormat; // no guess - examine text later
 #elif qXWindows
         char realFileName[1000]; // use MAX_PATH? ??? NO - GET REAL SIZE !!! X-TMP-HACK-LGP991213
         realFileName[0]                    = '\0';
@@ -270,7 +270,7 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromStartOfDat
     Led_ClipFormat* suggestedClipFormat,
     CodePage* /*suggestedCodePage*/,
     const Byte* /*fileStart*/, const Byte* /*fileEnd*/
-    )
+)
 
 {
     if (suggestedClipFormat != nullptr) {

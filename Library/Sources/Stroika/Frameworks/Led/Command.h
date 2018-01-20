@@ -128,9 +128,9 @@ namespace Stroika {
                 @DESCRIPTION:   <p>Retreives the text associated with each command to denote in a UI what command is being undone,
                     or redone.</p>
                 */
-                virtual size_t GetUndoRedoWhatMessageText (char* buf, size_t bufSize); // return nbytes - not NUL term string...
-                virtual const Led_SDK_Char* GetUndoCmdName () = 0;                     // don't free result - we keep
-                virtual const Led_SDK_Char* GetRedoCmdName () = 0;                     // don't free result - we keep
+                virtual size_t              GetUndoRedoWhatMessageText (char* buf, size_t bufSize); // return nbytes - not NUL term string...
+                virtual const Led_SDK_Char* GetUndoCmdName () = 0;                                  // don't free result - we keep
+                virtual const Led_SDK_Char* GetRedoCmdName () = 0;                                  // don't free result - we keep
             };
 
             /*
@@ -144,12 +144,12 @@ namespace Stroika {
                 SingleUndoCommandHandler ();
 
             public:
-                virtual void Post (Command* newCommand) override;
-                virtual bool PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
-                virtual void BreakInGroupedCommands () override;
-                virtual void BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
-                virtual void DoUndo (TextInteractor& interactor) override;
-                virtual void DoRedo (TextInteractor& interactor) override;
+                virtual void                Post (Command* newCommand) override;
+                virtual bool                PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
+                virtual void                BreakInGroupedCommands () override;
+                virtual void                BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
+                virtual void                DoUndo (TextInteractor& interactor) override;
+                virtual void                DoRedo (TextInteractor& interactor) override;
                 virtual void                Commit () override;
                 virtual bool                CanUndo () override;
                 virtual bool                CanRedo () override;
@@ -179,12 +179,12 @@ namespace Stroika {
                 virtual ~MultiLevelUndoCommandHandler ();
 
             public:
-                virtual void Post (Command* newCommand) override;
-                virtual bool PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
-                virtual void BreakInGroupedCommands () override;
-                virtual void BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
-                virtual void DoUndo (TextInteractor& interactor) override;
-                virtual void DoRedo (TextInteractor& interactor) override;
+                virtual void                Post (Command* newCommand) override;
+                virtual bool                PostUpdateSimpleTextInsert (size_t insertAt, Led_tChar c) override;
+                virtual void                BreakInGroupedCommands () override;
+                virtual void                BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
+                virtual void                DoUndo (TextInteractor& interactor) override;
+                virtual void                DoRedo (TextInteractor& interactor) override;
                 virtual void                Commit () override; // Commit all commands currently owned - something has happened to invalidate them...
                 virtual bool                CanUndo () override;
                 virtual bool                CanRedo () override;
@@ -193,7 +193,7 @@ namespace Stroika {
 
             public:
                 nonvirtual size_t GetMaxUnDoLevels ();
-                nonvirtual void SetMaxUnDoLevels (size_t maxUndoLevels);
+                nonvirtual void   SetMaxUnDoLevels (size_t maxUndoLevels);
 
             private:
                 size_t           fMaxUndoLevels;
@@ -234,11 +234,11 @@ namespace Stroika {
                 nonvirtual CommandHandler* GetRealHandler () const;
 
             public:
-                virtual void Post (Command* newCommand) override;
-                virtual void BreakInGroupedCommands () override;
-                virtual void BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
-                virtual void DoUndo (TextInteractor& interactor) override;
-                virtual void DoRedo (TextInteractor& interactor) override;
+                virtual void                Post (Command* newCommand) override;
+                virtual void                BreakInGroupedCommands () override;
+                virtual void                BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName) override;
+                virtual void                DoUndo (TextInteractor& interactor) override;
+                virtual void                DoRedo (TextInteractor& interactor) override;
                 virtual void                Commit () override;
                 virtual bool                CanUndo () override;
                 virtual bool                CanRedo () override;
@@ -355,7 +355,7 @@ namespace Stroika {
 
             public:
                 virtual size_t GetLength () const override;
-                virtual void InsertSelf (TextInteractor* imager, size_t at, size_t nBytesToOverwrite) override;
+                virtual void   InsertSelf (TextInteractor* imager, size_t at, size_t nBytesToOverwrite) override;
 
             public:
                 nonvirtual bool AppendCharToRep (size_t insertAt, Led_tChar c);

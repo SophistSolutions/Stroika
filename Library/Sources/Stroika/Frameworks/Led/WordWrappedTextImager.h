@@ -84,9 +84,9 @@ namespace Stroika {
                 virtual void AdjustBestRowLength (size_t textStart, const Led_tChar* text, const Led_tChar* end, size_t* rowLength);
 
             protected:
-                virtual bool ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
+                virtual bool   ContainsMappedDisplayCharacters (const Led_tChar* text, size_t nTChars) const override;
                 virtual size_t RemoveMappedDisplayCharacters (Led_tChar* copyText, size_t nTChars) const override;
-                virtual void PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const override;
+                virtual void   PatchWidthRemoveMappedDisplayCharacters (const Led_tChar* srcText, Led_Distance* distanceResults, size_t nTChars) const override;
 
                 /*
                  * Word wrapping helpers.

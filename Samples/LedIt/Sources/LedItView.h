@@ -111,14 +111,14 @@ protected:
 
 public:
     nonvirtual IncrementalParagraphInfo GetParaFormatSelection ();
-    nonvirtual void SetParaFormatSelection (const IncrementalParagraphInfo& pf);
+    nonvirtual void                     SetParaFormatSelection (const IncrementalParagraphInfo& pf);
 
 public:
     virtual void OnShowHideGlyphCommand (CommandNumber cmdNum) override;
 
 protected:
     virtual SearchParameters GetSearchParameters () const override;
-    virtual void SetSearchParameters (const SearchParameters& sp) override;
+    virtual void             SetSearchParameters (const SearchParameters& sp) override;
 
 public:
     nonvirtual void SetShowHiddenText (bool showHiddenText);

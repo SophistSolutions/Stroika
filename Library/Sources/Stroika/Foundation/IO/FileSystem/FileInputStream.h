@@ -85,10 +85,10 @@ namespace Stroika {
                      *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
                      *      \endcode
                      */
-                    static Ptr New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                    static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static Ptr                            New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static Ptr                            New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+                    static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
                     static InputStream<Memory::Byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
                     static InputStream<Memory::Byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
                     static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);

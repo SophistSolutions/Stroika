@@ -21,7 +21,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-/// TODO - maybe move this to configuraiotn module???
+            /// TODO - maybe move this to configuraiotn module???
 
 #if qHas_pid_t
             using pid_t = ::pid_t;

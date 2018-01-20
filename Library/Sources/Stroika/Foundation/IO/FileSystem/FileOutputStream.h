@@ -129,12 +129,12 @@ namespace Stroika {
                      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                      *          but then the results are 'on you.
                      */
-                    static Ptr New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr                             New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr                             New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr                             New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr                             New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr                             New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
+                    static Ptr                             New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekableFlag = SeekableFlag::eDEFAULT, FlushFlag flushFlag = FlushFlag::eDEFAULT);
                     static OutputStream<Memory::Byte>::Ptr New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag);
                     static OutputStream<Memory::Byte>::Ptr New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);
                     static OutputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag);

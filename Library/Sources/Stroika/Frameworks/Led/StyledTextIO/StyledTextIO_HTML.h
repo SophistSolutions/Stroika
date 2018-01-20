@@ -99,7 +99,7 @@ namespace Stroika {
                                       eEOF,
                                       eBangComment };
                     nonvirtual ThingyType ScanTilNextHTMLThingy ();
-                    nonvirtual void ScanTilAfterHTMLThingy (ThingyType thingy);
+                    nonvirtual void       ScanTilAfterHTMLThingy (ThingyType thingy);
 
                 protected:
                     nonvirtual bool LookingAt (const char* text) const;
@@ -109,9 +109,9 @@ namespace Stroika {
 
                 protected:
                     nonvirtual void EmitText (const Led_tString& text, bool skipNLCheck = false);
-                    virtual void EmitText (const Led_tChar* text, size_t nBytes, bool skipNLCheck = false);
+                    virtual void    EmitText (const Led_tChar* text, size_t nBytes, bool skipNLCheck = false);
                     nonvirtual void HandleHTMLThingy (ThingyType thingy, const string& text);
-                    virtual void HandleHTMLThingy (ThingyType thingy, const char* text, size_t nBytes);
+                    virtual void    HandleHTMLThingy (ThingyType thingy, const char* text, size_t nBytes);
 
                 protected:
                     virtual void HandleHTMLThingy_EntityReference (const char* text, size_t nBytes);
@@ -122,8 +122,8 @@ namespace Stroika {
 
                 protected:
                     nonvirtual Led_IncrementalFontSpecification ExtractFontSpecFromCSSStyleAttribute (const char* text, size_t nBytes);
-                    nonvirtual void ApplyCSSStyleAttributeToCurrentFontStack (const char* text, size_t nBytes);
-                    nonvirtual void GrabAndApplyCSSStyleFromTagText (const char* text, size_t nBytes);
+                    nonvirtual void                             ApplyCSSStyleAttributeToCurrentFontStack (const char* text, size_t nBytes);
+                    nonvirtual void                             GrabAndApplyCSSStyleFromTagText (const char* text, size_t nBytes);
 
                 protected:
                     virtual void HandleHTMLThingyTag_BANG_doctype (bool start, const char* text, size_t nBytes);

@@ -68,8 +68,8 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
-            using Configuration::ArgByValueType;
             using Common::CountedValue;
+            using Configuration::ArgByValueType;
             using Traversal::Iterable;
             using Traversal::Iterator;
 
@@ -333,7 +333,7 @@ namespace Stroika {
             class MultiSet<T, TRAITS>::_IRep
                 : public Iterable<CountedValue<T>>::_IRep
 #if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                  ,
+                ,
                   public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename MultiSet<T, TRAITS>::_IRep>
 #endif
             {
@@ -350,14 +350,14 @@ namespace Stroika {
                 _IRep () = default;
 
             public:
-                virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual bool Equals (const _IRep& rhs) const                                         = 0;
-                virtual bool Contains (ArgByValueType<T> item) const                                 = 0;
-                virtual void Add (ArgByValueType<T> item, CounterType count)    = 0;
-                virtual void Remove (ArgByValueType<T> item, CounterType count) = 0;
-                virtual void Remove (const Iterator<CountedValue<T>>& i) = 0;
-                virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) = 0;
-                virtual CounterType OccurrencesOf (ArgByValueType<T> item) const = 0;
+                virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                 = 0;
+                virtual bool                  Equals (const _IRep& rhs) const                                        = 0;
+                virtual bool                  Contains (ArgByValueType<T> item) const                                = 0;
+                virtual void                  Add (ArgByValueType<T> item, CounterType count)                        = 0;
+                virtual void                  Remove (ArgByValueType<T> item, CounterType count)                     = 0;
+                virtual void                  Remove (const Iterator<CountedValue<T>>& i)                            = 0;
+                virtual void                  UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) = 0;
+                virtual CounterType           OccurrencesOf (ArgByValueType<T> item) const                           = 0;
                 // Subtle point - shared rep argument to Elements() allows shared ref counting
                 // without the cost of a clone or enable_shared_from_this
                 virtual Iterable<T> Elements (const _MultiSetRepSharedPtr& rep) const = 0;

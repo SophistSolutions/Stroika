@@ -46,9 +46,9 @@ namespace Stroika {
                  *  Must combine behaviors of different mixins.
                  */
             public:
-                virtual void SetTopRowInWindow (size_t newTopRow) override;
+                virtual void    SetTopRowInWindow (size_t newTopRow) override;
                 nonvirtual void SetTopRowInWindow (size_t newTopRow, UpdateMode updateMode);
-                virtual void SetTopRowInWindow (RowReference row) override;
+                virtual void    SetTopRowInWindow (RowReference row) override;
                 nonvirtual void SetTopRowInWindow (RowReference row, UpdateMode updateMode);
 
                 // Speed tweek - use rowreferences...

@@ -27,7 +27,7 @@ namespace Stroika {
                 wstring ReadTextStream (wistream& in);
 
                 vector<Byte> ReadBytes (istream& in);
-                void WriteBytes (ostream& out, const vector<Byte>& s);
+                void         WriteBytes (ostream& out, const vector<Byte>& s);
             }
         }
     }

@@ -314,7 +314,6 @@ struct LinkMonitor::Rep_ {
         if (fMonitorThread_ == nullptr) {
             // very slight race starting this but not worth worrying about
             fMonitorThread_ = Execution::Thread::New ([this]() {
-
                 // for now - only handle adds, but removes SB easy too...
 
                 ConnectionlessSocket::Ptr sock = ConnectionlessSocket::New (static_cast<SocketAddress::FamilyType> (PF_NETLINK), Socket::RAW, NETLINK_ROUTE);

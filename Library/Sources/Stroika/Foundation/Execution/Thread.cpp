@@ -718,7 +718,7 @@ void Thread::Rep_::InterruptionSignalHandler_ (SignalID signal)
 void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
     TraceContextBumper ctx{"Thread::Rep_::CalledInRepThreadAbortProc_"};
-    Thread::Rep_*      rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
+    Thread::Rep_* rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
     /*
      *  Note why this is safe here:

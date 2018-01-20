@@ -171,10 +171,10 @@ namespace Stroika {
 
             public:
                 virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual void Enqueue (T item, Priority priority) = 0;
-                virtual T           Dequeue ()        = 0;
-                virtual T           Head () const     = 0;
-                virtual Iterable<T> Elements () const = 0;
+                virtual void           Enqueue (T item, Priority priority)                    = 0;
+                virtual T              Dequeue ()                                             = 0;
+                virtual T              Head () const                                          = 0;
+                virtual Iterable<T>    Elements () const                                      = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
