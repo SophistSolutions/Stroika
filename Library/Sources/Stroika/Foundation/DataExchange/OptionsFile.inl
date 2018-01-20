@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
 #ifndef _Stroika_Foundation_DataExchange_OptionsFile_inl_
 #define _Stroika_Foundation_DataExchange_OptionsFile_inl_ 1

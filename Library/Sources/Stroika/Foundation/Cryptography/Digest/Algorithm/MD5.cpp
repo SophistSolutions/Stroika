@@ -1,5 +1,5 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2017.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  *
  * Copyright (C) 1990, RSA Data Security, Inc. All rights reserved
  */
