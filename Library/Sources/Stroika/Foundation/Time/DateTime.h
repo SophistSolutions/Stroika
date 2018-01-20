@@ -137,8 +137,8 @@ namespace Stroika {
                 constexpr DateTime (const DateTime& src) = default;
                 constexpr DateTime (DateTime&& src)      = default;
                 constexpr DateTime (const Date& d) noexcept;
-                DateTime (const DateTime& dt, const Date& updateDate) noexcept;
-                DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
+                constexpr DateTime (const DateTime& dt, const Date& updateDate) noexcept;
+                constexpr DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
                 constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
                 explicit DateTime (time_t unixEpochTime) noexcept;
                 explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
@@ -247,10 +247,10 @@ namespace Stroika {
                 static constexpr DateTime max ();
 
             public:
-                nonvirtual Memory::Optional<Timezone> GetTimezone () const noexcept;
+                nonvirtual constexpr Memory::Optional<Timezone> GetTimezone () const noexcept;
 
             public:
-                /**
+                /** 
                  *  Creates a new DateTime object known to be in localtime. If this DateTime is unknown, then the
                  * conversion is also unknown (but either treat Kind as localtime or UTC)
                  */

@@ -33,13 +33,13 @@ namespace Stroika {
                 , fTimeOfDay_ ()
             {
             }
-            inline DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
+            inline constexpr DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
                 : fTimezone_ (dt.GetTimezone ())
                 , fDate_ (updateDate)
                 , fTimeOfDay_ (dt.GetTimeOfDay ())
             {
             }
-            inline DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
+            inline constexpr DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
                 : fTimezone_ (dt.GetTimezone ())
                 , fDate_ (dt.GetDate ())
                 , fTimeOfDay_ (updateTOD)
@@ -80,7 +80,7 @@ namespace Stroika {
             {
                 return Now ().GetDate ();
             }
-            inline Memory::Optional<Timezone> DateTime::GetTimezone () const noexcept
+            inline constexpr Memory::Optional<Timezone> DateTime::GetTimezone () const noexcept
             {
                 return fTimezone_;
             }
