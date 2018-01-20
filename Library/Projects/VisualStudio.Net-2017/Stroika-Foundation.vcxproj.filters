@@ -2010,6 +2010,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Common.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3233,6 +3236,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\Common.inl">
+      <Filter>Sources\Time</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

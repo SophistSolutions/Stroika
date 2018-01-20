@@ -18,6 +18,8 @@
 #include "../Configuration/Common.h"
 #include "../Execution/StringException.h"
 
+#include "Common.h"
+
 /**
  *  \file
  *
@@ -167,7 +169,7 @@ namespace Stroika {
             public:
                 /**
                  * Defined for
-                 *      time_t (alias for another type here)
+                 *      time_t
                  *      int
                  *      long int
                  *      long long int

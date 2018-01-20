@@ -53,6 +53,7 @@ namespace Stroika {
              *
              *      America/New_York    EST         Eastern Standard Time   EDT         Eastern Daylight Time   -05:00:00   +01:00:00       2;0;3                   +02:00:00   1;0;11              +02:00:00
              *
+             *  @see https://stroika.atlassian.net/browse/STK-636
              */
             struct TimeZoneInformationType {
                 struct Details {

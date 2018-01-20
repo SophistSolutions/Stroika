@@ -18,6 +18,8 @@
 #include "../Configuration/Enumeration.h"
 #include "../Execution/StringException.h"
 
+#include "Common.h"
+
 /**
  *  \file
  *

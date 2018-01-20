@@ -20,6 +20,7 @@
 #include "../Configuration/Enumeration.h"
 #include "../Math/Common.h"
 
+#include "Common.h"
 #include "Date.h"
 #include "TimeOfDay.h"
 #include "Timezone.h"
@@ -109,10 +110,6 @@ namespace Stroika {
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              *
-             *  \note   In the DateTime code, time_t is always assumed to be in UTC, because according to http://en.cppreference.com/w/c/chrono/time_t:
-             *              Although not defined by the C standard, this is almost always an integral 
-             *              value holding the number of seconds (not counting leap seconds) 
-             *              since 00:00, Jan 1 1970 UTC
              */
             class DateTime {
             public:
