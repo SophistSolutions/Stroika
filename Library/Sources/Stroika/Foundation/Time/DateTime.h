@@ -200,7 +200,7 @@ namespace Stroika {
                 static Date GetToday () noexcept;
 
             public:
-/*
+                /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  *
                  *  @see constexpr DateTime::min ()
@@ -214,7 +214,7 @@ namespace Stroika {
 #endif
 
             public:
-/*
+                /*
                  * DateTime::kMax is the last date this DateTime class supports representing.
                  *
                  *  @see constexpr DateTime::max ()

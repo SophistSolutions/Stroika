@@ -144,7 +144,7 @@ namespace Stroika {
                 static constexpr Memory::Optional<Timezone> Unknown ();
 
             public:
-/**
+                /**
                  *  @see Timezone::UTC ()
                  *
                  *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
@@ -156,7 +156,7 @@ namespace Stroika {
 #endif
 
             public:
-/**
+                /**
                  *  @see Timezone::LocalTime ()
                  *
                  *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
