@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2010
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Foundation", "..\..\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj", "{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}"
 EndProject
@@ -152,6 +152,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		..\..\Documentation\Design Overview.pdf = ..\..\Documentation\Design Overview.pdf
 		..\..\Documentation\Git-Tags-and-Branches.md = ..\..\Documentation\Git-Tags-and-Branches.md
 		..\..\Documentation\Makefile = ..\..\Documentation\Makefile
+		..\..\Documentation\Regression-Tests.md = ..\..\Documentation\Regression-Tests.md
 		..\..\Documentation\Thread-Safety.md = ..\..\Documentation\Thread-Safety.md
 	EndProjectSection
 EndProject

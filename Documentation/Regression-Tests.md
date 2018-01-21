@@ -27,3 +27,12 @@
        ```MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.2 ./ScriptsLib/RunRemoteRegressionTests.sh
        ```
 
+     * $TEST_TARGET=Windows_VS2k17 
+     
+       PerformanceDump-Windows_VS2k17-$VER.txt REGRESSION-TESTS-Windows_VS2k17-$VER-OUT.txt
+     
+       ```{on windows bash shell run)
+	   USE_TEST_BASENAME=Windows_VS2k17 ./ScriptsLib/RunRegressionTests.sh
+	   USE_TEST_BASENAME=Windows_VS2k17 ./ScriptsLib/RunPerformanceRegressionTests.sh
+       ```
+
