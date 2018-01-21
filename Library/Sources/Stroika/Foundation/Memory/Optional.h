@@ -209,7 +209,7 @@ namespace Stroika {
             template <typename T>
             using Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
 
-/**
+            /**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
              */
 #if qCompilerAndStdLib_Supports_stdoptional
@@ -222,7 +222,7 @@ namespace Stroika {
             };
 #endif
 
-/**
+            /**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt
              */
 #if qCompilerAndStdLib_Supports_stdoptional

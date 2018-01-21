@@ -85,7 +85,7 @@ namespace Stroika {
             using Traversal::Iterable;
             using Traversal::Iterator;
 
-/**
+            /**
              *  Having Stroika_Foundation_Containers_Sequence_SupportProxyModifiableOperatorBracket work would be nice. For POD
              *  types, this isnt hard to do well. But for things like Sequence<String> x;, where we want x[1].c_str () to work,
              *  the only way I've found is to use a temp proxy subclassing from T. And that has costs over constant usage.
