@@ -30,26 +30,18 @@ History
 				<li>Added DateTime::IsDaylightSavingsTime () utility</li>
 				<li>deprecated timezone  IsDaylightSavingsTime() and GetLcoaleTimeToGMTOffset - can now use Timezone object directly.</li>
 				<li>constexpr DateTime MOVE CTOR again</li>
-				<li>experiment with constexpr Optional move CTOR (more like stdc++17 optional)</li>
 				<li>new module Foundation/Time/Common - for now - just contains common comments about inherited C++ structures</li>
 				<li>A couple more DateTime methods & CTORs constexpr</li>
 				<li>Minor cleanups to datetime deprecation - deprecate less: leave around kMin/kMax and ifdef if they are const or constexpr and just docoment that function always constexpr and kMin/kMax is constexrp only if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy</li>
 				<li>replace Timezone::kUTC, kLocalTime, and kUnknown with static constexpr methods UTC (), LocalTime(), and Unknown(); keep existing const names with ifdefs !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy  if they are constexpr or const (so if I eventually figure this out I can fix to use real constants)</li>
-				<li>Lose qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy - not needed anymore - was bug with Stroika Optional (move ctor constexpr)</li>
-				<li>one more workaround for qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy though maybe my bug - not clang after all</li>
-				<li>revert last change - DateTime move CTOR is not constexpr (maybe can figure out how todo but not yet)</li>
 				<li>DateTime move CTOR constexpr</li>
 				<li>Minor todo docs, plus fix one TimeOfDay CTOR to be constexpr</li>
-				<li>Cleanup date/time comments - qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy</li>
-				<li>Cleanup datetime - obsolete constexpr stuff (related to above)</li>
+				<li>New strategy for dealing with qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy: for Date, TimeOfDay, and DateTime - min(), max() are constexpr functions. kMin/kMax still around, but when you need constexpr - use those constexpr functions.</li>
 				<li>Various datetime related docs / comments cleanups.</li>
 				<li>DefaultNames<Stroika::Foundation::Time>... for a bunch of Date related enums.</li>
 				<li>DateTime....Lose deprecated eFirstDayOfWeek etc...</li>
-				<li>qCompilerAndStdLib_constexpr_function_calling_constexprCTORInReturnInBody_Buggy bug workaround: and minor docs improvements for DateTime</li>
-				<li>DateTime::min/max cleanup</li>
 				<li>use Date/DateTime/TimeOfDay() ::min()/::max() instead of kMin/kMax - constexpr functions - https://stroika.atlassian.net/browse/STK-635</li>
 				<li>fixed ctor call for DateTime(time_t)</li>
-				<li>Experimental fix for TimeOfDay::kMin and TimeOfDay::kMax</li>
 				<li>DateTime(time_t) no longer accepts param of timezone - and no longer defaults to UNKNOWN but instead defaults to UTC; and documented time_t being UTC and why</li>
 				<li>progress on https://stroika.atlassian.net/browse/STK-555 - so now I suspect dates with +5:00 at end will capture that offset and it will be used/preserved appropriately (more todo relating to this and need tests, but this is a big step forward with datetime support); qCompilerAndStdLib_Supported_mkgmtime64 define</li>
 				<li>Timezones: workaround for https://stroika.atlassian.net/browse/STK-634; Time::IsDaylightSavingsTime cleanup () - and doc unsupported for current status of Timezone objects;</li>
@@ -57,7 +49,6 @@ History
 				<li>https://stroika.atlassian.net/browse/STK-555 - start adding supprot to timezone code for bias-offset</li>
 				<li>minor cleanups to Timezone - constexpr methods</li>
 				<li>Timezone operator= and CTOR copy overloads</li>
-				<li>test code for case with !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy</li>
 			</ul>
 		</li>
 		<li>Compilers
@@ -66,6 +57,7 @@ History
 				<li>Support VS2k17 15.5.4 compiler (bug defines)</li>
 			</ul>
 		</li>
+		<li>experiment with constexpr Optional move CTOR (more like stdc++17 optional)</li>
 		<li>Build Sysstem/Scripts
 			<ul>
 				<li>updated GetMessageForMissingTool for nodejs</li>
