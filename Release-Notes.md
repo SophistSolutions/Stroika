@@ -18,43 +18,40 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a226">v2.0a226</a><br/>2018-01-21xxxx</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a226">v2.0a226</a><br/>2018-01-21</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a225...v2.0a226</li>
+		<li>Compilers
+			<ul>
+				<li>Support VS2k17 15.5.3 compiler (bug defines)</li>
+				<li>Support VS2k17 15.5.4 compiler (bug defines)</li>
+			</ul>
+		</li>
 		<li>Date/Time/DateTime/Timezone
 			<ul>
 				<li>renamed Time::GetTimezoneInfo to Time::GetCurrentLocaleTimezoneInfo and deprecated old name; Deprecated Time::GetTimezone()</li>
 				<li>https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that - FIXED</li>
-				<li>notes/regtest cleanups for +//////https://stroika.atlassian.net/browse/STK-107 workaround</li>
+				<li>notes/regtest cleanups for https://stroika.atlassian.net/browse/STK-107 workaround</li>
 				<li>Added DateTime::IsDaylightSavingsTime () utility</li>
 				<li>deprecated timezone  IsDaylightSavingsTime() and GetLcoaleTimeToGMTOffset - can now use Timezone object directly.</li>
-				<li>constexpr DateTime MOVE CTOR again</li>
 				<li>new module Foundation/Time/Common - for now - just contains common comments about inherited C++ structures</li>
-				<li>A couple more DateTime methods & CTORs constexpr</li>
 				<li>Minor cleanups to datetime deprecation - deprecate less: leave around kMin/kMax and ifdef if they are const or constexpr and just docoment that function always constexpr and kMin/kMax is constexrp only if !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy</li>
 				<li>replace Timezone::kUTC, kLocalTime, and kUnknown with static constexpr methods UTC (), LocalTime(), and Unknown(); keep existing const names with ifdefs !qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy  if they are constexpr or const (so if I eventually figure this out I can fix to use real constants)</li>
-				<li>DateTime move CTOR constexpr</li>
-				<li>Minor todo docs, plus fix one TimeOfDay CTOR to be constexpr</li>
+				<li>DateTime move CTOR constexpr; more TimeOfDay CTOR to be constexpr; A couple more DateTime methods & CTORs constexpr</li>
+				<li>Lots of documentation cleanups and review of todo items (Timezone,Date,DateTime,TimeOfDay,Common)</li>
 				<li>New strategy for dealing with qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy: for Date, TimeOfDay, and DateTime - min(), max() are constexpr functions. kMin/kMax still around, but when you need constexpr - use those constexpr functions.</li>
 				<li>Various datetime related docs / comments cleanups.</li>
 				<li>DefaultNames<Stroika::Foundation::Time>... for a bunch of Date related enums.</li>
 				<li>DateTime....Lose deprecated eFirstDayOfWeek etc...</li>
 				<li>use Date/DateTime/TimeOfDay() ::min()/::max() instead of kMin/kMax - constexpr functions - https://stroika.atlassian.net/browse/STK-635</li>
-				<li>fixed ctor call for DateTime(time_t)</li>
 				<li>DateTime(time_t) no longer accepts param of timezone - and no longer defaults to UNKNOWN but instead defaults to UTC; and documented time_t being UTC and why</li>
 				<li>progress on https://stroika.atlassian.net/browse/STK-555 - so now I suspect dates with +5:00 at end will capture that offset and it will be used/preserved appropriately (more todo relating to this and need tests, but this is a big step forward with datetime support); qCompilerAndStdLib_Supported_mkgmtime64 define</li>
 				<li>Timezones: workaround for https://stroika.atlassian.net/browse/STK-634; Time::IsDaylightSavingsTime cleanup () - and doc unsupported for current status of Timezone objects;</li>
 				<li>https://stroika.atlassian.net/browse/STK-555 Timezone class improvements - Timezone::GetBiasInMinutesFromUTCType and IsDaylightSavings () overload</li>
-				<li>https://stroika.atlassian.net/browse/STK-555 - start adding supprot to timezone code for bias-offset</li>
+				<li>https://stroika.atlassian.net/browse/STK-555 - start adding support to timezone code for bias-offset</li>
 				<li>minor cleanups to Timezone - constexpr methods</li>
 				<li>Timezone operator= and CTOR copy overloads</li>
-			</ul>
-		</li>
-		<li>Compilers
-			<ul>
-				<li>Support VS2k17 15.5.3 compiler (bug defines)</li>
-				<li>Support VS2k17 15.5.4 compiler (bug defines)</li>
 			</ul>
 		</li>
 		<li>experiment with constexpr Optional move CTOR (more like stdc++17 optional)</li>
@@ -74,12 +71,12 @@ History
 				<li>progress/notes on https://stroika.atlassian.net/browse/STK-567 - zip reader ReadNonBlocking</li>
 			</ul>
 		</li>
-		<li>Updated copyright notice</li>
 		<li>use make_signed_t instead of make_signed<>::type and make_unsigned_t instead of make_unsigned<>::type</li>
 		<li>Docs on ConditionVariable class</li>
 		<li>FormatCode script allows external specification of formatter (conditionally set var)</li>
 		<li>upgraded to clang-format 6 and re-ran make-format</li>
 		<li>fixed Modbus response size for uint16_t (kReadHoldingResisters_, kReadInputRegister_) responses (bug report and fix from John Pringle)</li>
+		<li>Updated copyright notice</li>
 		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a226.txt</li>
 		<li>Tested (passed regtests)
 			<ul>
