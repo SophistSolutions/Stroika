@@ -12,19 +12,22 @@
    
        PerformanceDump-Ubuntu1604_x86_64-$VER.txt REGRESSION-TESTS-Ubuntu1604_x86_64-$VER-OUT.txt
      
-       ```MACHINE=StroikaTestVM-Ubuntu1604-1 USE_TEST_BASENAME=Ubuntu1604_x86_64 ./ScriptsLib/RunRemoteRegressionTests.sh
+       ```
+       MACHINE=StroikaTestVM-Ubuntu1604-1 USE_TEST_BASENAME=Ubuntu1604_x86_64 ./ScriptsLib/RunRemoteRegressionTests.sh
        ```
      
      * $TEST_TARGET=Ubuntu1710_x86_64 
      
-       ```MACHINE=StroikaTestVM-Ubuntu1710-1 USE_TEST_BASENAME=Ubuntu1710_x86_64 DO_ONLY_DEFAULT_CONFIGURATIONS=0 ./ScriptsLib/RunRemoteRegressionTests.sh
+       ```
+       MACHINE=StroikaTestVM-Ubuntu1710-1 USE_TEST_BASENAME=Ubuntu1710_x86_64 DO_ONLY_DEFAULT_CONFIGURATIONS=0 ./ScriptsLib/RunRemoteRegressionTests.sh
        ```
      
      * $TEST_TARGET=MacOS_XCode9.2 
      
        PerformanceDump-MacOS_XCode9.2-$VER.txt REGRESSION-TESTS-MacOS_XCode9.2-$VER-OUT.txt
      
-       ```MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.2 ./ScriptsLib/RunRemoteRegressionTests.sh
+       ```
+       MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.2 ./ScriptsLib/RunRemoteRegressionTests.sh
        ```
 
      * $TEST_TARGET=Windows_VS2k17 
@@ -36,3 +39,8 @@
 	   USE_TEST_BASENAME=Windows_VS2k17 ./ScriptsLib/RunPerformanceRegressionTests.sh
        ```
 
+   * Checkin results:
+
+    ```
+    Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt
+    ```
