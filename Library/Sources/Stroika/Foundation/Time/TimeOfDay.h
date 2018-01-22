@@ -115,7 +115,7 @@ namespace Stroika {
                 constexpr TimeOfDay (const TimeOfDay&) = default;
                 constexpr TimeOfDay (TimeOfDay&& src)  = default;
                 constexpr explicit TimeOfDay (uint32_t t);
-                explicit TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
+                explicit constexpr TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds);
 
             public:
                 /**

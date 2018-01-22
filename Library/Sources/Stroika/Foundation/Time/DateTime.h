@@ -474,8 +474,8 @@ namespace Stroika {
             DateTime operator+ (const DateTime& lhs, const Duration& rhs);
 
             /**
-            *  Syntactic sugar on Difference()
-            */
+             *  Syntactic sugar on Difference()
+             */
             Duration operator- (const DateTime& lhs, const DateTime& rhs);
 
             /**

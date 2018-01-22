@@ -658,8 +658,9 @@ DateTime DateTime::AddSeconds (int64_t seconds) const
 Duration DateTime::Difference (const DateTime& rhs) const
 {
     if (GetTimezone () == rhs.GetTimezone ()) {
-        int dayDiff = GetDate ().GetJulianRep () - rhs.GetDate ().GetJulianRep ();
-        return Duration (As<time_t> () - rhs.As<time_t> ());
+        int64_t             dayDiff         = static_cast<int64_t> (GetDate ().GetJulianRep ()) - static_cast<int64_t> (rhs.GetDate ().GetJulianRep ());
+        DurationSecondsType intraDaySecDiff = static_cast<DurationSecondsType> (GetTimeOfDay ().GetAsSecondsCount ()) - static_cast<DurationSecondsType> (rhs.GetTimeOfDay ().GetAsSecondsCount ());
+        return Duration{DurationSecondsType (kSecondsPerDay_ * dayDiff) + intraDaySecDiff};
     }
     else {
         return AsUTC ().Difference (rhs.AsUTC ());
