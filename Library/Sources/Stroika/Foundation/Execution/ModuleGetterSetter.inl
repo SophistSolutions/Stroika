@@ -44,7 +44,7 @@ namespace Stroika {
                 if (l->IsMissing ()) {
                     DoInitOutOfLine_ (&l);
                 }
-                l.rwref ()->Set (f (l.cref ()->Get ()));
+                l.rwref ()->Set (updaterFunction (l.cref ()->Get ()));
             }
             template <typename T, typename IMPL>
             dont_inline void ModuleGetterSetter<T, IMPL>::DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref)
