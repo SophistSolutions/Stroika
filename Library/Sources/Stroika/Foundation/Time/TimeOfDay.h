@@ -110,6 +110,12 @@ namespace Stroika {
                  *
                  *  For the TimeOfDay, we allow out of range values and pin/accumulate. But you can still never have a time of day >= kMaxSecondsPerDay.
                  *  And the first hour (1pm) is hour 0, so TimeOfDay (2, 0, 0) is 3am.
+                 *
+                 *  \req argument time-of-day (in seconds or hours/minutes/seconds) is in valid range for one day
+                 *  \req t < kMaxSecondsPerDay
+                 *  \req hour < 24
+                 *  \req minute < 60
+                 *  \req seconds < 60
                  */
                 constexpr TimeOfDay ();
                 constexpr TimeOfDay (const TimeOfDay&) = default;
@@ -140,6 +146,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  Always produces a valid legal TimeOfDay, or throws an exception
                  */
                 static TimeOfDay Parse (const String& rep, ParseFormat pf);
                 static TimeOfDay Parse (const String& rep, const locale& l);
@@ -150,19 +157,37 @@ namespace Stroika {
             public:
                 /**
                  *  TimeOfDay::kMin is the first date this TimeOfDay class supports representing.
+                 *
+                 *  @see constexpr TimeOfDay::min ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
-                [[deprecated ("use min ()")]] static const TimeOfDay kMin;
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const TimeOfDay kMin;
+#else
+                static constexpr TimeOfDay kMin{0};
+#endif
 
             public:
                 /**
                  *  TimeOfDay::kMax is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
                  *  not like 'end' - one past the last legal value.
+                 *
+                 *  @see constexpr TimeOfDay::max ()
+                 *
+                 *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
-                [[deprecated ("use max ()")]] static const TimeOfDay kMax;
+#if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
+                static const TimeOfDay kMax;
+#else
+                static constexpr TimeOfDay kMax{kMaxSecondsPerDay - 1};
+#endif
 
             public:
                 /**
                  *  min () is the first date this TimeOfDay class supports representing.
+                 *
+                 *  @see constexpr TimeOfDay::kMin
                  *
                  *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
@@ -172,6 +197,8 @@ namespace Stroika {
                 /**
                  *  max () is the last date this TimeOfDay class supports representing. This is a legal TimeOfDay, and
                  *  not like 'end' - one past the last legal value.
+                 *
+                 *  @see constexpr TimeOfDay::kMax
                  *
                  *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */

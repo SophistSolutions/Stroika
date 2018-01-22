@@ -30,6 +30,7 @@ namespace Stroika {
             inline constexpr TimeOfDay::TimeOfDay (uint32_t t)
                 : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
             {
+                Require (t < kMaxSecondsPerDay); // required added v2.0a227 - so still leave in check for a short while
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Assert (empty () or fTime_ < kMaxSecondsPerDay);
 #endif
