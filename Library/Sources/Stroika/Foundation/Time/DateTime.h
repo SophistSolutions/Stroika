@@ -367,7 +367,13 @@ namespace Stroika {
                  *
                  *  \note  As<time_t> Returns seconds since midnight 1970 UTC (UNIX 'Epoch time')
                  *
-                 *  \note This function will throw range_error() if it cannot perform the required conversions and produce a valid value.
+                 *  \note  As<struct tm> Returns a struct tm record without paying attention to timezone (in whatever timezone *this is) - but will throw if the date is before 1900
+                 *
+                 *  \note  As<struct timespec> inherits the limitations (UTC since 1970 - since it uses time_t internally)
+                 *
+                 *  \note  As<Date> ignores timezone, and returns the date object in this DateTime's timezone
+                 *
+                 *  \note As<> will throw range_error() if it cannot perform the required conversions and produce a valid value.
                  */
                 template <typename T>
                 nonvirtual T As () const;

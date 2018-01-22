@@ -50,8 +50,6 @@
  *              is for what range of dates is my currnet date logic valid, and thats what I'll use.
  *              But this needs some digging.
  *
- *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
- *
  *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
  *              Same format
  *              That doesn’t use std::locale()
@@ -210,7 +208,6 @@ namespace Stroika {
              *      ->  months have 28..31 days and
              *      ->  a particular year might be a leap year."
              *
-             *
              *          NB: Date implies NO NOTION of timezone.
              *
              *      'empty' concept:
@@ -219,8 +216,8 @@ namespace Stroika {
              *          And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin. This is a bit like the floating
              *          point concept of negative infinity.
              *
-             *  \note   This type properties (kMin/kMax) can only be used after static initialization, and before
-             *          static de-initializaiton.
+             *  \note   Date constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
+             *          instead of creating invalid values.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              *
@@ -238,6 +235,9 @@ namespace Stroika {
                 static constexpr JulianRepType kMinJulianRep = 2361222; // This number corresponds to 1752-09-14
 
             public:
+                static constexpr JulianRepType kMaxJulianRep = UINT_MAX - 1;
+
+            public:
                 static constexpr JulianRepType kEmptyJulianRep = UINT_MAX;
 
             public:
@@ -246,6 +246,8 @@ namespace Stroika {
             public:
                 /**
                  *  the Date/0 CTOR returns an empty date (see @Date::empty ())
+                 *
+                 *  \req kMinJulianRep <= julianRep <= kMaxJulianRep OR julianRep == kEmptyJulianRep
                  */
                 constexpr Date ();
                 constexpr Date (const Date& src) = default;
@@ -294,7 +296,7 @@ namespace Stroika {
 #endif
 
             public:
-/*
+                /**
                  *  Date::kMin is the first date this Date class supports representing.
                  *
                  *  @see constexpr Date::min ()
@@ -308,7 +310,7 @@ namespace Stroika {
 #endif
 
             public:
-/*
+                /**
                  * Date::kMax is the last date this Date class supports representing.
                  *
                  *  @see constexpr Date::max ()

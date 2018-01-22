@@ -440,6 +440,10 @@ Date Date::AddDays (SignedJulianRepType dayCount) const
     // then assume was supposed to be relative to today
     Date result = empty () ? DateTime::GetToday () : *this;
     result.fJulianDateRep_ += dayCount;
+    if (result.fJulianDateRep_ < Date::kMinJulianRep) {
+        static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
+        Execution::Throw (kRangeErrror_);
+    }
     return result;
 }
 

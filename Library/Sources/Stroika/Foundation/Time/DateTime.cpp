@@ -559,6 +559,10 @@ time_t DateTime::As () const
 template <>
 tm DateTime::As () const
 {
+    if (GetDate ().GetYear () < Year (1900)) {
+        static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1900"};
+        Execution::Throw (kRangeErrror_);
+    }
     struct tm tm {
     };
     tm.tm_year                         = static_cast<int> (fDate_.GetYear ()) - 1900;

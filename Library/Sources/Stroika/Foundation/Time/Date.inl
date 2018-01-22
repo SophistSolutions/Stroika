@@ -77,6 +77,9 @@ namespace Stroika {
             inline constexpr Date::Date (JulianRepType julianRep)
                 : fJulianDateRep_ (julianRep)
             {
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep);
+#endif
             }
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
             constexpr
@@ -84,6 +87,11 @@ namespace Stroika {
                 inline Date::Date (Year year, MonthOfYear month, DayOfMonth day)
                 : fJulianDateRep_ (jday_ (month, day, year))
             {
+#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                // Gregorian calendar started on Sep. 14, 1752
+                Require (year >= Year::eFirstYear);
+                Require (year > Year (1752) or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth (14)));
+#endif
             }
             inline constexpr Date::JulianRepType Date::GetJulianRep () const
             {
