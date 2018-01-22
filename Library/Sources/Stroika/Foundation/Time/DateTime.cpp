@@ -534,6 +534,12 @@ time_t DateTime::As () const
     DateTime  useDT = this->AsUTC (); // time_t defined in UTC
     Date      d     = useDT.GetDate ();
     TimeOfDay tod   = useDT.GetTimeOfDay ();
+
+    if (useDT.GetDate ().GetYear () < Year (1970)) {
+        static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
+        Execution::Throw (kRangeErrror_);
+    }
+
     struct tm tm {
     };
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;

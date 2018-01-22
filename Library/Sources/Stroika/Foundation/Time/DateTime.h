@@ -108,6 +108,9 @@ namespace Stroika {
              *          the value of timezone is undefined. That way, d.empty () iff d == DateTime ()
              *  <<</CONSIDERING MAYBE REQUIRING>>>
              *
+             *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
+             *          instead of creating invalid values.
+             *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              *
              */
@@ -129,6 +132,8 @@ namespace Stroika {
                  *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
                  *
                  *  \note DateTime (time_t unixEpochTime) returns a datetime in UTC
+                 *
+                 *  \note All DateTime constructors REQUIRE valid (in range) arguments.
                  */
                 constexpr DateTime () noexcept;
                 constexpr DateTime (const DateTime& src) = default;
@@ -171,6 +176,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  Parse will throw if the argument cannot be parsed as a valid DateTime.
                  */
                 static DateTime Parse (const String& rep, ParseFormat pf);
                 static DateTime Parse (const String& rep, const locale& l);
@@ -188,19 +194,19 @@ namespace Stroika {
                 nonvirtual constexpr bool empty () const noexcept;
 
             public:
-                /*
+                /**
                  *  Return the current DateTime (in LocalTime)
                  */
                 static DateTime Now () noexcept;
 
             public:
-                /*
+                /**
                  *  Return the current Date (in LocalTime - local timezone)
                  */
                 static Date GetToday () noexcept;
 
             public:
-                /*
+                /**
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  *
                  *  @see constexpr DateTime::min ()
@@ -214,7 +220,7 @@ namespace Stroika {
 #endif
 
             public:
-                /*
+                /**
                  * DateTime::kMax is the last date this DateTime class supports representing.
                  *
                  *  @see constexpr DateTime::max ()
@@ -244,6 +250,8 @@ namespace Stroika {
                 static constexpr DateTime max ();
 
             public:
+                /**
+                 */
                 nonvirtual constexpr Memory::Optional<Timezone> GetTimezone () const noexcept;
 
             public:
@@ -273,6 +281,8 @@ namespace Stroika {
                  *      \endcode
                  *
                  *  @see FromTickCount
+                 *
+                 *  \note - if this DateTime is out of range with respect to TickCount, then this function will throw a range_error.
                  */
                 nonvirtual DurationSecondsType ToTickCount () const;
 
@@ -282,6 +292,8 @@ namespace Stroika {
                  *  This returns a datetime in localtime.
                  *
                  *  @see ToTickCount
+                 *
+                 *  This function Requires a valid tickCount argument (in range - so meaning > 0)
                  */
                 static DateTime FromTickCount (DurationSecondsType tickCount);
 
@@ -354,6 +366,8 @@ namespace Stroika {
                  *  logically extends Date with extra (TOD) information.
                  *
                  *  \note  As<time_t> Returns seconds since midnight 1970 UTC (UNIX 'Epoch time')
+                 *
+                 *  \note This function will throw range_error() if it cannot perform the required conversions and produce a valid value.
                  */
                 template <typename T>
                 nonvirtual T As () const;
@@ -376,6 +390,8 @@ namespace Stroika {
                  *  the timezone value nor adjust for timezone issues. 
                  *
                  *  Add doesn't modify *this.
+                 *
+                 *  \note This function will throw range_error() if it cannot perform the required conversions and produce a valid value.
                  */
                 nonvirtual DateTime Add (const Duration& d) const;
 
@@ -385,6 +401,8 @@ namespace Stroika {
                  *  the timezone value nor adjust for timezone issues. 
                  *
                  *  AddDays doesn't modify this.
+                 *
+                 *  \note This function will throw range_error() if it cannot perform the required conversions and produce a valid value.
                  */
                 nonvirtual DateTime AddDays (int days) const;
 
@@ -394,6 +412,8 @@ namespace Stroika {
                  *  the timezone value nor adjust for timezone issues. 
                  *
                  *  AddSeconds doesn't modify this.
+                 *
+                 *  \note This function will throw range_error() if it cannot perform the required conversions and produce a valid value.
                  */
                 nonvirtual DateTime AddSeconds (int64_t seconds) const;
 
