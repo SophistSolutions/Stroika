@@ -25,6 +25,8 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
+                 *  \brief String_ExternalMemoryOwnership_ApplicationLifetime allow creation of String objects with fewer memory allocations, and more efficient storage, but only in constrained situations
+                 *
                  *      String_ExternalMemoryOwnership_ApplicationLifetime is a subtype of string you can
                  * use to construct a String object, so long as the memory pointed to in the argument has a
                  *      o   FULL APPLICATION LIFETIME,

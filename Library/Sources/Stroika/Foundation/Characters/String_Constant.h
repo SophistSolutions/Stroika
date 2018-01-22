@@ -17,6 +17,8 @@ namespace Stroika {
         namespace Characters {
 
             /**
+             *  \brief String_Constant allows creation of String objects with fewer memory allocations, and more efficient storage, but only in constrained situations
+             *
              *      String_Constant can safely be used to create Stroika String's from constant C-strings
              *  (string literals) with a minimum of performance cost.
              *
