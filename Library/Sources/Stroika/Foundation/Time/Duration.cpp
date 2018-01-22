@@ -300,12 +300,12 @@ namespace {
         return i;
     }
 
-    const time_t kSecondsPerMinute = 60;
-    const time_t kSecondsPerHour   = kSecondsPerMinute * 60;
-    const time_t kSecondsPerDay    = kSecondsPerHour * 24;
-    const time_t kSecondsPerWeek   = kSecondsPerDay * 7;
-    const time_t kSecondsPerMonth  = kSecondsPerDay * 30;
-    const time_t kSecondsPerYear   = kSecondsPerDay * 365;
+    constexpr time_t kSecondsPerMinute_ = 60;
+    constexpr time_t kSecondsPerHour_   = kSecondsPerMinute_ * 60;
+    constexpr time_t kSecondsPerDay_    = kSecondsPerHour_ * 24;
+    constexpr time_t kSecondsPerWeek_   = kSecondsPerDay_ * 7;
+    constexpr time_t kSecondsPerMonth_  = kSecondsPerDay_ * 30;
+    constexpr time_t kSecondsPerYear_   = kSecondsPerDay_ * 365;
 }
 
 String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
@@ -325,55 +325,55 @@ String Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
     bool                       isNeg    = (t < 0);
     InternalNumericFormatType_ timeLeft = t < 0 ? -t : t;
     String                     result;
-    if (timeLeft >= kSecondsPerYear) {
-        unsigned int nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
+    if (timeLeft >= kSecondsPerYear_) {
+        unsigned int nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear_);
         if (nYears != 0) {
             if (not result.empty ()) {
                 result += kCommaSpace_;
             }
             result += Characters::Format (L"%d", nYears) + kSpaceBeforeUnit_ + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
-            timeLeft -= nYears * kSecondsPerYear;
+            timeLeft -= nYears * kSecondsPerYear_;
         }
     }
-    if (timeLeft >= kSecondsPerMonth) {
-        unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
+    if (timeLeft >= kSecondsPerMonth_) {
+        unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth_);
         if (nMonths != 0) {
             if (not result.empty ()) {
                 result += kCommaSpace_;
             }
             result += Characters::Format (L"%d", nMonths) + kSpaceBeforeUnit_ + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
-            timeLeft -= nMonths * kSecondsPerMonth;
+            timeLeft -= nMonths * kSecondsPerMonth_;
         }
     }
-    if (timeLeft >= kSecondsPerDay) {
-        unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
+    if (timeLeft >= kSecondsPerDay_) {
+        unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay_);
         if (nDays != 0) {
             if (not result.empty ()) {
                 result += kCommaSpace_;
             }
             result += Characters::Format (L"%d", nDays) + kSpaceBeforeUnit_ + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
-            timeLeft -= nDays * kSecondsPerDay;
+            timeLeft -= nDays * kSecondsPerDay_;
         }
     }
     if (timeLeft != 0) {
-        if (timeLeft >= kSecondsPerHour) {
-            unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
+        if (timeLeft >= kSecondsPerHour_) {
+            unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour_);
             if (nHours != 0) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
                 }
                 result += Characters::Format (L"%d", nHours) + kSpaceBeforeUnit_ + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
-                timeLeft -= nHours * kSecondsPerHour;
+                timeLeft -= nHours * kSecondsPerHour_;
             }
         }
-        if (timeLeft >= kSecondsPerMinute) {
-            unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
+        if (timeLeft >= kSecondsPerMinute_) {
+            unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute_);
             if (nMinutes != 0) {
                 if (not result.empty ()) {
                     result += kCommaSpace_;
                 }
                 result += Characters::Format (L"%d", nMinutes) + kSpaceBeforeUnit_ + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
-                timeLeft -= nMinutes * kSecondsPerMinute;
+                timeLeft -= nMinutes * kSecondsPerMinute_;
             }
         }
         if (timeLeft > 0) {
@@ -496,28 +496,28 @@ Characters::String Duration::PrettyPrintAge (const AgePrettyPrintInfo& agePretty
         return Characters::Format (L"%d %s %s", timeInSelectedUnit, label.c_str (), suffix.c_str ());
     };
 
-    constexpr InternalNumericFormatType_ kShowAsMinutesIfLess_ = 55 * kSecondsPerMinute;
-    constexpr InternalNumericFormatType_ kShowHoursIfLess_     = 23 * kSecondsPerHour;
-    constexpr InternalNumericFormatType_ kShowDaysIfLess_      = 14 * kSecondsPerDay;
-    constexpr InternalNumericFormatType_ kShowWeeksIfLess_     = 59 * kSecondsPerDay;
-    constexpr InternalNumericFormatType_ kShowMonthsIfLess_    = 11 * kSecondsPerMonth;
+    constexpr InternalNumericFormatType_ kShowAsMinutesIfLess_ = 55 * kSecondsPerMinute_;
+    constexpr InternalNumericFormatType_ kShowHoursIfLess_     = 23 * kSecondsPerHour_;
+    constexpr InternalNumericFormatType_ kShowDaysIfLess_      = 14 * kSecondsPerDay_;
+    constexpr InternalNumericFormatType_ kShowWeeksIfLess_     = 59 * kSecondsPerDay_;
+    constexpr InternalNumericFormatType_ kShowMonthsIfLess_    = 11 * kSecondsPerMonth_;
 
     if (absT < kShowAsMinutesIfLess_) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerMinute), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerMinute_), prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes);
     }
     if (absT < kShowHoursIfLess_) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerHour), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerHour_), prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours);
     }
-    if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerWeek), 1.0)) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerDay), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
+    if (absT < kShowDaysIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerWeek_), 1.0)) {
+        return fmtDate (Math::Round<int> (absT / kSecondsPerDay_), prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays);
     }
-    if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerMonth), 1.0)) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerWeek), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
+    if (absT < kShowWeeksIfLess_ and not Math::NearlyEquals (absT, static_cast<InternalNumericFormatType_> (kSecondsPerMonth_), 1.0)) {
+        return fmtDate (Math::Round<int> (absT / kSecondsPerWeek_), prettyPrintInfo.fLabels.fWeek, prettyPrintInfo.fLabels.fWeeks);
     }
     if (absT < kShowMonthsIfLess_) {
-        return fmtDate (Math::Round<int> (absT / kSecondsPerMonth), prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths);
+        return fmtDate (Math::Round<int> (absT / kSecondsPerMonth_), prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths);
     }
-    return fmtDate (Math::Round<int> (absT / kSecondsPerYear), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
+    return fmtDate (Math::Round<int> (absT / kSecondsPerYear_), prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears);
 }
 
 Duration Duration::operator- () const
@@ -596,19 +596,19 @@ Duration::InternalNumericFormatType_ Duration::ParseTime_ (const string& s)
         InternalNumericFormatType_ n = atof (string (firstDigitI, lastDigitI).c_str ());
         switch (*lastDigitI) {
             case 'Y':
-                curVal += n * kSecondsPerYear;
+                curVal += n * kSecondsPerYear_;
                 break;
             case 'M':
-                curVal += n * (timePart ? kSecondsPerMinute : kSecondsPerMonth);
+                curVal += n * (timePart ? kSecondsPerMinute_ : kSecondsPerMonth_);
                 break;
             case 'W':
-                curVal += n * kSecondsPerWeek;
+                curVal += n * kSecondsPerWeek_;
                 break;
             case 'D':
-                curVal += n * kSecondsPerDay;
+                curVal += n * kSecondsPerDay_;
                 break;
             case 'H':
-                curVal += n * kSecondsPerHour;
+                curVal += n * kSecondsPerHour_;
                 break;
             case 'S':
                 curVal += n;
@@ -687,14 +687,14 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         result += "-";
     }
     result += "P";
-    if (timeLeft >= kSecondsPerYear) {
-        InternalNumericFormatType_ nYears = trunc (timeLeft / kSecondsPerYear);
+    if (timeLeft >= kSecondsPerYear_) {
+        InternalNumericFormatType_ nYears = trunc (timeLeft / kSecondsPerYear_);
         Assert (nYears > 0.0);
         if (nYears > 0.0) {
             char buf[10 * 1024];
             (void)std::snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
             result += buf;
-            timeLeft -= nYears * kSecondsPerYear;
+            timeLeft -= nYears * kSecondsPerYear_;
             if (std::isinf (timeLeft) or timeLeft < 0) {
                 // some date numbers are so large, we cannot compute a number of days, weeks etc
                 // Also, for reasons which elude me (e.g. 32 bit gcc builds) this can go negative.
@@ -703,49 +703,49 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
             }
         }
     }
-    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerYear);
-    if (timeLeft >= kSecondsPerMonth) {
-        unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerYear_);
+    if (timeLeft >= kSecondsPerMonth_) {
+        unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth_);
         if (nMonths != 0) {
             char buf[1024];
             (void)std::snprintf (buf, sizeof (buf), "%dM", nMonths);
             result += buf;
-            timeLeft -= nMonths * kSecondsPerMonth;
+            timeLeft -= nMonths * kSecondsPerMonth_;
         }
     }
-    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMonth);
-    if (timeLeft >= kSecondsPerDay) {
-        unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMonth_);
+    if (timeLeft >= kSecondsPerDay_) {
+        unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay_);
         if (nDays != 0) {
             char buf[1024];
             (void)std::snprintf (buf, sizeof (buf), "%dD", nDays);
             result += buf;
-            timeLeft -= nDays * kSecondsPerDay;
+            timeLeft -= nDays * kSecondsPerDay_;
         }
     }
-    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerDay);
+    Assert (0.0 <= timeLeft and timeLeft < kSecondsPerDay_);
     if (timeLeft > 0) {
         result += "T";
-        if (timeLeft >= kSecondsPerHour) {
-            unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
+        if (timeLeft >= kSecondsPerHour_) {
+            unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour_);
             if (nHours != 0) {
                 char buf[1024];
                 (void)std::snprintf (buf, sizeof (buf), "%dH", nHours);
                 result += buf;
-                timeLeft -= nHours * kSecondsPerHour;
+                timeLeft -= nHours * kSecondsPerHour_;
             }
         }
-        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerHour);
-        if (timeLeft >= kSecondsPerMinute) {
-            unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
+        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerHour_);
+        if (timeLeft >= kSecondsPerMinute_) {
+            unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute_);
             if (nMinutes != 0) {
                 char buf[1024];
                 (void)std::snprintf (buf, sizeof (buf), "%dM", nMinutes);
                 result += buf;
-                timeLeft -= nMinutes * kSecondsPerMinute;
+                timeLeft -= nMinutes * kSecondsPerMinute_;
             }
         }
-        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute);
+        Assert (0.0 <= timeLeft and timeLeft < kSecondsPerMinute_);
         if (timeLeft > 0.0) {
             char buf[10 * 1024];
             buf[0] = '\0';
