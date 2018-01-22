@@ -401,6 +401,9 @@ namespace Stroika {
                 /**
                  *  Returns the difference between the two DateTime records. This can then be easily converted to 
                  *  seconds, or days, or whatever.
+                 *
+                 *  If the DateTime objects have different timezones, they are converted to a common timezone before the difference
+                 *  is computed.
                  */
                 nonvirtual Duration Difference (const DateTime& rhs) const;
 

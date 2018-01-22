@@ -658,10 +658,11 @@ DateTime DateTime::AddSeconds (int64_t seconds) const
 Duration DateTime::Difference (const DateTime& rhs) const
 {
     if (GetTimezone () == rhs.GetTimezone ()) {
+        int dayDiff = GetDate ().GetJulianRep () - rhs.GetDate ().GetJulianRep ();
         return Duration (As<time_t> () - rhs.As<time_t> ());
     }
     else {
-        return Duration (AsUTC ().As<time_t> () - rhs.AsUTC ().As<time_t> ());
+        return AsUTC ().Difference (rhs.AsUTC ());
     }
 }
 
