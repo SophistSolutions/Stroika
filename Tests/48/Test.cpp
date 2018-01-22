@@ -385,7 +385,7 @@ namespace {
         {
             // difference
             {
-                constexpr Date kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
+                const Date kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
         constexpr TimeOfDay kTOD_{10, 21, 32};
         constexpr TimeOfDay kTOD2_{10, 21, 35};
         VerifyTestResult ((DateTime (kDate_, kTOD_) - DateTime (kDate_, kTOD2_)).As<Time::DurationSecondsType> () == -3);
@@ -400,21 +400,21 @@ namespace {
 {
     // https://stroika.atlassian.net/browse/STK-555 - Improve Timezone object so that we can read time with +500, and respect that
     {
-        constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
+        const Date          kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04:00", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
         Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
     }
     {
-        constexpr Date      kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
+        const Date          kDate_ = Date (Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29));
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-0400", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
         Verify (tdu == DateTime (kDate_, TimeOfDay (kTOD_.GetHours () + 4, kTOD_.GetMinutes (), kTOD_.GetSeconds ()), Timezone::UTC ()));
     }
     {
-        constexpr Date      kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
+        const Date          kDate_{Time::Year (2016), Time::MonthOfYear (9), Time::DayOfMonth (29)};
         constexpr TimeOfDay kTOD_{10, 21, 32};
         DateTime            td  = DateTime::Parse (L"2016-09-29T10:21:32-04", DateTime::ParseFormat::eISO8601);
         DateTime            tdu = td.AsUTC ();
