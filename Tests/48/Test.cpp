@@ -140,7 +140,7 @@ namespace {
             TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
-            TimeOfDay t2 (25 * 60 * 60);
+            TimeOfDay t2 (24 * 60 * 60 - 1);
             VerifyTestResult (t2.GetHours () == 23);
             VerifyTestResult (t2.GetMinutes () == 59);
             VerifyTestResult (t2.GetSeconds () == 59);
