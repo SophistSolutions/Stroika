@@ -42,5 +42,5 @@
    * Checkin results:
 
     ```
-    Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt
+    Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/*TestResults/PerformanceDump-*-$VER.txt
     ```
