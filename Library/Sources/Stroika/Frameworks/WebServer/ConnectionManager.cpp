@@ -122,8 +122,11 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fThreads_ (options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName) // implementation detail - due to EXPENSIVE blcoking read strategy
-    , fListener_ (bindAddresses, options.fBindFlags.Value (Options::kDefault_BindFlags), [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); }, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 2)
+    , fThreads_{options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy
+    , fListener_{bindAddresses,
+                 options.fBindFlags.Value (Options::kDefault_BindFlags),
+                 [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); },
+                 options.fTCPBacklog.Value (options.fMaxConnections.Value (Options::kDefault_MaxConnections) * 3 / 4)}
 {
 }
 
