@@ -126,7 +126,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fListener_{bindAddresses,
                  options.fBindFlags.Value (Options::kDefault_BindFlags),
                  [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); },
-                 options.fTCPBacklog.Value (min (2u, options.fMaxConnections.Value (Options::kDefault_MaxConnections) * 3 / 4))}
+                 options.fTCPBacklog.Value (max (2u, options.fMaxConnections.Value (Options::kDefault_MaxConnections) * 3 / 4))}
 {
 }
 
