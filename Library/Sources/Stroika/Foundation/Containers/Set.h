@@ -223,8 +223,8 @@ namespace Stroika {
 
             public:
                 /**
-                 *  The overload takign an item doesnt require the value exists, but removes it if it does. The overload taking an iterator requires
-                 *  the iterator is valid.
+                 *  The overload taking an item doesn't require the value exists, but removes it if it does.
+                 *  The overload taking an iterator requires the iterator is valid.
                  *
                  *  @see RemoveIf ()
                  */

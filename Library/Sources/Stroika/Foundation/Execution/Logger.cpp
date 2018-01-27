@@ -396,7 +396,7 @@ Logger::SysLogAppender::~SysLogAppender ()
 void Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
     DbgTrace (L"SYSLOG: %s: %s", DefaultNames<Logger::Priority> ().GetName (logLevel), message.c_str ());
-    int sysLogLevel = LOG_NOTICE; // doesnt matter cuz assert error if hit
+    int sysLogLevel = LOG_NOTICE; // doesn't matter cuz assert error if hit
     switch (logLevel) {
         case Priority::eDebug:
             sysLogLevel = LOG_DEBUG;

@@ -24,7 +24,7 @@
  *
  *      @todo   add demo project so shows how to use (cleaned up versions of the regtest code)
  *              Maybe something using bignums (dont exist yet) and the multithreaded threadpool
- *              mapper (doesnt exist yet) - showing how to run multiple IsPrime's at a time in the
+ *              mapper (doesn't exist yet) - showing how to run multiple IsPrime's at a time in the
  *              context of this mapping stuff.
  *
  *      @todo   Consider that we COULD implement something like http://underscorejs.org/#pluck

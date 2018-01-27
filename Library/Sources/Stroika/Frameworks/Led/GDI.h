@@ -1469,7 +1469,7 @@ namespace Stroika {
             @CLASS:         Led_Tablet
             @DESCRIPTION:   <p>A pointer to a @'Led_Tablet_' structure. These pointers are used throughout Led.</p>
                 <p>In versions of Led prior to Led 3.0 - this typedef refered directly to a Mac GrafPort or MFC CDC.</p>
-                <p>Now it refers to a structure which wraps those lower level concepts (and doesnt depend on MFC anymore).</p>
+                <p>Now it refers to a structure which wraps those lower level concepts (and doesn't depend on MFC anymore).</p>
             */
             using Led_Tablet = Led_Tablet_*;
 

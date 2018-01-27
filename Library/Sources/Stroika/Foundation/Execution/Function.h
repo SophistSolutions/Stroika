@@ -28,7 +28,7 @@
 
 /// NOT SURE WHAT's GOING ON. Seems like my bug, but I dont fully
 /// understand
-/// doesnt seem needed with msvc, but is with gcc/clang++
+/// doesn't seem needed with msvc, but is with gcc/clang++
 #ifndef qFoundation_Execution_Function_OperatorForwardNeedsRefBug
 #define qFoundation_Execution_Function_OperatorForwardNeedsRefBug 1
 #endif

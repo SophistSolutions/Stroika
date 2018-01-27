@@ -18,7 +18,7 @@
  *              pointers. It may be better to use a doubly linked list of Chunks? Unsure. Or maybe a tree (stl map)
  *              of chunks, so you can insert/remove them more easily.
  *
- *              The Led (vector Chunk*) doesnt work well as you append lots of data to the end of the sequence (realloc).
+ *              The Led (vector Chunk*) doesn't work well as you append lots of data to the end of the sequence (realloc).
  *
  *              DoublyLinkedList of chunks with cache for some 'central' point can allow you to take advantage of typical
  *              locality of reference (searching/udpating in an area), and still have the performance benefits of no

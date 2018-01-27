@@ -375,7 +375,7 @@ sub	SetDefaultForCompilerDriver_
 				$runtimeStackProtectorFlag = true;
 			}
 			if (trim (`uname -r`) eq "4.4.0-43-Microsoft") {
-				#LEAVE empty default, cuz for this version of WSL, asan doesnt work - insufficient procfs support
+				#LEAVE empty default, cuz for this version of WSL, asan doesn't work - insufficient procfs support
 			}
 			elsif ($sanitizerFlags eq "") {
 				$sanitizerFlags = "address,undefined";

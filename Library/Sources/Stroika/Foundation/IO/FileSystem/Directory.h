@@ -60,7 +60,7 @@ namespace Stroika {
                      *  Checks if the directory named in the object CTOR exists. If yes, this has no effect.
                      *  if no, the directory is created.
                      *
-                     *  AssureExists fails if doesnt exist at the end, or is not a directory (unclear if its a directry but not accessible)
+                     *  AssureExists fails if doesn't exist at the end, or is not a directory (unclear if its a directry but not accessible)
                      */
                     nonvirtual void AssureExists (bool createParentComponentsIfNeeded = true) const;
 

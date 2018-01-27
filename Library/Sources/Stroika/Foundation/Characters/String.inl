@@ -616,7 +616,7 @@ namespace Stroika {
             }
             inline bool String::Equals (const String& rhs, CompareOptions co) const
             {
-                // OK in two steps because length test doesnt affect correctness - just performance
+                // OK in two steps because length test doesn't affect correctness - just performance
                 //
                 // @todo - reconsider and test - not sure this helps performance
                 if (GetLength () != rhs.GetLength ()) {

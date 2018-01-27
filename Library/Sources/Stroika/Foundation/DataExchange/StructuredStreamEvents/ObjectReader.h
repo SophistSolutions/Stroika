@@ -256,7 +256,7 @@ namespace Stroika {
                          *  This function also works (but is generally unneeded for) any of the types defined in
                          *  @see ResetToDefaultTypeRegistry () (int, short, String, etc).
                          *
-                         *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
+                         *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesn't
                          *  fit what the deserailizer expects.
                          *
                          *  @see MakeClassReader

@@ -34,7 +34,7 @@
  *      @todo   See if its possible to support other 'value' return types. Sterl thinks
  *              and there is some evidence to suppor tthis - that there should be w way to get back
  *              strings (for stuff like disk name, or process name). And the API seems to ahve some
- *              support for this, but getformattedvalue doesnt seem to support it?
+ *              support for this, but getformattedvalue doesn't seem to support it?
  *
  *      @todo   Consider if we should support multiple objects at a time.
  *

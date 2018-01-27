@@ -279,7 +279,7 @@ namespace Stroika {
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
                 Execution::ThreadPool fThreads_;
 
-                // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesnt try to launch
+                // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
                 // new tasks into an already destroyed threadpool.
                 IO::Network::Listener                                 fListener_;
                 Execution::Synchronized<list<shared_ptr<Connection>>> fActiveConnections_;

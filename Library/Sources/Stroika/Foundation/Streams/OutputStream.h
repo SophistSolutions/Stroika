@@ -30,7 +30,7 @@
  *              zero write, and it assuming no seek past EOF makes implementations simpler, and
  *              definition more consistent (read).
  *
- *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesnt change EOF. EOF
+ *      @todo   Add abiiliy to SetEOF (); You can SEEK, but if you seek backwards, and start writing - that doesn't change EOF. EOF
  *              remains fixed as max written to. DODUCMNET THIS (for text and binary) - and provide a SetEOF() method
  *              (maybe just for seekable streams)? Maybe add rule that SetEOF () can only go backwards (shorten). Then call
  *              PullBackEOF() or RestrictEOF() or RemovePast(); OR ResetEOFToCurrentPosiiton(). Later maybe best API.

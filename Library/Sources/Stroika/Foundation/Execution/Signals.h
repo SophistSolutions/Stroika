@@ -45,7 +45,7 @@ namespace Stroika {
              *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
              *
              *  This function returns an errno error number.
-             *      o   if the error number is ESRCH, this just menans the target thread doesnt
+             *      o   if the error number is ESRCH, this just menans the target thread doesn't
              *          exist anymore, whcih can easily happen (race) - like if you are sending an abort
              *          to a thread but it exits first.
              *

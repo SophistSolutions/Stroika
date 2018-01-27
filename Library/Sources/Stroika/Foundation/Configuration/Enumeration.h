@@ -234,7 +234,7 @@ namespace Stroika {
 
             private:
                 // SHOULD BE ABLE TO USE CONST HERE qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
-                // but then one CTOR doesnt compile
+                // but then one CTOR doesn't compile
                 //const EnumNamesHolderType_   fEnumNames_;
                 EnumNamesHolderType_ fEnumNames_;
             };

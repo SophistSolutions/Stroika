@@ -37,7 +37,7 @@ namespace Stroika {
                      *          http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
                      *
                      *          There are several variations. Please also note that http://jsonlint.com/ disallows
-                     *          json top level values other than array or object, but that doesnt appear to follow
+                     *          json top level values other than array or object, but that doesn't appear to follow
                      *          the standard as specified in ECMA.
                      *
                      *  Another good summary is http://json.org/

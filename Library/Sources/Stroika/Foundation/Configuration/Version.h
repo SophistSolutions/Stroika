@@ -52,7 +52,7 @@ namespace Stroika {
              *      finalBuild(bool)
              *
              *  We provide support to automatically map this notion to a 32-bit version# which microsoft uses.
-             *  Note - this mapping is not totally 1-1, and doesnt correspond to any documented version# strategy defined
+             *  Note - this mapping is not totally 1-1, and doesn't correspond to any documented version# strategy defined
              *  by MSFT (as near as I can tell they have none - its just 4 bytes for them).
              *
              *  @see Stroika_Make_FULL_VERSION for the mapping

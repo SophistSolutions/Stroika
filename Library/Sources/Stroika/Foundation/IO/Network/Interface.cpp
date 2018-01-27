@@ -84,7 +84,7 @@ namespace Stroika {
 
 #if qPlatform_Linux
 // Hack for centos5 support:
-//      Overload with linux version so other one wins, but this gets called if other doesnt exist
+//      Overload with linux version so other one wins, but this gets called if other doesn't exist
 //      TRY --LGP 2015-05-19
 template <typename HACK = int>
 static __inline__ __u32 ethtool_cmd_speed (const struct ethtool_cmd* ep, HACK i = 0)

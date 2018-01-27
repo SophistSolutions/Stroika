@@ -285,7 +285,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  A Sequence<T> doesnt generally require a comparison for individual elements
+                 *  A Sequence<T> doesn't generally require a comparison for individual elements
                  *  be be defined, but obviously to compare if the containers are equal, you must
                  *  compare the individual elements (at least sometimes).
                  *

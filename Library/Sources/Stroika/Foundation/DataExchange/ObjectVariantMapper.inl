@@ -629,7 +629,7 @@ namespace Stroika {
                 }
                 {
                     // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
-                    // If you ever need to avoid it (I dont see how because this mapper doesnt work with circular data structures)
+                    // If you ever need to avoid it (I dont see how because this mapper doesn't work with circular data structures)
                     // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
                     for (auto i : fields) {
                         // dont need to register the type mapper if its specified as a field
@@ -701,7 +701,7 @@ namespace Stroika {
                 }
                 {
                     // Assure for each field type is registered. This is helpfull 99% of the time the assert is triggered.
-                    // If you ever need to avoid it (I dont see how because this mapper doesnt work with circular data structures)
+                    // If you ever need to avoid it (I dont see how because this mapper doesn't work with circular data structures)
                     // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
                     for (auto i : fields) {
                         // dont need to register the type mapper if its specified as a field

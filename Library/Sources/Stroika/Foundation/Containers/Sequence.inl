@@ -298,7 +298,7 @@ namespace Stroika {
                 _SafeReadWriteRepAccessor<_IRep> tmp = {this};
                 _IRep*                           ww  = nullptr; // lazy _GetWriteableRep... in case we dont need
 #if 0
-                // faster but doesn't work if container doesnt have 'Apply' method - like vector
+                // faster but doesn't work if container doesn't have 'Apply' method - like vector
                 s.Apply ([&ww] (const T & item) {
                     if (ww == nullptr) {
                         ww = &tmp._GetWriteableRep ();

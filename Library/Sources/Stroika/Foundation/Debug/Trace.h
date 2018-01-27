@@ -163,7 +163,7 @@ namespace Stroika {
              *      Debug::TraceContextBumper ctx (L"OptionsFile::ReadRaw", L"readfilename=%s", GetReadFilePath_ ().c_str ());
              *      \endcode
              *
-             *      Generates log output (assuming ReadRaw is quick and doesnt do more DbgTrace calls):
+             *      Generates log output (assuming ReadRaw is quick and doesn't do more DbgTrace calls):
              *          <OptionsFile::ReadRaw (readfilename=C:\Users\Lewis\AppData\Local\Temp\MyModule.json)/>
              *
              *  \par Example Usage

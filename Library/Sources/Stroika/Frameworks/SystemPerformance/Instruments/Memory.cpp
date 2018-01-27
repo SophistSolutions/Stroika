@@ -266,7 +266,7 @@ namespace {
                         nFound += ReadVMStatLine_ (&pgfault, kpgfaultLabel_, line);
                         // Unsure if this should be pgpgout or pgpgout, or none of the above. On a system with no swap, I seem to get both happening,
                         // which makes no sense
-                        nFound += ReadVMStatLine_ (&pgpgout, kpgpgoutLabel_, line); // tried pgpgout but I dont know what it is but doesnt appear to be pages out - noneof this well documented
+                        nFound += ReadVMStatLine_ (&pgpgout, kpgpgoutLabel_, line); // tried pgpgout but I dont know what it is but doesn't appear to be pages out - noneof this well documented
                         nFound += ReadVMStatLine_ (&updateResult->fPaging.fMajorPageFaultsSinceBoot, kpgmajfaultLabel_, line);
                         if (nFound >= 3) {
                             break; // avoid reading rest if all found

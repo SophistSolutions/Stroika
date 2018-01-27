@@ -143,7 +143,7 @@ namespace Stroika {
             {
 #if 1
                 // no where near enough, but a start...
-                // IsIterableOfT<T>::value would be closer, but until we fix the SFINAE bug with that - that it doesnt compile instead of returning false - we msut use has_beginend
+                // IsIterableOfT<T>::value would be closer, but until we fix the SFINAE bug with that - that it doesn't compile instead of returning false - we msut use has_beginend
                 return has_beginend<T>::value;
 #else
                 // about right?

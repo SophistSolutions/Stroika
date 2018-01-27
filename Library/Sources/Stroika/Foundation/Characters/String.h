@@ -62,7 +62,7 @@
  *              (or can be) safe, and is just wildly helpful, so proabby keep that. But document rationale!
  *              (well - .clear() is also mutaotr and operator= obvously).
  *
- *      @todo   EXPLAIN why InsertAt () returns string and Append() doesnt! Or - change it!
+ *      @todo   EXPLAIN why InsertAt () returns string and Append() doesn't! Or - change it!
  *              Basic idea is that append is SO convnentit (+=) - that we just must support that
  *              and it can be done safely.
  *

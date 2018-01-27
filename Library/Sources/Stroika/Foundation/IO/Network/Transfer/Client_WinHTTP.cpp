@@ -255,7 +255,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
 RetryWithNoCERTCheck:
 
     //
-    // REALLY - dont want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesnt do rest of fetch...
+    // REALLY - dont want these flags here - but have a CALLBACK whcih checks arbitrary rules and THROWS if unhappy - and doesn't do rest of fetch...
     //      TODO!!!
     //
     // See https://stroika.atlassian.net/browse/STK-442

@@ -16,7 +16,7 @@
  *
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *                  (one bad implemnation that doesnt even do sorting yet, and regtests so bad they dont notice)
+ *                  (one bad implemnation that doesn't even do sorting yet, and regtests so bad they dont notice)
  *
  *
  *  TODO:
@@ -24,7 +24,7 @@
  *
  *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
  *
- *      @todo   Improve test cases, and notice that sorting doesnt actually work for sorted-linked-list.
+ *      @todo   Improve test cases, and notice that sorting doesn't actually work for sorted-linked-list.
  *
  *      @todo   Implement using redblback trees.
  *

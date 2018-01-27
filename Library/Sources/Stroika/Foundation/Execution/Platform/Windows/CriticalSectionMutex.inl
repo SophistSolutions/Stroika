@@ -33,7 +33,7 @@ namespace Stroika {
                     {
                         // EnterCriticalSection supports recursive mutex, but this class non-recursive.
                         // If we ever did a call where the owning thread already was this, that would deadlock forever
-                        // in a non-recursive mutex, but be OK here. Assert to assure that doesnt happen.
+                        // in a non-recursive mutex, but be OK here. Assert to assure that doesn't happen.
                         Require (fCritSec_.OwningThread != ::GetCurrentThread ());
                         ::EnterCriticalSection (&fCritSec_);
                     }

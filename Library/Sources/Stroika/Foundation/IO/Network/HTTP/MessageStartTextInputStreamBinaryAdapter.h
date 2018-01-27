@@ -24,7 +24,7 @@ namespace Stroika {
                      * consume a BinaryStream (pre-seeked to the right place) - as a series of characters.
                      *
                      * This code respects the format defined in http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
-                     * and doesnt read more than needed (no pre-buffering).
+                     * and doesn't read more than needed (no pre-buffering).
                      * This lack of pre-buffering (peeking) is critical so that the underlying binary stream
                      * only reads the minimal amount needed and will be placed at the right position when handed
                      * to the next process to interpret.

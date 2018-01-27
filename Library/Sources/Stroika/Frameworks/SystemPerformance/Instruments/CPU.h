@@ -95,7 +95,7 @@ namespace Stroika {
                          *  \note   This is scaled to the number of CPUs, so a load average of 4 on a 4 CPU system is like
                          *          would produce a 'RunQLength' of 1.
                          *
-                         *  \note   This is very similar to Windows System \ Processor Queue Length, except that that doesnt take
+                         *  \note   This is very similar to Windows System \ Processor Queue Length, except that that doesn't take
                          *          into account running threads, and fRunQLength does.
                          *
                          *  \note   We chose to define this differently than 'windows Processor Queue Length' and UNIX 'loadave' so that

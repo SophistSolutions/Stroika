@@ -43,7 +43,7 @@ namespace {
             }
             return CIDR{ia, nBits};
         }
-        Execution::Throw (Execution::StringException (L"CIDR format exception: doesnt contain a / character"));
+        Execution::Throw (Execution::StringException (L"CIDR format exception: doesn't contain a / character"));
     }
 }
 

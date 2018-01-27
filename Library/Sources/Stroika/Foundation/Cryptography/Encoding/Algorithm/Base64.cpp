@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Memory;
  *  IMPLEMENTATION NOTES:
  *
  *      The public domain (private) code in this file - is designed to operate in a STREAM mode. I've preserved that
- *  internally, evne though my current API doesnt work that way, because we will soon support a STREAM based API here,
+ *  internally, evne though my current API doesn't work that way, because we will soon support a STREAM based API here,
  *  and that will fit perfectly.
  *
  *  @see    http://libb64.sourceforge.net/ - which explains the design of the routines, and the queer nested loop / switch

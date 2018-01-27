@@ -179,7 +179,7 @@ namespace Stroika {
                          *
                          *  I THINK The only quirk of this node is that
                          *      dyn:/foo.html gets parsed as HOST=EMPTY; relativeURL= foo.html; That makes sense
-                         *      but doesnt apper to conform to spec for urls (rfs) above. Research/analyze...
+                         *      but doesn't apper to conform to spec for urls (rfs) above. Research/analyze...
                          */
                         eStroikaPre20a50BackCompatMode,
                     };
@@ -310,8 +310,8 @@ namespace Stroika {
                 public:
                     /**
                      *  Note this does NOT contain the '/' separating the hostname from the relative path,
-                     *  so it typically doesnt start with a '/', but frequently contains them. It MAY legally
-                     *  start with a '/' because http://www.ietf.org/rfc/rfc1738.txt doesnt specifically prohibit this.
+                     *  so it typically doesn't start with a '/', but frequently contains them. It MAY legally
+                     *  start with a '/' because http://www.ietf.org/rfc/rfc1738.txt doesn't specifically prohibit this.
                      *
                      *  \note   This does not include the query string, if any.
                      *

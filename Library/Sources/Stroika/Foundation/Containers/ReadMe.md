@@ -49,5 +49,5 @@ Rejected Ideas
              2.    Its just a class of optimziations which makes sense for some backends. But other 
 				   optimizations make snese for other classes of backends. You can always retain a smartptr
 				   with OUR type of backend! So really can be added just for _Array<> impls. Note - this
-				   rationale doesnt work perfectly due to copy-by-values semantics with 'casts' but still
+				   rationale doesn't work perfectly due to copy-by-values semantics with 'casts' but still
 				   OK.

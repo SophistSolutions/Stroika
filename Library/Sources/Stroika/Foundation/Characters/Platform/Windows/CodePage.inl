@@ -281,7 +281,7 @@ namespace Stroika {
                     inline CodePage Win32PrimaryLangIDToCodePage (USHORT languageIdenifier)
                     {
                         /*
-                         *  I haven't found this stuff documented anyplace. Its hard to imagine that MSFT doesnt provide their own
+                         *  I haven't found this stuff documented anyplace. Its hard to imagine that MSFT doesn't provide their own
                          *  mapping routines! Anyhow - I got a start on this from some UNISCRIBE sample code, and have since
                          *  added on from educated guesswork.       -- LGP 2003-01-30
                          */

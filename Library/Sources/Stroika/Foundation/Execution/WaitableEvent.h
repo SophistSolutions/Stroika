@@ -124,7 +124,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \note   WaitableEvent () defaults to 'manual reset' - because it often doesnt matter how the waitable event gets reset (because it never does)
+                 *  \note   WaitableEvent () defaults to 'manual reset' - because it often doesn't matter how the waitable event gets reset (because it never does)
                  *          and this (manual reset) is the least surprising behavior.
                  */
                 WaitableEvent (ResetType resetType = eManualReset);

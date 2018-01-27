@@ -28,7 +28,7 @@ namespace Stroika {
         namespace Execution {
 
             /**
-             *  This class follows the Mutex concept - syntactically - but doesnt actually perform locking.
+             *  This class follows the Mutex concept - syntactically - but doesn't actually perform locking.
              *
              *  Sometimes you want to write code that can use locks or not. Use of the NullMutex allows the syntax of
              *  locking to be present, but effectively all compiled (even constexpr) away.

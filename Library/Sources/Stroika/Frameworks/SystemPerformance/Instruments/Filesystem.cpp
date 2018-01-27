@@ -782,7 +782,7 @@ namespace {
                         case DRIVE_CDROM:
                             v.fDeviceKind = BlockDeviceKind::eReadOnlyEjectable;
                             break;
-                        default:; /*ignored - if it doesnt map or error - nevermind */
+                        default:; /*ignored - if it doesn't map or error - nevermind */
                     }
                 }
 

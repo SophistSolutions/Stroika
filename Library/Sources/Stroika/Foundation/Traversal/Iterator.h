@@ -65,7 +65,7 @@
  *                      constant factor is big enough - 10-100-1000? - that still could be relevant pragmatically.
  *
  *                      The biggest challenge is preserving the existing stafety and patch semantics generically,
- *                      in light of update during iteration, and making sure for uses where that doesnt help its
+ *                      in light of update during iteration, and making sure for uses where that doesn't help its
  *                      not allowed to hurt.
  *
  *              (2)     special case common combinations. For example - at the point in the code where you have:
@@ -79,7 +79,7 @@
  *                          then peek and cheat...
  *                      }
  *                      Maybe when the iterator is constructed - it checks for a couple important types
- *                      and sets a flag, so the only cost when this doesnt work is checking that bool flag.
+ *                      and sets a flag, so the only cost when this doesn't work is checking that bool flag.
  *                      And the benefit in the more common case is you avoid the virtual function call! so the it++ can be
  *                      inlined (a big win oftne times).
  */

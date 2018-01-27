@@ -36,7 +36,7 @@
  *              and Distinct and take lambda
  *
  *      @todo   Document (which -not all) Linq-like functions only pull as needed from the
- *              original source, and which force a pull (like where doesnt but max does).
+ *              original source, and which force a pull (like where doesn't but max does).
  *
  *      @todo   Add more 'linq' overloads, like groupBy taking differnt kinds of compare functions, and field selectors.
  *
@@ -60,7 +60,7 @@ namespace Stroika {
             using Configuration::ArgByValueType;
 
 /*
-             *  COULD possibly fix this by - when we have active iterators - just set them to 'at end'. But I guess that doesnt fix the tracking?
+             *  COULD possibly fix this by - when we have active iterators - just set them to 'at end'. But I guess that doesn't fix the tracking?
              *  Maybe need actauly move them from one container rep to the other (we do in other cases have code for this).
              *
              *      https://stroika.atlassian.net/browse/STK-570
@@ -185,7 +185,7 @@ namespace Stroika {
              *  *Design Note*:
              *      Chose NOT to include an Equals (Iterable<T> rhs) const method here, but instead duplicatively in
              *      each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
-             *      importantly because it doesnt appear to me to make sense so say that a Stack<T> == Set<T>, even if
+             *      importantly because it doesn't appear to me to make sense so say that a Stack<T> == Set<T>, even if
              *      their values were the same.
              *
              *      Also, Equals() meaning is just wrong if you implement it the only way you can for an Iterable,

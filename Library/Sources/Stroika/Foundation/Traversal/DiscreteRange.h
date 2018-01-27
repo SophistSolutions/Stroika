@@ -33,7 +33,7 @@
  *
  *      @todo   Understand what you must do DiscreteRange<int> (1,10) instead of just DiscreteRange (1,10),
  *              and if something reasonable to be done about it - do so (compiler bug or ambiguity due to optional)
- *              or just that template inference of types doesnt work as well as I thought...
+ *              or just that template inference of types doesn't work as well as I thought...
  *
  *      @todo   GetNext() not quite right - using 'int'.
  *

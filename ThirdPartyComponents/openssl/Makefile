@@ -116,7 +116,7 @@ endif
 
 #ifeq (Unix,$(ProjectPlatformSubdir))
 #https://stroika.atlassian.net/browse/STK-527
-#	This hack doesnt appear needed right now, and isnt right in general, because it depeds if target OS uses pthreads or some other thread library
+#	This hack doesn't appear needed right now, and isnt right in general, because it depeds if target OS uses pthreads or some other thread library
 #CONFIG_ARGS+=	-lpthread
 #endif
 

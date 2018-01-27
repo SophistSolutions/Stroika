@@ -68,7 +68,7 @@ namespace Stroika {
              *  is all done after the start of main and before it completes.
              *
              *  \note   Since this object is in its 'default initialized' state with all zeros, it is safe to use before
-             *          the start of main (), and doesnt require the complicated inter-depependency managment of the
+             *          the start of main (), and doesn't require the complicated inter-depependency managment of the
              *          @ModuleInit code.
              */
             template <typename T>

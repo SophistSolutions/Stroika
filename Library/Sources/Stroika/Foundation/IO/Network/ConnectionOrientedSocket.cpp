@@ -100,7 +100,7 @@ namespace {
                     };
                     if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
                         if (intoStart == nullptr) {
-                            return 1; // dont know how much, but doesnt matter, since read allows returning just one byte if thats all thats available
+                            return 1; // dont know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
                         }
                         return Read (intoStart, intoEnd);
                     }

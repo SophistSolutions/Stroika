@@ -146,7 +146,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
 #if 0
     if (result.fID.IsMissing ()) {
         try {
-            // Not a good approach because this returns a zone abbreviation, which doesnt uniquely define a zone.
+            // Not a good approach because this returns a zone abbreviation, which doesn't uniquely define a zone.
             // For example, CDT could be Cocos Islands Time, or Central Daylight Time (North America) etc (see http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
             String  tzAbbrev = Execution::ProcessRunner (L"date +%Z").Run (String ()).Trim ();
             using   Containers::Mapping;

@@ -86,7 +86,7 @@ bool IsRunningUnderValgrind ();
  *      .... thread 2 writes; // all with locks
  *      wait til thread 1/2 done;
  *      Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(var);
- *      read var;   // helgrind doesnt know the thread completion is essentially a barrier
+ *      read var;   // helgrind doesn't know the thread completion is essentially a barrier
  *      Stroika_Foundation_Debug_ValgrindDisableHelgrind_END(var);
  */
 #define Stroika_Foundation_Debug_ValgrindDisableHelgrind_START(X) \
@@ -100,7 +100,7 @@ bool IsRunningUnderValgrind ();
 #endif
 
 /**
- *  If the current implementation of helgrind doesnt recognize std::atomic being atomic, disable warnings about those variables
+ *  If the current implementation of helgrind doesn't recognize std::atomic being atomic, disable warnings about those variables
  */
 #define Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic(X) \
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)

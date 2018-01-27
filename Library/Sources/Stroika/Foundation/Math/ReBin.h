@@ -165,7 +165,7 @@ namespace Stroika {
                  *  As a future exercise, we may want to experiment  with different assumptions (like linear
                  *  up/down according to prev and successive bins?).
                  *
-                 *  \note   The bucket index really doesnt mean much of anything (if you use the SRC_DATA_DESCRIPTOR
+                 *  \note   The bucket index really doesn't mean much of anything (if you use the SRC_DATA_DESCRIPTOR
                  *          variant of the API), except that its used to address (name) buckets.
                  *          Buckets underlying X-Range need not vary monotonically with bucket index
                  *          (though beware that BasicDataDescriptor assumes this).

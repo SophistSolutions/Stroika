@@ -120,7 +120,7 @@ namespace Stroika {
                  *
                  *  Equals is commutative().
                  *
-                 *  A DataHyperRectangle<T, INDEXES...> doesnt generally require a comparison for individual elements
+                 *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
                  *  be be defined, but obviously to compare if the containers are equal, you must
                  *  compare the individual elements (at least sometimes).
                  *

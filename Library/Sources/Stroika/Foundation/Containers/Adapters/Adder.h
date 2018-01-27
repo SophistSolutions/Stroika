@@ -21,7 +21,7 @@
  *
  *  DONT like how its done - with dependencies - but very helpful.
  *  Dont want to add to Iterable (though that would make some sense) - cuz:
- *       *STL stuff doesnt work with that
+ *       *STL stuff doesn't work with that
  *       *Up til now - Iterable has been all about readonly operations. Could have UpdatableIterable intermediate class...
  *
  *

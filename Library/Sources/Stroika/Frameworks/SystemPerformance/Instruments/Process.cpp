@@ -383,7 +383,7 @@ namespace {
      *      >   fWorkingSetSize
      *
      *  Fragile or broken:
-     *      >   fPrivateBytes   doesnt work on RedHat5 - must use /proc/PID/map (see http://stackoverflow.com/questions/1401359/understanding-linux-proc-id-maps)
+     *      >   fPrivateBytes   doesn't work on RedHat5 - must use /proc/PID/map (see http://stackoverflow.com/questions/1401359/understanding-linux-proc-id-maps)
      */
     struct CapturerWithContext_Linux_ : CapturerWithContext_COMMON_ {
         struct PerfStats_ {
@@ -927,7 +927,7 @@ namespace {
             }
 
             // MSVC SILLY WARNING ABOUT USING swscanf_s
-            // (warning doesnt appear to check if we have mismatch between types and format args provided.
+            // (warning doesn't appear to check if we have mismatch between types and format args provided.
             //      --LGP 2015-01-07
             DISABLE_COMPILER_MSC_WARNING_START (4996)
             int                ignoredInt{};

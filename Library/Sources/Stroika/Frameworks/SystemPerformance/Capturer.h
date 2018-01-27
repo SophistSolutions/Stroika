@@ -59,7 +59,7 @@ namespace Stroika {
              *  keep up with and maintain all the measurements in question.
              *
              *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
-             *  if its pattern doesnt meet your needs.
+             *  if its pattern doesn't meet your needs.
              */
             class Capturer {
             public:

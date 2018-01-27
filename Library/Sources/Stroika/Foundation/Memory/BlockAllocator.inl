@@ -226,7 +226,7 @@ namespace Stroika {
                  *
                  *  Use atomic_load to guarantee the value not loaded from cache line not shared across threads.
                  */
-                static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesnt change size");
+                static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesn't change size");
                 void* next = reinterpret_cast<const atomic<void*>*> (p)->load (memory_order_acquire);
                 Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
                 return result;
@@ -274,7 +274,7 @@ namespace Stroika {
                  *
                  *  Use atomic to guarantee the value not pushed to RAM so shared across threads.
                  */
-                static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesnt change size");
+                static_assert (sizeof (void*) == sizeof (atomic<void*>), "atomic doesn't change size");
                 void* newHead = p;
                 reinterpret_cast<atomic<void*>*> (newHead)->store (prevHead, memory_order_release);
                 Verify (sHeadLink_.exchange (newHead, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there

@@ -380,7 +380,7 @@ protected:
             return srcIt;
         }
         else {
-            return Read (intoStart, intoEnd); // safe because implemtation of Read () in this type of stream doesnt block
+            return Read (intoStart, intoEnd); // safe because implemtation of Read () in this type of stream doesn't block
         }
     }
     virtual SeekOffsetType GetReadOffset () const override

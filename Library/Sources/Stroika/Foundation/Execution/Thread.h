@@ -572,7 +572,7 @@ namespace Stroika {
                  *  inside that thread, so that at the next cancelation point, it will throw the InterruptedException.
                  *
                  *  When InterruptedException is thrown, that thread local storage flag is cleared. Often code will catch and rethrow
-                 *  the exception, but the Interrupt state doesnt perisist past when its first handled (this is in stark contrast to Abort).
+                 *  the exception, but the Interrupt state doesn't perisist past when its first handled (this is in stark contrast to Abort).
                  *
                  *  If the InterruptException is not handled, it will terminate the thread  (go to the done state).
                  *
@@ -644,7 +644,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \brief  Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
+                 *  \brief  Abort () the thread, and then WaitForDone () - but if doesn't finish fast enough, send extra aborts (aka AbortAndWaitForDoneUntil (timeout + GetTickCount))
                  *
                  *  \note   This frequently (and nearly always in a destructor) - should be preceded by:
                  *      \code
@@ -661,7 +661,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \brief  Abort () the thread, and then WaitForDone () - but if doesnt finish fast enough, send extra aborts
+                 *  \brief  Abort () the thread, and then WaitForDone () - but if doesn't finish fast enough, send extra aborts
                  *
                  *   \note  Note that its legal to call AbortAndWaitForDone on a thread in any state.
                  *          Some may just have no effect
@@ -926,7 +926,7 @@ namespace Stroika {
              */
             struct Thread::Statistics {
                 /**
-                 *  These are the thread objects in the status 'running'. It doesnt count ones that exist,
+                 *  These are the thread objects in the status 'running'. It doesn't count ones that exist,
                  *  or Thread objects (which could be null or completed)
                  */
                 Traversal::Iterable<IDType> fRunningThreads;

@@ -119,7 +119,7 @@ namespace Stroika {
             public:
                 /*
                  *  Note - you may want to pass in a specific queue object, to require use of a particular concrete implementation
-                 *  for the Queue (such as one that doesnt allocate memory). But when contructing a blocking Q (even with another Q)
+                 *  for the Queue (such as one that doesn't allocate memory). But when contructing a blocking Q (even with another Q)
                  *  the 'useQueue' must be empty.
                  */
                 BlockingQueue () = default;

@@ -375,7 +375,7 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
 
 @see also qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy - which provides another possible workaround 
 http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
-that doesnt work (duplicate definitions - works in a single file but not across multiple files)
+that doesn't work (duplicate definitions - works in a single file but not across multiple files)
 
 */
 #ifndef qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
@@ -555,7 +555,7 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #endif
 
 /**
- * Issue doesnt affect Ubuntu 16.04, but appears to affect any system using libc 2.26 or later with g++5
+ * Issue doesn't affect Ubuntu 16.04, but appears to affect any system using libc 2.26 or later with g++5
  */
 #ifndef qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
 
@@ -1293,7 +1293,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
-// doesnt seem any portable way todo this, and not defined in C++ language
+// doesn't seem any portable way todo this, and not defined in C++ language
 // Note - this doesn't appear in http://en.cppreference.com/w/cpp/language/attributes - as of 2016-06-22
 #if defined(__clang__) || defined(__GNUC__)
 #define dont_inline __attribute__ ((noinline))

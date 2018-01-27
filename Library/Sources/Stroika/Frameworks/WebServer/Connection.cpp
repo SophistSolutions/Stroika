@@ -122,7 +122,7 @@ bool Connection::ReadAndProcessMessage ()
     Debug::TraceContextBumper ctx (L"Connection::ReadAndProcessMessage");
 #endif
     constexpr bool kSupportHTTPKeepAlives_{false}; // @todo - support - now structured so maybe not too hard -- LGP 2016-09-02
-    // @todo but be sure REsponse::End () doesnt close socket - just flushes response!
+    // @todo but be sure REsponse::End () doesn't close socket - just flushes response!
 
     ReadHeaders (); // bad API. Must rethink...
 

@@ -227,7 +227,7 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *      Synchronized<Thread::Ptr> sharedData;
-                 *      sharedData.load ().AbortAndWaitTilDone ();  // copies thread and doesnt maintain lock during wait
+                 *      sharedData.load ().AbortAndWaitTilDone ();  // copies thread and doesn't maintain lock during wait
                  *      sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
                  *      \endcode
                  */
@@ -311,7 +311,7 @@ namespace Stroika {
 
             public:
                 // @todo - DOCUMENT that this RELEASES the read lock, so whatever values you checked need to be RECHECEKD.
-                // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesnt yet)
+                // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesn't yet)
                 // RE-LCOK the shared_lock
                 nonvirtual WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference)
                 {

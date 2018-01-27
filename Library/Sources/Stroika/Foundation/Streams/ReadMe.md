@@ -28,7 +28,7 @@ Design Overview
        logic are in those subclasses.
  
    *   Stream APIs are intrinsically blocking. This makes working with them simpler, since code
-       using Streams doesnt need to be written to handle both blocking and non-blocking behavior.
+       using Streams doesn't need to be written to handle both blocking and non-blocking behavior.
 	   You can always use the stack to maintain the context of your operation (clearer than closures)
 	   and never be surprised when a 'mode' is set on a stream making it non-blocking.
  

@@ -175,7 +175,7 @@ String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
         }
         return String::FromSDKString (SDKString (buf.begin (), buf.begin () + n));
 #elif qPlatform_Windows
-        // @todo WRONG semantics if file doesnt exist. Wed should raise an exception here.
+        // @todo WRONG semantics if file doesn't exist. Wed should raise an exception here.
         // But OK if not a shortcut. THEN just rutn the givne file
         //
         //
@@ -244,7 +244,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
 {
     try {
 #if qPlatform_POSIX
-        //  We used to call canonicalize_file_name() - but this doesnt work with AIX 7.1/g++4.9.2, and
+        //  We used to call canonicalize_file_name() - but this doesn't work with AIX 7.1/g++4.9.2, and
         //  according to http://man7.org/linux/man-pages/man3/canonicalize_file_name.3.html:
         //  The call canonicalize_file_name(path) is equivalent to the call:
         //      realpath(path, NULL)

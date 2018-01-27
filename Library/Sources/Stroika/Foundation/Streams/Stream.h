@@ -75,7 +75,7 @@ namespace Stroika {
               *         logic are in those subclasses.
               *
               *     o   Stream APIs are intrinsically blocking (except see InputStreamPtr<> and InputStreamPtr<>::ReadNonBlocking()).
-              *         This makes working with them much simpler, since code using Streams doesnt need to be written to handle
+              *         This makes working with them much simpler, since code using Streams doesn't need to be written to handle
               *         both blocking and non-blocking behavior, and be surprised when a 'mode' is set on a stream making it non-blocking.
               *
               *     o   Relationship with std iostream:

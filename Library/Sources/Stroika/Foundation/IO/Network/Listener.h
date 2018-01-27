@@ -66,7 +66,7 @@ namespace Stroika {
                      *  For 'backlog' - @see Socket::Listen
                      *
                      *  \note   DesignNote
-                     *          The reason the accept callback doesnt tell you which sockaddr returned is because you can find that with
+                     *          The reason the accept callback doesn't tell you which sockaddr returned is because you can find that with
                      *          sock.GetLocalAddress ()
                      */
                     Listener (const SocketAddress& addr, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog = 1);
