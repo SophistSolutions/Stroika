@@ -26,7 +26,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-/**
+            /**
              *  SpinLock and mutex can be nearly used interchangeably. Often types, users will want to define a typedef which selects
              *  the faster implementation.
              *
@@ -49,12 +49,26 @@ namespace Stroika {
               *
               * \note   ***Not Cancelation Point***
               *         SpinLock contains no cancelation points, and can be used interchangeably with mutex - just for the performance differences
+              *
+              * \note   From http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2013/n3690.pdf
+              *         1.10 Multi-threaded executions and data races [intro.multithread]
+              * 
+              *         "A synchronization operation without an associated memory location is a fence and
+              *         can be either an acquire fence, a release fence, or both an acquire and release fence"
+              *
+              *         Since a spinlock once acquired - can be used to assume assocated data (the data protected by the spinlock mutex)
+              *         is up to date with respect to other threads and acquire is needed on the lock. And to assure any changes made with
+              *         the lock are seen in other threads a release atomic_fence() is required on the unlock.
+              *
+              *         This is the DEFAULT behavior we provide with the default BarrierFlag - eReleaseAcquire
               */
             class SpinLock {
             public:
                 /**
                  *  @see std::atomic_thread_fence ()
                  *  @see std::memory_order
+                 *
+                 *  \note subtly - eReleaseAcquire means acquire on lock, and release on unlock. This is the natural default for a mutex.
                  */
                 enum class BarrierFlag {
                     eNoBarrier,

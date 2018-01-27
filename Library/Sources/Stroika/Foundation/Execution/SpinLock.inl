@@ -38,13 +38,21 @@ namespace Stroika {
 #endif
             inline bool SpinLock::try_lock ()
             {
-// Atomically set fLock to true and examine the previous value. If it was false, we
-// successfully gained the lock. If it was already true (someone else holds the lock),
-// we did NOT gain the lock, but we changed nothing. The fact that we changed nothing in the case where
-// we didn't gain the lock, is why this is not a race.
+                // Atomically set fLock to true and examine the previous value. If it was false, we
+                // successfully gained the lock. If it was already true (someone else holds the lock),
+                // we did NOT gain the lock, but we changed nothing. The fact that we changed nothing in the case where
+                // we didn't gain the lock, is why this is not a race.
 #if qStroika_FeatureSupported_Valgrind
                 VALGRIND_HG_MUTEX_LOCK_PRE (&fLock_, true);
 #endif
+                /*
+                 *  NOTE: I don't understand why memory_order_acquire is good enough here since if
+                 *  we make change we need to make sure its published to other threads.
+                 *
+                 *  But - the example on http://en.cppreference.com/w/cpp/atomic/atomic_flag_test_and_set shows
+                 *      while (std::atomic_flag_test_and_set_explicit (&lock, std::memory_order_acquire))
+                 *          ; // spin until the lock is acquired
+                 */
                 bool result = not fLock_.test_and_set (std::memory_order_acquire);
 #if qStroika_FeatureSupported_Valgrind
                 if (result) {
@@ -53,11 +61,7 @@ namespace Stroika {
 #endif
                 if (result) {
                     /*
-                     *  https://stroika.atlassian.net/browse/STK-494
-                     *
-                     *  According to http://www.boost.org/doc/libs/1_54_0/doc/html/atomic/usage_examples.html#boost_atomic.usage_examples.example_spinlock
-                     *  it makes sense to use memory_order_acquire, but that doesn't seem right, as the
-                     *  lock could protect reading or writing another memory area.
+                     *  See https://stroika.atlassian.net/browse/STK-494 for notes on why this is right (using eReleaseAcquire/memory_order_acquire)
                      */
                     switch (fBarrierFlag_) {
                         case BarrierFlag::eReleaseAcquire:
@@ -81,6 +85,7 @@ namespace Stroika {
             }
             inline void SpinLock::unlock ()
             {
+                // See notes in try_lock () for cooresponding thread_fence calls()
                 switch (fBarrierFlag_) {
                     case BarrierFlag::eReleaseAcquire:
                         std::atomic_thread_fence (std::memory_order_release);
@@ -91,7 +96,7 @@ namespace Stroika {
                     default:
                         break;
                 }
-// release lock
+                    // release lock
 #if qStroika_FeatureSupported_Valgrind
                 VALGRIND_HG_MUTEX_UNLOCK_PRE (&fLock_);
 #endif
