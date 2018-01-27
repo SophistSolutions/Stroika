@@ -122,7 +122,7 @@ namespace {
 
         s << f;
 
-        String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromAscii (s.str ());
+        String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
 
         bool useTrimTrailingZeros = options.GetTrimTrailingZeros ().Value (true);
         if (useTrimTrailingZeros) {

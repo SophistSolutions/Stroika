@@ -67,7 +67,7 @@ namespace {
         // characters
         //
         // then can clean this up
-        out.Write (String::FromAscii (QuoteForXML (v)));
+        out.Write (String::FromASCII (QuoteForXML (v)));
     }
     void PrettyPrint_ (const vector<VariantValue>& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {

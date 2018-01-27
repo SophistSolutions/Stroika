@@ -402,8 +402,12 @@ namespace Stroika {
                 /**
                  *  Create a String object from ascii text. This function requires that its arguments all ascii (no high-bit set)
                  */
-                static String FromAscii (const char* from);
-                static String FromAscii (const string& from);
+                static String FromASCII (const char* from);
+                static String FromASCII (const string& from);
+
+            public:
+                [[deprecated ("use FromASCII")]] static String FromAscii (const char* from) { return FromASCII (from); }
+                [[deprecated ("use FromASCII")]] static String FromAscii (const string& from) { return FromASCII (from); }
 
             private:
                 static _SharedPtrIRep mkEmpty_ ();

@@ -106,7 +106,7 @@ namespace {
                              macaddrBytes[0], macaddrBytes[1],
                              macaddrBytes[2], macaddrBytes[3],
                              macaddrBytes[4], macaddrBytes[5]);
-        return String::FromAscii (buf);
+        return String::FromASCII (buf);
     };
 }
 

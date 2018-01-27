@@ -223,7 +223,7 @@ String Network::GetPrimaryNetworkDeviceMacAddress ()
                              macaddrBytes[0], macaddrBytes[1],
                              macaddrBytes[2], macaddrBytes[3],
                              macaddrBytes[4], macaddrBytes[5]);
-        return String::FromAscii (buf);
+        return String::FromASCII (buf);
     };
 #if qPlatform_Linux
     // This counts on SIOCGIFHWADDR, which appears to be Linux specific
@@ -303,7 +303,7 @@ struct LinkMonitor::Rep_ {
                                  Address->Address.Ipv4.sin_addr.s_lh,
                                  Address->Address.Ipv4.sin_addr.s_impno);
             LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
-            rep->SendNotifies (lc, String (), String::FromAscii (ipAddrBuf));
+            rep->SendNotifies (lc, String (), String::FromASCII (ipAddrBuf));
         }
     }
 #endif
@@ -351,7 +351,7 @@ struct LinkMonitor::Rep_ {
                                     {
                                         char ipAddrBuf[1024];
                                         std::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
-                                        SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromAscii (ipAddrBuf));
+                                        SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromASCII (ipAddrBuf));
                                     }
                                 }
                                 rth = RTA_NEXT (rth, rtl);

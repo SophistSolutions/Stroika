@@ -2712,7 +2712,7 @@ public:
             if (filename_inzip[::strlen (filename_inzip) - 1] == '/') {
                 continue; // only list files - not directories for now
             }
-            result.Add (String::FromAscii (filename_inzip)); // not sure about codepage for conversion?
+            result.Add (String::FromASCII (filename_inzip)); // not sure about codepage for conversion?
         }
 #if 0
         // Keep temporarily, because we will want a traversal variant that captures this extra info

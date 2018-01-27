@@ -248,7 +248,7 @@ namespace Stroika {
             template <>
             String ToString (const std::thread::id& t)
             {
-                return String::FromAscii (Execution::FormatThreadID_A (t));
+                return String::FromASCII (Execution::FormatThreadID_A (t));
             }
         }
     }

@@ -541,7 +541,7 @@ String VariantValue::AsString_ () const
         case Type::eBLOB: {
             auto v = dynamic_cast<const TIRep_<Memory::BLOB>*> (fVal_.get ());
             AssertNotNull (v);
-            return String::FromAscii (Cryptography::Encoding::Algorithm::EncodeBase64 (v->fVal));
+            return String::FromASCII (Cryptography::Encoding::Algorithm::EncodeBase64 (v->fVal));
         }
         case Type::eInteger: {
             auto v = dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());

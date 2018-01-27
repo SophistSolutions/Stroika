@@ -47,7 +47,7 @@ namespace Stroika {
                 template <typename CRYTO_RESULT_TO_FORMAT_TYPE>
                 inline String Format_ (const CRYTO_RESULT_TO_FORMAT_TYPE& arr, const String*)
                 {
-                    return String::FromAscii (Format_ (arr, static_cast<const string*> (nullptr)));
+                    return String::FromASCII (Format_ (arr, static_cast<const string*> (nullptr)));
                 }
             }
 

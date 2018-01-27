@@ -214,7 +214,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
         String s = fn;
         char   buf[100];
         (void)std::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
-        s += String::FromAscii (buf);
+        s += String::FromASCII (buf);
         if (not Directory (s).Exists ()) {
             CreateDirectory (s, true);
             DbgTrace (L"AppTempFileManager::GetTempDir (): returning '%s'", s.c_str ());

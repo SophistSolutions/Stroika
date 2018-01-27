@@ -327,7 +327,7 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
     return resultWStr;
 }
 
-String String::FromAscii (const char* from)
+String String::FromASCII (const char* from)
 {
     RequireNotNull (from);
 // @todo FIX PERFORMANCE
@@ -339,7 +339,7 @@ String String::FromAscii (const char* from)
     return ASCIIStringToWide (from);
 }
 
-String String::FromAscii (const string& from)
+String String::FromASCII (const string& from)
 {
 // @todo FIX PERFORMANCE
 #if qDebug

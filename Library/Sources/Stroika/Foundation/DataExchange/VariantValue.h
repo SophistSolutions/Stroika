@@ -23,28 +23,6 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *  TODO:
- *
- *      @todo   XPath feature - https://github.com/SophistSolutions/Stroika/issues/110
- *
- *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
- *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
- *              Maybe Float2StringOptions is optional param to As<String> ()???
- *
- *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
- *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
- *              maps 'convertible' key and convertabile 'value' types.
- *
- *      @todo   Use Debug::AssertExternallySynchronizedLock<> to assure not used from multiple threads.
- *
- *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
- *              (mostly done but review)
- *
- *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
- *              warrent a careful review
- *
- *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
- *              Though probably not.
  */
 
 namespace Stroika {
@@ -57,7 +35,7 @@ namespace Stroika {
             using Time::Date;
             using Time::DateTime;
 
-/**
+            /**
              *  \def qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
              *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
              *      internal implementaiton detail, and may go away as an option.
@@ -102,6 +80,29 @@ namespace Stroika {
              *  the user users/requests.
              *
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *
+             *  TODO:
+             *
+             *      @todo   XPath feature - https://github.com/SophistSolutions/Stroika/issues/110
+             *
+             *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
+             *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
+             *              Maybe Float2StringOptions is optional param to As<String> ()???
+             *
+             *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
+             *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
+             *              maps 'convertible' key and convertabile 'value' types.
+             *
+             *      @todo   Use Debug::AssertExternallySynchronizedLock<> to assure not used from multiple threads.
+             *
+             *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
+             *              (mostly done but review)
+             *
+             *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
+             *              warrent a careful review
+             *
+             *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
+             *              Though probably not.
              */
             class VariantValue {
             private:
@@ -125,6 +126,18 @@ namespace Stroika {
             public:
                 /**
                  * \brief   Enumeration of variant types
+                 *
+                 *  \note Design Note
+                 *        It is important that ALL these types can easily and naturally be represented in JSON, but that
+                 *        the types here are a strict superset of the types that are native to JSON, so that roundtripping
+                 *        through JSON will not always produce the exact same object. For example, if you have BLOB, and write
+                 *        it in JSON, it might be represented as a string (or array of bytes). When you map back, its type will be
+                 *        that type its represented as. But - however its represented, if you say 
+                 *              T x;
+                 *              VariantValue v = x;
+                 *              VariantValue v2 = fromJSON (toJSON (v));
+                 *              v2 == v1;  // maybe false
+                 *              T y = v2.As<T> (); // will produce value x == y
                  */
                 enum class Type : uint8_t {
                     eNull,
