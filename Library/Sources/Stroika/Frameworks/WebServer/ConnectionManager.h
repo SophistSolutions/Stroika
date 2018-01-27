@@ -24,12 +24,7 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
- *
- *      o   Handle thread safety (very tricky - watch adding connection handlers!)
- *
- *      o   Do a single background thread first to run handlers.
- *
- *      o   THen do threadpooling.
+ *      o   REVIEW thread safety (very tricky - watch adding connection handlers!)
  */
 
 namespace Stroika {
@@ -48,7 +43,9 @@ namespace Stroika {
              *  and it will monitor the connections, and when any is ready with more input, it will assign the
              *  appropriate handler to handle the request, and produce the response.
              *
-             *  This doesn't CURRENTLY support keepalives.
+             *  TODO:
+             *      \note Connection (and therefore also ConnectionManager) doesn't CURRENTLY support HTTP keepalives (https://stroika.atlassian.net/browse/STK-637)
+             *      \note @todo https://stroika.atlassian.net/browse/STK-638 - WebServer ConnectionManager (and Connection) handling restructure - so while reading headers, only one thread used
              *
              *  \note Default ordering for interceptors:
              *        interceptors += earlyInterceptors;

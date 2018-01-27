@@ -122,7 +122,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fThreads_{options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy
+    , fThreads_{options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
     , fListener_{bindAddresses,
                  options.fBindFlags.Value (Options::kDefault_BindFlags),
                  [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); },
