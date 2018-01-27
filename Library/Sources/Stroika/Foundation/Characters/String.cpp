@@ -350,6 +350,38 @@ String String::FromASCII (const string& from)
     return ASCIIStringToWide (from);
 }
 
+String String::FromISOLatin1 (const char* from)
+{
+    /*
+     *  From http://unicodebook.readthedocs.io/encodings.html
+     *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
+     */
+    const char*                       s = from;
+    const char*                       e = s + ::strlen (from);
+    Memory::SmallStackBuffer<wchar_t> buf{static_cast<size_t> (e - s)};
+    wchar_t*                          pOut = buf.begin ();
+    for (const char* i = s; s != e; ++i, pOut) {
+        *pOut = *i;
+    }
+    return String{buf.begin ()};
+}
+
+String String::FromISOLatin1 (const string& from)
+{
+    /*
+     *  From http://unicodebook.readthedocs.io/encodings.html
+     *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
+     */
+    const char*                       s = from.c_str ();
+    const char*                       e = s + from.length ();
+    Memory::SmallStackBuffer<wchar_t> buf{static_cast<size_t> (e - s)};
+    wchar_t*                          pOut = buf.begin ();
+    for (const char* i = s; s != e; ++i, pOut) {
+        *pOut = *i;
+    }
+    return String{buf.begin ()};
+}
+
 String::_SharedPtrIRep String::mkEmpty_ ()
 {
     static constexpr wchar_t    kEmptyStr_[1] = {};

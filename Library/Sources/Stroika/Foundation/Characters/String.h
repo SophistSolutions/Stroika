@@ -114,8 +114,6 @@
  *              produce a string which is indentical to the orig except that IF start len < n, then expand it with
  *              the given arg char repeated on the left or right.
  *
- *      @todo   Add FromISOLatin1()
- *
  *      @todo   Performance optimize FromUTF8, and AsUtf8() functions to not go through intermediate string
  *              objects!
  *
@@ -408,6 +406,21 @@ namespace Stroika {
             public:
                 [[deprecated ("use FromASCII")]] static String FromAscii (const char* from) { return FromASCII (from); }
                 [[deprecated ("use FromASCII")]] static String FromAscii (const string& from) { return FromASCII (from); }
+
+            public:
+                /**
+                 *  Create a String object from ISO-Latin-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
+                 *
+                 *  \note Though ISO-Latin-1 is is defined to only have 192 valid characters (source), UNICODE
+                 *        is defined so that the first 256 code points match ISO-Latin-1.
+                 *
+                 *        Because of this, This function allows ANY 8-bit) characters at all - to be passed in, and those characters
+                 *        will be mapped to UNICODE characters (of the same code point) in the resulting String.
+                 *
+                 *  \note Alias From8bitASCII () or FromExtendedASCII().
+                 */
+                static String FromISOLatin1 (const char* from);
+                static String FromISOLatin1 (const string& from);
 
             private:
                 static _SharedPtrIRep mkEmpty_ ();
