@@ -404,8 +404,8 @@ namespace Stroika {
                 static String FromASCII (const string& from);
 
             public:
-                [[deprecated ("use FromASCII")]] static String FromAscii (const char* from) { return FromASCII (from); }
-                [[deprecated ("use FromASCII")]] static String FromAscii (const string& from) { return FromASCII (from); }
+                [[deprecated ("use FromASCII in version 2.0a228")]] static String FromAscii (const char* from) { return FromASCII (from); }
+                [[deprecated ("use FromASCII in version 2.0a228")]] static String FromAscii (const string& from) { return FromASCII (from); }
 
             public:
                 /**

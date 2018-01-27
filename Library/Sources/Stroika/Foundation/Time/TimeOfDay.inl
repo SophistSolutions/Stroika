@@ -96,8 +96,8 @@ namespace Stroika {
                     return rhs.empty () ? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
                 }
             }
-            [[deprecated ("use TimeOfDay::min ()")]] constexpr TimeOfDay TimeOfDay_kMin{0};
-            [[deprecated ("use TimeOfDay::max ()")]] constexpr TimeOfDay TimeOfDay_kMax{TimeOfDay::kMaxSecondsPerDay - 1};
+            [[deprecated ("use TimeOfDay::min () in Stroika v2.0a227")]] constexpr TimeOfDay TimeOfDay_kMin{0};
+            [[deprecated ("use TimeOfDay::max () in Stroika v2.0a227")]] constexpr TimeOfDay TimeOfDay_kMax{TimeOfDay::kMaxSecondsPerDay - 1};
 
             /*
              ********************************************************************************

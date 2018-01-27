@@ -88,8 +88,6 @@ namespace Stroika {
             {
                 return Format ();
             }
-            constexpr DateTime DateTime_kMin{Date::min (), TimeOfDay::min ()}; //[[deprecated ("use min ()")]]
-            constexpr DateTime DateTime_kMax{Date::max (), TimeOfDay::max ()}; //[[deprecated ("use min ()")]]
 
             /*
              ********************************************************************************
@@ -120,6 +118,9 @@ namespace Stroika {
             {
                 return lhs.Compare (rhs) > 0;
             }
+
+            [[deprecated ("use min () in Stroika v2.0a227")]] constexpr DateTime DateTime_kMin{DateTime::min ()};
+            [[deprecated ("use max () in Stroika v2.0a227")]] constexpr DateTime DateTime_kMax{DateTime::max ()};
         }
     }
 }
