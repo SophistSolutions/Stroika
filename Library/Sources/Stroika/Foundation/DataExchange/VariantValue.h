@@ -216,7 +216,7 @@ namespace Stroika {
             public:
                 /**
                  *  @see Characters::ToString()
-                 *  Return a debug-friendly, display version of the current variant. This is not guarnateed parseable or usable except for debugging.
+                 *  Return a debug-friendly, display version of the current variant. This is not guaranteed parseable or usable except for debugging.
                  */
                 nonvirtual String ToString () const;
 

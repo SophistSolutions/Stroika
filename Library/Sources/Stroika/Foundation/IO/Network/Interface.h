@@ -43,7 +43,7 @@ namespace Stroika {
                  */
                 struct Interface {
                     /**
-                     *      This is a somewhat artificial concept - which is introduced in Stroika. This is only guarnateed
+                     *      This is a somewhat artificial concept - which is introduced in Stroika. This is only guaranteed
                      *   unique or the life of one program lifetime (@todo - not even sure we can do that much).
                      *
                      *      UNIX:

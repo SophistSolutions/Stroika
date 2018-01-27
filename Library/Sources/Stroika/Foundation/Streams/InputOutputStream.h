@@ -68,7 +68,7 @@ namespace Stroika {
              *      InputOutputStream<ELEMENT_TYPE>::Ptr inherits from InputStream<ELEMENT_TYPE>::Ptr and OutputStream<ELEMENT_TYPE>::Ptr,
              *      so it has two copies of the shared_ptr, even though there is only one underlying 'rep' object.
              *
-             *      It is required/guarnateed by the implementation that the 'input' and 'output' sides refer to the same underlying
+             *      It is required/guaranteed by the implementation that the 'input' and 'output' sides refer to the same underlying
              *      'rep'.
              *
              *  \note   Design Note:

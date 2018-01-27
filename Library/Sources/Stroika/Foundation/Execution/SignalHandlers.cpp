@@ -634,7 +634,7 @@ void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 
     //
     // I THINK/HOPE it safe to increment/decrement the reference count on the shared_ptr.
-    // But this isn't guarnateed by anything I'm aware of.
+    // But this isn't guaranteed by anything I'm aware of.
     //
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
     if (tmp != nullptr) {

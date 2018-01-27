@@ -254,7 +254,7 @@ namespace Stroika {
                  *      size_t  size =  Seek (Whence::eFromEnd, 0);
                  *      Seek (savedReadFrom);
                  *      return size - savedReadFrom;
-                 *(EXCPET MAYBE GUARNATEED ATOMIC????)
+                 *(EXCPET MAYBE guaranteed ATOMIC????)
                  *  \note   @todo Not sure how useful this is - I can find no calls to this in code base
                  *          Maybe for input stream to see how big a buffer to allocate to read? But even then
                  *          probably not a great strategy -- LGP 2017-06-16
