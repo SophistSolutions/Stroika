@@ -239,7 +239,7 @@ namespace Stroika {
                  *  But this will return just those which are not 'done'. Of course - due to asyncrhony,
                  *  by the time one looks at the list, some may already be done.
                  */
-                nonvirtual vector<shared_ptr<Connection>> GetConnections () const;
+                nonvirtual Sequence<shared_ptr<Connection>> GetConnections () const;
 
 #if 0
             private:
