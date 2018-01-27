@@ -979,10 +979,10 @@ private:
     nonvirtual void MakeMappingTable ();
 
 private:
-    unsigned char fMappingTable[256];
+    uint8_t fMappingTable[256];
 
 private:
-    nonvirtual size_t FindClosestColorInColorTable (COLORREF c) const;
+    nonvirtual uint8_t FindClosestColorInColorTable_ (COLORREF c) const;
 
 private:
     nonvirtual COLORREF MapColor (COLORREF c) const; // use fHilightBackColor etc to map color
@@ -1095,19 +1095,19 @@ Led_Tablet_::RecolorHelper* Led_Tablet_::RecolorHelper::CheckCacheAndReconstruct
 void Led_Tablet_::RecolorHelper::MakeMappingTable ()
 {
     for (size_t i = 0; i < 256; ++i) {
-        fMappingTable[i] = FindClosestColorInColorTable (MapColor (fColorTable[i]));
+        fMappingTable[i] = FindClosestColorInColorTable_ (MapColor (fColorTable[i]));
     }
 }
 
-size_t Led_Tablet_::RecolorHelper::FindClosestColorInColorTable (COLORREF c) const
+uint8_t Led_Tablet_::RecolorHelper::FindClosestColorInColorTable_ (COLORREF c) const
 {
     // walk through the color table and see which color is closest to 'c'
-    size_t       closest         = 0;
+    uint8_t      closest         = 0;
     unsigned int closestDistance = 0xffffffff; // big distance
     for (size_t i = 0; i < 256; ++i) {
         unsigned int thisDist = Distance_Squared (c, RGB (fColorTable[i].rgbRed, fColorTable[i].rgbGreen, fColorTable[i].rgbBlue));
         if (thisDist < closestDistance) {
-            closest         = i;
+            closest         = static_cast<uint8_t> (i);
             closestDistance = thisDist;
             if (closestDistance == 0) {
                 break; // not needed, but COULD be a slight speed tweek
