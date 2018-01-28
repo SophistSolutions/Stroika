@@ -4,6 +4,12 @@ set -E
 trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
+### until we really support makefiles better - instead of using project files to parallelize
+if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
+	if [ -z ${PARALELLMAKEFLAG} ] ; then : ${PARALELLMAKEFLAG:=-j1}; fi
+fi
+
+
 : ${CONTINUE:=0}
 if [ -z ${INCLUDE_VALGRIND_MEMCHECK_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_MEMCHECK_TESTS=1; else  INCLUDE_VALGRIND_MEMCHECK_TESTS=0; fi; fi
 if [ -z ${INCLUDE_VALGRIND_HELGRIND_TESTS+x} ] ; then hash valgrind 2> /dev/null; if [ $? -eq 0 ]; then  INCLUDE_VALGRIND_HELGRIND_TESTS=1; else  INCLUDE_VALGRIND_HELGRIND_TESTS=0; fi; fi
