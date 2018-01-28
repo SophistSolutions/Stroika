@@ -143,7 +143,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
-    Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON); // all we support for now
+    Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON ()); // all we support for now
     response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
     if (webServiceDescription.fResponseType) {
         response->SetContentType (*webServiceDescription.fResponseType);

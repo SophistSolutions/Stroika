@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
-#include "Stroika/Foundation/Execution/VirtaulConstant.h"
+#include "Stroika/Foundation/Execution/VirtualConstant.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -103,24 +103,24 @@ namespace {
     namespace Test4_VirtaulConstant_ {
         namespace Private_ {
             namespace T1_ {
-                static const int                            x{3};
-                inline const int&                           kX_ () { return x; }
-                const Execution::VirtaulConstant<int, &kX_> kX;
-                void                                        DoIt ()
+                static const String                            x{3};
+                inline const String&                           kX_ () { return x; }
+                const Execution::VirtaulConstant<String, &kX_> kX;
+                void                                           DoIt ()
                 {
-                    const int a = kX;
+                    const String a = kX;
                 }
             }
             namespace T2_ {
-                inline const int& kX_ ()
+                inline const String& kX_ ()
                 {
-                    static const int x{6};
+                    static const String x{L"6"};
                     return x;
                 }
-                const Execution::VirtaulConstant<int, &kX_> kX;
-                void                                        DoIt ()
+                const Execution::VirtaulConstant<String, &kX_> kX;
+                void                                           DoIt ()
                 {
-                    const int a = kX;
+                    const String a = kX;
                 }
             }
         }
