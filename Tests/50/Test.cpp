@@ -1465,7 +1465,7 @@ namespace {
 #endif
             }
             else {
-                Execution::Throw (StringException (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromAscii (kDefaultPerfOutFile_).c_str ())));
+                Execution::Throw (StringException (Format (L"At least one test (%s) failed expected time constraint (see %s)", listAsMsg.c_str (), String::FromASCII (kDefaultPerfOutFile_).c_str ())));
             }
         }
     }
