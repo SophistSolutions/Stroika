@@ -8,7 +8,7 @@
 
 #include "../Characters/String.h"
 
-#include "../Execution/StaticConstantMaker.h"
+#include "../Execution/VirtualConstant.h"
 
 /**
  * TODO:
@@ -176,79 +176,79 @@ namespace Stroika {
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_CT> kImage;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Image_CT> kImage;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_PNG_CT> kImage_PNG;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Image_PNG_CT> kImage_PNG;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_GIF_CT> kImage_GIF;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Image_GIF_CT> kImage_GIF;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_JPEG_CT> kImage_JPEG;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Image_JPEG_CT> kImage_JPEG;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_CT> kText;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Text_CT> kText;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_HTML_CT> kText_HTML;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Text_HTML_CT> kText_HTML;
 
                 /**
                  */
-                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_XHTML_CT> kText_XHTML;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Text_XHTML_CT> kText_XHTML;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_XML_CT> kText_XML;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Text_XML_CT> kText_XML;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_CSV_CT> kText_CSV;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Text_CSV_CT> kText_CSV;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::JSON_CT> kJSON;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::JSON_CT> kJSON;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::PDF_CT> kPDF;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::PDF_CT> kPDF;
 
                 /**
                  * very unclear what to use, no clear standard!
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::URL_CT> kURL;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::URL_CT> kURL;
 
                 /**
                  *  application/x-xslt
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::XSLT_CT> kApplication_XSLT;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::XSLT_CT> kApplication_XSLT;
 
                 /**
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::JavaArchive_CT> kJavaArchive;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::JavaArchive_CT> kJavaArchive;
 
                 /**
                  * Microsoft RTF - Rich Text Format
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Application_RTF_CT> kApplication_RTF;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Application_RTF_CT> kApplication_RTF;
 
                 /**
                  *  application/zip
                  */
-                constexpr Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Application_Zip_CT> kApplication_Zip;
+                constexpr Execution::VirtaulConstant<InternetMediaType, PRIVATE_::Application_Zip_CT> kApplication_Zip;
             }
         }
     }

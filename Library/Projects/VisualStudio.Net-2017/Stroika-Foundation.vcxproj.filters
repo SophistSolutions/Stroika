@@ -2013,7 +2013,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Common.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StaticConstantMaker.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
   </ItemGroup>
@@ -3243,7 +3243,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\Common.inl">
       <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\StaticConstantMaker.inl">
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl">
       <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>

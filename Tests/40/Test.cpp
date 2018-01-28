@@ -9,7 +9,7 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
-#include "Stroika/Foundation/Execution/StaticConstantMaker.h"
+#include "Stroika/Foundation/Execution/VirtaulConstant.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -100,13 +100,13 @@ namespace {
 }
 
 namespace {
-    namespace Test4_StaticConstantMaker_ {
+    namespace Test4_VirtaulConstant_ {
         namespace Private_ {
             namespace T1_ {
-                static const int                                x{3};
-                inline const int&                               kX_ () { return x; }
-                const Execution::StaticConstantMaker<int, &kX_> kX;
-                void                                            DoIt ()
+                static const int                            x{3};
+                inline const int&                           kX_ () { return x; }
+                const Execution::VirtaulConstant<int, &kX_> kX;
+                void                                        DoIt ()
                 {
                     const int a = kX;
                 }
@@ -117,8 +117,8 @@ namespace {
                     static const int x{6};
                     return x;
                 }
-                const Execution::StaticConstantMaker<int, &kX_> kX;
-                void                                            DoIt ()
+                const Execution::VirtaulConstant<int, &kX_> kX;
+                void                                        DoIt ()
                 {
                     const int a = kX;
                 }
@@ -138,7 +138,7 @@ namespace {
         Test1_Function_ ();
         Test2_CommandLine_ ();
         Test3_::DoAll ();
-        Test4_StaticConstantMaker_::DoAll ();
+        Test4_VirtaulConstant_::DoAll ();
     }
 }
 

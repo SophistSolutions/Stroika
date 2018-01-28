@@ -1496,7 +1496,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StaticConstantMaker.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
@@ -1505,6 +1504,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Users.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.h" />
@@ -1904,13 +1904,13 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\StaticConstantMaker.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimedLockGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\TimeOutException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitableEvent.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WhenTimeExceeded.inl" />

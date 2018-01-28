@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_StaticConstantMaker_h_
-#define _Stroika_Foundation_Execution_StaticConstantMaker_h_ 1
+#ifndef _Stroika_Foundation_Execution_VirtaulConstant_h_
+#define _Stroika_Foundation_Execution_VirtaulConstant_h_ 1
 
 #include "../StroikaPreComp.h"
 
@@ -22,7 +22,7 @@ namespace Stroika {
              * an underlying system where the constant is actually FETECHED from the argument function.
              *
              * Could use this in someplace like:
-             *      const Execution::StaticConstantMaker<Enumeration,&Private::kTypeHiddenFilter_>   kTypeHiddenFilter;
+             *      const Execution::VirtaulConstant<Enumeration,&Private::kTypeHiddenFilter_>   kTypeHiddenFilter;
              *
              *  See https://stroika.atlassian.net/browse/STK-381 for details.
              *
@@ -35,11 +35,11 @@ namespace Stroika {
              *          T   t;
              *          t.m ();
              *  When you replace 'T t' with
-             *      StaticConstantMaker<T,...> t;
+             *      VirtaulConstant<T,...> t;
              *          you must call t().m();
              */
             template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-            struct StaticConstantMaker {
+            struct VirtaulConstant {
                 operator const BASETYPE () const;
                 const BASETYPE operator() () const;
             };
@@ -52,6 +52,6 @@ namespace Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "StaticConstantMaker.inl"
+#include "VirtualConstant.inl"
 
-#endif /*_Stroika_Foundation_Execution_StaticConstantMaker_h_*/
+#endif /*_Stroika_Foundation_Execution_VirtaulConstant_h_*/

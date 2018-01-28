@@ -172,7 +172,7 @@ namespace Stroika {
             };
 
             template <typename BASETYPE, const BASETYPE& (*ValueGetter) ()>
-            struct [[deprecated ("Use StaticConstantMaker since Stroika v2.0a228")]] ConstantViaGetter {
+            struct [[deprecated ("Use VirtaulConstant since Stroika v2.0a228")]] ConstantViaGetter {
                 inline operator const BASETYPE () const
                 {
                     return (ValueGetter) ();
