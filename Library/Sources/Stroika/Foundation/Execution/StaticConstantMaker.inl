@@ -9,11 +9,26 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Debug/Assertions.h"
 
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
+
+            /*
+             ********************************************************************************
+             ***************** StaticConstantMaker<BASETYPE, VALUE_GETTER> ******************
+             ********************************************************************************
+             */
+            template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
+            inline StaticConstantMaker<BASETYPE, VALUE_GETTER>::operator const BASETYPE () const
+            {
+                return VALUE_GETTER ();
+            }
+            template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
+            inline const BASETYPE StaticConstantMaker<BASETYPE, VALUE_GETTER>::operator() () const
+            {
+                return VALUE_GETTER ();
+            }
         }
     }
 }

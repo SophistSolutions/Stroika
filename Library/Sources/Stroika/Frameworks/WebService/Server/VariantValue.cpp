@@ -64,8 +64,8 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
 {
-    static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::JSON_CT ();
-    if (bodyContentType.Value (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::JSON_CT ()) {
+    static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
+    if (bodyContentType.Value (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
         Mapping<String, DataExchange::VariantValue> tmp = Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
         if (namedParameters) {
             tmp.RetainAll (*namedParameters);
@@ -143,7 +143,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 
 void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const VariantValue& responseValue)
 {
-    Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::JSON_CT ()); // all we support for now
+    Require (webServiceDescription.fResponseType == DataExchange::PredefinedInternetMediaType::kJSON); // all we support for now
     response->write (Variant::JSON::Writer ().WriteAsBLOB (responseValue));
     if (webServiceDescription.fResponseType) {
         response->SetContentType (*webServiceDescription.fResponseType);

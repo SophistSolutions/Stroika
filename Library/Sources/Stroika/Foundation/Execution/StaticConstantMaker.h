@@ -25,15 +25,13 @@ namespace Stroika {
             using Memory::Byte;
 
             /**
-             * See http://bugzilla/show_bug.cgi?id=439
-             *
              * Allow use of regular constant declaration use when we have
              * an underlying system where the constant is actually FETECHED from the argument function.
              *
              * Could use this in someplace like:
-             *      const ModuleInit::ConstantViaGetter<Enumeration,&Private::kTypeHiddenFilter_>   kTypeHiddenFilter;
+             *      const Execution::StaticConstantMaker<Enumeration,&Private::kTypeHiddenFilter_>   kTypeHiddenFilter;
              *
-             *  See http://bugzilla/show_bug.cgi?id=439 for details.
+             *  See https://stroika.atlassian.net/browse/STK-381 for details.
              *
              *  Note: it would be HIGHLY DESIRABLE if C++ allowed operator. overloading, as accessing one of these
              *  values without assinging to a temporary first - means that you cannot directly call its methods.
@@ -45,22 +43,12 @@ namespace Stroika {
              *          t.m ();
              *  When you replace 'T t' with
              *      StaticConstantMaker<T,...> t;
-             *          you must call t->m();
+             *          you must call t().m();
              */
             template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
             struct StaticConstantMaker {
-                inline operator const BASETYPE () const
-                {
-                    return VALUE_GETTER ();
-                }
-                inline const BASETYPE operator() () const
-                {
-                    return VALUE_GETTER ();
-                }
-                inline const BASETYPE* operator-> () const
-                {
-                    return &(VALUE_GETTER ());
-                }
+                operator const BASETYPE () const;
+                const BASETYPE operator() () const;
             };
         }
     }
