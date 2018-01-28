@@ -6,11 +6,6 @@
 
 #include "../StroikaPreComp.h"
 
-#include <cstdint>
-
-#include "../Configuration/Common.h"
-#include "../Memory/Common.h"
-
 /**
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
@@ -21,8 +16,6 @@
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
-
-            using Memory::Byte;
 
             /**
              * Allow use of regular constant declaration use when we have
