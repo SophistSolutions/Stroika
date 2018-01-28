@@ -100,12 +100,12 @@ namespace {
 }
 
 namespace {
-    namespace Test4_VirtaulConstant_ {
+    namespace Test4_VirtualConstant_ {
         namespace Private_ {
             namespace T1_ {
                 static const String                            x{L"3"};
                 inline const String&                           kX_ () { return x; }
-                const Execution::VirtaulConstant<String, &kX_> kX;
+                const Execution::VirtualConstant<String, &kX_> kX;
                 void                                           DoIt ()
                 {
                     const String a = kX;
@@ -117,7 +117,7 @@ namespace {
                     static const String x{L"6"};
                     return x;
                 }
-                const Execution::VirtaulConstant<String, &kX_> kX;
+                const Execution::VirtualConstant<String, &kX_> kX;
                 void                                           DoIt ()
                 {
                     const String a = kX;
@@ -138,7 +138,7 @@ namespace {
         Test1_Function_ ();
         Test2_CommandLine_ ();
         Test3_::DoAll ();
-        Test4_VirtaulConstant_::DoAll ();
+        Test4_VirtualConstant_::DoAll ();
     }
 }
 

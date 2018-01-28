@@ -1,16 +1,13 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Execution_VirtaulConstant_h_
-#define _Stroika_Foundation_Execution_VirtaulConstant_h_ 1
+#ifndef _Stroika_Foundation_Execution_VirtualConstant_h_
+#define _Stroika_Foundation_Execution_VirtualConstant_h_ 1
 
 #include "../StroikaPreComp.h"
 
 /**
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- * TODO
- *
  */
 
 namespace Stroika {
@@ -27,6 +24,8 @@ namespace Stroika {
              *  Allow use of regular constant declaration use when we have
              *  an underlying system where the constant is actually FETECHED from the argument function.
              *
+             *  This doesn't work perfectly (e.g. see below about operator.) - but its pretty usable.
+             *
              *  \par Example Usage
              *      \code
              *          // Use with ModuleInitializer<> to manage one-time creation of underlying constant, so created just
@@ -34,7 +33,7 @@ namespace Stroika {
              *          namespace PRIVATE_ {
              *              inline const InternetMediaType& OctetStream_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT; }
              *          }
-             *          constexpr VirtaulConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
+             *          constexpr VirtualConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
              *          ...
              *          InternetMediaType ia = kOctetStream;
              *      \endcode
@@ -44,7 +43,7 @@ namespace Stroika {
              *          // Use a single static file scope constant (perhaps in one file)
              *          static const String                            x{L"X"};
              *          inline const String&                           kX_ () { return x; }
-             *          const VirtaulConstant<String, &kX_> kX;
+             *          const VirtualConstant<String, &kX_> kX;
              *          ...
              *          const String a = kX;
              *      \endcode
@@ -53,7 +52,7 @@ namespace Stroika {
              *      \code
              *          // Use a static variable initialized within the fetching function
              *          inline const String& kX_ () { static const String x{L"6"}; return x; }
-             *          const Execution::VirtaulConstant<String, &kX_> kX;
+             *          const Execution::VirtualConstant<String, &kX_> kX;
              *          ...
              *          const String a = kX;
              *      \endcode
@@ -69,17 +68,36 @@ namespace Stroika {
              *              T   t;
              *              t.m ();
              *          When you replace 'T t' with
-             *              VirtaulConstant<T,...> t;
+             *              VirtualConstant<T,...> t;
              *              you must call t().m();
              *
              *  \note   C++ also only allows one level of automatic operator conversions, so things like comparing
-             *          Optional<T> {} == VirtaulConstant<T,...> {} won't work. To workaround, simply
-             *          apply () after the VirtaulConstant<> instance.
+             *          Optional<T> {} == VirtualConstant<T,...> {} won't work. To workaround, simply
+             *          apply () after the VirtualConstant<> instance.
+             *
+             *  \note   It's suggested you always declare VirtualConstants as constexpr to help assure they take up no
+             *          data space in your application - and are just syntactic sugar on accessing the underlying accessor
+             *          function.
+             *
+             *  TODO:
+             *      @todo   https://stroika.atlassian.net/browse/STK-639 - It would be nice if the
+             *              VirtualConstant<> template could auto-compute typename T, or support using 
+             *              lambdas for the function
              *          
              */
             template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-            struct VirtaulConstant {
+            struct VirtualConstant {
+                /**
+                 *  A virtual constant can be automatically assigned to its underlying base type.
+                 *  Due to how conversion operators work, this won't always be helpful (like with overloading
+                 *  or multiple levels of conversions). But when it works (80% of the time) - its helpful.
+                 */
                 operator const BASETYPE () const;
+
+                /**
+                 *  This works 100% of the time. Just use the function syntax, and you get back a constant of the desired
+                 *  underlying type.
+                 */
                 const BASETYPE operator() () const;
             };
         }
@@ -93,4 +111,4 @@ namespace Stroika {
  */
 #include "VirtualConstant.inl"
 
-#endif /*_Stroika_Foundation_Execution_VirtaulConstant_h_*/
+#endif /*_Stroika_Foundation_Execution_VirtualConstant_h_*/
