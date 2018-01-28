@@ -239,22 +239,26 @@ String::String (const Character& c)
 String String::FromUTF8 (const char* from)
 {
     RequireNotNull (from);
-    // @todo FIX PERFORMANCE
-    return String (UTF8StringToWide (from));
+    return FromUTF8 (from, from + ::strlen (from));
 }
 
 String String::FromUTF8 (const char* from, const char* to)
 {
-    // @todo FIX PERFORMANCE
-    wstring tmp;
-    NarrowStringToWide (from, to, kCodePage_UTF8, &tmp);
-    return String (move (tmp));
+    RequireNotNull (from);
+    RequireNotNull (to);
+    Require (from <= to);
+    size_t                            fromLen = to - from;
+    UTF8Converter                     cvt;
+    size_t                            cvtBufSize = cvt.MapToUNICODE_QuickComputeOutBufSize (from, ::strlen (from));
+    Memory::SmallStackBuffer<wchar_t> buf{cvtBufSize};
+    size_t                            outCharCnt = cvtBufSize;
+    cvt.MapToUNICODE (from, fromLen, buf, &outCharCnt);
+    return String{buf.begin (), buf.begin () + outCharCnt};
 }
 
 String String::FromUTF8 (const std::string& from)
 {
-    // @todo FIX PERFORMANCE
-    return String (UTF8StringToWide (from));
+    return FromUTF8 (from.c_str (), from.c_str () + from.length ());
 }
 
 String String::FromSDKString (const SDKChar* from)
