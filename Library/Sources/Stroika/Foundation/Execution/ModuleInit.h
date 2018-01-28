@@ -157,8 +157,8 @@ namespace Stroika {
              *              fTBuf properly aligned).
              */
             template <typename T>
-            struct StaticSingletonObjectConstructionHelper {
-                bool fConstructed;
+            struct [[deprecated ("This class is useless and deprectead as of Stroika 2.0a228")]] StaticSingletonObjectConstructionHelper {
+                bool                       fConstructed;
                 alignas (alignof (T)) Byte fTBuf[sizeof (T)];
 
                 operator T& ()

@@ -22,7 +22,7 @@ using Debug::TraceContextBumper;
 using Execution::make_unique_lock;
 
 namespace {
-    Execution::StaticSingletonObjectConstructionHelper<SimpleAllocator_CallLIBCMallocFree> sDefaultAllocator;
+    SimpleAllocator_CallLIBCMallocFree sDefaultAllocator_;
 }
 
 // Since this code frequently gets used with 'DEBUG' turned off - and so no assert checking, we may
@@ -106,7 +106,7 @@ namespace {
  ********************************************************************************
  */
 SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAllocator ()
-    : fBaseAllocator_ (sDefaultAllocator)
+    : fBaseAllocator_ (sDefaultAllocator_)
     , fNetAllocationCount_ (0)
     , fNetAllocatedByteCount_ (0)
 {
@@ -194,7 +194,7 @@ namespace {
 }
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator ()
     : fCritSection_ ()
-    , fBaseAllocator_ (sDefaultAllocator)
+    , fBaseAllocator_ (sDefaultAllocator_)
     , fAllocations_ ()
 {
 }
