@@ -8,6 +8,8 @@
 
 #include "../Characters/String.h"
 
+#include "../Execution/StaticConstantMaker.h"
+
 /**
  * TODO:
  *      @todo   Need some registration mechanism so IsTextFormat() results can be extended.
@@ -121,36 +123,132 @@ namespace Stroika {
              *          https://stroika.atlassian.net/browse/STK-576 - move to InternetMediaTypeRegistry
              */
             namespace PredefinedInternetMediaType {
-                const InternetMediaType& OctetStream_CT ();
+                namespace PRIVATE_ {
+                    const InternetMediaType& OctetStream_CT ();
+                    const InternetMediaType& Image_CT ();
+                    const InternetMediaType& Image_PNG_CT ();
+                    const InternetMediaType& Image_GIF_CT ();
+                    const InternetMediaType& Image_JPEG_CT ();
+                    const InternetMediaType& Text_CT ();
+                    const InternetMediaType& Text_HTML_CT ();
+                    const InternetMediaType& Text_XHTML_CT ();
+                    const InternetMediaType& Text_XML_CT ();
+                    const InternetMediaType& Text_PLAIN_CT ();
+                    const InternetMediaType& Text_CSV_CT ();
+                    const InternetMediaType& JSON_CT ();
+                    const InternetMediaType& PDF_CT ();
+                    const InternetMediaType& URL_CT ();
+                    const InternetMediaType& XML_CT ();
+                    const InternetMediaType& XSLT_CT ();
+                    const InternetMediaType& JavaArchive_CT ();
+                    const InternetMediaType& Application_RTF_CT ();
+                    const InternetMediaType& Application_Zip_CT ();
+                }
+                [[deprecated ("use kOctetStream instead - since Stroika v2.0a228")]] const InternetMediaType& OctetStream_CT ();
 
-                const InternetMediaType& Image_CT ();
-                const InternetMediaType& Image_PNG_CT ();
-                const InternetMediaType& Image_GIF_CT ();
-                const InternetMediaType& Image_JPEG_CT ();
+                [[deprecated ("use kImage instead - since Stroika v2.0a228")]] const InternetMediaType&      Image_CT ();
+                [[deprecated ("use kImage_PNG instead - since Stroika v2.0a228")]] const InternetMediaType&  Image_PNG_CT ();
+                [[deprecated ("use kImage_GIF instead - since Stroika v2.0a228")]] const InternetMediaType&  Image_GIF_CT ();
+                [[deprecated ("use kImage_JPEG instead - since Stroika v2.0a228")]] const InternetMediaType& Image_JPEG_CT ();
 
-                const InternetMediaType& Text_CT ();
-                const InternetMediaType& Text_HTML_CT ();
-                const InternetMediaType& Text_XHTML_CT ();
-                const InternetMediaType& Text_XML_CT ();
-                const InternetMediaType& Text_PLAIN_CT ();
-                const InternetMediaType& Text_CSV_CT ();
+                [[deprecated ("use kText_CT instead - since Stroika v2.0a228")]] const InternetMediaType&    Text_CT ();
+                [[deprecated ("use kText_HTML instead - since Stroika v2.0a228")]] const InternetMediaType&  Text_HTML_CT ();
+                [[deprecated ("use kText_XHTML instead - since Stroika v2.0a228")]] const InternetMediaType& Text_XHTML_CT ();
+                [[deprecated ("use kText_XML instead - since Stroika v2.0a228")]] const InternetMediaType&   Text_XML_CT ();
+                [[deprecated ("use kText_PLAIN instead - since Stroika v2.0a228")]] const InternetMediaType& Text_PLAIN_CT ();
+                [[deprecated ("use kText_CSV instead - since Stroika v2.0a228")]] const InternetMediaType&   Text_CSV_CT ();
 
-                const InternetMediaType& JSON_CT ();
+                [[deprecated ("use kJSON instead - since Stroika v2.0a228")]] const InternetMediaType& JSON_CT ();
 
-                const InternetMediaType& PDF_CT ();
+                [[deprecated ("use kPDF instead - since Stroika v2.0a228")]] const InternetMediaType& PDF_CT ();
 
-                const InternetMediaType& URL_CT (); // very unclear what to use, no clear standard!
-                //      -- LGP 2006-07-27
+                [[deprecated ("use kURL instead - since Stroika v2.0a228")]] const InternetMediaType& URL_CT ();
 
-                const InternetMediaType& XML_CT ();
+                [[deprecated ("use kText_XML instead - since Stroika v2.0a228")]] const InternetMediaType& XML_CT ();
 
-                const InternetMediaType& XSLT_CT ();
+                [[deprecated ("use kApplication_XSLT instead - since Stroika v2.0a228")]] const InternetMediaType& XSLT_CT ();
 
-                const InternetMediaType& JavaArchive_CT ();
+                [[deprecated ("use kJavaArchive instead - since Stroika v2.0a228")]] const InternetMediaType& JavaArchive_CT ();
 
-                const InternetMediaType& Application_RTF_CT (); // Microsoft RTF - Rich Text Format
+                [[deprecated ("use kApplication_RTF instead - since Stroika v2.0a228")]] const InternetMediaType& Application_RTF_CT (); // Microsoft RTF - Rich Text Format
 
-                const InternetMediaType& Application_Zip_CT (); // application/zip
+                [[deprecated ("use kApplication_Zip instead - since Stroika v2.0a228")]] const InternetMediaType& Application_Zip_CT (); // application/zip
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_CT> kImage;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_PNG_CT> kImage_PNG;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_GIF_CT> kImage_GIF;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Image_JPEG_CT> kImage_JPEG;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_CT> kText;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_HTML_CT> kText_HTML;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_XHTML_CT> kText_XHTML;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_XML_CT> kText_XML;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_PLAIN_CT> kText_PLAIN;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Text_CSV_CT> kText_CSV;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::JSON_CT> kJSON;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::PDF_CT> kPDF;
+
+                /**
+                 * very unclear what to use, no clear standard!
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::URL_CT> kURL;
+
+                /**
+                 *  application/x-xslt
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::XSLT_CT> kApplication_XSLT;
+
+                /**
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::JavaArchive_CT> kJavaArchive;
+
+                /**
+                 * Microsoft RTF - Rich Text Format
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Application_RTF_CT> kApplication_RTF;
+
+                /**
+                 *  application/zip
+                 */
+                const Execution::StaticConstantMaker<InternetMediaType, PRIVATE_::Application_Zip_CT> kApplication_Zip;
             }
         }
     }

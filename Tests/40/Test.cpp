@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/StaticConstantMaker.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -98,13 +99,30 @@ namespace {
     }
 }
 
+
+namespace {
+	namespace Test4_StaticConstantMaker_ {
+		namespace Private_ {
+			static const int x;
+			inline const int& kX_ () { return x; }
+			const Execution::StaticConstantMaker<int, &kX_> kX;
+		}
+
+		void DoAll ()
+		{
+			const int a = Private_::kX;
+		}
+	}
+}
+
 namespace {
     void DoRegressionTests_ ()
     {
         Test1_Function_ ();
         Test2_CommandLine_ ();
-        Test3_::DoAll ();
-    }
+		Test3_::DoAll ();
+		Test4_StaticConstantMaker_::DoAll ();
+	}
 }
 
 int main (int argc, const char* argv[])

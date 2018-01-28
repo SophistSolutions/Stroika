@@ -64,8 +64,8 @@ bool InternetMediaType::IsTextFormat () const
      *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES - EG HelathFrameWorks PHR FORMATS
      *              -- LGP 2011-10-04
      */
-    return IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::Text_CT ()) or
-           IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::JSON_CT ());
+    return IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::kText) or
+           IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::kJSON);
 }
 
 bool InternetMediaType::IsImageFormat () const
@@ -74,7 +74,7 @@ bool InternetMediaType::IsImageFormat () const
      * TODO:
      *      o   NEED EXTENSION MECHANSIM TO ADD OTHER TYPES
      */
-    return IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::Image_CT ());
+    return IsSubTypeOfOrEqualTo (*this, PredefinedInternetMediaType::kImage);
 }
 
 String InternetMediaType::ToString () const

@@ -140,7 +140,7 @@ namespace {
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
-                Response r = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::OctetStream_CT ());
+                Response r = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
                 VerifyTestResult (r.GetSucceeded ());
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
@@ -175,7 +175,7 @@ namespace {
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
-                Response r = c.PUT (roundTripTestData, DataExchange::PredefinedInternetMediaType::OctetStream_CT ());
+                Response r = c.PUT (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
                 VerifyTestResult (r.GetSucceeded ()); // because throws on failure
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
