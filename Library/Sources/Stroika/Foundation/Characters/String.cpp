@@ -249,7 +249,7 @@ String String::FromUTF8 (const char* from, const char* to)
     Require (from <= to);
     size_t                            fromLen = to - from;
     UTF8Converter                     cvt;
-    size_t                            cvtBufSize = cvt.MapToUNICODE_QuickComputeOutBufSize (from, ::strlen (from));
+    size_t                            cvtBufSize = cvt.MapToUNICODE_QuickComputeOutBufSize (from, fromLen);
     Memory::SmallStackBuffer<wchar_t> buf{cvtBufSize};
     size_t                            outCharCnt = cvtBufSize;
     cvt.MapToUNICODE (from, fromLen, buf, &outCharCnt);

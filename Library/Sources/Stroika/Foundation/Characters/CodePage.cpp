@@ -3092,6 +3092,9 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
     // Not really right - but hopefully adquate for starters -- LGP 2011-09-06
     SmallStackBuffer<char16_t> tmpBuf (*outCharCnt);
     MapToUNICODE (inMBChars, inMBCharCnt, tmpBuf, outCharCnt);
+	for (size_t i = 0; i < *outCharCnt; ++i) {
+		outChars[i] = tmpBuf[i];
+	}
 }
 
 void UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
