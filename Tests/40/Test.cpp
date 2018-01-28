@@ -103,14 +103,31 @@ namespace {
 namespace {
 	namespace Test4_StaticConstantMaker_ {
 		namespace Private_ {
-			static const int x;
-			inline const int& kX_ () { return x; }
-			const Execution::StaticConstantMaker<int, &kX_> kX;
+			namespace T1_ {
+				static const int x{ 3 };
+				inline const int& kX_ () { return x; }
+				const Execution::StaticConstantMaker<int, &kX_> kX;
+				void DoIt ()
+				{
+					const int a = kX;
+				}
+			}
+			namespace T2_ {
+				inline const int& kX_ () { 
+					static const int x{ 6 };
+					return x; 
+				}
+				const Execution::StaticConstantMaker<int, &kX_> kX;
+				void DoIt ()
+				{
+					const int a = kX;
+				}
+			}
 		}
-
 		void DoAll ()
 		{
-			const int a = Private_::kX;
+			Private_::T1_::DoIt ();
+			Private_::T2_::DoIt ();
 		}
 	}
 }
