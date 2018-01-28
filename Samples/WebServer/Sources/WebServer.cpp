@@ -63,14 +63,14 @@ namespace {
         static void DefaultPage_ (Request*, Response* response)
         {
             response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
-            response->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+            response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_HTML);
         }
         // Can declare arguments as Message* message
         static void SetAppState_ (Message* message)
         {
             String argsAsString = Streams::TextReader::New (message->PeekRequest ()->GetBody ()).ReadAll ();
             message->PeekResponse ()->writeln (L"<html><body><p>Hi SetAppState (" + argsAsString.As<wstring> () + L")</p></body></html>");
-            message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
+            message->PeekResponse ()->SetContentType (DataExchange::PredefinedInternetMediaType::kText_HTML);
         }
     };
 }

@@ -46,7 +46,7 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
     , fSocketStream_ (SocketStream::New (s))
     , fMessage_{
           move (Request (fSocketStream_)),
-          move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())),
+          move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
           s.GetPeerAddress ()}
 {
 }

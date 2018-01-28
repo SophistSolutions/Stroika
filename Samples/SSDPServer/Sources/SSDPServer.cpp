@@ -51,7 +51,7 @@ namespace {
                     conn.ReadHeaders (); // bad API. Must rethink...
                     conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
                     conn.GetResponse ().write (deviceDescription.begin (), deviceDescription.end ());
-                    conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::XML_CT ());
+                    conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::kText_XML);
                     conn.GetResponse ().End ();
                 });
                 runConnectionOnAnotherThread.SetThreadName (L"SSDP Servcie Connection Thread");

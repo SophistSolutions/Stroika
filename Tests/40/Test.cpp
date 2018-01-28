@@ -99,37 +99,37 @@ namespace {
     }
 }
 
-
 namespace {
-	namespace Test4_StaticConstantMaker_ {
-		namespace Private_ {
-			namespace T1_ {
-				static const int x{ 3 };
-				inline const int& kX_ () { return x; }
-				const Execution::StaticConstantMaker<int, &kX_> kX;
-				void DoIt ()
-				{
-					const int a = kX;
-				}
-			}
-			namespace T2_ {
-				inline const int& kX_ () { 
-					static const int x{ 6 };
-					return x; 
-				}
-				const Execution::StaticConstantMaker<int, &kX_> kX;
-				void DoIt ()
-				{
-					const int a = kX;
-				}
-			}
-		}
-		void DoAll ()
-		{
-			Private_::T1_::DoIt ();
-			Private_::T2_::DoIt ();
-		}
-	}
+    namespace Test4_StaticConstantMaker_ {
+        namespace Private_ {
+            namespace T1_ {
+                static const int                                x{3};
+                inline const int&                               kX_ () { return x; }
+                const Execution::StaticConstantMaker<int, &kX_> kX;
+                void                                            DoIt ()
+                {
+                    const int a = kX;
+                }
+            }
+            namespace T2_ {
+                inline const int& kX_ ()
+                {
+                    static const int x{6};
+                    return x;
+                }
+                const Execution::StaticConstantMaker<int, &kX_> kX;
+                void                                            DoIt ()
+                {
+                    const int a = kX;
+                }
+            }
+        }
+        void DoAll ()
+        {
+            Private_::T1_::DoIt ();
+            Private_::T2_::DoIt ();
+        }
+    }
 }
 
 namespace {
@@ -137,9 +137,9 @@ namespace {
     {
         Test1_Function_ ();
         Test2_CommandLine_ ();
-		Test3_::DoAll ();
-		Test4_StaticConstantMaker_::DoAll ();
-	}
+        Test3_::DoAll ();
+        Test4_StaticConstantMaker_::DoAll ();
+    }
 }
 
 int main (int argc, const char* argv[])
