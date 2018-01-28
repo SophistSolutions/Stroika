@@ -151,62 +151,35 @@ namespace {
         using UTF16 = char16_t;
         using UTF32 = char32_t;
         /* Some fundamental constants */
-#define UNI_REPLACEMENT_CHAR (UTF32)0x0000FFFD
-#define UNI_MAX_BMP (UTF32)0x0000FFFF
-#define UNI_MAX_UTF16 (UTF32)0x0010FFFF
-#define UNI_MAX_UTF32 (UTF32)0x7FFFFFFF
-#define UNI_MAX_LEGAL_UTF32 (UTF32)0x0010FFFF
+        constexpr UTF32 UNI_REPLACEMENT_CHAR{(UTF32)0x0000FFFD};
+        constexpr UTF32 UNI_MAX_BMP{(UTF32)0x0000FFFF};
+        constexpr UTF32 UNI_MAX_UTF16{(UTF32)0x0010FFFF};
+        constexpr UTF32 UNI_MAX_UTF32{(UTF32)0x7FFFFFFF};
+        constexpr UTF32 UNI_MAX_LEGAL_UTF32{(UTF32)0x0010FFFF};
 
-        typedef enum {
+        enum ConversionResult {
             conversionOK,    /* conversion successful */
             sourceExhausted, /* partial character in source, but hit end */
             targetExhausted, /* insuff. room in target for conversion */
             sourceIllegal    /* source sequence is illegal/malformed */
-        } ConversionResult;
+        };
 
-        typedef enum {
+        enum ConversionFlags {
             strictConversion = 0,
             lenientConversion
-        } ConversionFlags;
-        ConversionResult ConvertUTF8toUTF16 (
-            const UTF8** sourceStart, const UTF8* sourceEnd,
-            UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags);
-
-        ConversionResult ConvertUTF16toUTF8 (
-            const UTF16** sourceStart, const UTF16* sourceEnd,
-            UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
-
-        ConversionResult ConvertUTF8toUTF32 (
-            const UTF8** sourceStart, const UTF8* sourceEnd,
-            UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags);
-
-        ConversionResult ConvertUTF32toUTF8 (
-            const UTF32** sourceStart, const UTF32* sourceEnd,
-            UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags);
-
-        ConversionResult ConvertUTF16toUTF32 (
-            const UTF16** sourceStart, const UTF16* sourceEnd,
-            UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags);
-
-        ConversionResult ConvertUTF32toUTF16 (
-            const UTF32** sourceStart, const UTF32* sourceEnd,
-            UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags);
-
-        bool isLegalUTF8Sequence (const UTF8* source, const UTF8* sourceEnd);
+        };
 
         constexpr int halfShift = 10; /* used for shifting by 10 bits */
 
-		constexpr UTF32 halfBase = 0x0010000UL;
-		constexpr UTF32 halfMask = 0x3FFUL;
+        constexpr UTF32 halfBase = 0x0010000UL;
+        constexpr UTF32 halfMask = 0x3FFUL;
 
-#define UNI_SUR_HIGH_START (UTF32)0xD800
-#define UNI_SUR_HIGH_END (UTF32)0xDBFF
-#define UNI_SUR_LOW_START (UTF32)0xDC00
-#define UNI_SUR_LOW_END (UTF32)0xDFFF
+        constexpr UTF32 UNI_SUR_HIGH_START{(UTF32)0xD800};
+        constexpr UTF32 UNI_SUR_HIGH_END{(UTF32)0xDBFF};
+        constexpr UTF32 UNI_SUR_LOW_START{(UTF32)0xDC00};
+        constexpr UTF32 UNI_SUR_LOW_END{(UTF32)0xDFFF};
 
-        ConversionResult ConvertUTF32toUTF16 (
-            const UTF32** sourceStart, const UTF32* sourceEnd,
-            UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags)
+        ConversionResult ConvertUTF32toUTF16 (const UTF32** sourceStart, const UTF32* sourceEnd, UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const UTF32*     source = *sourceStart;
@@ -259,9 +232,7 @@ namespace {
             return result;
         }
 
-        ConversionResult ConvertUTF16toUTF32 (
-            const UTF16** sourceStart, const UTF16* sourceEnd,
-            UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags)
+        ConversionResult ConvertUTF16toUTF32 (const UTF16** sourceStart, const UTF16* sourceEnd, UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const UTF16*     source = *sourceStart;
@@ -318,16 +289,14 @@ namespace {
             return result;
         }
 
-        /* --------------------------------------------------------------------- */
-
         /*
- * Index into the table below with the first byte of a UTF-8 sequence to
- * get the number of trailing bytes that are supposed to follow it.
- * Note that *legal* UTF-8 values can't have 4 or 5-bytes. The table is
- * left as-is for anyone who may want to do such conversion, which was
- * allowed in earlier algorithms.
- */
-		constexpr char trailingBytesForUTF8[256] = {
+        * Index into the table below with the first byte of a UTF-8 sequence to
+        * get the number of trailing bytes that are supposed to follow it.
+        * Note that *legal* UTF-8 values can't have 4 or 5-bytes. The table is
+        * left as-is for anyone who may want to do such conversion, which was
+        * allowed in earlier algorithms.
+        */
+        constexpr char trailingBytesForUTF8[256] = {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -338,37 +307,30 @@ namespace {
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
 
         /*
- * Magic values subtracted from a buffer value during UTF8 conversion.
- * This table contains as many values as there might be trailing bytes
- * in a UTF-8 sequence.
- */
-        constexpr UTF32 offsetsFromUTF8[6] = {0x00000000UL, 0x00003080UL, 0x000E2080UL,
-                                              0x03C82080UL, 0xFA082080UL, 0x82082080UL};
+        * Magic values subtracted from a buffer value during UTF8 conversion.
+        * This table contains as many values as there might be trailing bytes
+        * in a UTF-8 sequence.
+        */
+        constexpr UTF32 offsetsFromUTF8[6] = {0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL};
 
         /*
- * Once the bits are split out into bytes of UTF-8, this is a mask OR-ed
- * into the first byte, depending on how many bytes follow.  There are
- * as many entries in this table as there are UTF-8 sequence types.
- * (I.e., one byte sequence, two byte... etc.). Remember that sequencs
- * for *legal* UTF-8 will be 4 or fewer bytes total.
- */
-		constexpr UTF8 firstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
-
-        /* --------------------------------------------------------------------- */
+         * Once the bits are split out into bytes of UTF-8, this is a mask OR-ed
+         * into the first byte, depending on how many bytes follow.  There are
+         * as many entries in this table as there are UTF-8 sequence types.
+         * (I.e., one byte sequence, two byte... etc.). Remember that sequencs
+         * for *legal* UTF-8 will be 4 or fewer bytes total.
+         */
+        constexpr UTF8 firstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
 
         /* The interface converts a whole buffer to avoid function-call overhead.
- * Constants have been gathered. Loops & conditionals have been removed as
- * much as possible for efficiency, in favor of drop-through switches.
- * (See "Note A" at the bottom of the file for equivalent code.)
- * If your compiler supports it, the "isLegalUTF8" call can be turned
- * into an inline function.
- */
+         * Constants have been gathered. Loops & conditionals have been removed as
+         * much as possible for efficiency, in favor of drop-through switches.
+         * (See "Note A" at the bottom of the file for equivalent code.)
+         * If your compiler supports it, the "isLegalUTF8" call can be turned
+         * into an inline function.
+         */
 
-        /* --------------------------------------------------------------------- */
-
-        ConversionResult ConvertUTF16toUTF8 (
-            const UTF16** sourceStart, const UTF16* sourceEnd,
-            UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
+        ConversionResult ConvertUTF16toUTF8 (const UTF16** sourceStart, const UTF16* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const UTF16*     source = *sourceStart;
@@ -455,20 +417,17 @@ namespace {
             return result;
         }
 
-        /* --------------------------------------------------------------------- */
-
         /*
- * Utility routine to tell whether a sequence of bytes is legal UTF-8.
- * This must be called with the length pre-determined by the first byte.
- * If not calling this from ConvertUTF8to*, then the length can be set by:
- *  length = trailingBytesForUTF8[*source]+1;
- * and the sequence is illegal right away if there aren't that many bytes
- * available.
- * If presented with a length > 4, this returns false.  The Unicode
- * definition of UTF-8 goes up to 4-byte sequences.
- */
-
-        static bool isLegalUTF8 (const UTF8* source, int length)
+         * Utility routine to tell whether a sequence of bytes is legal UTF-8.
+         * This must be called with the length pre-determined by the first byte.
+         * If not calling this from ConvertUTF8to*, then the length can be set by:
+         *  length = trailingBytesForUTF8[*source]+1;
+         * and the sequence is illegal right away if there aren't that many bytes
+         * available.
+         * If presented with a length > 4, this returns false.  The Unicode
+         * definition of UTF-8 goes up to 4-byte sequences.
+         */
+        bool isLegalUTF8 (const UTF8* source, int length)
         {
             UTF8        a;
             const UTF8* srcptr = source + length;
@@ -518,12 +477,10 @@ namespace {
             return true;
         }
 
-        /* --------------------------------------------------------------------- */
-
         /*
- * Exported function to return whether a UTF-8 sequence is legal or not.
- * This is not used here; it's just exported.
- */
+         * Exported function to return whether a UTF-8 sequence is legal or not.
+         * This is not used here; it's just exported.
+         */
         bool isLegalUTF8Sequence (const UTF8* source, const UTF8* sourceEnd)
         {
             int length = trailingBytesForUTF8[*source] + 1;
@@ -533,11 +490,7 @@ namespace {
             return isLegalUTF8 (source, length);
         }
 
-        /* --------------------------------------------------------------------- */
-
-        ConversionResult ConvertUTF8toUTF16 (
-            const UTF8** sourceStart, const UTF8* sourceEnd,
-            UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags)
+        ConversionResult ConvertUTF8toUTF16 (const UTF8** sourceStart, const UTF8* sourceEnd, UTF16** targetStart, UTF16* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const UTF8*      source = *sourceStart;
@@ -555,8 +508,8 @@ namespace {
                     break;
                 }
                 /*
-     * The cases all fall through. See "Note A" below.
-     */
+                 * The cases all fall through. See "Note A" below.
+                 */
                 switch (extraBytesToRead) {
                     case 5:
                         ch += *source++;
@@ -626,11 +579,7 @@ namespace {
             return result;
         }
 
-        /* --------------------------------------------------------------------- */
-
-        ConversionResult ConvertUTF32toUTF8 (
-            const UTF32** sourceStart, const UTF32* sourceEnd,
-            UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
+        ConversionResult ConvertUTF32toUTF8 (const UTF32** sourceStart, const UTF32* sourceEnd, UTF8** targetStart, UTF8* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const UTF32*     source = *sourceStart;
@@ -650,9 +599,9 @@ namespace {
                     }
                 }
                 /*
-     * Figure out how many bytes the result will require. Turn any
-     * illegally large UTF32 things (> Plane 17) into replacement chars.
-     */
+                 * Figure out how many bytes the result will require. Turn any
+                 * illegally large UTF32 things (> Plane 17) into replacement chars.
+                 */
                 if (ch < (UTF32)0x80) {
                     bytesToWrite = 1;
                 }
@@ -698,9 +647,7 @@ namespace {
             return result;
         }
 
-        ConversionResult ConvertUTF8toUTF32 (
-            const UTF8** sourceStart, const UTF8* sourceEnd,
-            UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags)
+        ConversionResult ConvertUTF8toUTF32 (const UTF8** sourceStart, const UTF8* sourceEnd, UTF32** targetStart, UTF32* targetEnd, ConversionFlags flags)
         {
             ConversionResult result = conversionOK;
             const UTF8*      source = *sourceStart;
@@ -718,8 +665,8 @@ namespace {
                     break;
                 }
                 /*
-     * The cases all fall through. See "Note A" below.
-     */
+                 * The cases all fall through. See "Note A" below.
+                 */
                 switch (extraBytesToRead) {
                     case 5:
                         ch += *source++;
@@ -748,9 +695,9 @@ namespace {
                 }
                 if (ch <= UNI_MAX_LEGAL_UTF32) {
                     /*
-         * UTF-16 surrogate values are illegal in UTF-32, and anything
-         * over Plane 17 (> 0x10FFFF) is illegal.
-         */
+                     * UTF-16 surrogate values are illegal in UTF-32, and anything
+                     * over Plane 17 (> 0x10FFFF) is illegal.
+                     */
                     if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
                         if (flags == strictConversion) {
                             source -= (extraBytesToRead + 1); /* return to the illegal value itself */
@@ -776,21 +723,21 @@ namespace {
         }
 
         /* ---------------------------------------------------------------------
-    Note A.
-    The fall-through switches in UTF-8 reading code save a
-    temp variable, some decrements & conditionals.  The switches
-    are equivalent to the following loop:
-    {
-        int tmpBytesToRead = extraBytesToRead+1;
-        do {
-        ch += *source++;
-        --tmpBytesToRead;
-        if (tmpBytesToRead) ch <<= 6;
-        } while (tmpBytesToRead > 0);
-    }
-    In UTF-8 writing code, the switches on "bytesToWrite" are
-    similarly unrolled loops.
-   --------------------------------------------------------------------- */
+            Note A.
+            The fall-through switches in UTF-8 reading code save a
+            temp variable, some decrements & conditionals.  The switches
+            are equivalent to the following loop:
+            {
+                int tmpBytesToRead = extraBytesToRead+1;
+                do {
+                ch += *source++;
+                --tmpBytesToRead;
+                if (tmpBytesToRead) ch <<= 6;
+                } while (tmpBytesToRead > 0);
+            }
+            In UTF-8 writing code, the switches on "bytesToWrite" are
+            similarly unrolled loops.
+           --------------------------------------------------------------------- */
     }
 }
 
@@ -3710,113 +3657,14 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
     Require (inMBCharCnt == 0 or inMBChars != nullptr);
     RequireNotNull (outCharCnt);
     Require (*outCharCnt == 0 or outChars != nullptr);
-
-    /*
-     *  NOTE - based on ConvertUTF8toUTF16 () code from ConvertUTF.C, written by Mark E. Davis (mark_davis@taligent.com),
-     *  and owned by Taligtent. That code is copyrighted. It says it cannot be reproduced without the consent of Taligent,
-     *  but the Taligent company doesn't seem to exist anymore (at least no web site). Also - technically,
-     *  I'm not sure if this is a reproduction, since I've rewritten it (somewhat).
-     *  I hope inclusion of this notice is sufficient. -- LGP 2001-09-15
-     *
-     *  Original code was found refered to on web page: http://www.czyborra.com/utf/
-     *  and downloaded from URL:                        ftp://ftp.unicode.org/Public/PROGRAMS/CVTUTF/
-     *
-     *  NB: I COULD get portable UTF7 code from the same location, but it didn't seem worth the trouble.
-     */
-    {
-        enum ConversionResult {
-            ok,              /* conversion successful */
-            sourceExhausted, /* partial character in source, but hit end */
-            targetExhausted  /* insuff. room in target for conversion */
-        };
-        using UCS4                                  = uint32_t;
-        using UTF16                                 = uint16_t;
-        using UTF8                                  = uint8_t;
-        constexpr UCS4        kReplacementCharacter = 0x0000FFFDUL;
-        constexpr UCS4        kMaximumUCS2          = 0x0000FFFFUL;
-        constexpr UCS4        kMaximumUTF16         = 0x0010FFFFUL;
-        constexpr UCS4        kMaximumUCS4          = 0x7FFFFFFFUL;
-        static constexpr char bytesFromUTF8[256]    = {
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
-        static constexpr UCS4 offsetsFromUTF8[6]  = {0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL};
-        constexpr int         halfShift           = 10;
-        constexpr UCS4        halfBase            = 0x0010000UL;
-        constexpr UCS4        halfMask            = 0x3FFUL;
-        constexpr UCS4        kSurrogateHighStart = 0xD800UL;
-        constexpr UCS4        kSurrogateHighEnd   = 0xDBFFUL;
-        constexpr UCS4        kSurrogateLowStart  = 0xDC00UL;
-        constexpr UCS4        kSurrogateLowEnd    = 0xDFFFUL;
-        ConversionResult      result              = ok;
-        const UTF8*           source              = reinterpret_cast<const UTF8*> (inMBChars);
-        const UTF8*           sourceEnd           = source + inMBCharCnt;
-        UTF16*                target              = reinterpret_cast<UTF16*> (outChars);
-        UTF16*                targetEnd           = target + *outCharCnt;
-        while (source < sourceEnd) {
-            UCS4           ch                = 0;
-            unsigned short extraBytesToWrite = bytesFromUTF8[*source];
-            if (source + extraBytesToWrite > sourceEnd) {
-                result = sourceExhausted;
-                break;
-            };
-            switch (extraBytesToWrite) { /* note: code falls through cases! */
-                case 5:
-                    ch += *source++;
-                    ch <<= 6;
-                case 4:
-                    ch += *source++;
-                    ch <<= 6;
-                case 3:
-                    ch += *source++;
-                    ch <<= 6;
-                case 2:
-                    ch += *source++;
-                    ch <<= 6;
-                case 1:
-                    ch += *source++;
-                    ch <<= 6;
-                case 0:
-                    ch += *source++;
-            };
-            ch -= offsetsFromUTF8[extraBytesToWrite];
-
-            if (target >= targetEnd) {
-                result = targetExhausted;
-                break;
-            };
-            if (ch <= kMaximumUCS2) {
-                Assert (target < targetEnd);
-                *target++ = static_cast<UTF16> (ch);
-            }
-            else if (ch > kMaximumUTF16) {
-                Assert (target < targetEnd);
-                *target++ = kReplacementCharacter;
-            }
-            else {
-                if (target + 1 >= targetEnd) {
-                    result = targetExhausted;
-                    break;
-                };
-                ch -= halfBase;
-                Assert (target < targetEnd);
-                *target++ = static_cast<UTF16> ((ch >> halfShift) + kSurrogateHighStart);
-                Assert (target < targetEnd);
-                *target++ = static_cast<UTF16> ((ch & halfMask) + kSurrogateLowStart);
-            };
-        };
-
-        // For now - we ignore ConversionResult flag - and just say how much output was generated...
-        //      *sourceStart = source;
-        //      *targetStart = target;
-        //      return result;
-        *outCharCnt = (reinterpret_cast<char16_t*> (target) - outChars);
-    }
+    using namespace ConvertUTF_;
+    const UTF8*               sourceStart = reinterpret_cast<const UTF8*> (inMBChars);
+    const UTF8*               sourceEnd   = sourceStart + inMBCharCnt;
+    UTF16*                    targetStart = outChars;
+    UTF16*                    targetEnd   = outChars + *outCharCnt;
+    constexpr ConversionFlags kFlag_      = lenientConversion;
+    ConversionResult          tmp         = ConvertUTF8toUTF16 (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
+    *outCharCnt                           = targetStart - outChars;
 }
 
 void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
@@ -3827,191 +3675,32 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
     UTF32*                    targetStart = outChars;
     UTF32*                    targetEnd   = outChars + *outCharCnt;
     constexpr ConversionFlags kFlag_      = lenientConversion;
-    ConversionResult          tmp         = ConvertUTF8toUTF32 ( &sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
-    //if (tmp == ConversionResult::conversionOK) {
-		*outCharCnt = targetStart - outChars;
-    //}
-	//else {
-	//	*outCharCnt = 0;
-	//}
+    ConversionResult          tmp         = ConvertUTF8toUTF32 (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
+    *outCharCnt                           = targetStart - outChars;
 }
 
 void UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    /*
-     *  NOTE - based on ConvertUTF16toUTF8 () code from ConvertUTF.C, written by Mark E. Davis (mark_davis@taligent.com),
-     *   and owned by Taligtent. That code is copyrighted. It says it cannot be reproduced without the consent of Taligent,
-     *  but the Taligent company doesn't seem to exist anymore (at least no web site). Also - technically,
-     *  I'm not sure if this is a reproduction, since I've rewritten it (somewhat).
-     *  I hope inclusion of this notice is sufficient. -- LGP 2001-09-15
-     *
-     *  Original code was found refered to on web page: http://www.czyborra.com/utf/
-     *  and downloaded from URL:                        ftp://ftp.unicode.org/Public/PROGRAMS/CVTUTF/
-     *
-     *  NB: I COULD get portable UTF7 code from the same location, but it didn't seem worth the trouble.
-     */
-    {
-        enum ConversionResult {
-            ok,              /* conversion successful */
-            sourceExhausted, /* partial character in source, but hit end */
-            targetExhausted  /* insuff. room in target for conversion */
-        };
-        using UCS4                                  = uint32_t;
-        using UTF16                                 = uint16_t;
-        using UTF8                                  = uint8_t;
-        constexpr UCS4        kReplacementCharacter = 0x0000FFFDUL;
-        constexpr UCS4        kMaximumUCS2          = 0x0000FFFFUL;
-        constexpr UCS4        kMaximumUTF16         = 0x0010FFFFUL;
-        constexpr UCS4        kMaximumUCS4          = 0x7FFFFFFFUL;
-        static constexpr char bytesFromUTF8[256]    = {
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
-        static const UCS4 offsetsFromUTF8[6]  = {0x00000000UL, 0x00003080UL, 0x000E2080UL,
-                                                0x03C82080UL, 0xFA082080UL, 0x82082080UL};
-        static const UTF8 firstByteMark[7]    = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
-        constexpr int     halfShift           = 10;
-        constexpr UCS4    halfBase            = 0x0010000UL;
-        constexpr UCS4    halfMask            = 0x3FFUL;
-        constexpr UCS4    kSurrogateHighStart = 0xD800UL;
-        constexpr UCS4    kSurrogateHighEnd   = 0xDBFFUL;
-        constexpr UCS4    kSurrogateLowStart  = 0xDC00UL;
-        constexpr UCS4    kSurrogateLowEnd    = 0xDFFFUL;
-        ConversionResult  result              = ok;
-        const UTF16*      source              = reinterpret_cast<const UTF16*> (inChars);
-        const UTF16*      sourceEnd           = source + inCharCnt;
-        UTF8*             target              = reinterpret_cast<UTF8*> (outChars);
-        const UTF8*       targetEnd           = target + *outCharCnt;
-        while (source < sourceEnd) {
-            UCS4           ch;
-            unsigned short bytesToWrite = 0;
-            constexpr UCS4 byteMask     = 0xBF;
-            constexpr UCS4 byteMark     = 0x80;
-            ch                          = *source++;
-            if (ch >= kSurrogateHighStart && ch <= kSurrogateHighEnd && source < sourceEnd) {
-                UCS4 ch2 = *source;
-                if (ch2 >= kSurrogateLowStart && ch2 <= kSurrogateLowEnd) {
-                    ch = ((ch - kSurrogateHighStart) << halfShift) + (ch2 - kSurrogateLowStart) + halfBase;
-                    ++source;
-                };
-            };
-            if (ch < 0x80) {
-                bytesToWrite = 1;
-            }
-            else if (ch < 0x800) {
-                bytesToWrite = 2;
-            }
-            else if (ch < 0x10000) {
-                bytesToWrite = 3;
-            }
-            else if (ch < 0x200000) {
-                bytesToWrite = 4;
-            }
-            else if (ch < 0x4000000) {
-                bytesToWrite = 5;
-            }
-            else if (ch <= kMaximumUCS4) {
-                bytesToWrite = 6;
-            }
-            else {
-                bytesToWrite = 2;
-                ch           = kReplacementCharacter;
-            }; /* I wish there were a smart way to avoid this conditional */
-
-            target += bytesToWrite;
-            if (target > targetEnd) {
-                target -= bytesToWrite;
-                result = targetExhausted;
-                break;
-            };
-            switch (bytesToWrite) { /* note: code falls through cases! */
-                case 6:
-                    *--target = static_cast<UTF8> ((ch | byteMark) & byteMask);
-                    ch >>= 6;
-                case 5:
-                    *--target = static_cast<UTF8> ((ch | byteMark) & byteMask);
-                    ch >>= 6;
-                case 4:
-                    *--target = static_cast<UTF8> ((ch | byteMark) & byteMask);
-                    ch >>= 6;
-                case 3:
-                    *--target = static_cast<UTF8> ((ch | byteMark) & byteMask);
-                    ch >>= 6;
-                case 2:
-                    *--target = static_cast<UTF8> ((ch | byteMark) & byteMask);
-                    ch >>= 6;
-                case 1:
-                    *--target = static_cast<UTF8> (ch | firstByteMark[bytesToWrite]);
-            };
-            target += bytesToWrite;
-        };
-        // For now - we ignore ConversionResult flag - and just say how much output was generated...
-        //      *sourceStart = source;
-        //      *targetStart = target;
-        //      return result;
-        *outCharCnt = (target - reinterpret_cast<UTF8*> (outChars));
-    }
-#if 0
-    /*
-     *  This code is based on comments in the document: http://www.czyborra.com/utf/
-     *          -- LGP 2001-09-15
-     */
-    char*               outP        =   outChars;
-    char*               outEOB      =   outChars + *outCharCnt;
-    const   wchar_t*    inCharEnd   =   inChars + inCharCnt;
-    for (const wchar_t* i = inChars; i < inCharEnd; ++i) {
-        wchar_t c   =   *i;
-        if (c < 0x80) {
-            if (outP >= outEOB) {
-                return; // outCharCnt already set. Unclear if/how to signal buffer too small?
-            }
-            *outP++ = c;
-        }
-        else if (c < 0x800) {
-            if (outP + 1 >= outEOB) {
-                return; // outCharCnt already set. Unclear if/how to signal buffer too small?
-            }
-            *outP++ = (0xC0 | c >> 6);
-            *outP++ = (0x80 | c & 0x3F);
-        }
-        else if (c < 0x10000) {
-            if (outP + 2 >= outEOB) {
-                return; // outCharCnt already set. Unclear if/how to signal buffer too small?
-            }
-            *outP++ = (0xE0 | c >> 12);
-            *outP++ = (0x80 | c >> 6 & 0x3F);
-            *outP++ = (0x80 | c & 0x3F);
-        }
-        else if (c < 0x200000) {
-            if (outP + 3 >= outEOB) {
-                return; // outCharCnt already set. Unclear if/how to signal buffer too small?
-            }
-            *outP++ = (0xF0 | c >> 18);
-            *outP++ = (0x80 | c >> 12 & 0x3F);
-            *outP++ = (0x80 | c >> 6 & 0x3F);
-            *outP++ = (0x80 | c & 0x3F);
-        }
-        else {
-            // NOT SURE WHAT TODO HERE??? IGNORE FOR NOW...
-        }
-    }
-    *outCharCnt = (outP - outChars);
-#endif
+    using namespace ConvertUTF_;
+    const UTF16*              sourceStart = reinterpret_cast<const UTF16*> (inChars);
+    const UTF16*              sourceEnd   = sourceStart + inCharCnt;
+    UTF8*                     targetStart = reinterpret_cast<UTF8*> (outChars);
+    UTF8*                     targetEnd   = targetStart + *outCharCnt;
+    constexpr ConversionFlags kFlag_      = lenientConversion;
+    ConversionResult          tmp         = ConvertUTF16toUTF8 (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
+    *outCharCnt                           = targetStart - reinterpret_cast<UTF8*> (outChars);
 }
 
 void UTF8Converter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
-    // Not really right - but hopefully adquate for starters -- LGP 2011-09-06
-    SmallStackBuffer<char16_t> tmpBuf (*outCharCnt);
-    for (size_t i = 0; i < inCharCnt; ++i) {
-        tmpBuf[i] = inChars[i];
-    }
-    MapFromUNICODE (tmpBuf, inCharCnt, outChars, outCharCnt);
+    using namespace ConvertUTF_;
+    const UTF32*              sourceStart = reinterpret_cast<const UTF32*> (inChars);
+    const UTF32*              sourceEnd   = sourceStart + inCharCnt;
+    UTF8*                     targetStart = reinterpret_cast<UTF8*> (outChars);
+    UTF8*                     targetEnd   = targetStart + *outCharCnt;
+    constexpr ConversionFlags kFlag_      = lenientConversion;
+    ConversionResult          tmp         = ConvertUTF32toUTF8 (&sourceStart, sourceEnd, &targetStart, targetEnd, kFlag_);
+    *outCharCnt                           = targetStart - reinterpret_cast<UTF8*> (outChars);
 }
 
 /*
