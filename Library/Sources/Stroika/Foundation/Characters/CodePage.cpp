@@ -2981,7 +2981,7 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
 
     /*
      *  NOTE - based on ConvertUTF8toUTF16 () code from ConvertUTF.C, written by Mark E. Davis (mark_davis@taligent.com),
-     *   and owned by Taligtent. That code is copyrighted. It says it cannot be reproduced without the consent of Taligent,
+     *  and owned by Taligtent. That code is copyrighted. It says it cannot be reproduced without the consent of Taligent,
      *  but the Taligent company doesn't seem to exist anymore (at least no web site). Also - technically,
      *  I'm not sure if this is a reproduction, since I've rewritten it (somewhat).
      *  I hope inclusion of this notice is sufficient. -- LGP 2001-09-15
@@ -2997,14 +2997,14 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
             sourceExhausted, /* partial character in source, but hit end */
             targetExhausted  /* insuff. room in target for conversion */
         };
-        using UCS4                              = uint32_t;
-        using UTF16                             = uint16_t;
-        using UTF8                              = uint8_t;
-        const UCS4        kReplacementCharacter = 0x0000FFFDUL;
-        const UCS4        kMaximumUCS2          = 0x0000FFFFUL;
-        const UCS4        kMaximumUTF16         = 0x0010FFFFUL;
-        const UCS4        kMaximumUCS4          = 0x7FFFFFFFUL;
-        static const char bytesFromUTF8[256]    = {
+        using UCS4                                  = uint32_t;
+        using UTF16                                 = uint16_t;
+        using UTF8                                  = uint8_t;
+        constexpr UCS4        kReplacementCharacter = 0x0000FFFDUL;
+        constexpr UCS4        kMaximumUCS2          = 0x0000FFFFUL;
+        constexpr UCS4        kMaximumUTF16         = 0x0010FFFFUL;
+        constexpr UCS4        kMaximumUCS4          = 0x7FFFFFFFUL;
+        static constexpr char bytesFromUTF8[256]    = {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -3013,20 +3013,19 @@ void UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, cha
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5};
-        static const UCS4 offsetsFromUTF8[6]  = {0x00000000UL, 0x00003080UL, 0x000E2080UL,
-                                                0x03C82080UL, 0xFA082080UL, 0x82082080UL};
-        const int         halfShift           = 10;
-        const UCS4        halfBase            = 0x0010000UL;
-        const UCS4        halfMask            = 0x3FFUL;
-        const UCS4        kSurrogateHighStart = 0xD800UL;
-        const UCS4        kSurrogateHighEnd   = 0xDBFFUL;
-        const UCS4        kSurrogateLowStart  = 0xDC00UL;
-        const UCS4        kSurrogateLowEnd    = 0xDFFFUL;
-        ConversionResult  result              = ok;
-        const UTF8*       source              = reinterpret_cast<const UTF8*> (inMBChars);
-        const UTF8*       sourceEnd           = source + inMBCharCnt;
-        UTF16*            target              = reinterpret_cast<UTF16*> (outChars);
-        UTF16*            targetEnd           = target + *outCharCnt;
+        static constexpr UCS4 offsetsFromUTF8[6]  = {0x00000000UL, 0x00003080UL, 0x000E2080UL, 0x03C82080UL, 0xFA082080UL, 0x82082080UL};
+        constexpr int         halfShift           = 10;
+        constexpr UCS4        halfBase            = 0x0010000UL;
+        constexpr UCS4        halfMask            = 0x3FFUL;
+        constexpr UCS4        kSurrogateHighStart = 0xD800UL;
+        constexpr UCS4        kSurrogateHighEnd   = 0xDBFFUL;
+        constexpr UCS4        kSurrogateLowStart  = 0xDC00UL;
+        constexpr UCS4        kSurrogateLowEnd    = 0xDFFFUL;
+        ConversionResult      result              = ok;
+        const UTF8*           source              = reinterpret_cast<const UTF8*> (inMBChars);
+        const UTF8*           sourceEnd           = source + inMBCharCnt;
+        UTF16*                target              = reinterpret_cast<UTF16*> (outChars);
+        UTF16*                targetEnd           = target + *outCharCnt;
         while (source < sourceEnd) {
             UCS4           ch                = 0;
             unsigned short extraBytesToWrite = bytesFromUTF8[*source];
@@ -3115,14 +3114,14 @@ void UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, c
             sourceExhausted, /* partial character in source, but hit end */
             targetExhausted  /* insuff. room in target for conversion */
         };
-        using UCS4                              = uint32_t;
-        using UTF16                             = uint16_t;
-        using UTF8                              = uint8_t;
-        const UCS4        kReplacementCharacter = 0x0000FFFDUL;
-        const UCS4        kMaximumUCS2          = 0x0000FFFFUL;
-        const UCS4        kMaximumUTF16         = 0x0010FFFFUL;
-        const UCS4        kMaximumUCS4          = 0x7FFFFFFFUL;
-        static const char bytesFromUTF8[256]    = {
+        using UCS4                                  = uint32_t;
+        using UTF16                                 = uint16_t;
+        using UTF8                                  = uint8_t;
+        constexpr UCS4        kReplacementCharacter = 0x0000FFFDUL;
+        constexpr UCS4        kMaximumUCS2          = 0x0000FFFFUL;
+        constexpr UCS4        kMaximumUTF16         = 0x0010FFFFUL;
+        constexpr UCS4        kMaximumUCS4          = 0x7FFFFFFFUL;
+        static constexpr char bytesFromUTF8[256]    = {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -3134,13 +3133,13 @@ void UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, c
         static const UCS4 offsetsFromUTF8[6]  = {0x00000000UL, 0x00003080UL, 0x000E2080UL,
                                                 0x03C82080UL, 0xFA082080UL, 0x82082080UL};
         static const UTF8 firstByteMark[7]    = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
-        const int         halfShift           = 10;
-        const UCS4        halfBase            = 0x0010000UL;
-        const UCS4        halfMask            = 0x3FFUL;
-        const UCS4        kSurrogateHighStart = 0xD800UL;
-        const UCS4        kSurrogateHighEnd   = 0xDBFFUL;
-        const UCS4        kSurrogateLowStart  = 0xDC00UL;
-        const UCS4        kSurrogateLowEnd    = 0xDFFFUL;
+        constexpr int     halfShift           = 10;
+        constexpr UCS4    halfBase            = 0x0010000UL;
+        constexpr UCS4    halfMask            = 0x3FFUL;
+        constexpr UCS4    kSurrogateHighStart = 0xD800UL;
+        constexpr UCS4    kSurrogateHighEnd   = 0xDBFFUL;
+        constexpr UCS4    kSurrogateLowStart  = 0xDC00UL;
+        constexpr UCS4    kSurrogateLowEnd    = 0xDFFFUL;
         ConversionResult  result              = ok;
         const UTF16*      source              = reinterpret_cast<const UTF16*> (inChars);
         const UTF16*      sourceEnd           = source + inCharCnt;
@@ -3149,8 +3148,8 @@ void UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt, c
         while (source < sourceEnd) {
             UCS4           ch;
             unsigned short bytesToWrite = 0;
-            const UCS4     byteMask     = 0xBF;
-            const UCS4     byteMark     = 0x80;
+            constexpr UCS4 byteMask     = 0xBF;
+            constexpr UCS4 byteMark     = 0x80;
             ch                          = *source++;
             if (ch >= kSurrogateHighStart && ch <= kSurrogateHighEnd && source < sourceEnd) {
                 UCS4 ch2 = *source;
