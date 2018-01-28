@@ -103,7 +103,7 @@ namespace {
     namespace Test4_VirtaulConstant_ {
         namespace Private_ {
             namespace T1_ {
-                static const String                            x{3};
+                static const String                            x{L"3"};
                 inline const String&                           kX_ () { return x; }
                 const Execution::VirtaulConstant<String, &kX_> kX;
                 void                                           DoIt ()
