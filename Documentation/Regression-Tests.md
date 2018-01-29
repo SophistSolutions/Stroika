@@ -35,7 +35,7 @@
        PerformanceDump-Windows_VS2k17-$VER.txt REGRESSION-TESTS-Windows_VS2k17-$VER-OUT.txt
      
        ```{on windows bash shell run)
-	   USE_TEST_BASENAME=Windows_VS2k17 ./ScriptsLib/RunRegressionTests.sh
+	   USE_TEST_BASENAME=Windows_VS2k17 ./ScriptsLib/RegressionTests.sh
 	   USE_TEST_BASENAME=Windows_VS2k17 ./ScriptsLib/RunPerformanceRegressionTests.sh
        ```
 
