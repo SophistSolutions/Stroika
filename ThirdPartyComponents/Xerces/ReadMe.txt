@@ -1,4 +1,4 @@
-The version of Xerces used is defined at the top of the buildall.pl file.
+The version of Xerces used is defined at the top of the Makefile.
 
-It will first check in the ..\Origs-cache folder for that version and
+The Makefile will first check in the ..\Origs-cache folder for that version and
 if not already present, it will automatically download it.

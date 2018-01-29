@@ -3,7 +3,7 @@ If built with Stroika, Stroika can take advantage of these features.
 
 The version of openssl used is defined at the top of the Makefile.
 
-It will first check in the ..\Origs-cache folder for that version and
+The Makefile will first check in the ..\Origs-cache folder for that version and
 if not already present, it will automatically download it (to there).
 
 Generally, we do builds of just static versions of the library, because this
