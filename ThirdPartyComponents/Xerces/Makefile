@@ -273,13 +273,15 @@ CMAKE_CONFIGURATION=Debug
 endif
 
 #Default Xerces build generates depednency on DLL version of runtime
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq (Release,$(CMAKE_CONFIGURATION))
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="/MT"
-else
-CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="/MTd"
-endif
-endif
+#TRIED To ADD (or replace /MDd with /MTd) from cmdline for cmake but could find no way.
+#So used sed script to post-process CMakeCache.txt
+#ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+#ifeq (Release,$(CMAKE_CONFIGURATION))
+#CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_RELEASE="/MT"
+#else
+#CMAKE_ARGS+= -DCMAKE_CXX_FLAGS_DEBUG="/MTd"
+#endif
+#endif
 
 
 #@todo fix config mechanism to have var saying 32 or 64 bits?? Or -arch?
@@ -309,6 +311,14 @@ ifeq (1,$(BUILD_WITH_CMAKE))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)"` "... "
 	@echo 'export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
 	@export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+	@###I could find no param to set going into cmake to use the static link version of the C++ runtime, but this does it (I hope not too aggressively)
+	@echo "sed -i CMakeCache.txt -e 's/MD/MT/g'" >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && sed -i CMakeCache.txt -e 's/MD/MT/g'
+	@###Then though not documented, you have to re-run cmake SRCDIR to get it to pay attention to the changes
+	@echo 'export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake $(CMAKE_CURRENT_SOURCE_DIR)' >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
+	@export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
+endif	
 	@echo done
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Compiling (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT)"` "... "
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ECHO) "$(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)" > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
