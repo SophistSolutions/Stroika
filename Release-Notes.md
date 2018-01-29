@@ -16,6 +16,125 @@ History
 
 
 
+
+
+ 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a228">v2.0a228</a><br/>2018-01-29</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a227...v2.0a228</li>
+		<li>Compiler Support
+			<ul>
+				<li>Support VisualStudio.net 2k17 15.5.5</li>
+			</ul>
+		</li>
+		<li>Xerces makefile - fix windows regression - had messed up debug symbols (and more)</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>use libcurl version 7.58.0</li>
+				<li>3.22 sqlite</li>
+			</ul>
+		</li>
+		<li>String
+			<ul>
+				<li>Fixed several char_32_t bugs in UTF8Converter</li>
+				<li>use https://github.com/codebrainz/libutfxx/blob/master/utf/ConvertUTF.* to improve UTF8 conversion code</li>
+				<li>String::FromUTF8 () - rewrite using UTF8Converter - so should be faster</li>
+				<li>In UTF8Converter - use constexpr instead of const(</li>
+				<li>Added String::FromISOLatin1 () support, and documented this can be used for any random string of characters safely</li>
+				<li>renamed String::FromAscii to String::FromASCII; FromAscii deprecated</li>
+			</ul>
+		</li>
+		<li>Frameworks::WebServer
+			<ul>
+				<li>WebServer::ConnectionManager::Options now has option for fTCPBacklog and changed default to 3/4 of maxConnections</li>
+				<li>Cleanup and docs and todo items on WebServer Connection and ConnectionManager class</li>
+			</ul>
+		</li>
+		<li>reviewed https://stroika.atlassian.net/browse/STK-494 (spinlock/atomic_thread_fence) and various issues and C++ spec/docs. Decided this code was correct and updated docs with clearer justifications as to why.</li>
+		<li>On CYGWIN - dont use -j10 by default</li>
+		<li>https://stroika.atlassian.net/browse/STK-381 - Deprecate constviagetter; replace with VirtaulConstant; used successfully in PredefinedInternetMediaType</li>
+		<li>Minor cleanups to Led FindClosestColorInColorTable code</li>
+		<li>Doc-comments and cleanups</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a228.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a228-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a227">v2.0a227</a><br/>2018-01-22</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a226...v2.0a227</li>
+		<li>improve makefile output from xerces build/logging</li>
+		<li>Time support
+			<ul>
+				<li>more docs and validation cleanup to Date/DateTime code - throwing range_error if numbers out of range</li>
+				<li>Implement new policy (halfway) - in Date/DateTime code - (and TimeOfDay but less critical there) - so CTOR requires valid inputs, but operations that could overflow will now thorw range_error instead of overflowing</li>
+				<li>cleanup TimeOfDay - doc that CTOR always requires valid in range input (change for uint32_t overload - docuemnted changed and temp hackward compat/assert)</li>
+				<li>more regtests for datetime issue I encoounted in HealthFrame (diff of days before 1970) - now done mcuh better. And another TimeOfDay constexpr CTOR</li>
+				<li>DateTime::Difference () cleanups</li>
+				<li>Cleanup code - Duration</li>
+			</ul>
+		</li>
+		<li>typo in ModuleGetterSetter synchronized update</li>
+		<li>docs improvemnts so clearer why to use String_Constant</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a227.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a227-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.0 (apple clang 9.0)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a226">v2.0a226</a><br/>2018-01-21</td>
