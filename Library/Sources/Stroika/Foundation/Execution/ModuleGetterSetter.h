@@ -8,13 +8,10 @@
 
 #include "../Configuration/Common.h"
 #include "../Memory/Common.h"
+#include "../Memory/Optional.h"
 
 /**
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Late</a>
- *
- * TODO
- *
- *      @todo   Consider addiing Update method (with func arg taking T by reference?/optr or taking and returing
  */
 
 namespace Stroika {
@@ -76,7 +73,14 @@ namespace Stroika {
              *          {
              *              if (sModuleConfiguration_.Get ().fEnabled) {
              *                  auto n = sModuleConfiguration_.Get ();
+             *                  n.fEnabled = false; // change something in 'n' here
              *                  sModuleConfiguration_.Set (n);
+             *              }
+             *          }
+             *          void TestUse3_ ()
+             *          {
+             *              if (sModuleConfiguration_.Update ([](const MyData_& data) -> Optional<MyData_> {  if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+             *                  sWaitableEvent.Set ();  // e.g. trigger someone to wakeup and used changes? - no global lock held here...
              *              }
              *          }
              *      \endcode
@@ -86,27 +90,53 @@ namespace Stroika {
              */
             template <typename T, typename IMPL>
             struct ModuleGetterSetter {
+            public:
                 /**
+                 *  Grab the global value, performing any necessary read-locks automatically.
                  */
                 nonvirtual T Get ();
 
+            public:
                 /**
+                 *  Set the global value, performing any necessary write-locks automatically.
                  */
                 nonvirtual void Set (const T& v);
 
+            public:
                 /**
-                 *  Call this with a lambda that will update the associated value. The update will happen INSIDE a lock (synchonized).
+                 *  \brief Call this with a lambda that will update the associated value (INSIDE a lock (synchonized))
+                 *
+                 *  Call this with a lambda that will update the associated value. The update will happen INSIDE
+                 *  a lock (synchonized). 
+                 *
+                 *  updaterFunction should return nullopt if no change, or the new value if changed.
+                 *
+                 *  Update () assures atomic update of your global data, and returns copy of the new value set (optional - this can be ignored).
+                 *  But since it returns an Optional<> you can test the result to see if any update was made, and trigger a wakeup or
+                 *  further processing (without the global lock held).
                  *
                  *  \par Example Usage
                  *      \code
-                 *      // extension of example in class docs above
-                 *      sModuleConfiguration_.SynchonizedUpdate ([] (MyData_ data) { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { data.fLastSynchronizedAt = DateTime::Now ();} return data; });
+                 *          sModuleConfiguration_.SynchonizedUpdate ([] (MyData_ data) { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { data.fLastSynchronizedAt = DateTime::Now ();} return data; });
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          if (sModuleConfiguration_.SynchonizedUpdate ([] (const MyData_& data) -> Optional<MyData_> { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result;} return {};  })) {
+                 *              sWaitableEvent.Set ();  // e.g. trigger someone to wakeup and used changes? - no global lock held here...
+                 *          }
                  *      \endcode
                  */
-                nonvirtual void SynchonizedUpdate (const function<T (T)>& updaterFunction);
+                nonvirtual Memory::Optional<T> Update (const function<Memory::Optional<T> (const T&)>& updaterFunction);
 
-            private:
-                Synchronized<Memory::Optional<IMPL>> fIndirect_;
+            public:
+                [[deprecated ("Use just plain Update - and note slight function signature diff - since Stroika v2.0a229")]] void SynchonizedUpdate (const function<T (T)>& updaterFunction) 
+				{
+                    Update (updaterFunction);
+                }
+
+            private: 
+				Synchronized<Memory::Optional<IMPL>> fIndirect_;
 
             private:
                 // separate this method out so the callers can be inlined, this more rarely executed, and longer segment of code is not

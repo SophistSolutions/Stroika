@@ -38,13 +38,17 @@ namespace Stroika {
                 l.rwref ()->Set (v);
             }
             template <typename T, typename IMPL>
-            void ModuleGetterSetter<T, IMPL>::SynchonizedUpdate (const function<T (T)>& updaterFunction)
+            Memory::Optional<T> ModuleGetterSetter<T, IMPL>::Update (const function<Memory::Optional<T> (const T&)>& updaterFunction)
             {
                 typename Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
                 if (l->IsMissing ()) {
                     DoInitOutOfLine_ (&l);
                 }
-                l.rwref ()->Set (updaterFunction (l.cref ()->Get ()));
+                if (auto o = updaterFunction (l.cref ()->Get ())) {
+                    l.rwref ()->Set (*o);
+                    return o;
+                }
+                return {};
             }
             template <typename T, typename IMPL>
             dont_inline void ModuleGetterSetter<T, IMPL>::DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref)

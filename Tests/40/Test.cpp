@@ -4,12 +4,17 @@
 //  TEST    Foundation::Execution::Other
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include "Stroika/Foundation/DataExchange/OptionsFile.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Function.h"
+#include "Stroika/Foundation/Execution/ModuleGetterSetter.h"
 #include "Stroika/Foundation/Execution/VirtualConstant.h"
+#include "Stroika/Foundation/Time/DateTime.h"
+#include "Stroika/Foundation/Time/Duration.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -133,12 +138,87 @@ namespace {
 }
 
 namespace {
+    namespace Test5_ModuleGetterSetter_ {
+        namespace PRIVATE_ {
+            using namespace DataExchange;
+            using namespace Execution;
+            using namespace Time;
+            static const Duration kMinTime_ = 1s;
+            struct MyData_ {
+                bool     fEnabled = false;
+                DateTime fLastSynchronizedAt;
+            };
+            struct ModuleGetterSetter_Implementation_MyData_ {
+                ModuleGetterSetter_Implementation_MyData_ ()
+                    : fOptionsFile_{
+                          L"MyModule",
+                          []() -> ObjectVariantMapper {
+                              ObjectVariantMapper mapper;
+                              mapper.AddClass<MyData_> (initializer_list<ObjectVariantMapper::StructFieldInfo>{
+                                  {L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled)},
+                                  {L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt)},
+                              });
+                              return mapper;
+                          }(),
+                          OptionsFile::kDefaultUpgrader, OptionsFile::mkFilenameMapper (L"Put-Your-App-Name-Here")}
+                    , fActualCurrentConfigData_ (fOptionsFile_.Read<MyData_> (MyData_ ()))
+                {
+                    Set (fActualCurrentConfigData_); // assure derived data (and changed fields etc) up to date
+                }
+                MyData_ Get () const
+                {
+                    return fActualCurrentConfigData_;
+                }
+                void Set (const MyData_& v)
+                {
+                    fActualCurrentConfigData_ = v;
+                    fOptionsFile_.Write (v);
+                }
+
+            private:
+                OptionsFile fOptionsFile_;
+                MyData_     fActualCurrentConfigData_; // automatically initialized just in time, and externally synchronized
+            };
+
+            using Execution::ModuleGetterSetter;
+            ModuleGetterSetter<MyData_, ModuleGetterSetter_Implementation_MyData_> sModuleConfiguration_;
+
+            void TestUse1_ ()
+            {
+                if (sModuleConfiguration_.Get ().fEnabled) {
+                    auto n     = sModuleConfiguration_.Get ();
+                    n.fEnabled = false;
+                    sModuleConfiguration_.Set (n);
+                }
+            }
+            void TestUse2_ ()
+            {
+                sModuleConfiguration_.Update ([](MyData_ data) { MyData_ result = data; if (result.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { result.fLastSynchronizedAt = DateTime::Now (); } return result; });
+            }
+            void TestUse3_ ()
+            {
+                if (sModuleConfiguration_.Update ([](const MyData_& data) -> Optional<MyData_> {  if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+                    // e.g. trigger someone to wakeup and used changes?
+                }
+            }
+        }
+        void DoAll ()
+        {
+            PRIVATE_::TestUse1_ ();
+            PRIVATE_::TestUse2_ ();
+            PRIVATE_::TestUse3_ ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         Test1_Function_ ();
         Test2_CommandLine_ ();
         Test3_::DoAll ();
         Test4_VirtualConstant_::DoAll ();
+        Test5_ModuleGetterSetter_::DoAll ();
     }
 }
 
