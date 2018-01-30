@@ -117,12 +117,12 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *          sModuleConfiguration_.SynchonizedUpdate ([] (MyData_ data) { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { data.fLastSynchronizedAt = DateTime::Now ();} return data; });
+                 *          sModuleConfiguration_.Update ([] (MyData_ data) { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { data.fLastSynchronizedAt = DateTime::Now ();} return data; });
                  *      \endcode
                  *
                  *  \par Example Usage
                  *      \code
-                 *          if (sModuleConfiguration_.SynchonizedUpdate ([] (const MyData_& data) -> Optional<MyData_> { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result;} return {};  })) {
+                 *          if (sModuleConfiguration_.Update ([] (const MyData_& data) -> Optional<MyData_> { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result;} return {};  })) {
                  *              sWaitableEvent.Set ();  // e.g. trigger someone to wakeup and used changes? - no global lock held here...
                  *          }
                  *      \endcode
