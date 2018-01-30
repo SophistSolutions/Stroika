@@ -174,7 +174,7 @@ History
 			</ul>
 		</li>
 		<li>experiment with constexpr Optional move CTOR (more like stdc++17 optional)</li>
-		<li>Build Sysstem/Scripts
+		<li>Build System/Scripts
 			<ul>
 				<li>updated GetMessageForMissingTool for nodejs</li>
 				<li>fixes for make clobber with Tools folder (mostly fix for windows)</li>
