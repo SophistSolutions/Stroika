@@ -55,6 +55,13 @@ namespace Stroika {
                 return Debug::Demangle (String::FromNarrowSDKString (t.name ()));
             }
 
+            String ToString (const char* t)
+            {
+                // No way to know the 'right' characterset in this case, but as this is mostly used for debugging, no biggie. The caller
+                // can be more careful if he cares about charset. This should be safe, and mostly helpful
+                return String::FromISOLatin1 (t);
+            }
+
             template <>
             String ToString (const bool& t)
             {
