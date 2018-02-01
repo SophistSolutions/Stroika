@@ -130,13 +130,11 @@ namespace Stroika {
                 nonvirtual Memory::Optional<T> Update (const function<Memory::Optional<T> (const T&)>& updaterFunction);
 
             public:
-                [[deprecated ("Use just plain Update - and note slight function signature diff - since Stroika v2.0a229")]] void SynchonizedUpdate (const function<T (T)>& updaterFunction) 
-				{
+                [[deprecated ("Use just plain Update - and note slight function signature diff - since Stroika v2.0a229")]] void SynchonizedUpdate (const function<T (T)>& updaterFunction) {
                     Update (updaterFunction);
                 }
 
-            private: 
-				Synchronized<Memory::Optional<IMPL>> fIndirect_;
+                private : Synchronized<Memory::Optional<IMPL>> fIndirect_;
 
             private:
                 // separate this method out so the callers can be inlined, this more rarely executed, and longer segment of code is not
