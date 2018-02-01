@@ -20,7 +20,7 @@ namespace {
     wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
-            return Characters::CString::Format (L"Invalid file format");
+            return L"Invalid file format";
         }
         else {
             return Characters::CString::Format (L"Invalid file format: '%.200s'", fileName.LimitLength (100, false).c_str ());
