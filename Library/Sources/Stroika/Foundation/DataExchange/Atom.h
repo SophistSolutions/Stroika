@@ -116,7 +116,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                Atom ();
+                constexpr Atom ();
                 Atom (const wchar_t* src);
                 Atom (const wstring& src);
                 Atom (const String& src);
@@ -144,7 +144,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual bool empty () const;
+                nonvirtual constexpr bool empty () const;
 
             public:
                 /**

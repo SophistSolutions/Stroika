@@ -24,7 +24,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ATOM_MANAGER>
-            inline Atom<ATOM_MANAGER>::Atom ()
+            inline constexpr Atom<ATOM_MANAGER>::Atom ()
                 : fValue_ (ATOM_MANAGER::kEmpty)
             {
             }
@@ -70,7 +70,7 @@ namespace Stroika {
                 return Common::CompareNormalizer (fValue_, rhs.fValue_);
             }
             template <typename ATOM_MANAGER>
-            inline bool Atom<ATOM_MANAGER>::empty () const
+            inline constexpr bool Atom<ATOM_MANAGER>::empty () const
             {
                 return fValue_ == ATOM_MANAGER::kEmpty;
             }
