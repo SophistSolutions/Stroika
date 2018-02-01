@@ -417,7 +417,7 @@ namespace Stroika {
                  *        Because of this, This function allows ANY 8-bit) characters at all - to be passed in, and those characters
                  *        will be mapped to UNICODE characters (of the same code point) in the resulting String.
                  *
-                 *  \note Alias From8bitASCII () or FromExtendedASCII().
+                 *  \note Alias From8bitASCII () or FromExtendedASCII () or FromAnyCharset (), FromAnyCharacterSet ()
                  */
                 static String FromISOLatin1 (const char* from);
                 static String FromISOLatin1 (const string& from);

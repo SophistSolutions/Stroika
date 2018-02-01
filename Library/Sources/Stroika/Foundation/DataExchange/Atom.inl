@@ -24,7 +24,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ATOM_MANAGER>
-            inline Atom<ATOM_MANAGER>::Atom ()
+            inline constexpr Atom<ATOM_MANAGER>::Atom ()
                 : fValue_ (ATOM_MANAGER::kEmpty)
             {
             }
@@ -44,20 +44,9 @@ namespace Stroika {
             {
             }
             template <typename ATOM_MANAGER>
-            inline Atom<ATOM_MANAGER>::Atom (const Atom& src)
-                : fValue_ (src.fValue_)
-            {
-            }
-            template <typename ATOM_MANAGER>
-            inline Atom<ATOM_MANAGER>::Atom (const _AtomInternalType& src)
+            inline constexpr Atom<ATOM_MANAGER>::Atom (const _AtomInternalType& src)
                 : fValue_ (src)
             {
-            }
-            template <typename ATOM_MANAGER>
-            inline Atom<ATOM_MANAGER>& Atom<ATOM_MANAGER>::operator= (const Atom& rhs)
-            {
-                fValue_ = rhs.fValue_;
-                return *this;
             }
             template <typename ATOM_MANAGER>
             inline String Atom<ATOM_MANAGER>::GetPrintName () const
@@ -70,7 +59,7 @@ namespace Stroika {
                 return Common::CompareNormalizer (fValue_, rhs.fValue_);
             }
             template <typename ATOM_MANAGER>
-            inline bool Atom<ATOM_MANAGER>::empty () const
+            inline constexpr bool Atom<ATOM_MANAGER>::empty () const
             {
                 return fValue_ == ATOM_MANAGER::kEmpty;
             }

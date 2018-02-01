@@ -116,19 +116,19 @@ namespace Stroika {
             public:
                 /**
                  */
-                Atom ();
+                constexpr Atom ();
                 Atom (const wchar_t* src);
                 Atom (const wstring& src);
                 Atom (const String& src);
-                Atom (const Atom& src);
+                constexpr Atom (const Atom& src) = default;
 
             protected:
-                Atom (const _AtomInternalType& src);
+                constexpr Atom (const _AtomInternalType& src);
 
             public:
                 /**
                  */
-                nonvirtual Atom& operator= (const Atom& rhs);
+                nonvirtual Atom& operator= (const Atom& rhs) = default;
 
             public:
                 /**
@@ -144,7 +144,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual bool empty () const;
+                nonvirtual constexpr bool empty () const;
 
             public:
                 /**
