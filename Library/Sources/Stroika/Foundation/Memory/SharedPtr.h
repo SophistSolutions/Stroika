@@ -357,7 +357,7 @@ namespace Stroika {
             void ThrowIfNull (const Memory::SharedPtr<T>& p);
         }
 
-/**
+        /**
          *  Callers can always use EITHER shared_ptr or SharedPtr. But this define tells which is probably faster
          *  for the most part. Often types, users will want to define a typedef which selects
          *  the faster implementation.
