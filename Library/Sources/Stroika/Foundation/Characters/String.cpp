@@ -1012,7 +1012,7 @@ String String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
         }
     }
     if (endOfFirstTrim == 0) {
-        return String (); // all trimmed
+        return String{}; // all trimmed
     }
     else if (endOfFirstTrim == length) {
         return *this; // nothing trimmed
