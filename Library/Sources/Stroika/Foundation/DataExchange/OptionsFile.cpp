@@ -103,10 +103,9 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
 
 const OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
 {
-    String useAppName = appName;
     return
-        [useAppName](const String& moduleName, const String& fileSuffix) -> String {
-            return IO::FileSystem::WellKnownLocations::GetApplicationData () + useAppName + String (IO::FileSystem::kPathComponentSeperator) + moduleName + fileSuffix;
+        [appName](const String& moduleName, const String& fileSuffix) -> String {
+            return IO::FileSystem::WellKnownLocations::GetApplicationData () + appName + String (IO::FileSystem::kPathComponentSeperator) + moduleName + fileSuffix;
         };
 }
 
