@@ -23,7 +23,7 @@ namespace {
             return L"Invalid file format";
         }
         else {
-            return Characters::CString::Format (L"Invalid file format: '%.200s'", fileName.LimitLength (100, false).c_str ());
+            return Characters::CString::Format (L"Invalid file format: '%s'", fileName.LimitLength (100, false).c_str ());
         }
     }
 }

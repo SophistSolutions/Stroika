@@ -35,7 +35,7 @@ namespace {
         }
         DISABLE_COMPILER_MSC_WARNING_END (4800)
         if (fileName) {
-            message = Characters::CString::Format (L"%s: '%.200s'", message.c_str (), fileName->LimitLength (100, false).c_str ());
+            message = Characters::CString::Format (L"%s: '%s'", message.c_str (), fileName->LimitLength (100, false).c_str ());
         }
         return message;
     }

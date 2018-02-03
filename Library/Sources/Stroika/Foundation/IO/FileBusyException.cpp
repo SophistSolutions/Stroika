@@ -23,7 +23,7 @@ namespace {
             return L"File busy";
         }
         else {
-            return Characters::CString::Format (L"File busy: '%.200s'", fileName.LimitLength (100, false).c_str ());
+            return Characters::CString::Format (L"File busy: '%s'", fileName.LimitLength (100, false).c_str ());
         }
     }
 }
