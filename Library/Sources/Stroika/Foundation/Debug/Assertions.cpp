@@ -157,9 +157,6 @@ void Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (cons
     (sWeakAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, functionName);
 }
 
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Winvalid-noreturn\"");
-// Cannot figure out how to disable this warning? -- LGP 2014-01-04
-//DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Wenabled-by-default\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 [[noreturn]] void Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName) noexcept
 {
     static bool s_InTrap = false;
@@ -170,10 +167,12 @@ DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Winvalid-nore
     }
     s_InTrap = true;
     (sAssertFailureHandler_.load ()) (assertCategory, assertionText, fileName, lineNum, functionName);
-    s_InTrap = false; //  in case using some sort of assertion handler that allows for continuation
+    //  in case using some sort of assertion handler that allows for continuation
     //  (like under debugger manipulation of PC to go a little further in the code)
+    s_InTrap = false;
+
+    // Doesn't matter much what we do at this stage, but in visual studio debugger, you can skip this line
+    std::quick_exit (1);
 }
-//DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Wenabled-by-default\"");
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Winvalid-noreturn\"");
 
 #endif
