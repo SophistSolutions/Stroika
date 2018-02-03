@@ -1409,6 +1409,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Demangle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Trace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.h" />
@@ -1841,6 +1842,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\MallocGuard.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TimingTrace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />

@@ -2016,6 +2016,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.h">
+      <Filter>Sources\Debug</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3245,6 +3248,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\VirtualConstant.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.inl">
+      <Filter>Sources\Debug</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
