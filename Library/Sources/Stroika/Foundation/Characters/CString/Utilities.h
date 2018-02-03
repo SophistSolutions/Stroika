@@ -132,8 +132,6 @@ namespace Stroika {
                  *              covered by the stdc++ ;-)) - is because of two reasons:
                  *                  a)  Microsoft has this interpretation.
                  *                  b)  Its a BETTER interpretation (allowing for stuff like (Format (SDKSTR("time%s"), count==1? SDKSTR (""): SDKSTR ("s"));
-                 *
-                 *  @see qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
                  */
                 string  FormatV (const char* format, va_list argsList);
                 wstring FormatV (const wchar_t* format, va_list argsList);
@@ -220,26 +218,26 @@ namespace Stroika {
                  */
                 wstring Float2String (double f);
 
-/*
-                @CONFIGVAR:     qPlatformSupports_snprintf
-                @DESCRIPTION:   <p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
-                    */
+                /*
+                 @CONFIGVAR:     qPlatformSupports_snprintf
+                 @DESCRIPTION:   <p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
+                */
 #ifndef qPlatformSupports_snprintf
 #error "qPlatformSupports_snprintf should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-/*
+                /*
                 @CONFIGVAR:     qPlatformSupports_wcscasecmp
                 @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
-                    */
+                */
 #ifndef qPlatformSupports_wcscasecmp
 #error "qPlatformSupports_wcscasecmp should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-/*
+                /*
                 @CONFIGVAR:     qPlatformSupports_wcsncasecmp
                 @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
-                    */
+                */
 #ifndef qPlatformSupports_wcsncasecmp
 #error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
 #endif

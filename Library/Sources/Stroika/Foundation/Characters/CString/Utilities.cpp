@@ -82,7 +82,6 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
     RequireNotNull (format);
     Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (10 * 1024);
     const wchar_t*                               useFormat = format;
-#if !qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
     wchar_t newFormat[5 * 1024];
     {
         size_t origFormatLen = wcslen (format);
@@ -127,7 +126,6 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
             useFormat               = newFormat;
         }
     }
-#endif
 
     // SUBTLE: va_list looks like it is passed by value, but its not really,
     // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
