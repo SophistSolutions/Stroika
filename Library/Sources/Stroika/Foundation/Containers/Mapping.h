@@ -355,10 +355,16 @@ namespace Stroika {
                  *  \note   Java comparison
                  *          mapping.keySet.retainAll (collection);
                  *
-                 *  \par Example Usage
+                 *  \par    Example Usage
                  *      \code
                  *      fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
                  *      \endcode
+                 *
+                 * \note    Something of an alias for 'Subset()' or 'Intersects', as this - in-place computes the subset
+                 *          of the Mapping<> that intersects with the argument keys.
+                 *
+                 * \todo    Consider having const function Intersects() - or Subset() - that produces a copy of the results of RetrainAll()
+                 *          without modifying this object.
                  */
                 template <typename CONTAINER_OF_KEY_TYPE>
                 nonvirtual void RetainAll (const CONTAINER_OF_KEY_TYPE& items);
