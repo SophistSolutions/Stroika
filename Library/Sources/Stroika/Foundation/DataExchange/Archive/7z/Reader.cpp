@@ -5,7 +5,6 @@
 
 #include "../../../Characters/Format.h"
 #include "../../../Execution/Finally.h"
-#include "../../../Streams/iostream/InputStreamFromStdIStream.h"
 
 #include "Reader.h"
 
@@ -24,8 +23,6 @@ extern "C" {
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
-
-using Streams::iostream::InputStreamFromStdIStream;
 
 #if qHasFeature_LZMA
 namespace {
