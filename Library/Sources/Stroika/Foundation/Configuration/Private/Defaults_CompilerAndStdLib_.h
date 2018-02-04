@@ -1185,6 +1185,28 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 /*
+@CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionBug
+/*
+ *  Running regression tests (built with clang and sanitizer debug options)
+ *
+        /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14: runtime error: call to function (unknown) through pointer to incorrect function type 'Stroika::Foundation::DataExchange::VariantValue (*)(const std::_Any_data &, const Stroika::Foundation::DataExchange::ObjectVariantMapper &, const void *&&)'
+        (/home/lewis/Sandbox/Stroika-Dev/Builds/clang++-debug/Test31+0x176a5a0): note: (unknown) defined here
+        SUMMARY: AddressSanitizer: undefined-behavior /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14 in
+        /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14: runtime error: call to function (unknown) through pointer to incorrect function type 'void (*)(const std::_Any_data &, const Stroika::Foundation::DataExchange::ObjectVariantMapper &, const Stroika::Foundation::DataExchange::VariantValue &, void *&&)'
+        (/home/lewis/Sandbox/Stroika-Dev/Builds/clang++-debug/Test31+0x176b760): note: (unknown) defined here
+        SUMMARY: AddressSanitizer: undefined-behavior /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14 in
+*/
+#if !defined(qCompiler_SanitizerFunctionPtrConversionBug)
+
+#if defined(__clang__) && !defined(__APPLE__)
+#define qCompiler_SanitizerFunctionPtrConversionBug (__clang_major__ < 5 or ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#else
+#define qCompiler_SanitizerFunctionPtrConversionBug 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 *
 *   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just dont

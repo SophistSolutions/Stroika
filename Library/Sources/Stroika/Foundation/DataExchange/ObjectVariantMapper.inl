@@ -185,7 +185,11 @@ namespace Stroika {
                 return Lookup_ (typeid (T)).FromObjectMapper<T> ();
             }
             template <typename T>
-            inline void ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
+#if qCompiler_SanitizerFunctionPtrConversionBug
+            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR
+#endif
+                inline void
+                ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
             {
                 RequireNotNull (into);
                 RequireNotNull (toObjectMapper);
@@ -223,7 +227,11 @@ namespace Stroika {
                 return fromObjectMapper (*this, &from);
             }
             template <typename T>
-            inline VariantValue ObjectVariantMapper::FromObject (const T& from) const
+#if qCompiler_SanitizerFunctionPtrConversionBug
+            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR
+#endif
+                inline VariantValue
+                ObjectVariantMapper::FromObject (const T& from) const
             {
                 return FromObjectMapper<T> () (*this, &from);
             }

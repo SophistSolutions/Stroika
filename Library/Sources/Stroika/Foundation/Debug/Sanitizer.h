@@ -19,11 +19,17 @@ namespace Stroika {
         namespace Debug {
 
 #if defined(__clang__) || defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize("address")))
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #endif
-        }
+
+#if defined(__clang__) || defined(__GNUC__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR __attribute__((no_sanitize("undefined")))
+#else
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR
+#endif
+		}
     }
 }
 #endif
