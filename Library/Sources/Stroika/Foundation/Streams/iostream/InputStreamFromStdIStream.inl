@@ -27,11 +27,11 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename ELEMENT_TYPE, typename TRAITS>
-#if qCompiler_SanitizerVPtrTemplateTypeEraseureBug
-				Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
-#endif
 					class
-                        InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep,
+#if qCompiler_SanitizerVPtrTemplateTypeEraseureBug
+						Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+						InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep,
                                                                                 private Debug::AssertExternallySynchronizedLock {
                 private:
                     using IStreamType = typename TRAITS::IStreamType;
