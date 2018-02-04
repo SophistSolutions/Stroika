@@ -192,10 +192,9 @@ namespace Stroika {
             }
             template <typename T>
 #if qCompiler_SanitizerFunctionPtrConversionBug
-			Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("function")
+            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function")
 #endif
-                inline void
-                ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
+                inline void ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
             {
                 RequireNotNull (into);
                 RequireNotNull (toObjectMapper);
@@ -240,7 +239,7 @@ namespace Stroika {
             }
             template <typename T>
 #if qCompiler_SanitizerFunctionPtrConversionBug
-			Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function")
+            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function")
 #endif
                 inline VariantValue
                 ObjectVariantMapper::FromObject (const T& from) const

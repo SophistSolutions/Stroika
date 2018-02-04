@@ -32,15 +32,16 @@ namespace Stroika {
                 template <typename ELEMENT_TYPE, typename TRAITS>
                 class
 #if qCompiler_SanitizerVPtrTemplateTypeEraseureBug
-                    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+                    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address")
 #endif
                         InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep,
-                                                                                private Debug::AssertExternallySynchronizedLock {
+                                                                                private Debug::AssertExternallySynchronizedLock
+                {
                 private:
                     using IStreamType = typename TRAITS::IStreamType;
 
                 private:
-                    static SeekableFlag DefaultSeekable_ (IStreamType& originalStream)
+                    static SeekableFlag DefaultSeekable_ (IStreamType & originalStream)
                     {
                         // SB something like lseek(fd, CURRENT, 0) not an error, but that doesn't work wtih seekg() on
                         // MSVC2k13. Not sure of a good portable, and yet non-destructive way...
@@ -51,11 +52,11 @@ namespace Stroika {
                     bool fOpen_{true};
 
                 public:
-                    Rep_ (IStreamType& originalStream)
+                    Rep_ (IStreamType & originalStream)
                         : Rep_ (originalStream, DefaultSeekable_ (originalStream))
                     {
                     }
-                    Rep_ (IStreamType& originalStream, SeekableFlag seekable)
+                    Rep_ (IStreamType & originalStream, SeekableFlag seekable)
                         : fOriginalStream_ (originalStream)
                         , fSeekable_ (seekable)
                     {
@@ -76,7 +77,7 @@ namespace Stroika {
                     {
                         return fOpen_;
                     }
-                    virtual size_t Read (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+                    virtual size_t Read (ELEMENT_TYPE * intoStart, ELEMENT_TYPE * intoEnd) override
                     {
                         RequireNotNull (intoStart);
                         RequireNotNull (intoEnd);
@@ -98,7 +99,7 @@ namespace Stroika {
                         }
                         return n;
                     }
-                    virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+                    virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE * intoStart, ELEMENT_TYPE * intoEnd) override
                     {
                         Require (IsOpenRead ());
                         std::streamsize sz = fOriginalStream_.rdbuf ()->in_avail ();
