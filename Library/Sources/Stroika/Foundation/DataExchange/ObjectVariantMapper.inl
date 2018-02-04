@@ -13,6 +13,7 @@
 #include "../Characters/ToString.h"
 #include "../Containers/Adapters/Adder.h"
 #include "../Debug/Assertions.h"
+#include "../Debug/Sanitizer.h"
 #include "../Execution/Exceptions.h"
 
 #include "BadFormatException.h"
