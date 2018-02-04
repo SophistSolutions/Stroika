@@ -383,12 +383,6 @@ sub	SetDefaultForCompilerDriver_
 			else {
 				$sanitizerFlags = "address,undefined," . $sanitizerFlags;
 			}
-			if ($noSanitizerFlags eq "") {
-				$noSanitizerFlags = "vptr";
-			}
-			else {
-				$noSanitizerFlags = "vptr," . $noSanitizerFlags;
-			}
 			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
 				if ($noSanitizerFlags eq "") {
 					$noSanitizerFlags = "function";

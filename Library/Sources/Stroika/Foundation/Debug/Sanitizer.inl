@@ -10,7 +10,6 @@
 namespace Stroika {
     namespace Foundation {
         namespace Debug {
-
         }
     }
 }

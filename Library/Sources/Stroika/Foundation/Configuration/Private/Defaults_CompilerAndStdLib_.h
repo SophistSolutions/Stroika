@@ -1165,6 +1165,26 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 /*
+@CONFIGVAR:     qCompiler_SanitizerVPtrTemplateTypeEraseureBug
+/*
+*  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS because of https://stroika.atlassian.net/browse/STK-500
+*          .. / .. / Streams / iostream / InputStreamFromStdIStream.inl:46 : 66 : runtime error : member call on address 0x60d000001300 which does not point to an object of type 'Rep_'
+*              0x60d000001300 : note : object has invalid vptr
+*              01 00 00 00  00 00 00 00 00 00 00 00  be be be be be be be be  be be be be be be be be  be be be be
+*              ^~~~~~~~~~~~~~~~~~~~~~~
+*              invalid vptr
+*/
+#if !defined(qCompiler_SanitizerVPtrTemplateTypeEraseureBug)
+
+#if !defined(__clang__) && defined(__GNUC__)
+#define qCompiler_SanitizerVPtrTemplateTypeEraseureBug CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
+#else
+#define qCompiler_SanitizerVPtrTemplateTypeEraseureBug 0
+#endif
+
+#endif
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_locale_name_string_return_bogus_lengthBuggy
 *
 *   Looking at returned string object from locale - its got a bogus length. And then the DTOR for that string causes crash. Just dont

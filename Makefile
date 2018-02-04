@@ -394,12 +394,10 @@ regression-test-configurations:
 		#\
 		# maybe add these directly to config\
 		# NB: muse use noblockalloc for gcc-debug-threadsanitize because we need to annoate and thats NYI - so sanitizer knows about free\
-		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
-		#OR maybe I have a bug with the stream/iostream convert code - wait a bit and test more later--LGP 2016-08-17\
-		./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr;\
+		./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
 		#This config gets link erorrs probably cuz of https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81004  with LTO\
-		#./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr;\
-		./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize address,undefined --no-sanitize vptr;\
+		#./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
+		./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
 		#./configure gcc-debug-threadsanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --block-allocation disable --extra-compiler-args -fsanitize=thread --extra-linker-args -fsanitize=thread;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
@@ -411,8 +409,7 @@ regression-test-configurations:
 		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
 		./configure raspberrypi-gcc-6 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-6' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi-gcc-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
-		# see https://stroika.atlassian.net/browse/STK-500 for why  --no-sanitize vptr\
-		./configure raspberrypi-gcc-7-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --no-sanitize vptr --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4' --append-compiler-warning-args -Wno-psabi;\
+		./configure raspberrypi-gcc-7-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4' --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi_valgrind_gcc-7_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-7' --valgrind enable --block-allocation disable --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 	fi
 
