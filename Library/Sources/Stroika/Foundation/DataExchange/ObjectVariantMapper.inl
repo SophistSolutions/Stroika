@@ -19,6 +19,11 @@
 #include "BadFormatException.h"
 #include "CheckedConverter.h"
 
+//#define _HACK_2_PRINT_BUG_ 1
+#if _HACK_2_PRINT_BUG_
+#include <cstdio>
+#endif
+
 namespace Stroika {
     namespace Foundation {
         namespace DataExchange {
@@ -195,7 +200,13 @@ namespace Stroika {
                 RequireNotNull (into);
                 RequireNotNull (toObjectMapper);
                 // LOGICALLY require but cannot compare == on std::function! Require (toObjectMapper  == ToObjectMapper<T> ());  // pass it in as optimization, but not change of semantics
+#if _HACK_2_PRINT_BUG_
+                fprintf (stderr, "***about to do toMapper\n");
+#endif
                 toObjectMapper (*this, v, into);
+#if _HACK_2_PRINT_BUG_
+                fprintf (stderr, "***did to do toMapper\n");
+#endif
             }
             template <typename T>
             inline void ObjectVariantMapper::ToObject (const VariantValue& v, T* into) const
@@ -234,7 +245,15 @@ namespace Stroika {
                 inline VariantValue
                 ObjectVariantMapper::FromObject (const T& from) const
             {
+#if _HACK_2_PRINT_BUG_
+                auto fromMapper = FromObjectMapper<T> ();
+                fprintf (stderr, "***about to do fromMapper\n");
+                auto ret = fromMapper (*this, &from);
+                fprintf (stderr, "***did to do fromMapper\n");
+                return ret;
+#else
                 return FromObjectMapper<T> () (*this, &from);
+#endif
             }
             template <typename ACTUAL_CONTAINER_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithAdder ()

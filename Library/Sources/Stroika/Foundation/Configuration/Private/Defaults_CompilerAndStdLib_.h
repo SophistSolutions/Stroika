@@ -1174,6 +1174,8 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 *              ^~~~~~~~~~~~~~~~~~~~~~~
 *              invalid vptr
 */
+/// testing - maybe not broken ?? Confused
+#define qCompiler_SanitizerVPtrTemplateTypeEraseureBug 0
 #if !defined(qCompiler_SanitizerVPtrTemplateTypeEraseureBug)
 
 #if !defined(__clang__) && defined(__GNUC__)
@@ -1188,6 +1190,9 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 @CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionBug
 /*
  *  Running regression tests (built with clang and sanitizer debug options)
+ *      clang++-debug/Test31
+ *      clang++-debug/Test33
+ *      clang++-debug/Test40
  *
         /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14: runtime error: call to function (unknown) through pointer to incorrect function type 'Stroika::Foundation::DataExchange::VariantValue (*)(const std::_Any_data &, const Stroika::Foundation::DataExchange::ObjectVariantMapper &, const void *&&)'
         (/home/lewis/Sandbox/Stroika-Dev/Builds/clang++-debug/Test31+0x176a5a0): note: (unknown) defined here
