@@ -26,12 +26,15 @@ namespace Stroika {
                  **************** InputStreamFromStdIStream<ELEMENT_TYPE>::Rep_ *****************
                  ********************************************************************************
                  */
-                template <typename ELEMENT_TYPE, typename TRAITS>
-					class
 #if qCompiler_SanitizerVPtrTemplateTypeEraseureBug
-						Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+                DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wattributes\"");
 #endif
-						InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep,
+                template <typename ELEMENT_TYPE, typename TRAITS>
+                class
+#if qCompiler_SanitizerVPtrTemplateTypeEraseureBug
+                    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
+#endif
+                        InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep,
                                                                                 private Debug::AssertExternallySynchronizedLock {
                 private:
                     using IStreamType = typename TRAITS::IStreamType;
@@ -138,6 +141,9 @@ namespace Stroika {
                     IStreamType& fOriginalStream_;
                     SeekableFlag fSeekable_;
                 };
+#if qCompiler_SanitizerVPtrTemplateTypeEraseureBug
+                DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wattributes\"");
+#endif
 
                 /*
                  ********************************************************************************

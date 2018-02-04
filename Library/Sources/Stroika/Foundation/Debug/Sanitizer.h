@@ -22,8 +22,8 @@ namespace Stroika {
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize ("address")))
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR __attribute__ ((no_sanitize ("undefined")))
 #elif defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR __attribute__ ((no_sanitize_undefined))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS [[no_sanitize ("address")]]
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR __attribute__[[no_sanitize ("undefined")]]
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR
