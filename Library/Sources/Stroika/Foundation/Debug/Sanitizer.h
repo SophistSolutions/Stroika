@@ -18,7 +18,10 @@ namespace Stroika {
     namespace Foundation {
         namespace Debug {
 
-#if defined(__clang__) || defined(__GNUC__)
+#if defined(__clang__) && !defined(__GNUC__)
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize("address"))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR __attribute__((no_sanitize("undefined"))
+#elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS [[no_sanitize ("address")]]
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR [[no_sanitize ("undefined")]]
 #else
