@@ -383,14 +383,14 @@ sub	SetDefaultForCompilerDriver_
 			else {
 				$sanitizerFlags = "address,undefined," . $sanitizerFlags;
 			}
-			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
-				if ($noSanitizerFlags eq "") {
-					$noSanitizerFlags = "function";
-				}
-				else {
-					$noSanitizerFlags = "function," . $noSanitizerFlags;
-				}
-			}
+			#if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
+				#if ($noSanitizerFlags eq "") {
+				#	$noSanitizerFlags = "function";
+				#}
+				#else {
+				#	$noSanitizerFlags = "function," . $noSanitizerFlags;
+				#}
+			#}
 		}
 
 		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {

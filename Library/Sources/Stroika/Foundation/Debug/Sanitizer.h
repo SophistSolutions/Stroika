@@ -19,11 +19,14 @@ namespace Stroika {
         namespace Debug {
 
 #if defined(__clang__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__((no_sanitize("address")))
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR __attribute__((no_sanitize("undefined")))
+// at least clang++4 requires this older attr syntax - retest later with clang5
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize ("address")))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR __attribute__ ((no_sanitize ("undefined")))
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) __attribute__ ((no_sanitize (ARGS)))
 #elif defined(__GNUC__)
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS [[no_sanitize ("address")]]
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR [[no_sanitize ("undefined")]]
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_UNDEFINEDBEHAVIOR
