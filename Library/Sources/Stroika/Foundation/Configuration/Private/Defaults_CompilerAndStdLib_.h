@@ -348,6 +348,92 @@ ABORTING...
 #endif
 
 /*
+ *  This ONLY affects arm-linux-gnueabihf-g++-7
+ *
+    Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (scp ../Builds/raspberrypi-gcc-7-sanitize/Test30
+ *
+ =================================================================
+ ==13645==ERROR: AddressSanitizer: stack-use-after-scope on address 0x7e94da60 at pc 0x55d05d8d bp 0x7e94c5dc sp 0x7e94c5d4
+ WRITE of size 4 at 0x7e94da60 thread T0
+ #0 0x55d05d8b in Stroika::Foundation::Memory::SmallStackBuffer<unsigned char, 4096u>::SmallStackBuffer() ../../../DataExchange/../Execution/../Characters/../Containers/Factory/../Concrete/../Private/PatchingDataStructures/../../../Memory/SmallStackBuffer.inl:31
+ #1 0x55d3e9fb in Stroika::Foundation::Memory::SmallStackBuffer<unsigned char, 4096u>::SmallStackBuffer(unsigned int) ../../../DataExchange/../Execution/../Characters/../Containers/Factory/../Concrete/../Private/PatchingDataStructures/../../../Memory/SmallStackBuffer.inl:41
+ #2 0x55d30787 in Stroika::Foundation::Streams::TextReader::FromBinaryStreamBaseRep_::Read(Stroika::Foundation::Characters::Character*, Stroika::Foundation::Characters::Character*) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Streams/TextReader.cpp:79
+ #3 0x55d35877 in Stroika::Foundation::Streams::TextReader::CachingSeekableBinaryStreamRep_::Read(Stroika::Foundation::Characters::Character*, Stroika::Foundation::Characters::Character*) (/tmp/Test30+0x11b3877)
+ #4 0x55b2e5f9 in Stroika::Foundation::Streams::InputStream<Stroika::Foundation::Characters::Character>::Ptr::Read() const ../../../Streams/InputStream.inl:134
+ #5 0x55b2c291 in Reader_value_ /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/JSON/Reader.cpp:337
+ #6 0x55b2de41 in Stroika::Foundation::DataExchange::Variant::JSON::Reader::Rep_::Read(Stroika::Foundation::Streams::InputStream<Stroika::Foundation::Characters::Character>::Ptr const&) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/JSON/Reader.cpp:407
+ #7 0x55a54931 in Stroika::Foundation::DataExchange::Variant::Reader::Read(Stroika::Foundation::Streams::InputStream<Stroika::Foundation::Characters::Character>::Ptr const&) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/Reader.inl:46
+ #8 0x55a540a7 in Stroika::Foundation::DataExchange::Variant::Reader::Read(std::istream&) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/DataExchange/Variant/Reader.cpp:34
+ #9 0x5576427d in VerifyThisStringFailsToParse_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:315
+ #10 0x557649cd in DoIt /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:330
+ #11 0x5576cb09 in DoAll_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:598
+ #12 0x5576efb5 in DoRegressionTests_ /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:803
+ #13 0x558b7ee7 in Stroika::TestHarness::PrintPassOrFail(void (*)()) /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/../TestHarness/TestHarness.cpp:81
+ #14 0x5576f013 in main /home/lewis/Sandbox/Stroika-Regression-Tests/Tests/30/Test.cpp:820
+ #15 0x76298677 in __libc_start_main (/lib/arm-linux-gnueabihf/libc.so.6+0x16677)
+
+ Address 0x7e94da60 is located in stack of thread T0 at offset 4800 in frame
+ #0 0x55d30247 in Stroika::Foundation::Streams::TextReader::FromBinaryStreamBaseRep_::Read(Stroika::Foundation::Characters::Character*, Stroika::Foundation::Characters::Character*) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Streams/TextReader.cpp:60
+
+ This frame has 10 object(s):
+ [32, 34) '<unknown>'
+ [96, 100) 'outCursor'
+ [160, 164) 'critSec'
+ [224, 228) 'cursorB'
+ [288, 292) '<unknown>'
+ [352, 412) '<unknown>'
+ [448, 456) 'mbState_'
+ [512, 600) '<unknown>'
+ [640, 4760) 'outBuf'
+ [4800, 8920) 'inBuf' <== Memory access at offset 4800 is inside this variable
+ HINT: this may be a false positive if your program uses some custom stack unwind mechanism or swapcontext
+ (longjmp and C++ exceptions *are* supported)
+ SUMMARY: AddressSanitizer: stack-use-after-scope ../../../DataExchange/../Execution/../Characters/../Containers/Factory/../Concrete/../Private/PatchingDataStructures/../../../Memory/SmallStackBuffer.inl:31 in Stroika::Foundation::Memory::SmallStackBuffer<unsigned char, 4096u>::SmallStackBuffer()
+ Shadow bytes around the buggy address:
+ 0x2fd29af0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ 0x2fd29b00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ 0x2fd29b10: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ 0x2fd29b20: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ 0x2fd29b30: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ =>0x2fd29b40: 00 00 00 00 00 00 00 f2 f2 f2 f2 f2[f8]f8 f8 f8
+ 0x2fd29b50: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ 0x2fd29b60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ 0x2fd29b70: 00 00 00 00 00 00 00 00 f8 f8 f8 f8 f8 f8 f8 f8
+ 0x2fd29b80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 00
+ 0x2fd29b90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ Shadow byte legend (one shadow byte represents 8 application bytes):
+ Addressable:           00
+ Partially addressable: 01 02 03 04 05 06 07
+ Heap left redzone:       fa
+ Freed heap region:       fd
+ Stack left redzone:      f1
+ Stack mid redzone:       f2
+ Stack right redzone:     f3
+ Stack after return:      f5
+ Stack use after scope:   f8
+ Global redzone:          f9
+ Global init order:       f6
+ Poisoned by user:        f7
+ Container overflow:      fc
+ Array cookie:            ac
+ Intra object redzone:    bb
+ ASan internal:           fe
+ Left alloca redzone:     ca
+ Right alloca redzone:    cb
+ ==13645==ABORTING
+
+ */
+#ifndef qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy
+
+#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
+#define qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
+#else
+#define qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy 0
+#endif
+
+#endif
+
+/*
  */
 #ifndef qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy
 

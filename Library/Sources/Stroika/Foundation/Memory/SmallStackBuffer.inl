@@ -16,6 +16,10 @@
 #include "../Debug/Assertions.h"
 #include "Common.h"
 
+#if qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy
+#include "../Debug/Sanitizer.h"
+#endif
+
 namespace Stroika {
     namespace Foundation {
         namespace Memory {
@@ -26,7 +30,10 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T, size_t BUF_SIZE>
-            inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
+#if qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy
+            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("stack-use-after-scope")
+#endif
+                inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
                 : fSize_ (0)
                 , fPointer_ (fBuffer_)
             {
