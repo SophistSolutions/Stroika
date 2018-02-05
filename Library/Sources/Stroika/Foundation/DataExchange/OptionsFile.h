@@ -103,7 +103,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                static const ModuleNameToFileNameMapperType mkFilenameMapper (const String& appName);
+                static ModuleNameToFileNameMapperType mkFilenameMapper (const String& appName);
 
             public:
                 /**

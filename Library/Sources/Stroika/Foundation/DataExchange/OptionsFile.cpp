@@ -101,7 +101,7 @@ const OptionsFile::LoggerType OptionsFile::kDefaultLogger =
         Logger::Get ().Log (priority, L"%s", message.FormatMessage ().c_str ());
     };
 
-const OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
+OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const String& appName)
 {
     return
         [appName](const String& moduleName, const String& fileSuffix) -> String {
