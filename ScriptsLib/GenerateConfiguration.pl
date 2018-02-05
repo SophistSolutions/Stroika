@@ -380,6 +380,9 @@ sub	SetDefaultForCompilerDriver_
 			elsif ($sanitizerFlags eq "") {
 				$sanitizerFlags = "address,undefined";
 			}
+			elsif ($sanitizerFlags eq "address,undefined") {
+				#should really do set split and merge sets
+			}
 			else {
 				$sanitizerFlags = "address,undefined," . $sanitizerFlags;
 			}
