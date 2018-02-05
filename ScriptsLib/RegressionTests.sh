@@ -248,6 +248,7 @@ TOTAL_REGTESTS_EXPECTED_TO_PASS=$(($NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS))
 
 X1=`cat $TEST_OUT_FILE | grep seconds | grep -F "[Succeeded]" | grep -F " seconds)" | wc -l`
 XF=`cat $TEST_OUT_FILE | grep -i FAILED | wc -l`
+XE=`cat $TEST_OUT_FILE | grep -i error: | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
 VOL=`grep == $TEST_OUT_FILE | wc -l`
 XW=`cat $TEST_OUT_FILE | grep -i "warning:" | wc -l`
@@ -269,13 +270,16 @@ else
 fi
 echo "   $XF items failed (expected 0)"
 echo "   $XF items failed (expected 0)">>$TEST_OUT_FILE 2>&1
+echo "   $XE items error (expected 0)"
+echo "   $XE items error (expected 0)">>$TEST_OUT_FILE 2>&1
 echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)"
 echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)">>$TEST_OUT_FILE 2>&1
 echo "   $XC core dumps (expected 0)"
 echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
-echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
-echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
-
+if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] || [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] || ; then
+	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
+	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
+fi
 TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STARTAT_INT )) / 60))
 echo "Finished at `date` ($TOTAL_MINUTES_SPENT minutes)"
 echo "$PREFIX_OUT_LABEL" "Finished at `date`  ($TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
