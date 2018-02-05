@@ -1251,28 +1251,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 /*
-@CONFIGVAR:     qCompiler_SanitizerVPtrTemplateTypeEraseureBug
-/*
-*  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE_ADDRESS because of https://stroika.atlassian.net/browse/STK-500
-*          .. / .. / Streams / iostream / InputStreamFromStdIStream.inl:46 : 66 : runtime error : member call on address 0x60d000001300 which does not point to an object of type 'Rep_'
-*              0x60d000001300 : note : object has invalid vptr
-*              01 00 00 00  00 00 00 00 00 00 00 00  be be be be be be be be  be be be be be be be be  be be be be
-*              ^~~~~~~~~~~~~~~~~~~~~~~
-*              invalid vptr
-*/
-/// testing - maybe not broken ?? Confused
-#define qCompiler_SanitizerVPtrTemplateTypeEraseureBug 0
-#if !defined(qCompiler_SanitizerVPtrTemplateTypeEraseureBug)
-
-#if !defined(__clang__) && defined(__GNUC__)
-#define qCompiler_SanitizerVPtrTemplateTypeEraseureBug CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
-#else
-#define qCompiler_SanitizerVPtrTemplateTypeEraseureBug 0
-#endif
-
-#endif
-
-/*
 @CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionBug
 /*
  *  Running regression tests (built with clang and sanitizer debug options)
