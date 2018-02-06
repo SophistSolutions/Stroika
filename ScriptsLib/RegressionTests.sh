@@ -276,7 +276,7 @@ echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)"
 echo "   $XW items warned (expected $TOTAL_WARNINGS_EXPECTED)">>$TEST_OUT_FILE 2>&1
 echo "   $XC core dumps (expected 0)"
 echo "   $XC core dumps (expected 0)">>$TEST_OUT_FILE 2>&1
-if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] || [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] || ; then
+if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] || [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)"
 	echo "   $VOL valgrind output lines (apx $(($VOL / 27)) errors (expected 0)" >>$TEST_OUT_FILE 2>&1
 fi
