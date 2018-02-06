@@ -337,12 +337,12 @@ ABORTING...
      Right alloca redzone:    cb
  *
  */
-#ifndef qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy
+#ifndef qCompiler_Sanitizer_on_arm_SetOfString_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
-#define qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
+#define qCompiler_Sanitizer_on_arm_SetOfString_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
-#define qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy 0
+#define qCompiler_Sanitizer_on_arm_SetOfString_Buggy 0
 #endif
 
 #endif
@@ -423,12 +423,12 @@ ABORTING...
  ==13645==ABORTING
 
  */
-#ifndef qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy
+#ifndef qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
-#define qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
+#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
-#define qCompilerAndStdLib_asan_stack_use_after_scope_on_arm_Buggy 0
+#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy 0
 #endif
 
 #endif

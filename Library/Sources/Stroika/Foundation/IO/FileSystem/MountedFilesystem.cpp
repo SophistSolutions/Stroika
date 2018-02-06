@@ -132,7 +132,7 @@ namespace {
                 String                       mountedAt = line[1];
                 String                       fstype    = line[2];
                 static const String_Constant kNone_{L"none"};
-#if qCompilerAndStdLib_asan_on_arm_SetOfString_Buggy
+#if qCompiler_Sanitizer_on_arm_SetOfString_Buggy
                 if (devName == kNone_) {
                     results.Add (MountedFilesystemType{mountedAt, Set<String>{}, fstype}); // special name none often used when there is no name
                 }
