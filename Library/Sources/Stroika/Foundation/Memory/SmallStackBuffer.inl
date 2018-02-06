@@ -48,7 +48,7 @@ namespace Stroika {
                 Invariant ();
             }
 #if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
-            DISABLE_COMPILER_GCC_WARNING_ENDT ("GCC diagnostic ignored \"-Wattributes\"");
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wattributes\"");
 #endif
             template <typename T, size_t BUF_SIZE>
             inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements)
