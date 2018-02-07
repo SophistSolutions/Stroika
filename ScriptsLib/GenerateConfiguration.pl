@@ -377,7 +377,7 @@ sub	SetDefaultForCompilerDriver_
 			if (trim (`uname -r`) eq "4.4.0-43-Microsoft") {
 				#LEAVE empty default, cuz for this version of WSL, asan doesn't work - insufficient procfs support
 			}
-			elsif (if !defined ($sanitizerFlags)) {
+			elsif (!defined ($sanitizerFlags)) {
 				$sanitizerFlags = "address,undefined";
 			}
 			#if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
