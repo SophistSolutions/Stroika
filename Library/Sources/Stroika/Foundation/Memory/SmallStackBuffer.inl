@@ -16,28 +16,17 @@
 #include "../Debug/Assertions.h"
 #include "Common.h"
 
-#if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
-#include "../Debug/Sanitizer.h"
-#endif
-
 namespace Stroika {
     namespace Foundation {
         namespace Memory {
 
-/*
+            /*
              ********************************************************************************
              ************************* SmallStackBuffer<T, BUF_SIZE> ************************
              ********************************************************************************
              */
-#if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
-            // Crazy warning - cuz its NOT ignored - it works around probable bug with stack-use-after-scope
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wattributes\"");
-#endif
             template <typename T, size_t BUF_SIZE>
-#if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
-            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("stack-use-after-scope")
-#endif
-                inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
+            inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
                 : fSize_ (0)
                 , fPointer_ (fBuffer_)
             {
@@ -47,9 +36,6 @@ namespace Stroika {
 #endif
                 Invariant ();
             }
-#if qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wattributes\"");
-#endif
             template <typename T, size_t BUF_SIZE>
             inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (size_t nElements)
                 : SmallStackBuffer ()
