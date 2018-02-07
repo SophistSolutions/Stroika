@@ -962,9 +962,10 @@ sub	ParseCommandLine_
 	SetDefaultForPlatform_ ();
 
 	ParseCommandLine_CompilerDriver_ ();
-	SetDefaultForCompilerDriver_();
 
 	ParseCommandLine_Remaining_ ();
+
+	SetDefaultForCompilerDriver_();
 
 	CHECK_OPTIONS_ ();
 }
