@@ -1287,8 +1287,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 #endif
 
-
-
 #ifndef qCompilerAndStdLib_quick_exit_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
@@ -1298,7 +1296,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 #endif
-
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Support__PRETTY_FUNCTION__
