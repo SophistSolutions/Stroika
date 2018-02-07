@@ -172,7 +172,11 @@ void Stroika::Foundation::Debug::Private_::Weak_Assertion_Failure_Handler_ (cons
     s_InTrap = false;
 
     // Doesn't matter much what we do at this stage, but in visual studio debugger, you can skip this line
-    std::quick_exit (1);
+#if qCompilerAndStdLib_quick_exit_Buggy
+	std::_Exit (1);
+#else
+	std::quick_exit (1);
+#endif
 }
 
 #endif

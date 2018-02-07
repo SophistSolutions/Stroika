@@ -1287,6 +1287,19 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 #endif
 
+
+
+#ifndef qCompilerAndStdLib_quick_exit_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
+#else
+#define qCompilerAndStdLib_quick_exit_Buggy 0
+#endif
+
+#endif
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Support__PRETTY_FUNCTION__
 @DESCRIPTION:   <p>FOR ASSERT</p>
