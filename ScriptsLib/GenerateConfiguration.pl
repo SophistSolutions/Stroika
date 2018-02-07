@@ -51,7 +51,7 @@ my $CWARNING_FLAGS = undef;
 my $ADD2CWARNING_FLAGS = "";
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
-my $sanitizerFlags = "";
+my $sanitizerFlags = undef;
 my $noSanitizerFlags = "";
 
 my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
@@ -377,14 +377,8 @@ sub	SetDefaultForCompilerDriver_
 			if (trim (`uname -r`) eq "4.4.0-43-Microsoft") {
 				#LEAVE empty default, cuz for this version of WSL, asan doesn't work - insufficient procfs support
 			}
-			elsif ($sanitizerFlags eq "") {
+			elsif (if !defined ($sanitizerFlags)) {
 				$sanitizerFlags = "address,undefined";
-			}
-			elsif ($sanitizerFlags eq "address,undefined") {
-				#should really do set split and merge sets
-			}
-			else {
-				$sanitizerFlags = "address,undefined," . $sanitizerFlags;
 			}
 			#if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
 				#if ($noSanitizerFlags eq "") {
@@ -856,8 +850,13 @@ sub	ParseCommandLine_Remaining_
 				$sanitizerFlags = "";
 			}
 			else {
-				if (not ($sanitizerFlags eq "")) {
-					$sanitizerFlags .= ",";
+				if (defined $sanitizerFlags) {
+					if (not ($sanitizerFlags eq "")) {
+						$sanitizerFlags .= ",";
+					}
+				}
+				else {
+					$sanitizerFlags = "";
 				}
 				$sanitizerFlags .= $var;
 			}
@@ -986,7 +985,7 @@ sub PostProcessOptions_ ()
 			$COPTIMIZE_FLAGS .= " /GL";
 		}
 	}
-	if (not ($sanitizerFlags eq "")) {
+	if (defined $sanitizerFlags and not ($sanitizerFlags eq "")) {
 		$EXTRA_COMPILER_ARGS .= " -fsanitize=" . $sanitizerFlags;
 		$EXTRA_LINKER_ARGS .= " -fsanitize=" . $sanitizerFlags;
 	}
