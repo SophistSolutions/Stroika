@@ -283,7 +283,7 @@ ABORTING...
 /*
  *  This ONLY affects arm-linux-gnueabihf-g++-7
  *
- Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (scp ../Builds/raspberrypi-gcc-7-sanitize/Test30
+ ... (7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (scp ../Builds/raspberrypi-gcc-7-sanitize/Test30
  ...  (scp ../Builds/raspberrypi-gcc-7-sanitize/Test40
  *
  * MUST MANUALLY FIX make default-regressions like to test if this is fixed (MAYBE WITH GCC8)
