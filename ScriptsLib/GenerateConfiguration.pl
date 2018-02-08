@@ -216,13 +216,17 @@ sub     GetGCCVersion_
 sub     GetClangVersion_
 {
     my $x = trim(shift(@_));
-    my $ver = trim (`($x --version 2>/dev/null) | head -1 |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
-    if ($ver * 1 != 0) {
-	return $ver;
-    }
-    $ver = trim(`($x --version 2>/dev/null) | head -1 | awk '{print \$3}'`);
-    $ver = $ver * 1;
-    return $ver;
+	my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
+	if (index($firstLine, "Apple LLVM") != -1) {
+		$ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
+		$ver = $ver * 1;
+		return $ver;
+	}
+	else {
+		my $ver = trim (`echo "$firstLine" |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
+		$ver = $ver * 1;
+		return $ver;
+	}
 }
 
 sub     IsMSVCCompiler_
