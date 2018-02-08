@@ -391,7 +391,7 @@ sub	SetDefaultForCompilerDriver_
 					$test2Suppress = "vptr";
 				}
 				if ($noSanitizerFlags eq "") {
-					$noSanitizerFlags = "$test2Suppress;
+					$noSanitizerFlags = $test2Suppress;
 				}
 				else {
 					$noSanitizerFlags = $test2Suppress . "," . $noSanitizerFlags;
