@@ -388,7 +388,7 @@ sub	SetDefaultForCompilerDriver_
 				else {
 					$noSanitizerFlags = "function," . $noSanitizerFlags;
 				}
-			#}
+			}
 		}
 
 		if (IsMSVCCompiler_ ($COMPILER_DRIVER_CPlusPlus)) {
