@@ -223,7 +223,7 @@ sub     GetClangVersion_
 		return $ver;
 	}
 	else {
-		my $ver = trim (`echo "$firstLine" |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$2;}'`);
+		my $ver = trim (`echo "$firstLine" |  sed 's/.*LLVM/x/' | sed 's/)//' |  awk '{print \$3;}'`);
 		$ver = $ver * 1;
 		return $ver;
 	}
