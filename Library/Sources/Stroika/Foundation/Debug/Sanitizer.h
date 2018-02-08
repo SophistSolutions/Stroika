@@ -18,10 +18,10 @@ namespace Stroika {
     namespace Foundation {
         namespace Debug {
 
-#if defined(__clang__) || defined(__GNUC__)
-#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
-#else
+#if qCompiler_noSanitizeAttribute_Buggy
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS)
+#else
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
 #endif
         }
     }

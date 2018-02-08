@@ -541,6 +541,19 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #endif
 
 /**
+ */
+#ifndef qCompiler_noSanitizeAttribute_Buggy
+#elif defined(__clang__) && defined(__APPLE__)
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
+#elif defined(__clang__)
+#define qCompiler_noSanitizeAttribute_Buggy 0
+#elif defined(__GNUC__)
+#define qCompiler_noSanitizeAttribute_Buggy 0
+#else
+#define qCompiler_noSanitizeAttribute_Buggy 1
+#endif
+
+/**
 Compiling  $StroikaRoot/Library/Sources/Stroika/Foundation/Configuration/VersionDefs.cpp...
 Locale.cpp: In function ‘Stroika::Foundation::Characters::String Stroika::Foundation::Configuration::FindLocaleName(const Stroika::Foundation::Characters::String&, const Stroika::Foundation::Characters::String&)’:
 Locale.cpp:102:5: internal compiler error: in process_init_constructor_array, at cp/typeck2.c:1308
