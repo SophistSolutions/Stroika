@@ -1247,9 +1247,9 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 /*
-@CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionBug
+@CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionSuppressionBug
 /*
- *  Running regression tests (built with clang and sanitizer debug options)
+ *  Running regression tests (built with clang (4 and 5) and sanitizer debug options)
  *      clang++-debug/Test31
  *      clang++-debug/Test33
  *      clang++-debug/Test40
@@ -1260,13 +1260,18 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
         /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14: runtime error: call to function (unknown) through pointer to incorrect function type 'void (*)(const std::_Any_data &, const Stroika::Foundation::DataExchange::ObjectVariantMapper &, const Stroika::Foundation::DataExchange::VariantValue &, void *&&)'
         (/home/lewis/Sandbox/Stroika-Dev/Builds/clang++-debug/Test31+0x176b760): note: (unknown) defined here
         SUMMARY: AddressSanitizer: undefined-behavior /usr/bin/../lib/gcc/x86_64-linux-gnu/7.2.0/../../../../include/c++/7.2.0/bits/std_function.h:706:14 in
+
+ * @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper)
+ *
+ *  NOTE - this is really NOT A BUG. I just cannot find a clean way to disable this (CORRECT BUT OK) runtime warning (well ubsan calls it an error but ...)
+ *  THIS "BUG" really just tracks that fact that I cannot find a clean way to suppress this valid warning
 */
-#if !defined(qCompiler_SanitizerFunctionPtrConversionBug)
+#if !defined(qCompiler_SanitizerFunctionPtrConversionSuppressionBug)
 
 #if defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_SanitizerFunctionPtrConversionBug (__clang_major__ < 5 or ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ < 5 or ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #else
-#define qCompiler_SanitizerFunctionPtrConversionBug 0
+#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug 0
 #endif
 
 #endif

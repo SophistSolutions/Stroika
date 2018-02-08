@@ -19,11 +19,6 @@
 #include "BadFormatException.h"
 #include "CheckedConverter.h"
 
-//#define _HACK_2_PRINT_BUG_ 1
-#if _HACK_2_PRINT_BUG_
-#include <cstdio>
-#endif
-
 namespace Stroika {
     namespace Foundation {
         namespace DataExchange {
@@ -191,21 +186,12 @@ namespace Stroika {
                 return Lookup_ (typeid (T)).FromObjectMapper<T> ();
             }
             template <typename T>
-#if qCompiler_SanitizerFunctionPtrConversionBug
-            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function")
-#endif
-                inline void ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
+            inline void ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v, T* into) const
             {
                 RequireNotNull (into);
                 RequireNotNull (toObjectMapper);
                 // LOGICALLY require but cannot compare == on std::function! Require (toObjectMapper  == ToObjectMapper<T> ());  // pass it in as optimization, but not change of semantics
-#if _HACK_2_PRINT_BUG_
-                fprintf (stderr, "***about to do toMapper\n");
-#endif
                 toObjectMapper (*this, v, into);
-#if _HACK_2_PRINT_BUG_
-                fprintf (stderr, "***did to do toMapper\n");
-#endif
             }
             template <typename T>
             inline void ObjectVariantMapper::ToObject (const VariantValue& v, T* into) const
@@ -238,21 +224,9 @@ namespace Stroika {
                 return fromObjectMapper (*this, &from);
             }
             template <typename T>
-#if qCompiler_SanitizerFunctionPtrConversionBug
-            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function")
-#endif
-                inline VariantValue
-                ObjectVariantMapper::FromObject (const T& from) const
+            inline VariantValue ObjectVariantMapper::FromObject (const T& from) const
             {
-#if _HACK_2_PRINT_BUG_
-                auto fromMapper = FromObjectMapper<T> ();
-                fprintf (stderr, "***about to do fromMapper\n");
-                auto ret = fromMapper (*this, &from);
-                fprintf (stderr, "***did to do fromMapper\n");
-                return ret;
-#else
                 return FromObjectMapper<T> () (*this, &from);
-#endif
             }
             template <typename ACTUAL_CONTAINER_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_WithAdder ()
@@ -666,8 +640,29 @@ namespace Stroika {
                     }
                 }
 #endif
-
-                FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
+                /*
+                 *  @see qCompiler_SanitizerFunctionPtrConversionSuppressionBug
+                 *
+                 *  @see https://stroika.atlassian.net/browse/STK-601
+                 *
+                 *  NOTE - we technically call function objects with illegal parameters on each field (data member) of a class.
+                 *  Each field has a type 'T' - but in this template, we don't know it. We know its type_info object, but there is
+                 *  no way in C++ to map that back to a type for use an a FromObjectMapperType<T>/ToObjectMapperType<T> function object.
+                 *
+                 *  So we use the saved FromGenericObjectMapperType/ToGenericObjectMapperType values. This works because we are careful
+                 *  with our API to not pass or return objects to type T, but just have POINTERS to those types.
+                 *
+                 *  Still - systems like the 'undefined behavior sanitizer' - may sometimes detect this and report it as an error. So - we must
+                 *  suppress these (technically correct) error detections.
+                 *
+                 *  This applies BOTH to the fromObjectMapper and toObjectMapper below.
+                 *
+                 *  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("function") was a FAILED attempt to workaround this issue.
+                 *  I also tried similar attributes on each other converter lambda (like the ones in mkSerializerInfo_ in the .cpp file).
+                 *
+                 *  But so far, all that I've found that disables this detection on clang-4 and clang5 is to set the global --no-sanitize function command line flag.
+                 */
+                FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> VariantValue {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
@@ -684,7 +679,7 @@ namespace Stroika {
                     }
                     return VariantValue (m);
                 };
-                ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) -> void {
+                ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> void {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper");
 #endif
