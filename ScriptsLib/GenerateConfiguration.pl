@@ -381,7 +381,7 @@ sub	SetDefaultForCompilerDriver_
 				$sanitizerFlags = "address,undefined";
 			}
 			# @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper) - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
-			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER) >= '4.0') {
+			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '4.0') {
 				if ($noSanitizerFlags eq "") {
 					$noSanitizerFlags = "function";
 				}
