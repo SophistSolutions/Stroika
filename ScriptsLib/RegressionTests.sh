@@ -259,7 +259,8 @@ fi
 
 #VERY ROUGH GUESTIMATE - I think excludes 2 clang tests, and a few more?
 TOTALCONFIGS_=`./ScriptsLib/GetConfigurations.sh  | wc -w`
-TOTAL_WARNINGS_EXPECTED=$(($TOTALCONFIGS_ - 2))
+#TOTAL_WARNINGS_EXPECTED=$(($TOTALCONFIGS_ - 2))
+TOTAL_WARNINGS_EXPECTED=0
 
 if [ $X1 -eq $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   $X1 items succeeded (AS expected $NUM_PASSES_OF_REGTESTS_RUN * $NUM_REGTESTS)"
