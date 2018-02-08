@@ -386,11 +386,15 @@ sub	SetDefaultForCompilerDriver_
 			}
 			# @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper) - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
 			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '4.0') {
+				my $test2Suppress = "function";
+				if ("$^O" eq "darwin") {
+					$test2Suppress = "vptr";
+				}
 				if ($noSanitizerFlags eq "") {
-					$noSanitizerFlags = "function";
+					$noSanitizerFlags = "$test2Suppress;
 				}
 				else {
-					$noSanitizerFlags = "function," . $noSanitizerFlags;
+					$noSanitizerFlags = $test2Suppress . "," . $noSanitizerFlags;
 				}
 			}
 		}
