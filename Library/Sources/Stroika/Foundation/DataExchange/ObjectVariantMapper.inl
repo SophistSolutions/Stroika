@@ -662,7 +662,7 @@ namespace Stroika {
                  *
                  *  But so far, all that I've found that disables this detection on clang-4 and clang5 is to set the global --no-sanitize function command line flag.
                  */
-                FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> VariantValue {
+                FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("vptr") -> VariantValue {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
@@ -679,7 +679,7 @@ namespace Stroika {
                     }
                     return VariantValue (m);
                 };
-                ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> void {
+                ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("vptr") -> void {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper");
 #endif
