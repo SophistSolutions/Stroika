@@ -547,12 +547,22 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #ifndef qCompiler_noSanitizeAttribute_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
-#elif defined(__clang__)
-#define qCompiler_noSanitizeAttribute_Buggy 0
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
 #elif defined(__GNUC__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
 #define qCompiler_noSanitizeAttribute_Buggy 1
+#endif
+#endif
+
+#ifndef qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
+#elif defined(__clang__) && !defined(__APPLE__)
+#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#else
+#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy 0
 #endif
 #endif
 

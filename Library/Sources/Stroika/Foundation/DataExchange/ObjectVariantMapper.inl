@@ -658,11 +658,13 @@ namespace Stroika {
                  *  This applies BOTH to the fromObjectMapper and toObjectMapper below.
                  *
                  *  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("function") was a FAILED attempt to workaround this issue.
+                 *  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("vptr") was a FAILED attempt to workaround this issue.
                  *  I also tried similar attributes on each other converter lambda (like the ones in mkSerializerInfo_ in the .cpp file).
                  *
-                 *  But so far, all that I've found that disables this detection on clang-4 and clang5 is to set the global --no-sanitize function command line flag.
+                 *  But so far, all that I've found that disables this detection on clang-4 and clang5 is to set the global
+                 *  --no-sanitize function command line flag (or --no-sanitize vptr on macos).
                  */
-                FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("vptr") -> VariantValue {
+                FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> VariantValue {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
@@ -679,7 +681,7 @@ namespace Stroika {
                     }
                     return VariantValue (m);
                 };
-                ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("vptr") -> void {
+                ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> void {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper");
 #endif

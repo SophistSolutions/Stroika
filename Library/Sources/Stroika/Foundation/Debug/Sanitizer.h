@@ -21,7 +21,11 @@ namespace Stroika {
 #if qCompiler_noSanitizeAttribute_Buggy
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS)
 #else
+#if qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy
+#define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) __attribute__ ((no_sanitize (ARGS)))
+#else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
+#endif
 #endif
         }
     }
