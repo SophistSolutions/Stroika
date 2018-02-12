@@ -87,7 +87,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Return value guarantied lifetime at least as long as 'this' object.
+                 *  Return value guaranteed lifetime at least as long as 'this' object.
                  *
                  *  Note - though THIS is fully threadsafe, use of the reference T& is only as threadsafe as T itself.
                  */

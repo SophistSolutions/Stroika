@@ -46,7 +46,7 @@
  *              added to a threadpool. If multiple tasks are added to the threadpool with the same
  *              TaskGroup, then they respect that taskgroup's contraints. One example constraint would be
  *              mutual run exclusion. This would allow you to create lockless threaded procedures, because
- *              they would be guarantied to not be run all at the same time, and yet could STILL leverage
+ *              they would be guaranteed to not be run all at the same time, and yet could STILL leverage
  *              the benefits of thread pooling.
  *
  *              For example, if you had 3 threads in the pool, and 5 thread groups, then typically one or

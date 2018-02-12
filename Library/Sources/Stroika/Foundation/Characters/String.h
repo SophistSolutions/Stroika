@@ -1090,7 +1090,7 @@ namespace Stroika {
                  *  As with STL, the return value of the data () function should NOT be assumed to be
                  *  NUL-terminated
                  *
-                 *  The lifetime of the pointer returned is guarantied until the next non-const call to this String
+                 *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
                  *  envelope class (that is if other reps change, or are acceessed this data will not
                  *  be modified)
                  *
@@ -1102,7 +1102,7 @@ namespace Stroika {
                 /**
                  *  This will always return a value which is NUL-terminated.
                  *
-                 *  The lifetime of the pointer returned is guarantied until the next non-const call to this String
+                 *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
                  *  envelope class (that is if other reps change, or are acceessed this data will not be modified)
                  *  Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
                  *  class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing

@@ -308,7 +308,7 @@ namespace Stroika {
 
 #if qDebug
                 //Ensure (fSharedImpl_.unique ());
-                // technically not 100% guarantied if two threads did this at the same time, but so rare interesting if ever triggered.
+                // technically not 100% guaranteed if two threads did this at the same time, but so rare interesting if ever triggered.
                 // may need to lose this assert - maybe replace with #if qDebug DbgTrace
                 if (not unique ()) {
                     DbgTrace ("probably a bug, but not necessarily...");
