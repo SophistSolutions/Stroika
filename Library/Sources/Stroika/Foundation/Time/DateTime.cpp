@@ -233,16 +233,16 @@ DateTime::DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& 
 DateTime DateTime::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
-        return DateTime ();
+        return DateTime{};
     }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
 #if qPlatform_Windows
             /*
-                 * Windows Parser does better job than POSIX one - for reasons which elude me.
-                 * Automated test has some test cases to help close the gap...
-                 *      -- LGP 2011-10-08
-                 */
+             * Windows Parser does better job than POSIX one - for reasons which elude me.
+             * Automated test has some test cases to help close the gap...
+             *      -- LGP 2011-10-08
+             */
             return Parse (rep, LOCALE_USER_DEFAULT);
 #else
             return Parse (rep, locale ());
@@ -422,7 +422,7 @@ Memory::Optional<bool> DateTime::IsDaylightSavingsTime () const
 String DateTime::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
@@ -460,11 +460,9 @@ String DateTime::Format (PrintFormat pf) const
             }
             return r;
         } break;
-        default: {
-            AssertNotReached ();
-            return String ();
-        } break;
     }
+    AssertNotReached ();
+    return String ();
 }
 
 String DateTime::Format (const locale& l) const
@@ -503,7 +501,7 @@ String DateTime::Format (const locale& l, const String& formatPattern) const
 String DateTime::Format (LCID lcid) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     else {
         String r = fDate_.Format (lcid);
