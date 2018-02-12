@@ -35,7 +35,7 @@ namespace {
 }
 
 namespace {
-    void Test2_Direct_ ()
+    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void Test2_Direct_ ()
     {
         Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
