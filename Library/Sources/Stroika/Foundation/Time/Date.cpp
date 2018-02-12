@@ -152,16 +152,16 @@ constexpr Date::JulianRepType Date::kEmptyJulianRep;
 Date Date::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
-        return Date ();
+        return Date{};
     }
     switch (pf) {
         case ParseFormat::eCurrentLocale: {
 #if qPlatform_Windows
             /*
-                 * Windows Parser does better job than POSIX one - for reasons which elude me.
-                 * Automated test has some test cases to help close the gap...
-                 *      -- LGP 2011-10-08
-                 */
+             * Windows Parser does better job than POSIX one - for reasons which elude me.
+             * Automated test has some test cases to help close the gap...
+             *      -- LGP 2011-10-08
+             */
             return Parse (rep, LOCALE_USER_DEFAULT);
 #else
             return Parse (rep, locale ());
@@ -170,8 +170,8 @@ Date Date::Parse (const String& rep, ParseFormat pf)
         case ParseFormat::eISO8601:
         case ParseFormat::eXML: {
             /*
-                 * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
-                 */
+             * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
+             */
             int year  = 0;
             int month = 0;
             int day   = 0;
@@ -182,7 +182,7 @@ Date Date::Parse (const String& rep, ParseFormat pf)
                 return Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
             }
             else {
-                return Date (); // at some point maybe we should throw for badly-formatted dates? -- LGP 2011-10-08
+                return Date{}; // at some point maybe we should throw for badly-formatted dates? -- LGP 2011-10-08
             }
         } break;
         case ParseFormat::eJavascript: {
@@ -202,11 +202,9 @@ Date Date::Parse (const String& rep, ParseFormat pf)
 #endif
             return result;
         } break;
-        default: {
-            AssertNotReached ();
-            return Date ();
-        } break;
     }
+    AssertNotReached ();
+    return Date{};
 }
 
 Date Date::Parse (const String& rep, const locale& l)
@@ -228,7 +226,7 @@ Date Date::Parse (const String& rep, const locale& l, size_t* consumedCharsInStr
 {
     RequireNotNull (consumedCharsInStringUpTo);
     if (rep.empty ()) {
-        return Date ();
+        return Date{};
     }
     const time_get<wchar_t>&     tmget = use_facet<time_get<wchar_t>> (l);
     ios::iostate                 state = ios::goodbit;
@@ -251,7 +249,7 @@ Date Date::Parse (const String& rep, const locale& l, size_t* consumedCharsInStr
 Date Date::Parse (const String& rep, LCID lcid)
 {
     if (rep.empty ()) {
-        return Date ();
+        return Date{};
     }
     DATE d{};
     try {
@@ -270,7 +268,7 @@ Date Date::Parse (const String& rep, LCID lcid)
 String Date::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
@@ -279,13 +277,13 @@ String Date::Format (PrintFormat pf) const
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale ());
             /*
-                 *  This logic probably needs to be locale-specific, but this is good enuf for now...
-                 *  Map things like:
-                 *      01:03:05 to 1:03:05
-                 *
-                 *  and map
-                 *      12/05/00 to 12/05, but DONT map 12/15/2000 to 12/15/2000
-                 */
+             *  This logic probably needs to be locale-specific, but this is good enuf for now...
+             *  Map things like:
+             *      01:03:05 to 1:03:05
+             *
+             *  and map
+             *      12/05/00 to 12/05, but DONT map 12/15/2000 to 12/15/2000
+             */
             static const String_Constant kZero_ = String_Constant (L"0");
             Memory::Optional<size_t>     i      = 0;
             while ((i = tmp.Find (kZero_, *i))) {
@@ -323,16 +321,16 @@ String Date::Format (PrintFormat pf) const
         } break;
         case PrintFormat::eJavascript: {
             /*
-                 *  From
-                 *      http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/ed737e50-6398-4462-8779-2af3c03f8325.asp
-                 *
-                 *          parse Method (JScript 5.6)
-                 *          ...
-                 *          The following rules govern what the parse method can successfully parse:
-                 *          Short dates can use either a "/" or "-" date separator, but must follow the month/day/year format, for example "7/20/96".
-                 *
-                 *  @see    explicit Date (const String& rep, Javascript);
-                 */
+             *  From
+             *      http://msdn.microsoft.com/library/default.asp?url=/library/en-us/script56/html/ed737e50-6398-4462-8779-2af3c03f8325.asp
+             *
+             *          parse Method (JScript 5.6)
+             *          ...
+             *          The following rules govern what the parse method can successfully parse:
+             *          Short dates can use either a "/" or "-" date separator, but must follow the month/day/year format, for example "7/20/96".
+             *
+             *  @see    explicit Date (const String& rep, Javascript);
+             */
             wchar_t     buf[20]; // really only  11 needed (so long as no negatives - which I dont think is allowed)
             MonthOfYear m = MonthOfYear::eEmptyMonthOfYear;
             DayOfMonth  d = DayOfMonth::eEmptyDayOfMonth;
@@ -341,11 +339,9 @@ String Date::Format (PrintFormat pf) const
             Verify (::swprintf (buf, NEltsOf (buf), L"%02d/%02d/%04d", m, d, y) == 10);
             return buf;
         } break;
-        default: {
-            AssertNotReached ();
-            return String ();
-        } break;
     }
+    AssertNotReached ();
+    return String{};
 }
 
 String Date::Format (const locale& l) const
