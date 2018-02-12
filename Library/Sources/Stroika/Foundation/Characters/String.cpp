@@ -959,7 +959,7 @@ String String::Repeat (unsigned int count) const
 {
     switch (count) {
         case 0:
-            return String ();
+            return String{};
         case 1:
             return *this;
         case 2:
@@ -970,7 +970,7 @@ String String::Repeat (unsigned int count) const
                 result += *this;
             }
             return result.str ();
-        } break;
+        }
     }
 }
 
