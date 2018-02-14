@@ -51,7 +51,9 @@ my $CWARNING_FLAGS = undef;
 my $ADD2CWARNING_FLAGS = "";
 
 my $runtimeStackProtectorFlag = DEFAULT_BOOL_OPTIONS;
-my $sanitizerFlags = undef;
+my $sanitizerFlagsIsDefined = false;		#sadly perl arrays cannot be 'undefined'
+my $sanitizerFlagsNoneSet = false;
+my @sanitizerFlags = ();
 my $noSanitizerFlags = "";
 
 my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
@@ -386,8 +388,15 @@ sub	SetDefaultForCompilerDriver_
 			if (trim (`uname -r`) eq "4.4.0-43-Microsoft") {
 				#LEAVE empty default, cuz for this version of WSL, asan doesn't work - insufficient procfs support
 			}
-			elsif (!defined ($sanitizerFlags)) {
-				$sanitizerFlags = "address,undefined";
+			elsif (!$sanitizerFlagsNoneSet) {
+				my %already = map { $_ => 1 } @sanitizerFlags;
+				if(!exists($already{'address'})) {
+					push @sanitizerFlags, 'address';
+				}
+				if(!exists($already{'undefined'})) {
+					push @sanitizerFlags, 'undefined';
+				}
+				$sanitizerFlagsIsDefined = true;
 			}
 			# @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper) - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
 			if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus) && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '4.0') {
@@ -860,19 +869,20 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-sanitize") or (lc ($var) eq "--sanitize")) {
 			$i++;
 			$var = $ARGV[$i];
-			if ($var eq "none") {
-				$sanitizerFlags = "";
-			}
-			else {
-				if (defined $sanitizerFlags) {
-					if (not ($sanitizerFlags eq "")) {
-						$sanitizerFlags .= ",";
-					}
+			my @splitSanFlags = split(/,/, $var);
+			foreach my $ii (0 .. $#splitSanFlags) {
+				my $flag = $splitSanFlags[$ii];
+				if ($flag eq "none") {
+					@sanitizerFlags = ();
+					$sanitizerFlagsNoneSet = true;
 				}
 				else {
-					$sanitizerFlags = "";
+					my %already = map { $_ => 1 } @sanitizerFlags;
+					if(!exists($already{$flag})) {
+						push @sanitizerFlags, $flag;
+					}
 				}
-				$sanitizerFlags .= $var;
+				$sanitizerFlagsIsDefined = true;
 			}
 		}
 		elsif ((lc ($var) eq "-no-sanitize") or (lc ($var) eq "--no-sanitize")) {
@@ -1000,9 +1010,17 @@ sub PostProcessOptions_ ()
 			$COPTIMIZE_FLAGS .= " /GL";
 		}
 	}
-	if (defined $sanitizerFlags and not ($sanitizerFlags eq "")) {
-		$EXTRA_COMPILER_ARGS .= " -fsanitize=" . $sanitizerFlags;
-		$EXTRA_LINKER_ARGS .= " -fsanitize=" . $sanitizerFlags;
+	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
+		$EXTRA_COMPILER_ARGS .= " -fsanitize=";
+		$EXTRA_LINKER_ARGS .= " -fsanitize=";
+		foreach my $i (0 .. $#sanitizerFlags) {
+			$EXTRA_COMPILER_ARGS .= $sanitizerFlags[$i];
+			$EXTRA_LINKER_ARGS .= $sanitizerFlags[$i];
+			if ($i < $#sanitizerFlags) {
+				$EXTRA_COMPILER_ARGS .= ",";
+				$EXTRA_LINKER_ARGS .= ",";
+			}
+		}
 	}
 	if (not ($noSanitizerFlags eq "")) {
 		$EXTRA_COMPILER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
