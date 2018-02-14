@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 #TRY THESE AGAIN, but for now generate too many problems...
-#use strict;
-#use warnings;
+use strict;
+use warnings;
 
 BEGIN{ @INC = ( "./", @INC ); }
 
@@ -58,22 +58,22 @@ my $ApplyDebugFlags = DEFAULT_BOOL_OPTIONS;
 my $ApplyReleaseFlags = DEFAULT_BOOL_OPTIONS;
 
 my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = '-Wall ';
-my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-switch ';
-my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-sign-compare ';
-my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-variable ';
-my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-value ';
-my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-strict-aliasing ';
-my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-comment ';
-my $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ = $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-function ';
+$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-switch ';
+$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-sign-compare ';
+$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-variable ';
+$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-value ';
+$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-strict-aliasing ';
+$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-comment ';
+$DEFAULT_CWARNING_FLAGS_SAFE_COMMON_	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_ . '-Wno-unused-function ';
 
 my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
-my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-but-set-variable ';
-my $DEFAULT_CWARNING_FLAGS_GCC		= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-local-typedefs ';
+$DEFAULT_CWARNING_FLAGS_GCC			= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-but-set-variable ';
+$DEFAULT_CWARNING_FLAGS_GCC			= $DEFAULT_CWARNING_FLAGS_GCC . '-Wno-unused-local-typedefs ';
 
 my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_SAFE_COMMON_;
-my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-const-variable ';
-my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef ';
-my $DEFAULT_CWARNING_FLAGS_CLANG	= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-compat ';
+$DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-const-variable ';
+$DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-unused-local-typedef ';
+$DEFAULT_CWARNING_FLAGS_CLANG		= $DEFAULT_CWARNING_FLAGS_CLANG . '-Wno-future-compat ';
 
 my $FEATUREFLAG_ActivePerl = undef;
 my $FEATUREFLAG_PrivateOverrideOfCMake = undef;
@@ -206,19 +206,23 @@ sub     IsClangPlusPlus_
 	return ($x =~ /clang\+\+[!\/]*/);
 }
 
+#return number
 sub     GetGCCVersion_
 {
+	no warnings;	#@todo sometimes gives warning about use of  uninitialized variable - not sure why - debug later
     my $x = shift(@_);
-	return trim (`($x --version 2>/dev/null) | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`);
+	return trim (`($x --version 2>/dev/null) | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`) * 1;
 }
 
 
+#return number
 sub     GetClangVersion_
 {
     my $x = trim(shift(@_));
 	my $firstLine = trim (`($x --version 2>/dev/null) | head -1`);
+	no warnings 'numeric';
 	if (index($firstLine, "Apple LLVM") != -1) {
-		$ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
+		my $ver = trim(`echo "$firstLine" | awk '{print \$4}'`);
 		$ver = $ver * 1;
 		return $ver;
 	}
@@ -249,8 +253,8 @@ sub	SetInitialDefaults_
 	if ("$^O" eq "cygwin") {
 		# try vs 2k15
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
-			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			my $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+			my $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
 			system ('ls -l "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio/"2017/*/VC >/dev/null 2> /dev/null');
 			if ($? == 0) {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2017';
@@ -309,9 +313,10 @@ sub     ReplaceLast_
 
 sub	SetDefaultForCompilerDriver_
 {
+	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '4.9') {
+			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 4.9) {
 				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 			else {
@@ -336,7 +341,7 @@ sub	SetDefaultForCompilerDriver_
 		$CWARNING_FLAGS = '';
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
-			if (GetGCCVersion_ ($COMPILER_DRIVER) >= '5.2' && GetGCCVersion_ ($COMPILER_DRIVER) < '6') {
+			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 5.2 && GetGCCVersion_ ($COMPILER_DRIVER) < 6) {
 				#This is broken in gcc 5.2 - #https://gcc.gnu.org/ml/gcc-bugs/2015-08/msg01811.html
 				$EXTRA_LINKER_ARGS = $EXTRA_LINKER_ARGS . " -Wno-odr"
 			}
@@ -483,12 +488,12 @@ sub	SetDefaultForPlatform_
 ### Do initial pass, just looking for platform
 sub	ParseCommandLine_Platform_
 {
-	for ($i = 0; $i <= $#ARGV; $i++) {
+	for (my $i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
 		if ((lc ($var) eq "-platform") or (lc ($var) eq "--platform")) {
 			$i++;
 			$var = $ARGV[$i];
-			$platform = $var;
+			$PROJECTPLATFORMSUBDIR = $var;
 			SetDefaultForPlatform_ ();
 		}
 	}
@@ -497,7 +502,7 @@ sub	ParseCommandLine_Platform_
 ### Do initial pass, just looking for platform
 sub	ParseCommandLine_CompilerDriver_
 {
-	for ($i = 0; $i <= $#ARGV; $i++) {
+	for (my $i = 0; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
 		if (lc ($var) eq "-compiler-driver" or lc ($var) eq "--compiler-driver") {
 			$i++;
@@ -517,7 +522,7 @@ sub	ParseCommandLine_CompilerDriver_
 
 sub	ParseCommandLine_Remaining_
 {
-	for ($i = 1; $i <= $#ARGV; $i++) {
+	for (my $i = 1; $i <= $#ARGV; $i++) {
 		my $var = $ARGV[$i];
 		if (lc ($var) eq "-c-define" or lc ($var) eq "--c-define") {
 			$i++;
@@ -942,12 +947,12 @@ sub	ParseCommandLine_
 	if (false) {
 		# Helpful to debug scripts...
 		print "Entering GenerateConfiguration.pl (";
-		for ($i = 0; $i <= $#ARGV; $i++) {
+		for (my $i = 0; $i <= $#ARGV; $i++) {
 			my $var = $ARGV[$i];
 			print ("\"$var\"");
 			print (" ");
 		}
-		print (")\n");
+		print ")\n";
 	}
 
 	SetInitialDefaults_ ();
@@ -1075,7 +1080,7 @@ sub	WriteConfigFile_
 
 	open(OUT,">$configFileName");
 	print (OUT "<!--This file autogenerated by the command\n    configure ");
-	foreach $argnum (0 .. $#ARGV) {
+	foreach my $argnum (0 .. $#ARGV) {
 	   print (OUT "$ARGV[$argnum] ");
 	}
 	print (OUT "\n-->\n\n");
@@ -1156,14 +1161,14 @@ sub	WriteConfigFile_
 
 
 	print (OUT "    <ExtraCDefines>\n");
-		foreach $var (@useExtraCDefines)
+		foreach my $var (@useExtraCDefines)
 		{
 			print (OUT "       <CDefine>$var</CDefine>\n");
 		}
 	print (OUT "    </ExtraCDefines>\n");
 	
 	print (OUT "    <ExtraMakeDefines>\n");
-		foreach $var (@useExtraMakeDefines)
+		foreach my $var (@useExtraMakeDefines)
 		{
 			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
 		}
