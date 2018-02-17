@@ -651,6 +651,7 @@ namespace {
             String{L"Producer"});
         Thread::Ptr consumerThread = Thread::New (
             [&q]() {
+                // Since we call EndOfInput () - the RemoveHead () will eventually timeout
                 while (true) {
                     function<void()> f = q.RemoveHead ();
                     f ();
@@ -658,14 +659,10 @@ namespace {
             },
             Thread::eAutoStart,
             String{L"Consumer"});
-        Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (counter);
-        while (counter != expectedValue and Time::GetTickCount () < killAt) {
-            Execution::Sleep (.5);
-        }
+        // producer already set to run off the end...
+        // consumer will end due to exception reading from end
+        Thread::WaitForDone ({producerThread, consumerThread});
         Verify (counter == expectedValue);
-        producerThread.WaitForDone (); // producer already set to run off the end...
-        consumerThread.WaitForDone (); // consumer will end due to exception reading from end
     }
 }
 
@@ -1037,14 +1034,10 @@ namespace {
             },
             Thread::eAutoStart,
             String{L"Producer"});
-        Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
-        Stroika_Foundation_Debug_ValgrindDisableHelgrind (counter);
-        while (counter != expectedValue and Time::GetTickCount () < killAt) {
-            Execution::Sleep (.5);
-        }
+        // producer already set to run off the end...
+        // consumer will end due to exception reading from end
+        Thread::WaitForDone ({producerThread, consumerThread});
         Verify (counter == expectedValue);
-        producerThread.WaitForDone (); // producer already set to run off the end...
-        consumerThread.WaitForDone (); // consumer will end due to exception reading from end
     }
 }
 
