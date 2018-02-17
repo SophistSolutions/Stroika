@@ -44,7 +44,7 @@ namespace Stroika {
             inline WaitableEvent::WE_::WE_ (ResetType resetType)
                 : fResetType (resetType)
             {
-                Stroika_Foundation_Debug_ValgrindDisableHelgrind (fTriggered); // @see https://stroika.atlassian.net/browse/STK-484
+                //               Stroika_Foundation_Debug_ValgrindDisableHelgrind (fTriggered); // @see https://stroika.atlassian.net/browse/STK-484
             }
             inline void WaitableEvent::WE_::Reset ()
             {
@@ -53,6 +53,7 @@ namespace Stroika {
             }
             inline bool WaitableEvent::WE_::PeekIsSet () const noexcept
             {
+                typename ConditionVariable<>::QuickLockType critSection{fConditionVariable.fMutex};
                 return fTriggered;
             }
             inline void WaitableEvent::WE_::Set ()
