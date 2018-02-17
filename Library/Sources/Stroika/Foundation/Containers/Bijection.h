@@ -213,6 +213,8 @@ namespace Stroika {
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  *
+                 *  \note   Alias - Lookup (key, RangeType* value) - is equivilent to .Net TryGetValue ()
+                 *
                  *  @see   LookupValue ()
                  *  @see   InverseLookup ()
                  *  @see   InverseLookupValue ()

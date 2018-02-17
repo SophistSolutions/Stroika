@@ -214,6 +214,8 @@ namespace Stroika {
                  *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
+                 *
+                 *  \note   Alias - Lookup (key, value_type* value) - is equivilent to .Net TryGetValue ()
                  */
                 nonvirtual Memory::Optional<value_type> Lookup (ArgByValueType<KeyType> key) const;
                 nonvirtual bool                         Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const;
