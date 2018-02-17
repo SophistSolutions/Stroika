@@ -84,8 +84,8 @@ constexpr WaitableEvent::ResetType WaitableEvent::eManualReset;
 #if qDebug || qStroika_FeatureSupported_Valgrind
 WaitableEvent::~WaitableEvent ()
 {
-    Require (fExtraWaitableEvents_.empty ());                                                      // Cannot kill a waitable event while its being waited on by others
- //   Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWE_.fConditionVariable.fConditionVariable); // avoid sporadic (about 1/3 time) probably spurious helgrind failure - for test Foundation::Execution::Threads -https://stroika.atlassian.net/browse/STK-484
+    Require (fExtraWaitableEvents_.empty ()); // Cannot kill a waitable event while its being waited on by others
+                                              //   Stroika_Foundation_Debug_ValgrindDisableHelgrind (fWE_.fConditionVariable.fConditionVariable); // avoid sporadic (about 1/3 time) probably spurious helgrind failure - for test Foundation::Execution::Threads -https://stroika.atlassian.net/browse/STK-484
 }
 #endif
 
