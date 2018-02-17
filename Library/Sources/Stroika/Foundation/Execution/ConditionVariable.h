@@ -84,7 +84,7 @@ namespace Stroika {
              *
              *              If its set before, condition variable sees that on entry (in its pred check).
              *
-             *              If its after, then on the mutex unlock (I DONT KNOW HOW THIS HAPPENS YET) - the COndition
+             *              If its after, then on the mutex unlock (I DONT KNOW HOW THIS HAPPENS YET) - the Condition
              *              var must somehow get 'awkakened' - probably by a TLS list (queue) of waiters to get notififed
              *              and that gets hooked in the mutex code???? GUESSING.
              *
