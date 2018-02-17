@@ -319,6 +319,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note   AddAll/2 is alias for .net AddRange ()
                  */
                 template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>::type>
                 nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);

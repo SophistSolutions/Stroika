@@ -200,6 +200,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note   AddAll/2 is alias for .net AddRange ()
                  */
                 nonvirtual void AddAll (const T* start, const T* end);
                 nonvirtual void AddAll (const CountedValue<T>* start, const CountedValue<T>* end);

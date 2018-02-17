@@ -176,6 +176,7 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note   AddAll/2 is alias for .net AddRange ()
                  */
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
