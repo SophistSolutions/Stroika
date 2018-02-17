@@ -747,6 +747,8 @@ namespace {
     {
         {
             wchar_t buf[1024];
+            VerifyTestResult (swprintf (buf, NEltsOf (buf), L"a, %ls, %d", L"xxx", 33) == 10);
+            VerifyTestResult (wstring (buf) == L"a, xxx, 33");
             VerifyTestResult (swprintf (buf, NEltsOf (buf), L"0x%x", 0x20) == 4);
             VerifyTestResult (wstring (buf) == L"0x20");
         }
