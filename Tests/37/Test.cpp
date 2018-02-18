@@ -22,16 +22,42 @@ using Containers::Set;
 namespace {
     void Test1_Basic_ ()
     {
-        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
-            bool called = false;
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
-            ::raise (SIGINT);
-            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-            VerifyTestResult (called);
+            Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+            {
+                // atomic CAN be used with SAFE signal handlers
+                atomic<bool> called = false;
+                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eSafe));
+                ::raise (SIGINT);
+                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+                VerifyTestResult (called);
+            }
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
         }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        {
+            Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+            {
+                // atomic CAN be used with direct signal handlers
+                atomic<bool> called = false;
+                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eDirect));
+                ::raise (SIGINT);
+                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+                VerifyTestResult (called);
+            }
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        }
+        {
+            Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+            {
+                // Synchronized CAN be used with SAFE signal handlers
+                Synchronized<bool> called = false;
+                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eSafe));
+                ::raise (SIGINT);
+                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+                VerifyTestResult (called);
+            }
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        }
     }
 }
 
