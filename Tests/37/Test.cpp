@@ -20,13 +20,12 @@ using namespace Stroika::Foundation::Execution;
 
 using Containers::Set;
 
-
 namespace {
     void Test1_Direct_ ()
     {
-        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-		auto&&             cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
-		{
+        Set<SignalHandler> saved   = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        auto&&             cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+        {
             bool called = false;
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eDirect));
             auto&& cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
@@ -46,7 +45,7 @@ namespace {
             {
                 atomic<bool> called = false;
                 SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
-				// @todo - as of 2018-02-18 - helgrind still doesn't understand that atomic<bool> is threadsafe
+                // @todo - as of 2018-02-18 - helgrind still doesn't understand that atomic<bool> is threadsafe
                 Stroika_Foundation_Debug_ValgrindDisableHelgrind (called);
                 ::raise (SIGINT);
                 Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
