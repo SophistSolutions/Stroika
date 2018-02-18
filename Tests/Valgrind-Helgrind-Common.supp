@@ -31,20 +31,6 @@
    fun:main
 }
 {
-   RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part1
-   Helgrind:LockOrder
-   ...
-   fun:_ZNSt17_Function_handlerIFvvEZN12_GLOBAL__N_132RegressionTest18_RWSynchronized_8Private_31Test1_MultipleConcurrentReadersEvEUlvE_E9_M_invokeERKSt9_Any_data
-   ...
-}
-{
-   RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part2
-   Helgrind:LockOrder
-   ...
-   fun:_ZNSt17_Function_handlerIFvvEZN12_GLOBAL__N_132RegressionTest18_RWSynchronized_8Private_31Test1_MultipleConcurrentReadersEvEUlvE0_E9_M_invokeERKSt9_Any_data
-   ...
-}
-{
    Helgrind_WARNS_EINTR_Error_With_SemWait_As_Problem_Even_Though_Handled
    Helgrind:PthAPIerror
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so

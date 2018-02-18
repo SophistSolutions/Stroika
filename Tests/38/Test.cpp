@@ -906,39 +906,39 @@ namespace {
 namespace {
     namespace RegressionTest18_RWSynchronized_ {
         namespace Private_ {
-            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void Test1_MultipleConcurrentReaders ()
+            void Test1_MultipleConcurrentReaders ()
             {
+                Debug::TraceContextBumper ctx{"...Test1_MultipleConcurrentReaders"};
                 /**
-                 *  Note - this code can EASILY (but not definitely) deadlock if t1 is BETWEEN its two locks when t2 is BETWEEN its two locks (so more likely with longer sleep)
-                 *  if using a regular Syncrhonized() lock. But using RWSyncrhonized allows multiple read locks (which is what we are doing) - so no deadlock.
-                 *
-                 *  NOTE - had to add VALGRIND SUPRESSION - RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part1
-                 *  and RegressionTest18_RWSynchronized____Test1_MultipleConcurrentReaders__LockOrderReversedForSpecificTestPurpose_Part2 because of the reversed lock order.
+                 *  Verify that both threads are maintaining the lock at the same time.
                  */
-                static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
-                RWSynchronized<int>       sharedData{0};
-                unsigned int              sum1{};
-                unsigned int              sum2{};
+                static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+                // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the VerifyTestResult about countWhereTwoHoldingRead below will fail!
+                RWSynchronized<int>  sharedData{0};
+                atomic<unsigned int> countMaybeHoldingReadLock = 0; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
+                atomic<unsigned int> countWhereTwoHoldingRead  = 0;
+                ;
+                atomic<unsigned int>      sum1{};
                 static const unsigned int kRepeatCount_{kRunningValgrind_ ? 1000u : 10000u};
                 mutex                     forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
-                Thread::Ptr               t1 = Thread::New ([&]() {
+                auto                      lambda = [&]() {
                     for (unsigned int i = 0; i < kRepeatCount_; i++) {
-                        auto holdRWLock = sharedData.cget ();
+                        auto holdReadOnlyLock = sharedData.cget ();
+                        countMaybeHoldingReadLock++;
                         Execution::Sleep (0.0001);
-                        lock_guard<mutex> crit{forceDeadlockOccasionallyIfNotUsingMultipleReaderLock};
-                        sum1 += holdRWLock.load ();
+                        sum1 += holdReadOnlyLock.load ();
+                        if (countMaybeHoldingReadLock >= 2) {
+                            countWhereTwoHoldingRead++;
+                        }
+                        countMaybeHoldingReadLock--;
                     }
-                });
-                Thread::Ptr               t2 = Thread::New ([&]() {
-                    for (unsigned int i = 0; i < kRepeatCount_; i++) {
-                        lock_guard<mutex> crit{forceDeadlockOccasionallyIfNotUsingMultipleReaderLock};
-                        Execution::Sleep (0.0001);
-                        auto holdRWLock = sharedData.cget ();
-                        sum2 += holdRWLock.load ();
-                    }
-                });
+                };
+                Thread::Ptr t1 = Thread::New (lambda);
+                Thread::Ptr t2 = Thread::New (lambda);
                 Thread::Start ({t1, t2});
                 Thread::WaitForDone ({t1, t2});
+                VerifyTestResult (countWhereTwoHoldingRead >= 1); // not logically true, but a good test..
+                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double(countWhereTwoHoldingRead.load ()) / kRepeatCount_);
             }
         }
         void DoIt ()
