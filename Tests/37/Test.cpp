@@ -7,6 +7,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
 
@@ -19,76 +20,51 @@ using namespace Stroika::Foundation::Execution;
 
 using Containers::Set;
 
+
 namespace {
-    void Test1_Basic_ ()
+    void Test1_Direct_ ()
     {
-        {
-            Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-            {
-                // atomic CAN be used with SAFE signal handlers
-                atomic<bool> called = false;
-                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eSafe));
-                ::raise (SIGINT);
-                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-                VerifyTestResult (called);
-            }
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
-        }
-        {
-            Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-            {
-                // atomic CAN be used with direct signal handlers
-                atomic<bool> called = false;
-                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eDirect));
-                ::raise (SIGINT);
-                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-                VerifyTestResult (called);
-            }
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
-        }
-        {
-            Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-            {
-                // Synchronized CAN be used with SAFE signal handlers
-                Synchronized<bool> called = false;
-                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eSafe));
-                ::raise (SIGINT);
-                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-                VerifyTestResult (called);
-            }
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+		auto&&             cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+		{
+            bool called = false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::eDirect));
+            auto&& cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+            ::raise (SIGINT);
+            VerifyTestResult (called);
         }
     }
 }
 
 namespace {
-    Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void Test2_Direct_ ()
+    void Test2_Safe_ ()
     {
-        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        // safe signal handlers all run through another thread, so this amounts to thread sync
         {
-            bool called = false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }, SignalHandler::Type::eDirect));
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
-            ::raise (SIGINT);
-            VerifyTestResult (called);
+            Set<SignalHandler> saved   = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+            auto&&             cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+            {
+                atomic<bool> called = false;
+                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
+				// @todo - as of 2018-02-18 - helgrind still doesn't understand that atomic<bool> is threadsafe
+                Stroika_Foundation_Debug_ValgrindDisableHelgrind (called);
+                ::raise (SIGINT);
+                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+                VerifyTestResult (called);
+            }
         }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
-    }
-}
-
-namespace {
-    void Test3_Safe_ ()
-    {
-        Set<SignalHandler> saved = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
-            bool called = false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
-            Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
-            ::raise (SIGINT);
-            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
-            VerifyTestResult (called);
+            Set<SignalHandler> saved   = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+            auto&&             cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+            {
+                Execution::Synchronized<bool> called = false;
+                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
+                //Stroika_Foundation_Debug_ValgrindDisableHelgrind (called); // helgrind doesnt know signal handler must have returend by end of sleep.
+                ::raise (SIGINT);
+                Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+                VerifyTestResult (called);
+            }
         }
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
     }
 }
 
@@ -96,9 +72,8 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        Test1_Basic_ ();
-        Test2_Direct_ ();
-        Test3_Safe_ ();
+        Test1_Direct_ ();
+        Test2_Safe_ ();
     }
 }
 
