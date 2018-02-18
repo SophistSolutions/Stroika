@@ -44,7 +44,6 @@ namespace Stroika {
             inline WaitableEvent::WE_::WE_ (ResetType resetType)
                 : fResetType (resetType)
             {
-                //               Stroika_Foundation_Debug_ValgrindDisableHelgrind (fTriggered); // @see https://stroika.atlassian.net/browse/STK-484
             }
             inline void WaitableEvent::WE_::Reset ()
             {
