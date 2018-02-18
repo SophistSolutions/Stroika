@@ -906,7 +906,8 @@ namespace {
 namespace {
     namespace RegressionTest18_RWSynchronized_ {
         namespace Private_ {
-            void Test1_MultipleConcurrentReaders ()
+            template <typename SYNCRHONIZED_INT>
+            void Test1_MultipleConcurrentReaders (bool mustBeEqualToZero)
             {
                 Debug::TraceContextBumper ctx{"...Test1_MultipleConcurrentReaders"};
                 /**
@@ -914,7 +915,7 @@ namespace {
                  */
                 static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
                 // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the VerifyTestResult about countWhereTwoHoldingRead below will fail!
-                RWSynchronized<int>       sharedData{0};
+                SYNCRHONIZED_INT          sharedData{0};
                 atomic<unsigned int>      countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
                 atomic<unsigned int>      countWhereTwoHoldingRead{0};
                 atomic<unsigned int>      sum1{};
@@ -936,14 +937,20 @@ namespace {
                 Thread::Ptr t2 = Thread::New (lambda);
                 Thread::Start ({t1, t2});
                 Thread::WaitForDone ({t1, t2});
-                VerifyTestResult (countWhereTwoHoldingRead >= 1); // not logically true, but a good test..
+                if (mustBeEqualToZero) {
+                    VerifyTestResult (countWhereTwoHoldingRead == 0);
+                }
+                else {
+                    VerifyTestResult (countWhereTwoHoldingRead >= 1); // not logically true, but a good test..
+                }
                 DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double(countWhereTwoHoldingRead.load ()) / kRepeatCount_);
             }
         }
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
-            Private_::Test1_MultipleConcurrentReaders ();
+            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true);
         }
     }
 }
