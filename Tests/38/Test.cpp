@@ -915,8 +915,8 @@ namespace {
                 static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
                 // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the VerifyTestResult about countWhereTwoHoldingRead below will fail!
                 RWSynchronized<int>  sharedData{0};
-                atomic<unsigned int> countMaybeHoldingReadLock = 0; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
-                atomic<unsigned int> countWhereTwoHoldingRead  = 0;
+                atomic<unsigned int> countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
+                atomic<unsigned int> countWhereTwoHoldingRead{0};
                 ;
                 atomic<unsigned int>      sum1{};
                 static const unsigned int kRepeatCount_{kRunningValgrind_ ? 1000u : 10000u};
