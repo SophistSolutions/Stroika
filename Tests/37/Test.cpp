@@ -43,7 +43,7 @@ namespace {
             Set<SignalHandler> saved   = SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
             auto&&             cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             {
-                atomic<bool> called = false;
+                atomic<bool> called{false};
                 SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
                 // @todo - as of 2018-02-18 - helgrind still doesn't understand that atomic<bool> is threadsafe
                 Stroika_Foundation_Debug_ValgrindDisableHelgrind (called);
