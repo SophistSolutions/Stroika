@@ -92,6 +92,16 @@ namespace Stroika {
                 };
 
             public:
+                /**
+                 */
+                static constexpr Type eDirect = Type::eDirect;
+
+            public:
+                /**
+                 */
+                static constexpr Type eSafe = Type::eSafe;
+
+            public:
                 SignalHandler (void (*signalHandler) (SignalID), Type type = Type::eDEFAULT);
                 SignalHandler (const Function<void(SignalID)>& signalHandler, Type type = Type::eDEFAULT);
 
