@@ -9,6 +9,7 @@
 
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
+#include "Stroika/Foundation/Debug/Sanitizer.h"
 #include "Stroika/Foundation/Execution/BlockingQueue.h"
 #include "Stroika/Foundation/Execution/Finally.h"
 #include "Stroika/Foundation/Execution/Sleep.h"
@@ -905,7 +906,7 @@ namespace {
 namespace {
     namespace RegressionTest18_RWSynchronized_ {
         namespace Private_ {
-            void Test1_MultipleConcurrentReaders ()
+            Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("thread") void Test1_MultipleConcurrentReaders ()
             {
                 /**
                  *  Note - this code can EASILY (but not definitely) deadlock if t1 is BETWEEN its two locks when t2 is BETWEEN its two locks (so more likely with longer sleep)
@@ -920,8 +921,22 @@ namespace {
                 unsigned int              sum2{};
                 static const unsigned int kRepeatCount_{kRunningValgrind_ ? 1000u : 10000u};
                 mutex                     forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
-                Thread::Ptr               t1 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { auto holdRWLock = sharedData.cget (); Execution::Sleep (0.0001); lock_guard<mutex> crit { forceDeadlockOccasionallyIfNotUsingMultipleReaderLock };  sum1 += holdRWLock.load ();  } });
-                Thread::Ptr               t2 = Thread::New ([&]() {for (unsigned int i = 0; i < kRepeatCount_; i++) { lock_guard<mutex> crit{ forceDeadlockOccasionallyIfNotUsingMultipleReaderLock }; Execution::Sleep (0.0001);  auto holdRWLock = sharedData.cget ();  sum2 += holdRWLock.load ();  } });
+                Thread::Ptr               t1 = Thread::New ([&]() {
+                    for (unsigned int i = 0; i < kRepeatCount_; i++) {
+                        auto holdRWLock = sharedData.cget ();
+                        Execution::Sleep (0.0001);
+                        lock_guard<mutex> crit{forceDeadlockOccasionallyIfNotUsingMultipleReaderLock};
+                        sum1 += holdRWLock.load ();
+                    }
+                });
+                Thread::Ptr               t2 = Thread::New ([&]() {
+                    for (unsigned int i = 0; i < kRepeatCount_; i++) {
+                        lock_guard<mutex> crit{forceDeadlockOccasionallyIfNotUsingMultipleReaderLock};
+                        Execution::Sleep (0.0001);
+                        auto holdRWLock = sharedData.cget ();
+                        sum2 += holdRWLock.load ();
+                    }
+                });
                 Thread::Start ({t1, t2});
                 Thread::WaitForDone ({t1, t2});
             }
