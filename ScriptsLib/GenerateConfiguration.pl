@@ -476,6 +476,9 @@ sub	SetDefaultForCompilerDriver_
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
 	}
+	if (!(defined $FEATUREFLAG_librt)) {
+		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
+	}
 	if (!(defined $STRIP) and  $PROJECTPLATFORMSUBDIR eq 'Unix') {
 		$STRIP = "strip";
 	}
