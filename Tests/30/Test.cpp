@@ -301,7 +301,7 @@ namespace Test_02_BasicReaderTests_ {
             stringstream tmp;
             tmp << kExample;
             VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (tmp);
-            VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
+            VerifyTestResult (v1.GetType () == VariantValue::eMap);
         }
     }
 }
@@ -412,7 +412,7 @@ namespace Test_05_ParseRegressionTest_1_ {
                 "}";
             VariantValue               v  = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             map<wstring, VariantValue> mv = v.As<map<wstring, VariantValue>> ();
-            VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::Type::eMap);
+            VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::eMap);
             map<wstring, VariantValue> outputMap = v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
             outputMap[L"MaxFiles"]               = 123456789;
             mv[L"Output"]                        = outputMap;
@@ -489,10 +489,10 @@ namespace Test_05_ParseRegressionTest_3_ {
                 "}";
             VariantValue                  v  = DataExchange::Variant::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryInputStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> ();
-            VerifyTestResult (mv[L"T1"].GetType () == VariantValue::Type::eString);
+            VerifyTestResult (mv[L"T1"].GetType () == VariantValue::eString);
             VerifyTestResult (mv[L"T1"] == String ());
-            VerifyTestResult (mv[L"T2"].GetType () == VariantValue::Type::eNull);
-            VerifyTestResult (mv[L"T3"].GetType () == VariantValue::Type::eMap);
+            VerifyTestResult (mv[L"T2"].GetType () == VariantValue::eNull);
+            VerifyTestResult (mv[L"T3"].GetType () == VariantValue::eMap);
         }
     }
 }
@@ -511,13 +511,13 @@ namespace Test_07_ParserTestReadWriteBasictypes_ {
             stringstream tnmStrStrm (encoded);
             VariantValue v1 = DataExchange::Variant::JSON::Reader ().Read (tnmStrStrm);
             // JSON reader comes back with strings - because date/datetime are not native types
-            if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
+            if (v.GetType () == VariantValue::eDate and v1.GetType () == VariantValue::eString) {
                 v1 = VariantValue (v1.As<Time::Date> ());
             }
-            if (v.GetType () == VariantValue::Type::eDateTime and v1.GetType () == VariantValue::Type::eString) {
+            if (v.GetType () == VariantValue::eDateTime and v1.GetType () == VariantValue::eString) {
                 v1 = VariantValue (v1.As<Time::DateTime> ());
             }
-            if (v.GetType () == VariantValue::Type::eFloat) {
+            if (v.GetType () == VariantValue::eFloat) {
                 VerifyTestResult (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
             }
             else {

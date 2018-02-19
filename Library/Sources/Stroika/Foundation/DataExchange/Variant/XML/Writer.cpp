@@ -97,33 +97,33 @@ namespace {
     void PrettyPrint_ (const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {
         switch (v.GetType ()) {
-            case VariantValue::Type::eNull:
+            case VariantValue::eNull:
                 break;
-            case VariantValue::Type::eBoolean:
+            case VariantValue::eBoolean:
                 PrettyPrint_ (v.As<bool> (), out);
                 break;
-            case VariantValue::Type::eDate:
+            case VariantValue::eDate:
                 PrettyPrint_ (v.As<String> (), out);
                 break;
-            case VariantValue::Type::eDateTime:
+            case VariantValue::eDateTime:
                 PrettyPrint_ (v.As<String> (), out);
                 break;
-            case VariantValue::Type::eInteger:
+            case VariantValue::eInteger:
                 PrettyPrint_ (v.As<long long int> (), out);
                 break;
-            case VariantValue::Type::eUnsignedInteger:
+            case VariantValue::eUnsignedInteger:
                 PrettyPrint_ (v.As<unsigned long long int> (), out);
                 break;
-            case VariantValue::Type::eFloat:
+            case VariantValue::eFloat:
                 PrettyPrint_ (v.As<long double> (), out);
                 break;
-            case VariantValue::Type::eString:
+            case VariantValue::eString:
                 PrettyPrint_ (v.As<String> (), out);
                 break;
-            case VariantValue::Type::eMap:
+            case VariantValue::eMap:
                 PrettyPrint_ (v.As<map<wstring, VariantValue>> (), out, indentLevel);
                 break;
-            case VariantValue::Type::eArray:
+            case VariantValue::eArray:
                 PrettyPrint_ (v.As<vector<VariantValue>> (), out, indentLevel);
                 break;
             default:
@@ -158,7 +158,7 @@ public:
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>::Ptr& out) override
     {
         if (fDocumentElementName_.empty ()) {
-            Require (v.GetType () == VariantValue::Type::eMap);
+            Require (v.GetType () == VariantValue::eMap);
             PrettyPrint_ (v, TextWriter::New (out, TextWriter::Format::eUTF8WithoutBOM), 0);
         }
         else {
@@ -170,7 +170,7 @@ public:
     virtual void Write (const VariantValue& v, const Streams::OutputStream<Character>::Ptr& out) override
     {
         if (fDocumentElementName_.empty ()) {
-            Require (v.GetType () == VariantValue::Type::eMap);
+            Require (v.GetType () == VariantValue::eMap);
             PrettyPrint_ (v, out, 0);
         }
         else {

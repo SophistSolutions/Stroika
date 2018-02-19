@@ -36,43 +36,43 @@ namespace {
     };
     template <>
     struct TN_<bool> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eBoolean};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eBoolean};
     };
     template <>
     struct TN_<Memory::BLOB> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eBLOB};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eBLOB};
     };
     template <>
     struct TN_<IntegerType_> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eInteger};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eInteger};
     };
     template <>
     struct TN_<UnsignedIntegerType_> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eUnsignedInteger};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eUnsignedInteger};
     };
     template <>
     struct TN_<FloatType_> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eFloat};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eFloat};
     };
     template <>
     struct TN_<Date> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eDate};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eDate};
     };
     template <>
     struct TN_<DateTime> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eDateTime};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eDateTime};
     };
     template <>
     struct TN_<String> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eString};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eString};
     };
     template <>
     struct TN_<Sequence<VariantValue>> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eArray};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eArray};
     };
     template <>
     struct TN_<Mapping<String, VariantValue>> {
-        static constexpr VariantValue::Type kTYPEENUM{VariantValue::Type::eMap};
+        static constexpr VariantValue::Type kTYPEENUM{VariantValue::eMap};
     };
 }
 
@@ -329,8 +329,7 @@ bool VariantValue::As () const
     }
 }
 
-template <>
-Memory::BLOB VariantValue::As () const
+Memory::BLOB VariantValue::AsBLOB_ () const
 {
     if (fVal_ == nullptr) {
         return Memory::BLOB{};
@@ -341,14 +340,8 @@ Memory::BLOB VariantValue::As () const
             AssertNotNull (v);
             return v->fVal;
         }
-        case Type::eString: {
-            return Cryptography::Encoding::Algorithm::DecodeBase64 (As<String> ());
-        }
         default: {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"failed coerce-to-blob: type=%s, value=%s", Characters::ToString (fVal_->GetType ()).c_str (), Characters::ToString (*this).c_str ());
-#endif
-            Execution::Throw (DataExchange::BadFormatException (String_Constant (L"Cannot coerce VariantValue to Memory::BLOB")));
+            return Cryptography::Encoding::Algorithm::DecodeBase64 (As<String> ());
         }
     }
 }
@@ -712,15 +705,15 @@ int VariantValue::Compare (const VariantValue& rhs) const
     VariantValue::Type lt = GetType ();
     VariantValue::Type rt = rhs.GetType ();
     switch (lt) {
-        case VariantValue::Type::eNull:
-            return rt == VariantValue::Type::eNull ? 0 : 1;
-        case VariantValue::Type::eBoolean:
+        case VariantValue::eNull:
+            return rt == VariantValue::eNull ? 0 : 1;
+        case VariantValue::eBoolean:
             return Common::ComparerWithWellOrder<bool>::Compare (As<bool> (), rhs.As<bool> ());
-        case VariantValue::Type::eInteger:
+        case VariantValue::eInteger:
             return Common::ComparerWithWellOrder<IntegerType_>::Compare (As<IntegerType_> (), rhs.As<IntegerType_> ());
-        case VariantValue::Type::eUnsignedInteger:
+        case VariantValue::eUnsignedInteger:
             return Common::ComparerWithWellOrder<UnsignedIntegerType_>::Compare (As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
-        case VariantValue::Type::eFloat: {
+        case VariantValue::eFloat: {
             // explicit test so we can do NearlyEquals()
             FloatType_ l = As<FloatType_> ();
             FloatType_ r = rhs.As<FloatType_> ();
@@ -734,15 +727,15 @@ int VariantValue::Compare (const VariantValue& rhs) const
                 return 1;
             }
         }
-        case VariantValue::Type::eDate:
+        case VariantValue::eDate:
             return Common::ComparerWithWellOrder<Date>::Compare (As<Date> (), rhs.As<Date> ());
-        case VariantValue::Type::eDateTime:
+        case VariantValue::eDateTime:
             return Common::ComparerWithWellOrder<DateTime>::Compare (As<DateTime> (), rhs.As<DateTime> ());
-        case VariantValue::Type::eString:
+        case VariantValue::eString:
             return Common::ComparerWithWellOrder<String>::Compare (As<String> (), rhs.As<String> ());
-        case VariantValue::Type::eArray:
+        case VariantValue::eArray:
             return Common::ComparerWithWellOrder<Sequence<VariantValue>>::Compare (As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
-        case VariantValue::Type::eMap: {
+        case VariantValue::eMap: {
 // Cannot do cuz Keys() NYI
 // @todo - fix!!!
 #if 0
@@ -784,26 +777,26 @@ bool VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) con
             return false;
         }
         else if (
-            (lt == VariantValue::Type::eInteger or lt == VariantValue::Type::eUnsignedInteger) and
-            (rt == VariantValue::Type::eInteger or rt == VariantValue::Type::eUnsignedInteger)) {
+            (lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger) and
+            (rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) {
             // Set compare as type and fall through
-            lt = VariantValue::Type::eUnsignedInteger;
-            rt = VariantValue::Type::eUnsignedInteger;
+            lt = VariantValue::eUnsignedInteger;
+            rt = VariantValue::eUnsignedInteger;
         }
         else if (
-            (lt == VariantValue::Type::eFloat and (rt == VariantValue::Type::eString or rt == VariantValue::Type::eInteger or rt == VariantValue::Type::eUnsignedInteger)) or
-            (rt == VariantValue::Type::eFloat and (lt == VariantValue::Type::eString or lt == VariantValue::Type::eInteger or lt == VariantValue::Type::eUnsignedInteger))) {
+            (lt == VariantValue::eFloat and (rt == VariantValue::eString or rt == VariantValue::eInteger or rt == VariantValue::eUnsignedInteger)) or
+            (rt == VariantValue::eFloat and (lt == VariantValue::eString or lt == VariantValue::eInteger or lt == VariantValue::eUnsignedInteger))) {
             // Set compare as type and fall through
-            lt = VariantValue::Type::eFloat;
-            rt = VariantValue::Type::eFloat;
+            lt = VariantValue::eFloat;
+            rt = VariantValue::eFloat;
         }
         else if (
-            ((lt != VariantValue::Type::eArray and lt != VariantValue::Type::eMap) and rt == VariantValue::Type::eString) or
-            ((rt != VariantValue::Type::eArray and rt != VariantValue::Type::eMap) and lt == VariantValue::Type::eString)) {
+            ((lt != VariantValue::eArray and lt != VariantValue::eMap) and rt == VariantValue::eString) or
+            ((rt != VariantValue::eArray and rt != VariantValue::eMap) and lt == VariantValue::eString)) {
             // special case - comparing a string with any type except map or array, trat as strings
             // Set compare as type and fall through
-            lt = VariantValue::Type::eString;
-            rt = VariantValue::Type::eString;
+            lt = VariantValue::eString;
+            rt = VariantValue::eString;
         }
         else {
             return false;
@@ -811,23 +804,23 @@ bool VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) con
         // can fall through for some fallthrough cases above...
     }
     switch (lt) {
-        case VariantValue::Type::eNull:
+        case VariantValue::eNull:
             return true;
-        case VariantValue::Type::eBoolean:
+        case VariantValue::eBoolean:
             return As<bool> () == rhs.As<bool> ();
-        case VariantValue::Type::eInteger:
+        case VariantValue::eInteger:
             return As<IntegerType_> () == rhs.As<IntegerType_> ();
-        case VariantValue::Type::eUnsignedInteger:
+        case VariantValue::eUnsignedInteger:
             return As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
-        case VariantValue::Type::eFloat:
+        case VariantValue::eFloat:
             return Math::NearlyEquals (As<VariantValue::FloatType_> (), rhs.As<VariantValue::FloatType_> ());
-        case VariantValue::Type::eDate:
+        case VariantValue::eDate:
             return As<Date> () == rhs.As<Date> ();
-        case VariantValue::Type::eDateTime:
+        case VariantValue::eDateTime:
             return As<DateTime> () == rhs.As<DateTime> ();
-        case VariantValue::Type::eString:
+        case VariantValue::eString:
             return As<String> () == rhs.As<String> ();
-        case VariantValue::Type::eArray: {
+        case VariantValue::eArray: {
             // same iff all elts same
             Sequence<VariantValue> lhsV = As<Sequence<VariantValue>> ();
             Sequence<VariantValue> rhsV = rhs.As<Sequence<VariantValue>> ();
@@ -841,7 +834,7 @@ bool VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) con
             }
             return true;
         }
-        case VariantValue::Type::eMap: {
+        case VariantValue::eMap: {
             // same iff all elts same
             Mapping<String, VariantValue> lhsM = As<Mapping<String, VariantValue>> ();
             Mapping<String, VariantValue> rhsM = rhs.As<Mapping<String, VariantValue>> ();

@@ -158,6 +158,21 @@ namespace Stroika {
             public:
                 /**
                  */
+                static constexpr Type eNull            = Type::eNull;
+                static constexpr Type eBLOB            = Type::eBLOB;
+                static constexpr Type eBoolean         = Type::eBoolean;
+                static constexpr Type eInteger         = Type::eInteger;
+                static constexpr Type eUnsignedInteger = Type::eUnsignedInteger;
+                static constexpr Type eFloat           = Type::eFloat;
+                static constexpr Type eDate            = Type::eDate;
+                static constexpr Type eDateTime        = Type::eDateTime;
+                static constexpr Type eString          = Type::eString;
+                static constexpr Type eArray           = Type::eArray;
+                static constexpr Type eMap             = Type::eMap;
+
+            public:
+                /**
+                 */
                 VariantValue () = default;
                 VariantValue (nullptr_t);
                 VariantValue (bool val);
@@ -254,9 +269,8 @@ namespace Stroika {
                  *          to true if non-zero.
                  *
                  *  \note   About As<Memory::BLOB> ()
-                 *          Converts String to BLOB using base64 conversion. If thats not what you want, convert yourself.
-                 *          null-type converted to empty BLOB
-                 *          other types an assertion error.
+                 *          If type=eBLOB, return that. If type = null, return empty blob.
+                 *          Else, converts any type to String, and use base64 conversion.
                  *
                  *  \note   About As<DateTime> ()
                  *          Coerences String value to dates assuming ISO8601 string format.

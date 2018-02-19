@@ -68,6 +68,11 @@ namespace Stroika {
                 return fVal_->GetType ();
             }
             template <>
+            inline Memory::BLOB VariantValue::As () const
+            {
+                return AsBLOB_ ();
+            }
+            template <>
             inline signed char VariantValue::As () const
             {
                 return static_cast<signed char> (AsInteger_ ());
@@ -192,17 +197,17 @@ namespace Stroika {
                 static constexpr EnumNames<DataExchange::VariantValue::Type> k{
                     EnumNames<DataExchange::VariantValue::Type>::BasicArrayInitializer{
                         {
-                            {DataExchange::VariantValue::Type::eNull, L"Null"},
-                            {DataExchange::VariantValue::Type::eBLOB, L"BLOB"},
-                            {DataExchange::VariantValue::Type::eBoolean, L"Boolean"},
-                            {DataExchange::VariantValue::Type::eInteger, L"Integer"},
-                            {DataExchange::VariantValue::Type::eUnsignedInteger, L"Unsigned-Integer"},
-                            {DataExchange::VariantValue::Type::eFloat, L"Float"},
-                            {DataExchange::VariantValue::Type::eDate, L"Date"},
-                            {DataExchange::VariantValue::Type::eDateTime, L"DateTime"},
-                            {DataExchange::VariantValue::Type::eString, L"String"},
-                            {DataExchange::VariantValue::Type::eArray, L"Array"},
-                            {DataExchange::VariantValue::Type::eMap, L"Map"},
+                            {DataExchange::VariantValue::eNull, L"Null"},
+                            {DataExchange::VariantValue::eBLOB, L"BLOB"},
+                            {DataExchange::VariantValue::eBoolean, L"Boolean"},
+                            {DataExchange::VariantValue::eInteger, L"Integer"},
+                            {DataExchange::VariantValue::eUnsignedInteger, L"Unsigned-Integer"},
+                            {DataExchange::VariantValue::eFloat, L"Float"},
+                            {DataExchange::VariantValue::eDate, L"Date"},
+                            {DataExchange::VariantValue::eDateTime, L"DateTime"},
+                            {DataExchange::VariantValue::eString, L"String"},
+                            {DataExchange::VariantValue::eArray, L"Array"},
+                            {DataExchange::VariantValue::eMap, L"Map"},
                         }}};
                 DefaultNames ()
                     : EnumNames<DataExchange::VariantValue::Type> (k)

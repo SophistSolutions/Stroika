@@ -191,37 +191,37 @@ namespace {
     void PrettyPrint_ (const Options_& options, const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel)
     {
         switch (v.GetType ()) {
-            case VariantValue::Type::eNull:
+            case VariantValue::eNull:
                 PrettyPrint_Null_ (options, out);
                 break;
-            case VariantValue::Type::eBoolean:
+            case VariantValue::eBoolean:
                 PrettyPrint_ (options, v.As<bool> (), out);
                 break;
-            case VariantValue::Type::eBLOB:
+            case VariantValue::eBLOB:
                 PrettyPrint_ (options, v.As<String> (), out);
                 break;
-            case VariantValue::Type::eDate:
+            case VariantValue::eDate:
                 PrettyPrint_ (options, v.As<wstring> (), out);
                 break;
-            case VariantValue::Type::eDateTime:
+            case VariantValue::eDateTime:
                 PrettyPrint_ (options, v.As<wstring> (), out);
                 break;
-            case VariantValue::Type::eInteger:
+            case VariantValue::eInteger:
                 PrettyPrint_ (options, v.As<long long int> (), out);
                 break;
-            case VariantValue::Type::eUnsignedInteger:
+            case VariantValue::eUnsignedInteger:
                 PrettyPrint_ (options, v.As<unsigned long long int> (), out);
                 break;
-            case VariantValue::Type::eFloat:
+            case VariantValue::eFloat:
                 PrettyPrint_ (options, v.As<long double> (), out);
                 break;
-            case VariantValue::Type::eString:
+            case VariantValue::eString:
                 PrettyPrint_ (options, v.As<wstring> (), out);
                 break;
-            case VariantValue::Type::eMap:
+            case VariantValue::eMap:
                 PrettyPrint_ (options, v.As<Mapping<String, VariantValue>> (), out, indentLevel);
                 break;
-            case VariantValue::Type::eArray:
+            case VariantValue::eArray:
                 PrettyPrint_ (options, v.As<vector<VariantValue>> (), out, indentLevel);
                 break;
             default:

@@ -40,7 +40,7 @@ namespace Stroika {
                 public:
                     // NOTE - defaults to "Document"
                     // if empty - then Write requiers
-                    //              Require (v.GetType () == VariantValue::Type::eMap);
+                    //              Require (v.GetType () == VariantValue::eMap);
                     //
                     // If provided - must be a valid xml element name (ncname?)
                     nonvirtual Optional<String> GetDocumentElementName () const;

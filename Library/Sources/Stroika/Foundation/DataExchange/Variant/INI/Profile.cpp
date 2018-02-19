@@ -25,7 +25,7 @@ Profile INI::Convert (VariantValue v)
     Profile                       profile;
     Mapping<String, VariantValue> mv = v.As<Mapping<String, VariantValue>> (); // throws if format mismatch
     for (KeyValuePair<String, VariantValue> kvi : mv) {
-        if (kvi.fValue.GetType () == VariantValue::Type::eMap) {
+        if (kvi.fValue.GetType () == VariantValue::eMap) {
             Section newSection;
             for (KeyValuePair<String, VariantValue> namedSectionElt : kvi.fValue.As<Mapping<String, VariantValue>> ()) {
                 newSection.fProperties.Add (namedSectionElt.fKey, namedSectionElt.fValue.As<String> ());

@@ -328,7 +328,7 @@ namespace Stroika {
                 ToObjectMapperType<Optional<T, TRAITS>> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Optional<T, TRAITS>* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     // NOTE - until v2.0a100, this read if (d.empty ()) - but thats wrong beacuse it maps empty strings to null (missing) values
-                    if (d.GetType () == VariantValue::Type::eNull) {
+                    if (d.GetType () == VariantValue::eNull) {
                         intoObjOfTypeT->clear ();
                     }
                     else {
@@ -675,7 +675,7 @@ namespace Stroika {
 #endif
                         FromGenericObjectMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
                         VariantValue                vv                     = toGenericVariantMapper (mapper, reinterpret_cast<const Byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
-                        if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::Type::eNull) {
+                        if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) {
                             m.Add (i.fSerializedFieldName, vv);
                         }
                     }
@@ -753,7 +753,7 @@ namespace Stroika {
 #endif
                         FromGenericObjectMapperType fromGenericObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
                         VariantValue                vv                      = fromGenericObjectMapper (mapper, reinterpret_cast<const Byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
-                        if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::Type::eNull) {
+                        if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::eNull) {
                             m.Add (i.fSerializedFieldName, vv);
                         }
                     }
