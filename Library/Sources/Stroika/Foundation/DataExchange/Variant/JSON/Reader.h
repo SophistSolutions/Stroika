@@ -42,7 +42,7 @@ namespace Stroika {
                      *
                      *  Another good summary is http://json.org/
                      *
-                     *  @todo add example usage (and docs)
+                     *  \note   Any JSON object can be represented as as VariantValue object, and unambiguously mapped back to the same JSON.
                      *
                      *  \note   req inputStream.IsSeekable () - when reading an input stream
                      */

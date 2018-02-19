@@ -30,6 +30,7 @@ namespace {
             : fFloatOptions{o.fFloatOptions.Value ()}
             , fJSONPrettyPrint (o.fJSONPrettyPrint.Value (true))
             , fSpacesPerIndent{o.fSpacesPerIndent.Value (4)}
+            , fAllowNANInf{o.fAllowNANInf.Value (true)}
         {
             if (not fJSONPrettyPrint) {
                 fSpacesPerIndent = 0;
@@ -42,6 +43,7 @@ namespace {
         bool                            fJSONPrettyPrint;
         unsigned int                    fSpacesPerIndent;
         String                          fIndentSpace;
+        bool                            fAllowNANInf;
     };
 }
 
@@ -91,6 +93,7 @@ namespace {
     {
         String tmp{Characters::Float2String (v, options.fFloatOptions)};
         if (isnan (v) or isinf (v)) {
+            Require (options.fAllowNANInf);
             PrettyPrint_ (options, tmp, out);
         }
         else {
