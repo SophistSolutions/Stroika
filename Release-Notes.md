@@ -18,6 +18,124 @@ History
 
 
 
+
+
+
+
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a229">v2.0a229</a><br/>2018-02-19</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a228...v2.0a229</li>
+		<li>Exeuction/Thread/Syncrhonization
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-484 possible fix - waitableevent - may need extra mutex lock on read (found with tsan)</li>
+				<li>WaitableEvent - Lose obsolete workarounds for https://stroika.atlassian.net/browse/STK-484</li>
+				<li>added type aliases for SignalHandler types</li>
+			</ul>
+		</li>
+		<li>Various sanitizer related cleanups
+			<ul>
+				<li>(Minimally) support thread sanitizer
+					<ul>
+						<li>Improved Test1_MultipleConcurrentReaders test - so test that RW does support mutiple readers, but regular Synchonized<> does not</li>
+						<li>RegressionTest18_RWSynchronized_  and Test1_MultipleConcurrentReaders  - rewroite to not use extra mutex, and other means to check for multiple readers working.
+							 https://stroika.atlassian.net/browse/STK-484 - testing but I think gcc-basic-threadsanitize is now working.</li>
+						<li>lose no longer needed //Stroika_Foundation_Debug_ValgrindDisableHelgrind in a few places due to TSAN driven cleanups</li>
+						<li>cleaned up signal handler regtests - so pass TSAN and helgrdind with fewer suppressions</li>
+						<li>Enhanced Test1_Basic_ regtest to hopfully workaround/fix TSAN reported error about race writing to variable</li>
+						<li>remove data race in blockingqueue regtests, which silences a few warnings from tsan (and removes need for helgrind workarounds) - https://stroika.atlassian.net/browse/STK-481</li>
+					</ul>
+				</li>
+				<li>for https://stroika.atlassian.net/browse/STK-601 and clang++ - try Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(vptr) isntead of function</li>
+				<li>failed attempt at getting tsan to pass (use no_sanitize(thread))</li>
+				<li>fixed qCompiler_noSanitizeAttribute_Buggy  define</li>
+				<li>for https://stroika.atlassian.net/browse/STK-601 disable function on latest clang bug vptr on macos clang</li>
+				<li>document/touch up qCompiler_noSanitizeAttribute_Buggy</li>
+				<li>new Foundation/Debug/Sanitizer module</li>
+				<li>https://stroika.atlassian.net/browse/STK-500 - qCompiler_SanitizerVPtrTemplateTypeEraseureBug to workaround issue with address - santizer vptr subfeature. </li>
+				<li>makefile doc comment about Compiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500</li>
+				<li>https://stroika.atlassian.net/browse/STK-500 - differnt workaround for (now) stack-use-after... on ARM only - disabled use of address sanitizer as workaround - not worth finding better kludge / workaround (hard)</li>
+				<li>remove qCompiler_SanitizerVPtrTemplateTypeEraseureBug workaround - for reasons I don't follow - it doesn't appear needed anymore</li>
+				<li>qCompiler_SanitizerFunctionPtrConversionSuppressionBug - re-enabled the ./configure workaround;  better documented the bug in ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (); better documetned / linkd to JIRA ticket https://stroika.atlassian.net/browse/STK-601 ; and removed some hacks used to debug/track this issue down</li>
+				<li>suppress warning about stack-use-after-scope - qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy</li>
+				<li>if set any --sanitize flags - then dont add in default values (just ones explicitly set) - from ./configure</li>
+			</ul>
+		</li>
+		<li>VariantValue
+			<ul>
+				<li>Minor cleanup to VariantValue class (mirroed with constexpr the type names in  the variantValue class)</li>
+				<li>Allow VariantValue::As<BLOB> () - for ALL types and document as such.</li>
+			</ul>
+		</li>
+		<li>Build and Regression Test Scripts
+			<ul>
+				<li>Configuration building and other perl scripts improved to include warnings and strict declarations</li>
+				<li>added default value for FEATUREFLAG_librt in configure script (just affects windows)</li>
+				<li>improved behavior of sanize  flags wtih configure - using set in perl</li>
+				<li>GetClangVersion_ fix to configure (fixed problem in configure detecting clang version)</li>
+				<li>TOTAL_WARNINGS_EXPECTED=0 in regression tests now</li>
+				<li>in configure script - run SetDefaultForCompilerDriver_() AFTER ParseCommandLine_Remaining_ () so the defaults dont take precedence over the overrides</li>
+				<li>Minor tweak to configure script for default sanitizer inclusion</li>
+				<li>regression test script cahgnes to NOT include output about valgrind if not running valgrind; and added total ERRORs output</li>
+				<li>cosmetic cleanup to Boost makefile output</li>
+			</ul>
+		</li>
+		<li>JSON Reader/Writer
+			<ul>
+				<li>JSONWriter - refactor a bunch of cases that write string to go through same case (and document we handle ALL VariantValues since all can be coereced to string)</li>
+				<li>JSONWriter option fAllowNANInf</li>
+				<li>And documented better our handling and requirements for JSONWriter.</li>
+			</ul>
+		</li>
+		<li>ModuleGetterSetter<>
+			<ul>
+				<li>regression test for ModuleGetterSetter_</li>
+				<li>deprecated ModuleGetterSetter<>::SynchonizedUpdate () and replaced it with a better ModuleGetterSetter<>::Update () - which only conditionally (if needed) updates the global data - but the same method works to unconditionally update the data</li>
+			</ul>
+		</li>
+		<li>added overload for String ToString (const char* t)</li>
+		<li>minor constexpr cleanups for Atom<> class</li>
+		<li>fixed copyright date</li>
+		<li>minor cleanups to Date/DateTime code/</li>
+		<li>Avoid use of It turns out,  .200s anyhow, since the use was pointless, and it was producing valgrind errors</li>
+		<li>Lose qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat define - just always assume true (standards conformant)</li>
+		<li>changed Stroika::Foundation::Debug::Private_::Assertion_Failure_Handler_  () so it no longer warns in gcc since I cannot 
+		figure out how to suppress the warning. Just call std::quick_exit() at the end. Probably not what I would have preferred, but reasonable - Support qCompilerAndStdLib_quick_exit_Buggy</li>
+		<li>OptionsFile::mkFilenameMapper () shouldnt return const object (no reason for const I can think of)</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a229.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a229-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.2 (apple clang 9.2)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
+
  
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a228">v2.0a228</a><br/>2018-01-29</td>
