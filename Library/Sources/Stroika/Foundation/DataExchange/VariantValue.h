@@ -83,7 +83,7 @@ namespace Stroika {
              *
              *  TODO:
              *
-             *      @todo   XPath feature - https://github.com/SophistSolutions/Stroika/issues/110
+             *      @todo   XPath / JPath / JSONPath feature in DataExchange::VariantValue - https://github.com/SophistSolutions/Stroika/issues/110
              *
              *      @todo   POSSIBLY add support for Precision (see Characters::Float2String) - once that module has clenaned up
              *              notion of precision. Not sure how to add unobtrusively. - for As<String>()? optional param?...
@@ -272,10 +272,11 @@ namespace Stroika {
                  *          If type=eBLOB, return that. If type = null, return empty blob.
                  *          Else, converts any type to String, and use base64 conversion.
                  *
-                 *  \note   About As<DateTime> ()
-                 *          Coerences String value to dates assuming ISO8601 string format.
+                 *  \note   About As<Date> (), About As<DateTime> ()
+                 *          Null maps to empty Date.DateTime; 
+                 *          String value mapped to Date/DateTIme assuming ISO8601 string format  - may return empty or exception on failure.
                  *
-                 *  \note   About As<float> ()
+                 *  \note   About As<float> (), As<double> (), As<long double> ()
                  *          This converts strings and integer and floating point types. 'empty' - or the null type - is converted to nan().
                  *          Similarly, if the string cannot be converted, a nan will be returned. Other types (like Mapping) generate
                  *          an exception.

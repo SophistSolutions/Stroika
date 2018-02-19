@@ -458,7 +458,7 @@ template <>
 Date VariantValue::As () const
 {
     if (fVal_ == nullptr) {
-        return Date ();
+		return Date{};
     }
     switch (fVal_->GetType ()) {
         case Type::eDate: {
