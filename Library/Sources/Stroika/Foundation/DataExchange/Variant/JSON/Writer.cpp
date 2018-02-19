@@ -200,15 +200,6 @@ namespace {
             case VariantValue::eBoolean:
                 PrettyPrint_ (options, v.As<bool> (), out);
                 break;
-            case VariantValue::eBLOB:
-                PrettyPrint_ (options, v.As<String> (), out);
-                break;
-            case VariantValue::eDate:
-                PrettyPrint_ (options, v.As<wstring> (), out);
-                break;
-            case VariantValue::eDateTime:
-                PrettyPrint_ (options, v.As<wstring> (), out);
-                break;
             case VariantValue::eInteger:
                 PrettyPrint_ (options, v.As<long long int> (), out);
                 break;
@@ -218,9 +209,6 @@ namespace {
             case VariantValue::eFloat:
                 PrettyPrint_ (options, v.As<long double> (), out);
                 break;
-            case VariantValue::eString:
-                PrettyPrint_ (options, v.As<wstring> (), out);
-                break;
             case VariantValue::eMap:
                 PrettyPrint_ (options, v.As<Mapping<String, VariantValue>> (), out, indentLevel);
                 break;
@@ -228,7 +216,7 @@ namespace {
                 PrettyPrint_ (options, v.As<vector<VariantValue>> (), out, indentLevel);
                 break;
             default:
-                RequireNotReached (); // only certain types allowed
+                PrettyPrint_ (options, v.As<String> (), out);
         }
     }
 }
