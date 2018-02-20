@@ -404,11 +404,12 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *           Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
-                 *           VerifyTestResult ((m.Where (initializer_list<int> {2, 5}) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{5, 7}}));
+                 *           VerifyTestResult ((m.WithKeys (initializer_list<int> {2, 5}) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{5, 7}}));
                  *      \endcode
                  */
                 template <typename CONTAINER_OF_KEYS>
                 nonvirtual ArchetypeContainerType WithKeys (const CONTAINER_OF_KEYS& includeKeys) const;
+                nonvirtual ArchetypeContainerType WithKeys (const initializer_list<key_type>& includeKeys) const;
 
             public:
                 /**
