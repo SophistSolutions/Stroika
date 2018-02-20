@@ -59,9 +59,9 @@ namespace Stroika {
 
             using Configuration::ArgByValueType;
 
-/*
+            /*
              *  COULD possibly fix this by - when we have active iterators - just set them to 'at end'. But I guess that doesn't fix the tracking?
-             *  Maybe need actauly move them from one container rep to the other (we do in other cases have code for this).
+             *  Maybe need actualy move them from one container rep to the other (we do in other cases have code for this).
              *
              *      https://stroika.atlassian.net/browse/STK-570
              */
@@ -69,7 +69,7 @@ namespace Stroika {
 #define qStroika_Foundation_Traveral_OverwriteContainerWhileIteratorRunning_Buggy 1
 #endif
 
-/**
+            /**
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
              *  at one time, and on some systems.
              *
@@ -82,7 +82,7 @@ namespace Stroika {
 #define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
 #endif
 
-/**
+            /**
              *  EXPERIMENTAL AS OF v2.0a22x
              *
              *  @todo - TEST. I dont think this is important one way or the other, but I think it may aid performance,
@@ -455,11 +455,11 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      unsigned int cnt { 0 };
-                 *      s.Apply ([&cnt] (int i) {
-                 *         cnt += i;
-                 *      });
-                 *      DbgTrace ("cnt=%d", cnt);
+                 *          unsigned int cnt { 0 };
+                 *          s.Apply ([&cnt] (int i) {
+                 *              cnt += i;
+                 *          });
+                 *          DbgTrace ("cnt=%d", cnt);
                  *      \endcode
                  *
                  *  \note   Aliases:
@@ -502,10 +502,10 @@ namespace Stroika {
                  *              directly (or indirectly) access the Iterable<> being iterated over.
                  *  \par Example Usage
                  *      \code
-                 *      bool IsAllWhitespace (String s) const
-                 *      {
-                 *          return not s.FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
-                 *      }
+                 *          bool IsAllWhitespace (String s) const
+                 *          {
+                 *              return not s.FindFirstThat ([] (Character c) -> bool { return not c.IsWhitespace (); });
+                 *          }
                  *      \endcode
                  *
                  *  @see First ()
@@ -535,10 +535,10 @@ namespace Stroika {
                 *  \brief Find the Nth element of the Iterable<>
                 *
                 *  \par Example Usage
-                *      \code
-                *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                *      VerifyTestResult (c.Nth (1) == 2);
-                *      \endcode
+                *       \code
+                *           Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                *           VerifyTestResult (c.Nth (1) == 2);
+                *       \endcode
                 *
                 *  \req n < size ()
                 */
@@ -550,8 +550,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.NthValue (1) == 2);
+                 *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *          VerifyTestResult (c.NthValue (1) == 2);
                  *      \endcode
                  *
                  */
@@ -570,8 +570,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
+                 *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *          VerifyTestResult (c.Where ([] (int i) { return i % 2 == 0; }).SequnceEquals (Iterable<int> { 2, 4, 6 }));
                  *      \endcode
                  *
                  *  \note   Could have been called EachWith, EachWhere, or EachThat ().
@@ -591,8 +591,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
-                 *      VerifyTestResult (c.Distinct ().SetEquals (Iterable<int> { 1, 2, 4, 5, 6, 9 }));
+                 *          Iterable<int> c { 1, 2, 2, 5, 9, 4, 5, 6 };
+                 *          VerifyTestResult (c.Distinct ().SetEquals (Iterable<int> { 1, 2, 4, 5, 6, 9 }));
                  *      \endcode
                  *
                  *  @todo need overloads taking lambda that projects
@@ -611,15 +611,15 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
-                 *      VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
+                 *          Iterable<pair<int,char>> c { {1, 'a'}, {2, 'b'}, {3, 'c'} };
+                 *          VerifyTestResult (c.Select<int> ([] (pair<int,char> p) { return p.first; }).SequnceEquals (Iterable<int> { 1, 2, 3 }));
                  *      \endcode
                  *
                  *  This can also easily be used to TRANSFORM an iterable.
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 3, 4, 7 };
-                 *      VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequnceEquals (Iterable<String> { L"3", L"4", L"7" }));
+                 *          Iterable<int> c { 3, 4, 7 };
+                 *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequnceEquals (Iterable<String> { L"3", L"4", L"7" }));
                  *      \endcode
                  *
                  *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
@@ -642,8 +642,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int> { 4, 5, 6 }));
+                 *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *          VerifyTestResult (c.Skip (3).SequnceEquals (Iterable<int> { 4, 5, 6 }));
                  *      \endcode
                  *
                  *  @see https://msdn.microsoft.com/en-us/library/bb358985%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
@@ -661,8 +661,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-                 *      VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
+                 *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+                 *          VerifyTestResult (c.Take (3).SequnceEquals (Iterable<int> { 1, 2, 3 }));
                  *      \endcode
                  *
                  *  @see    https://msdn.microsoft.com/en-us/library/bb503062(v=vs.110).aspx
@@ -679,8 +679,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-                 *      VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+                 *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *          VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
                  *      \endcode
                  *
                  *  See:
@@ -695,9 +695,9 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-                 *      VerifyTestResult (*c.First () == 3);
-                 *      VerifyTestResult (*c.First ([](int i){ return i % 2 == 0;}) == 38);
+                 *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *          VerifyTestResult (*c.First () == 3);
+                 *          VerifyTestResult (*c.First ([](int i){ return i % 2 == 0;}) == 38);
                  *      \endcode
                  *
                  *  \note
