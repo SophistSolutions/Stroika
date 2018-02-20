@@ -264,6 +264,22 @@ namespace Stroika {
 #endif
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Where (const function<bool(ArgByValueType<key_type>)>& includeIfTrue) const -> ArchetypeContainerType
+            {
+                return inherited::Where ([=](const key_type& key, const mapped_type&) { return includeIfTrue (key); }, ArchetypeContainerType{});
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Where (const function<bool(ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const -> ArchetypeContainerType
+            {
+                return inherited::Where (includeIfTrue, ArchetypeContainerType{});
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename CONTAINER_OF_KEYS>
+            inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::WithKeys (const CONTAINER_OF_KEYS& includeKeys) const -> ArchetypeContainerType
+            {
+                return Where ([=](const key_type& key) { return includeKeys.Contains (key); }, ArchetypeContainerType{});
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
             template <typename CONTAINER_OF_Key_T>
             inline CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::As () const
             {

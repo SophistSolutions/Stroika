@@ -177,6 +177,26 @@ namespace {
 }
 
 namespace {
+    namespace Where_Test_6_ {
+        void DoAll ()
+        {
+            Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            VerifyTestResult ((m.WithKeys (initializer_list<int>{2, 5}) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+        }
+    }
+}
+
+namespace {
+    namespace Where_Test_7_ {
+        void DoAll ()
+        {
+            Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            VerifyTestResult ((m.WithKeys (initializer_list<int>{2, 5}) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
@@ -229,6 +249,9 @@ namespace {
         Test4_MappingCTOROverloads_::DoIt ();
 
         ExampleCTORS_Test_5_::DoTest ();
+
+        Where_Test_6_::DoAll ();
+        Where_Test_7_::DoAll ();
     }
 }
 

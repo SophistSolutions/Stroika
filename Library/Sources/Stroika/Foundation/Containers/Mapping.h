@@ -360,7 +360,7 @@ namespace Stroika {
                  *
                  *  \par    Example Usage
                  *      \code
-                 *      fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
+                 *          fStaticProcessStatsForThisSpill_.RetainAll (fDynamicProcessStatsForThisSpill_.Keys ());     // lose static data for processes no longer running
                  *      \endcode
                  *
                  * \note    Something of an alias for 'Subset()' or 'Intersects', as this - in-place computes the subset
@@ -371,6 +371,44 @@ namespace Stroika {
                  */
                 template <typename CONTAINER_OF_KEY_TYPE>
                 nonvirtual void RetainAll (const CONTAINER_OF_KEY_TYPE& items);
+
+            public:
+                /**
+                 *  Apply the function funciton to each element, and return a subset Mapping including just the ones for which it was true.
+                 *
+                 *  \note   Alias - this could have been called 'Subset' - as it constructs a subset mapping (filtering on key or key-value pairs)
+                 *
+                 *  @see Iterable<T>::Where
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *           Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+                 *           VerifyTestResult ((m.Where ([](const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+                 *           VerifyTestResult ((m.Where ([](int key) { return Math::IsPrime (key); }) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+                 *      \endcode
+                 */
+                nonvirtual ArchetypeContainerType Where (const function<bool(ArgByValueType<key_type>)>& includeIfTrue) const;
+                nonvirtual ArchetypeContainerType Where (const function<bool(ArgByValueType<KeyValuePair<key_type, mapped_type>>)>& includeIfTrue) const;
+
+            public:
+                /**
+                 *  Return a subset of this Mapping<> where the keys are included in the argument includeKeys set..
+                 *
+                 *  \note   Alias - this could have been called 'Subset' - as it constructs a subset mapping (where the given keys intersect)
+                 *
+                 *  @see Iterable<T>::Where
+                 *  @see Where
+                 *
+                 *  \note   CONCEPT - CONTAINER_OF_KEYS must support the 'Contains' API - not that set, and Iterable<> do this.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *           Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+                 *           VerifyTestResult ((m.Where (initializer_list<int> {2, 5}) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{5, 7}}));
+                 *      \endcode
+                 */
+                template <typename CONTAINER_OF_KEYS>
+                nonvirtual ArchetypeContainerType WithKeys (const CONTAINER_OF_KEYS& includeKeys) const;
 
             public:
                 /**
