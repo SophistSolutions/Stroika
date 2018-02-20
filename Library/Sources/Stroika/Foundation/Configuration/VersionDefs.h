@@ -64,7 +64,7 @@ namespace Stroika {
             using Binary32BitFullVersionType = uint32_t;
 #endif
 
-/**
+            /**
              *  We use a MACRO here so we can use in languages other than C++, and so we can use these in #if macro pre-processor commands.
              */
 #define kStroika_Version_Stage_Dev 0x1
@@ -73,7 +73,7 @@ namespace Stroika {
 #define kStroika_Version_Stage_ReleaseCandidate 0x4
 #define kStroika_Version_Stage_Release 0x5
 
-/**
+            /**
              *  We use a MACRO here so we can use in languages other than C++, and so we can use these in #if macro pre-processor commands.
              *      @see Binary32BitFullVersionType for bit layout
              *
