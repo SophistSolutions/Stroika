@@ -265,13 +265,21 @@ namespace Stroika {
                 /**
                  *  Apply the function funciton to each element, and return all the ones for which it was true.
                  *
+                 *  \note   Alias - this could have been called 'Subset' - as it constructs a subset.
+                 *
                  *  @see Iterable<T>::Where
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Set<int> s{ 1, 2, 3, 4, 5 };
+                 *          VerifyTestResult ((s.Where ([](int i) {return Math::IsPrime (i); }) == Set<int>{ 2, 3, 5 }));
+                 *      \endcode
                  */
-                nonvirtual Set<T, TRAITS> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+                nonvirtual Set<T, TRAITS> Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const;
 
             public:
                 /**
-                 *  Two Sets are considered equal if they contain the same elements (by comparing them with operator==).
+                 *  Two Sets are considered equal if they contain the same elements (by comparing them with TRAITS::EqualsCompareFunctionType (defaults to operator==)).
                  *
                  *  Equals is commutative ().
                  *

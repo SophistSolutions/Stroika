@@ -197,9 +197,9 @@ namespace Stroika {
                 return Equals (Set<T, TRAITS>{rhs});
             }
             template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> Set<T, TRAITS>::Where (const function<bool(ArgByValueType<T>)>& doToElement) const
+            inline Set<T, TRAITS> Set<T, TRAITS>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
-                return Iterable<T>::Where (doToElement, Set<T, TRAITS>{});
+                return Iterable<T>::Where (includeIfTrue, Set<T, TRAITS>{});
             }
             template <typename T, typename TRAITS>
             bool Set<T, TRAITS>::Intersects (const Iterable<T>& rhs) const

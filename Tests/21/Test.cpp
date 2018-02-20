@@ -8,13 +8,11 @@
 #include <iostream>
 #include <sstream>
 
+#include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Containers/Collection.h"
-
-#include "Stroika/Foundation/Containers/Set.h"
-
 #include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
-
+#include "Stroika/Foundation/Containers/Set.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
@@ -63,6 +61,16 @@ namespace {
 }
 
 namespace {
+    namespace Where_Test_3_ {
+        void DoAll ()
+        {
+            Set<int> s{1, 2, 3, 4, 5};
+            VerifyTestResult ((s.Where ([](int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
         using namespace CommonTests::SetTests;
@@ -102,6 +110,8 @@ namespace {
 
             ExampleCTORS_Test_2_::DoTest ();
         }
+
+        Where_Test_3_::DoAll ();
     }
 }
 
