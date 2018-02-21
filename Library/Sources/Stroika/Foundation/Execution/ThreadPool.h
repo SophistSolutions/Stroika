@@ -269,8 +269,11 @@ namespace Stroika {
                 nonvirtual TPInfo_ mkThread_ ();
 
             private:
+                /*
+                 *  @todo - make clear what fCriticalSection_ protects, and maybe redo using synchonized.
+                 */
                 mutable recursive_mutex              fCriticalSection_;
-                bool                                 fAborted_{false};
+                atomic<bool>                         fAborted_{false};
                 Containers::Collection<TPInfo_>      fThreads_;                                    // all threads, and a data member for thread object, and one for running task, if any
                 list<TaskType>                       fPendingTasks_;                               // tasks not yet running - @todo Use Stroika Queue
                 WaitableEvent                        fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)

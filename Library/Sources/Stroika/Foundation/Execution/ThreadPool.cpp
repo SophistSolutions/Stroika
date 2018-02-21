@@ -374,9 +374,8 @@ void ThreadPool::Abort_ () noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
     Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
-    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // disable cuz - see below
-    fAborted_ = true;                                             // No race, because fAborted never 'unset'
-                                                                  // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
+    fAborted_ = true; // No race, because fAborted never 'unset'
+                      // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
         auto critSec{make_unique_lock (fCriticalSection_)};
@@ -430,11 +429,11 @@ String ThreadPool::ToString () const
 void ThreadPool::WaitForNextTask_ (TaskType* result)
 {
     RequireNotNull (result);
-    if (fAborted_) {
-        Execution::Throw (Thread::AbortException::kThe);
-    }
-
     while (true) {
+        if (fAborted_) {
+            Execution::Throw (Thread::AbortException::kThe);
+        }
+
         {
             auto critSec{make_unique_lock (fCriticalSection_)};
             if (not fPendingTasks_.empty ()) {
