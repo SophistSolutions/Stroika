@@ -122,7 +122,8 @@ sub	DoHelp_
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
         print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++14, --std=c++17, or --std=c++1z, etc) - UNIX ONLY */\n");
+        print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++14, --std=c++17,\n");
+        print("	                                                       or --std=c++1z, etc) - UNIX ONLY */\n");
         print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
         print("	    --private-cmake-override {use|no}               /* Enables/disables use of private cmake replacement (Windows/cygwin Only) - JUST USED TO BUILD Xerces for Windows*/\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
@@ -138,7 +139,8 @@ sub	DoHelp_
         print("	    --trace2file { enable|disable|default }         /* Enables/disable trace2file feature */\n");
         print("	    --static-link-gccruntime { enable|disable }     /* Enables/disable gcc runtime static link (only applies if gcc family compiler) */\n");
         print("	    --cpp-optimize-flag  {FLAG}                     /* Sets \$COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
-        print("	    --c-define {ARG}                                /* Define C++ define for the given configuration: arg appears as a line in Stroika-Configuraiton.h */\n");
+        print("	    --c-define {ARG}                                /* Define C++ pre-processor define for the given configuration: arg appears as a line in Stroika-Configuration.h\n");
+        print("	                                                       (e.g. --c-define '\\#define qCompilerAndStdLib_quick_exit_Buggy 1')*/\n");
         print("	    --make-define {ARG}                             /* Define makefile define for the given configuration: text of arg appears as line in Configuration.mk */\n");
         print("	    --compiler-driver {ARG}                         /* default is gcc */\n");
         print("	    --ar {ARG}                                      /* default is undefined, but if compiler-driver is gcc or g++, this is gcc-ar */\n");
@@ -151,7 +153,8 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
         print("	    --append-extra-linker-args {ARG}                /* Appends ARG to 'extra linker */\n");
         print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
-        print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables, such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
+        print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
+        print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
         print("	    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */\n");
         print("	    --pg {ARG}                                      /* Turn on -pg option (profile for UNIX/gcc platform) on linker/compiler */\n");
         print("	    --lto { enable|disable }                        /* Turn on link time code gen on linker/compiler (for now only gcc/unix stack) */\n");
@@ -164,7 +167,8 @@ sub	DoHelp_
         print("	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
         print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
         print("	    --runtime-stack-check {true|false}              /* gcc -fstack-protector-all */\n");
-        print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) - any arg you can pass to -fsanitize=XXXX */\n");
+        print("	    --sanitize {none|thread|address|undefined|leak} /* if arg none, reset to none, else adds arg to sanitized feature (gcc/clang only) -\n");
+        print("	                                                       any arg you can pass to -fsanitize=XXXX */\n");
         print("	                                                    /* see https://gcc.gnu.org/onlinedocs/gcc-6.1.0/gcc.pdf (search -fsanitize=; eg. --sanitize address,undefined */\n");
         print("	    --no-sanitize {thread|vptr|etc...}              /* any from --sanitize or all */\n");
 		
