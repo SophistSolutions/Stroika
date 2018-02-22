@@ -33,6 +33,8 @@ namespace Stroika {
              *          namespace PRIVATE_ {
              *              inline const InternetMediaType& OctetStream_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT; }
              *          }
+             *
+             *          // and use VirtualConstant to make that appear a regular constant of type InternetMediaType (mostly)
              *          constexpr VirtualConstant<InternetMediaType, PRIVATE_::OctetStream_CT> kOctetStream;
              *          ...
              *          InternetMediaType ia = kOctetStream;
@@ -70,6 +72,8 @@ namespace Stroika {
              *          When you replace 'T t' with
              *              VirtualConstant<T,...> t;
              *              you must call t().m();
+             *          OR
+             *              you must call t->m();
              *
              *  \note   C++ also only allows one level of automatic operator conversions, so things like comparing
              *          Optional<T> {} == VirtualConstant<T,...> {} won't work. To workaround, simply
@@ -78,6 +82,10 @@ namespace Stroika {
              *  \note   It's suggested you always declare VirtualConstants as constexpr to help assure they take up no
              *          data space in your application - and are just syntactic sugar on accessing the underlying accessor
              *          function.
+             *
+             *  \req    VALUE_GETTER template parameter must return a pointer to a constant object of lifetime >=
+             *          the first time VALUE_GETTER to well-after (OK  that's a little ambiguous - but should be OK
+             *          in general).
              *
              *  TODO:
              *      @todo   https://stroika.atlassian.net/browse/STK-639 - It would be nice if the
@@ -97,8 +105,30 @@ namespace Stroika {
                 /**
                  *  This works 100% of the time. Just use the function syntax, and you get back a constant of the desired
                  *  underlying type.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kImage_PNG;
+                 *
+                 *          bool checkIsImage1 = kImage_PNG ().IsImageFormat ();
+                 *          bool checkIsImage3 = kImage_PNG.IsImageFormat ();       // FAIL - WONT COMPILE - the main difference between VirtualConstant and actual constant of type T
+                 *      \endcode
                  */
                 const BASETYPE operator() () const;
+
+                /**
+                 *  This works 100% of the time. Just use the operator-> syntax, and you get back a constant of the desired
+                 *  underlying type.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          namespace PredefinedInternetMediaType {  constexpr Execution::VirtualConstant<InternetMediaType,...> kImage_PNG;
+                 *
+                 *          bool checkIsImage2 = kImage_PNG->IsImageFormat ();
+                 *          bool checkIsImage3 = kImage_PNG.IsImageFormat ();       // FAIL - WONT COMPILE - the main difference between VirtualConstant and actual constant of type T
+                 *      \endcode
+                 */
+                const BASETYPE* operator-> () const;
             };
         }
     }

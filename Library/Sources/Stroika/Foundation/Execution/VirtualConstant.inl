@@ -29,6 +29,11 @@ namespace Stroika {
             {
                 return VALUE_GETTER ();
             }
+            template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
+            inline const BASETYPE* VirtualConstant<BASETYPE, VALUE_GETTER>::operator-> () const
+            {
+                return &VALUE_GETTER ();
+            }
         }
     }
 }
