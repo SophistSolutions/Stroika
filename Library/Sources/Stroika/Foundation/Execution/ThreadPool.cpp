@@ -374,8 +374,9 @@ void ThreadPool::Abort_ () noexcept
 {
     Thread::SuppressInterruptionInContext suppressCtx; // must cleanly shut down each of our subthreads - even if our thread is aborting... dont be half-way aborted
     Debug::TraceContextBumper             ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ThreadPool::Abort_", L"*this=%s", ToString ().c_str ())};
-    fAborted_ = true; // No race, because fAborted never 'unset'
-                      // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
+    Stroika_Foundation_Debug_ValgrindDisableHelgrind (fAborted_); // Valgrind warns updated with no lock, but my design (see below) - and since using std::atomic, will be published to other threads
+    fAborted_ = true;                                             // No race, because fAborted never 'unset'
+                                                                  // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
         auto critSec{make_unique_lock (fCriticalSection_)};
