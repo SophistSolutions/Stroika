@@ -400,6 +400,9 @@ sub	SetDefaultForCompilerDriver_
 				if(!exists($already{'undefined'})) {
 					push @sanitizerFlags, 'undefined';
 				}
+				if(!exists($already{'thread'})) {
+					push @sanitizerFlags, 'thread';
+				}
 				$sanitizerFlagsIsDefined = true;
 			}
 			# @see https://stroika.atlassian.net/browse/STK-601 for details on why this is needed (ObjectVariantMapper) - qCompiler_SanitizerFunctionPtrConversionSuppressionBug
