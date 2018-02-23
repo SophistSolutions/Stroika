@@ -374,9 +374,8 @@ regression-test-configurations:
 		./configure gcc-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.4.0-debug-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.4.0-release-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
-		#NOTE - --sanitize none on gcc-7.2.0-debug* cuz we dont have the right asan libraries installed yet;  - sudo apt-get install libasan4\
-		./configure my-gcc-7.2.0-debug-c++14 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14 --sanitize none;\
-		./configure my-gcc-7.2.0-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none;\
+		./configure my-gcc-7.2.0-debug-c++14 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14;\
+		./configure my-gcc-7.2.0-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-7.2.0-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
 		#LTO not working for my private builds of clang- no matter\
@@ -393,12 +392,12 @@ regression-test-configurations:
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
 		#\
 		# maybe add these directly to config\
-		./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
+		./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		#This config gets link erorrs probably cuz of https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81004  with LTO\
 		#./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
 		./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
 		# NB: muse use noblockalloc for gcc-debug-threadsanitize because we need to annoate and thats NYI - so sanitizer knows about free\
-		./configure gcc-basic-threadsanitize --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize thread --assertions enable\
+		#./configure gcc-basic-threadsanitize --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize thread --assertions enable\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
