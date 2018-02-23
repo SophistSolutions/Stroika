@@ -14,15 +14,14 @@ namespace Stroika {
     namespace Foundation {
         namespace Debug {
 
-/*
+            /*
              ********************************************************************************
              *************** Debug::AssertExternallySynchronizedLock ************************
              ********************************************************************************
              */
 #if qDebug
             DISABLE_COMPILER_MSC_WARNING_START (4297)
-            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept try : fSharedLockThreads_ ()
-            /*,fSharedLockThreadsMutex_ ()*/ {
+            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept try : fSharedLockThreads_ () {
             }
             catch (...) {
                 AssertNotReached ();
@@ -43,7 +42,7 @@ namespace Stroika {
             {
 #if qDebug
                 try {
-                    lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_ ()};
+                    lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                     Require (src.fLocks_ == 0 and src.fSharedLockThreads_.empty ()); // to move, the src can have no locks of any kind (since we change src)
                 }
                 catch (...) {
@@ -56,7 +55,7 @@ namespace Stroika {
 #if qDebug
                 try {
                     lock_guard<const AssertExternallySynchronizedLock> critSec1{rhs}; // to copy, the src can have shared_locks, but no (write) locks
-                    lock_guard<mutex>                                  sharedLockProtect{fSharedLockThreadsMutex_ ()};
+                    lock_guard<mutex>                                  sharedLockProtect{GetSharedLockMutexThreads_ ()};
                     Require (fLocks_ == 0 and fSharedLockThreads_.empty ()); // We must not have any locks going to replace this
                 }
                 catch (...) {
@@ -69,7 +68,7 @@ namespace Stroika {
             {
 #if qDebug
                 try {
-                    lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_ ()};
+                    lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
                     Require (rhs.fLocks_ == 0 and rhs.fSharedLockThreads_.empty ()); // to move, the rhs can have no locks of any kind (since we change rhs)
                     Require (fLocks_ == 0 and fSharedLockThreads_.empty ());         // ditto for thing being assigned to
                 }
@@ -102,6 +101,11 @@ namespace Stroika {
 #if qDebug
                 unlock_shared_ ();
 #endif
+            }
+            inline mutex& AssertExternallySynchronizedLock::GetSharedLockMutexThreads_ ()
+            {
+                static mutex sMutex_;
+                return sMutex_;
             }
         }
     }

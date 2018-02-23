@@ -160,14 +160,8 @@ namespace Stroika {
             private:
                 mutable atomic_uint_fast32_t      fLocks_{0};
                 mutable std::thread::id           fCurLockThread_;
-                mutable multiset<std::thread::id> fSharedLockThreads_; // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use fSharedLockThreadsMutex_ to make safe
-                //mutable Execution::SharedStaticData<mutex> fSharedLockThreadsMutex_;
-                mutex& fSharedLockThreadsMutex_ () const
-                {
-                    //mutable Execution::SharedStaticData<mutex> fSharedLockThreadsMutex_;
-                    static mutex sValue_;
-                    return sValue_;
-                }
+                static mutex&                     GetSharedLockMutexThreads_ (); // MUTEX ONLY FOR fSharedLockThreads_ (could do one mutex per AssertExternallySynchronizedLock but static probably performs better)
+                mutable multiset<std::thread::id> fSharedLockThreads_;           // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use GetSharedLockMutexThreads_ () to make safe
 #endif
             };
         }

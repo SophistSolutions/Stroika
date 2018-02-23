@@ -21,7 +21,7 @@ void AssertExternallySynchronizedLock::lock_ () const noexcept
         if (fLocks_++ == 0) {
             // If first time in, save thread-id
             fCurLockThread_ = this_thread::get_id ();
-            lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_ ()};
+            lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
             if (not fSharedLockThreads_.empty ()) {
                 // If first already shared locks - OK - so long as same thread
                 Require (fSharedLockThreads_.count (fCurLockThread_) == fSharedLockThreads_.size ());
@@ -53,7 +53,7 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
             // If first already locks - OK - so long as same thread
             Require (fCurLockThread_ == this_thread::get_id ());
         }
-        lock_guard<mutex> sharedLockProtect{fSharedLockThreadsMutex_ ()};
+        lock_guard<mutex> sharedLockProtect{GetSharedLockMutexThreads_ ()};
         fSharedLockThreads_.insert (this_thread::get_id ());
     }
     catch (...) {
@@ -64,7 +64,7 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
 void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
 {
     try {
-        lock_guard<mutex>                   sharedLockProtect{fSharedLockThreadsMutex_ ()};
+        lock_guard<mutex>                   sharedLockProtect{GetSharedLockMutexThreads_ ()};
         multiset<std::thread::id>::iterator tti = fSharedLockThreads_.find (this_thread::get_id ());
         Require (tti != fSharedLockThreads_.end ()); // else unbalanced
         fSharedLockThreads_.erase (tti);
