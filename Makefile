@@ -398,7 +398,7 @@ regression-test-configurations:
 		#./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
 		./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
 		# NB: muse use noblockalloc for gcc-debug-threadsanitize because we need to annoate and thats NYI - so sanitizer knows about free\
-		./configure gcc-basic-threadsanitize --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize thread --assertions disable\
+		./configure gcc-basic-threadsanitize --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize thread --assertions enable\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
