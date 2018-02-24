@@ -391,11 +391,11 @@ regression-test-configurations:
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
 		#\
-		# (@todo - see if --lto disable still needed on release asan)\
+		# (@todo - see if --lto disable still needed on release asan/tsan (was needed for gcc 7.2)\
 		./configure gcc-debug-address-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure gcc-debug-thread-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none,thread,undefined;\
 		./configure gcc-release-address-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize none,address,undefined;\
-		./configure gcc-release-thread-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none,thread,undefined;\
+		./configure gcc-release-thread-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize none,thread,undefined;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
