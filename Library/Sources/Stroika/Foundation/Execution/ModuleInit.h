@@ -21,8 +21,6 @@
  *
  *      @todo   Better Document new Module Dependency code, and verify there is as little wasted overhead
  *              as possible...
- *
- *      @todo   Review SharedStaticData<> module - and see if we can use that here or which works better?
  */
 
 namespace Stroika {
@@ -74,7 +72,7 @@ namespace Stroika {
                 ~ModuleDependency ();
 
             private:
-                void (*fEnd) ();
+                void (*fEnd_) ();
             };
 
             /**
@@ -129,17 +127,29 @@ namespace Stroika {
             template <typename MODULE_DATA>
             class ModuleInitializer {
             public:
+                /**
+                 */
                 ModuleInitializer ();
                 ~ModuleInitializer ();
 
             public:
+                /**
+                 */
                 static void Start ();
+
+            public:
+                /**
+                 */
                 static void End ();
 
             public:
+                /**
+                 */
                 static MODULE_DATA& Actual ();
 
             public:
+                /**
+                 */
                 static ModuleDependency GetDependency ();
 
             private:

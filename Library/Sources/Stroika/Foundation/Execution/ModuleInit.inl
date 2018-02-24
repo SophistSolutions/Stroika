@@ -21,13 +21,13 @@ namespace Stroika {
              ********************************************************************************
              */
             inline ModuleDependency::ModuleDependency (void (*start) (), void (*end) ())
-                : fEnd (end)
+                : fEnd_ (end)
             {
                 (*start) ();
             }
             inline ModuleDependency::~ModuleDependency ()
             {
-                (*fEnd) ();
+                (*fEnd_) ();
             }
 
             /*
