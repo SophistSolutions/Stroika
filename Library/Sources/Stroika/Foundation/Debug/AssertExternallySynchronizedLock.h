@@ -14,7 +14,6 @@
 
 #include "../Configuration/Common.h"
 #include "../Debug/Assertions.h"
-#include "../Execution/SharedStaticData.h"
 
 /**
  *  \file
