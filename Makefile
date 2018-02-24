@@ -392,12 +392,10 @@ regression-test-configurations:
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args  -m32 --static-link-gccruntime disable;\
 		#\
 		# maybe add these directly to config\
-		./configure gcc-debug-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		#This config gets link erorrs probably cuz of https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81004  with LTO\
-		#./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
-		./configure gcc-release-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize address,undefined;\
-		# NB: muse use noblockalloc for gcc-debug-threadsanitize because we need to annoate and thats NYI - so sanitizer knows about free\
-		#./configure gcc-basic-threadsanitize --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize thread --assertions enable\
+		./configure gcc-debug-address-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
+		./configure gcc-debug-thread-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none,thread,undefined;\
+		./configure gcc-release-address-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize none,address,undefined;\
+		./configure gcc-release-thread-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize none,thread,undefined;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
