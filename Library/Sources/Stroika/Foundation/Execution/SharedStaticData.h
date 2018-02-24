@@ -72,6 +72,7 @@ namespace Stroika {
              *          the start of main (), and doesn't require the complicated inter-depependency managment of the
              *          @ModuleInit code.
              */
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             template <typename T>
             class [[deprecated ("as of Stroika v2.0a230 - use static member function -inline - returning static object reference - like AssertExternallySynchronizedLock::GetSharedLockMutex_")]] SharedStaticData {
             public:
@@ -105,6 +106,7 @@ namespace Stroika {
                 static unsigned int sCountUses_;
                 static T*           sOnceObj_;
             };
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
 #if 0
             // NO NEED - 
