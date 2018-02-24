@@ -73,7 +73,7 @@ namespace Stroika {
              *          @ModuleInit code.
              */
             template <typename T>
-            [[deprecated ("as of Stroika v2.0a230 - use static member function -inline - returning static object reference - like AssertExternallySynchronizedLock::GetSharedLockMutex_")]] class SharedStaticData {
+            class [[deprecated ("as of Stroika v2.0a230 - use static member function -inline - returning static object reference - like AssertExternallySynchronizedLock::GetSharedLockMutex_")]] SharedStaticData {
             public:
                 /**
                  */

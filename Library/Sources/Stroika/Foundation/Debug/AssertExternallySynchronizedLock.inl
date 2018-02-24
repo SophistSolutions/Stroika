@@ -102,11 +102,13 @@ namespace Stroika {
                 unlock_shared_ ();
 #endif
             }
+#if qDebug
             inline mutex& AssertExternallySynchronizedLock::GetSharedLockMutexThreads_ ()
             {
                 static mutex sMutex_;
                 return sMutex_;
             }
+#endif
         }
     }
 }
