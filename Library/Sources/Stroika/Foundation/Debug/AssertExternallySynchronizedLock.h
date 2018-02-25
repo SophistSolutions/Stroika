@@ -88,7 +88,7 @@ namespace Stroika {
              */
             class AssertExternallySynchronizedLock {
             public:
-/**
+                /**
                  *  \note   Copy/Move constructor checks for existing locks while copying.
                  *          Must be able to readlock source on copy, and have zero existing locks on src for move.
                  */
