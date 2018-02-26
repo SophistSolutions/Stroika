@@ -96,15 +96,15 @@ namespace Stroika {
             }
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename KEY_TYPE2, typename VALUE_TYPE2>
-            KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& rhs)
+            inline KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& rhs)
             {
-                rhs = _Right.fKey;
-                rhs = _Right.fValue;
+                rhs = rhs.fKey;
+                rhs = rhs.fValue;
                 return *this;
             }
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename KEY_TYPE2, typename VALUE_TYPE2>
-            KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (pair<KEY_TYPE2, VALUE_TYPE2>&& rhs)
+            inline KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (pair<KEY_TYPE2, VALUE_TYPE2>&& rhs)
             {
                 fKey   = std::forward<KEY_TYPE2> (rhs.first);
                 fValue = std::forward<VALUE_TYPE2> (rhs.second);
@@ -112,7 +112,7 @@ namespace Stroika {
             }
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename KEY_TYPE2, typename VALUE_TYPE2>
-            KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (KeyValuePair<KEY_TYPE2, VALUE_TYPE2>&& rhs)
+            inline KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (KeyValuePair<KEY_TYPE2, VALUE_TYPE2>&& rhs)
             {
                 fKey   = std::forward<KEY_TYPE2> (rhs.fKey);
                 fValue = std::forward<VALUE_TYPE2> (rhs.fValue);
