@@ -60,7 +60,6 @@ namespace Stroika {
                 , fValue (src.second)
             {
             }
-
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename KEY_TYPE2, typename VALUE_TYPE2,
                       enable_if_t<
@@ -87,7 +86,6 @@ namespace Stroika {
                 , fValue (src.fValue)
             {
             }
-
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename KEY_TYPE2, typename VALUE_TYPE2>
             KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (const pair<KEY_TYPE2, VALUE_TYPE2>& rhs)
