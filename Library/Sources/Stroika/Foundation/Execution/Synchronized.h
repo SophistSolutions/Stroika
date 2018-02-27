@@ -325,7 +325,7 @@ namespace Stroika {
                 }
 
             public:
-                /*
+                /**
                  *  A DEFEFCT with this implementation, is that you cannot count on values computed with the read lock to remiain
                  *  true in the upgrade lock (since we unlock and then re-lock).
                  *
@@ -334,6 +334,17 @@ namespace Stroika {
                  *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
                  *
                  *  @todo - MAYBE add 'ReadableReference* readReference' arg, but maybe not
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Execution::RWSynchronized<Status_> fStatus_;
+                 *          auto lockedStatus = fStatus_.cget ();
+                 *          // do a bunch of code that only needs read access
+                 *          if (some rare event) {
+                 *              fStatus_.Experimental_UpgradeLock2 ([=](auto&& writeLock) {
+                 *                  writeLock.rwref ().fCompletedScans.Add (scan);
+                 *              });
+                 *          }
                  */
                 nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
                 {
