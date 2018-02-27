@@ -66,14 +66,15 @@ void Connection::ReadHeaders ()
 {
     // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
     // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
+    using Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter;
 
-    Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter inTextStream (fMessage_.PeekRequest ()->GetInputStream ());
+    MessageStartTextInputStreamBinaryAdapter::Ptr inTextStream = MessageStartTextInputStreamBinaryAdapter::New (fMessage_.PeekRequest ()->GetInputStream ());
     {
         // Read METHOD line
         String           line = inTextStream.ReadLine ();
         Sequence<String> tokens{line.Tokenize (Set<Character>{' '})};
         if (tokens.size () < 3) {
-            DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
+            DbgTrace (L"tokens=%s, line='%s', inTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), inTextStream.ToString ().c_str ());
             Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD REQUEST HTTP line (%s)", line.c_str ())));
         }
         fMessage_.PeekRequest ()->SetHTTPMethod (tokens[0]);
@@ -112,6 +113,9 @@ void Connection::ReadHeaders ()
 
 void Connection::Close ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"Connection::Close");
+#endif
     fMessage_.PeekResponse ()->Flush ();
     fSocket_.Close ();
 }

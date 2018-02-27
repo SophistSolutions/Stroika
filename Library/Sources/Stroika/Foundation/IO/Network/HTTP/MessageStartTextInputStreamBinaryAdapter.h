@@ -35,14 +35,51 @@ namespace Stroika {
                      *  This adpater defines 0 seek offset as the point at which its constructed. And then you can seek to any locaiton
                      *  0 .. up to the max point ever read (with Read).
                      */
-                    class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character>::Ptr {
+                    class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
                     public:
-                        MessageStartTextInputStreamBinaryAdapter () = delete;
-                        MessageStartTextInputStreamBinaryAdapter (const Streams::InputStream<Memory::Byte>::Ptr& src);
-                        MessageStartTextInputStreamBinaryAdapter (const MessageStartTextInputStreamBinaryAdapter&) = delete;
+                        class Ptr;
+
+                    public:
+                        /**
+                        */
+                        enum ToStringFormat {
+                            eAsBytes,
+                            eAsString,
+
+                            eDEFAULT = eAsString
+                        };
+
+                    public:
+                        /**
+                        */
+                        static Ptr New (const Streams::InputStream<Memory::Byte>::Ptr& src);
 
                     private:
                         class Rep_;
+                    };
+
+                    /**
+                     *  Ptr is a copyable smart pointer to a MessageStartTextInputStreamBinaryAdapter.
+                     */
+                    class MessageStartTextInputStreamBinaryAdapter::Ptr : public Streams::InputStream<Characters::Character>::Ptr {
+                    private:
+                        using inherited = typename InputStream<Characters::Character>::Ptr;
+
+                    public:
+                        Ptr ()           = default;
+                        Ptr (const Ptr&) = default;
+
+                    protected:
+                        Ptr (const shared_ptr<InputStream<Characters::Character>::_IRep>& from);
+
+                    public:
+                        /**
+                         *  @see Characters::ToString ()
+                         */
+                        nonvirtual Characters::String ToString (ToStringFormat format = ToStringFormat::eDEFAULT) const;
+
+                    private:
+                        friend class MessageStartTextInputStreamBinaryAdapter;
                     };
                 }
             }

@@ -5,6 +5,8 @@
 
 #include <mutex>
 
+#include "../../../Characters/Format.h"
+#include "../../../Characters/ToString.h"
 #include "../../../Execution/Common.h"
 #include "../../../Execution/OperationNotSupportedException.h"
 #include "../../../Memory/SmallStackBuffer.h"
@@ -12,13 +14,12 @@
 #include "MessageStartTextInputStreamBinaryAdapter.h"
 
 using namespace Stroika::Foundation;
+using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Execution;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
-
-using Characters::Character;
 
 namespace {
     constexpr size_t kDefaultBufSize_ = 1024; // guess enough for http headers?
@@ -33,10 +34,45 @@ public:
     Rep_ (const InputStream<Byte>::Ptr& src)
         : fCriticalSection_ ()
         , fSource_ (src)
-        , fReadDataBuf_ (kDefaultBufSize_)
+        , fAllDataReadBuf_ (kDefaultBufSize_)
         , fOffset_ (0)
         , fBufferFilledUpValidBytes_ (0)
     {
+    }
+
+public:
+    nonvirtual Characters::String ToString (ToStringFormat format) const
+    {
+        StringBuilder sb;
+        sb += L"{";
+        sb += L"fOffset_: " + Characters::Format (L"%d", fOffset_) + L",";
+        sb += L"HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + L",";
+        sb += L"TEXT: ";
+        switch (format) {
+            case ToStringFormat::eAsBytes: {
+                for (size_t i = 0; i < fBufferFilledUpValidBytes_; ++i) {
+                    sb += Characters::Format (L"x%x, ", fAllDataReadBuf_[i]);
+                }
+            } break;
+            case ToStringFormat::eAsString: {
+                String tmp = String::FromISOLatin1 (reinterpret_cast<const char*> (begin (fAllDataReadBuf_)), reinterpret_cast<const char*> (begin (fAllDataReadBuf_) + fBufferFilledUpValidBytes_));
+                for (size_t i = 0; i < sb.length (); ++i) {
+                    switch (tmp[i].GetCharacterCode ()) {
+                        case '\r':
+                            sb += L"\\r";
+                            break;
+                        case '\n':
+                            sb += L"\\n";
+                            break;
+                        default:
+                            sb += tmp[i].GetCharacterCode ();
+                            break;
+                    }
+                }
+            } break;
+        }
+        sb += L"}";
+        return sb.str ();
     }
 
 protected:
@@ -67,11 +103,11 @@ protected:
         auto critSec{make_unique_lock (fCriticalSection_)};
         Assert (fBufferFilledUpValidBytes_ >= fOffset_); // limitation/feature of current implemetnation
         if (fBufferFilledUpValidBytes_ == fOffset_) {
-            size_t roomLeftInBuf = fReadDataBuf_.GetSize () - fBufferFilledUpValidBytes_;
+            size_t roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
             if (roomLeftInBuf == 0) {
                 // should be quite rare
-                fReadDataBuf_.GrowToSize (fBufferFilledUpValidBytes_ + kDefaultBufSize_);
-                roomLeftInBuf = fReadDataBuf_.GetSize () - fBufferFilledUpValidBytes_;
+                fAllDataReadBuf_.GrowToSize (fBufferFilledUpValidBytes_ + kDefaultBufSize_);
+                roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
             }
             Assert (roomLeftInBuf > 0);
 
@@ -84,7 +120,7 @@ protected:
                 }
             }
 
-            Byte*  startReadAt = fReadDataBuf_.begin () + fBufferFilledUpValidBytes_;
+            Byte*  startReadAt = fAllDataReadBuf_.begin () + fBufferFilledUpValidBytes_;
             size_t n           = fSource_.Read (startReadAt, startReadAt + roomLeftInBuf);
             Assert (n <= roomLeftInBuf);
             // if n == 0, OK, just means EOF
@@ -95,7 +131,7 @@ protected:
         size_t outN = 0;
         for (Character* outChar = intoStart; outChar != intoEnd; ++outChar) {
             if (fOffset_ < fBufferFilledUpValidBytes_) {
-                *outChar = Characters::Character ((char)*(fReadDataBuf_.begin () + fOffset_));
+                *outChar = Characters::Character ((char)*(fAllDataReadBuf_.begin () + fOffset_));
                 fOffset_++;
                 outN++;
             }
@@ -108,7 +144,7 @@ protected:
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
         auto critSec{make_unique_lock (fCriticalSection_)};
-        // See if data already in fReadDataBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
+        // See if data already in fAllDataReadBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
         if (fOffset_ < fBufferFilledUpValidBytes_) {
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
         }
@@ -173,18 +209,34 @@ protected:
 private:
     mutable recursive_mutex        fCriticalSection_;
     InputStream<Byte>::Ptr         fSource_;
-    Memory::SmallStackBuffer<Byte> fReadDataBuf_; // OK cuz typically this will be very small (1k) and not really grow...
+    Memory::SmallStackBuffer<Byte> fAllDataReadBuf_; // OK cuz typically this will be very small (1k) and not really grow...
     // but it can if we must
     size_t fOffset_;                   // text stream offset
-    size_t fBufferFilledUpValidBytes_; // nbytes of valid text in fReadDataBuf_
+    size_t fBufferFilledUpValidBytes_; // nbytes of valid text in fAllDataReadBuf_
 };
 
 /*
  ********************************************************************************
- ******* IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter ************
+ ********* IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter **********
  ********************************************************************************
  */
-MessageStartTextInputStreamBinaryAdapter::MessageStartTextInputStreamBinaryAdapter (const InputStream<Byte>::Ptr& src)
-    : InputStream<Character>::Ptr (make_shared<Rep_> (src))
+MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryAdapter::New (const InputStream<Byte>::Ptr& src)
 {
+    return Ptr (make_shared<Rep_> (src));
+}
+
+/*
+ ********************************************************************************
+ ******** IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter::Ptr ******
+ ********************************************************************************
+ */
+MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
+    : inherited (from)
+{
+}
+
+String MessageStartTextInputStreamBinaryAdapter::Ptr::ToString (ToStringFormat format) const
+{
+    AssertMember (&_GetRepConstRef (), Rep_);
+    return reinterpret_cast<const Rep_*> (&_GetRepConstRef ())->ToString (format);
 }
