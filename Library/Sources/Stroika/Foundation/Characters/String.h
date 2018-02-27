@@ -420,6 +420,7 @@ namespace Stroika {
                  *  \note Alias From8bitASCII () or FromExtendedASCII () or FromAnyCharset (), FromAnyCharacterSet ()
                  */
                 static String FromISOLatin1 (const char* from);
+                static String FromISOLatin1 (const char* start, const char* end);
                 static String FromISOLatin1 (const string& from);
 
             private:

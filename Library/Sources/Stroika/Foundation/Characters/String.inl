@@ -174,6 +174,14 @@ namespace Stroika {
             {
                 return FromNarrowString (from.c_str (), from.c_str () + from.length (), l);
             }
+            inline String String::FromISOLatin1 (const char* from)
+            {
+                return FromISOLatin1 (from, from + ::strlen (from));
+            }
+            inline String String::FromISOLatin1 (const string& from)
+            {
+                return FromISOLatin1 (from.c_str (), from.c_str () + from.length ());
+            }
             inline void String::_AssertRepValidType () const
             {
                 EnsureMember (&_SafeReadRepAccessor{this}._ConstGetRep (), String::_IRep);
