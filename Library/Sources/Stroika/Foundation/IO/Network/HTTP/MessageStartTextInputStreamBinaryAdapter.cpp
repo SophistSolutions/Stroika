@@ -3,8 +3,6 @@
  */
 #include "../../../StroikaPreComp.h"
 
-#include <mutex>
-
 #include "../../../Characters/Format.h"
 #include "../../../Characters/ToString.h"
 #include "../../../Execution/Common.h"
@@ -22,18 +20,17 @@ using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
 namespace {
-    constexpr size_t kDefaultBufSize_ = 1024; // guess enough for http headers?
+    constexpr size_t kDefaultBufSize_ = 2 * 1024; // guess enough for http headers (typically around .8K but little cost in reserving a bit more)
 }
 
 //@todo - NOTE - NOT RIGHT - RE_READ RFP - maybe need to do mime decoding???
 // http://stackoverflow.com/questions/4400678/http-header-should-use-what-character-encoding
 // but for now this seems and adequate hack
 
-class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep {
+class MessageStartTextInputStreamBinaryAdapter::Rep_ : public InputStream<Character>::_IRep, protected Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ (const InputStream<Byte>::Ptr& src)
-        : fCriticalSection_ ()
-        , fSource_ (src)
+        : fSource_ (src)
         , fAllDataReadBuf_ (kDefaultBufSize_)
         , fOffset_ (0)
         , fBufferFilledUpValidBytes_ (0)
@@ -43,7 +40,8 @@ public:
 public:
     nonvirtual Characters::String ToString (ToStringFormat format) const
     {
-        StringBuilder sb;
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        StringBuilder                                       sb;
         sb += L"{";
         sb += L"fOffset_: " + Characters::Format (L"%d", fOffset_) + L",";
         sb += L"HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + L",";
@@ -55,9 +53,8 @@ public:
                 }
             } break;
             case ToStringFormat::eAsString: {
-                String tmp = String::FromISOLatin1 (reinterpret_cast<const char*> (begin (fAllDataReadBuf_)), reinterpret_cast<const char*> (begin (fAllDataReadBuf_) + fBufferFilledUpValidBytes_));
-                for (size_t i = 0; i < sb.length (); ++i) {
-                    switch (tmp[i].GetCharacterCode ()) {
+                for (Character c : String::FromISOLatin1 (reinterpret_cast<const char*> (begin (fAllDataReadBuf_)), reinterpret_cast<const char*> (begin (fAllDataReadBuf_) + fBufferFilledUpValidBytes_))) {
+                    switch (c.GetCharacterCode ()) {
                         case '\r':
                             sb += L"\\r";
                             break;
@@ -65,7 +62,7 @@ public:
                             sb += L"\\n";
                             break;
                         default:
-                            sb += tmp[i].GetCharacterCode ();
+                            sb += c.GetCharacterCode ();
                             break;
                     }
                 }
@@ -83,6 +80,7 @@ protected:
     virtual void CloseRead () override
     {
         Require (IsOpenRead ());
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         fSource_.Close ();
         Assert (fSource_ == nullptr);
     }
@@ -100,7 +98,7 @@ protected:
             return 0;
         }
         AssertNotNull (intoStart);
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Assert (fBufferFilledUpValidBytes_ >= fOffset_); // limitation/feature of current implemetnation
         if (fBufferFilledUpValidBytes_ == fOffset_) {
             size_t roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
@@ -143,7 +141,7 @@ protected:
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         // See if data already in fAllDataReadBuf_. If yes, then data available. If no, ReadNonBlocking () from upstream, and return that result.
         if (fOffset_ < fBufferFilledUpValidBytes_) {
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
@@ -155,13 +153,13 @@ protected:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpenRead ());
         return fOffset_;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpenRead ());
         switch (whence) {
             case Whence::eFromStart: {
@@ -207,7 +205,6 @@ protected:
     }
 
 private:
-    mutable recursive_mutex        fCriticalSection_;
     InputStream<Byte>::Ptr         fSource_;
     Memory::SmallStackBuffer<Byte> fAllDataReadBuf_; // OK cuz typically this will be very small (1k) and not really grow...
     // but it can if we must
