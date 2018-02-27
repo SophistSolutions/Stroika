@@ -124,7 +124,7 @@ namespace Stroika {
             };
 
             /**
-             *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
+             *  Ptr is a copyable smart pointer to a TextReader object.
              */
             class TextReader::Ptr : public InputStream<Character>::Ptr {
             private:
