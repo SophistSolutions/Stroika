@@ -33,6 +33,12 @@ namespace Stroika {
             {
                 operator+= (initialValue);
             }
+            inline StringBuilder& StringBuilder::operator= (const String& rhs)
+            {
+                clear ();
+                Append (rhs);
+                return *this;
+            }
             inline void StringBuilder::Append (const Character* s, const Character* e)
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "assume wchar_t == Character roughly"); //tmphack
