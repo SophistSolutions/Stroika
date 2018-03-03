@@ -114,6 +114,12 @@ namespace Stroika {
                 template <typename... ARGS_TYPE>
                 nonvirtual void writeln (ARGS_TYPE&&... args);
 
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual String ToString () const;
+
             private:
                 Memory::Optional<IO::Network::SocketAddress> fPeerAddress_;
                 Request                                      fRequest_;

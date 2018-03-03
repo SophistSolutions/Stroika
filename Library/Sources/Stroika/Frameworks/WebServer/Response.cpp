@@ -333,6 +333,7 @@ String Response::ToString () const
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     StringBuilder                                       sb;
     sb += L"{";
+    sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     sb += L"State_: " + Characters::ToString (fState_) + L", ";
     sb += L"StatusOverrideReason_: '" + Characters::ToString (fStatusOverrideReason_) + L"', ";
     sb += L"Headers: " + Characters::ToString (fHeaders_) + L", ";

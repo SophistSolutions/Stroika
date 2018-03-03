@@ -114,6 +114,12 @@ namespace Stroika {
                  */
                 nonvirtual Streams::InputStream<Memory::Byte>::Ptr GetInputStream ();
 
+            public:
+                /**
+                *  @see Characters::ToString ()
+                */
+                nonvirtual String ToString () const;
+
             private:
                 // SOON TO BE PRIVATE
                 Streams::InputStream<Memory::Byte>::Ptr fInputStream_;
@@ -123,12 +129,6 @@ namespace Stroika {
                 String                  fMethod_;
                 IO::Network::URL        fURL_;
                 Mapping<String, String> fHeaders_;
-
-            public:
-                /**
-                 *  @see Characters::ToString ();
-                 */
-                nonvirtual String ToString () const;
 
             private:
                 Memory::Optional<Memory::BLOB> fBody_;
