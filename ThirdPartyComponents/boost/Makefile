@@ -20,7 +20,7 @@ PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-m
 
 export StroikaRoot
 
-VERSION=1_65_1
+VERSION=1_66_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
