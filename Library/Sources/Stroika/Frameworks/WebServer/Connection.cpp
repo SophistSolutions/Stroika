@@ -49,6 +49,7 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
           move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
           s.GetPeerAddress ()}
 {
+    Require (s != nullptr);
 }
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
@@ -60,6 +61,19 @@ Connection::~Connection ()
         IgnoreExceptionsForCall (fMessage_.PeekResponse ()->Abort ());
     }
     Require (fMessage_.PeekResponse ()->GetState () == Response::State::eCompleted);
+    /*
+     *  When the connection is completed, make sure the socket is closed so that the calling client knows
+     *  as quickly as possible. Probably not generally necessary since when the last reference to the socket
+     *  goes away, it will also be closed, but that might take a little longer as its held in some object
+     *  that hasn't gone away yet.
+     */
+    AssertNotNull (fSocket_);
+    try {
+        fSocket_.Close ();
+    }
+    catch (...) {
+        DbgTrace (L"Exception ignored closing socket: %s", Characters::ToString (current_exception ()).c_str ());
+    }
 }
 
 void Connection::ReadHeaders ()
