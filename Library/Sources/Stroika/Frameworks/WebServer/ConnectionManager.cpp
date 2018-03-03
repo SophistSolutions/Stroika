@@ -130,7 +130,7 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 {
 }
 
-void ConnectionManager::onConnect_ (ConnectionOrientedSocket::Ptr s)
+void ConnectionManager::onConnect_ (const ConnectionOrientedSocket::Ptr& s)
 {
     // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
     // and that way wehn we call 'remove connection- ' we can abort the task (if needed)
