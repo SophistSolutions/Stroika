@@ -79,7 +79,7 @@ namespace Stroika {
                 */
                 class Socket {
                 public:
-/**
+                    /**
                     *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
                     */
 #if qPlatform_Windows
@@ -370,6 +370,12 @@ namespace Stroika {
                      */
                     template <typename ARG_TYPE>
                     nonvirtual void setsockopt (int level, int optname, ARG_TYPE arg) const;
+
+                public:
+                    /**
+                     *  @see Characters::ToString ()
+                     */
+                    nonvirtual String ToString () const;
 
                 protected:
                     /**

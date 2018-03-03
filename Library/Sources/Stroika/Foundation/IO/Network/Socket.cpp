@@ -150,6 +150,23 @@ bool Socket::Ptr::IsOpen () const
     return false;
 }
 
+String Socket::Ptr::ToString () const
+{
+    StringBuilder sb;
+    if (fRep_ == nullptr) {
+        sb += L"nullptr";
+    }
+    else {
+        sb += L"{";
+        sb += L"Native-Socket: " + ((fRep_->GetNativeSocket () == kINVALID_NATIVE_HANDLE_) ? L"CLOSED" : Characters::ToString (fRep_->GetNativeSocket ())) + L", ";
+        if (auto ola = GetLocalAddress ()) {
+            sb += L"Local-Address: " + Characters::ToString (*ola);
+        }
+        sb += L"}";
+    }
+    return sb.str ();
+}
+
 /*
  ********************************************************************************
  ******************** Execution::ThrowErrNoIfNegative ***************************
