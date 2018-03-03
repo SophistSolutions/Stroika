@@ -30,7 +30,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -50,6 +50,9 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
           s.GetPeerAddress ()}
 {
     Require (s != nullptr);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"Created connection for socket %s, message=%s", Characters::ToString (s).c_str (), Characters::ToString (fMessage_).c_str ());
+#endif
 }
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
 DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
@@ -57,6 +60,9 @@ DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-mo
 
 Connection::~Connection ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
+#endif
     if (fMessage_.PeekResponse ()->GetState () != Response::State::eCompleted) {
         IgnoreExceptionsForCall (fMessage_.PeekResponse ()->Abort ());
     }
@@ -78,6 +84,9 @@ Connection::~Connection ()
 
 void Connection::ReadHeaders ()
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    DbgTrace (L"Connection::ReadHeaders for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
+#endif
     // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
     // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
     using Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter;
