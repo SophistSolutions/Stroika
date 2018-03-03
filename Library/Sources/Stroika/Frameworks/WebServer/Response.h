@@ -69,7 +69,7 @@ namespace Stroika {
                 ~Response ();
 
             public:
-                nonvirtual const Response& operator= (const Response&) = delete;
+                nonvirtual Response& operator= (const Response&) = delete;
 
             public:
                 /*

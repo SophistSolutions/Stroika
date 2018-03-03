@@ -47,7 +47,7 @@ namespace Stroika {
                 Request (const Streams::InputStream<Memory::Byte>::Ptr& inStream);
 
             public:
-                nonvirtual const Request& operator= (const Request&) = delete;
+                nonvirtual Request& operator= (const Request&) = delete;
 
             public:
                 // Quicky impl. Need to improve this significantly.

@@ -39,7 +39,7 @@ namespace Stroika {
                 Message (Request&& request, Response&& response, const Memory::Optional<IO::Network::SocketAddress>& peerAddress = Memory::Optional<IO::Network::SocketAddress>{});
 
             public:
-                nonvirtual const Message& operator= (const Message&) = delete;
+                nonvirtual Message& operator= (const Message&) = delete;
 
             public:
                 /**
