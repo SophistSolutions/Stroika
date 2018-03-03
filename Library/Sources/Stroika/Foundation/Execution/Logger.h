@@ -82,6 +82,11 @@ namespace Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
              *
+             *  \par Example Usage
+             *      \code
+             *          Logger::Get ().Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+             *      \endcode
+             *
              *  @see DbgTrace
              */
             class Logger final {
@@ -216,8 +221,8 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *              Log ("QUITTING");
-                 *              _exit (0);
+                 *          Log ("QUITTING");
+                 *          _exit (0);
                  *      \endcode
                  *
                  *      probably won't get logged. To avoid this issue, call myLogger.Shutdown () (@see ShutdownSingleton)
@@ -277,7 +282,7 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *          Logger::Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
+                 *          Logger::Get ().Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
                 nonvirtual void Log (Priority logLevel, String format, ...); // varargs logger
@@ -292,7 +297,7 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *          // same as Log, but dont emit this error if we've seen the message in the last 60 seconds
-                 *          Logger::LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
+                 *          Logger::Get ().LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
                 nonvirtual void LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
