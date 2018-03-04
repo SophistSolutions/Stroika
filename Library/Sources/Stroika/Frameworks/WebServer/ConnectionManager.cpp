@@ -120,6 +120,21 @@ ConnectionManager::ConnectionManager (const SocketAddress& bindAddress, const Ro
 {
 }
 
+namespace {
+    inline unsigned int ComputeThreadPoolSize_ (const ConnectionManager::Options& options)
+    {
+        using Options = ConnectionManager::Options;
+        constexpr unsigned int kMinThreadCnt_{3u};
+        return Math::AtLeast (kMinThreadCnt_, options.fMaxConnections.Value (Options::kDefault_MaxConnections));
+    }
+    inline unsigned int ComputeConnectionBacklog_ (const ConnectionManager::Options& options)
+    {
+        using Options = ConnectionManager::Options;
+        constexpr unsigned int kMinDefaultTCPBacklog_{3u};
+        return options.fTCPBacklog.Value (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections.Value (Options::kDefault_MaxConnections) * 3 / 4));
+    }
+}
+
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
     : fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
     , fCORSModeSupport_ (options.fCORSModeSupport.Value (Options::kDefault_CORSModeSupport))
@@ -132,11 +147,11 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fThreads_{options.fMaxConnections.Value (Options::kDefault_MaxConnections), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
+    , fThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
     , fListener_{bindAddresses,
                  options.fBindFlags.Value (Options::kDefault_BindFlags),
                  [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); },
-                 options.fTCPBacklog.Value (max (2u, options.fMaxConnections.Value (Options::kDefault_MaxConnections) * 3 / 4))}
+                 ComputeConnectionBacklog_ (options)}
 {
 }
 
