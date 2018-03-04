@@ -94,7 +94,19 @@ void Connection::ReadHeaders ()
     MessageStartTextInputStreamBinaryAdapter::Ptr inTextStream = MessageStartTextInputStreamBinaryAdapter::New (fMessage_.PeekRequest ()->GetInputStream ());
     {
         // Read METHOD line
-        String           line = inTextStream.ReadLine ();
+        String line = inTextStream.ReadLine ();
+        if (line.length () == 0) {
+            // inTextStream.IsAtEOF () would be blocking, and that's not desired here
+            if (inTextStream.ReadNonBlocking () == 0) {
+                /*
+                 * This is relatively common. There is an outstanding connection (so client did tcp_connect) - but never got around
+                 * to sending data cuz the need for the data evaporated.
+                 *
+                 * I've seen this not so uncommonly with chrome -- LGP 2018-03-04
+                 */
+                Execution::Throw (ClientErrorException (L"EOF"));
+            }
+        }
         Sequence<String> tokens{line.Tokenize (Set<Character>{' '})};
         if (tokens.size () < 3) {
             DbgTrace (L"tokens=%s, line='%s', inTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), inTextStream.ToString ().c_str ());
