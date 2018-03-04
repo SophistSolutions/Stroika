@@ -43,7 +43,7 @@ public:
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         StringBuilder                                       sb;
         sb += L"{";
-        sb += L"fOffset_: " + Characters::Format (L"%d", fOffset_) + L", ";
+        sb += L"Offset: " + Characters::Format (L"%d", fOffset_) + L", ";
         sb += L"HighWaterMark: " + Characters::Format (L"%d", fBufferFilledUpValidBytes_) + L", ";
         sb += L"TEXT: ";
         switch (format) {

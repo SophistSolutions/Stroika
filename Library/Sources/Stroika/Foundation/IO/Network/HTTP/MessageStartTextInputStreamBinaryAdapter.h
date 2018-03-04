@@ -35,6 +35,10 @@ namespace Stroika {
                      *  This adpater defines 0 seek offset as the point at which its constructed. And then you can seek to any locaiton
                      *  0 .. up to the max point ever read (with Read).
                      *
+                     *  \par TODO
+                     *      @todo   Must rewrite this to properly handle other than ASCII characterset on incoming headers
+                     *              and URL lines.
+                     *
                      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
                      */
                     class MessageStartTextInputStreamBinaryAdapter : public Streams::InputStream<Characters::Character> {
