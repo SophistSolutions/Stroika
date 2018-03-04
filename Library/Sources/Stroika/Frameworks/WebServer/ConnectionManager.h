@@ -128,7 +128,7 @@ namespace Stroika {
                  *
                  *  Turn this on - especially - if you see connection reset when clients talk to the Stroika web-server (TCP RST sent).
                  *
-                 *  \note - this defaults to 5 seconds.
+                 *  \note - this defaults to 2 seconds (kDefault_AutomaticTCPDisconnectOnClose)
                  *
                  * @see Socket::GetAutomaticTCPDisconnectOnClose
                  */
@@ -334,7 +334,7 @@ namespace Stroika {
                 static constexpr Socket::BindFlags         kDefault_BindFlags{};
                 static const Optional<String>              kDefault_ServerHeader;
                 static constexpr CORSModeSupport           kDefault_CORSModeSupport{CORSModeSupport::eDEFAULT};
-                static constexpr Time::DurationSecondsType kDefault_AutomaticTCPDisconnectOnClose{5.0};
+                static constexpr Time::DurationSecondsType kDefault_AutomaticTCPDisconnectOnClose{2.0};
                 static constexpr Optional<int>             kDefault_Linger{};
             };
         }
