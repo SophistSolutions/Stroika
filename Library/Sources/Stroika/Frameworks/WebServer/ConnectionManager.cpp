@@ -16,6 +16,7 @@
 #include "../../Foundation/Execution/Sleep.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
+#include "../../Foundation/IO/Network/HTTP/Methods.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "DefaultFaultInterceptor.h"
@@ -51,8 +52,17 @@ namespace {
                     m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
                 }
                 if (fCORSModeSupport == ConnectionManager::CORSModeSupport::eSuppress) {
+                    /*
+                     *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
+                     *  on all responses, but these others just when you do a preflight - using OPTIONS.
+                     */
                     m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant{L"*"});
-                    m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant{L"Origin, X-Requested-With, Content-Type, Accept, Authorization"});
+                    if (m->PeekRequest ()->GetHTTPMethod () == IO::Network::HTTP::Methods::kOptions) {
+                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowCredentials, String_Constant{L"true"});
+                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant{L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"});
+                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowMethods, String_Constant{L"DELETE, GET, OPTIONS, POST, PUT, TRACE, UPDATE"});
+                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlMaxAge, String_Constant{L"86400"});
+                    }
                 }
             }
             const Optional<String>                   fServerHeader_; // no need for synchronization cuz constant - just set on construction
