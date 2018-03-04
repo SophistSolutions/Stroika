@@ -23,8 +23,8 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE>
             class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
-                static const size_t kMinBufSize_    = 1 * 1024;
-                static const size_t kDefaultBufSize = 16 * 1024;
+                static const size_t kMinBufSize_     = 1 * 1024;
+                static const size_t kDefaultBufSize_ = 16 * 1024;
 
             public:
                 Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut)
@@ -33,7 +33,7 @@ namespace Stroika {
                     , fRealOut_ (realOut)
                     , fAborted_ (false)
                 {
-                    fBuffer_.reserve (kDefaultBufSize);
+                    fBuffer_.reserve (kDefaultBufSize_);
                 }
                 ~Rep_ ()
                 {
