@@ -139,7 +139,7 @@ void Connection::Close ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"Connection::Close");
 #endif
-    fMessage_.PeekResponse ()->Flush ();
+    fMessage_.PeekResponse ()->End ();
     fSocket_.Close ();
 }
 

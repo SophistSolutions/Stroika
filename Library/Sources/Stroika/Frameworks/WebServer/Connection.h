@@ -57,8 +57,8 @@ namespace Stroika {
                 nonvirtual void ReadHeaders ();
 
             public:
-                // not sure we want this
-                nonvirtual void Close ();
+                // Cannot do here becuase request maybe already sent...
+                [[deprecated ("use - Response.MarkConnectionClose in Stroika v2.0a230")]] nonvirtual void Close ();
 
             public:
                 /**
