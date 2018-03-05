@@ -49,7 +49,7 @@ namespace Stroika {
                 ~Connection ();
 
             public:
-                nonvirtual const Connection& operator= (const Connection&) = delete;
+                nonvirtual Connection& operator= (const Connection&) = delete;
 
             public:
                 // Must rethink this organization -but for now - call this once at start of connection to fill in details in
@@ -83,11 +83,30 @@ namespace Stroika {
                  */
                 nonvirtual bool ReadAndProcessMessage ();
 
+            public:
+                /**
+                 */
+                struct Remaining {
+                    Memory::Optional<unsigned int>              fMessages;
+                    Memory::Optional<Time::DurationSecondsType> fTimeoutAt;
+                };
+
+            public:
+                /**
+                 */
+                nonvirtual Memory::Optional<Remaining> GetRemainingConnectionLimits () const;
+
+            public:
+                /**
+                 */
+                nonvirtual void SetRemainingConnectionMessages (const Memory::Optional<Remaining>& remainingConnectionLimits);
+
             private:
                 InterceptorChain              fInterceptorChain_;
                 ConnectionOrientedSocket::Ptr fSocket_;
                 SocketStream::Ptr             fSocketStream_;
                 Message                       fMessage_;
+                Memory::Optional<Remaining>   fRemaining_;
 
             private:
                 friend ConnectionManager;

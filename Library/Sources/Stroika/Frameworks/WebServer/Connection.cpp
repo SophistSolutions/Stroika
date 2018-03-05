@@ -6,7 +6,9 @@
 #include <algorithm>
 #include <cstdlib>
 
+#include "../../Foundation/Characters/FloatConversion.h"
 #include "../../Foundation/Characters/Format.h"
+#include "../../Foundation/Characters/String2Int.h"
 #include "../../Foundation/Characters/String_Constant.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Common.h"
@@ -30,7 +32,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -130,7 +132,7 @@ void Connection::ReadHeaders ()
     while (true) {
         String line = inTextStream.ReadLine ();
         if (line == String_Constant (L"\r\n") or line.empty ()) {
-            return; // done
+            break; // done
         }
 
         // add subsequent items to the header map
@@ -165,6 +167,36 @@ bool Connection::ReadAndProcessMessage ()
     // @todo but be sure REsponse::End () doesn't close socket - just flushes response!
 
     ReadHeaders (); // bad API. Must rethink...
+
+    {
+        // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
+        if (auto aliveHeaderValue = this->fMessage_.PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
+            for (String token : aliveHeaderValue->Tokenize (Set<Character>{' ', ','})) {
+                Containers::Sequence<String> kvp = token.Tokenize (Set<Character>{'='});
+                if (kvp.length () == 2) {
+                    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
+                    if (kvp[0] == L"timeout") {
+                        Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
+                        Remaining                 r    = GetRemainingConnectionLimits ().Value ();
+                        r.fTimeoutAt                   = Time::GetTickCount () + toAt;
+                        this->SetRemainingConnectionMessages (r);
+                    }
+                    else if (kvp[0] == L"max") {
+                        unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
+                        Remaining    r      = GetRemainingConnectionLimits ().Value ();
+                        r.fMessages         = maxMsg;
+                        this->SetRemainingConnectionMessages (r);
+                    }
+                    else {
+                        DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
+                    }
+                }
+                else {
+                    DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
+                }
+            }
+        }
+    }
 
     if (not kSupportHTTPKeepAlives_) {
         // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html

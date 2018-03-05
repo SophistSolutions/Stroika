@@ -44,6 +44,7 @@ namespace Stroika {
                         constexpr wchar_t kAccessControlMaxAge[]           = L"Access-Control-Max-Age";
                         constexpr wchar_t kAuthorization[]                 = L"Authorization";
                         constexpr wchar_t kAllow[]                         = L"Allow";
+                        constexpr wchar_t kKeepAlive[]                     = L"Keep-Alive";
                     }
                 }
             }

@@ -2019,6 +2019,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.h">
       <Filter>Sources\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.h">
+      <Filter>Sources\IO\Network\HTTP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3251,6 +3254,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Sanitizer.inl">
       <Filter>Sources\Debug</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl">
+      <Filter>Sources\IO\Network\HTTP</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

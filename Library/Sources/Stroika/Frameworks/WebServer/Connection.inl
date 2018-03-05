@@ -40,6 +40,14 @@ namespace Stroika {
             {
                 return *fMessage_.PeekResponse ();
             }
+            inline Memory::Optional<Connection::Remaining> Connection::GetRemainingConnectionLimits () const
+            {
+                return fRemaining_;
+            }
+            inline void Connection::SetRemainingConnectionMessages (const Memory::Optional<Remaining>& remainingConnectionLimits)
+            {
+                fRemaining_ = remainingConnectionLimits;
+            }
         }
     }
 }

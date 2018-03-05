@@ -1539,6 +1539,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.h" />
@@ -1947,6 +1948,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Makefile" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddressRange.inl" />
