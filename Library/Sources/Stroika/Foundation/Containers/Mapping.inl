@@ -277,7 +277,7 @@ namespace Stroika {
             template <typename CONTAINER_OF_KEYS>
             auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::WithKeys (const CONTAINER_OF_KEYS& includeKeys) const -> ArchetypeContainerType
             {
-                return Where ([=](const key_type& key) { return includeKeys.Contains (key); }, ArchetypeContainerType{});
+                return Where ([=](const key_type& key) -> bool { return includeKeys.Contains (key); });
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
             auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::WithKeys (const initializer_list<key_type>& includeKeys) const -> ArchetypeContainerType
