@@ -93,6 +93,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \brief mostly looks at Connection: ARG header, but if not there takes into account HTTP-version specific defaults.
+                 */
+                nonvirtual bool GetKeepAliveRequested () const;
+
+            public:
+                /**
                  *  Return the unsigned integer value of the Content-Length header.
                  *
                  *  \note - this does not imply having read the body, and nor is it updated to reflect the body size read after its been read.

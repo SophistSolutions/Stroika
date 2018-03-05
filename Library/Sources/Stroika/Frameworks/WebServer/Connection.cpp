@@ -170,7 +170,7 @@ bool Connection::ReadAndProcessMessage ()
 
     {
         // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
-        if (auto aliveHeaderValue = this->fMessage_.PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
+        if (auto aliveHeaderValue = fMessage_.PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
             for (String token : aliveHeaderValue->Tokenize (Set<Character>{' ', ','})) {
                 Containers::Sequence<String> kvp = token.Tokenize (Set<Character>{'='});
                 if (kvp.length () == 2) {
