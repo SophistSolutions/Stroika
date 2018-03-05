@@ -21,6 +21,99 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a230">v2.0a230</a><br/>2018-03-05</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a229...v2.0a230</li>
+		<li>Fixed ConnectionOrientedSocket::ReadNonBlocking () - was returning 1 when EOF was available - but thats WRONG. Return 0 in that case</li>
+		<li>Tweaks to support tsan (thread sanitizer)
+			<ul>
+				<li>tsan now fully works with Stroika. The biggest remaining issue is that tsan doesn't work with ASAN so hard to fit with just one 'debug' configuration</li>
+				<li>gcc-release-thread-sanitize  config needs --lto disable like gcc-release-address-sanitize (compiler / linker bug)</li>
+				<li>SharedStaticData deprecated</li>
+				<li>adjustments to sanitizer regresiosn test configs</li>
+				<li>redo Debug/AssertExternallySynchronizedLock MUTEX definition - no longer using obsolete SharedStaticData - instead just using function to access object which controls timing of create automatically; and documented better what the mutex protects</li>
+				<li>blockallocation works fine with --sanitze thread and --assertions enabled</li>
+				<li> Foundation::Execution::Threads  (../Builds/gcc-basic-threadsanitize/Test38)
+            WARNING: ThreadSanitizer: data race (pid=19396)
+              Write of size 1 at 0x7ffd1a6307d8 by main thread:
+                #0 Stroika::Foundation::Execution::ThreadPool::Abort_() /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Execution/ThreadPool.cpp:378 (Test38+0x00000011ce81)
+    ..
+              Previous read of size 1 at 0x7ffd1a6307d8 by thread T3:
+                #0 Stroika::Foundation::Execution::ThreadPool::WaitForNextTask_(Stroika::Foundation::Execution::Function<void ()>*) /home/lewis/Sandbox/Stroika-Regression-Tests/Library/Sources/Stroika/Foundation/Execution/ThreadPool.cpp:433 (Test38+0x00000011d645)
+     So try making fAborted_ atomic. Not a real bug, but may eliminate this warning, and sb safe/reasonable.
+				</li>
+			</ul>
+		</li>
+		<li>String
+			<ul>
+				<li>StringBuilder supports assignemnt from String:</li>
+				<li>Fixed serious bug iwth String::FromISOLatin1 ()</li>
+				<li>refactor and add overload for String::FromISOLatin1/2</li>
+			</ul>
+		</li>
+		<li>HTTP WebServer
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-637: HTTP Keep-Alives (complete but only modestly tested)</li>
+				<li>other cleanups to WebServer framework - docs etc</li>
+				<li>Simplified SSDP webserver usage - now clearer and cleaner (still doesnt use keepaives
+            but on purpose).</li>
+				<li>Cleanup WebServer Connection::ReadHeaders_ () - private static returns bool instead
+            of throw on common failure due to EOF</li>
+				<li>In keepalive handling - default on/off according to http 1.1, etc. And if known content
+            length (if not force off).; support 'remaining' countdown - with remaining info captued by keep-alives header</li>
+				<li>Overload for Intercepttor CTOR taking lambdas (for simpler use - done in SSDP example).</li>
+				<li>HTTP WebServer - Request object SetHTTPVersion impl; and renamed GetSpecialHeaders -> GetHeaders (); and in ToString () use GetEffectiveHeaders ()</li>
+				<li>Deprecated Connection::Close () (websever)</li>
+				<li>changed kDefault_AutomaticTCPDisconnectOnClose from 5 to 2 (since this happens not infrequently 
+				talking to chrome and it can cause threads to get eaten up in the short term</li>
+				<li>WebServer ToString support: Message, Request, Response, MessageStartTextInputStreamBinaryAdapter</li>
+				<li>Improved defaults for WebServer ConnectionManager - ComputeThreadPoolSize_ () and ComputeConnectionBacklog_ ()</li>
+				<li>in response to report from John - futher improved CORSModeSupport::eSuppress code. I added kAccessControlAllowMethods (his request); but at the same time, fixed code so ONLY reports other than allow-origin for PREFLIGHT (OPTIONS) requests, and added more headers and Access-Control-Max-Age</li>
+				<li>WebServer::Connection  USE_NOISY_TRACE_IN_THIS_MODULE_ extra logging</li>
+				<li>WebBrowser: When the connection is completed, make sure the socket is closed so that the
+			calling client knows as quickly as possible (not just when last object ref goes away).</li>
+				<li>MessageStartTextInputStreamBinaryAdapter::Rep_ now uses AssertExternallySynchronizedLock instead of regular mutex - and documented as such - threadsafetyrules,  IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter changed to follow New/Ptr pattern; and added ToString() method on PTR (for debugging). NOT backward compat</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>use Boost 1.66.0</li>
+			</ul>
+		</li>
+		<li>Improve and add regtests for Set<>::Where - esp docs</li>
+		<li>Cleanups for KeyValuePair&lt;&gt; - but incomplete</li>
+		<li>Support Socket::Ptr::ToString ()</li>
+		<li>new Mapping<>::Where overload (hiding Iterable one - updating return type and overload for diff functions); and added related Mapping<>::WithKeys method</li>
+		<li>Allow VirtualConstant<>::operator-> and document it a bit more</li>
+		<li>Socket::Ptr Compare/Equals - use shared_ptr compare instead of compare on NativeSocket</li>
+		<li>Add default value for USE_TEST_BASENAME to ScriptsLib/RunPerformanceRegressionTests.sh</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a230.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a230-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.2 (apple clang 9.2)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
 
 
 <tr>
