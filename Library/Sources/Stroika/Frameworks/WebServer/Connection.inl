@@ -26,19 +26,19 @@ namespace Stroika {
             }
             inline const Request& Connection::GetRequest () const
             {
-                return *fMessage_.PeekRequest ();
+                return *fMessage_->PeekRequest ();
             }
             inline Request& Connection::GetRequest ()
             {
-                return *fMessage_.PeekRequest ();
+                return *fMessage_->PeekRequest ();
             }
             inline Response& Connection::GetResponse ()
             {
-                return *fMessage_.PeekResponse ();
+                return *fMessage_->PeekResponse ();
             }
             inline const Response& Connection::GetResponse () const
             {
-                return *fMessage_.PeekResponse ();
+                return *fMessage_->PeekResponse ();
             }
             inline Memory::Optional<Connection::Remaining> Connection::GetRemainingConnectionLimits () const
             {

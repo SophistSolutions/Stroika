@@ -45,15 +45,10 @@ DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-
 Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : fInterceptorChain_{interceptorChain}
     , fSocket_ (s)
-    , fSocketStream_ (SocketStream::New (s))
-    , fMessage_{
-          move (Request (fSocketStream_)),
-          move (Response (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
-          s.GetPeerAddress ()}
 {
     Require (s != nullptr);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Created connection for socket %s, message=%s", Characters::ToString (s).c_str (), Characters::ToString (fMessage_).c_str ());
+    DbgTrace (L"Created connection for socket %s", Characters::ToString (s).c_str ());
 #endif
 }
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
@@ -63,12 +58,12 @@ DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-mo
 Connection::~Connection ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
+    DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (*fMessage_).c_str ());
 #endif
-    if (fMessage_.PeekResponse ()->GetState () != Response::State::eCompleted) {
-        IgnoreExceptionsForCall (fMessage_.PeekResponse ()->Abort ());
+    if (fMessage_->PeekResponse ()->GetState () != Response::State::eCompleted) {
+        IgnoreExceptionsForCall (fMessage_->PeekResponse ()->Abort ());
     }
-    Require (fMessage_.PeekResponse ()->GetState () == Response::State::eCompleted);
+    Require (fMessage_->PeekResponse ()->GetState () == Response::State::eCompleted);
     /*
      *  When the connection is completed, make sure the socket is closed so that the calling client knows
      *  as quickly as possible. Probably not generally necessary since when the last reference to the socket
@@ -87,13 +82,13 @@ Connection::~Connection ()
 void Connection::ReadHeaders ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Connection::ReadHeaders for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
+    DbgTrace (L"Connection::ReadHeaders for socket %s", Characters::ToString (fSocket_).c_str ());
 #endif
     // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
     // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
     using Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter;
 
-    MessageStartTextInputStreamBinaryAdapter::Ptr inTextStream = MessageStartTextInputStreamBinaryAdapter::New (fMessage_.PeekRequest ()->GetInputStream ());
+    MessageStartTextInputStreamBinaryAdapter::Ptr inTextStream = MessageStartTextInputStreamBinaryAdapter::New (fMessage_->PeekRequest ()->GetInputStream ());
     {
         // Read METHOD line
         String line = inTextStream.ReadLine ();
@@ -114,16 +109,16 @@ void Connection::ReadHeaders ()
             DbgTrace (L"tokens=%s, line='%s', inTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), inTextStream.ToString ().c_str ());
             Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD REQUEST HTTP line (%s)", line.c_str ())));
         }
-        fMessage_.PeekRequest ()->SetHTTPMethod (tokens[0]);
-        fMessage_.PeekRequest ()->SetHTTPVersion (tokens[2]);
+        fMessage_->PeekRequest ()->SetHTTPMethod (tokens[0]);
+        fMessage_->PeekRequest ()->SetHTTPVersion (tokens[2]);
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
         using IO::Network::URL;
-        fMessage_.PeekRequest ()->SetURL (URL::Parse (tokens[1], URL::eAsRelativeURL));
-        if (fMessage_.PeekRequest ()->GetHTTPMethod ().empty ()) {
+        fMessage_->PeekRequest ()->SetURL (URL::Parse (tokens[1], URL::eAsRelativeURL));
+        if (fMessage_->PeekRequest ()->GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
@@ -144,7 +139,7 @@ void Connection::ReadHeaders ()
         else {
             String hdr   = line.SubString (0, i).Trim ();
             String value = line.SubString (i + 1).Trim ();
-            fMessage_.PeekRequest ()->AddHeader (hdr, value);
+            fMessage_->PeekRequest ()->AddHeader (hdr, value);
         }
     }
 }
@@ -154,7 +149,7 @@ void Connection::Close ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"Connection::Close");
 #endif
-    fMessage_.PeekResponse ()->End ();
+    fMessage_->PeekResponse ()->End ();
     fSocket_.Close ();
 }
 
@@ -163,14 +158,20 @@ bool Connection::ReadAndProcessMessage ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"Connection::ReadAndProcessMessage");
 #endif
-    constexpr bool kSupportHTTPKeepAlives_{false}; // @todo - support - now structured so maybe not too hard -- LGP 2016-09-02
-    // @todo but be sure REsponse::End () doesn't close socket - just flushes response!
+    {
+        fSocketStream_ = SocketStream::New (fSocket_);
+        auto x         = make_shared<Message> (
+            move (Request (fSocketStream_)),
+            move (Response (fSocket_, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
+            fSocket_.GetPeerAddress ());
+        fMessage_ = x;
+    }
 
     ReadHeaders (); // bad API. Must rethink...
 
     {
         // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
-        if (auto aliveHeaderValue = fMessage_.PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
+        if (auto aliveHeaderValue = fMessage_->PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
             for (String token : aliveHeaderValue->Tokenize (Set<Character>{' ', ','})) {
                 Containers::Sequence<String> kvp = token.Tokenize (Set<Character>{'='});
                 if (kvp.length () == 2) {
@@ -198,17 +199,22 @@ bool Connection::ReadAndProcessMessage ()
         }
     }
 
-    if (not kSupportHTTPKeepAlives_) {
+    bool thisMessageKeepAlive = fMessage_->PeekRequest ()->GetKeepAliveRequested ();
+    if (thisMessageKeepAlive) {
+        GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant{L"Keep-Alive"});
+    }
+    else {
         // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
         GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant{L"close"});
     }
+
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     String url = GetRequest ().GetURL ().GetFullURL ();
     DbgTrace (L"Serving page %s", url.c_str ());
 #endif
     try {
-        fInterceptorChain_.HandleMessage (&fMessage_);
+        fInterceptorChain_.HandleMessage (fMessage_.get ());
     }
     catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -216,5 +222,5 @@ bool Connection::ReadAndProcessMessage ()
 #endif
     }
     GetResponse ().End ();
-    return kSupportHTTPKeepAlives_;
+    return thisMessageKeepAlive;
 }

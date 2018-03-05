@@ -66,11 +66,11 @@ void Request::SetHTTPVersion (const String& versionOrVersionLabel)
 
 bool Request::GetKeepAliveRequested () const
 {
-	if (auto connectionHdr = this->fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kConnection)) {
-		return *connectionHdr == L"Keep-Alive";
-	}
-	// @todo convert version to number and compare that way
-	return fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne;
+    if (auto connectionHdr = this->fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kConnection)) {
+        return connectionHdr->Equals (L"Keep-Alive", Characters::CompareOptions::eCaseInsensitive);
+    }
+    // @todo convert version to number and compare that way
+    return fHTTPVersion_ == IO::Network::HTTP::Versions::kOnePointOne;
 }
 
 Memory::BLOB Request::GetBody ()

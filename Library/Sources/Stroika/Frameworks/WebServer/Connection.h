@@ -105,7 +105,7 @@ namespace Stroika {
                 InterceptorChain              fInterceptorChain_;
                 ConnectionOrientedSocket::Ptr fSocket_;
                 SocketStream::Ptr             fSocketStream_;
-                Message                       fMessage_;
+                shared_ptr<Message>           fMessage_; // always there, but ptr so it can be replaced
                 Memory::Optional<Remaining>   fRemaining_;
 
             private:
