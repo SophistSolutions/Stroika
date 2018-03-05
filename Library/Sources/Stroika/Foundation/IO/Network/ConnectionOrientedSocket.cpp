@@ -104,7 +104,7 @@ namespace {
                             // But MUST check if is EOF or real data available
                             char buf[1000];
 #if qPlatform_POSIX
-                            int tmp = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption (::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK)));
+							int tmp = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int {::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
 #elif qPlatform_Windows
                             int tmp = ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK));
 #else
