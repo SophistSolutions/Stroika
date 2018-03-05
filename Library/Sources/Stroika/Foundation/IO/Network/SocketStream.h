@@ -84,7 +84,7 @@ namespace Stroika {
                      *            SocketStream::Ptr             inOut = SocketStream::New (connectionSocket);
                      *      \endcode
                      */
-                    Ptr ()                = delete;
+                    Ptr ()                = default;
                     Ptr (const Ptr& from) = default;
                     Ptr (nullptr_t);
 
