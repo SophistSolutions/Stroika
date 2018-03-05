@@ -56,8 +56,15 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This typically returns "1.1"
                  */
                 nonvirtual String GetHTTPVersion () const;
+
+            public:
+                /**
+                 *  This can be given HTTP/1.0, 1.0, HTTP/1.1, or 1.1. Other values are allowed, but surprising.
+                 */
+                nonvirtual void SetHTTPVersion (const String& versionOrVersionLabel);
 
             public:
                 /**
@@ -121,7 +128,6 @@ namespace Stroika {
                 nonvirtual String ToString () const;
 
             private:
-                // SOON TO BE PRIVATE
                 Streams::InputStream<Memory::Byte>::Ptr fInputStream_;
 
             private:

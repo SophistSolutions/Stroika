@@ -44,6 +44,27 @@ Request::Request (const Streams::InputStream<Byte>::Ptr& inStream)
 {
 }
 
+void Request::SetHTTPVersion (const String& versionOrVersionLabel)
+{
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    static const String_Constant                       k10_{L"1.0"};
+    static const String_Constant                       kLabeled_10_{L"HTTP/1.0"};
+    static const String_Constant                       k11_{L"1.1"};
+    static const String_Constant                       kLabeled_11_{L"HTTP/1.1"};
+    if (versionOrVersionLabel == kLabeled_11_ or versionOrVersionLabel == k11_ or versionOrVersionLabel.Equals (kLabeled_11_, Characters::CompareOptions::eCaseInsensitive)) {
+        fHTTPVersion_ = k11_;
+    }
+    else if (versionOrVersionLabel == kLabeled_10_ or versionOrVersionLabel == k10_ or versionOrVersionLabel.Equals (kLabeled_10_, Characters::CompareOptions::eCaseInsensitive)) {
+        fHTTPVersion_ = k10_;
+    }
+    else if (versionOrVersionLabel.StartsWith (L"HTTP/", Characters::CompareOptions::eCaseInsensitive)) {
+        fHTTPVersion_ = versionOrVersionLabel.SubString (5);
+    }
+    else {
+        fHTTPVersion_ = versionOrVersionLabel;
+    }
+}
+
 Memory::BLOB Request::GetBody ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

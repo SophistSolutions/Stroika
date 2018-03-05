@@ -113,6 +113,7 @@ void Connection::ReadHeaders ()
             Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD REQUEST HTTP line (%s)", line.c_str ())));
         }
         fMessage_.PeekRequest ()->SetHTTPMethod (tokens[0]);
+        fMessage_.PeekRequest ()->SetHTTPVersion (tokens[2]);
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());

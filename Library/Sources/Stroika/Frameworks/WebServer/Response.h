@@ -229,13 +229,22 @@ namespace Stroika {
                 nonvirtual void AppendToCommaSeperatedHeader (const String& headerName, const String& value);
 
             public:
-                nonvirtual void ClearHeader ();
+                /**
+                 */
                 nonvirtual void ClearHeader (const String& headerName);
 
             public:
                 /**
                  */
-                nonvirtual Mapping<String, String> GetSpecialHeaders () const;
+                nonvirtual void ClearHeaders ();
+
+            public:
+                /**
+                 *  \brief return the set of explicitly specified headers.
+                 *
+                 *  @see GetEffectiveHeaders ()
+                 */
+                nonvirtual Mapping<String, String> GetHeaders () const;
 
             public:
                 /**

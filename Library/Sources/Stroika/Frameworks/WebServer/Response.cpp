@@ -156,7 +156,7 @@ void Response::AppendToCommaSeperatedHeader (const String& headerName, const Str
     }
 }
 
-void Response::ClearHeader ()
+void Response::ClearHeaders ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Require (fState_ == State::eInProgress);
@@ -171,7 +171,7 @@ void Response::ClearHeader (const String& headerName)
     fHeaders_.Remove (headerName);
 }
 
-Mapping<String, String> Response::GetSpecialHeaders () const
+Mapping<String, String> Response::GetHeaders () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fHeaders_;
@@ -180,7 +180,7 @@ Mapping<String, String> Response::GetSpecialHeaders () const
 Mapping<String, String> Response::GetEffectiveHeaders () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    Mapping<String, String>                             tmp = GetSpecialHeaders ();
+    Mapping<String, String>                             tmp = GetHeaders ();
     switch (GetContentSizePolicy ()) {
         case ContentSizePolicy::eAutoCompute:
         case ContentSizePolicy::eExact: {
@@ -336,7 +336,7 @@ String Response::ToString () const
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
     sb += L"State_: " + Characters::ToString (fState_) + L", ";
     sb += L"StatusOverrideReason_: '" + Characters::ToString (fStatusOverrideReason_) + L"', ";
-    sb += L"Headers: " + Characters::ToString (fHeaders_) + L", ";
+    sb += L"Headers: " + Characters::ToString (GetEffectiveHeaders ()) + L", ";
     sb += L"}";
     return sb.str ();
 }
