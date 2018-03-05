@@ -100,7 +100,17 @@ namespace {
                     };
                     if (::select (static_cast<int> (fSD_) + 1, &input, NULL, NULL, &timeout) == 1) {
                         if (intoStart == nullptr) {
-                            return 1; // dont know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
+                            // dont know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
+                            // But MUST check if is EOF or real data available
+                            char buf[1000];
+#if qPlatform_POSIX
+                            int tmp = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption (::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK)));
+#elif qPlatform_Windows
+                            int tmp = ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK));
+#else
+                            AssertNotImplemented ();
+#endif
+                            return tmp;
                         }
                         return Read (intoStart, intoEnd);
                     }
