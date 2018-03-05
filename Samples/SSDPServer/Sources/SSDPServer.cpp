@@ -41,18 +41,21 @@ namespace {
             : fListener ()
         {
             // @todo Consider simplifying this using WebServer Framework more fully - Router or Interceptor
-            auto onConnect = [d, dd](const ConnectionOrientedSocket::Ptr& s) {
-                Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([s, d, dd]() {
+            auto onConnect = [d, dd](const ConnectionOrientedSocket::Ptr& acceptedSocketConnection) {
+                Execution::Thread::Ptr runConnectionOnAnotherThread = Execution::Thread::New ([acceptedSocketConnection, d, dd]() {
                     // If the URLs are served locally, you may want to update the URL based on
                     // IO::Network::GetPrimaryInternetAddress ()
-                    Memory::BLOB deviceDescription = Stroika::Frameworks::UPnP::Serialize (d, dd);
-                    // now read
-                    Connection conn{s};
-                    conn.ReadHeaders (); // bad API. Must rethink...
-                    conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
-                    conn.GetResponse ().write (deviceDescription.begin (), deviceDescription.end ());
-                    conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::kText_XML);
-                    conn.GetResponse ().End ();
+                    Connection conn{acceptedSocketConnection,
+                                    Sequence<Interceptor>{
+                                        Interceptor (
+                                            [=](Message* m) {
+                                                Response* response = m->PeekResponse ();
+                                                response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
+                                                response->write (Stroika::Frameworks::UPnP::Serialize (d, dd));
+                                                response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_XML);
+                                            })}};
+                    conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
+                    conn.ReadAndProcessMessage ();
                 });
                 runConnectionOnAnotherThread.SetThreadName (L"SSDP Servcie Connection Thread");
                 runConnectionOnAnotherThread.Start ();

@@ -56,6 +56,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 Execution::Throw (IO::Network::HTTP::Exception (IO::Network::HTTP::StatusCodes::kMethodNotAllowed));
             }
             else {
+                DbgTrace (L"Router 404: (...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ());
                 Execution::Throw (IO::Network::HTTP::Exception (IO::Network::HTTP::StatusCodes::kNotFound));
             }
         }

@@ -128,6 +128,14 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This can be true if:
+                 *      GetContentSizePolicy () == eAutoCompute or eExact.
+                 *      \note - you cannot call AddHeader (Content-Length)
+                 */
+                nonvirtual bool IsContentLengthKnown () const;
+
+            public:
+                /**
                  * This begins sending the parts of the message which have already been accumulated to the client.
                  * Its illegal to modify anything in the headers etc - after this - but additional writes can happen
                  * if we are NOT in automatic-include-Content-Length mode (NYI).

@@ -32,7 +32,7 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 /*
  ********************************************************************************
@@ -79,16 +79,16 @@ Connection::~Connection ()
     }
 }
 
-void Connection::ReadHeaders ()
+bool Connection::ReadHeaders_ (Message* msg)
 {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Connection::ReadHeaders for socket %s", Characters::ToString (fSocket_).c_str ());
-#endif
-    // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
-    // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
+    /*
+     * DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true 
+     * (and probably isn't here anymore)
+     * Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
+     */
     using Foundation::IO::Network::HTTP::MessageStartTextInputStreamBinaryAdapter;
-
-    MessageStartTextInputStreamBinaryAdapter::Ptr inTextStream = MessageStartTextInputStreamBinaryAdapter::New (fMessage_->PeekRequest ()->GetInputStream ());
+    Request*                                      request      = msg->PeekRequest ();
+    MessageStartTextInputStreamBinaryAdapter::Ptr inTextStream = MessageStartTextInputStreamBinaryAdapter::New (request->GetInputStream ());
     {
         // Read METHOD line
         String line = inTextStream.ReadLine ();
@@ -99,9 +99,9 @@ void Connection::ReadHeaders ()
                  * This is relatively common. There is an outstanding connection (so client did tcp_connect) - but never got around
                  * to sending data cuz the need for the data evaporated.
                  *
-                 * I've seen this not so uncommonly with chrome -- LGP 2018-03-04
+                 * I've seen this not so uncommonly with chrome (hit refresh button fast and wait a while) -- LGP 2018-03-04
                  */
-                Execution::Throw (ClientErrorException (L"EOF"));
+                return false;
             }
         }
         Sequence<String> tokens{line.Tokenize (Set<Character>{' '})};
@@ -109,16 +109,16 @@ void Connection::ReadHeaders ()
             DbgTrace (L"tokens=%s, line='%s', inTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), inTextStream.ToString ().c_str ());
             Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD REQUEST HTTP line (%s)", line.c_str ())));
         }
-        fMessage_->PeekRequest ()->SetHTTPMethod (tokens[0]);
-        fMessage_->PeekRequest ()->SetHTTPVersion (tokens[2]);
+        request->SetHTTPMethod (tokens[0]);
+        request->SetHTTPVersion (tokens[2]);
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
         }
         using IO::Network::URL;
-        fMessage_->PeekRequest ()->SetURL (URL::Parse (tokens[1], URL::eAsRelativeURL));
-        if (fMessage_->PeekRequest ()->GetHTTPMethod ().empty ()) {
+        request->SetURL (URL::Parse (tokens[1], URL::eAsRelativeURL));
+        if (request->GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
             Execution::Throw (ClientErrorException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
@@ -139,9 +139,10 @@ void Connection::ReadHeaders ()
         else {
             String hdr   = line.SubString (0, i).Trim ();
             String value = line.SubString (i + 1).Trim ();
-            fMessage_->PeekRequest ()->AddHeader (hdr, value);
+            request->AddHeader (hdr, value);
         }
     }
+    return true;
 }
 
 void Connection::Close ()
@@ -160,14 +161,16 @@ bool Connection::ReadAndProcessMessage ()
 #endif
     {
         fSocketStream_ = SocketStream::New (fSocket_);
-        auto x         = make_shared<Message> (
+        fMessage_      = make_shared<Message> (
             move (Request (fSocketStream_)),
             move (Response (fSocket_, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
             fSocket_.GetPeerAddress ());
-        fMessage_ = x;
     }
 
-    ReadHeaders (); // bad API. Must rethink...
+    if (not ReadHeaders_ (fMessage_.get ())) {
+        DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web browser hitting refresh button fast).");
+        return false;
+    }
 
     {
         // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
@@ -199,16 +202,6 @@ bool Connection::ReadAndProcessMessage ()
         }
     }
 
-    bool thisMessageKeepAlive = fMessage_->PeekRequest ()->GetKeepAliveRequested ();
-    if (thisMessageKeepAlive) {
-        GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant{L"Keep-Alive"});
-    }
-    else {
-        // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-        GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection, String_Constant{L"close"});
-    }
-
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     String url = GetRequest ().GetURL ().GetFullURL ();
     DbgTrace (L"Serving page %s", url.c_str ());
@@ -221,6 +214,37 @@ bool Connection::ReadAndProcessMessage ()
         DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
 #endif
     }
+
+    bool thisMessageKeepAlive = fMessage_->PeekRequest ()->GetKeepAliveRequested ();
+    if (thisMessageKeepAlive) {
+        if (not GetResponse ().IsContentLengthKnown ()) {
+            thisMessageKeepAlive = false;
+        }
+    }
+    if (thisMessageKeepAlive) {
+        // if missing, no limits
+        if (auto oRemaining = GetRemainingConnectionLimits ()) {
+            if (oRemaining->fMessages) {
+                if (oRemaining->fMessages == 0) {
+                    thisMessageKeepAlive = false;
+                }
+                else {
+                    oRemaining->fMessages = *oRemaining->fMessages - 1;
+                }
+            }
+            if (oRemaining->fTimeoutAt) {
+                if (*oRemaining->fTimeoutAt < Time::GetTickCount ()) {
+                    thisMessageKeepAlive = false;
+                }
+            }
+        }
+    }
+
+    // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+    //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+    GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection,
+                              thisMessageKeepAlive ? String_Constant{L"Keep-Alive"} : String_Constant{L"close"});
+
     GetResponse ().End ();
     return thisMessageKeepAlive;
 }

@@ -34,13 +34,29 @@ namespace Stroika {
              *  \brief  A Connection object represents the state (and socket) for an ongoing, active, HTTP Connection, managed by the ConnectionManager class
              *
              *  TODO:
-             *      \todo REDO Connection object as Connection::REp and Ptr and what we store is conneciton ptr... using SmartPtr pattern
-             *            used elsewhere in stroika - like Stream, Socket::Ptr etc...
-             *      \note Connection doesn't CURRENTLY support HTTP keepalives (https://stroika.atlassian.net/browse/STK-637)
              *      \note @todo https://stroika.atlassian.net/browse/STK-638 - WebServer ConnectionManager (and Connection) handling restructure - so while reading headers, only one thread used
+             *
+             *  This tends to get used internally by the ConnectionManager, but you can use it directly. For example:
+             *
+             *  \par Example Usage
+             *      \code
+             *          Connection conn{acceptedSocketConnection,
+             *                       Sequence<Interceptor>{
+             *                          Interceptor (
+             *                              [=](Message* m) {
+             *                                  Response* response = m->PeekResponse ();
+             *                                  response->AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-ssdp-server-demo");
+             *                                  response->write (Stroika::Frameworks::UPnP::Serialize (d, dd));
+             *                                  response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_XML);
+             *                               })}};
+             *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
+             *          conn.ReadAndProcessMessage ();
+             *      \endcode
              */
             class Connection {
             public:
+                /**
+                 */
                 Connection ()                  = delete;
                 Connection (const Connection&) = delete;
                 explicit Connection (const ConnectionOrientedSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{});
@@ -51,10 +67,12 @@ namespace Stroika {
             public:
                 nonvirtual Connection& operator= (const Connection&) = delete;
 
-            public:
+            private:
                 // Must rethink this organization -but for now - call this once at start of connection to fill in details in
                 // the  Request object
-                nonvirtual void ReadHeaders ();
+                //
+                // Return false if 'silent exception' - like empty connection
+                static bool ReadHeaders_ (Message* msg);
 
             public:
                 // Cannot do here becuase request maybe already sent...
@@ -98,6 +116,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \note set Remaining::fMessages := 0 to prevent keep-alives.
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
+                 *      \endcode
                  */
                 nonvirtual void SetRemainingConnectionMessages (const Memory::Optional<Remaining>& remainingConnectionLimits);
 

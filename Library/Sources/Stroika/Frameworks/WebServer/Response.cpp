@@ -108,6 +108,11 @@ void Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
     fContentSize_       = size;
 }
 
+bool Response::IsContentLengthKnown () const
+{
+    return fContentSizePolicy_ != ContentSizePolicy::eNone;
+}
+
 void Response::SetContentType (const InternetMediaType& contentType)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

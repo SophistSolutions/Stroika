@@ -39,10 +39,12 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \nb: avoid noexcept in funciton<> declaration due to qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
                  */
                 Interceptor ()                   = delete;
                 Interceptor (const Interceptor&) = default;
                 Interceptor (Interceptor&&)      = default;
+                Interceptor (const function<void(Message*)>& handleMessage, const function<void(Message*, const exception_ptr& e)>& handleFault = nullptr);
 
             protected:
                 Interceptor (const shared_ptr<_IRep>& rep);
@@ -79,6 +81,9 @@ namespace Stroika {
 
             private:
                 shared_ptr<_IRep> fRep_;
+
+            private:
+                class MyRep_;
 
             private:
                 friend bool operator== (const Interceptor& lhs, const Interceptor& rhs);
