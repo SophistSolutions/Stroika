@@ -39,9 +39,6 @@ using namespace Stroika::Frameworks::WebServer;
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
-#if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
-#endif
 Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : fInterceptorChain_{interceptorChain}
     , fSocket_ (s)
@@ -51,9 +48,6 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
     DbgTrace (L"Created connection for socket %s", Characters::ToString (s).c_str ());
 #endif
 }
-#if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
-#endif
 
 Connection::~Connection ()
 {
@@ -159,6 +153,9 @@ bool Connection::ReadAndProcessMessage ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"Connection::ReadAndProcessMessage");
 #endif
+#if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
+#endif
     {
         fSocketStream_ = SocketStream::New (fSocket_);
         fMessage_      = make_shared<Message> (
@@ -166,6 +163,9 @@ bool Connection::ReadAndProcessMessage ()
             move (Response (fSocket_, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
             fSocket_.GetPeerAddress ());
     }
+#if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
+    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
+#endif
 
     if (not ReadHeaders_ (fMessage_.get ())) {
         DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web browser hitting refresh button fast).");
