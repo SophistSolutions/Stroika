@@ -48,7 +48,7 @@ History
 		</li>
 		<li>String
 			<ul>
-				<li>StringBuilder supports assignemnt from String:</li>
+				<li>StringBuilder supports assignemnt from String</li>
 				<li>Fixed serious bug iwth String::FromISOLatin1 ()</li>
 				<li>refactor and add overload for String::FromISOLatin1/2</li>
 			</ul>
@@ -63,7 +63,7 @@ History
             of throw on common failure due to EOF</li>
 				<li>In keepalive handling - default on/off according to http 1.1, etc. And if known content
             length (if not force off).; support 'remaining' countdown - with remaining info captued by keep-alives header</li>
-				<li>Overload for Intercepttor CTOR taking lambdas (for simpler use - done in SSDP example).</li>
+				<li>Overload for Interceptor CTOR taking lambdas (for simpler use - done in SSDP example).</li>
 				<li>HTTP WebServer - Request object SetHTTPVersion impl; and renamed GetSpecialHeaders -> GetHeaders (); and in ToString () use GetEffectiveHeaders ()</li>
 				<li>Deprecated Connection::Close () (websever)</li>
 				<li>changed kDefault_AutomaticTCPDisconnectOnClose from 5 to 2 (since this happens not infrequently 
@@ -83,9 +83,9 @@ History
 			</ul>
 		</li>
 		<li>Improve and add regtests for Set<>::Where - esp docs</li>
+		<li>new Mapping<>::Where overload (hiding Iterable one - updating return type and overload for diff functions); and added related Mapping<>::WithKeys method</li>
 		<li>Cleanups for KeyValuePair&lt;&gt; - but incomplete</li>
 		<li>Support Socket::Ptr::ToString ()</li>
-		<li>new Mapping<>::Where overload (hiding Iterable one - updating return type and overload for diff functions); and added related Mapping<>::WithKeys method</li>
 		<li>Allow VirtualConstant<>::operator-> and document it a bit more</li>
 		<li>Socket::Ptr Compare/Equals - use shared_ptr compare instead of compare on NativeSocket</li>
 		<li>Add default value for USE_TEST_BASENAME to ScriptsLib/RunPerformanceRegressionTests.sh</li>
