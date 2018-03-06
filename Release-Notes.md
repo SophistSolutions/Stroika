@@ -103,7 +103,8 @@ History
 				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
 				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
-				<li>gcc with --sanitize address,undefined, and debug/release builds (tried but not working threadsanitizer) on tests</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>ONE INNCUOUS REGTEST REPORT ON WINDOWS - PERFORMANCE - IGNORED</li>
 				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
 				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
 			</ul>
