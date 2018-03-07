@@ -6,6 +6,8 @@
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 
+#include "../../WebServer/ClientErrorException.h"
+
 #include "Basic.h"
 
 #include "VariantValue.h"
@@ -98,7 +100,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
         return VariantValue{result};
     }
     else {
-        Execution::Throw (Execution::StringException (
+        Execution::Throw (ClientErrorException (
             String_Constant{L"Expected GET with query-string arguments or PUT or POST"} +
             (fromInMessage ? (L" from " + *fromInMessage) : L"")));
     }

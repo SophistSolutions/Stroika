@@ -36,7 +36,7 @@ namespace Stroika {
             namespace Server {
                 namespace VariantValue {
 
-/*
+                    /*
                     ********************************************************************************
                     **************** WebService::Server::VariantValue::mkRequestHandler ************
                     ********************************************************************************

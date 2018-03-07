@@ -11,6 +11,8 @@
 #include "../../../Foundation/DataExchange/Variant/JSON/Reader.h"
 #include "../../../Foundation/DataExchange/Variant/JSON/Writer.h"
 
+#include "../../WebServer/ClientErrorException.h"
+
 #include "Basic.h"
 
 using namespace Stroika::Foundation;
@@ -35,8 +37,8 @@ void WebService::Server::ExpectedMethod (const Request* request, const Iterable<
     Set<String> lcMethods = methods.Select<String> ([](const String& s) { return s.ToLowerCase (); });
     if (not methods.Contains (method.ToLowerCase ())) {
         Execution::Throw (
-            Execution::StringException (
-                Characters::Format (L"Got HTTP method %s%s, but expected one from %s", Characters::ToString (method).c_str (), (fromInMessage ? (L" from " + *fromInMessage) : L"").c_str (), Characters::ToString (methods).c_str ())));
+            ClientErrorException (
+                Characters::Format (L"Got HTTP method %s%s, but expected one from %s", Characters::ToString (method).c_str (), (fromInMessage ? (L" from " + *fromInMessage).c_str () : L""), Characters::ToString (methods).c_str ())));
     }
 }
 
