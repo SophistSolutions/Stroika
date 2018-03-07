@@ -753,7 +753,7 @@ namespace {
                         stream.Write (buf, buf + nBytesRead);
                     }
                     if (write2StdErrCache) {
-                        for (size_t i = 0; i < nBytes; ++i) {
+                        for (size_t i = 0; i < nBytesRead; ++i) {
                             *trailingStderrBufNextByte2WriteAt = buf[i];
                             trailingStderrBufNWritten++;
                             if (trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf)) {
