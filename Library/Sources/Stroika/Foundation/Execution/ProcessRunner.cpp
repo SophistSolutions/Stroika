@@ -229,7 +229,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     Characters::StringBuilder sb;
     sb += errorMessage;
     sb += L" '" + cmdLine + L"' failed";
-	{
+    {
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
             extraMsg += Characters::Format (L"exit status %d", int(*wExitStatus));
@@ -260,8 +260,8 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
-	sb += L" '" + cmdLine + L"' failed";
-	{
+    sb += L" '" + cmdLine + L"' failed";
+    {
         Characters::StringBuilder extraMsg;
         if (err) {
             extraMsg += Characters::Format (L"error: %d", int(*err));
