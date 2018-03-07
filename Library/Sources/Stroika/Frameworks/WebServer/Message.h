@@ -55,6 +55,10 @@ namespace Stroika {
                 nonvirtual Request* PeekRequest ();
 
             public:
+                nonvirtual const Request& GetRequestReference () const;
+                nonvirtual Request& GetRequestReference ();
+
+            public:
                 /**
                  *  \ensure NotNull
                  */

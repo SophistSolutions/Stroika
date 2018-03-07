@@ -41,6 +41,16 @@ namespace Stroika {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
                 return &fRequest_;
             }
+            inline const Request& Message::GetRequestReference () const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+                return fRequest_;
+            }
+            inline Request& Message::GetRequestReference ()
+            {
+                lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
+                return fRequest_;
+            }
             inline const Response* Message::PeekResponse () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this}; // inadequate testing - but best we can do with this API
