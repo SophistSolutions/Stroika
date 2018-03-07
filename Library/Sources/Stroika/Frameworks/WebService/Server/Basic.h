@@ -43,8 +43,16 @@ namespace Stroika {
 
                 /**
                  */
-                void ExpectedMethod (const Request* request, const Iterable<String>& methods, const Optional<String>& fromInMessage);
-                void ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription);
+                void                                                                                ExpectedMethod (const Request& request, const Iterable<String>& methods, const Optional<String>& fromInMessage);
+                void                                                                                ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription);
+                [[deprecated ("use const Request& overload = since Stroika v2.0a231")]] inline void ExpectedMethod (const Request* request, const Iterable<String>& methods, const Optional<String>& fromInMessage)
+                {
+                    ExpectedMethod (*request, methods, fromInMessage);
+                }
+                [[deprecated ("use const Request& overload = since Stroika v2.0a231")]] inline void ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription)
+                {
+                    ExpectedMethod (*request, wsMethodDescription);
+                }
 
                 /**
                  */

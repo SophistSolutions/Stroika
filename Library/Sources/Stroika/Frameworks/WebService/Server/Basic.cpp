@@ -26,24 +26,33 @@ using Characters::String_Constant;
 using Characters::StringBuilder;
 using WebServer::ClientErrorException;
 
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+
 /*
  ********************************************************************************
  ************************ WebService::Server::ExpectedMethod ********************
  ********************************************************************************
  */
-void WebService::Server::ExpectedMethod (const Request* request, const Iterable<String>& methods, const Optional<String>& fromInMessage)
+void WebService::Server::ExpectedMethod (const Request& request, const Iterable<String>& methods, const Optional<String>& fromInMessage)
 {
-    String method{request->GetHTTPMethod ()};
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+	Debug::TraceContextBumper ctx{ Stroika_Foundation_Debug_OptionalizeTraceArgs (L"WebService::Server::ExpectedMethod", L"request=%s, methods=%s, fromInMessage=%s", Characters::ToString (request).c_str (), Characters::ToString (methods).c_str (), Characters::ToString (fromInMessage).c_str ()) };
+#endif
+	String method{request.GetHTTPMethod ()};
     // @todo rewrite to do better case insensitive compare - fix with https://stroika.atlassian.net/browse/STK-642 - https://stroika.atlassian.net/browse/STK-642
-    Set<String> lcMethods = methods.Select<String> ([](const String& s) { return s.ToLowerCase (); });
-    if (not methods.Contains (method.ToLowerCase ())) {
+    if (not methods.Select<String> ([](const String& s) { return s.ToLowerCase (); }).Contains (method.ToLowerCase ())) {
         Execution::Throw (
             ClientErrorException (
-                Characters::Format (L"Got HTTP method %s%s, but expected one from %s", Characters::ToString (method).c_str (), (fromInMessage ? (L" from " + *fromInMessage).c_str () : L""), Characters::ToString (methods).c_str ())));
-    }
+				Characters::Format (L"Received HTTP method '%s'%s, but expected one from %s", Characters::ToString (method).c_str (), (fromInMessage ? (L" from '" + *fromInMessage + L"'").c_str () : L""), Characters::ToString (methods).c_str ())
+			)
+		);
+	}
 }
 
-void WebService::Server::ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription)
+void WebService::Server::ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription)
 {
     ExpectedMethod (request, wsMethodDescription.fAllowedMethods, wsMethodDescription.fOperation);
 }
