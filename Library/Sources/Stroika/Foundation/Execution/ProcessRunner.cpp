@@ -205,8 +205,8 @@ namespace {
  ********************************************************************************
  */
 #if qPlatform_POSIX
-ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
-    : inherited (mkMsg_ (cmdLine, errorMessage, wExitStatus, wTermSig, wStopSig))
+ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
+    : inherited (mkMsg_ (cmdLine, errorMessage, stderrSubset, wExitStatus, wTermSig, wStopSig))
     , fCmdLine_ (cmdLine)
     , fErrorMessage_ (errorMessage)
     , fWExitStatus_ (wExitStatus)
@@ -215,8 +215,8 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
 {
 }
 #elif qPlatform_Windows
-ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err)
-    : inherited (mkMsg_ (cmdLine, errorMessage, err))
+ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<DWORD>& err)
+    : inherited (mkMsg_ (cmdLine, errorMessage, stderrSubset, err))
     , fCmdLine_ (cmdLine)
     , fErrorMessage_ (errorMessage)
     , fErr_ (err)
@@ -224,40 +224,46 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
 }
 #endif
 #if qPlatform_POSIX
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
+String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
 {
     Characters::StringBuilder sb;
-    sb += errorMessage;
-    {
+	sb += errorMessage;
+	sb += L" '" + cmdLine + L"' ";
+	sb += L" failed: ";
+	{
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
-            extraMsg += Characters::Format (L"exit status: %d", int(*wExitStatus));
+            extraMsg += Characters::Format (L"exit status %d", int(*wExitStatus));
         }
         if (wTermSig) {
             if (not extraMsg.empty ()) {
                 extraMsg += L", ";
             }
-            extraMsg += Characters::Format (L"terminated by signal: %d", int(*wTermSig));
+            extraMsg += Characters::Format (L"terminated by signal %d", int(*wTermSig));
         }
         if (wStopSig) {
             if (not extraMsg.empty ()) {
                 extraMsg += L", ";
             }
-            extraMsg += Characters::Format (L"stopped by signal: %d", int(*wStopSig));
+            extraMsg += Characters::Format (L"stopped by signal %d", int(*wStopSig));
         }
         if (not extraMsg.empty ()) {
-            sb += L": " + extraMsg.str ();
+            sb += L": " + D.str ();
         }
     }
-    sb += L" while executing '" + cmdLine + L"'";
+	if (stderrSubset) {
+		sb += L"; " + stderrSubset->LimitLength (100);
+	}
     return sb.str ();
 }
 #elif qPlatform_Windows
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err)
+String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<DWORD>& err)
 {
     Characters::StringBuilder sb;
-    sb += errorMessage;
-    {
+	sb += errorMessage;
+	sb += L" '" + cmdLine + L"' ";
+	sb += L" failed: ";
+	{
         Characters::StringBuilder extraMsg;
         if (err) {
             extraMsg += Characters::Format (L"error: %d", int(*err));
@@ -266,8 +272,10 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
             sb += L": " + extraMsg.str ();
         }
     }
-    sb += L" while executing '" + cmdLine + L"'";
-    return sb.str ();
+	if (stderrSubset) {
+		sb += L"; " + stderrSubset->LimitLength (100);
+	}
+	return sb.str ();
 }
 #endif
 
@@ -535,7 +543,12 @@ namespace {
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
-        /*
+		// track the last few bytes of stderr to include in possible exception messages
+		char trailingStderrBuf[256];
+		char* trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
+		size_t trailingStderrBufNWritten{};
+
+		/*
          *  NOTE:
          *      From http://linux.die.net/man/2/pipe
          *          "The array pipefd is used to return two file descriptors referring to the ends
@@ -729,7 +742,7 @@ namespace {
             ThrowErrNoIfNegative (::fcntl (useSTDERR, F_SETFL, fcntl (useSTDERR, F_GETFL, 0) | O_NONBLOCK));
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
-            auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
+            auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
                 Byte buf[10 * 1024];
                 int  nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -739,6 +752,18 @@ namespace {
                     if (stream != nullptr) {
                         stream.Write (buf, buf + nBytesRead);
                     }
+					if (write2StdErrCache) {
+						for (size_t i = 0; i < nBytes; ++i) {
+							*trailingStderrBufNextByte2WriteAt = buf[i];
+							trailingStderrBufNWritten++;
+							if (trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf)) {
+								trailingStderrBufNextByte2WriteAt++;
+							}
+							else {
+								trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
+							}
+						}
+					}
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     if (errno == EAGAIN) {
                         // If we get lots of EAGAINS, just skip logging them to avoid spamming the tracelog
@@ -769,18 +794,18 @@ namespace {
                     *maybeMoreData = (nBytesRead > 0) or (nBytesRead < 0 and errno == EINTR);
                 }
             };
-            auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream) {
+            auto readSoNotBlocking = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool write2StdErrCache) {
                 bool maybeMoreData = true;
                 while (maybeMoreData) {
-                    readALittleFromProcess (fd, stream, nullptr, &maybeMoreData);
+                    readALittleFromProcess (fd, stream, write2StdErrCache, nullptr, &maybeMoreData);
                 }
             };
-            auto readTilEOF = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream) {
+            auto readTilEOF = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool write2StdErrCache) {
                 Execution::WaitForIOReady waiter{fd};
                 bool                      eof = false;
                 while (not eof) {
                     waiter.WaitQuietly (1);
-                    readALittleFromProcess (fd, stream, &eof);
+                    readALittleFromProcess (fd, stream, write2StdErrCache, &eof);
                 }
             };
 
@@ -799,8 +824,8 @@ namespace {
                         else {
                             for (const Byte* i = p; i != e;) {
                                 // read stuff from stdout, stderr while pushing to stdin, so that we dont get the PIPE buf too full
-                                readSoNotBlocking (useSTDOUT, out);
-                                readSoNotBlocking (useSTDERR, err);
+                                readSoNotBlocking (useSTDOUT, out, false);
+                                readSoNotBlocking (useSTDERR, err, true);
                                 int bytesWritten = ThrowErrNoIfNegative (
                                     Handle_ErrNoResultInterruption ([useSTDIN, i, e]() {
                                         int tmp = ::write (useSTDIN, i, e - i);
@@ -825,8 +850,8 @@ namespace {
                     }
                     else {
                         // nothing on input stream, so pull from stdout, stderr, and wait a little to avoid busy-waiting
-                        readSoNotBlocking (useSTDOUT, out);
-                        readSoNotBlocking (useSTDERR, err);
+                        readSoNotBlocking (useSTDOUT, out, false);
+                        readSoNotBlocking (useSTDERR, err, true);
                         Execution::Sleep (100ms);
                     }
                 }
@@ -834,8 +859,8 @@ namespace {
             // in case child process reads from its STDIN to EOF
             CLOSE_ (useSTDIN);
 
-            readTilEOF (useSTDOUT, out);
-            readTilEOF (useSTDERR, err);
+            readTilEOF (useSTDOUT, out, false);
+            readTilEOF (useSTDERR, err, true);
 
             // not sure we need?
             int status = 0;
@@ -851,9 +876,15 @@ namespace {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
-                    Throw (ProcessRunner::Exception (
+					StringBuilder stderrMsg;
+					if (trailingStderrBufNWritten > NEltsOf (trailingStderrBuf)) {
+						stderrMsg += String::FromISOLatin1 (trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf));
+					}
+					stderrMsg += String::FromISOLatin1 (begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt);
+					Throw (ProcessRunner::Exception (
                         effectiveCmdLine,
-                        L"sub-process failed",
+                        L"Spawned program",
+						{},
                         WIFEXITED (status) ? WEXITSTATUS (status) : Optional<uint8_t>{},
                         WIFSIGNALED (status) ? WTERMSIG (status) : Optional<uint8_t>{},
                         WIFSTOPPED (status) ? WSTOPSIG (status) : Optional<uint8_t>{}));
@@ -1115,7 +1146,7 @@ namespace {
 
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
-                        Throw (ProcessRunner::Exception (effectiveCmdLine, L"sub-process failed", processExitCode));
+						Throw (ProcessRunner::Exception (effectiveCmdLine, L"Spawned program", {}, processExitCode));
                     }
                 }
                 else {

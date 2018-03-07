@@ -274,18 +274,18 @@ namespace Stroika {
                 using inherited = StringException;
 
             public:
-/**
+                /**
                  */
 #if qPlatform_POSIX
-                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wTermSig = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wStopSig = Memory::Optional<uint8_t>{});
+                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset = {}, const Memory::Optional<uint8_t>& wExitStatus = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wTermSig = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wStopSig = Memory::Optional<uint8_t>{});
 #elif qPlatform_Windows
-                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err = Memory::Optional<DWORD>{});
+                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset = {}, const Memory::Optional<DWORD>& err = Memory::Optional<DWORD>{});
 #endif
             private:
 #if qPlatform_POSIX
-                static String mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig);
+                static String mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig);
 #elif qPlatform_Windows
-                static String           mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<DWORD>& err);
+                static String           mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<DWORD>& err);
 #endif
             private:
                 String fCmdLine_;
