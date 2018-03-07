@@ -248,7 +248,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
             extraMsg += Characters::Format (L"stopped by signal %d", int(*wStopSig));
         }
         if (not extraMsg.empty ()) {
-            sb += L": " + D.str ();
+            sb += L": " + extraMsg.str ();
         }
     }
     if (stderrSubset) {
