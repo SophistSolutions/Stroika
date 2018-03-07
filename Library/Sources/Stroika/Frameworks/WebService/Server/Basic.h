@@ -36,11 +36,12 @@ namespace Stroika {
                 using Containers::Sequence;
                 using Containers::Set;
                 using Memory::Optional;
+                using Traversal::Iterable;
 
                 using WebServer::Request;
                 using WebServer::Response;
 
-                void ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage);
+                void ExpectedMethod (const Request* request, const Iterable<String>& methods, const Optional<String>& fromInMessage);
                 void ExpectedMethod (const Request* request, const WebServiceMethodDescription& wsMethodDescription);
 
                 struct DocsOptions {

@@ -3,6 +3,7 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include "../../../Foundation/Characters/Format.h"
 #include "../../../Foundation/Characters/StringBuilder.h"
 #include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Characters/ToString.h"
@@ -24,16 +25,18 @@ using Characters::StringBuilder;
 
 /*
  ********************************************************************************
- **************************** WebService::Server::ExpectedMethod ****************
+ ************************ WebService::Server::ExpectedMethod ********************
  ********************************************************************************
  */
-void WebService::Server::ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage)
+void WebService::Server::ExpectedMethod (const Request* request, const Iterable<String>& methods, const Optional<String>& fromInMessage)
 {
     String method{request->GetHTTPMethod ()};
-    if (not methods.Contains (method)) {
-        Execution::Throw (Execution::StringException (
-            String_Constant{L"Expected HTTP method "} + Characters::ToString (methods) +
-            (fromInMessage ? (L" from " + *fromInMessage) : L"")));
+    // @todo rewrite to do better case insensitive compare - fix with https://stroika.atlassian.net/browse/STK-642 - https://stroika.atlassian.net/browse/STK-642
+    Set<String> lcMethods = methods.Select<String> ([](const String& s) { return s.ToLowerCase (); });
+    if (not methods.Contains (method.ToLowerCase ())) {
+        Execution::Throw (
+            Execution::StringException (
+                Characters::Format (L"Got HTTP method %s%s, but expected one from %s", Characters::ToString (method).c_str (), (fromInMessage ? (L" from " + *fromInMessage) : L"").c_str (), Characters::ToString (methods).c_str ())));
     }
 }
 
