@@ -24,6 +24,7 @@ using namespace Stroika::Frameworks::WebService;
 
 using Characters::String_Constant;
 using Characters::StringBuilder;
+using WebServer::ClientErrorException;
 
 /*
  ********************************************************************************
