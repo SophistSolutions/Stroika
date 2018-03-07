@@ -114,7 +114,7 @@ namespace Stroika {
                     {
                         return [=](WebServer::Message* m) {
                             using namespace Containers;
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
                             Mapping<String, VariantValue> allArgsMap = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
                             Sequence<VariantValue> vvs;
@@ -136,7 +136,7 @@ namespace Stroika {
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS)>& f)
                     {
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
                         };
                     }
@@ -212,7 +212,7 @@ namespace Stroika {
                     {
                         using namespace Containers;
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             VariantValue allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
                             CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_COMBINED> (allArgsAsVariantValue));
                         };
@@ -223,14 +223,14 @@ namespace Stroika {
                         using namespace Containers;
                         Require (paramNames.size () == 1);
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
                             Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
                             Sequence<VariantValue>        vvs;
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
-                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
+                            CallFAndWriteConvertedResponse (*m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
                         };
                     }
                     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
@@ -239,7 +239,7 @@ namespace Stroika {
                         using namespace Containers;
                         Require (paramNames.size () == 2);
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
                             Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
                             Sequence<VariantValue>        vvs;
@@ -255,7 +255,7 @@ namespace Stroika {
                         using namespace Containers;
                         Require (paramNames.size () == 3);
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
                             Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
                             Sequence<VariantValue>        vvs;
@@ -271,7 +271,7 @@ namespace Stroika {
                         using namespace Containers;
                         Require (paramNames.size () == 4);
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             VariantValue                  allArgsAsVariantValue = GetWebServiceArgsAsVariantValue (m->PeekRequest (), {});
                             Mapping<String, VariantValue> allArgsMap            = allArgsAsVariantValue.As<Mapping<String, VariantValue>> ();
                             Sequence<VariantValue>        vvs;
@@ -287,7 +287,7 @@ namespace Stroika {
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS)>& f)
                     {
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (f (objVarMapper.ToObject<IN_ARGS> (GetWebServiceArgsAsVariantValue (m->PeekRequest (), {})))));
                         };
                     }
@@ -296,7 +296,7 @@ namespace Stroika {
                     WebServer::RequestHandler mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (void)>& f)
                     {
                         return [=](WebServer::Message* m) {
-                            ExpectedMethod (m->PeekRequest (), webServiceDescription);
+                            ExpectedMethod (m->GetRequestReference (), webServiceDescription);
                             CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f);
                         };
                     }

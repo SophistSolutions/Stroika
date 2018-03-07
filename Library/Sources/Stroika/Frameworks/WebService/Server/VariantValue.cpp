@@ -161,7 +161,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
 WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<Memory::BLOB (WebServer::Message* m)>& f)
 {
     return [=](WebServer::Message* m) {
-        ExpectedMethod (*m->PeekRequest (), webServiceDescription);
+        ExpectedMethod (m->GetRequestReference (), webServiceDescription);
         if (webServiceDescription.fResponseType) {
             m->PeekResponse ()->SetContentType (*webServiceDescription.fResponseType);
         }
