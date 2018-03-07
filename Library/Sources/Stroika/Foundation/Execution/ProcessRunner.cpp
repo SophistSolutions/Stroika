@@ -876,6 +876,7 @@ namespace {
                 if (processResult == nullptr) {
                     StringBuilder stderrMsg;
                     if (trailingStderrBufNWritten > NEltsOf (trailingStderrBuf)) {
+                        stderrMsg += L"...";
                         stderrMsg += String::FromISOLatin1 (trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf));
                     }
                     stderrMsg += String::FromISOLatin1 (begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt);
