@@ -228,9 +228,8 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
-    sb += L" '" + cmdLine + L"' ";
-    sb += L" failed: ";
-    {
+    sb += L" '" + cmdLine + L"' failed";
+	{
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
             extraMsg += Characters::Format (L"exit status %d", int(*wExitStatus));
@@ -261,9 +260,8 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
-    sb += L" '" + cmdLine + L"' ";
-    sb += L" failed: ";
-    {
+	sb += L" '" + cmdLine + L"' failed";
+	{
         Characters::StringBuilder extraMsg;
         if (err) {
             extraMsg += Characters::Format (L"error: %d", int(*err));
@@ -884,7 +882,7 @@ namespace {
                     Throw (ProcessRunner::Exception (
                         effectiveCmdLine,
                         L"Spawned program",
-						stderrMsg.str (),
+                        stderrMsg.str (),
                         WIFEXITED (status) ? WEXITSTATUS (status) : Optional<uint8_t>{},
                         WIFSIGNALED (status) ? WTERMSIG (status) : Optional<uint8_t>{},
                         WIFSTOPPED (status) ? WSTOPSIG (status) : Optional<uint8_t>{}));
