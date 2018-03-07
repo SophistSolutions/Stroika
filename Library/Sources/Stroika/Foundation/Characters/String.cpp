@@ -364,7 +364,7 @@ String String::FromISOLatin1 (const char* start, const char* end)
     const char*                       e = end;
     Memory::SmallStackBuffer<wchar_t> buf{static_cast<size_t> (e - s)};
     wchar_t*                          pOut = buf.begin ();
-    for (const char* i = s; i != e; ++i, pOut) {
+    for (const char* i = s; i != e; ++i, pOut++) {
         *pOut = *i;
     }
     return String{buf.begin (), pOut};
