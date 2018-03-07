@@ -227,10 +227,10 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
 String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
 {
     Characters::StringBuilder sb;
-	sb += errorMessage;
-	sb += L" '" + cmdLine + L"' ";
-	sb += L" failed: ";
-	{
+    sb += errorMessage;
+    sb += L" '" + cmdLine + L"' ";
+    sb += L" failed: ";
+    {
         Characters::StringBuilder extraMsg;
         if (wExitStatus) {
             extraMsg += Characters::Format (L"exit status %d", int(*wExitStatus));
@@ -251,19 +251,19 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
             sb += L": " + D.str ();
         }
     }
-	if (stderrSubset) {
-		sb += L"; " + stderrSubset->LimitLength (100);
-	}
+    if (stderrSubset) {
+        sb += L"; " + stderrSubset->LimitLength (100);
+    }
     return sb.str ();
 }
 #elif qPlatform_Windows
 String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<DWORD>& err)
 {
     Characters::StringBuilder sb;
-	sb += errorMessage;
-	sb += L" '" + cmdLine + L"' ";
-	sb += L" failed: ";
-	{
+    sb += errorMessage;
+    sb += L" '" + cmdLine + L"' ";
+    sb += L" failed: ";
+    {
         Characters::StringBuilder extraMsg;
         if (err) {
             extraMsg += Characters::Format (L"error: %d", int(*err));
@@ -272,10 +272,10 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
             sb += L": " + extraMsg.str ();
         }
     }
-	if (stderrSubset) {
-		sb += L"; " + stderrSubset->LimitLength (100);
-	}
-	return sb.str ();
+    if (stderrSubset) {
+        sb += L"; " + stderrSubset->LimitLength (100);
+    }
+    return sb.str ();
 }
 #endif
 
@@ -543,12 +543,12 @@ namespace {
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
-		// track the last few bytes of stderr to include in possible exception messages
-		char trailingStderrBuf[256];
-		char* trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
-		size_t trailingStderrBufNWritten{};
+        // track the last few bytes of stderr to include in possible exception messages
+        char   trailingStderrBuf[256];
+        char*  trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
+        size_t trailingStderrBufNWritten{};
 
-		/*
+        /*
          *  NOTE:
          *      From http://linux.die.net/man/2/pipe
          *          "The array pipefd is used to return two file descriptors referring to the ends
@@ -752,18 +752,18 @@ namespace {
                     if (stream != nullptr) {
                         stream.Write (buf, buf + nBytesRead);
                     }
-					if (write2StdErrCache) {
-						for (size_t i = 0; i < nBytes; ++i) {
-							*trailingStderrBufNextByte2WriteAt = buf[i];
-							trailingStderrBufNWritten++;
-							if (trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf)) {
-								trailingStderrBufNextByte2WriteAt++;
-							}
-							else {
-								trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
-							}
-						}
-					}
+                    if (write2StdErrCache) {
+                        for (size_t i = 0; i < nBytes; ++i) {
+                            *trailingStderrBufNextByte2WriteAt = buf[i];
+                            trailingStderrBufNWritten++;
+                            if (trailingStderrBufNextByte2WriteAt < end (trailingStderrBuf)) {
+                                trailingStderrBufNextByte2WriteAt++;
+                            }
+                            else {
+                                trailingStderrBufNextByte2WriteAt = begin (trailingStderrBuf);
+                            }
+                        }
+                    }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     if (errno == EAGAIN) {
                         // If we get lots of EAGAINS, just skip logging them to avoid spamming the tracelog
@@ -876,15 +876,15 @@ namespace {
                 // @todo fix this message
                 DbgTrace ("childPID=%d, result=%d, status=%d, WIFEXITED=%d, WEXITSTATUS=%d, WIFSIGNALED=%d", childPID, result, status, WIFEXITED (status), WEXITSTATUS (status), WIFSIGNALED (status));
                 if (processResult == nullptr) {
-					StringBuilder stderrMsg;
-					if (trailingStderrBufNWritten > NEltsOf (trailingStderrBuf)) {
-						stderrMsg += String::FromISOLatin1 (trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf));
-					}
-					stderrMsg += String::FromISOLatin1 (begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt);
-					Throw (ProcessRunner::Exception (
+                    StringBuilder stderrMsg;
+                    if (trailingStderrBufNWritten > NEltsOf (trailingStderrBuf)) {
+                        stderrMsg += String::FromISOLatin1 (trailingStderrBufNextByte2WriteAt, end (trailingStderrBuf));
+                    }
+                    stderrMsg += String::FromISOLatin1 (begin (trailingStderrBuf), trailingStderrBufNextByte2WriteAt);
+                    Throw (ProcessRunner::Exception (
                         effectiveCmdLine,
                         L"Spawned program",
-						{},
+						stderrMsg.str (),
                         WIFEXITED (status) ? WEXITSTATUS (status) : Optional<uint8_t>{},
                         WIFSIGNALED (status) ? WTERMSIG (status) : Optional<uint8_t>{},
                         WIFSTOPPED (status) ? WSTOPSIG (status) : Optional<uint8_t>{}));
@@ -1146,7 +1146,7 @@ namespace {
 
                 if (processResult == nullptr) {
                     if (processExitCode != 0) {
-						Throw (ProcessRunner::Exception (effectiveCmdLine, L"Spawned program", {}, processExitCode));
+                        Throw (ProcessRunner::Exception (effectiveCmdLine, L"Spawned program", {}, processExitCode));
                     }
                 }
                 else {
