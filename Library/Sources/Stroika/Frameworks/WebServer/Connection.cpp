@@ -52,12 +52,14 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
 Connection::~Connection ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (*fMessage_).c_str ());
+    DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
 #endif
-    if (fMessage_->PeekResponse ()->GetState () != Response::State::eCompleted) {
-        IgnoreExceptionsForCall (fMessage_->PeekResponse ()->Abort ());
+    if (fMessage_ != nullptr) {
+        if (fMessage_->PeekResponse ()->GetState () != Response::State::eCompleted) {
+            IgnoreExceptionsForCall (fMessage_->PeekResponse ()->Abort ());
+        }
+        Require (fMessage_->PeekResponse ()->GetState () == Response::State::eCompleted);
     }
-    Require (fMessage_->PeekResponse ()->GetState () == Response::State::eCompleted);
     /*
      *  When the connection is completed, make sure the socket is closed so that the calling client knows
      *  as quickly as possible. Probably not generally necessary since when the last reference to the socket
