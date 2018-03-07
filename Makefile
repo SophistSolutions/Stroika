@@ -337,16 +337,15 @@ UNAME_DASH_O_=$(shell uname -o 2>/dev/null || true)
 
 default-configurations:
 	@ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Making default configurations:"
-	@###TMPHACK DUE TO ISSUE WITH BOOST BEING BROKEN WITH LATEST VS2k17 - https://stroika.atlassian.net/browse/STK-643
 	@export MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1));\
 	if [ "$(UNAME_DASH_O_)" = "Cygwin" ] ; then\
-		./configure Debug-U-32 --boost no --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Debug-U-64 --boost no --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-DbgMemLeaks-U-32 --boost no --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-32 --boost no --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-Logging-U-64 --boost no --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-U-32 --boost no --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
-		./configure Release-U-64 --boost no --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-32 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Debug-U-64 --apply-default-debug-flags --trace2file disable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-DbgMemLeaks-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-32 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-Logging-U-64 --apply-default-release-flags --trace2file enable $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-32 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
+		./configure Release-U-64 --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
 	else\
 		./configure Debug --apply-default-debug-flags $(DEFAULT_CONFIGURATION_ARGS);\
 		./configure Release --apply-default-release-flags $(DEFAULT_CONFIGURATION_ARGS);\
