@@ -76,7 +76,7 @@ namespace Stroika {
 
                         namespace V4 {
 
-/**
+                            /**
                          * The IPv4 packet header
                          *
                          * @see https://tools.ietf.org/html/rfc760
