@@ -622,6 +622,16 @@ namespace Stroika {
                  *          VerifyTestResult (c.Select<String> ([] (int i) { return Characters::Format (L"%d", i); }).SequnceEquals (Iterable<String> { L"3", L"4", L"7" }));
                  *      \endcode
                  *
+                 *  \par Example Usage
+                 *      \code
+                 *          void ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage)
+                 *          {
+                 *              String method{request->GetHTTPMethod ()};
+                 *              Set<String> lcMethods = methods.Select<String> ([](const String& s) { return s.ToLowerCase ();  });
+                 *              if (not methods.Contains (method.ToLowerCase ())) {
+                 *                  ...
+                 *      \endcode
+                 *
                  *      @todo provide overload that is more terse, where instead of specifing funciton, you specify ptr-to-member or some such?
                  */
                 template <typename T1, typename RESULT = T1>
