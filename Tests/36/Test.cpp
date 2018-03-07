@@ -137,6 +137,19 @@ namespace {
     }
 }
 
+void RegressionTes7_FaledRun_ ()
+{
+    Debug::TraceContextBumper ctx{L"RegressionTes7_FaledRun_"};
+    try {
+        ProcessRunner pr (L"mount /fasdkfjasdfjasdkfjasdklfjasldkfjasdfkj /dadsf/a/sdf/asdf//");
+        pr.Run ();
+        VerifyTestResult (false);
+    }
+    catch (...) {
+        DbgTrace (L"got failure msg: %s", Characters::ToString (current_exception ()).c_str ());
+    }
+}
+
 namespace {
 
     void DoRegressionTests_ ()
@@ -154,6 +167,7 @@ namespace {
         RegressionTest4_DocSample_ ();
         LargeDataSentThroughPipe_Test5_::DoTests ();
         LargeDataSentThroughPipeBackground_Test6_::DoTests ();
+        RegressionTes7_FaledRun_ ();
     }
 }
 
