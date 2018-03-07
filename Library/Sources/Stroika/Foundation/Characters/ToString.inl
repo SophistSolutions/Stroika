@@ -138,6 +138,11 @@ namespace Stroika {
                 {
                     return Float2String (t);
                 }
+                template <typename T>
+                inline String ToString_ (const shared_ptr<T>& pt)
+                {
+                    return (pt == nullptr) ? L"nullptr" : ToString (*pt);
+                }
             }
 
             template <typename T>
