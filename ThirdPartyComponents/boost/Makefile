@@ -275,6 +275,7 @@ ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
+	@cp project-config.jam project-config.jam.ORIG
 ifeq ($(shell uname -s),Darwin)
 	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam
 else
