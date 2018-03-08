@@ -18,8 +18,6 @@
  *
  * TODO:
  *
- *      @todo   rough, untested draft
- *
  */
 
 namespace Stroika {
@@ -28,8 +26,6 @@ namespace Stroika {
 
             /**
              *      \note   Based on https://en.wikipedia.org/wiki/PID_controller (Discrete implementation)
-             *
-             *  This code is internally synchronized (except that the caller must handle any synchonizaiton required by the measureFunction and the outputFunction).
              *
              *  This code captures the basic logic/implementation of a discrete PID loop. It can be run from an owner-controlled
              *  thread, or internally maintain its own thread to run the loop in (the easiest to use is the later).
@@ -46,6 +42,9 @@ namespace Stroika {
              *
              *  \note   To have code which preflights or cleanps up after the PIDLoop, create your own subclass of PIDLoop<>, and do your
              *          initialization in the CTOR, and cleanup in the DTOR, so leverage and respects the RAII.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+             *                              except that the caller must handle any synchonizaiton required by the measureFunction and the outputFunction
              *
              */
             template <typename CONTROL_VAR_TYPE = double>
@@ -72,11 +71,16 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Measure function produces PV = ProcessVariable, and SP - SetPoint is target value
+                 *  Measure function produces PV = ProcessVariable, and SP - SetPoint is target value.
+                 *
+                 *  For more about the PID parameters to provide (tuning) see https://en.wikipedia.org/wiki/PID_controller
+                 *
+                 *  For updatePeriod, this depends alot on the system you are using. THis is a measure of how much time beween updates to the 
+                 *  control variable.
                  */
                 PIDLoop ()               = delete;
                 PIDLoop (const PIDLoop&) = delete;
-                PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
+                PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
                 nonvirtual PIDLoop& operator= (const PIDLoop&) = delete;
 
             public:
@@ -101,6 +105,17 @@ namespace Stroika {
 
             public:
                 /**
+                 *  return P/I/D parameters
+                 */
+                nonvirtual ControlParams GetControlParams () const;
+
+            public:
+                /**
+                 */
+                nonvirtual Time::DurationSecondsType GetUpdatePeriod () const;
+
+            public:
+                /**
                  *  Typically this is what you would do, and recieve the Thread object, to cancel (Abort)
                  *
                  *  \req only called once.
@@ -119,7 +134,7 @@ namespace Stroika {
 
             private:
                 ControlParams               fPIDParams_;
-                Time::DurationSecondsType   fTimeDelta_; // time between loop iterations
+                Time::DurationSecondsType   fUpdatePeriod_; // time between loop iterations
                 function<ValueType ()>      fMeasureFunction_;
                 function<void(ValueType o)> fOutputFunction_;
                 struct UpdatableParams_ {

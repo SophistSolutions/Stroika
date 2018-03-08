@@ -57,9 +57,9 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename CONTROL_VAR_TYPE>
-            PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType timeDelta, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint)
+            PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint)
                 : fPIDParams_ (pidParams)
-                , fTimeDelta_ (timeDelta)
+                , fUpdatePeriod_ (updatePeriod)
                 , fMeasureFunction_ (measureFunction)
                 , fOutputFunction_ (outputFunction)
             {
@@ -87,6 +87,16 @@ namespace Stroika {
                 }
             }
             template <typename CONTROL_VAR_TYPE>
+            inline PIDLoop<CONTROL_VAR_TYPE>::GetControlParams () const->ControlParams
+            {
+                return fPIDParams_;
+            }
+            template <typename CONTROL_VAR_TYPE>
+            inline PIDLoop<CONTROL_VAR_TYPE>::GetUpdatePeriod () const->Time::DurationSecondsType
+            {
+                return fUpdatePeriod_;
+            }
+            template <typename CONTROL_VAR_TYPE>
             void PIDLoop<CONTROL_VAR_TYPE>::RunDirectly ()
             {
                 Time::DurationSecondsType nextRunAt = Time::GetTickCount ();
@@ -94,11 +104,11 @@ namespace Stroika {
                     SleepUntil (nextRunAt);
                     ValueType measuredValue = fMeasureFunction_ ();
                     ValueType error         = fUpdatableParams_->fSetPoint_ - measuredValue;
-                    fUpdatableParams_->fIntegral_ += error * fTimeDelta_;
-                    ValueType derivative           = (error - fUpdatableParams_->fPrevError) / fTimeDelta_;
+                    fUpdatableParams_->fIntegral_ += error * fUpdatePeriod_;
+                    ValueType derivative           = (error - fUpdatableParams_->fPrevError) / fUpdatePeriod_;
                     fUpdatableParams_->fPrevError_ = error;
                     fOutputFunction_ (fPIDParams_.P * error + fPIDParams_.I * fUpdatableParams_->fIntegral_ + fPIDParams_.D * derivative);
-                    nextRunAt += fTimeDelta_;
+                    nextRunAt += fUpdatePeriod_;
                 }
             }
             template <typename CONTROL_VAR_TYPE>
