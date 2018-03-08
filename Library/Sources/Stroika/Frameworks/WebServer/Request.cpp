@@ -94,7 +94,22 @@ Memory::BLOB Request::GetBody ()
             fBody_ = Memory::BLOB (begin (buf), end (buf));
         }
         else {
+            /*
+             *  @todo FIX - WRONG!!!! - MUST TO TRANSFER ENCODING IN THIS CASE OR NOTHING
+             *
+             *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
+             *      The rules for when a message-body is allowed in a message differ for requests and responses.
+             *
+             *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
+             *      or Transfer-Encoding header field in the request's message-headers/
+             *
+             *  For now - EMPTY is a better failure mode than reading eveythign and hanging...
+             */
+#if 1
+            fBody_ = Memory::BLOB{};
+#else
             fBody_ = fInputStream_.ReadAll ();
+#endif
         }
     }
     return *fBody_;
