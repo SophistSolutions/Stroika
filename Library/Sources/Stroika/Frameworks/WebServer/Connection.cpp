@@ -244,6 +244,16 @@ bool Connection::ReadAndProcessMessage ()
 
     if (thisMessageKeepAlive) {
         // be sure we advance the read pointer over the message body, lest we start reading part of the previous message as the next message
+
+        // @todo must fix this for support of Transfer-Encoding, but from:
+        //
+        /*
+         *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
+         *      The rules for when a message-body is allowed in a message differ for requests and responses.
+         *
+         *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
+         *      or Transfer-Encoding header field in the request's message-headers/
+         */
         if (GetRequest ().GetContentLength ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
@@ -251,6 +261,7 @@ bool Connection::ReadAndProcessMessage ()
             // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
             (void)fMessage_->GetRequestBody ();
         }
+#if 0
         else if (GetRequest ().GetHTTPMethod ().Equals (IO::Network::HTTP::Methods::kGet, Characters::CompareOptions::eCaseInsensitive)) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"This request should be closed but thats much less efficient, and chrome seems todo this - sure???; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
@@ -262,6 +273,7 @@ bool Connection::ReadAndProcessMessage ()
             DbgTrace (L"forced close connection because the request header lacked a Content-Length: REQ=%s", Characters::ToString (GetRequest ()).c_str ());
 #endif
         }
+#endif
     }
 
     // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
