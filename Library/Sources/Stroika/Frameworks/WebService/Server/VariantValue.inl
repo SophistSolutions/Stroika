@@ -230,7 +230,7 @@ namespace Stroika {
                             for (auto i : paramNames) {
                                 vvs += allArgsMap.LookupValue (i);
                             }
-                            CallFAndWriteConvertedResponse (*m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
+                            CallFAndWriteConvertedResponse (m->PeekResponse (), webServiceDescription, objVarMapper, f, objVarMapper.ToObject<ARG_TYPE_0> (vvs[0]));
                         };
                     }
                     template <typename RETURN_TYPE, typename ARG_TYPE_0, typename ARG_TYPE_1>
