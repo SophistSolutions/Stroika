@@ -63,7 +63,7 @@ namespace Stroika {
 				, fMeasureFunction_ (measureFunction)
 				, fOutputFunction_ (outputFunction)
 			{
-				Require (timeDelta > 0);
+				Require (updatePeriod > 0);
 				fUpdatableParams_.rwget ()->fSetPoint_ = (initialSetPoint);
 			}
 			template <typename CONTROL_VAR_TYPE>
