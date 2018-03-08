@@ -808,6 +808,12 @@ namespace Stroika {
                 nonvirtual bool operator!= (const Ptr& rhs) const;
                 nonvirtual bool operator!= (nullptr_t) const;
 
+            public:
+                /**
+                 *  \brief return true iff *this != nullptr
+                 */
+                nonvirtual operator bool () const;
+
             private:
                 shared_ptr<Rep_> fRep_;
 

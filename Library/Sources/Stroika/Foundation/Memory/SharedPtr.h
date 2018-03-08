@@ -292,6 +292,12 @@ namespace Stroika {
                 nonvirtual bool operator== (nullptr_t) const noexcept;
                 nonvirtual bool operator!= (nullptr_t) const noexcept;
 
+            public:
+                /**
+                 *  \brief return true iff *this != nullptr
+                 */
+                nonvirtual operator bool () const noexcept;
+
             private:
                 Envelope_ fEnvelope_;
 

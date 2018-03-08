@@ -492,6 +492,11 @@ namespace Stroika {
             {
                 return get () != nullptr;
             }
+            template <typename T>
+            inline bool SharedPtr<T>::operator bool () const noexcept
+            {
+                return get () != nullptr;
+            }
 
             /*
              ********************************************************************************

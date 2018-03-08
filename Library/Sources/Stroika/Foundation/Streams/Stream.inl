@@ -65,13 +65,19 @@ namespace Stroika {
                 fRep_.reset ();
             }
             template <typename ELEMENT_TYPE>
-            bool Stream<ELEMENT_TYPE>::Ptr::operator== (nullptr_t) const
+            inline bool Stream<ELEMENT_TYPE>::Ptr::operator== (nullptr_t) const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_.get () == nullptr;
             }
             template <typename ELEMENT_TYPE>
-            bool Stream<ELEMENT_TYPE>::Ptr::operator!= (nullptr_t) const
+            inline bool Stream<ELEMENT_TYPE>::Ptr::operator!= (nullptr_t) const
+            {
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                return fRep_.get () != nullptr;
+            }
+            template <typename ELEMENT_TYPE>
+            inline bool Stream<ELEMENT_TYPE>::Ptr::operator bool () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fRep_.get () != nullptr;

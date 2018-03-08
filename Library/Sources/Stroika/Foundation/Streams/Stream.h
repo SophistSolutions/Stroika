@@ -184,6 +184,12 @@ namespace Stroika {
                  */
                 nonvirtual bool operator!= (nullptr_t) const;
 
+            public:
+                /**
+                 *  \brief return true iff *this != nullptr
+                 */
+                nonvirtual operator bool () const;
+
             protected:
                 /**
                  *  \brief protected access to underlying stream smart pointer
