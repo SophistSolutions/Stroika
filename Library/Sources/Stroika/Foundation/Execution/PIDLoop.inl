@@ -111,21 +111,29 @@ namespace Stroika {
                 Time::DurationSecondsType nextRunAt = Time::GetTickCount ();
                 while (true) {
                     SleepUntil (nextRunAt);
-                    ValueType measuredValue = fMeasureFunction_ ();
-                    ValueType setPoint      = fUpdatableParams_->fSetPoint_;
-                    ValueType error         = setPoint - measuredValue;
-                    ValueType derivative    = (error - fUpdatableParams_->fPrevError_) / fUpdatePeriod_;
-                    {
-                        auto updateUpdatableParams = fUpdatableParams_.rwget ();
-                        updateUpdatableParams->fIntegral_ += error * fUpdatePeriod_;
-                        updateUpdatableParams->fPrevError_ = error;
-                    }
-                    ValueType outputFunctionArgument = fPIDParams_.P * error + fPIDParams_.I * fUpdatableParams_->fIntegral_ + fPIDParams_.D * derivative;
-                    fOutputFunction_ (outputFunctionArgument);
-                    nextRunAt += fUpdatePeriod_;
+                    try {
+                        ValueType measuredValue = fMeasureFunction_ ();
+                        ValueType setPoint      = fUpdatableParams_->fSetPoint_;
+                        ValueType error         = setPoint - measuredValue;
+                        ValueType derivative    = (error - fUpdatableParams_->fPrevError_) / fUpdatePeriod_;
+                        {
+                            auto updateUpdatableParams = fUpdatableParams_.rwget ();
+                            updateUpdatableParams->fIntegral_ += error * fUpdatePeriod_;
+                            updateUpdatableParams->fPrevError_ = error;
+                        }
+                        ValueType outputFunctionArgument = fPIDParams_.P * error + fPIDParams_.I * fUpdatableParams_->fIntegral_ + fPIDParams_.D * derivative;
+                        fOutputFunction_ (outputFunctionArgument);
+                        nextRunAt += fUpdatePeriod_;
 #if Stroika_Foundation_Execution_PIDLoop_USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"Completed PIDLoop update: set-point=%s, measuredValue=%s, error=%s, derivative=%s, integral=%s, outputFunctionArgument=%s, nextRunAt=%f", Characters::ToString (setPoint).c_str (), Characters::ToString (measuredValue).c_str (), Characters::ToString (error).c_str (), Characters::ToString (derivative).c_str (), Characters::ToString (updateUpdatableParams->fIntegral_).c_str (), Characters::ToString (outputFunctionArgument).c_str (), nextRunAt);
+                        DbgTrace (L"Completed PIDLoop update: set-point=%s, measuredValue=%s, error=%s, derivative=%s, integral=%s, outputFunctionArgument=%s, nextRunAt=%f", Characters::ToString (setPoint).c_str (), Characters::ToString (measuredValue).c_str (), Characters::ToString (error).c_str (), Characters::ToString (derivative).c_str (), Characters::ToString (fUpdatableParams_->fIntegral_).c_str (), Characters::ToString (outputFunctionArgument).c_str (), nextRunAt);
 #endif
+                    }
+                    catch (const Thread::InterruptException&) {
+                        Execution::ReThrow ();
+                    }
+                    catch (...) {
+                        DbgTrace (L"Suppressing exception in PIDLoop: %s", Characters::ToString (current_exception ()).c_str ());
+                    }
                 }
             }
             template <typename CONTROL_VAR_TYPE>
