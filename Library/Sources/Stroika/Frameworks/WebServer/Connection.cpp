@@ -17,6 +17,7 @@
 #include "../../Foundation/Execution/Exceptions.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
+#include "../../Foundation/IO/Network/HTTP/Methods.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "ClientErrorException.h"
@@ -238,6 +239,28 @@ bool Connection::ReadAndProcessMessage ()
                     thisMessageKeepAlive = false;
                 }
             }
+        }
+    }
+
+    if (thisMessageKeepAlive) {
+        // be sure we advance the read pointer over the message body, lest we start reading part of the previous message as the next message
+        if (GetRequest ().GetContentLength ()) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
+#endif
+            // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
+            (void)fMessage_->GetRequestBody ();
+        }
+        else if (GetRequest ().GetHTTPMethod ().Equals (IO::Network::HTTP::Methods::kGet, Characters::CompareOptions::eCaseInsensitive)) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"This request should be closed but thats much less efficient, and chrome seems todo this - sure???; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
+#endif
+        }
+        else {
+            thisMessageKeepAlive = false;
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"forced close connection because the request header lacked a Content-Length: REQ=%s", Characters::ToString (GetRequest ()).c_str ());
+#endif
         }
     }
 
