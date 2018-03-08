@@ -19,6 +19,9 @@
 #include "BadFormatException.h"
 #include "CheckedConverter.h"
 
+// Comment this in to turn on aggressive noisy DbgTrace in this module (note the extra long name since its in a header)
+//#define Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+
 namespace Stroika {
     namespace Foundation {
         namespace DataExchange {
@@ -665,12 +668,12 @@ namespace Stroika {
                  *  --no-sanitize function command line flag (or --no-sanitize vptr on macos).
                  */
                 FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> VariantValue {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
                     Mapping<String, VariantValue> m;
                     for (auto i : fields) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
                         FromGenericObjectMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
@@ -682,7 +685,7 @@ namespace Stroika {
                     return VariantValue (m);
                 };
                 ToObjectMapperType<CLASS> toObjectMapper = [fields, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("function") -> void {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper");
 #endif
                     RequireNotNull (intoObjOfTypeT);
@@ -693,7 +696,7 @@ namespace Stroika {
                     Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
                     for (auto i : fields) {
                         Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
 #endif
                         if (o) {
@@ -740,7 +743,7 @@ namespace Stroika {
 #endif
 
                 FromObjectMapperType<CLASS> fromObjectMapper = [fields, baseClassTypeInfo](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
                     Mapping<String, VariantValue> m;
@@ -748,7 +751,7 @@ namespace Stroika {
                         m = mapper.Lookup_ (typeid (BASE_CLASS)).FromObjectMapper<BASE_CLASS> () (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> (); // so we can extend
                     }
                     for (auto i : fields) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
                         FromGenericObjectMapperType fromGenericObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
@@ -760,7 +763,7 @@ namespace Stroika {
                     return VariantValue (m);
                 };
                 ToObjectMapperType<CLASS> toObjectMapper = [fields, baseClassTypeInfo, preflightBeforeToObject](const ObjectVariantMapper& mapper, const VariantValue& d, CLASS* intoObjOfTypeT) -> void {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                     Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToObjectMapper");
 #endif
                     RequireNotNull (intoObjOfTypeT);
@@ -774,7 +777,7 @@ namespace Stroika {
                     Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
                     for (auto i : fields) {
                         Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
+#if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
 #endif
                         if (o) {
