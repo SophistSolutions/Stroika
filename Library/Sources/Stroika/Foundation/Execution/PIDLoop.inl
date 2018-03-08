@@ -56,17 +56,23 @@ namespace Stroika {
              ************************** PIDLoop<CONTROL_VAR_TYPE> ***************************
              ********************************************************************************
              */
-            template <typename CONTROL_VAR_TYPE>
-            PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint)
-                : fPIDParams_ (pidParams)
-                , fUpdatePeriod_ (updatePeriod)
-                , fMeasureFunction_ (measureFunction)
-                , fOutputFunction_ (outputFunction)
-            {
-                Require (timeDelta > 0);
-                fUpdatableParams_.rwget ()->fSetPoint_ = (initialSetPoint);
-            }
-            template <typename CONTROL_VAR_TYPE>
+			template <typename CONTROL_VAR_TYPE>
+			PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint)
+				: fPIDParams_ (pidParams)
+				, fUpdatePeriod_ (updatePeriod)
+				, fMeasureFunction_ (measureFunction)
+				, fOutputFunction_ (outputFunction)
+			{
+				Require (timeDelta > 0);
+				fUpdatableParams_.rwget ()->fSetPoint_ = (initialSetPoint);
+			}
+			template <typename CONTROL_VAR_TYPE>
+			PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void (ValueType o)>& outputFunction, ValueType initialSetPoint)
+				: PIDLoop (pidParams, updatePeriod, measureFunction, outputFunction, initialSetPoint)
+			{
+				(void)RunInThread ();
+			}
+			template <typename CONTROL_VAR_TYPE>
             PIDLoop<CONTROL_VAR_TYPE>::~PIDLoop ()
             {
                 if (fThread_) {
@@ -87,12 +93,12 @@ namespace Stroika {
                 }
             }
             template <typename CONTROL_VAR_TYPE>
-            inline PIDLoop<CONTROL_VAR_TYPE>::GetControlParams () const->ControlParams
+            inline auto PIDLoop<CONTROL_VAR_TYPE>::GetControlParams () const -> ControlParams
             {
                 return fPIDParams_;
             }
             template <typename CONTROL_VAR_TYPE>
-            inline PIDLoop<CONTROL_VAR_TYPE>::GetUpdatePeriod () const->Time::DurationSecondsType
+            inline auto PIDLoop<CONTROL_VAR_TYPE>::GetUpdatePeriod () const -> Time::DurationSecondsType
             {
                 return fUpdatePeriod_;
             }

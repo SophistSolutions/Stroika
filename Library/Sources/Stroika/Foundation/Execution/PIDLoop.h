@@ -70,6 +70,9 @@ namespace Stroika {
                 };
 
             public:
+                enum AutoStartFlag { eAutoStart };
+
+            public:
                 /**
                  *  Measure function produces PV = ProcessVariable, and SP - SetPoint is target value.
                  *
@@ -81,6 +84,7 @@ namespace Stroika {
                 PIDLoop ()               = delete;
                 PIDLoop (const PIDLoop&) = delete;
                 PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
+                PIDLoop (AutoStartFlag, const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint = {});
                 nonvirtual PIDLoop& operator= (const PIDLoop&) = delete;
 
             public:
