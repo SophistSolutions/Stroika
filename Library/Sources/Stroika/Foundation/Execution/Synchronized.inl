@@ -10,7 +10,7 @@
  ********************************************************************************
  */
 
-// Comment this in to turn on aggressive noisy DbgTrace in this module
+// Comment this in to turn on aggressive noisy DbgTrace in this module (note the extra long name since its in a header)
 //#define Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 #include "../Debug/Assertions.h"
