@@ -67,6 +67,13 @@ namespace Stroika {
                  *  replace these, but they must remain consistent.
                  */
                 static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+
+                struct NEW_EQUALS_COMPARER {
+                    bool operator() (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2) const
+                    {
+                        return Equals (v1, v2);
+                    }
+                };
             };
 
             /**

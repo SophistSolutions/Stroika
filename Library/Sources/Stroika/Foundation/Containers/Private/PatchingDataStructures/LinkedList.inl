@@ -118,7 +118,8 @@ namespace Stroika {
                         Invariant ();
                     }
                     template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::Remove (T item)
+                    template <typename EQUALS_COMPARER>
+                    inline void LinkedList<T, TRAITS>::Remove (T item, const EQUALS_COMPARER& equalsComparer)
                     {
                         /*
                          *  Base class impl is fine, but doesn't do patching, and doesn't
@@ -130,7 +131,7 @@ namespace Stroika {
                         Invariant ();
                         Memory::Optional<T> current;
                         for (ForwardIterator it (Traversal::kUnknownIteratorOwnerID, this); it.More (&current, true), current.IsPresent ();) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
+                            if (equalsComparer (*current, item)) {
                                 this->RemoveAt (it);
                                 break;
                             }

@@ -315,22 +315,24 @@ namespace Stroika {
                 }
 #endif
                 template <typename T, typename TRAITS>
-                T* LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item)
+                template <typename EQUALS_COMPARER>
+                T* LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this}; // lock not shared cuz return mutable ptr
                     for (Link* i = _fHead; i != nullptr; i = i->fNext) {
-                        if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem, item)) {
+                        if (equalsComparer (i->fItem, item)) {
                             return &i->fItem;
                         }
                     }
                     return nullptr;
                 }
                 template <typename T, typename TRAITS>
-                const T* LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item) const
+                template <typename EQUALS_COMPARER>
+                const T* LinkedList<T, TRAITS>::Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
-                        if (TRAITS::EqualsCompareFunctionType::Equals (i->fItem, item)) {
+                        if (equalsComparer (i->fItem, item)) {
                             return &i->fItem;
                         }
                     }
