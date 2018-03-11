@@ -145,7 +145,7 @@ namespace Stroika {
                      *
                      *  Utility to search the list for the given item using operator==
                      */
-                    template <typename EQUALS_COMPARER = TRAITS::EqualsCompareFunctionType::NEW_EQUALS_COMPARER>
+                    template <typename EQUALS_COMPARER = typename TRAITS::EqualsCompareFunctionType::NEW_EQUALS_COMPARER>
                     nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
 
                 public:
@@ -164,7 +164,7 @@ namespace Stroika {
                      *
                      *  Note - does nothing if item not found.
                      */
-                    template <typename EQUALS_COMPARER = TRAITS::EqualsCompareFunctionType::NEW_EQUALS_COMPARER>
+                    template <typename EQUALS_COMPARER = typename TRAITS::EqualsCompareFunctionType::NEW_EQUALS_COMPARER>
                     nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
 
                 public:
