@@ -150,14 +150,15 @@ namespace Stroika {
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
-                bool Array<T, TRAITS>::Contains (ArgByValueType<T> item) const
+                template <typename EQUALS_COMPARER>
+                bool Array<T, TRAITS>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     Invariant ();
                     const T* current = &_fItems[0];
                     const T* last    = &_fItems[_fLength];
                     for (; current < last; current++) {
-                        if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
+                        if (equalsComparer (*current, item)) {
                             return true;
                         }
                     }
