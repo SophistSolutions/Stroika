@@ -81,6 +81,12 @@ namespace {
             {
                 return v1.GetValue () == v2.GetValue ();
             }
+            struct NEW_EQUALS_COMPARER {
+                bool operator() (value_type v1, value_type v2) const
+                {
+                    return Equals (v1, v2);
+                }
+            };
         };
         using SimpleClassWithoutComparisonOperators_SETRAITS = DefaultTraits::Set<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_>;
 

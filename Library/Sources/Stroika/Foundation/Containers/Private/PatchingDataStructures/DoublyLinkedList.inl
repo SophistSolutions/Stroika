@@ -107,12 +107,13 @@ namespace Stroika {
                         Invariant ();
                     }
                     template <typename T, typename TRAITS>
-                    inline void DoublyLinkedList<T, TRAITS>::Remove (ArgByValueType<T> item)
+                    template <typename EQUALS_COMPARER>
+                    inline void DoublyLinkedList<T, TRAITS>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
                     {
                         Invariant ();
                         T current;
                         for (ForwardIterator it (*this); it.More (&current, true);) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (current, item)) {
+                            if (equalsComparer (current, item)) {
                                 RemoveAt (it);
                                 break;
                             }

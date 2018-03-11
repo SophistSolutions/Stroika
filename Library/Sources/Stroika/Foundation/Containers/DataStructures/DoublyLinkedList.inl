@@ -233,17 +233,18 @@ namespace Stroika {
                     return *this;
                 }
                 template <typename T, typename TRAITS>
-                void DoublyLinkedList<T, TRAITS>::Remove (ArgByValueType<T> item)
+                template <typename EQUALS_COMPARER>
+                void DoublyLinkedList<T, TRAITS>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Invariant ();
-                    if (TRAITS::EqualsCompareFunctionType::Equals (item, _fHead->fItem)) {
+                    if (equalsComparer (item, _fHead->fItem)) {
                         RemoveFirst ();
                     }
                     else {
                         Link* prev = nullptr;
                         for (Link* link = _fHead; link != nullptr; prev = link, link = link->fNext) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (link->fItem, item)) {
+                            if (equalsComparer (link->fItem, item)) {
                                 AssertNotNull (prev); // cuz otherwise we would have hit it in first case!
                                 prev->fNext = link->fNext;
                                 delete (link);
@@ -254,11 +255,12 @@ namespace Stroika {
                     Invariant ();
                 }
                 template <typename T, typename TRAITS>
-                bool DoublyLinkedList<T, TRAITS>::Contains (ArgByValueType<T> item) const
+                template <typename EQUALS_COMPARER>
+                bool DoublyLinkedList<T, TRAITS>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     for (const Link* current = _fHead; current != nullptr; current = current->fNext) {
-                        if (TRAITS::EqualsCompareFunctionType::Equals (current->fItem, item)) {
+                        if (equalsComparer (current->fItem, item)) {
                             return true;
                         }
                     }
