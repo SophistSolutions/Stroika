@@ -67,13 +67,6 @@ namespace Stroika {
                  *  replace these, but they must remain consistent.
                  */
                 static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
-
-                struct NEW_EQUALS_COMPARER {
-                    constexpr bool operator() (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2) const
-                    {
-                        return Equals (v1, v2);
-                    }
-                };
             };
 
             // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
@@ -134,13 +127,6 @@ namespace Stroika {
                     return result;
 #endif
                 }
-
-                struct NEW_EQUALS_COMPARER {
-                    constexpr bool operator() (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2) const
-                    {
-                        return Equals (v1, v2);
-                    }
-                };
             };
 
             // @todo - TRY CHANGING USE OF ComparerWithEquals so instance copied around. Verify no perofrmance (size/time)
