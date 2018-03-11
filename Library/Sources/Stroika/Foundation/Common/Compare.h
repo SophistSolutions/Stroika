@@ -76,6 +76,26 @@ namespace Stroika {
                 };
             };
 
+            // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
+            template <typename OLD_COMPARER>
+            struct NEW_EQUALS_COMPARER {
+                template <typename T>
+                constexpr bool operator() (T v1, T v2) const
+                {
+                    return OLD_COMPARER::Equals (v1, v2);
+                }
+            };
+
+            /// Stroika uses compreres that reutrn <, 0, or >, and this converts one of those into an equals comparer
+            template <typename INT_RESULT_COMPARER>
+            struct EqualsComparerFromIntResultComparer {
+                template <typename T>
+                constexpr bool operator() (T v1, T v2) const
+                {
+                    return INT_RESULT_COMPARER () (v1, v2) == 0;
+                }
+            };
+
             /**
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
              *
