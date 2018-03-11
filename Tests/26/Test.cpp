@@ -87,12 +87,6 @@ namespace {
             {
                 return v1.GetValue () == v2.GetValue ();
             }
-            struct NEW_EQUALS_COMPARER {
-                bool operator() (value_type v1, value_type v2) const
-                {
-                    return Equals (v1, v2);
-                }
-            };
         };
         struct MySimpleClassWithoutComparisonOperators_Comparer_ {
             typedef SimpleClassWithoutComparisonOperators value_type;
@@ -104,12 +98,6 @@ namespace {
             {
                 return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
             }
-            struct NEW_EQUALS_COMPARER {
-                bool operator() (value_type v1, value_type v2) const
-                {
-                    return Equals (v1, v2);
-                }
-            };
         };
         typedef DefaultTraits::SortedSet<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_, MySimpleClassWithoutComparisonOperators_Comparer_> SimpleClassWithoutComparisonOperators_SETTRAITS;
 
