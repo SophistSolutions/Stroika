@@ -54,35 +54,27 @@ namespace Stroika {
 
                 using Configuration::ArgByValueType;
 
-                /**
-                 * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
-                 */
-                template <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<T>>
-                struct DoublyLinkedList_DefaultTraits {
-                    using EqualsCompareFunctionType = EQUALS_COMPARER;
-                };
-
                 /*
-                 *      DoublyLinkedList<T, TRAITS> is a generic link (non-intrusive) list implementation.
+                 *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.
                  *  It keeps a length count so access to its length is rapid. We provide
                  *  no public means to access the links themselves.
                  *
                  *      Since this class provides no patching support, it is not generally
-                 *  used - more likely you want to use DoublyLinkedList<T, TRAITS>. Use this if you
+                 *  used - more likely you want to use DoublyLinkedList<T>. Use this if you
                  *  will manage all patching, or know that none is necessary.
                  */
-                template <typename T, typename TRAITS = DoublyLinkedList_DefaultTraits<T>>
+                template <typename T>
                 class DoublyLinkedList : public Debug::AssertExternallySynchronizedLock {
                 public:
                     using value_type = T;
 
                 public:
                     DoublyLinkedList ();
-                    DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from);
+                    DoublyLinkedList (const DoublyLinkedList<T>& from);
                     ~DoublyLinkedList ();
 
                 public:
-                    nonvirtual DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& list);
+                    nonvirtual DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& list);
 
                 public:
                     class Link;
@@ -201,7 +193,7 @@ namespace Stroika {
                      *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
                      *  the container they were iterating over).
                      */
-                    nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T, TRAITS>* movedFrom);
+                    nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T>* movedFrom);
 
                 public:
                     /**
@@ -252,8 +244,8 @@ namespace Stroika {
                 /**
                  *  Just an implementation detail. Don't use directly except in helper classes.
                  */
-                template <typename T, typename TRAITS>
-                class DoublyLinkedList<T, TRAITS>::Link {
+                template <typename T>
+                class DoublyLinkedList<T>::Link {
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Link);
 
@@ -267,19 +259,19 @@ namespace Stroika {
                 };
 
                 /**
-                 *      ForwardIterator<T> allows you to iterate over a DoublyLinkedList<T, TRAITS>. Its API
+                 *      ForwardIterator<T> allows you to iterate over a DoublyLinkedList<T>. Its API
                  *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
                  *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListIterator_Patch<T>
                  *  for that.
                  */
-                template <typename T, typename TRAITS>
-                class DoublyLinkedList<T, TRAITS>::ForwardIterator {
+                template <typename T>
+                class DoublyLinkedList<T>::ForwardIterator {
                 public:
                     ForwardIterator (const ForwardIterator& from);
-                    ForwardIterator (const DoublyLinkedList<T, TRAITS>* data);
+                    ForwardIterator (const DoublyLinkedList<T>* data);
 
                 public:
-                    using Link = typename DoublyLinkedList<T, TRAITS>::Link;
+                    using Link = typename DoublyLinkedList<T>::Link;
 
                 public:
                     nonvirtual ForwardIterator& operator= (const ForwardIterator& list);
@@ -299,16 +291,16 @@ namespace Stroika {
                     nonvirtual void SetCurrentLink (Link* l);
 
                 public:
-                    nonvirtual bool Equals (const typename DoublyLinkedList<T, TRAITS>::ForwardIterator& rhs) const;
+                    nonvirtual bool Equals (const typename DoublyLinkedList<T>::ForwardIterator& rhs) const;
 
                 public:
                     nonvirtual void Invariant () const;
 
                 protected:
                 public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
-                    const DoublyLinkedList<T, TRAITS>* _fData;
-                    const Link*                        _fCurrent;
-                    bool                               _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
+                    const DoublyLinkedList<T>* _fData;
+                    const Link*                _fCurrent;
+                    bool                       _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
 #if qDebug
                 protected:
@@ -316,7 +308,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    friend class DoublyLinkedList<T, TRAITS>;
+                    friend class DoublyLinkedList<T>;
                 };
             }
         }

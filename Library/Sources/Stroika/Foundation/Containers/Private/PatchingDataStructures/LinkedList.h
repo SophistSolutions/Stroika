@@ -44,21 +44,21 @@ namespace Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template <typename T, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
-                    class LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>> {
+                    template <typename T>
+                    class LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T>> {
                     private:
-                        using inherited = PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>;
+                        using inherited = PatchableContainerHelper<DataStructures::LinkedList<T>>;
 
                     public:
                         LinkedList ();
-                        LinkedList (LinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID);
-                        LinkedList (const LinkedList<T, TRAITS>& from) = delete;
+                        LinkedList (LinkedList<T>* rhs, IteratorOwnerID newOwnerID);
+                        LinkedList (const LinkedList<T>& from) = delete;
 
                     public:
-                        nonvirtual LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list) = delete;
+                        nonvirtual LinkedList<T>& operator= (const LinkedList<T>& list) = delete;
 
                     public:
-                        using Link = typename DataStructures::LinkedList<T, TRAITS>::Link;
+                        using Link = typename DataStructures::LinkedList<T>::Link;
 
                     public:
                         class ForwardIterator;
@@ -112,24 +112,24 @@ namespace Stroika {
                     };
 
                     /*
-                     *      LinkedList<T, TRAITS>::ForwardIterator is a ForwardIterator that allows
+                     *      LinkedList<T>::ForwardIterator is a ForwardIterator that allows
                      *  for updates to the LinkedList<T,TRAITS> to be dealt with properly. It maintains a
-                     *  link list of iterators headed by the LinkedList<T, TRAITS>, and takes care
+                     *  link list of iterators headed by the LinkedList<T>, and takes care
                      *  of all patching details.
                      *
                      *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
                      *          and removed before destruction of other bases
                      */
-                    template <typename T, typename TRAITS>
-                    class LinkedList<T, TRAITS>::ForwardIterator
-                        : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator,
-                          public PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMixIn {
+                    template <typename T>
+                    class LinkedList<T>::ForwardIterator
+                        : public DataStructures::LinkedList<T>::ForwardIterator,
+                          public PatchableContainerHelper<DataStructures::LinkedList<T>>::PatchableIteratorMixIn {
                     private:
-                        using inherited_DataStructure = typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
-                        using inherited_PatchHelper   = typename PatchableContainerHelper<DataStructures::LinkedList<T, TRAITS>>::PatchableIteratorMixIn;
+                        using inherited_DataStructure = typename DataStructures::LinkedList<T>::ForwardIterator;
+                        using inherited_PatchHelper   = typename PatchableContainerHelper<DataStructures::LinkedList<T>>::PatchableIteratorMixIn;
 
                     public:
-                        ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data);
+                        ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T>* data);
                         ForwardIterator (const ForwardIterator& from);
 
                     public:
@@ -139,7 +139,7 @@ namespace Stroika {
                         nonvirtual ForwardIterator& operator= (const ForwardIterator& rhs) = delete;
 
                     public:
-                        using ContainerType = PatchingDataStructures::LinkedList<T, TRAITS>;
+                        using ContainerType = PatchingDataStructures::LinkedList<T>;
                         using Link          = typename ContainerType::Link;
 
                     public:
@@ -164,7 +164,7 @@ namespace Stroika {
 #endif
 
                     private:
-                        friend class LinkedList<T, TRAITS>;
+                        friend class LinkedList<T>;
                     };
                 }
             }

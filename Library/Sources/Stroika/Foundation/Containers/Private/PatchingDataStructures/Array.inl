@@ -14,30 +14,30 @@ namespace Stroika {
 
                     /*
                      ********************************************************************************
-                     *************** PatchingDataStructures::Array<T,TRAITS> ************************
+                     ******************** PatchingDataStructures::Array<T> **************************
                      ********************************************************************************
                      */
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::Array ()
+                    template <typename T>
+                    inline Array<T>::Array ()
                         : inherited ()
                     {
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::Array (Array<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
+                    template <typename T>
+                    inline Array<T>::Array (Array<T>* rhs, IteratorOwnerID newOwnerID)
                         : inherited (rhs, newOwnerID, (_ArrayIteratorBase*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::~Array ()
+                    template <typename T>
+                    inline Array<T>::~Array ()
                     {
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::PatchViewsAdd (size_t index) const
+                    template <typename T>
+                    inline void Array<T>::PatchViewsAdd (size_t index) const
                     {
                         /*
                          *      Must call PatchRealloc before PatchAdd() since the test of currentIndex
@@ -48,43 +48,43 @@ namespace Stroika {
                             ai->PatchAdd (index);
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::PatchViewsRemove (size_t index) const
+                    template <typename T>
+                    inline void Array<T>::PatchViewsRemove (size_t index) const
                     {
                         this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index](_ArrayIteratorBase* ai) {
                             ai->PatchRemove (index);
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::PatchViewsRemoveAll () const
+                    template <typename T>
+                    inline void Array<T>::PatchViewsRemoveAll () const
                     {
                         this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([](_ArrayIteratorBase* ai) {
                             ai->PatchRemoveAll ();
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::PatchViewsRealloc () const
+                    template <typename T>
+                    inline void Array<T>::PatchViewsRealloc () const
                     {
                         this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([](_ArrayIteratorBase* ai) {
                             ai->PatchRealloc ();
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::SetLength (size_t newLength, T fillValue)
+                    template <typename T>
+                    inline void Array<T>::SetLength (size_t newLength, T fillValue)
                     {
                         // For now, not sure how to patch the iterators, so just Assert out - fix later ...
                         AssertNotImplemented ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::InsertAt (size_t index, T item)
+                    template <typename T>
+                    inline void Array<T>::InsertAt (size_t index, T item)
                     {
                         this->Invariant ();
                         inherited::InsertAt (index, item);
                         PatchViewsAdd (index); // PatchRealloc done in PatchViewsAdd()
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::RemoveAt (size_t index)
+                    template <typename T>
+                    inline void Array<T>::RemoveAt (size_t index)
                     {
                         this->Invariant ();
                         PatchViewsRemove (index);
@@ -93,8 +93,8 @@ namespace Stroika {
                         // just destructs things.
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::RemoveAll ()
+                    template <typename T>
+                    inline void Array<T>::RemoveAll ()
                     {
                         this->Invariant ();
                         inherited::RemoveAll ();
@@ -102,85 +102,85 @@ namespace Stroika {
                         // it does not realloc pointers (ie does not call SetCapacity).
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::RemoveAt (const ForwardIterator& i)
+                    template <typename T>
+                    inline void Array<T>::RemoveAt (const ForwardIterator& i)
                     {
                         Require (not i.Done ());
                         RemoveAt (i.CurrentIndex ());
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::RemoveAt (const BackwardIterator& i)
+                    template <typename T>
+                    inline void Array<T>::RemoveAt (const BackwardIterator& i)
                     {
                         Require (not i.Done ());
                         RemoveAt (i.CurrentIndex ());
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::SetAt (size_t i, T newValue)
+                    template <typename T>
+                    inline void Array<T>::SetAt (size_t i, T newValue)
                     {
                         inherited::SetAt (i, newValue);
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
+                    template <typename T>
+                    inline void Array<T>::SetAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         inherited::SetAt (i.CurrentIndex (), newValue);
                     }
-                    template <typename T, typename TRAITS>
-                    void Array<T, TRAITS>::SetAt (const BackwardIterator& i, T newValue)
+                    template <typename T>
+                    void Array<T>::SetAt (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         inherited::SetAt (newValue, i.CurrentIndex ());
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
+                    template <typename T>
+                    inline void Array<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (i.CurrentIndex (), newValue);
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::AddBefore (const BackwardIterator& i, T newValue)
+                    template <typename T>
+                    inline void Array<T>::AddBefore (const BackwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (i.CurrentIndex (), newValue);
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                    template <typename T>
+                    inline void Array<T>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (i.CurrentIndex () + 1, newValue);
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::AddAfter (const BackwardIterator& i, T newValue)
+                    template <typename T>
+                    inline void Array<T>::AddAfter (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (i.CurrentIndex () + 1, newValue);
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
+                    template <typename T>
+                    inline void Array<T>::SetCapacity (size_t slotsAlloced)
                     {
                         this->Invariant ();
                         inherited::SetCapacity (slotsAlloced);
                         PatchViewsRealloc ();
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::Compact ()
+                    template <typename T>
+                    inline void Array<T>::Compact ()
                     {
                         this->Invariant ();
                         inherited::Compact ();
                         PatchViewsRealloc ();
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::Invariant () const
+                    template <typename T>
+                    inline void Array<T>::Invariant () const
                     {
 #if qDebug
                         _Invariant ();
 #endif
                     }
 #if qDebug
-                    template <typename T, typename TRAITS>
-                    void Array<T, TRAITS>::_Invariant () const
+                    template <typename T>
+                    void Array<T>::_Invariant () const
                     {
                         inherited::_Invariant ();
                         /*
@@ -200,32 +200,32 @@ namespace Stroika {
 
                     /*
                      ********************************************************************************
-                     ********* PatchingDataStructures::Array<T, TRAITS>::_ArrayIteratorBase *********
+                     ************* PatchingDataStructures::Array<T>::_ArrayIteratorBase *************
                      ********************************************************************************
                      */
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T, TRAITS>* data)
+                    template <typename T>
+                    inline Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T>* data)
                         : inherited_DataStructure (data)
-                        , inherited_PatchHelper (const_cast<Array<T, TRAITS>*> (data), ownerID)
+                        , inherited_PatchHelper (const_cast<Array<T>*> (data), ownerID)
                     {
                         /*
                          * Cannot call invariant () here since _fCurrent not yet setup.
                          */
                     }
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const typename Array<T, TRAITS>::_ArrayIteratorBase& from)
+                    template <typename T>
+                    inline Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (const typename Array<T>::_ArrayIteratorBase& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
                     {
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::_ArrayIteratorBase::~_ArrayIteratorBase ()
+                    template <typename T>
+                    inline Array<T>::_ArrayIteratorBase::~_ArrayIteratorBase ()
                     {
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::_ArrayIteratorBase::PatchAdd (size_t index)
+                    template <typename T>
+                    inline void Array<T>::_ArrayIteratorBase::PatchAdd (size_t index)
                     {
                         /*
                          *      NB: We cannot call invariants here because this is called after the add
@@ -264,8 +264,8 @@ namespace Stroika {
                             this->_fCurrent++;
                         }
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::_ArrayIteratorBase::PatchRemove (size_t index)
+                    template <typename T>
+                    inline void Array<T>::_ArrayIteratorBase::PatchRemove (size_t index)
                     {
                         Require (index >= 0);
                         Require (index < this->_fData->GetLength ());
@@ -308,8 +308,8 @@ namespace Stroika {
                         }
                         this->_fEnd--;
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::_ArrayIteratorBase::PatchRemoveAll ()
+                    template <typename T>
+                    inline void Array<T>::_ArrayIteratorBase::PatchRemoveAll ()
                     {
                         Require (this->_fData->GetLength () == 0); //  since called after removeall
 
@@ -318,8 +318,8 @@ namespace Stroika {
                         this->_fEnd          = this->_fData->_fItems;
                         this->_fSuppressMore = true;
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::_ArrayIteratorBase::PatchRealloc ()
+                    template <typename T>
+                    inline void Array<T>::_ArrayIteratorBase::PatchRealloc ()
                     {
                         /*
                          *      NB: We can only call invariant after we've fixed things up, since realloc
@@ -333,28 +333,28 @@ namespace Stroika {
                         }
                     }
 #if qDebug
-                    template <typename T, typename TRAITS>
-                    void Array<T, TRAITS>::_ArrayIteratorBase::_Invariant () const
+                    template <typename T>
+                    void Array<T>::_ArrayIteratorBase::_Invariant () const
                     {
                         inherited_DataStructure::_Invariant ();
                     }
 #endif /*qDebug*/
 
                     /*
-                    ********************************************************************************
-                    ********** PatchingDataStructures::Array<T,TRAITS>::ForwardIterator ************
-                    ********************************************************************************
-                    */
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const Array<T, TRAITS>* data)
+                     ********************************************************************************
+                     ************** PatchingDataStructures::Array<T>::ForwardIterator ***************
+                     ********************************************************************************
+                     */
+                    template <typename T>
+                    inline Array<T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const Array<T>* data)
                         : inherited (ownerID, data)
                     {
                         RequireNotNull (data);
                         this->_fCurrent = this->_fStart;
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline bool Array<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
+                    template <typename T>
+                    inline bool Array<T>::ForwardIterator::More (T* current, bool advance)
                     {
                         this->Invariant ();
                         if (advance) {
@@ -370,8 +370,8 @@ namespace Stroika {
                         this->Invariant ();
                         return (not this->Done ());
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    template <typename T>
+                    inline void Array<T>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
                     {
                         //// RESTRUCTUIRE SO WE CAN INHERIT IMPL!!!
                         RequireNotNull (result);
@@ -391,25 +391,25 @@ namespace Stroika {
                             *result = *this->_fCurrent;
                         }
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::ForwardIterator::PatchRemoveCurrent ()
+                    template <typename T>
+                    inline void Array<T>::ForwardIterator::PatchRemoveCurrent ()
                     {
                         Assert (this->_fCurrent < this->_fEnd); // cannot remove something past the end
                         this->_fSuppressMore = true;
                     }
-                    template <typename T, typename TRAITS>
-                    inline bool Array<T, TRAITS>::ForwardIterator::More (nullptr_t, bool advance)
+                    template <typename T>
+                    inline bool Array<T>::ForwardIterator::More (nullptr_t, bool advance)
                     {
                         return More (static_cast<T*> (nullptr), advance);
                     }
 
                     /*
-                    ********************************************************************************
-                    ****** PatchingDataStructures::Array<T,TRAITS>::BackwardIterator ***************
-                    ********************************************************************************
-                    */
-                    template <typename T, typename TRAITS>
-                    inline Array<T, TRAITS>::BackwardIterator::BackwardIterator (IteratorOwnerID ownerID, const Array<T, TRAITS>* data)
+                     ********************************************************************************
+                     ************* PatchingDataStructures::Array<T>::BackwardIterator ***************
+                     ********************************************************************************
+                     */
+                    template <typename T>
+                    inline Array<T>::BackwardIterator::BackwardIterator (IteratorOwnerID ownerID, const Array<T>* data)
                         : inherited (ownerID, data)
                     {
                         if (data->GetLength () == 0) {
@@ -421,8 +421,8 @@ namespace Stroika {
                         this->Invariant ();
                     }
                     // Careful to keep hdr and src copies identical...
-                    template <typename T, typename TRAITS>
-                    inline bool Array<T, TRAITS>::BackwardIterator::More (T* current, bool advance)
+                    template <typename T>
+                    inline bool Array<T>::BackwardIterator::More (T* current, bool advance)
                     {
                         this->Invariant ();
                         if (advance) {
@@ -454,8 +454,8 @@ namespace Stroika {
                         }
                         return (not this->Done ());
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    template <typename T>
+                    inline void Array<T>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
                     {
                         //// RESTRUCTUIRE SO WE CAN INHERIT IMPL!!!
                         RequireNotNull (result);
@@ -484,13 +484,13 @@ namespace Stroika {
                             *result = *this->_fCurrent;
                         }
                     }
-                    template <typename T, typename TRAITS>
-                    inline bool Array<T, TRAITS>::BackwardIterator::More (nullptr_t, bool advance)
+                    template <typename T>
+                    inline bool Array<T>::BackwardIterator::More (nullptr_t, bool advance)
                     {
                         return More (static_cast<T*> (nullptr), advance);
                     }
-                    template <typename T, typename TRAITS>
-                    inline void Array<T, TRAITS>::BackwardIterator::PatchRemoveCurrent ()
+                    template <typename T>
+                    inline void Array<T>::BackwardIterator::PatchRemoveCurrent ()
                     {
                         if (this->_fCurrent == this->_fStart) {
                             this->_fCurrent = this->_fEnd; // magic to indicate done

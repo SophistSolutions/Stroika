@@ -49,14 +49,6 @@ namespace Stroika {
 
                 using Configuration::ArgByValueType;
 
-                /**
-                 * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
-                 */
-                template <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<T>>
-                struct LinkedList_DefaultTraits {
-                    using EqualsCompareFunctionType = EQUALS_COMPARER;
-                };
-
                 /*
                  *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation.
                  *  It keeps a length count so access to its length is rapid. We provide
@@ -66,18 +58,18 @@ namespace Stroika {
                  *  used - more likely you want to use PatchingDataStructures::LinkedList<T>. Use this if you
                  *  will manage all patching, or know that none is necessary.
                  */
-                template <typename T, typename TRAITS = LinkedList_DefaultTraits<T>>
+                template <typename T>
                 class LinkedList : public Debug::AssertExternallySynchronizedLock {
                 public:
                     using value_type = T;
 
                 public:
                     LinkedList ();
-                    LinkedList (const LinkedList<T, TRAITS>& from);
+                    LinkedList (const LinkedList<T>& from);
                     ~LinkedList ();
 
                 public:
-                    nonvirtual LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list);
+                    nonvirtual LinkedList<T>& operator= (const LinkedList<T>& list);
 
                 public:
                     class ForwardIterator;
@@ -92,7 +84,7 @@ namespace Stroika {
                      *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
                      *  the container they were iterating over).
                      */
-                    nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T, TRAITS>* movedFrom);
+                    nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T>* movedFrom);
 
                 public:
                     nonvirtual bool IsEmpty () const;
@@ -237,8 +229,8 @@ namespace Stroika {
                     friend class ForwardIterator;
                 };
 
-                template <typename T, typename TRAITS>
-                class LinkedList<T, TRAITS>::Link {
+                template <typename T>
+                class LinkedList<T>::Link {
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Link);
 
@@ -256,8 +248,8 @@ namespace Stroika {
                  *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
                  *  for that.
                  */
-                template <typename T, typename TRAITS>
-                class LinkedList<T, TRAITS>::ForwardIterator {
+                template <typename T>
+                class LinkedList<T>::ForwardIterator {
                 public:
                     ForwardIterator (const ForwardIterator& from);
                     ForwardIterator (const LinkedList* data);
@@ -278,20 +270,20 @@ namespace Stroika {
                     nonvirtual void SetCurrentLink (Link* l);
 
                 public:
-                    nonvirtual bool Equals (const typename LinkedList<T, TRAITS>::ForwardIterator& rhs) const;
+                    nonvirtual bool Equals (const typename LinkedList<T>::ForwardIterator& rhs) const;
 
                 public:
                     nonvirtual void Invariant () const;
 
                 protected:
-                    const LinkedList<T, TRAITS>* _fData;
+                    const LinkedList<T>* _fData;
 
                 protected:
                     //const typename LinkedList<T,TRAITS>::Link*     fCachedPrev;        // either nullptr or valid cached prev
                 protected:
                 public:
                     ///@todo - tmphack - this SB protected probably???
-                    const typename LinkedList<T, TRAITS>::Link* _fCurrent;
+                    const typename LinkedList<T>::Link* _fCurrent;
 
                 protected:
                     bool _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
@@ -301,7 +293,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    friend class LinkedList<T, TRAITS>;
+                    friend class LinkedList<T>;
                 };
             }
         }

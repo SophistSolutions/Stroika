@@ -40,21 +40,21 @@ namespace Stroika {
                      *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
                      *  the source to copy from and the newOwnerID to copy INTO.
                      */
-                    template <typename T, typename TRAITS = DataStructures::DoublyLinkedList_DefaultTraits<T>>
-                    class DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>> {
+                    template <typename T>
+                    class DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T>> {
                     private:
-                        using inherited = PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>;
+                        using inherited = PatchableContainerHelper<DataStructures::DoublyLinkedList<T>>;
 
                     public:
                         DoublyLinkedList ();
-                        DoublyLinkedList (DoublyLinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID);
-                        DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from) = delete;
+                        DoublyLinkedList (DoublyLinkedList<T>* rhs, IteratorOwnerID newOwnerID);
+                        DoublyLinkedList (const DoublyLinkedList<T>& from) = delete;
 
                     public:
-                        nonvirtual DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& rhs) = delete;
+                        nonvirtual DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& rhs) = delete;
 
                     public:
-                        using Link = typename DataStructures::DoublyLinkedList<T, TRAITS>::Link;
+                        using Link = typename DataStructures::DoublyLinkedList<T>::Link;
 
                     public:
                         class ForwardIterator;
@@ -111,22 +111,22 @@ namespace Stroika {
 
                     /*
                      *      ForwardIterator is a .... that allows
-                     *  for updates to the DoublyLinkedList<T, TRAITS> to be dealt with properly. It maintains a
-                     *  link list of iterators headed by the DoublyLinkedList<T, TRAITS>, and takes care
+                     *  for updates to the DoublyLinkedList<T> to be dealt with properly. It maintains a
+                     *  link list of iterators headed by the DoublyLinkedList<T>, and takes care
                      *  of all patching details.
                      *
                      *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
                      *          and removed before destruction of other bases
                      */
-                    template <typename T, typename TRAITS>
-                    class DoublyLinkedList<T, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator,
-                                                                         public PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMixIn {
+                    template <typename T>
+                    class DoublyLinkedList<T>::ForwardIterator : public DataStructures::DoublyLinkedList<T>::ForwardIterator,
+                                                                 public PatchableContainerHelper<DataStructures::DoublyLinkedList<T>>::PatchableIteratorMixIn {
                     private:
-                        using inherited_DataStructure = typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator;
-                        using inherited_PatchHelper   = typename PatchableContainerHelper<DataStructures::DoublyLinkedList<T, TRAITS>>::PatchableIteratorMixIn;
+                        using inherited_DataStructure = typename DataStructures::DoublyLinkedList<T>::ForwardIterator;
+                        using inherited_PatchHelper   = typename PatchableContainerHelper<DataStructures::DoublyLinkedList<T>>::PatchableIteratorMixIn;
 
                     public:
-                        ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data);
+                        ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T>* data);
                         ForwardIterator (const ForwardIterator& from);
 
                     public:
@@ -136,7 +136,7 @@ namespace Stroika {
                         nonvirtual ForwardIterator& operator= (const ForwardIterator& rhs) = delete;
 
                     public:
-                        using ContainerType = PatchingDataStructures::DoublyLinkedList<T, TRAITS>;
+                        using ContainerType = PatchingDataStructures::DoublyLinkedList<T>;
                         using Link          = typename ContainerType::Link;
 
                     public:
@@ -153,7 +153,7 @@ namespace Stroika {
 #endif
 
                     private:
-                        friend class DoublyLinkedList<T, TRAITS>;
+                        friend class DoublyLinkedList<T>;
                     };
                 }
             }

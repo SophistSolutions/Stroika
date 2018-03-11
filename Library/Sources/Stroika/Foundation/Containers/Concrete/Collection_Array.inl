@@ -138,7 +138,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::Array<T, DataStructures::Array_DefaultTraits<T, void>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::Array<T>;
 
                 private:
                     using IteratorRep_ = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;

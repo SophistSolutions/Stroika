@@ -14,70 +14,70 @@ namespace Stroika {
 
                     /*
                      ********************************************************************************
-                     ******************************** LinkedList<T, TRAITS> *************************
+                     ************************************ LinkedList<T> *****************************
                      ********************************************************************************
                      */
-                    template <typename T, typename TRAITS>
-                    inline LinkedList<T, TRAITS>::LinkedList ()
+                    template <typename T>
+                    inline LinkedList<T>::LinkedList ()
                         : inherited ()
                     {
                         Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline LinkedList<T, TRAITS>::LinkedList (LinkedList<T, TRAITS>* rhs, IteratorOwnerID newOwnerID)
+                    template <typename T>
+                    inline LinkedList<T>::LinkedList (LinkedList<T>* rhs, IteratorOwnerID newOwnerID)
                         : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();
                         Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::Invariant () const
+                    template <typename T>
+                    inline void LinkedList<T>::Invariant () const
                     {
 #if qDebug
                         Invariant_ ();
                         InvariantOnIterators_ ();
 #endif
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::PatchViewsAdd (const Link* link) const
+                    template <typename T>
+                    inline void LinkedList<T>::PatchViewsAdd (const Link* link) const
                     {
                         RequireNotNull (link);
                         this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link](ForwardIterator* ai) {
                             ai->PatchAdd (link);
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::PatchViewsRemove (const Link* link) const
+                    template <typename T>
+                    inline void LinkedList<T>::PatchViewsRemove (const Link* link) const
                     {
                         RequireNotNull (link);
                         this->template _ApplyToEachOwnedIterator<ForwardIterator> ([link](ForwardIterator* ai) {
                             ai->PatchRemove (link);
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::PatchViewsRemoveAll () const
+                    template <typename T>
+                    inline void LinkedList<T>::PatchViewsRemoveAll () const
                     {
                         this->template _ApplyToEachOwnedIterator<ForwardIterator> ([](ForwardIterator* ai) {
                             ai->PatchRemoveAll ();
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
+                    template <typename T>
+                    inline void LinkedList<T>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
                         this->template _ApplyToEachOwnedIterator<ForwardIterator> ([oldI, items2Patch](ForwardIterator* ai) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const
+                    template <typename T>
+                    inline void LinkedList<T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const
                     {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::Prepend (T item)
+                    template <typename T>
+                    inline void LinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
                         inherited::Prepend (item);
@@ -85,8 +85,8 @@ namespace Stroika {
                         Invariant ();
                     }
                     //tmphack - must fix to have in  base class and just hook for patch here
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::Append (T item)
+                    template <typename T>
+                    inline void LinkedList<T>::Append (T item)
                     {
                         if (this->_fHead == nullptr) {
                             Prepend (item);
@@ -101,25 +101,25 @@ namespace Stroika {
                             PatchViewsAdd (last->fNext);
                         }
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::RemoveFirst ()
+                    template <typename T>
+                    inline void LinkedList<T>::RemoveFirst ()
                     {
                         Invariant ();
                         PatchViewsRemove (this->_fHead);
                         inherited::RemoveFirst ();
                         Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::RemoveAll ()
+                    template <typename T>
+                    inline void LinkedList<T>::RemoveAll ()
                     {
                         Invariant ();
                         inherited::RemoveAll ();
                         PatchViewsRemoveAll ();
                         Invariant ();
                     }
-                    template <typename T, typename TRAITS>
+                    template <typename T>
                     template <typename EQUALS_COMPARER>
-                    inline void LinkedList<T, TRAITS>::Remove (T item, const EQUALS_COMPARER& equalsComparer)
+                    inline void LinkedList<T>::Remove (T item, const EQUALS_COMPARER& equalsComparer)
                     {
                         /*
                          *  Base class impl is fine, but doesn't do patching, and doesn't
@@ -138,8 +138,8 @@ namespace Stroika {
                         }
                         Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::RemoveAt (const ForwardIterator& i)
+                    template <typename T>
+                    inline void LinkedList<T>::RemoveAt (const ForwardIterator& i)
                     {
                         Require (not i.Done ());
                         Invariant ();
@@ -152,8 +152,8 @@ namespace Stroika {
 
                         Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
+                    template <typename T>
+                    inline void LinkedList<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();
 
@@ -177,8 +177,8 @@ namespace Stroika {
 
                         Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
+                    template <typename T>
+                    inline void LinkedList<T>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();
                         inherited::AddAfter (i, newValue);
@@ -186,8 +186,8 @@ namespace Stroika {
                         Invariant ();
                     }
 #if qDebug
-                    template <typename T, typename TRAITS>
-                    void LinkedList<T, TRAITS>::Invariant_ () const
+                    template <typename T>
+                    void LinkedList<T>::Invariant_ () const
                     {
                         inherited::Invariant_ ();
                         /*
@@ -195,15 +195,15 @@ namespace Stroika {
                          *  here since we cannot call each iterators Invariant(). That would be
                          *  nice, but sadly when this Invariant_ () is called from LinkedList<T,TRAITS> the
                          *  iterators themselves may not have been patched, so they'll be out of
-                         *  date. Instead, so that in local shadow of Invariant() done in LinkedList<T, TRAITS>
+                         *  date. Instead, so that in local shadow of Invariant() done in LinkedList<T>
                          *  so only called when WE call Invariant().
                          */
                         this->template _ApplyToEachOwnedIterator<ForwardIterator> ([this](ForwardIterator* ai) {
                             Assert (ai->_fData == this);
                         });
                     }
-                    template <typename T, typename TRAITS>
-                    void LinkedList<T, TRAITS>::InvariantOnIterators_ () const
+                    template <typename T>
+                    void LinkedList<T>::InvariantOnIterators_ () const
                     {
                         /*
                          *      Only here can we iterate over each iterator and calls its Invariant()
@@ -218,20 +218,20 @@ namespace Stroika {
 
                     /*
                      ********************************************************************************
-                     ******************* LinkedList<T, TRAITS>::ForwardIterator *********************
+                     ************************* LinkedList<T>::ForwardIterator ***********************
                      ********************************************************************************
                      */
-                    template <typename T, typename TRAITS>
-                    inline LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data)
+                    template <typename T>
+                    inline LinkedList<T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T>* data)
                         : inherited_DataStructure (data)
-                        , inherited_PatchHelper (const_cast<LinkedList<T, TRAITS>*> (data), ownerID)
+                        , inherited_PatchHelper (const_cast<LinkedList<T>*> (data), ownerID)
                     //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
                     {
                         RequireNotNull (data);
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
+                    template <typename T>
+                    inline LinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited_DataStructure (from)
                         , inherited_PatchHelper (from)
                     //, fPrev (from.fPrev)
@@ -239,13 +239,13 @@ namespace Stroika {
                         from.Invariant ();
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline LinkedList<T, TRAITS>::ForwardIterator::~ForwardIterator ()
+                    template <typename T>
+                    inline LinkedList<T>::ForwardIterator::~ForwardIterator ()
                     {
                         this->Invariant ();
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
+                    template <typename T>
+                    inline void LinkedList<T>::ForwardIterator::PatchAdd (const Link* link)
                     {
                         /*
                          *      link is the new link just added. If it was just after current, then
@@ -258,8 +258,8 @@ namespace Stroika {
                             //fPrev = link;
                         }
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::ForwardIterator::PatchRemove (const Link* link)
+                    template <typename T>
+                    inline void LinkedList<T>::ForwardIterator::PatchRemove (const Link* link)
                     {
                         RequireNotNull (link);
 
@@ -288,29 +288,29 @@ namespace Stroika {
                         //    fPrev = nullptr;                    // real value recomputed later, if needed
                         //}
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::ForwardIterator::PatchRemoveAll ()
+                    template <typename T>
+                    inline void LinkedList<T>::ForwardIterator::PatchRemoveAll ()
                     {
                         this->_fCurrent = nullptr;
                         //fPrev = nullptr;
                         Ensure (this->Done ());
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
+                    template <typename T>
+                    inline void LinkedList<T>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
                     {
                         if (this->_fCurrent == oldI) {
                             items2Patch->push_back (this);
                         }
                     }
-                    template <typename T, typename TRAITS>
-                    inline void LinkedList<T, TRAITS>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (Link* newI)
+                    template <typename T>
+                    inline void LinkedList<T>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (Link* newI)
                     {
                         this->_fSuppressMore = true;
                         this->_fCurrent      = newI;
                     }
 #if qDebug
-                    template <typename T, typename TRAITS>
-                    void LinkedList<T, TRAITS>::ForwardIterator::Invariant_ () const
+                    template <typename T>
+                    void LinkedList<T>::ForwardIterator::Invariant_ () const
                     {
                         inherited_DataStructure::Invariant_ ();
                         //inherited_PatchHelper::Invariant_ ();
