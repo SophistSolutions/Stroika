@@ -129,12 +129,12 @@ namespace Stroika {
                     virtual bool Contains (ArgByValueType<T> item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item) != nullptr;
+                        return fData_.Lookup (item, Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>{}) != nullptr;
                     }
                     virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const T*                                                        l = fData_.Lookup (item);
+                        const T*                                                        l = fData_.Lookup (item, Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>{});
                         return (l == nullptr) ? Memory::Optional<T> () : Memory::Optional<T> (*l);
                     }
                     virtual void Add (ArgByValueType<T> item) override

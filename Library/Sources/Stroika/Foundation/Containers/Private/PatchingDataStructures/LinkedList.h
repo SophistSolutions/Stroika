@@ -86,8 +86,8 @@ namespace Stroika {
                          */
                     public:
                         nonvirtual void Prepend (T item);
-                        template <typename EQUALS_COMPARER = typename TRAITS::EqualsCompareFunctionType::NEW_EQUALS_COMPARER>
-                        nonvirtual void Remove (T item, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{});
+                        template <typename EQUALS_COMPARER>
+                        nonvirtual void Remove (T item, const EQUALS_COMPARER& equalsComparer);
                         nonvirtual void RemoveFirst ();
                         nonvirtual void RemoveAll ();
                         nonvirtual void Append (T item);
