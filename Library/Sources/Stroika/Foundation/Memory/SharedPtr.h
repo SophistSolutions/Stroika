@@ -296,7 +296,7 @@ namespace Stroika {
                 /**
                  *  \brief return true iff *this != nullptr
                  */
-                nonvirtual operator bool () const noexcept;
+                nonvirtual explicit operator bool () const noexcept;
 
             private:
                 Envelope_ fEnvelope_;

@@ -440,7 +440,7 @@ namespace Stroika {
                  *          }
                  *          not sure thats better than while (not n.Done ())???
                  */
-                nonvirtual operator bool () const;
+                nonvirtual explicit operator bool () const;
 
             public:
                 /**

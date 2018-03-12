@@ -140,7 +140,7 @@ bool Execution::MatchesCommandLineArgument (const String& actualArg, const Strin
 
 bool Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-    return argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+    return static_cast<bool> (argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); }));
 }
 
 Optional<String> Execution::MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern)

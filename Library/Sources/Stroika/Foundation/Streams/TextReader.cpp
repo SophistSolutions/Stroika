@@ -377,7 +377,7 @@ protected:
             }
             for (; srcIt != fSource_.end (); ++srcIt, ++cnt)
                 ;
-            return srcIt;
+            return cnt;
         }
         else {
             return Read (intoStart, intoEnd); // safe because implemtation of Read () in this type of stream doesn't block

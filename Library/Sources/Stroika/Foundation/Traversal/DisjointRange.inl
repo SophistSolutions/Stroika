@@ -62,7 +62,7 @@ namespace Stroika {
             template <typename T, typename RANGE_TYPE>
             bool DisjointRange<T, RANGE_TYPE>::Contains (value_type elt) const
             {
-                return fSubRanges_.FindFirstThat ([elt](RangeType r) { return r.Contains (elt); });
+                return static_cast<bool> (fSubRanges_.FindFirstThat ([elt](RangeType r) { return r.Contains (elt); }));
             }
             template <typename T, typename RANGE_TYPE>
             bool DisjointRange<T, RANGE_TYPE>::Contains (const RangeType& rhs) const

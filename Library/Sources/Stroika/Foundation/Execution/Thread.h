@@ -812,7 +812,7 @@ namespace Stroika {
                 /**
                  *  \brief return true iff *this != nullptr
                  */
-                nonvirtual operator bool () const;
+                nonvirtual explicit operator bool () const;
 
             private:
                 shared_ptr<Rep_> fRep_;

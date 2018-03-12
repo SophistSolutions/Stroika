@@ -188,7 +188,7 @@ namespace Stroika {
                 /**
                  *  \brief return true iff *this != nullptr
                  */
-                nonvirtual operator bool () const;
+                nonvirtual explicit operator bool () const;
 
             protected:
                 /**
