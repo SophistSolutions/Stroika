@@ -25,21 +25,9 @@ namespace Stroika {
                 /*
                  */
                 template <typename T, typename TRAITS>
-                class SortedSet_stdset<T, TRAITS>::IImplRep_ : public SortedSet<T, TRAITS>::_IRep {
+                class SortedSet_stdset<T, TRAITS>::Rep_ : public SortedSet<T, TRAITS>::_IRep {
                 private:
                     using inherited = typename SortedSet<T, TRAITS>::_IRep;
-
-                protected:
-                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-                };
-
-                /*
-                 */
-                template <typename T, typename TRAITS>
-                class SortedSet_stdset<T, TRAITS>::Rep_ : public IImplRep_ {
-                private:
-                    using inherited = IImplRep_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
@@ -197,6 +185,14 @@ namespace Stroika {
                     : SortedSet_stdset ()
                 {
                     this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T, typename TRAITS>
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                inline SortedSet_stdset<T, TRAITS>::SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : SortedSet_stdset ()
+                {
+                    this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>

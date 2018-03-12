@@ -85,6 +85,8 @@ namespace Stroika {
                 using _SortedSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
+                /**
+                 */
                 SortedSet ();
                 SortedSet (const SortedSet<T, TRAITS>& src) noexcept;
                 SortedSet (SortedSet<T, TRAITS>&& src) noexcept;

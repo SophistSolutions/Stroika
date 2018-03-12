@@ -51,7 +51,6 @@ namespace Stroika {
                     nonvirtual SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& rhs);
 
                 private:
-                    class IImplRep_;
                     class Rep_;
 
                 private:
