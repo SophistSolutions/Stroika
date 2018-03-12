@@ -51,6 +51,7 @@ namespace Stroika {
                     nonvirtual SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& rhs);
 
                 private:
+                    template <typename USE_COMPARER>
                     class Rep_;
 
                 private:

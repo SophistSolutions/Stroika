@@ -25,6 +25,7 @@ namespace Stroika {
                 /*
                  */
                 template <typename T, typename TRAITS>
+                template <typename USE_COMPARER>
                 class SortedSet_stdset<T, TRAITS>::Rep_ : public SortedSet<T, TRAITS>::_IRep {
                 private:
                     using inherited = typename SortedSet<T, TRAITS>::_IRep;
@@ -148,7 +149,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, USE_COMPARER>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
@@ -162,7 +163,7 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline SortedSet_stdset<T, TRAITS>::SortedSet_stdset ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_<Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -207,7 +208,7 @@ namespace Stroika {
                 inline void SortedSet_stdset<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<Rep_<Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }

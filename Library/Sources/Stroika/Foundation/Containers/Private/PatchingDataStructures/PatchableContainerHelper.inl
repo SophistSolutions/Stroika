@@ -13,10 +13,10 @@ namespace Stroika {
                 namespace PatchingDataStructures {
 
                     /*
-                    ********************************************************************************
-                    ********* PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS> ***********
-                    ********************************************************************************
-                    */
+                     ********************************************************************************
+                     ********* PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS> ***********
+                     ********************************************************************************
+                     */
                     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     template <typename COMBINED_ITERATOR>
                     PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload)

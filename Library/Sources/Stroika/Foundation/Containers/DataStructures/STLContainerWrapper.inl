@@ -30,7 +30,7 @@ namespace Stroika {
                     return this->find (item) != this->end ();
                 }
                 template <typename STL_CONTAINER_OF_T>
-                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
+                void STLContainerWrapper<STL_CONTAINER_OF_T>::MoveIteratorHereAfterClone (ForwardIterator* pi, const STLContainerWrapper<STL_CONTAINER_OF_T>* movedFrom)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     // TRICKY TODO - BUT MUST DO - MUST MOVE FROM OLD ITER TO NEW
@@ -57,7 +57,7 @@ namespace Stroika {
                 }
                 template <typename STL_CONTAINER_OF_T>
                 template <typename FUNCTION>
-                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
+                void STLContainerWrapper<STL_CONTAINER_OF_T>::Apply (FUNCTION doToElement) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     for (auto i = this->begin (); i != this->end (); ++i) {
@@ -66,7 +66,7 @@ namespace Stroika {
                 }
                 template <typename STL_CONTAINER_OF_T>
                 template <typename FUNCTION>
-                inline typename STL_CONTAINER_OF_T::const_iterator STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const
+                typename STL_CONTAINER_OF_T::const_iterator STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     for (auto i = this->begin (); i != this->end (); ++i) {
@@ -78,7 +78,7 @@ namespace Stroika {
                 }
                 template <typename STL_CONTAINER_OF_T>
                 template <typename FUNCTION>
-                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement)
+                typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::FindFirstThat (FUNCTION doToElement)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     for (auto i = this->begin (); i != this->end (); ++i) {
