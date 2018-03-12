@@ -62,7 +62,9 @@ const String WebService::Server::DocsOptions::kDefaultCSSSection =
     L"div.mainDocs {margin-left: .3in; margin-right: .3in; }"
     L"div.mainDocs div { padding-top: 6pt; padding-bottom: 6pt; }"
     L"div.curlExample {margin-left: .3in; margin-top: .1in; margin-bottom:.1in; font-family: \"Courier New\", Courier, \"Lucida Sans Typewriter\", \"Lucida Typewriter\", monospace; font-size: 9pt; font-weight: bold;}"
-    L"div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }";
+	L"div.curlExample div { padding-top: 2pt; padding-bottom: 2pt; }"
+	L"div.introduction div { padding-top: 2pt; padding-bottom: 2pt; }"
+	;
 
 void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions)
 {
@@ -71,7 +73,8 @@ void WebService::Server::WriteDocsPage (Response* response, const Sequence<WebSe
     response->writeln (docsOptions.fCSSSection);
     response->writeln (L"</style>");
     response->writeln (L"<body>");
-    response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.c_str ());
+	response->printf (L"<h1>%s</h1>", docsOptions.fH1Text.c_str ());
+	response->printf (L"<div class='introduction'>%s</div>", docsOptions.fIntroductoryText.c_str ());
     response->writeln (L"<ul>");
     auto substVars = [=](const String& origStr) {
         String str = origStr;
