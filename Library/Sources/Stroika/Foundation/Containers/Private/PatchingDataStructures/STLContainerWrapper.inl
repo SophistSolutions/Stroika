@@ -20,13 +20,15 @@ namespace Stroika {
                      ********************************************************************************
                      */
                     template <typename STL_CONTAINER_OF_T>
-                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper ()
-                        : inherited ()
+                    template <typename... CONTAINER_EXTRA_ARGS>
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... args)
+                        : inherited (std::forward<CONTAINER_EXTRA_ARGS> (args)...)
                     {
                     }
                     template <typename STL_CONTAINER_OF_T>
-                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID)
-                        : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
+                    template <typename... CONTAINER_EXTRA_ARGS>
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID, CONTAINER_EXTRA_ARGS&&... args)
+                        : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr, std::forward<CONTAINER_EXTRA_ARGS> (args)...)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();

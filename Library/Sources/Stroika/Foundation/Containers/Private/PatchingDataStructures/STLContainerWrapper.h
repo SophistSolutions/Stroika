@@ -62,9 +62,11 @@ namespace Stroika {
                         using value_type = typename inherited::value_type;
 
                     public:
-                        STLContainerWrapper ();
+                        template <typename... CONTAINER_EXTRA_ARGS>
+                        STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... args);
                         STLContainerWrapper (const STLContainerWrapper&) = delete;
-                        STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID);
+                        template <typename... CONTAINER_EXTRA_ARGS>
+                        STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID, CONTAINER_EXTRA_ARGS&&... args);
 
                     public:
                         nonvirtual STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs) = delete;

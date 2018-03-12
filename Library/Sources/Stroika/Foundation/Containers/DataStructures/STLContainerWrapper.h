@@ -62,6 +62,13 @@ namespace Stroika {
                     using value_type = typename STL_CONTAINER_OF_T::value_type;
 
                 public:
+                    /**
+                     *  pass through CTOR args to underlying container
+                     */
+                    template <typename... EXTRA_ARGS>
+                    STLContainerWrapper (EXTRA_ARGS&&... args);
+
+                public:
                     class ForwardIterator;
 
                 public:

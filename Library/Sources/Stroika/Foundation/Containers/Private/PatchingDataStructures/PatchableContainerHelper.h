@@ -49,8 +49,8 @@ namespace Stroika {
                         PatchableContainerHelper (const PatchableContainerHelper&) = delete;
 
                     protected:
-                        template <typename COMBINED_ITERATOR>
-                        PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload);
+                        template <typename COMBINED_ITERATOR, typename... EXTRA_ARGS>
+                        PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload, EXTRA_ARGS&&... args);
 
                     public:
                         ~PatchableContainerHelper ();

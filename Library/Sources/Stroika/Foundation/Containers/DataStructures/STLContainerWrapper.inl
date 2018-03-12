@@ -24,6 +24,12 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename STL_CONTAINER_OF_T>
+                template <typename... EXTRA_ARGS>
+                inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (EXTRA_ARGS&&... args)
+                    : inherited (std::forward<EXTRA_ARGS> (args)...)
+                {
+                }
+                template <typename STL_CONTAINER_OF_T>
                 inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::Contains (value_type item) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
