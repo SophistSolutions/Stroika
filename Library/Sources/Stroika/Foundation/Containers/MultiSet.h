@@ -168,8 +168,8 @@ namespace Stroika {
                 MultiSet (const initializer_list<CountedValue<T>>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
                 MultiSet (const CONTAINER_OF_T& src);
-                MultiSet (const T* start, const T* end);
-                MultiSet (const CountedValue<T>* start, const CountedValue<T>* end);
+                template <typename COPY_FROM_ITERATOR>
+                MultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit MultiSet (const _MultiSetRepSharedPtr& rep) noexcept;
@@ -201,9 +201,10 @@ namespace Stroika {
             public:
                 /**
                  *  \note   AddAll/2 is alias for .net AddRange ()
+                 *          and AddAll/2 - the iterator can be Iterator<T> or Iterator<CountedValue<T>>
                  */
-                nonvirtual void AddAll (const T* start, const T* end);
-                nonvirtual void AddAll (const CountedValue<T>* start, const CountedValue<T>* end);
+                template <typename COPY_FROM_ITERATOR>
+                nonvirtual void AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
                 nonvirtual void AddAll (const CONTAINER_OF_T& src);
 

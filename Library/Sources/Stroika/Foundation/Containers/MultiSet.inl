@@ -328,14 +328,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const T* start, const T* end)
-                : MultiSet ()
-            {
-                AddAll (start, end);
-                _AssertRepValidType ();
-            }
-            template <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const CountedValue<T>* start, const CountedValue<T>* end)
+            template <typename COPY_FROM_ITERATOR>
+            MultiSet<T, TRAITS>::MultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
                 : MultiSet ()
             {
                 AddAll (start, end);
@@ -428,17 +422,11 @@ namespace Stroika {
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item.fValue, item.fCount);
             }
             template <typename T, typename TRAITS>
-            void MultiSet<T, TRAITS>::AddAll (const T* start, const T* end)
+            template <typename COPY_FROM_ITERATOR>
+            void MultiSet<T, TRAITS>::AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
             {
-                for (const T* i = start; i != end; ++i) {
+                for (COPY_FROM_ITERATOR i = start; i != end; ++i) {
                     Add (*i);
-                }
-            }
-            template <typename T, typename TRAITS>
-            inline void MultiSet<T, TRAITS>::AddAll (const CountedValue<T>* start, const CountedValue<T>* end)
-            {
-                for (auto i = start; i != end; ++i) {
-                    _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (i->fItem, i->fEnd);
                 }
             }
             template <typename T, typename TRAITS>
