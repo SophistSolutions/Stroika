@@ -25,22 +25,16 @@ namespace Stroika {
                 /*
                  */
                 template <typename T, typename TRAITS>
-                class Set_stdset<T, TRAITS>::IImplRep_ : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
-                private:
-                    using inherited = typename Set<T, typename TRAITS::SetTraitsType>::_IRep;
-
-                protected:
-                    using _SetRepSharedPtr    = typename inherited::_SetRepSharedPtr;
-                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                class Set_stdset<T, TRAITS>::IImplRepBase_ : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
                 };
 
                 /*
                  */
                 template <typename T, typename TRAITS>
-                class Set_stdset<T, TRAITS>::Rep_ : public IImplRep_ {
+                template <typename USE_COMPARER>
+                class Set_stdset<T, TRAITS>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = IImplRep_;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
@@ -161,7 +155,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, USE_COMPARER>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
@@ -175,7 +169,7 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline Set_stdset<T, TRAITS>::Set_stdset ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_<Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -212,7 +206,7 @@ namespace Stroika {
                 inline void Set_stdset<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }

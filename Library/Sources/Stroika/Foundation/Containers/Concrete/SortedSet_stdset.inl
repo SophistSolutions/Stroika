@@ -22,13 +22,17 @@ namespace Stroika {
         namespace Containers {
             namespace Concrete {
 
+                template <typename T, typename TRAITS>
+                class SortedSet_stdset<T, TRAITS>::IImplRepBase_ : public SortedSet<T, TRAITS>::_IRep {
+                };
+
                 /*
                  */
                 template <typename T, typename TRAITS>
                 template <typename USE_COMPARER>
-                class SortedSet_stdset<T, TRAITS>::Rep_ : public SortedSet<T, TRAITS>::_IRep {
+                class SortedSet_stdset<T, TRAITS>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename SortedSet<T, TRAITS>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
@@ -208,7 +212,7 @@ namespace Stroika {
                 inline void SortedSet_stdset<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_<Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }
