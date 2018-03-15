@@ -51,7 +51,8 @@ namespace Stroika {
                     nonvirtual Set_LinkedList<T, TRAITS>& operator= (const Set_LinkedList<T, TRAITS>& rhs);
 
                 private:
-                    class IImplRep_;
+                    class IImplRepBase_;
+                    template <typename EQUALS_COMPARER>
                     class Rep_;
 
                 private:

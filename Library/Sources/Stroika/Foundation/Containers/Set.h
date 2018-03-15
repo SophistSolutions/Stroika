@@ -412,7 +412,10 @@ namespace Stroika {
                  *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
                  *  the sucblass refers to the method in a subclass virtual override.
                  */
-            public:
+            protected:
+                /**
+                 *  \note - this doesn't require a Compare function argument because it indirects to 'Contains'
+                 */
                 nonvirtual bool _Equals_Reference_Implementation (const _IRep& rhs) const;
             };
 

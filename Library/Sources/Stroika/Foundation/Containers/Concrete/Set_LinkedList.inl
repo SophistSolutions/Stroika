@@ -24,12 +24,13 @@ namespace Stroika {
                 /*
                  */
                 template <typename T, typename TRAITS>
-                class Set_LinkedList<T, TRAITS>::IImplRep_ : public Set<T, TRAITS>::_IRep {
+                class Set_LinkedList<T, TRAITS>::IImplRepBase_ : public Set<T, TRAITS>::_IRep {
                 private:
                     using inherited = typename Set<T, TRAITS>::_IRep;
 
                 protected:
-                    using _SetRepSharedPtr    = typename inherited::_SetRepSharedPtr;
+                    // @todo - DONT UNDERTAND WHY these 2 using declarations needed? on visual studio.net?? retest!
+                    //using _SetRepSharedPtr = typename inherited::_SetRepSharedPtr;
                     using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                 };
@@ -37,9 +38,10 @@ namespace Stroika {
                 /*
                  */
                 template <typename T, typename TRAITS>
-                class Set_LinkedList<T, TRAITS>::Rep_ : public IImplRep_ {
+                template <typename EQUALS_COMPARER>
+                class Set_LinkedList<T, TRAITS>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = IImplRep_;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
@@ -129,12 +131,12 @@ namespace Stroika {
                     virtual bool Contains (ArgByValueType<T> item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item, Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>{}) != nullptr;
+                        return fData_.Lookup (item, EQUALS_COMPARER{}) != nullptr;
                     }
                     virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const T*                                                        l = fData_.Lookup (item, Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>{});
+                        const T*                                                        l = fData_.Lookup (item, EQUALS_COMPARER{});
                         return (l == nullptr) ? Memory::Optional<T> () : Memory::Optional<T> (*l);
                     }
                     virtual void Add (ArgByValueType<T> item) override
@@ -142,7 +144,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
                         // safe to use UnpatchedForwardIterator cuz locked and no updates
                         for (typename DataStructureImplType_::UnpatchedForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
+                            if (EQUALS_COMPARER () (it.Current (), item)) {
                                 return;
                             }
                         }
@@ -153,7 +155,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
                         using Traversal::kUnknownIteratorOwnerID;
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
+                            if (EQUALS_COMPARER () (it.Current (), item)) {
                                 fData_.RemoveAt (it);
                                 return;
                             }
@@ -190,7 +192,7 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline Set_LinkedList<T, TRAITS>::Set_LinkedList ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_<Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>>> ())
                 {
                     AssertRepValidType_ ();
                 }
@@ -235,7 +237,7 @@ namespace Stroika {
                 inline void Set_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }
