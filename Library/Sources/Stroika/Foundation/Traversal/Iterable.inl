@@ -292,16 +292,16 @@ namespace Stroika {
             }
             template <typename T>
             template <typename EQUALS_COMPARER>
-            bool Iterable<T>::Contains (ArgByValueType<T> element) const
+            bool Iterable<T>::Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer) const
             {
                 // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
-                return static_cast<bool> (this->FindFirstThat ([element](T i) -> bool {
-                    return EQUALS_COMPARER::Equals (i, element);
+                return static_cast<bool> (this->FindFirstThat ([element, equalsComparer](T i) -> bool {
+                    return equalsComparer.Equals (i, element);
                 }));
             }
             template <typename T>
             template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-            bool Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs) const
+            bool Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
                 /*
                  *  An extremely in-efficient but space-constant implementation. N^2 and check
@@ -310,7 +310,7 @@ namespace Stroika {
                 for (auto ti : *this) {
                     bool contained = false;
                     for (auto ri : rhs) {
-                        if (EQUALS_COMPARER::Equals (ti, ri)) {
+                        if (equalsComparer.Equals (ti, ri)) {
                             contained = true;
                             break;
                         }
@@ -322,7 +322,7 @@ namespace Stroika {
                 for (auto ri : rhs) {
                     bool contained = false;
                     for (auto ti : *this) {
-                        if (EQUALS_COMPARER::Equals (ti, ri)) {
+                        if (equalsComparer.Equals (ti, ri)) {
                             contained = true;
                             break;
                         }
@@ -335,12 +335,12 @@ namespace Stroika {
             }
             template <typename T>
             template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-            bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs) const
+            bool Iterable<T>::MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
-                auto tallyOf = [](const Iterable<T>& c, T item) -> size_t {
+                auto tallyOf = [equalsComparer](const Iterable<T>& c, T item) -> size_t {
                     size_t total = 0;
                     for (auto ti : c) {
-                        if (EQUALS_COMPARER::Equals (ti, item)) {
+                        if (equalsComparer.Equals (ti, item)) {
                             total++;
                         }
                     }
@@ -364,14 +364,14 @@ namespace Stroika {
             }
             template <typename T>
             template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
-            bool Iterable<T>::SequnceEquals (const RHS_CONTAINER_TYPE& rhs) const
+            bool Iterable<T>::SequnceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
                 Iterator<T> li{MakeIterator ()};
                 Iterator<T> le{end ()};
                 auto        ri = rhs.begin ();
                 auto        re = rhs.end ();
                 for (; li != le and ri != re; ++ri, ++li) {
-                    if (not EQUALS_COMPARER::Equals (*li, *ri)) {
+                    if (not equalsComparer.Equals (*li, *ri)) {
                         return false;
                     }
                 }

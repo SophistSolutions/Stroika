@@ -363,7 +363,7 @@ namespace Stroika {
                  *
                  */
                 template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool Contains (ArgByValueType<T> element) const;
+                nonvirtual bool Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
                 /**
@@ -374,9 +374,16 @@ namespace Stroika {
                  *  \em Performance:
                  *      This algorithm is O(N) * O(M) where N and M are the length of the two respective iterables.
                  *
+                 *  \note \todo - consider alternative implementation where we accumulate into std::set<>. 
+                 *                Assume without loss of generality that N is the smaller side (can be determinted in O(M)).
+                 *                Accumulate into set would take N*log (N).
+                 *                Then we would iterate over M (O(M)), and each time check log(N)). So time would be sum of
+                 *                N*log (N) + M*(log(N)) or (N + M)*log(N).
+                 *                That's a little better (but at the cost of more RAM usage).
+                 *
                  */
                 template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
                 /**
@@ -386,10 +393,9 @@ namespace Stroika {
                  *
                  *  \em Performance:
                  *      This algorithm is O(N^^3)
-                 *
                  */
                 template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
                 /**
@@ -400,7 +406,7 @@ namespace Stroika {
                  *      This algorithm is O(N)
                  */
                 template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool SequnceEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                nonvirtual bool SequnceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
                 /**
