@@ -42,7 +42,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
                      */
-                    static SortedCollection<T, TRAITS> New ();
+                    nonvirtual SortedCollection<T, TRAITS> operator() () const;
 
                 public:
                     /**

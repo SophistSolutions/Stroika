@@ -18,7 +18,7 @@ namespace Stroika {
              */
             template <typename T>
             inline Deque<T>::Deque ()
-                : inherited (move (Factory::Deque_Factory<T>::New ()))
+                : inherited (move (Factory::Deque_Factory<T> () ()))
             {
                 _AssertRepValidType ();
             }

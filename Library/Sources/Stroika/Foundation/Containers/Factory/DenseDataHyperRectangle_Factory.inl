@@ -30,7 +30,7 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> DenseDataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
                 template <typename T, typename... INDEXES>
-                inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::New (INDEXES... dimensions)
+                inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::operator() (INDEXES... dimensions)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

@@ -43,7 +43,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the SortedMultiSet<T,TRAITS> CTOR does so automatically.
                      */
-                    static SortedMultiSet<T, TRAITS> New ();
+                    nonvirtual SortedMultiSet<T, TRAITS> operator() () const;
 
                 public:
                     /**

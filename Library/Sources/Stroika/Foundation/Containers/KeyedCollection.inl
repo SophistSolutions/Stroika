@@ -27,7 +27,7 @@ namespace Stroika {
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping ()
-                : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::New ()))
+                : inherited (move (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> () ()))
             {
                 _AssertRepValidType ();
             }

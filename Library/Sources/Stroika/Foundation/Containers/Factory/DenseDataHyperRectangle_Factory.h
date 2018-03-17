@@ -40,7 +40,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the DenseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
                      */
-                    static DenseDataHyperRectangle<T, INDEXES...> New (INDEXES... dimensions);
+                    nonvirtual DenseDataHyperRectangle<T, INDEXES...> operator() (INDEXES... dimensions);
 
                 public:
                     /**

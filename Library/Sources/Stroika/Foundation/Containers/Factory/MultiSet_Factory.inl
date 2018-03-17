@@ -26,7 +26,7 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 atomic<MultiSet<T, TRAITS> (*) ()> MultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template <typename T, typename TRAITS>
-                inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS>::New ()
+                inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

@@ -44,7 +44,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Queue<T> CTOR does so automatically.
                      */
-                    static Queue<T> New ();
+                    nonvirtual Queue<T> operator() () const;
 
                 public:
                     /**

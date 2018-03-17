@@ -44,7 +44,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Sequence<T,TRAITS> CTOR does so automatically.
                      */
-                    static Sequence<T> New ();
+                    nonvirtual Sequence<T> operator() () const;
 
                 public:
                     /**

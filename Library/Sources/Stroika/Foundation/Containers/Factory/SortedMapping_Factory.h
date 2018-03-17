@@ -43,7 +43,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the SortedMapping<T,TRAITS> CTOR does so automatically.
                      */
-                    static SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> New ();
+                    nonvirtual SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> operator() () const;
 
                 public:
                     /**

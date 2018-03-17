@@ -40,7 +40,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the SparseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
                      */
-                    static SparseDataHyperRectangle<T, INDEXES...> New (Configuration::ArgByValueType<T> defaultItem = {});
+                    nonvirtual SparseDataHyperRectangle<T, INDEXES...> operator() (Configuration::ArgByValueType<T> defaultItem = {});
 
                 public:
                     /**

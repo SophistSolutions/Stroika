@@ -26,7 +26,7 @@ namespace Stroika {
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::New ()
+                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

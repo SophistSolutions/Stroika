@@ -27,7 +27,7 @@ namespace Stroika {
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 atomic<Association<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline Association<KEY_TYPE, VALUE_TYPE, TRAITS> Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::New ()
+                inline Association<KEY_TYPE, VALUE_TYPE, TRAITS> Association_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

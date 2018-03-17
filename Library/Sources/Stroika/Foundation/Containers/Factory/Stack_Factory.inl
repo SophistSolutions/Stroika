@@ -26,7 +26,7 @@ namespace Stroika {
                 template <typename T>
                 atomic<Stack<T> (*) ()> Stack_Factory<T>::sFactory_ (nullptr);
                 template <typename T>
-                inline Stack<T> Stack_Factory<T>::New ()
+                inline Stack<T> Stack_Factory<T>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

@@ -44,7 +44,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Deque<T> CTOR does so automatically.
                      */
-                    static Deque<T> New ();
+                    nonvirtual Deque<T> operator() () const;
 
                 public:
                     /**

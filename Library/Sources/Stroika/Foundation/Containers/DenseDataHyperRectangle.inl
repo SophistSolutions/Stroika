@@ -17,7 +17,7 @@ namespace Stroika {
              */
             template <typename T, typename... INDEXES>
             DenseDataHyperRectangle<T, INDEXES...>::DenseDataHyperRectangle (INDEXES... dimensions)
-                : inherited (move (Factory::DenseDataHyperRectangle_Factory<T, INDEXES...>::New (std::forward<INDEXES> (dimensions)...)))
+                : inherited (move (Factory::DenseDataHyperRectangle_Factory<T, INDEXES...> () (std::forward<INDEXES> (dimensions)...)))
             {
             }
             template <typename T, typename... INDEXES>

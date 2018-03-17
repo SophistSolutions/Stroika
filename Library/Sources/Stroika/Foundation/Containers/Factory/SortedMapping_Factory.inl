@@ -32,7 +32,7 @@ namespace Stroika {
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::New ()
+                inline SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

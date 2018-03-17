@@ -27,7 +27,7 @@ namespace Stroika {
                 template <typename T, typename TRAITS>
                 atomic<Set<T, TRAITS> (*) ()> Set_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template <typename T, typename TRAITS>
-                inline Set<T, TRAITS> Set_Factory<T, TRAITS>::New ()
+                inline Set<T, TRAITS> Set_Factory<T, TRAITS>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

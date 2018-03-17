@@ -47,7 +47,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Bijection<T,TRAITS> CTOR does so automatically.
                      */
-                    static Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> New ();
+                    nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> operator() () const;
 
                 public:
                     /**

@@ -41,7 +41,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the SortedSet<T,TRAITS> CTOR does so automatically.
                      */
-                    static SortedSet<T, TRAITS> New ();
+                    nonvirtual SortedSet<T, TRAITS> operator() () const;
 
                 public:
                     /**

@@ -43,7 +43,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the MultiSet<T,TRAITS> CTOR does so automatically.
                      */
-                    static MultiSet<T, TRAITS> New ();
+                    nonvirtual MultiSet<T, TRAITS> operator() () const;
 
                 public:
                     /**

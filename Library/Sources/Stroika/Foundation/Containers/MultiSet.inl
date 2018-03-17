@@ -277,7 +277,7 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet ()
-                : inherited (move (Factory::MultiSet_Factory<T, TRAITS>::New ()))
+                : inherited (move (Factory::MultiSet_Factory<T, TRAITS> () ()))
             {
                 _AssertRepValidType ();
             }

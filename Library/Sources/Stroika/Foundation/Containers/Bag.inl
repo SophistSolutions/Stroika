@@ -25,7 +25,7 @@ namespace Stroika {
              */
             template <typename T>
             inline Bag<T>::Bag ()
-                : inherited (Factory::Bag_Factory<T>::New ())
+                : inherited (Factory::Bag_Factory<T> () ())
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }

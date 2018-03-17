@@ -43,7 +43,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Stack<T> CTOR does so automatically.
                      */
-                    static Stack<T> New ();
+                    nonvirtual Stack<T> operator() () const;
 
                 public:
                     /**

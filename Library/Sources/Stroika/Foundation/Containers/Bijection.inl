@@ -25,7 +25,7 @@ namespace Stroika {
              */
             template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection ()
-                : inherited (move (Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::New ()))
+                : inherited (move (Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS> () ()))
             {
                 _AssertRepValidType ();
             }

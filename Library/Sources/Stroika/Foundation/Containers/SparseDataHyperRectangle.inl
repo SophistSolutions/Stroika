@@ -17,7 +17,7 @@ namespace Stroika {
              */
             template <typename T, typename... INDEXES>
             SparseDataHyperRectangle<T, INDEXES...>::SparseDataHyperRectangle (Configuration::ArgByValueType<T> defaultItem)
-                : inherited (move (Factory::SparseDataHyperRectangle_Factory<T, INDEXES...>::New (defaultItem)))
+                : inherited (move (Factory::SparseDataHyperRectangle_Factory<T, INDEXES...> () (defaultItem)))
             {
                 this->_AssertRepValidType ();
             }

@@ -30,7 +30,7 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 atomic<SparseDataHyperRectangle<T, INDEXES...> (*) (Configuration::ArgByValueType<T>)> SparseDataHyperRectangle_Factory<T, INDEXES...>::sFactory_ (nullptr);
                 template <typename T, typename... INDEXES>
-                inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::New (Configuration::ArgByValueType<T> defaultItem)
+                inline SparseDataHyperRectangle<T, INDEXES...> SparseDataHyperRectangle_Factory<T, INDEXES...>::operator() (Configuration::ArgByValueType<T> defaultItem)
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize

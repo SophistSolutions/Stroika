@@ -20,7 +20,7 @@ namespace Stroika {
              */
             template <typename T>
             inline Queue<T>::Queue ()
-                : inherited (move (Factory::Queue_Factory<T>::New ()))
+                : inherited (move (Factory::Queue_Factory<T> () ()))
             {
                 _AssertRepValidType ();
             }

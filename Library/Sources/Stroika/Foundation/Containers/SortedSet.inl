@@ -18,7 +18,7 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             inline SortedSet<T, TRAITS>::SortedSet ()
-                : inherited (move (Factory::SortedSet_Factory<T, TRAITS>::New ()))
+                : inherited (move (Factory::SortedSet_Factory<T, TRAITS> () ()))
             {
                 _AssertRepValidType ();
             }

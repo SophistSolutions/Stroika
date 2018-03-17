@@ -47,7 +47,7 @@ namespace Stroika {
                     /**
                      *  You can call this directly, but there is no need, as the Set<T,TRAITS> CTOR does so automatically.
                      */
-                    static Set<T, TRAITS> New ();
+                    nonvirtual Set<T, TRAITS> operator() () const;
 
                 public:
                     /**
