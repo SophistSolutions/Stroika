@@ -63,7 +63,7 @@ namespace Stroika {
             struct substitution_succeeded<substitution_failure> : std::false_type {
             };
 
-/**
+            /**
              *  \brief  Define has_XXX (where you specify XXX) class which has a 'value' field saying
              *          if the XXX property is present.
              *
@@ -297,6 +297,41 @@ namespace Stroika {
 #define RequireConceptAppliesToTypeInFunction(TEMPLATE, T)
 
 #endif
+
+            namespace Private_ {
+                // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
+                template <typename T>
+                struct is_callable_impl_ {
+                private:
+                    typedef char (&yes)[1];
+                    typedef char (&no)[2];
+
+                    struct Fallback {
+                        void operator() ();
+                    };
+                    struct Derived : T, Fallback {
+                    };
+
+                    template <typename U, U>
+                    struct Check;
+
+                    template <typename>
+                    static yes test (...);
+
+                    template <typename C>
+                    static no test (Check<void (Fallback::*) (), &C::operator()>*);
+
+                public:
+                    static const bool value = sizeof (test<Derived> (0)) == sizeof (yes);
+                };
+            }
+            template <typename T>
+            struct is_callable
+                : std::conditional<
+                      std::is_class<T>::value,
+                      Private_::is_callable_impl_<T>,
+                      std::false_type>::type {
+            };
         }
     }
 }
