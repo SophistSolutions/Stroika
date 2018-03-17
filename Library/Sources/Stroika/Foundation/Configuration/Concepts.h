@@ -298,6 +298,18 @@ namespace Stroika {
 
 #endif
 
+            /**
+             *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator
+             */
+            template <typename T, typename = void>
+            struct is_iterator {
+                static constexpr bool value = false;
+            };
+            template <typename T>
+            struct is_iterator<T, typename std::enable_if<!std::is_same<typename std::iterator_traits<T>::value_type, void>::value>::type> {
+                static constexpr bool value = true;
+            };
+
             namespace Private_ {
                 // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
                 template <typename T>
@@ -325,6 +337,8 @@ namespace Stroika {
                     static const bool value = sizeof (test<Derived> (0)) == sizeof (yes);
                 };
             }
+            /**
+             */
             template <typename T>
             struct is_callable
                 : std::conditional<
