@@ -23,18 +23,6 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set (const Set<T, TRAITS>& src) noexcept
-                : inherited (src)
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set (Set<T, TRAITS>&& src) noexcept
-                : inherited (move (src))
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T, typename TRAITS>
             inline Set<T, TRAITS>::Set (const initializer_list<T>& src)
                 : Set ()
             {

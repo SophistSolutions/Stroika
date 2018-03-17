@@ -170,7 +170,7 @@ namespace Stroika {
                  *      \endcode
                  */
                 Mapping ();
-                Mapping (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src) noexcept;
+                Mapping (const Mapping& src) noexcept = default;
 #if 0
                 Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& src) noexcept;      //  https://stroika.atlassian.net/browse/STK-541
 #endif

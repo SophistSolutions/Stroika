@@ -25,18 +25,6 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline Stack<T>::Stack (const Stack<T>& src) noexcept
-                : inherited (src)
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T>
-            inline Stack<T>::Stack (Stack<T>&& src) noexcept
-                : inherited (move (src))
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T>
             template <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline Stack<T>::Stack (const CONTAINER_OF_T& src)
                 : Stack ()

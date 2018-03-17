@@ -243,8 +243,8 @@ namespace Stroika {
                  *      \endcode
                  */
                 Sequence ();
-                Sequence (const Sequence<T>& src) noexcept;
-                Sequence (Sequence<T>&& src) noexcept;
+                Sequence (const Sequence& src) noexcept = default;
+                Sequence (Sequence&& src) noexcept      = default;
                 Sequence (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Sequence<T>*>::value>::type>
                 Sequence (const CONTAINER_OF_T& src);

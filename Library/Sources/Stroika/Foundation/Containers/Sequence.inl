@@ -102,18 +102,6 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline Sequence<T>::Sequence (const Sequence<T>& src) noexcept
-                : inherited (src)
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T>
-            inline Sequence<T>::Sequence (Sequence<T>&& src) noexcept
-                : inherited (move (src))
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T>
             inline Sequence<T>::Sequence (const initializer_list<T>& src)
                 : Sequence ()
             {

@@ -102,7 +102,7 @@ namespace Stroika {
                 /*
                  */
                 PriorityQueue ();
-                PriorityQueue (const PriorityQueue<T>& src);
+                PriorityQueue (const PriorityQueue& src) = default;
 
             protected:
                 explicit PriorityQueue (const _SharedPtrIRep& rep);

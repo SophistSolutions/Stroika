@@ -93,8 +93,8 @@ namespace Stroika {
                  *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
                  */
                 Stack ();
-                Stack (const Stack<T>& src) noexcept;
-                Stack (Stack<T>&& src) noexcept;
+                Stack (const Stack& src) noexcept = default;
+                Stack (Stack&& src) noexcept      = default;
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value>::type>
                 Stack (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>

@@ -106,7 +106,8 @@ namespace Stroika {
                 /**
                  */
                 SortedKeyedCollection ();
-                SortedKeyedCollection (const SortedKeyedCollection<KEY_TYPE, T, TRAITS>& src);
+                SortedKeyedCollection (const SortedKeyedCollection& src)  = default;
+                SortedKeyedCollection (const SortedKeyedCollection&& src) = default;
                 SortedKeyedCollection (const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedKeyedCollection<T>*>::value>::type>
                 explicit SortedKeyedCollection (const CONTAINER_OF_T& src);

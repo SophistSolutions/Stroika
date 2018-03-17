@@ -136,8 +136,8 @@ namespace Stroika {
                  *  The underlying data structure of the Bijection is defined by @see Concrete::Bijection_Factory<>
                  */
                 Bijection ();
-                Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src) noexcept;
-                Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src) noexcept;
+                Bijection (const Bijection& src) noexcept = default;
+                Bijection (Bijection&& src) noexcept      = default;
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value>::type>
                 Bijection (const CONTAINER_OF_PAIR_KEY_T& src);

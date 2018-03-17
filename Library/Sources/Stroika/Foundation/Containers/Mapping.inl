@@ -30,12 +30,6 @@ namespace Stroika {
             {
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src) noexcept
-                : inherited (src)
-            {
-                _AssertRepValidType ();
-            }
 #if 0
             //  https://stroika.atlassian.net/browse/STK-541
             template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>

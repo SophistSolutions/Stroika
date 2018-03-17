@@ -72,11 +72,11 @@ namespace Stroika {
                 *  This constructor creates a concrete sorted mapping object, either empty,
                 *  or initialized with any argument values.
                 *
-                *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
+                *  The underlying data structure of the SortedAssociation is defined by @see Concrete::SortedAssociation_Factory<>
                 */
                 SortedAssociation ();
-                SortedAssociation (const SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>& src) noexcept;
-                SortedAssociation (SortedAssociation<KEY_TYPE, VALUE_TYPE, TRAITS>&& src) noexcept;
+                SortedAssociation (const SortedAssociation& src) noexcept = default;
+                SortedAssociation (SortedAssociation&& src) noexcept      = default;
                 SortedAssociation (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 SortedAssociation (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value>::type>

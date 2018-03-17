@@ -101,8 +101,8 @@ namespace Stroika {
                 /**
                  */
                 SortedCollection ();
-                SortedCollection (const SortedCollection<T, TRAITS>& src) noexcept;
-                SortedCollection (SortedCollection<T, TRAITS>&& src) noexcept;
+                SortedCollection (const SortedCollection& src) noexcept = default;
+                SortedCollection (SortedCollection&& src) noexcept      = default;
                 SortedCollection (const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T, TRAITS>*>::value>::type>
                 SortedCollection (const CONTAINER_OF_T& src);

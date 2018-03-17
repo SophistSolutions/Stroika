@@ -30,18 +30,6 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline Collection<T>::Collection (const Collection<T>& src) noexcept
-                : inherited (src)
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T>
-            inline Collection<T>::Collection (Collection<T>&& src) noexcept
-                : inherited (move (src))
-            {
-                _AssertRepValidType ();
-            }
-            template <typename T>
             template <typename COPY_FROM_ITERATOR_OF_T>
             inline Collection<T>::Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : Collection ()

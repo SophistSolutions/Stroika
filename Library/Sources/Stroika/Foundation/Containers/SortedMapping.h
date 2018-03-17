@@ -73,8 +73,8 @@ namespace Stroika {
                  *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                  */
                 SortedMapping ();
-                SortedMapping (const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src) noexcept;
-                SortedMapping (SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& src) noexcept;
+                SortedMapping (const SortedMapping& src) noexcept = default;
+                SortedMapping (SortedMapping&& src) noexcept      = default;
                 SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<(Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value>::type>

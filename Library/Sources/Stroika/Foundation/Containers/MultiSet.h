@@ -162,8 +162,8 @@ namespace Stroika {
                  *      \endcode
                  */
                 MultiSet ();
-                MultiSet (const MultiSet<T, TRAITS>& src) noexcept;
-                MultiSet (MultiSet<T, TRAITS>&& src) noexcept;
+                MultiSet (const MultiSet& src) noexcept = default;
+                MultiSet (MultiSet&& src) noexcept      = default;
                 MultiSet (const initializer_list<T>& src);
                 MultiSet (const initializer_list<CountedValue<T>>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>

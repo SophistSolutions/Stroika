@@ -30,18 +30,6 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src) noexcept
-                : inherited (src)
-            {
-                _AssertRepValidType ();
-            }
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& src) noexcept
-                : inherited (move (src))
-            {
-                _AssertRepValidType ();
-            }
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
                 : Bijection ()
             {
