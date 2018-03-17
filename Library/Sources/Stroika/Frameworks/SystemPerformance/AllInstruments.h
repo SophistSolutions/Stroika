@@ -9,7 +9,7 @@
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/DataExchange/Atom.h"
 
-#include "InstrumentSet.h"
+#include "Instrument.h"
 
 /*
  * TODO:
@@ -23,7 +23,7 @@ namespace Stroika {
             /*
              *
              */
-            InstrumentSet GetAllInstruments ();
+            Set<Instrument> GetAllInstruments ();
         }
     }
 }

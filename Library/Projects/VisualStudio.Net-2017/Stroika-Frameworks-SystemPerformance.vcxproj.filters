@@ -20,9 +20,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.inl">
       <Filter>Sources</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl">
-      <Filter>Sources</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.inl">
       <Filter>Sources</Filter>
     </None>
@@ -50,9 +47,6 @@
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.cpp">
@@ -91,9 +85,6 @@
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.h">
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\AllInstruments.h">

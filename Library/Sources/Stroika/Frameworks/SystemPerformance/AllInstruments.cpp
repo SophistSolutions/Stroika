@@ -23,14 +23,14 @@ using namespace Stroika::Frameworks::SystemPerformance;
  ******************* SystemPerformance::GetAllInstruments ***********************
  ********************************************************************************
  */
-InstrumentSet SystemPerformance::GetAllInstruments ()
+Set<Instrument> SystemPerformance::GetAllInstruments ()
 {
     /*
      *  OK to cache - copyable - but construct AFTER main (only when called here).
      *
      *  Return a sorted set. Not strictly required, but looks better in some uses, and doesn't cost anything.
      */
-    static InstrumentSet kInstruments_ = SortedSet<Instrument, Private_::InstrumentSetTraits_>{
+    static Set<Instrument> kInstruments_ = SortedSet<Instrument>{
         Instruments::CPU::GetInstrument (),
         Instruments::Memory::GetInstrument (),
         Instruments::Filesystem::GetInstrument (),

@@ -9,7 +9,7 @@
 #include "../../Foundation/Containers/Set.h"
 #include "../../Foundation/Time/Duration.h"
 
-#include "InstrumentSet.h"
+#include "Instrument.h"
 
 /*
  * TODO:
@@ -31,7 +31,7 @@ namespace Stroika {
              */
             class CaptureSet {
             public:
-                CaptureSet (const Duration& period = Duration (30.0), const InstrumentSet& instruments = InstrumentSet ());
+                CaptureSet (const Duration& period = Duration (30.0), const Set<Instrument>& instruments = {});
 
             public:
                 /**
@@ -46,19 +46,19 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual InstrumentSet GetInstrumentSet () const;
+                nonvirtual Set<Instrument> GetInstrumentSet () const;
 
             public:
                 /**
                  */
-                nonvirtual void SetInstrumentSet (const InstrumentSet& i);
+                nonvirtual void SetInstrumentSet (const Set<Instrument>& i);
 
             public:
                 nonvirtual void AddInstrument (const Instrument i);
 
             private:
-                InstrumentSet fInstruments_;
-                Duration      fPeriod_;
+                Set<Instrument> fInstruments_;
+                Duration        fPeriod_;
             };
         }
     }

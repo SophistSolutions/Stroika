@@ -20,7 +20,7 @@ namespace Stroika {
              *********************** SystemPerformance::CaptureSet **************************
              ********************************************************************************
              */
-            inline CaptureSet::CaptureSet (const Duration& period, const InstrumentSet& instruments)
+            inline CaptureSet::CaptureSet (const Duration& period, const Set<Instrument>& instruments)
                 : fInstruments_ (instruments)
                 , fPeriod_ (period)
             {
@@ -33,11 +33,11 @@ namespace Stroika {
             {
                 fPeriod_ = p;
             }
-            inline InstrumentSet CaptureSet::GetInstrumentSet () const
+            inline Set<Instrument> CaptureSet::GetInstrumentSet () const
             {
                 return fInstruments_;
             }
-            inline void CaptureSet::SetInstrumentSet (const InstrumentSet& i)
+            inline void CaptureSet::SetInstrumentSet (const Set<Instrument>& i)
             {
                 fInstruments_ = i;
             }

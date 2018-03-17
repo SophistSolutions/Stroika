@@ -99,6 +99,15 @@ namespace Stroika {
                  */
                 template <typename T>
                 nonvirtual T CaptureOneMeasurement (Range<DurationSecondsType>* measurementTimeOut = nullptr);
+
+                bool operator== (const Instrument& rhs) const
+                {
+                    return fInstrumentName == rhs.fInstrumentName;
+                }
+                bool operator< (const Instrument& rhs) const
+                {
+                    return fInstrumentName < rhs.fInstrumentName;
+                }
             };
         }
     }

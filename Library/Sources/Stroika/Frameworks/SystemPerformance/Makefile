@@ -22,7 +22,6 @@ Objs	=	\
 	$(ObjDir)Capturer.o\
 	$(ObjDir)CaptureSet.o\
 	$(ObjDir)Instrument.o\
-	$(ObjDir)InstrumentSet.o\
 	$(ObjDir)Measurement.o\
 	$(ObjDir)MeasurementSet.o\
 

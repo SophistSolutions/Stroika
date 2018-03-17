@@ -78,7 +78,6 @@
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Makefile" />
     <None Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Measurement.inl" />
@@ -93,7 +92,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/SystemPerformance-Instruments-Memory.obj</ObjectFileName>
@@ -184,7 +182,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Capturer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\CaptureSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instrument.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\InstrumentSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\CPU.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Memory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\SystemPerformance\Instruments\Filesystem.h" />
