@@ -18,11 +18,13 @@ namespace Stroika {
         namespace Containers {
             namespace Factory {
 
+#if 0
                 // Not sure why this pre-declare needed on GCC 4.7? Either a bug with my mutual #include file stuff or??? Hmmm...
                 // no biggie for now...
                 // -- LGP 2013-07-21
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class SortedMapping_stdmap;
+#endif
 
                 /*
                  ********************************************************************************
