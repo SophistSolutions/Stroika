@@ -295,7 +295,7 @@ namespace Stroika {
             bool Iterable<T>::Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer) const
             {
                 // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
-                return static_cast<bool> (this->FindFirstThat ([element, equalsComparer](T i) -> bool {
+                return static_cast<bool> (this->FindFirstThat ([&element, &equalsComparer](T i) -> bool {
                     return equalsComparer.Equals (i, element);
                 }));
             }
@@ -534,14 +534,14 @@ namespace Stroika {
                 return CreateGenerator (getNext);
             }
             template <typename T>
-            Iterable<T> Iterable<T>::OrderBy (const function<bool(T, T)>& compare) const
+            Iterable<T> Iterable<T>::OrderBy (const function<bool(T, T)>& compareLess) const
             {
                 using Memory::Optional;
                 vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
 #if qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
                 sort (tmp.begin (), tmp.end (), [compare](const T& l, const T& r) -> bool { return compare (l, r); });
 #else
-                sort (tmp.begin (), tmp.end (), compare);
+                sort (tmp.begin (), tmp.end (), compareLess);
 #endif
                 size_t                   idx{0};
                 function<Optional<T> ()> getNext = [tmp, idx]() mutable -> Optional<T> {

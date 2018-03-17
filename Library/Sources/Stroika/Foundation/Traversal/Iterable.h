@@ -702,7 +702,7 @@ namespace Stroika {
                  *  See:
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
                  */
-                nonvirtual Iterable<T> OrderBy (const function<bool(T, T)>& compare =
+                nonvirtual Iterable<T> OrderBy (const function<bool(T, T)>& compareLess =
                                                     [](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
 
             public:
