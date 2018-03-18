@@ -26,33 +26,35 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   SortedSet_stdset<T, TRAITS> is an std::map-based concrete implementation of the SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> container pattern.
+                 *  \brief   SortedSet_stdset<T> is an std::set-based concrete implementation of the SortedSet<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template <typename T, typename TRAITS = DefaultTraits::SortedSet<T>>
-                class SortedSet_stdset : public SortedSet<T, TRAITS> {
+                template <typename T>
+                class SortedSet_stdset : public SortedSet<T> {
                 private:
-                    using inherited = SortedSet<T, TRAITS>;
+                    using inherited = SortedSet<T>;
 
                 public:
                     SortedSet_stdset ();
-                    SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& src);
+                    template <typename LESS_COMPARER>
+                    explicit SortedSet_stdset (LESS_COMPARER lessComparer);
+                    SortedSet_stdset (const SortedSet_stdset& src) = default;
                     SortedSet_stdset (const std::initializer_list<T>& src);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedSet_stdset<T, TRAITS>*>::value>::type>
-                    explicit SortedSet_stdset (const CONTAINER_OF_T& src);
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>::value>::type>
+                    SortedSet_stdset (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     /**
                      */
-                    nonvirtual SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& rhs);
+                    nonvirtual SortedSet_stdset& operator= (const SortedSet_stdset& rhs) = default;
 
                 private:
                     class IImplRepBase_;
-                    template <typename USE_COMPARER>
+                    template <typename LESS_COMPARER>
                     class Rep_;
 
                 private:

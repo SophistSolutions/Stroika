@@ -8,7 +8,6 @@
 
 #include "../Configuration/Concepts.h"
 
-#include "DefaultTraits/SortedSet.h"
 #include "Set.h"
 
 /**
@@ -53,30 +52,16 @@ namespace Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template <typename T, typename TRAITS = DefaultTraits::SortedSet<T>>
-            class SortedSet : public Set<T, typename TRAITS::SetTraitsType> {
+            template <typename T>
+            class SortedSet : public Set<T> {
             private:
-                using inherited = Set<T, typename TRAITS::SetTraitsType>;
+                using inherited = Set<T>;
 
             public:
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using ArchetypeContainerType = SortedSet<T, TRAITS>;
-
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of SortedSet<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                using TraitsType = TRAITS;
-
-            public:
-                /**
-                 *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
+                using ArchetypeContainerType = SortedSet<T>;
 
             protected:
                 class _IRep;
@@ -88,12 +73,14 @@ namespace Stroika {
                 /**
                  */
                 SortedSet ();
+                template <typename LESS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<LESS_COMPARER>::value>>
+                explicit SortedSet (const LESS_COMPARER& lessComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedSet (const SortedSet& src) noexcept = default;
                 SortedSet (SortedSet&& src) noexcept      = default;
                 SortedSet (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet<T, TRAITS>*>::value>::type>
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet<T>*>::value>>
                 SortedSet (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
+                template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
@@ -103,8 +90,8 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual SortedSet<T, TRAITS>& operator= (const SortedSet<T, TRAITS>& rhs) = default;
-                nonvirtual SortedSet<T, TRAITS>& operator= (SortedSet<T, TRAITS>&& rhs) = default;
+                nonvirtual SortedSet<T>& operator= (const SortedSet<T>& rhs) = default;
+                nonvirtual SortedSet<T>& operator= (SortedSet<T>&& rhs) = default;
 
             protected:
                 /**
@@ -123,16 +110,16 @@ namespace Stroika {
             };
 
             /**
-             *  \brief  Implementation detail for SortedSet<T, TRAITS> implementors.
+             *  \brief  Implementation detail for SortedSet<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the SortedSet<T, TRAITS> container API.
+             *  the SortedSet<T> container API.
              *
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
-            template <typename T, typename TRAITS>
-            class SortedSet<T, TRAITS>::_IRep : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
+            template <typename T>
+            class SortedSet<T>::_IRep : public Set<T>::_IRep {
             };
         }
     }

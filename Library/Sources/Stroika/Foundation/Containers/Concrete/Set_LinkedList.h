@@ -25,20 +25,22 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   Set_LinkedList<T, TRAITS> is an LinkedList-based concrete implementation of the Set<T, TRAITS> container pattern.
+                 *  \brief   Set_LinkedList<T> is an LinkedList-based concrete implementation of the Set<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename T, typename TRAITS = DefaultTraits::Set<T>>
-                class Set_LinkedList : public Set<T, typename TRAITS::SetTraitsType> {
+                template <typename T>
+                class Set_LinkedList : public Set<T> {
                 private:
-                    using inherited = Set<T, typename TRAITS::SetTraitsType>;
+                    using inherited = Set<T>;
 
                 public:
                     /**
                      */
                     Set_LinkedList ();
-                    Set_LinkedList (const Set_LinkedList<T, TRAITS>& src);
+                    template <typename EQUALS_COMPARER>
+                    Set_LinkedList (const EQUALS_COMPARER& equalsComparer);
+                    Set_LinkedList (const Set_LinkedList<T>& src);
                     Set_LinkedList (const std::initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_LinkedList<T>*>::value>::type>
                     explicit Set_LinkedList (const CONTAINER_OF_T& src);
@@ -48,7 +50,7 @@ namespace Stroika {
                 public:
                     /**
                      */
-                    nonvirtual Set_LinkedList<T, TRAITS>& operator= (const Set_LinkedList<T, TRAITS>& rhs);
+                    nonvirtual Set_LinkedList<T>& operator= (const Set_LinkedList<T>& rhs);
 
                 private:
                     class IImplRepBase_;

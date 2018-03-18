@@ -11,6 +11,7 @@
  */
 #include <set>
 
+#include "../../Common/Compare.h"
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/IteratorImplHelper.h"
@@ -24,15 +25,15 @@ namespace Stroika {
 
                 /*
                  */
-                template <typename T, typename TRAITS>
-                class Set_stdset<T, TRAITS>::IImplRepBase_ : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
+                template <typename T>
+                class Set_stdset<T>::IImplRepBase_ : public Set<T>::_IRep {
                 };
 
                 /*
                  */
-                template <typename T, typename TRAITS>
-                template <typename USE_COMPARER>
-                class Set_stdset<T, TRAITS>::Rep_ : public IImplRepBase_ {
+                template <typename T>
+                template <typename LESS_COMPARER>
+                class Set_stdset<T>::Rep_ : public IImplRepBase_ {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -43,10 +44,15 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const LESS_COMPARER& lessComparer)
+                        : fLessComparer_ (lessComparer)
+                        , fData_ (lessComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
+                        , fLessComparer_ (from->fLessComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -54,6 +60,9 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
+
+                private:
+                    LESS_COMPARER fLessComparer_;
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -95,8 +104,12 @@ namespace Stroika {
                         return this->_FindFirstThat (doToElement, suggestedOwner);
                     }
 
-                    // Set<T, TRAITS>::_IRep overrides
+                    // Set<T>::_IRep overrides
                 public:
+                    virtual function<bool(T, T)> PeekEqualsComparer () const override
+                    {
+                        return Common::LessComparerToEqualsComparer<LESS_COMPARER>{fLessComparer_};
+                    }
                     virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
@@ -106,10 +119,10 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<T>::template MakeSharedPtr<Rep_> (fLessComparer_);
                         }
                     }
-                    virtual bool Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const override
+                    virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
@@ -155,7 +168,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, USE_COMPARER>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, LESS_COMPARER>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
@@ -164,46 +177,39 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 **************************** Set_setset<T, TRAITS> *****************************
+                 ********************************** Set_setset<T> *******************************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                inline Set_stdset<T, TRAITS>::Set_stdset ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_<Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>> ())
+                template <typename T>
+                inline Set_stdset<T>::Set_stdset ()
+                    : Set_stdset (std::less<T>{})
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline Set_stdset<T, TRAITS>::Set_stdset (const Set_stdset<T, TRAITS>& src)
-                    : inherited (src)
+                template <typename T>
+                template <typename LESS_COMPARER>
+                inline Set_stdset<T>::Set_stdset (const LESS_COMPARER& lessComparer)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> (lessComparer))
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline Set_stdset<T, TRAITS>::Set_stdset (const std::initializer_list<T>& src)
+                template <typename T>
+                inline Set_stdset<T>::Set_stdset (const std::initializer_list<T>& src)
                     : Set_stdset ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
+                template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline Set_stdset<T, TRAITS>::Set_stdset (const CONTAINER_OF_T& src)
+                inline Set_stdset<T>::Set_stdset (const CONTAINER_OF_T& src)
                     : Set_stdset ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline Set_stdset<T, TRAITS>& Set_stdset<T, TRAITS>::operator= (const Set_stdset<T, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename T, typename TRAITS>
-                inline void Set_stdset<T, TRAITS>::AssertRepValidType_ () const
+                template <typename T>
+                inline void Set_stdset<T>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember

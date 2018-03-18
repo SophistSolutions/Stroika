@@ -63,10 +63,9 @@ namespace Stroika {
 
                     public:
                         template <typename... CONTAINER_EXTRA_ARGS>
-                        STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... args);
+                        STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... stdContainerArgs);
                         STLContainerWrapper (const STLContainerWrapper&) = delete;
-                        template <typename... CONTAINER_EXTRA_ARGS>
-                        STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID, CONTAINER_EXTRA_ARGS&&... args);
+                        STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID);
 
                     public:
                         nonvirtual STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs) = delete;

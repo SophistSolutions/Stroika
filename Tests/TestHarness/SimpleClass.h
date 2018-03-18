@@ -45,7 +45,7 @@ namespace Stroika {
         nonvirtual size_t GetValue () const;
         static size_t     GetTotalLiveCount ();
 
-        explicit operator size_t () const { return fValue; }
+        //explicit operator size_t () const { return fValue; }
 
         SimpleClassWithoutComparisonOperators operator+ (const SimpleClassWithoutComparisonOperators& rhs) const
         {

@@ -16,50 +16,57 @@ namespace Stroika {
              ********************************** SortedSet<T> ********************************
              ********************************************************************************
              */
-            template <typename T, typename TRAITS>
-            inline SortedSet<T, TRAITS>::SortedSet ()
-                : inherited (move (Factory::SortedSet_Factory<T, TRAITS> () ()))
+            template <typename T>
+            inline SortedSet<T>::SortedSet ()
+                : SortedSet (std::less<T>{})
             {
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            inline SortedSet<T, TRAITS>::SortedSet (const _SortedSetRepSharedPtr& src) noexcept
+            template <typename T>
+            template <typename LESS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline SortedSet<T>::SortedSet (const LESS_COMPARER& lessComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::SortedSet_Factory<T, LESS_COMPARER> () (lessComparer)))
+            {
+                _AssertRepValidType ();
+            }
+            template <typename T>
+            inline SortedSet<T>::SortedSet (const _SortedSetRepSharedPtr& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            inline SortedSet<T, TRAITS>::SortedSet (_SortedSetRepSharedPtr&& src) noexcept
+            template <typename T>
+            inline SortedSet<T>::SortedSet (_SortedSetRepSharedPtr&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            inline SortedSet<T, TRAITS>::SortedSet (const initializer_list<T>& src)
+            template <typename T>
+            inline SortedSet<T>::SortedSet (const initializer_list<T>& src)
                 : SortedSet ()
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
+            template <typename T>
             template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& src)
+            inline SortedSet<T>::SortedSet (const CONTAINER_OF_T& src)
                 : SortedSet ()
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline SortedSet<T, TRAITS>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename T>
+            template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : SortedSet ()
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            inline void SortedSet<T, TRAITS>::_AssertRepValidType () const
+            template <typename T>
+            inline void SortedSet<T>::_AssertRepValidType () const
             {
 #if qDebug
                 _SafeReadRepAccessor<_IRep>{this};

@@ -22,7 +22,7 @@ namespace Stroika {
                 // Not sure why this pre-declare needed on GCC 4.7? Either a bug with my mutual #include file stuff or??? Hmmm...
                 // no biggie for now...
                 // -- LGP 2013-07-23
-                template <typename T, typename TRAITS>
+                template <typename T>
                 class SortedSet_stdset;
 #endif
 
@@ -31,10 +31,10 @@ namespace Stroika {
                  ************************ SortedSet_Factory<T, TRAITS> **************************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                atomic<SortedSet<T, TRAITS> (*) ()> SortedSet_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template <typename T, typename TRAITS>
-                inline SortedSet<T, TRAITS> SortedSet_Factory<T, TRAITS>::operator() () const
+                template <typename T, typename LESS_COMPARER>
+                atomic<SortedSet<T> (*) ()> SortedSet_Factory<T, LESS_COMPARER>::sFactory_ (nullptr);
+                template <typename T, typename LESS_COMPARER>
+                inline SortedSet<T> SortedSet_Factory<T, LESS_COMPARER>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -47,18 +47,35 @@ namespace Stroika {
                         return f ();
                     }
                     else {
-                        return Default_ ();
+                        return Default_ (std::less<T> ());
                     }
                 }
-                template <typename T, typename TRAITS>
-                void SortedSet_Factory<T, TRAITS>::Register (SortedSet<T, TRAITS> (*factory) ())
+                template <typename T, typename LESS_COMPARER>
+                inline SortedSet<T> SortedSet_Factory<T, LESS_COMPARER>::operator() (const LESS_COMPARER& lessComparer) const
+                {
+                    /*
+                     *  Would have been more performant to just and assure always properly set, but to initialize
+                     *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+                     *  with containers constructed before main.
+                     *
+                     *  This works more generally (and with hopefully modest enough performance impact).
+                     */
+                    if (auto f = sFactory_.load ()) {
+                        return f ();
+                    }
+                    else {
+                        return Default_ (lessComparer);
+                    }
+                }
+                template <typename T, typename LESS_COMPARER>
+                void SortedSet_Factory<T, LESS_COMPARER>::Register (SortedSet<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template <typename T, typename TRAITS>
-                inline SortedSet<T, TRAITS> SortedSet_Factory<T, TRAITS>::Default_ ()
+                template <typename T, typename LESS_COMPARER>
+                inline SortedSet<T> SortedSet_Factory<T, LESS_COMPARER>::Default_ (const LESS_COMPARER& lessComparer)
                 {
-                    return Concrete::SortedSet_stdset<T, TRAITS> ();
+                    return Concrete::SortedSet_stdset<T> (lessComparer);
                 }
             }
         }

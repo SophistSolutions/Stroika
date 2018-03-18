@@ -28,8 +28,7 @@ namespace Stroika {
                     Add_ (container, value);
                 }
                 template <typename CONTAINER_TYPE>
-                template <typename TRAITS>
-                inline void Adder<CONTAINER_TYPE>::Add_ (Set<value_type, TRAITS>* container, Configuration::ArgByValueType<value_type> value)
+                inline void Adder<CONTAINER_TYPE>::Add_ (Set<value_type>* container, Configuration::ArgByValueType<value_type> value)
                 {
                     RequireNotNull (container);
                     container->Add (value);

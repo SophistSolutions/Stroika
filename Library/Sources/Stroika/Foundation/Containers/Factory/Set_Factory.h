@@ -25,7 +25,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
-            template <typename T, typename TRAITS>
+            template <typename T>
             class Set;
 
             namespace Factory {
@@ -38,30 +38,31 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename T, typename TRAITS>
+                template <typename T, typename EQUALS_COMPARER>
                 class Set_Factory {
                 private:
-                    static atomic<Set<T, TRAITS> (*) ()> sFactory_;
+                    static atomic<Set<T> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Set<T,TRAITS> CTOR does so automatically.
                      */
-                    nonvirtual Set<T, TRAITS> operator() () const;
+                    nonvirtual Set<T> operator() () const;
+                    nonvirtual Set<T> operator() (const EQUALS_COMPARER& equalsComparer) const;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Set<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (Set<T, TRAITS> (*factory) () = nullptr);
+                    static void Register (Set<T> (*factory) () = nullptr);
 
                 private:
-                    static Set<T, TRAITS> Default_ ();
+                    static Set<T> Default_ (const EQUALS_COMPARER& equalsComparer);
 
                 private:
                     template <typename CHECK_T>
-                    static Set<T, TRAITS> Default_SFINAE_ (CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type* = 0);
-                    static Set<T, TRAITS> Default_SFINAE_ (...);
+                    static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value>::type* = 0);
+                    static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, ...);
                 };
             }
         }

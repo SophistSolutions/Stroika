@@ -19,7 +19,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
-            template <typename T, typename TRAITS>
+            template <typename T>
             class SortedSet;
 
             namespace Factory {
@@ -32,25 +32,26 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename T, typename TRAITS>
+                template <typename T, typename LESS_COMPARER>
                 class SortedSet_Factory {
                 private:
-                    static atomic<SortedSet<T, TRAITS> (*) ()> sFactory_;
+                    static atomic<SortedSet<T> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the SortedSet<T,TRAITS> CTOR does so automatically.
                      */
-                    nonvirtual SortedSet<T, TRAITS> operator() () const;
+                    nonvirtual SortedSet<T> operator() () const;
+                    nonvirtual SortedSet<T> operator() (const LESS_COMPARER& lessComparer) const;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SortedSet<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (SortedSet<T, TRAITS> (*factory) () = nullptr);
+                    static void Register (SortedSet<T> (*factory) () = nullptr);
 
                 private:
-                    static SortedSet<T, TRAITS> Default_ ();
+                    static SortedSet<T> Default_ (const LESS_COMPARER& lessComparer);
                 };
             }
         }

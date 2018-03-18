@@ -181,7 +181,7 @@ namespace Stroika {
                  *
                  *  @see Iterable<T>::Where
                  */
-                nonvirtual Set<T, TRAITS> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
+                nonvirtual Set<T> Where (const function<bool(ArgByValueType<T>)>& doToElement) const;
 
             public:
                 /**

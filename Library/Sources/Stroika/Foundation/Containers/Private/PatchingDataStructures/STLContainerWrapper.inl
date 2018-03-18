@@ -21,14 +21,13 @@ namespace Stroika {
                      */
                     template <typename STL_CONTAINER_OF_T>
                     template <typename... CONTAINER_EXTRA_ARGS>
-                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... args)
-                        : inherited (std::forward<CONTAINER_EXTRA_ARGS> (args)...)
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... stdContainerArgs)
+                        : inherited (eCreateNewConstructorSelector, std::forward<CONTAINER_EXTRA_ARGS> (stdContainerArgs)...)
                     {
                     }
                     template <typename STL_CONTAINER_OF_T>
-                    template <typename... CONTAINER_EXTRA_ARGS>
-                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID, CONTAINER_EXTRA_ARGS&&... args)
-                        : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr, std::forward<CONTAINER_EXTRA_ARGS> (args)...)
+                    inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (STLContainerWrapper<STL_CONTAINER_OF_T>* rhs, IteratorOwnerID newOwnerID)
+                        : inherited (rhs, newOwnerID, (ForwardIterator*)nullptr)
                     {
                         RequireNotNull (rhs);
                         rhs->Invariant ();

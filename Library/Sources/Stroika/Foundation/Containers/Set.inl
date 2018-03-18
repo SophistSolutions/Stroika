@@ -13,53 +13,60 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ******************************* Set<T, TRAITS> *********************************
+             ************************************* Set<T> ***********************************
              ********************************************************************************
              */
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set ()
-                : inherited (move (Factory::Set_Factory<T, TRAITS> () ()))
+            template <typename T>
+            inline Set<T>::Set ()
+                : Set (equal_to<T>{})
             {
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set (const initializer_list<T>& src)
+            template <typename T>
+            template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline Set<T>::Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::Set_Factory<T, EQUALS_COMPARER> () (equalsComparer)))
+            {
+                _AssertRepValidType ();
+            }
+            template <typename T>
+            inline Set<T>::Set (const initializer_list<T>& src)
                 : Set ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
+            template <typename T>
             template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
+            inline Set<T>::Set (const CONTAINER_OF_T& src)
                 : Set ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set (const _SetRepSharedPtr& src) noexcept
+            template <typename T>
+            inline Set<T>::Set (const _SetRepSharedPtr& src) noexcept
                 : inherited (src)
             {
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>::Set (_SetRepSharedPtr&& src) noexcept
+            template <typename T>
+            inline Set<T>::Set (_SetRepSharedPtr&& src) noexcept
                 : inherited ((RequireNotNull (src), move (src)))
             {
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename T>
+            template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
+            inline Set<T>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : Set ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
 #if qDebug
-            template <typename T, typename TRAITS>
-            Set<T, TRAITS>::~Set ()
+            template <typename T>
+            Set<T>::~Set ()
             {
                 if (this->_GetSharingState () != Memory::SharedByValue_State::eNull) {
                     // SharingState can be NULL because of MOVE semantics
@@ -67,13 +74,46 @@ namespace Stroika {
                 }
             }
 #endif
-            template <typename T, typename TRAITS>
-            inline bool Set<T, TRAITS>::Contains (ArgByValueType<T> item) const
+            template <typename T>
+            inline function<bool(T, T)> Set<T>::PeekEqualsComparer () const
+            {
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekEqualsComparer ();
+            }
+            template <typename T>
+            inline function<bool(T, T)> Set<T>::GetEqualsComparer () const
+            {
+                return this->GetEqualsComparer_ ();
+            }
+            template <typename T>
+            template <typename ENABLE_IF_HAS_EQUALS>
+            inline function<bool(T, T)> Set<T>::GetEqualsComparer_ () const
+            {
+                if (auto f = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekEqualsComparer ()) {
+                    return f;
+                }
+                else {
+                    return std::equal_to<T> ();
+                }
+            }
+            template <typename T>
+            template <typename ENABLE_IF_NOT_HAS_EQUALS>
+            inline function<bool(T, T)> Set<T>::GetEqualsComparer_ (ENABLE_IF_NOT_HAS_EQUALS*) const
+            {
+                if (auto f = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekEqualsComparer ()) {
+                    return f;
+                }
+                else {
+                    AssertNotReached ();
+                    return nullptr;
+                }
+            }
+            template <typename T>
+            inline bool Set<T>::Contains (ArgByValueType<T> item) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Contains (item);
             }
-            template <typename T, typename TRAITS>
-            bool Set<T, TRAITS>::IsSubsetOf (const Set<T>& superset) const
+            template <typename T>
+            bool Set<T>::IsSubsetOf (const Set<T>& superset) const
             {
                 for (auto i : *this) {
                     if (not superset.Contains (i)) {
@@ -82,18 +122,18 @@ namespace Stroika {
                 }
                 return true;
             }
-            template <typename T, typename TRAITS>
-            inline Memory::Optional<T> Set<T, TRAITS>::Lookup (ArgByValueType<T> item) const
+            template <typename T>
+            inline Memory::Optional<T> Set<T>::Lookup (ArgByValueType<T> item) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item);
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::Add (ArgByValueType<T> item)
+            template <typename T>
+            inline void Set<T>::Add (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (item);
             }
-            template <typename T, typename TRAITS>
-            inline bool Set<T, TRAITS>::AddIf (ArgByValueType<T> item)
+            template <typename T>
+            inline bool Set<T>::AddIf (ArgByValueType<T> item)
             {
                 /*
                  *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
@@ -108,35 +148,35 @@ namespace Stroika {
                     return true;
                 }
             }
-            template <typename T, typename TRAITS>
+            template <typename T>
             template <typename COPY_FROM_ITERATOR_OF_T>
-            void Set<T, TRAITS>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            void Set<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
-            template <typename T, typename TRAITS>
+            template <typename T>
             template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline void Set<T, TRAITS>::AddAll (const CONTAINER_OF_T& s)
+            inline void Set<T>::AddAll (const CONTAINER_OF_T& s)
             {
                 // Note - unlike Collection<T, TRAITS> - we dont need to check for this != &s because if we
                 // attempt to add items that already exist, it would do nothing, and not lead to
                 // an infinite loop
                 AddAll (std::begin (s), std::end (s));
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::Remove (ArgByValueType<T> item)
+            template <typename T>
+            inline void Set<T>::Remove (ArgByValueType<T> item)
             {
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (item);
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::Remove (const Iterator<T>& i)
+            template <typename T>
+            inline void Set<T>::Remove (const Iterator<T>& i)
             {
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
             }
-            template <typename T, typename TRAITS>
-            inline bool Set<T, TRAITS>::RemoveIf (ArgByValueType<T> item)
+            template <typename T>
+            inline bool Set<T>::RemoveIf (ArgByValueType<T> item)
             {
                 /*
                  *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
@@ -151,46 +191,46 @@ namespace Stroika {
                     return false;
                 }
             }
-            template <typename T, typename TRAITS>
+            template <typename T>
             template <typename COPY_FROM_ITERATOR_OF_T>
-            void Set<T, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            void Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (*i);
                 }
             }
-            template <typename T, typename TRAITS>
+            template <typename T>
             template <typename CONTAINER_OF_T>
-            inline void Set<T, TRAITS>::RemoveAll (const CONTAINER_OF_T& s)
+            inline void Set<T>::RemoveAll (const CONTAINER_OF_T& s)
             {
                 RemoveAll (std::begin (s), std::end (s));
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::RemoveAll ()
+            template <typename T>
+            inline void Set<T>::RemoveAll ()
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 if (not tmp._ConstGetRep ().IsEmpty ()) {
                     tmp._UpdateRep (tmp._ConstGetRep ().CloneEmpty (this));
                 }
             }
-            template <typename T, typename TRAITS>
-            inline bool Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
+            template <typename T>
+            inline bool Set<T>::Equals (const Set<T>& rhs) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Equals (_SafeReadRepAccessor<_IRep>{&rhs}._ConstGetRep ());
             }
-            template <typename T, typename TRAITS>
-            inline bool Set<T, TRAITS>::Equals (const Iterable<T>& rhs) const
+            template <typename T>
+            inline bool Set<T>::Equals (const Iterable<T>& rhs) const
             {
                 // KISS for now
-                return Equals (Set<T, TRAITS>{rhs});
+                return Equals (Set<T>{rhs});
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> Set<T, TRAITS>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
+            template <typename T>
+            inline Set<T> Set<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
-                return Iterable<T>::Where (includeIfTrue, Set<T, TRAITS>{});
+                return Iterable<T>::Where (includeIfTrue, Set<T>{});
             }
-            template <typename T, typename TRAITS>
-            bool Set<T, TRAITS>::Intersects (const Iterable<T>& rhs) const
+            template <typename T>
+            bool Set<T>::Intersects (const Iterable<T>& rhs) const
             {
                 for (T i : rhs) {
                     if (Contains (i)) {
@@ -199,10 +239,10 @@ namespace Stroika {
                 }
                 return false;
             }
-            template <typename T, typename TRAITS>
-            Set<T, TRAITS> Set<T, TRAITS>::Intersection (const Iterable<T>& rhs) const
+            template <typename T>
+            Set<T> Set<T>::Intersection (const Iterable<T>& rhs) const
             {
-                Set<T, TRAITS> result;
+                Set<T> result{this->GetEqualsComparer ()};
                 for (T i : rhs) {
                     if (Contains (i)) {
                         result.Add (i);
@@ -210,24 +250,24 @@ namespace Stroika {
                 }
                 return result;
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> Set<T, TRAITS>::Union (const Iterable<T>& rhs) const
+            template <typename T>
+            inline Set<T> Set<T>::Union (const Iterable<T>& rhs) const
             {
-                Set<T, TRAITS> r = *this;
+                Set<T> r = *this;
                 r.AddAll (rhs);
                 return r;
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> Set<T, TRAITS>::Union (const T& rhs) const
+            template <typename T>
+            inline Set<T> Set<T>::Union (ArgByValueType<T> rhs) const
             {
-                Set<T, TRAITS> r = *this;
+                Set<T> r = *this;
                 r.Add (rhs);
                 return r;
             }
-            template <typename T, typename TRAITS>
-            Set<T, TRAITS> Set<T, TRAITS>::Difference (const Set<T, TRAITS>& rhs) const
+            template <typename T>
+            Set<T> Set<T>::Difference (const Set<T>& rhs) const
             {
-                Set<T, TRAITS> result;
+                Set<T> result{this->GetEqualsComparer ()};
                 for (T i : *this) {
                     if (not rhs.Contains (i)) {
                         result.Add (i);
@@ -235,63 +275,63 @@ namespace Stroika {
                 }
                 return result;
             }
-            template <typename T, typename TRAITS>
-            Set<T, TRAITS> Set<T, TRAITS>::Difference (const T& rhs) const
+            template <typename T>
+            Set<T> Set<T>::Difference (ArgByValueType<T> rhs) const
             {
-                return Difference (Set<T, TRAITS>{rhs});
+                return Difference (Set<T>{rhs});
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>& Set<T, TRAITS>::operator+= (T item)
+            template <typename T>
+            inline Set<T>& Set<T>::operator+= (ArgByValueType<T> item)
             {
                 Add (item);
                 return *this;
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>& Set<T, TRAITS>::operator+= (const Iterable<T>& items)
+            template <typename T>
+            inline Set<T>& Set<T>::operator+= (const Iterable<T>& items)
             {
                 AddAll (items);
                 return *this;
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>& Set<T, TRAITS>::operator-= (T item)
+            template <typename T>
+            inline Set<T>& Set<T>::operator-= (ArgByValueType<T> item)
             {
                 Remove (item);
                 return *this;
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>& Set<T, TRAITS>::operator-= (const Iterable<T>& items)
+            template <typename T>
+            inline Set<T>& Set<T>::operator-= (const Iterable<T>& items)
             {
                 RemoveAll (items);
                 return *this;
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS>& Set<T, TRAITS>::operator^= (const Iterable<T>& items)
+            template <typename T>
+            inline Set<T>& Set<T>::operator^= (const Iterable<T>& items)
             {
                 *this = Intersection (items);
                 return *this;
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::clear ()
+            template <typename T>
+            inline void Set<T>::clear ()
             {
                 RemoveAll ();
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::insert (ArgByValueType<T> item)
+            template <typename T>
+            inline void Set<T>::insert (ArgByValueType<T> item)
             {
                 Add (item);
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::erase (ArgByValueType<T> item)
+            template <typename T>
+            inline void Set<T>::erase (ArgByValueType<T> item)
             {
                 Remove (item);
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::erase (const Iterator<T>& i)
+            template <typename T>
+            inline void Set<T>::erase (const Iterator<T>& i)
             {
                 Remove (i);
             }
-            template <typename T, typename TRAITS>
-            inline void Set<T, TRAITS>::_AssertRepValidType () const
+            template <typename T>
+            inline void Set<T>::_AssertRepValidType () const
             {
 #if qDebug
                 _SafeReadRepAccessor<_IRep>{this};
@@ -300,11 +340,11 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ************************** Set<T, TRAITS>::_IRep *******************************
+             ********************************** Set<T>::_IRep *******************************
              ********************************************************************************
              */
-            template <typename T, typename TRAITS>
-            bool Set<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            template <typename T>
+            bool Set<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {
                     return true;
@@ -326,58 +366,58 @@ namespace Stroika {
              ******************************* Set<T> operators *******************************
              ********************************************************************************
              */
-            template <typename T, typename TRAITS>
-            inline bool operator== (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
+            template <typename T>
+            inline bool operator== (const Set<T>& lhs, const Set<T>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline bool operator== (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            template <typename T>
+            inline bool operator== (const Set<T>& lhs, const Iterable<T>& rhs)
             {
                 return lhs.Equals (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline bool operator== (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs)
+            template <typename T>
+            inline bool operator== (const Iterable<T>& lhs, const Set<T>& rhs)
             {
                 return rhs.Equals (lhs);
             }
-            template <typename T, typename TRAITS>
-            inline bool operator!= (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
+            template <typename T>
+            inline bool operator!= (const Set<T>& lhs, const Set<T>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline bool operator!= (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            template <typename T>
+            inline bool operator!= (const Set<T>& lhs, const Iterable<T>& rhs)
             {
                 return not lhs.Equals (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline bool operator!= (const Iterable<T>& lhs, const Set<T, TRAITS>& rhs)
+            template <typename T>
+            inline bool operator!= (const Iterable<T>& lhs, const Set<T>& rhs)
             {
                 return not rhs.Equals (lhs);
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> operator+ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            template <typename T>
+            inline Set<T> operator+ (const Set<T>& lhs, const Iterable<T>& rhs)
             {
                 return lhs.Union (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> operator+ (const Set<T, TRAITS>& lhs, const T& rhs)
+            template <typename T>
+            inline Set<T> operator+ (const Set<T>& lhs, const T& rhs)
             {
                 return lhs.Union (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> operator- (const Set<T, TRAITS>& lhs, const Set<T, TRAITS>& rhs)
+            template <typename T>
+            inline Set<T> operator- (const Set<T>& lhs, const Set<T>& rhs)
             {
                 return lhs.Difference (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> operator- (const Set<T, TRAITS>& lhs, const T& rhs)
+            template <typename T>
+            inline Set<T> operator- (const Set<T>& lhs, const T& rhs)
             {
                 return lhs.Difference (rhs);
             }
-            template <typename T, typename TRAITS>
-            inline Set<T, TRAITS> operator^ (const Set<T, TRAITS>& lhs, const Iterable<T>& rhs)
+            template <typename T>
+            inline Set<T> operator^ (const Set<T>& lhs, const Iterable<T>& rhs)
             {
                 return lhs.Intersection (rhs);
             }

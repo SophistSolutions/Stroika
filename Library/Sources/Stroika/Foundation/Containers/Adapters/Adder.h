@@ -53,8 +53,7 @@ namespace Stroika {
                     static void Add (CONTAINER_TYPE* container, Configuration::ArgByValueType<value_type> value);
 
                 private:
-                    template <typename TRAITS>
-                    static void Add_ (Set<value_type, TRAITS>* container, Configuration::ArgByValueType<value_type> value);
+                    static void Add_ (Set<value_type>* container, Configuration::ArgByValueType<value_type> value);
                     template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                     static void Add_ (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>* container, Configuration::ArgByValueType<value_type> value);
                     template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

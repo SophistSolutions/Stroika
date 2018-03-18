@@ -79,6 +79,22 @@ namespace Stroika {
                 }
             };
 
+            // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
+            template <typename EQUALS_COMPARER>
+            struct OldStyleEqualsComparerFromNewStyleEqualsComparer {
+                EQUALS_COMPARER fEqualsComparer_;
+                constexpr OldStyleEqualsComparerFromNewStyleEqualsComparer (const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{})
+                    : fEqualsComparer_ (equalsComparer)
+                {
+                }
+
+                template <typename T>
+                bool Equals (const T& v1, const T& v2) const
+                {
+                    return fEqualsComparer_ (v1, v2);
+                }
+            };
+
             /// Stroika uses compreres that reutrn <, 0, or >, and this converts one of those into an equals comparer
             template <typename INT_RESULT_COMPARER>
             struct EqualsComparerFromIntResultComparer {
@@ -98,6 +114,47 @@ namespace Stroika {
             struct ComparerWithEquals : ComparerWithEqualsOptionally<T> {
                 RequireConceptAppliesToTypeMemberOfClass (RequireOperatorEquals, T);
                 static_assert (Configuration::EqualityComparable<T> (), "T must be EqualityComparable");
+            };
+
+            /**
+             *  take a less comparer (like std::less<> which returns a bool, and convert it to a function that returns -1 for <, 0 for ==, and 1 for >
+             */
+            template <typename LESS_COMPARER>
+            struct TotalOrderComparerFromLessComparer {
+                template <typename T>
+                constexpr int operator() (const T& lhs, const T& rhs) const
+                {
+                    if (LESS_COMPARER{}(lhs, rhs)) {
+                        return -1;
+                    }
+                    if (LESS_COMPARER{}(rhs, lhs)) {
+                        return 1;
+                    }
+                    return 0;
+                }
+            };
+
+            /**
+            *  take a less comparer (like std::less<> which returns a bool, and convert it to a function that returns -1 for <, 0 for ==, and 1 for >
+            */
+            template <typename LESS_COMPARER>
+            struct LessComparerToEqualsComparer {
+                LESS_COMPARER fLessComparer_;
+                LessComparerToEqualsComparer (const LESS_COMPARER& lessComparer = {})
+                    : fLessComparer_ (lessComparer)
+                {
+                }
+                template <typename T>
+                constexpr int operator() (const T& lhs, const T& rhs) const
+                {
+                    if (fLessComparer_ (lhs, rhs)) {
+                        return 0;
+                    }
+                    if (fLessComparer_ (rhs, lhs)) {
+                        return 0;
+                    }
+                    return 1;
+                }
             };
 
             /**

@@ -1737,9 +1737,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\MultiSet.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\Set.h">
-      <Filter>Sources\Containers\DefaultTraits</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedCollection.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
@@ -1747,9 +1744,6 @@
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMultiSet.h">
-      <Filter>Sources\Containers\DefaultTraits</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedSet.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h">

@@ -21,13 +21,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************** Set_Factory<T, TRAITS> ******************************
+                 ************************** Set_Factory<T, EQUALS_COMPARER> *********************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                atomic<Set<T, TRAITS> (*) ()> Set_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template <typename T, typename TRAITS>
-                inline Set<T, TRAITS> Set_Factory<T, TRAITS>::operator() () const
+                template <typename T, typename EQUALS_COMPARER>
+                atomic<Set<T> (*) ()> Set_Factory<T, EQUALS_COMPARER>::sFactory_ (nullptr);
+                template <typename T, typename EQUALS_COMPARER>
+                inline Set<T> Set_Factory<T, EQUALS_COMPARER>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -40,30 +40,52 @@ namespace Stroika {
                         return f ();
                     }
                     else {
-                        return Default_ ();
+                        return Default_ (std::equal_to<T> ());
                     }
                 }
-                template <typename T, typename TRAITS>
-                void Set_Factory<T, TRAITS>::Register (Set<T, TRAITS> (*factory) ())
+                template <typename T, typename EQUALS_COMPARER>
+                inline Set<T> Set_Factory<T, EQUALS_COMPARER>::operator() (const EQUALS_COMPARER& equalsComparer) const
+                {
+                    /*
+                     *  Would have been more performant to just and assure always properly set, but to initialize
+                     *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+                     *  with containers constructed before main.
+                     *
+                     *  This works more generally (and with hopefully modest enough performance impact).
+                     */
+                    if (auto f = sFactory_.load ()) {
+                        return f ();
+                    }
+                    else {
+                        return Default_ (equalsComparer);
+                    }
+                }
+                template <typename T, typename EQUALS_COMPARER>
+                void Set_Factory<T, EQUALS_COMPARER>::Register (Set<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template <typename T, typename TRAITS>
-                inline Set<T, TRAITS> Set_Factory<T, TRAITS>::Default_ ()
+                template <typename T, typename EQUALS_COMPARER>
+                inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_ (const EQUALS_COMPARER& equalsComparer)
                 {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
-                    return Default_SFINAE_ (static_cast<T*> (nullptr));
+                    return Default_SFINAE_ (equalsComparer, static_cast<T*> (nullptr));
                 }
-                template <typename T, typename TRAITS>
+                template <typename T, typename EQUALS_COMPARER>
                 template <typename CHECK_T>
-                inline Set<T, TRAITS> Set_Factory<T, TRAITS>::Default_SFINAE_ (CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value and is_same<TRAITS, DefaultTraits::Set<CHECK_T>>::value>::type*)
+                inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value>::type*)
                 {
-                    return Concrete::Set_stdset<T> (); // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
+                    if (typeid (EQUALS_COMPARER) == typeid (equal_to<T>)) {
+                        return Concrete::Set_stdset<T> (); // OK to omit TRAITS (and not manually pass in equals) cuz checked this method using default traits so no need to specify traits here
+                    }
+                    else {
+                        return Concrete::Set_LinkedList<T> (equalsComparer);
+                    }
                 }
-                template <typename T, typename TRAITS>
-                inline Set<T, TRAITS> Set_Factory<T, TRAITS>::Default_SFINAE_ (...)
+                template <typename T, typename EQUALS_COMPARER>
+                inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, ...)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Set<> for large sizes,
@@ -74,7 +96,7 @@ namespace Stroika {
                      *  Calls may use an explicit initializer of Set_xxx<> to get better performance for large sized
                      *  sets.
                      */
-                    return Concrete::Set_LinkedList<T, TRAITS> ();
+                    return Concrete::Set_LinkedList<T> (equalsComparer); // probably not right - probably have to specify ARG to CTOR with comparer
                 }
             }
         }

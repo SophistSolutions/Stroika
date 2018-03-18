@@ -23,23 +23,22 @@ namespace Stroika {
 
                 /*
                  */
-                template <typename T, typename TRAITS>
-                class Set_LinkedList<T, TRAITS>::IImplRepBase_ : public Set<T, TRAITS>::_IRep {
+                template <typename T>
+                class Set_LinkedList<T>::IImplRepBase_ : public Set<T>::_IRep {
                 private:
-                    using inherited = typename Set<T, TRAITS>::_IRep;
+                    using inherited = typename Set<T>::_IRep;
 
                 protected:
                     // @todo - DONT UNDERTAND WHY these 2 using declarations needed? on visual studio.net?? retest!
-                    //using _SetRepSharedPtr = typename inherited::_SetRepSharedPtr;
                     using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                 };
 
                 /*
                  */
-                template <typename T, typename TRAITS>
+                template <typename T>
                 template <typename EQUALS_COMPARER>
-                class Set_LinkedList<T, TRAITS>::Rep_ : public IImplRepBase_ {
+                class Set_LinkedList<T>::Rep_ : public IImplRepBase_ {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -50,14 +49,21 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const EQUALS_COMPARER& equalsComparer)
+                        : fEqualsComparer_ (equalsComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
+                        , fEqualsComparer_ (from->fEqualsComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
                     }
+
+                private:
+                    EQUALS_COMPARER fEqualsComparer_;
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
@@ -110,8 +116,12 @@ namespace Stroika {
                         return RESULT_TYPE (resultRep);
                     }
 
-                    // Set<T, TRAITS>::_IRep overrides
+                    // Set<T>::_IRep overrides
                 public:
+                    virtual function<bool(T, T)> PeekEqualsComparer () const override
+                    {
+                        return fEqualsComparer_;
+                    }
                     virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
@@ -121,22 +131,22 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<T>::template MakeSharedPtr<Rep_> (fEqualsComparer_);
                         }
                     }
-                    virtual bool Equals (const typename Set<T, TRAITS>::_IRep& rhs) const override
+                    virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
                     virtual bool Contains (ArgByValueType<T> item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item, EQUALS_COMPARER{}) != nullptr;
+                        return fData_.Lookup (item, fEqualsComparer_) != nullptr;
                     }
                     virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const T*                                                        l = fData_.Lookup (item, EQUALS_COMPARER{});
+                        const T*                                                        l = fData_.Lookup (item, fEqualsComparer_);
                         return (l == nullptr) ? Memory::Optional<T> () : Memory::Optional<T> (*l);
                     }
                     virtual void Add (ArgByValueType<T> item) override
@@ -144,7 +154,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
                         // safe to use UnpatchedForwardIterator cuz locked and no updates
                         for (typename DataStructureImplType_::UnpatchedForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (EQUALS_COMPARER () (it.Current (), item)) {
+                            if (fEqualsComparer_ (it.Current (), item)) {
                                 return;
                             }
                         }
@@ -155,7 +165,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
                         using Traversal::kUnknownIteratorOwnerID;
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                            if (EQUALS_COMPARER () (it.Current (), item)) {
+                            if (fEqualsComparer_ (it.Current (), item)) {
                                 fData_.RemoveAt (it);
                                 return;
                             }
@@ -187,54 +197,61 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************ Set_LinkedList<T, TRAITS> *****************************
+                 ******************************** Set_LinkedList<T> *****************************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                inline Set_LinkedList<T, TRAITS>::Set_LinkedList ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_<Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>>> ())
+                template <typename T>
+                inline Set_LinkedList<T>::Set_LinkedList ()
+                    : Set_LinkedList (std::equal_to<T>{})
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline Set_LinkedList<T, TRAITS>::Set_LinkedList (const Set_LinkedList<T, TRAITS>& src)
+                template <typename T>
+                template <typename EQUALS_COMPARER>
+                inline Set_LinkedList<T>::Set_LinkedList (const EQUALS_COMPARER& equalsComparer)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
+                {
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
+                inline Set_LinkedList<T>::Set_LinkedList (const Set_LinkedList<T>& src)
                     : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline Set_LinkedList<T, TRAITS>::Set_LinkedList (const initializer_list<T>& src)
+                template <typename T>
+                inline Set_LinkedList<T>::Set_LinkedList (const initializer_list<T>& src)
                     : Set_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
+                template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline Set_LinkedList<T, TRAITS>::Set_LinkedList (const CONTAINER_OF_T& src)
+                inline Set_LinkedList<T>::Set_LinkedList (const CONTAINER_OF_T& src)
                     : Set_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
+                template <typename T>
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                inline Set_LinkedList<T, TRAITS>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                inline Set_LinkedList<T>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : Set_LinkedList ()
                 {
                     AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline Set_LinkedList<T, TRAITS>& Set_LinkedList<T, TRAITS>::operator= (const Set_LinkedList<T, TRAITS>& rhs)
+                template <typename T>
+                inline Set_LinkedList<T>& Set_LinkedList<T>::operator= (const Set_LinkedList<T>& rhs)
                 {
                     AssertRepValidType_ ();
                     inherited::operator= (static_cast<const inherited&> (rhs));
                     AssertRepValidType_ ();
                     return *this;
                 }
-                template <typename T, typename TRAITS>
-                inline void Set_LinkedList<T, TRAITS>::AssertRepValidType_ () const
+                template <typename T>
+                inline void Set_LinkedList<T>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember

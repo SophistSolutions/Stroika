@@ -21,6 +21,7 @@ namespace Stroika {
         namespace Containers {
             namespace Concrete {
 
+#if 0
                 /**
                  *  Set_stdset requires its own traits (besides DefaultTraits::Set) because of the neeed for a compare function for std::set<>
                  */
@@ -34,38 +35,28 @@ namespace Stroika {
                      */
                     RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
                 };
+#endif
 
                 /**
-                 *  \brief   Set_stdset<KEY_TYPE, VALUE_TYPE, TRAITS> is an std::set-based concrete implementation of the Set<T, TRAITS> container pattern.
+                 *  \brief   Set_stdset<KEY_TYPE, VALUE_TYPE, TRAITS> is an std::set-based concrete implementation of the Set<T> container pattern.
                  *
                  *  \note   \em Implemenation   Just indirect to SortedSet_stdset<>, which in turn mostly indirects to std::set<T>
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template <typename T, typename TRAITS = Set_stdset_DefaultTraits<T>>
-                class Set_stdset : public Set<T, typename TRAITS::SetTraitsType> {
+                template <typename T>
+                class Set_stdset : public Set<T> {
                 private:
-                    using inherited = Set<T, typename TRAITS::SetTraitsType>;
-
-                public:
-                    /**
-                     */
-                    using TraitsType = TRAITS;
-
-                public:
-                    /**
-                     */
-                    using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
-
-                public:
-                    RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+                    using inherited = Set<T>;
 
                 public:
                     /**
                      */
                     Set_stdset ();
-                    Set_stdset (const Set_stdset<T, TRAITS>& src);
+                    template <typename LESS_COMPARER>
+                    Set_stdset (const LESS_COMPARER& lessComparer);
+                    Set_stdset (const Set_stdset& src) = default;
                     Set_stdset (const std::initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value>::type>
                     explicit Set_stdset (const CONTAINER_OF_T& src);
@@ -75,11 +66,11 @@ namespace Stroika {
                 public:
                     /**
                      */
-                    nonvirtual Set_stdset<T, TRAITS>& operator= (const Set_stdset<T, TRAITS>& rhs);
+                    nonvirtual Set_stdset& operator= (const Set_stdset& rhs) = default;
 
                 private:
                     class IImplRepBase_;
-                    template <typename USE_COMPARER>
+                    template <typename LESS_COMPARER>
                     class Rep_;
 
                 private:

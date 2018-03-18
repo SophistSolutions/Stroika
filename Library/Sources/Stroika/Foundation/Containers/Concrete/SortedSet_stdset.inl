@@ -22,21 +22,21 @@ namespace Stroika {
         namespace Containers {
             namespace Concrete {
 
-                template <typename T, typename TRAITS>
-                class SortedSet_stdset<T, TRAITS>::IImplRepBase_ : public SortedSet<T, TRAITS>::_IRep {
+                template <typename T>
+                class SortedSet_stdset<T>::IImplRepBase_ : public SortedSet<T>::_IRep {
                 };
 
                 /*
                  */
-                template <typename T, typename TRAITS>
-                template <typename USE_COMPARER>
-                class SortedSet_stdset<T, TRAITS>::Rep_ : public IImplRepBase_ {
+                template <typename T>
+                template <typename LESS_COMPARER>
+                class SortedSet_stdset<T>::Rep_ : public IImplRepBase_ {
                 private:
                     using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-                    using _SetSharedPtrIRep     = typename Set<T, typename TRAITS::SetTraitsType>::_SetRepSharedPtr;
+                    using _SetSharedPtrIRep     = typename Set<T>::_SetRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 
@@ -92,8 +92,13 @@ namespace Stroika {
                         return this->_FindFirstThat (doToElement, suggestedOwner);
                     }
 
-                    // Set<T, TRAITS>::_IRep overrides
+                    // Set<T>::_IRep overrides
                 public:
+                    virtual function<bool(T, T)> PeekEqualsComparer () const override
+                    {
+                        // maybe should return nullptr here???
+                        return [](T l, T r) -> bool { return Common::LessComparerToEqualsComparer<LESS_COMPARER>{}(l, r); };
+                    }
                     virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
@@ -106,7 +111,7 @@ namespace Stroika {
                             return Iterable<T>::template MakeSharedPtr<Rep_> ();
                         }
                     }
-                    virtual bool Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const override
+                    virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
@@ -153,7 +158,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, USE_COMPARER>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, LESS_COMPARER>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
@@ -162,54 +167,47 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************** SortedSet_stdset<T, TRAITS> *****************************
+                 ****************************** SortedSet_stdset<T> *****************************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                inline SortedSet_stdset<T, TRAITS>::SortedSet_stdset ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_<Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>> ())
+                template <typename T>
+                inline SortedSet_stdset<T>::SortedSet_stdset ()
+                    : SortedSet_stdset (std::less<T>{})
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& src)
-                    : inherited (src)
+                template <typename T>
+                template <typename LESS_COMPARER>
+                inline SortedSet_stdset<T>::SortedSet_stdset (LESS_COMPARER lessComparer)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> ())
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const initializer_list<T>& src)
+                template <typename T>
+                SortedSet_stdset<T>::SortedSet_stdset (const initializer_list<T>& src)
                     : SortedSet_stdset ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
+                template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
-                inline SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& src)
+                SortedSet_stdset<T>::SortedSet_stdset (const CONTAINER_OF_T& src)
                     : SortedSet_stdset ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
+                template <typename T>
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                inline SortedSet_stdset<T, TRAITS>::SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                inline SortedSet_stdset<T>::SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : SortedSet_stdset ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline SortedSet_stdset<T, TRAITS>& SortedSet_stdset<T, TRAITS>::operator= (const SortedSet_stdset<T, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename T, typename TRAITS>
-                inline void SortedSet_stdset<T, TRAITS>::AssertRepValidType_ () const
+                template <typename T>
+                inline void SortedSet_stdset<T>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember

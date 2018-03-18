@@ -18,10 +18,15 @@ namespace Stroika {
                      ********************************************************************************
                      */
                     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
-                    template <typename COMBINED_ITERATOR, typename... EXTRA_ARGS>
-                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload, EXTRA_ARGS&&... args)
-                        : inherited ((RequireNotNull (rhs), *rhs), std::forward<EXTRA_ARGS> (args)...)
-                        , fActiveIteratorsListHead_ (nullptr)
+                    template <typename... CONTAINER_EXTRA_ARGS>
+                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (_CreateNewConstructorSelector, CONTAINER_EXTRA_ARGS&&... stdContainerArgs)
+                        : inherited (std::forward<CONTAINER_EXTRA_ARGS> (stdContainerArgs)...)
+                    {
+                    }
+                    template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
+                    template <typename COMBINED_ITERATOR>
+                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload)
+                        : inherited ((RequireNotNull (rhs), *rhs))
                     {
                         Assert (not HasActiveIterators ());
                         std::lock_guard<std::mutex> critSec (rhs->fActiveIteratorsMutex_);

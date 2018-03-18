@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "Stroika/Foundation/Common/Compare.h"
 #include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 #include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -20,26 +21,31 @@
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Common;
 
 using Concrete::SortedSet_stdset;
 
 namespace {
-    template <typename CONCRETE_CONTAINER>
-    void RunTests_ ()
+    template <typename CONCRETE_CONTAINER, typename LESS_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
+    void RunTests_ (const LESS_COMPARER& lessComparer, CONCRETE_CONTAINER_FACTORY factory)
     {
         typedef typename CONCRETE_CONTAINER::value_type T;
-        typedef typename CONCRETE_CONTAINER::TraitsType TraitsType;
-        auto                                            testFunc = [](const SortedSet<T, TraitsType>& s) {
+        auto                                            testFunc = [&](const SortedSet<T>& s) {
             // verify in sorted order
             Memory::Optional<T> last;
             for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
+                    VerifyTestResult (TotalOrderComparerFromLessComparer<LESS_COMPARER>{}(*last, i) <= 0);
                 }
                 last = i;
             }
         };
-        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, SortedSet<T, TraitsType>> (testFunc);
+        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, SortedSet<T>> (factory, testFunc);
+    }
+    template <typename CONCRETE_CONTAINER>
+    void RunTests_ ()
+    {
+        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, []() { return CONCRETE_CONTAINER (); });
     }
 }
 
@@ -81,33 +87,19 @@ namespace {
     {
         using namespace CommonTests::SetTests;
 
-        struct MySimpleClassWithoutComparisonOperators_CompareEquals_ {
-            typedef SimpleClassWithoutComparisonOperators value_type;
-            static bool                                   Equals (value_type v1, value_type v2)
+        struct MySimpleClassWithoutComparisonOperators_LESS_ {
+            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
-                return v1.GetValue () == v2.GetValue ();
+                return lhs.GetValue () < rhs.GetValue ();
             }
         };
-        struct MySimpleClassWithoutComparisonOperators_Comparer_ {
-            typedef SimpleClassWithoutComparisonOperators value_type;
-            static bool                                   Equals (value_type v1, value_type v2)
-            {
-                return v1.GetValue () == v2.GetValue ();
-            }
-            static int Compare (value_type v1, value_type v2)
-            {
-                return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
-            }
-        };
-        typedef DefaultTraits::SortedSet<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_, MySimpleClassWithoutComparisonOperators_Comparer_> SimpleClassWithoutComparisonOperators_SETTRAITS;
-
         RunTests_<SortedSet<size_t>> ();
         RunTests_<SortedSet<SimpleClass>> ();
-        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETTRAITS>> ();
+        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedSet<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         RunTests_<SortedSet_stdset<size_t>> ();
         RunTests_<SortedSet_stdset<SimpleClass>> ();
-        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETTRAITS>> ();
+        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedSet_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         Test2_InitalizeCTORs_::DoRun ();
     }
