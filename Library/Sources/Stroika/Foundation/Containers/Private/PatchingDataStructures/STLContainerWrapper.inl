@@ -22,7 +22,7 @@ namespace Stroika {
                     template <typename STL_CONTAINER_OF_T>
                     template <typename... CONTAINER_EXTRA_ARGS>
                     inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... stdContainerArgs)
-                        : inherited (eCreateNewConstructorSelector, std::forward<CONTAINER_EXTRA_ARGS> (stdContainerArgs)...)
+                        : inherited (inherited::eCreateNewConstructorSelector, std::forward<CONTAINER_EXTRA_ARGS> (stdContainerArgs)...)
                     {
                     }
                     template <typename STL_CONTAINER_OF_T>
