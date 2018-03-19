@@ -290,7 +290,115 @@ namespace Stroika {
              *          o   Transitivity: a <= b and b <= c implies a <= c
              *          o   Comparability: either a <= b or b <= a
              *
-             *  Our comparisons ALL require Transitivity and Comparability.
+             *  Our comparisons ALL require Comparability; and all the <,<=,>,>= comparisons require Transitivity
+             *
+             *  Types of Comparers:
+             *      <, <=, ==, etc, are functions from SxS => bool. They are also called relations (where the
+             *      relationship need not be comparable). But in our domain, they are all comparable, so all comparers
+             *      are function<bool(T,T)> - at least logically.
+             *
+             *      Most of Stroika's containers concern themselves with == testing. The value of == can always be derived from
+             *      !=, <=, <, >, >=, though not necessarily very efficiently (the greater/less than ones translate one call to two).
+             *
+             *      A frequently more efficient strategy is compare(T,T)-> int (<0 is <, ==0, means equals, >0 means >).
+             *      This strategy was widely used in the "C" world (e.g. strcmp, quicksort, etc).
+             *
+             *      It also appears to be making a comeback for C++20 (http://open-std.org/JTC1/SC22/WG21/docs/papers/2017/p0515r0.pdf)
+             *
+             *  std-c++ favors a handful of these predefined functions
+             *      >   less
+             *      >   equal_to ( to a lesser degree)
+             *  but also provides
+             *      >   greater
+             *      >   less_equal
+             *      >   greater_equal
+             *      >   not_equal_to
+             *
+             *  c++ also appears to support this funtion<int(T,T)> approach rarely (eg. string<>::compare).
+             *
+             *  The biggest problem with how std-c++ supports these comparison operators, is that typeid(equal_to<int>) is 
+             *  essentially unrelated to typeid(equal_to<char>). There is no 'tag' (as with bidirectional iterators etc) to 
+             *  identify different classes of comparison and so no easy to to leverage the natural relationships between
+             *  equal_to and less_equal.
+             *
+             *  So to get started, we fill that gap: ComparisonTraits.
+             */
+
+            /**
+             *  Standin until C++20, three way compare
+             */
+            template <typename T>
+            struct ThreeWayCompare {
+                constexpr int operator() (const T& _Left, const T& _Right) const
+                {
+                    // in general, can do this much more efficiently (subtract left and right), but for now, KISS
+                    if (equal_to<T>{}(_Left, _Right)) {
+                        return 0;
+                    }
+                    return less<T>{}(_Left, _Right) ? -1 : 1;
+                }
+            };
+
+            /**
+             */
+            enum class ComparisonFunciton {
+                eEquals,
+                eNotEquals,
+                eLess,
+                eGreater,
+                eLessOrEqual,
+                eGreaterOrEqual,
+                eThreeWayCompare
+            };
+
+            /**
+             *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
+             *  specific user-defined types.
+             */
+            template <typename COMPARE_FUNCTION>
+            struct ComparisonTraits {
+            };
+            template <typename T>
+            struct ComparisonTraits<equal_to<T>> {
+                static constexpr ComparisonFunciton value = ComparisonFunciton::eEquals;
+            };
+            template <typename T>
+            struct ComparisonTraits<not_equal_to<T>> {
+                static constexpr ComparisonFunciton value = ComparisonFunciton::eNotEquals;
+            };
+            template <typename T>
+            struct ComparisonTraits<less<T>> {
+                static constexpr ComparisonFunciton value = ComparisonFunciton::eLess;
+            };
+            template <typename T>
+            struct ComparisonTraits<greater<T>> {
+                static constexpr ComparisonFunciton value = ComparisonFunciton::eGreater;
+            };
+            template <typename T>
+            struct ComparisonTraits<less_equal<T>> {
+                static constexpr ComparisonFunciton value = ComparisonFunciton::eLessOrEqual;
+            };
+            template <typename T>
+            struct ComparisonTraits<greater_equal<T>> {
+                static constexpr ComparisonFunciton value = ComparisonFunciton::eGreaterOrEqual;
+            };
+            template <typename T>
+            struct ComparisonTraits<ThreeWayCompare<T>> {
+                static constexpr ComparisonFunciton value = ComparisonFunciton::eThreeWayCompare;
+            };
+
+            /**
+             *      NEXT STEP - add helper class to create known less/greater etc comparison objects from lambda(function<>>)
+             *
+             *  THEN - add constexpr concept IsEqualsComparer(), IsLessComparer() - using the above.
+             *
+             *  AROUND then (maybe bfore last two) - add adapters to CONVERT diffenrt kinds of comparison
+             *      CNA AUTOMATICALLY do all these - case by case. 
+             *      struct MakeComparer<ComparisonFunciton::eGreaterOrEqual,FROM_COMPARER>
+             *
+             *
+             *           *  THEN can add enable_if or static_assert() into Set/SortedSet so we know rihgt type of comparer? Maybe?
+             *  Maybe not easy with getCompareEquals() result (may need differnt type).
              *
              */
         }
