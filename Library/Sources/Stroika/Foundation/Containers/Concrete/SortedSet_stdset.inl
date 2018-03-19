@@ -41,7 +41,11 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const LESS_COMPARER& lessComparer)
+                        : fLessComparer_ (lessComparer)
+                        , fData_ (lessComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
@@ -55,6 +59,9 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
+                private:
+                    LESS_COMPARER fLessComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -96,8 +103,7 @@ namespace Stroika {
                 public:
                     virtual function<bool(T, T)> PeekEqualsComparer () const override
                     {
-                        // maybe should return nullptr here???
-                        return [](T l, T r) -> bool { return Common::LessComparerToEqualsComparer<LESS_COMPARER>{}(l, r); };
+                        return Common::LessComparerToEqualsComparer<LESS_COMPARER>{fLessComparer_};
                     }
                     virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -108,7 +114,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<T>::template MakeSharedPtr<Rep_> (fLessComparer_);
                         }
                     }
                     virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
@@ -179,7 +185,7 @@ namespace Stroika {
                 template <typename T>
                 template <typename LESS_COMPARER>
                 inline SortedSet_stdset<T>::SortedSet_stdset (LESS_COMPARER lessComparer)
-                    : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> ())
+                    : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> (lessComparer))
                 {
                     AssertRepValidType_ ();
                 }

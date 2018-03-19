@@ -652,7 +652,7 @@ namespace Stroika {
              ******************************* String::LessCI *********************************
              ********************************************************************************
              */
-            bool String::EqualToCI::operator() (const String& lhs, const String& rhs) const
+            inline bool String::LessCI::operator() (const String& lhs, const String& rhs) const
             {
                 return lhs.Compare (rhs, CompareOptions::eCaseInsensitive) < 0;
             }

@@ -39,18 +39,18 @@ namespace Stroika {
                      */
                     Set_LinkedList ();
                     template <typename EQUALS_COMPARER>
-                    Set_LinkedList (const EQUALS_COMPARER& equalsComparer);
-                    Set_LinkedList (const Set_LinkedList<T>& src);
+                    explicit Set_LinkedList (const EQUALS_COMPARER& equalsComparer);
+                    Set_LinkedList (const Set_LinkedList& src) = default;
                     Set_LinkedList (const std::initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_LinkedList<T>*>::value>::type>
-                    explicit Set_LinkedList (const CONTAINER_OF_T& src);
+                    Set_LinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                    Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     /**
                      */
-                    nonvirtual Set_LinkedList<T>& operator= (const Set_LinkedList<T>& rhs);
+                    nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs) = default;
 
                 private:
                     class IImplRepBase_;

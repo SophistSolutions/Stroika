@@ -25,7 +25,7 @@ namespace Stroika {
             template <typename T>
             template <typename LESS_COMPARER, typename ENABLE_IF_IS_COMPARER>
             inline SortedSet<T>::SortedSet (const LESS_COMPARER& lessComparer, ENABLE_IF_IS_COMPARER*)
-                : inherited (move (Factory::SortedSet_Factory<T, LESS_COMPARER> () (lessComparer)))
+                : inherited (move (Factory::SortedSet_Factory<T, LESS_COMPARER> (lessComparer) ()))
             {
                 _AssertRepValidType ();
             }

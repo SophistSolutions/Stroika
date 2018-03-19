@@ -214,12 +214,6 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Set_LinkedList<T>::Set_LinkedList (const Set_LinkedList<T>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
                 inline Set_LinkedList<T>::Set_LinkedList (const initializer_list<T>& src)
                     : Set_LinkedList ()
                 {
@@ -241,14 +235,6 @@ namespace Stroika {
                 {
                     AddAll (start, end);
                     AssertRepValidType_ ();
-                }
-                template <typename T>
-                inline Set_LinkedList<T>& Set_LinkedList<T>::operator= (const Set_LinkedList<T>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
                 }
                 template <typename T>
                 inline void Set_LinkedList<T>::AssertRepValidType_ () const

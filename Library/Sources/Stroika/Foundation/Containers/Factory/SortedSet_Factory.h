@@ -11,8 +11,6 @@
 /**
  *  \file
  *
- *  TODO:
- *
  */
 
 namespace Stroika {
@@ -27,28 +25,33 @@ namespace Stroika {
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedSet<> container
                  *
-                 *  Note - you can override the underlying factory dynamically by calling SortedSet_Factory<T,TRAITS>::Register (), or
-                 *  replace it statically by template-specailizing SortedSet_Factory<T,TRAITS>::New () - though the later is trickier.
+                 *  Note - you can override the underlying factory dynamically by calling SortedSet_Factory<T,LESS_COMPARER>::Register (), or
+                 *  replace it statically by template-specailizing SortedSet_Factory<T,TRAITS>::operator() () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename T, typename LESS_COMPARER>
+                template <typename T, typename LESS_COMPARER = less<T>>
                 class SortedSet_Factory {
                 private:
-                    static atomic<SortedSet<T> (*) ()> sFactory_;
+                    static atomic<SortedSet<T> (*) (const LESS_COMPARER&)> sFactory_;
+
+                public:
+                    SortedSet_Factory (const LESS_COMPARER& lessComparer);
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the SortedSet<T,TRAITS> CTOR does so automatically.
                      */
                     nonvirtual SortedSet<T> operator() () const;
-                    nonvirtual SortedSet<T> operator() (const LESS_COMPARER& lessComparer) const;
+
+                private:
+                    LESS_COMPARER fLessComparer_;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SortedSet<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (SortedSet<T> (*factory) () = nullptr);
+                    static void Register (SortedSet<T> (*factory) (const LESS_COMPARER&) = nullptr);
 
                 private:
                     static SortedSet<T> Default_ (const LESS_COMPARER& lessComparer);

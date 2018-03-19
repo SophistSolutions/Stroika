@@ -33,12 +33,12 @@ namespace Stroika {
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Set<> container
                  *
-                 *  Note - you can override the underlying factory dynamically by calling Set_Factory<T,TRAITS>::Register (), or
-                 *  replace it statically by template-specailizing Set_Factory<T,TRAITS>::New () - though the later is trickier.
+                 *  Note - you can override the underlying factory dynamically by calling Set_Factory<T,EQUALS_COMPARER>::Register (), or
+                 *  replace it statically by template-specailizing Set_Factory<T,TRAITS>::operator () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename T, typename EQUALS_COMPARER>
+                template <typename T, typename EQUALS_COMPARER = equal_to<T>>
                 class Set_Factory {
                 private:
                     static atomic<Set<T> (*) (const EQUALS_COMPARER&)> sFactory_;
