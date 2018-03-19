@@ -341,7 +341,7 @@ namespace Stroika {
 
             /**
              */
-            enum class ComparisonFunciton {
+            enum class ComparisonFunction {
                 eEquals,
                 eNotEquals,
                 eLess,
@@ -357,34 +357,35 @@ namespace Stroika {
              */
             template <typename COMPARE_FUNCTION>
             struct ComparisonTraits {
+                static constexpr ComparisonFunction value = COMPARE_FUNCTION::kType; // default - so user-defined types can do this to automatically define their Comparison Traits
             };
             template <typename T>
             struct ComparisonTraits<equal_to<T>> {
-                static constexpr ComparisonFunciton value = ComparisonFunciton::eEquals;
+                static constexpr ComparisonFunction value = ComparisonFunction::eEquals;
             };
             template <typename T>
             struct ComparisonTraits<not_equal_to<T>> {
-                static constexpr ComparisonFunciton value = ComparisonFunciton::eNotEquals;
+                static constexpr ComparisonFunction value = ComparisonFunction::eNotEquals;
             };
             template <typename T>
             struct ComparisonTraits<less<T>> {
-                static constexpr ComparisonFunciton value = ComparisonFunciton::eLess;
+                static constexpr ComparisonFunction value = ComparisonFunction::eLess;
             };
             template <typename T>
             struct ComparisonTraits<greater<T>> {
-                static constexpr ComparisonFunciton value = ComparisonFunciton::eGreater;
+                static constexpr ComparisonFunction value = ComparisonFunction::eGreater;
             };
             template <typename T>
             struct ComparisonTraits<less_equal<T>> {
-                static constexpr ComparisonFunciton value = ComparisonFunciton::eLessOrEqual;
+                static constexpr ComparisonFunction value = ComparisonFunction::eLessOrEqual;
             };
             template <typename T>
             struct ComparisonTraits<greater_equal<T>> {
-                static constexpr ComparisonFunciton value = ComparisonFunciton::eGreaterOrEqual;
+                static constexpr ComparisonFunction value = ComparisonFunction::eGreaterOrEqual;
             };
             template <typename T>
             struct ComparisonTraits<ThreeWayCompare<T>> {
-                static constexpr ComparisonFunciton value = ComparisonFunciton::eThreeWayCompare;
+                static constexpr ComparisonFunction value = ComparisonFunction::eThreeWayCompare;
             };
 
             /**
@@ -394,7 +395,7 @@ namespace Stroika {
              *
              *  AROUND then (maybe bfore last two) - add adapters to CONVERT diffenrt kinds of comparison
              *      CNA AUTOMATICALLY do all these - case by case. 
-             *      struct MakeComparer<ComparisonFunciton::eGreaterOrEqual,FROM_COMPARER>
+             *      struct MakeComparer<ComparisonFunction::eGreaterOrEqual,FROM_COMPARER>
              *
              *
              *           *  THEN can add enable_if or static_assert() into Set/SortedSet so we know rihgt type of comparer? Maybe?

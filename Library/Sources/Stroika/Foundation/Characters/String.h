@@ -9,6 +9,7 @@
 #include <locale>
 #include <string>
 
+#include "../Common/Compare.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/Set.h"
 #include "../Execution/ModuleInit.h"
@@ -1067,6 +1068,12 @@ namespace Stroika {
                 nonvirtual bool Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
+                struct EqualToCI;
+
+            public:
+                struct LessCI;
+
+            public:
                 /**
                  *  Alias for basic_string>char>::npos - except this is constexpr.
                  *
@@ -1120,7 +1127,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  need more overloads. 
+                 *  need more overloads.
                  *
                  *  Returns String::npos if not found, else the zero based index.
                  */
@@ -1196,6 +1203,22 @@ namespace Stroika {
             pair<const Character*, const Character*> String::GetData () const;
             template <>
             pair<const wchar_t*, const wchar_t*> String::GetData () const;
+
+            /*
+             *  Equivilent to std::equal_to<String>, except doing case insensitive compares
+             */
+            struct String::EqualToCI {
+                static constexpr Common::ComparisonFunction kType = Common::ComparisonFunction::eEquals;
+                nonvirtual bool                             operator() (const String& lhs, const String& rhs) const;
+            };
+
+            /*
+             *  Equivilent to std::less<String>, except doing case insensitive compares
+             */
+            struct String::LessCI {
+                static constexpr Common::ComparisonFunction kType = Common::ComparisonFunction::eLess;
+                nonvirtual bool                             operator() (const String& lhs, const String& rhs) const;
+            };
 
             /**
              * Protected helper Rep class.
