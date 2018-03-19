@@ -280,6 +280,19 @@ namespace Stroika {
                     nonvirtual bool operator() (Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const;
                 };
             }
+
+            /*
+             *  NEW (as of 2.0a231) Comparison logic
+             *
+             *  \par Total Ordering (http://mathworld.wolfram.com/TotallyOrderedSet.html)
+             *          o   Reflexivity: a <= a 
+             *          o   Antisymmetry:  a <= b and b <= a implies a=b
+             *          o   Transitivity: a <= b and b <= c implies a <= c
+             *          o   Comparability: either a <= b or b <= a
+             *
+             *  Our comparisons ALL require Transitivity and Comparability.
+             *
+             */
         }
     }
 }
