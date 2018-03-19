@@ -174,7 +174,7 @@ namespace Stroika {
                 nonvirtual function<bool(T, T)> GetEqualsComparer () const;
 
             private:
-                template <typename ENABLE_IF_HAS_EQUALS = enable_if_t<Configuration::has_eq<T>::value>>
+                template <typename CHECK = T, typename ENABLE_IF_HAS_EQUALS = enable_if_t<Configuration::has_eq<CHECK>::value>>
                 nonvirtual function<bool(T, T)> GetEqualsComparer_ () const;
                 nonvirtual function<bool(T, T)> GetEqualsComparer_ (...) const;
 

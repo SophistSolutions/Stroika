@@ -85,7 +85,7 @@ namespace Stroika {
                 return this->GetEqualsComparer_ ();
             }
             template <typename T>
-            template <typename ENABLE_IF_HAS_EQUALS>
+            template <typename CHECK, typename ENABLE_IF_HAS_EQUALS>
             inline function<bool(T, T)> Set<T>::GetEqualsComparer_ () const
             {
                 if (auto f = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekEqualsComparer ()) {
