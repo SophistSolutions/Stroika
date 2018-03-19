@@ -25,7 +25,7 @@ namespace Stroika {
             template <typename T>
             template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
             inline Set<T>::Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
-                : inherited (move (Factory::Set_Factory<T, EQUALS_COMPARER> () (equalsComparer)))
+                : inherited (move (Factory::Set_Factory<T, EQUALS_COMPARER> (equalsComparer) ()))
             {
                 _AssertRepValidType ();
             }

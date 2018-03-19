@@ -41,20 +41,25 @@ namespace Stroika {
                 template <typename T, typename EQUALS_COMPARER>
                 class Set_Factory {
                 private:
-                    static atomic<Set<T> (*) ()> sFactory_;
+                    static atomic<Set<T> (*) (const EQUALS_COMPARER&)> sFactory_;
+
+                public:
+                    Set_Factory (const EQUALS_COMPARER& equalsComparer);
 
                 public:
                     /**
-                     *  You can call this directly, but there is no need, as the Set<T,TRAITS> CTOR does so automatically.
+                     *  You can call this directly, but there is no need, as the Set<T> CTOR does so automatically.
                      */
                     nonvirtual Set<T> operator() () const;
-                    nonvirtual Set<T> operator() (const EQUALS_COMPARER& equalsComparer) const;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Set<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (Set<T> (*factory) () = nullptr);
+                    static void Register (Set<T> (*factory) (const EQUALS_COMPARER&) = nullptr);
+
+                private:
+                    EQUALS_COMPARER fEqualsComparer_;
 
                 private:
                     static Set<T> Default_ (const EQUALS_COMPARER& equalsComparer);
