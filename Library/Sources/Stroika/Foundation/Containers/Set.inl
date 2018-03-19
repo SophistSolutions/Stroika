@@ -75,11 +75,6 @@ namespace Stroika {
             }
 #endif
             template <typename T>
-            inline function<bool(T, T)> Set<T>::PeekEqualsComparer () const
-            {
-                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekEqualsComparer ();
-            }
-            template <typename T>
             inline function<bool(T, T)> Set<T>::GetEqualsComparer () const
             {
                 return this->GetEqualsComparer_ ();
@@ -339,7 +334,7 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ********************************** Set<T>::_IRep *******************************
+             ******************************** Set<T>::_IRep *********************************
              ********************************************************************************
              */
             template <typename T>

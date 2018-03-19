@@ -106,14 +106,6 @@ namespace Stroika {
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
                 using ArchetypeContainerType = Set<T>;
-#if 0
-            public:
-                /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                using EqualsCompareFunctionType = typename TraitsType::EqualsCompareFunctionType;
-#endif
 
             public:
                 /**
@@ -160,12 +152,6 @@ namespace Stroika {
                  */
                 nonvirtual Set<T>& operator= (const Set<T>& rhs) = default;
                 nonvirtual Set<T>& operator= (Set<T>&& rhs) = default;
-
-            public:
-                /**
-                 *  Return the function used to compare if two elements are equal, which can be nullptr, implying use the default for 'T'
-                 */
-                nonvirtual function<bool(T, T)> PeekEqualsComparer () const;
 
             public:
                 /**
