@@ -103,7 +103,7 @@ namespace Stroika {
                 public:
                     virtual function<bool(T, T)> PeekEqualsComparer () const override
                     {
-                        return Common::LessComparerToEqualsComparer<LESS_COMPARER>{fLessComparer_};
+                        return Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_};
                     }
                     virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {

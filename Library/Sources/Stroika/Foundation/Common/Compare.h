@@ -95,6 +95,7 @@ namespace Stroika {
                 }
             };
 
+#if 0
             /// Stroika uses compreres that reutrn <, 0, or >, and this converts one of those into an equals comparer
             template <typename INT_RESULT_COMPARER>
             struct EqualsComparerFromIntResultComparer {
@@ -104,6 +105,7 @@ namespace Stroika {
                     return INT_RESULT_COMPARER () (v1, v2) == 0;
                 }
             };
+#endif
 
             /**
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
@@ -116,6 +118,7 @@ namespace Stroika {
                 static_assert (Configuration::EqualityComparable<T> (), "T must be EqualityComparable");
             };
 
+#if 0
             /**
              *  take a less comparer (like std::less<> which returns a bool, and convert it to a function that returns -1 for <, 0 for ==, and 1 for >
              */
@@ -133,6 +136,9 @@ namespace Stroika {
                     return 0;
                 }
             };
+#endif
+
+#if 0
 
             /**
             *  take a less comparer (like std::less<> which returns a bool, and convert it to a function that returns -1 for <, 0 for ==, and 1 for >
@@ -156,6 +162,7 @@ namespace Stroika {
                     return 1;
                 }
             };
+#endif
 
             /**
              *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
@@ -352,6 +359,34 @@ namespace Stroika {
             };
 
             /**
+             *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
+             *  the type.
+             */
+            template <ComparisonFunction TYPE>
+            struct ComparisonTraitsBase {
+                static constexpr ComparisonFunction kType = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+            };
+
+            /**
+             *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
+             *  the type.
+             */
+            template <ComparisonFunction TYPE, typename ACTUAL_COMPARER>
+            struct FunctionComparerAdapter {
+                static constexpr ComparisonFunction value = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                ACTUAL_COMPARER                     fActualComparer;
+                FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
+                    : fActualComparer (actualComparer)
+                {
+                }
+                template <typename T>
+                constexpr bool operator() (const T& lhs, const T& rhs) const
+                {
+                    return fActualComparer (lhs, rhs);
+                }
+            };
+
+            /**
              *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
              *  specific user-defined types.
              */
@@ -389,14 +424,111 @@ namespace Stroika {
             };
 
             /**
-             *      NEXT STEP - add helper class to create known less/greater etc comparison objects from lambda(function<>>)
-             *
-             *  THEN - add constexpr concept IsEqualsComparer(), IsLessComparer() - using the above.
-             *
-             *  AROUND then (maybe bfore last two) - add adapters to CONVERT diffenrt kinds of comparison
-             *      CNA AUTOMATICALLY do all these - case by case. 
-             *      struct MakeComparer<ComparisonFunction::eGreaterOrEqual,FROM_COMPARER>
-             *
+             *  \brief Use this to wrap any basic comparer, and produce a Less comparer
+             */
+            template <typename BASE_COMPARER>
+            struct LessComparerAdapter {
+                constexpr LessComparerAdapter (const BASE_COMPARER& baseComparer)
+                    : fBASE_COMPARER_ (baseComparer)
+                {
+                }
+                template <typename T>
+                constexpr bool operator() (const T& lhs, const T& rhs) const
+                {
+                    switch (ComparisonTraits<BASE_COMPARER>::value) {
+                        case ComparisonFunction::eLess:
+                            return fBASE_COMPARER_ (lhs, rhs);
+                        case ComparisonFunction::eLessOrEqual:
+                            return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
+                        case ComparisonFunction::eGreaterOrEqual:
+                            return not fBASE_COMPARER_ (lhs, rhs);
+                        case ComparisonFunction::eGreater:
+                            return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
+                        case ComparisonFunction::eThreeWayCompare:
+                            return fBASE_COMPARER_ (lhs, rhs) < 0;
+                        default:
+                            AssertNotReached ();
+                            return false;
+                    }
+                }
+
+            private:
+                BASE_COMPARER fBASE_COMPARER_;
+            };
+
+            /**
+             *  \brief Use this to wrap any basic comparer, and produce an Equals comparer
+             */
+            template <typename BASE_COMPARER>
+            struct EqualsComparerAdapter {
+                constexpr EqualsComparerAdapter (const BASE_COMPARER& baseComparer)
+                    : fBASE_COMPARER_ (baseComparer)
+                {
+                }
+                template <typename T>
+                constexpr bool operator() (const T& lhs, const T& rhs) const
+                {
+                    switch (ComparisonTraits<BASE_COMPARER>::value) {
+                        case ComparisonFunction::eEquals:
+                            return fBASE_COMPARER_ (lhs, rhs);
+                        case ComparisonFunction::eNotEquals:
+                            return not fBASE_COMPARER_ (lhs, rhs);
+                        case ComparisonFunction::eLess:
+                        case ComparisonFunction::eGreater:
+                            return not fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
+                        case ComparisonFunction::eLessOrEqual:
+                        case ComparisonFunction::eGreaterOrEqual:
+                            return fBASE_COMPARER_ (lhs, rhs) and fBASE_COMPARER_ (rhs, lhs);
+                        case ComparisonFunction::eThreeWayCompare:
+                            return fBASE_COMPARER_ (lhs, rhs) == 0;
+                        default:
+                            AssertNotReached ();
+                            return false;
+                    }
+                }
+
+            private:
+                BASE_COMPARER fBASE_COMPARER_;
+            };
+
+            /**
+             *  \brief Use this to wrap any basic comparer, and produce a Three-Way comparer
+             */
+            template <typename BASE_COMPARER>
+            struct ThreeWayComparerAdapter {
+                constexpr ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
+                    : fBASE_COMPARER_ (baseComparer)
+                {
+                }
+                template <typename T>
+                constexpr int operator() (const T& lhs, const T& rhs) const
+                {
+                    switch (ComparisonTraits<BASE_COMPARER>::value) {
+                        case ComparisonFunction::eLess:
+                            return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
+                        case ComparisonFunction::eLessOrEqual:
+                            AssertNotImplemented ();
+                            return false;
+                        case ComparisonFunction::eGreaterOrEqual:
+                            AssertNotImplemented ();
+                            return false;
+                        case ComparisonFunction::eGreater:
+                            AssertNotImplemented ();
+                            return false;
+                        case ComparisonFunction::eThreeWayCompare:
+                            return fBASE_COMPARER_ (lhs, rhs);
+                        default:
+                            AssertNotReached ();
+                            return false;
+                    }
+                }
+
+            private:
+                BASE_COMPARER fBASE_COMPARER_;
+            };
+
+            /**
+             *      NEXT STEP -THEN - add constexpr concept IsEqualsComparer(), IsLessComparer() - using the above.
              *
              *           *  THEN can add enable_if or static_assert() into Set/SortedSet so we know rihgt type of comparer? Maybe?
              *  Maybe not easy with getCompareEquals() result (may need differnt type).

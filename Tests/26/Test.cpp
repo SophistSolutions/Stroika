@@ -35,7 +35,7 @@ namespace {
             Memory::Optional<T> last;
             for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TotalOrderComparerFromLessComparer<LESS_COMPARER>{}(*last, i) <= 0);
+                    VerifyTestResult (ThreeWayComparerAdapter<LESS_COMPARER>{LESS_COMPARER{}}(*last, i) <= 0);
                 }
                 last = i;
             }
@@ -87,7 +87,7 @@ namespace {
     {
         using namespace CommonTests::SetTests;
 
-        struct MySimpleClassWithoutComparisonOperators_LESS_ {
+        struct MySimpleClassWithoutComparisonOperators_LESS_ : ComparisonTraitsBase<ComparisonFunction::eLess> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () < rhs.GetValue ();
