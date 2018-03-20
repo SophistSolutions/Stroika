@@ -264,8 +264,8 @@ namespace Stroika {
             Set<T> Set<T>::Difference (const Set<T>& rhs) const
             {
                 using namespace Stroika::Foundation::Common;
-				Set<T> result{ this->GetEqualsComparer () };
-				for (T i : *this) {
+                Set<T> result{this->GetEqualsComparer ()};
+                for (T i : *this) {
                     if (not rhs.Contains (i)) {
                         result.Add (i);
                     }
