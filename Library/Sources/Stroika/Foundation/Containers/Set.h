@@ -109,8 +109,8 @@ namespace Stroika {
 
             public:
                 /**
-				 *	This is the type returned by GetEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
-				 *	we allow any template in the Set<> CTOR for an equalityComparer that follows the 'is-functional (bool,T,T)' concept (need better name).
+                 *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
+                 *  we allow any template in the Set<> CTOR for an equalityComparer that follows the 'is-functional (bool,T,T)' concept (need better name).
                  */
                 using EqualityComparerType = Common::FunctionComparerAdapter<Common::ComparisonFunction::eEquals, function<bool(T, T)>>;
 
