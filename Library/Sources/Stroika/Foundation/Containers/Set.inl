@@ -4,6 +4,7 @@
 #ifndef _Stroika_Foundation_Containers_Set_inl_
 #define _Stroika_Foundation_Containers_Set_inl_
 
+#include "../Common/Compare.h"
 #include "../Debug/Assertions.h"
 #include "Factory/Set_Factory.h"
 
@@ -75,7 +76,7 @@ namespace Stroika {
             }
 #endif
             template <typename T>
-            inline function<bool(T, T)> Set<T>::GetEqualsComparer () const
+            inline auto Set<T>::GetEqualsComparer () const -> EqualityComparerType
             {
                 return this->GetEqualsComparer_ ();
             }
@@ -236,6 +237,7 @@ namespace Stroika {
             template <typename T>
             Set<T> Set<T>::Intersection (const Iterable<T>& rhs) const
             {
+                using namespace Stroika::Foundation::Common;
                 Set<T> result{this->GetEqualsComparer ()};
                 for (T i : rhs) {
                     if (Contains (i)) {
@@ -261,8 +263,9 @@ namespace Stroika {
             template <typename T>
             Set<T> Set<T>::Difference (const Set<T>& rhs) const
             {
-                Set<T> result{this->GetEqualsComparer ()};
-                for (T i : *this) {
+                using namespace Stroika::Foundation::Common;
+				Set<T> result{ this->GetEqualsComparer () };
+				for (T i : *this) {
                     if (not rhs.Contains (i)) {
                         result.Add (i);
                     }

@@ -30,6 +30,7 @@ namespace Stroika {
                 inline Set_Factory<T, EQUALS_COMPARER>::Set_Factory (const EQUALS_COMPARER& equalsComparer)
                     : fEqualsComparer_ (equalsComparer)
                 {
+                    static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_Factory");
                 }
                 template <typename T, typename EQUALS_COMPARER>
                 inline Set<T> Set_Factory<T, EQUALS_COMPARER>::operator() () const

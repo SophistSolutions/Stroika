@@ -317,7 +317,7 @@ namespace Stroika {
              */
             template <ComparisonFunction TYPE, typename ACTUAL_COMPARER>
             struct FunctionComparerAdapter {
-                static constexpr ComparisonFunction value = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                static constexpr ComparisonFunction kType = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
                 ACTUAL_COMPARER                     fActualComparer;
                 constexpr FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
                     : fActualComparer (actualComparer)
@@ -370,7 +370,12 @@ namespace Stroika {
             /**
              */
             template <typename COMPARER>
-            constexpr bool IsEqualsComparer (const COMPARER& c)
+            constexpr bool IsEqualsComparer ()
+            {
+                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eEquals;
+            }
+            template <typename COMPARER>
+            constexpr bool IsEqualsComparer (const COMPARER&)
             {
                 return ComparisonTraits<COMPARER>::value == ComparisonFunction::eEquals;
             }
@@ -378,7 +383,12 @@ namespace Stroika {
             /**
              */
             template <typename COMPARER>
-            constexpr bool IsLessComparer (const COMPARER& c)
+            constexpr bool IsLessComparer ()
+            {
+                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eLess;
+            }
+            template <typename COMPARER>
+            constexpr bool IsLessComparer (const COMPARER&)
             {
                 return ComparisonTraits<COMPARER>::value == ComparisonFunction::eLess;
             }
@@ -386,7 +396,12 @@ namespace Stroika {
             /**
              */
             template <typename COMPARER>
-            constexpr bool IsGreaterComparer (const COMPARER& c)
+            constexpr bool IsGreaterComparer ()
+            {
+                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eGreater;
+            }
+            template <typename COMPARER>
+            constexpr bool IsGreaterComparer (const COMPARER&)
             {
                 return ComparisonTraits<COMPARER>::value == ComparisonFunction::eGreater;
             }

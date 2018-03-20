@@ -109,6 +109,13 @@ namespace Stroika {
 
             public:
                 /**
+				 *	This is the type returned by GetEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
+				 *	we allow any template in the Set<> CTOR for an equalityComparer that follows the 'is-functional (bool,T,T)' concept (need better name).
+                 */
+                using EqualityComparerType = Common::FunctionComparerAdapter<Common::ComparisonFunction::eEquals, function<bool(T, T)>>;
+
+            public:
+                /**
                  *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  *
@@ -157,7 +164,7 @@ namespace Stroika {
                 /**
                  *  Return the function used to compare if two elements are equal
                  */
-                nonvirtual function<bool(T, T)> GetEqualsComparer () const;
+                nonvirtual EqualityComparerType GetEqualsComparer () const;
 
             private:
                 template <typename CHECK = T, typename ENABLE_IF_HAS_EQUALS = enable_if_t<Configuration::has_eq<CHECK>::value>>
