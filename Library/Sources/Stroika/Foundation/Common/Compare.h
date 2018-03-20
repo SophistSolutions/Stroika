@@ -325,7 +325,7 @@ namespace Stroika {
              */
 
             /**
-             *  Standin until C++20, three way compare
+             *  Stand-in until C++20, three way compare
              */
             template <typename T>
             struct ThreeWayCompare {

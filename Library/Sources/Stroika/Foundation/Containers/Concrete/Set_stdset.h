@@ -21,22 +21,6 @@ namespace Stroika {
         namespace Containers {
             namespace Concrete {
 
-#if 0
-                /**
-                 *  Set_stdset requires its own traits (besides DefaultTraits::Set) because of the neeed for a compare function for std::set<>
-                 */
-                template <typename T, typename EQUALS_COMPARER = typename DefaultTraits::Set<T>::EqualsCompareFunctionType, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-                struct Set_stdset_DefaultTraits : DefaultTraits::Set<T, EQUALS_COMPARER> {
-                    /**
-                     */
-                    using WellOrderCompareFunctionType = WELL_ORDER_COMPARER;
-
-                    /**
-                     */
-                    RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
-                };
-#endif
-
                 /**
                  *  \brief   Set_stdset<KEY_TYPE, VALUE_TYPE, TRAITS> is an std::set-based concrete implementation of the Set<T> container pattern.
                  *
@@ -55,13 +39,13 @@ namespace Stroika {
                      */
                     Set_stdset ();
                     template <typename LESS_COMPARER>
-                    Set_stdset (const LESS_COMPARER& lessComparer);
+                    explicit Set_stdset (const LESS_COMPARER& lessComparer);
                     Set_stdset (const Set_stdset& src) = default;
                     Set_stdset (const std::initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value>::type>
-                    explicit Set_stdset (const CONTAINER_OF_T& src);
+                    Set_stdset (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_T>
-                    explicit Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
+                    Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
 
                 public:
                     /**

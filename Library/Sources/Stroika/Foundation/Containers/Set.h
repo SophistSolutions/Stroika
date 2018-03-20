@@ -129,7 +129,7 @@ namespace Stroika {
                  */
                 Set ();
                 template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
-                explicit Set (const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}, ENABLE_IF_IS_COMPARER* = nullptr);
+                explicit Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 Set (const Set& src) noexcept = default;
                 Set (Set&& src) noexcept      = default;
                 Set (const initializer_list<T>& src);
