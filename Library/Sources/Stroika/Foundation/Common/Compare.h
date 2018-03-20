@@ -368,6 +368,30 @@ namespace Stroika {
             };
 
             /**
+             */
+            template <typename COMPARER>
+            constexpr bool IsEqualsComparer (const COMPARER& c)
+            {
+                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eEquals;
+            }
+
+            /**
+             */
+            template <typename COMPARER>
+            constexpr bool IsLessComparer (const COMPARER& c)
+            {
+                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eLess;
+            }
+
+            /**
+             */
+            template <typename COMPARER>
+            constexpr bool IsGreaterComparer (const COMPARER& c)
+            {
+                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eGreater;
+            }
+
+            /**
              *  \brief Use this to wrap any basic comparer, and produce a Less comparer
              */
             template <typename BASE_COMPARER>
@@ -472,8 +496,6 @@ namespace Stroika {
             };
 
             /**
-             *      NEXT STEP -THEN - add constexpr concept IsEqualsComparer(), IsLessComparer() - using the above.
-             *
              *           *  THEN can add enable_if or static_assert() into Set/SortedSet so we know rihgt type of comparer? Maybe?
              *  Maybe not easy with getCompareEquals() result (may need differnt type).
              *
