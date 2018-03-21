@@ -291,6 +291,31 @@ namespace Stroika {
             };
 
             /**
+            @todo - use ComparisonFunction instead of ComparisonFunction in most places - in containers
+            *
+             *  THIS is what drives how we do containers/related algorithms (less is equiv to greater for most of them)
+            */
+            enum class OrderingRelationType {
+                eEquals,
+
+                /**
+                 *   e.g. less<T>, or greater<T>
+                 */
+                eInOrder,
+
+                /**
+                 *   e.g. less_equal<T>, or greater_equal<T>
+                 */
+                eInOrderOrEquals,
+
+                /**
+                 *   e.g. function<int(T,T)> - where < 0 return is 'in order', 0 means equal, and > 0 means reversed order
+                 */
+                eThreeWayCompare
+            };
+
+            /**
+			 *		@todo NOT sure this is useful - maybe lose this and just do OrderingRelationType.
              */
             enum class ComparisonFunction {
                 eEquals,
@@ -336,35 +361,42 @@ namespace Stroika {
              */
             template <typename COMPARE_FUNCTION>
             struct ComparisonTraits {
-                static constexpr ComparisonFunction value = COMPARE_FUNCTION::kType; // default - so user-defined types can do this to automatically define their Comparison Traits
+                static constexpr ComparisonFunction kComparisonFunctionKind = COMPARE_FUNCTION::kType; // default - so user-defined types can do this to automatically define their Comparison Traits
+                //static constexpr OrderingRelationType kOrderingRelationKind = COMPARE_FUNCTION::kOrderingRelationKind; // default - so user-defined types can do this to automatically define their Comparison Traits
             };
             template <typename T>
             struct ComparisonTraits<equal_to<T>> {
-                static constexpr ComparisonFunction value = ComparisonFunction::eEquals;
+                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eEquals;
+                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eEquals;
             };
             template <typename T>
             struct ComparisonTraits<not_equal_to<T>> {
-                static constexpr ComparisonFunction value = ComparisonFunction::eNotEquals;
+                static constexpr ComparisonFunction kComparisonFunctionKind = ComparisonFunction::eNotEquals;
             };
             template <typename T>
             struct ComparisonTraits<less<T>> {
-                static constexpr ComparisonFunction value = ComparisonFunction::eLess;
+                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eLess;
+                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrder;
             };
             template <typename T>
             struct ComparisonTraits<greater<T>> {
-                static constexpr ComparisonFunction value = ComparisonFunction::eGreater;
+                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eGreater;
+                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrder;
             };
             template <typename T>
             struct ComparisonTraits<less_equal<T>> {
-                static constexpr ComparisonFunction value = ComparisonFunction::eLessOrEqual;
+                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eLessOrEqual;
+                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrderOrEquals;
             };
             template <typename T>
             struct ComparisonTraits<greater_equal<T>> {
-                static constexpr ComparisonFunction value = ComparisonFunction::eGreaterOrEqual;
+                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eGreaterOrEqual;
+                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrderOrEquals;
             };
             template <typename T>
             struct ComparisonTraits<ThreeWayCompare<T>> {
-                static constexpr ComparisonFunction value = ComparisonFunction::eThreeWayCompare;
+                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eThreeWayCompare;
+                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eThreeWayCompare;
             };
 
             /**
@@ -372,12 +404,12 @@ namespace Stroika {
             template <typename COMPARER>
             constexpr bool IsEqualsComparer ()
             {
-                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eEquals;
+                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eEquals;
             }
             template <typename COMPARER>
             constexpr bool IsEqualsComparer (const COMPARER&)
             {
-                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eEquals;
+                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eEquals;
             }
 
             /**
@@ -385,25 +417,12 @@ namespace Stroika {
             template <typename COMPARER>
             constexpr bool IsLessComparer ()
             {
-                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eLess;
+                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eLess;
             }
             template <typename COMPARER>
             constexpr bool IsLessComparer (const COMPARER&)
             {
-                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eLess;
-            }
-
-            /**
-             */
-            template <typename COMPARER>
-            constexpr bool IsGreaterComparer ()
-            {
-                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eGreater;
-            }
-            template <typename COMPARER>
-            constexpr bool IsGreaterComparer (const COMPARER&)
-            {
-                return ComparisonTraits<COMPARER>::value == ComparisonFunction::eGreater;
+                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eLess;
             }
 
             /**
@@ -418,7 +437,7 @@ namespace Stroika {
                 template <typename T>
                 constexpr bool operator() (const T& lhs, const T& rhs) const
                 {
-                    switch (ComparisonTraits<BASE_COMPARER>::value) {
+                    switch (ComparisonTraits<BASE_COMPARER>::kComparisonFunctionKind) {
                         case ComparisonFunction::eLess:
                             return fBASE_COMPARER_ (lhs, rhs);
                         case ComparisonFunction::eLessOrEqual:
@@ -451,7 +470,7 @@ namespace Stroika {
                 template <typename T>
                 constexpr bool operator() (const T& lhs, const T& rhs) const
                 {
-                    switch (ComparisonTraits<BASE_COMPARER>::value) {
+                    switch (ComparisonTraits<BASE_COMPARER>::kComparisonFunctionKind) {
                         case ComparisonFunction::eEquals:
                             return fBASE_COMPARER_ (lhs, rhs);
                         case ComparisonFunction::eNotEquals:
@@ -486,7 +505,7 @@ namespace Stroika {
                 template <typename T>
                 constexpr int operator() (const T& lhs, const T& rhs) const
                 {
-                    switch (ComparisonTraits<BASE_COMPARER>::value) {
+                    switch (ComparisonTraits<BASE_COMPARER>::kComparisonFunctionKind) {
                         case ComparisonFunction::eLess:
                             return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
                         case ComparisonFunction::eLessOrEqual:
