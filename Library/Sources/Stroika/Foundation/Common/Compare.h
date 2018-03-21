@@ -305,6 +305,8 @@ namespace Stroika {
 
                 /**
                  *   e.g. less_equal<T>, or greater_equal<T>
+                 *   \note considered the name 'partial' order here but that could be confusing, since partial order frequently
+                 *         refers to not covering the entire domain - not less vs. less_equal.
                  */
                 eInOrderOrEquals,
 
@@ -315,7 +317,7 @@ namespace Stroika {
             };
 
             /**
-			 *		@todo NOT sure this is useful - maybe lose this and just do OrderingRelationType.
+             *      @todo NOT sure this is useful - maybe lose this and just do OrderingRelationType.
              */
             enum class ComparisonFunction {
                 eEquals,
