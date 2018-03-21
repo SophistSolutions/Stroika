@@ -90,8 +90,9 @@ namespace Stroika {
             template <typename COPY_FROM_ITERATOR_OF_T>
             void Collection<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
+                _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 for (auto i = start; i != end; ++i) {
-                    Add (*i);
+                    tmp._GetWriteableRep ().Add (*i);
                 }
             }
             template <typename T>

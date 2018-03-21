@@ -228,6 +228,7 @@ namespace Stroika {
             template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
             inline void Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
+                // see https://stroika.atlassian.net/browse/STK-645
                 /*
                  *  Note - unlike some other containers - we dont need to check for this != &s because if we
                  *  attempt to add items that already exist, it would do nothing to our iteration
