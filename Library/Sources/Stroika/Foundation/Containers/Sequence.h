@@ -353,10 +353,10 @@ namespace Stroika {
                  *  If not found for the by value overloads, IndexOf () return {};
                  *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual Memory::Optional<size_t> IndexOf (ArgByValueType<T> i) const;
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual Memory::Optional<size_t> IndexOf (const Sequence<T>& s) const;
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual Memory::Optional<size_t> IndexOf (ArgByValueType<T> i, const EQUALS_COMPARER& equalsComparer = {}) const;
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual Memory::Optional<size_t> IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer = {}) const;
                 template <typename IGNORED = void>
                 nonvirtual size_t IndexOf (const Iterator<T>& i) const;
 

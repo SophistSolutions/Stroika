@@ -106,8 +106,8 @@ namespace Test4_Equals {
         VerifyTestResult (s.size () == 2);
         USING_STACK_CONTAINER s3 = s;
         //VerifyTestResult (s == s3);
-		using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
-		VerifyTestResult (s.template Equals<EQC> (s3));
+        using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+        VerifyTestResult (s.template Equals<EQC> (s3));
         //VerifyTestResult (not (s != s3));
 
         //VerifyTestResult (s != s2);

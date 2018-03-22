@@ -166,8 +166,8 @@ namespace {
             s.Append (1);
             Sequence<T> s2 = s;
             s2.Append (2);
-			using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
-			VerifyTestResult (not s.template Equals<EQC> (s2));
+            using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            VerifyTestResult (not s.template Equals<EQC> (s2));
             VerifyTestResult (not s2.template Equals<EQC> (s));
             s.Append (2);
             VerifyTestResult (s2.template Equals<EQC> (s));
@@ -241,7 +241,8 @@ namespace {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (21 + i);
             }
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (5).IsMissing ());
+			using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+			VerifyTestResult (s.template IndexOf<EQC> (5).IsMissing ());
             VerifyTestResult (not s.empty ());
 
             s.RemoveAll ();
@@ -255,14 +256,15 @@ namespace {
             VerifyTestResult (s.size () == 1000);
 
             Sequence<T> s2 = s;
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s2) == 0);
-            VerifyTestResult (s2.template IndexOf<EQUALS_COMPARER> (s) == 0);
+			using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+			VerifyTestResult (s.template IndexOf<EQC> (s2) == 0);
+            VerifyTestResult (s2.template IndexOf<EQC> (s) == 0);
 
             Sequence<T> s3;
             s3.Append (3);
             s3.Append (4);
-            VerifyTestResult (s3.template IndexOf<EQUALS_COMPARER> (s).IsMissing ());
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s3) == 3);
+            VerifyTestResult (s3.template IndexOf<EQC> (s).IsMissing ());
+            VerifyTestResult (s.template IndexOf<EQC> (s3) == 3);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
@@ -323,8 +325,8 @@ namespace {
             x.Append (12);
 
             s.PrependAll (x);
-			using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
-			VerifyTestResult (s.template Equals<EQC> (x));
+            using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            VerifyTestResult (s.template Equals<EQC> (x));
             s.AppendAll (x);
             VerifyTestResult (EQUALS_COMPARER::Equals (s[1], 11));
             VerifyTestResult (EQUALS_COMPARER::Equals (s[2], 12));

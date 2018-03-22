@@ -83,6 +83,11 @@ namespace Stroika {
                 return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
             }
             template <typename T>
+            inline void Stack<T>::clear ()
+            {
+                RemoveAll ();
+            }
+            template <typename T>
             inline void Stack<T>::_AssertRepValidType () const
             {
 #if qDebug
