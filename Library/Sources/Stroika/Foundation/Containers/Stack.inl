@@ -78,9 +78,9 @@ namespace Stroika {
             }
             template <typename T>
             template <typename EQUALS_COMPARER>
-            bool Stack<T>::Equals (const Stack<T>& rhs) const
+            bool Stack<T>::Equals (const Stack& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
-                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
+                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
             }
             template <typename T>
             inline void Stack<T>::_AssertRepValidType () const

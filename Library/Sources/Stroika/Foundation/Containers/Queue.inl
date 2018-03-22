@@ -139,9 +139,9 @@ namespace Stroika {
             }
             template <typename T>
             template <typename EQUALS_COMPARER>
-            bool Queue<T>::Equals (const Queue<T>& rhs) const
+            bool Queue<T>::Equals (const Queue<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
-                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
+                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
             }
             template <typename T>
             inline void Queue<T>::_AssertRepValidType () const noexcept

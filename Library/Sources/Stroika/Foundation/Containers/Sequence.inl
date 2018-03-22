@@ -160,9 +160,9 @@ namespace Stroika {
             }
             template <typename T>
             template <typename EQUALS_COMPARER>
-            inline bool Sequence<T>::Equals (const Sequence<T>& rhs) const
+            inline bool Sequence<T>::Equals (const Sequence<T>& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
-                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs);
+                return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
             }
             template <typename T>
             inline void Sequence<T>::RemoveAll ()

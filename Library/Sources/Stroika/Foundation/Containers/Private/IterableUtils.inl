@@ -73,26 +73,26 @@ namespace Stroika {
                     DISABLE_COMPILER_MSC_WARNING_END (6001)
                 }
 
-                template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                bool Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
-                {
-                    // Check length, so we dont need to check both iterators for end/done
-                    if (&lhs == &rhs) {
-                        return true;
-                    }
-                    if (lhs.GetLength () != rhs.GetLength ()) {
-                        return false;
-                    }
-                    auto li = lhs.MakeIterator ();
-                    auto ri = rhs.MakeIterator ();
-                    while (not li.Done () and ELEMENT_COMPARE_EQUALS_TYPE::Equals (*li, *ri)) {
-                        ++li;
-                        ++ri;
-                    }
-                    return li.Done ();
-                }
+				template <typename T, typename ELEMENT_ELEMENT_EQUALS_COMPARER>
+				bool Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_ELEMENT_EQUALS_COMPARER& equalsComparer)
+				{
+					// Check length, so we dont need to check both iterators for end/done
+					if (&lhs == &rhs) {
+						return true;
+					}
+					if (lhs.GetLength () != rhs.GetLength ()) {
+						return false;
+					}
+					auto li = lhs.MakeIterator ();
+					auto ri = rhs.MakeIterator ();
+					while (not li.Done () and equalsComparer::Equals (*li, *ri)) {
+						++li;
+						++ri;
+					}
+					return li.Done ();
+				}
 
-                template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
+				template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, ArgByValueType<T> item)
                 {
                     constexpr bool kUseApply_{true}; // I think apply faster due to single lock
