@@ -222,6 +222,13 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
+                inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
+                    : Set_LinkedList (equalsComparer)
+                {
+                    this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline Set_LinkedList<T>::Set_LinkedList (const CONTAINER_OF_T& src)
                     : Set_LinkedList ()
@@ -230,9 +237,25 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
+                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+                    : Set_LinkedList (equalsComparer)
+                {
+                    this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 inline Set_LinkedList<T>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : Set_LinkedList ()
+                {
+                    AddAll (start, end);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : Set_LinkedList (equalsComparer)
                 {
                     AddAll (start, end);
                     AssertRepValidType_ ();

@@ -201,11 +201,42 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
+                inline Set_stdset<T>::Set_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src)
+                    : Set_stdset (equalsComparer)
+                {
+                    this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
                 inline Set_stdset<T>::Set_stdset (const CONTAINER_OF_T& src)
                     : Set_stdset ()
                 {
                     this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
+                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                inline Set_stdset<T>::Set_stdset (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+                    : Set_stdset (equalsComparer)
+                {
+                    this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
+                template <typename COPY_FROM_ITERATOR_T>
+                inline Set_stdset<T>::Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end)
+                    : Set_stdset ()
+                {
+                    this->AddAll (start, end);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
+                template <typename COPY_FROM_ITERATOR_T>
+                inline Set_stdset<T>::Set_stdset (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end)
+                    : Set_stdset (equalsComparer)
+                {
+                    this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
                 template <typename T>

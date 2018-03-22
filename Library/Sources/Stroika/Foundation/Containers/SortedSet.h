@@ -72,16 +72,26 @@ namespace Stroika {
             public:
                 /**
                  */
+                using EqualityComparerType = inherited::EqualityComparerType;
+
+            public:
+                /**
+                 */
                 SortedSet ();
                 template <typename LESS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<LESS_COMPARER>::value>>
                 explicit SortedSet (const LESS_COMPARER& lessComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedSet (const SortedSet& src) noexcept = default;
                 SortedSet (SortedSet&& src) noexcept      = default;
                 SortedSet (const initializer_list<T>& src);
+                SortedSet (const EqualityComparerType& equalityComparer, const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet*>::value>>
                 SortedSet (const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet*>::value>>
+                SortedSet (const EqualityComparerType& equalityComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
+                SortedSet (const EqualityComparerType& equalityComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit SortedSet (const _SortedSetRepSharedPtr& src) noexcept;

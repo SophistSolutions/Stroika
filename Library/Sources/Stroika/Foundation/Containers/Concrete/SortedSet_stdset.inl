@@ -197,6 +197,13 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
+                SortedSet_stdset<T>::SortedSet_stdset (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
+                    : SortedSet_stdset (equalsComparer)
+                {
+                    this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
                 SortedSet_stdset<T>::SortedSet_stdset (const CONTAINER_OF_T& src)
                     : SortedSet_stdset ()
@@ -205,9 +212,25 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
+                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                SortedSet_stdset<T>::SortedSet_stdset (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+                    : SortedSet_stdset (equalsComparer)
+                {
+                    this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 inline SortedSet_stdset<T>::SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : SortedSet_stdset ()
+                {
+                    this->AddAll (start, end);
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                inline SortedSet_stdset<T>::SortedSet_stdset (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : SortedSet_stdset (equalsComparer)
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();

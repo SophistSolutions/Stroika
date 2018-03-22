@@ -37,15 +37,25 @@ namespace Stroika {
                 public:
                     /**
                      */
+                    using EqualityComparerType = inherited::EqualityComparerType;
+
+                public:
+                    /**
+                     */
                     Set_stdset ();
                     template <typename LESS_COMPARER>
                     explicit Set_stdset (const LESS_COMPARER& lessComparer);
                     Set_stdset (const Set_stdset& src) = default;
                     Set_stdset (const std::initializer_list<T>& src);
+                    Set_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value>::type>
                     Set_stdset (const CONTAINER_OF_T& src);
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value>::type>
+                    Set_stdset (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_T>
                     Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
+                    template <typename COPY_FROM_ITERATOR_T>
+                    Set_stdset (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
 
                 public:
                     /**
