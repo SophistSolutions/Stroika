@@ -305,9 +305,9 @@ namespace Stroika {
              *  specific user-defined types.
              */
             template <typename COMPARE_FUNCTION>
-			struct ComparisonTraits {
-				static constexpr OrderingRelationType kOrderingRelationKind = COMPARE_FUNCTION::kOrderingRelationKind;
-			};
+            struct ComparisonTraits {
+                static constexpr OrderingRelationType kOrderingRelationKind = COMPARE_FUNCTION::kOrderingRelationKind;
+            };
 
             template <typename T>
             struct ComparisonTraits<equal_to<T>> {
@@ -457,9 +457,8 @@ namespace Stroika {
                 constexpr int operator() (const T& lhs, const T& rhs) const
                 {
                     switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-					case OrderingRelationType::eInOrder:
-						return fBASE_COMPARER_ (lhs, rhs) ? -1:
-                            (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
+                        case OrderingRelationType::eInOrder:
+                            return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
                         case OrderingRelationType::eThreeWayCompare:
                             return fBASE_COMPARER_ (lhs, rhs);
                         default:
