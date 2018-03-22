@@ -72,7 +72,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                using EqualityComparerType = inherited::EqualityComparerType;
+                using EqualityComparerType = typename inherited::EqualityComparerType;
 
             public:
                 /**
