@@ -82,13 +82,13 @@ namespace {
     {
         using namespace CommonTests::SetTests;
 
-        struct MySimpleClassWithoutComparisonOperators_EQUAL_TO_ : Common::ComparisonTraitsBase<Common::ComparisonFunction::eEquals> {
+        struct MySimpleClassWithoutComparisonOperators_EQUAL_TO_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eEquals> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () == rhs.GetValue ();
             }
         };
-        struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonTraitsBase<Common::ComparisonFunction::eLess> {
+        struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () < rhs.GetValue ();

@@ -135,29 +135,6 @@ namespace Stroika {
                 }
             };
 
-#if 0
-            // @todo - TRY CHANGING USE OF ComparerWithEquals so instance copied around. Verify no perofrmance (size/time)
-            //          costs!!!!
-            //
-            ///EXPERIMENTAL - MIMICS API/CONCEPT of ComparerWithEquals<T> - but without requirement on T
-            /// BUT - to make it it work - we need all places that use
-            // ComparerWithEquals to keep an instance - and we have t to test/verify that has no codesize/object
-            // size implications when used with the above default case (ok that this costs)
-            template <typename T>
-            struct ComparerWithEquals_XXX {
-                function<bool(T, T)> fEq;
-
-                ComparerWithEquals_XXX (function<bool(T, T)> e)
-                    : fEq (e)
-                {
-                }
-                bool Equals (T v1, T v2)
-                {
-                    return fEq (v1, v2);
-                }
-            };
-#endif
-
             /**
              *  DefaultEqualsComparer will procduce an Equals() method from a variety of sources automatically:
              *      o   operator==
@@ -291,10 +268,8 @@ namespace Stroika {
             };
 
             /**
-            @todo - use ComparisonFunction instead of ComparisonFunction in most places - in containers
-            *
              *  THIS is what drives how we do containers/related algorithms (less is equiv to greater for most of them)
-            */
+             */
             enum class OrderingRelationType {
                 eEquals,
 
@@ -317,35 +292,87 @@ namespace Stroika {
             };
 
             /**
-             *      @todo NOT sure this is useful - maybe lose this and just do OrderingRelationType.
-             */
-            enum class ComparisonFunction {
-                eEquals,
-                eNotEquals,
-                eLess,
-                eGreater,
-                eLessOrEqual,
-                eGreaterOrEqual,
-                eThreeWayCompare
-            };
-
-            /**
              *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
              *  the type.
              */
-            template <ComparisonFunction TYPE>
+            template <OrderingRelationType TYPE>
             struct ComparisonTraitsBase {
-                static constexpr ComparisonFunction kType = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                static constexpr OrderingRelationType kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
             };
+
+            /**
+             *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
+             *  specific user-defined types.
+             */
+            template <typename COMPARE_FUNCTION>
+			struct ComparisonTraits {
+				static constexpr OrderingRelationType kOrderingRelationKind = COMPARE_FUNCTION::kOrderingRelationKind;
+			};
+
+            template <typename T>
+            struct ComparisonTraits<equal_to<T>> {
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eEquals;
+            };
+            template <typename T>
+            struct ComparisonTraits<less<T>> {
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrder;
+            };
+            template <typename T>
+            struct ComparisonTraits<greater<T>> {
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrder;
+            };
+            template <typename T>
+            struct ComparisonTraits<less_equal<T>> {
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrderOrEquals;
+            };
+            template <typename T>
+            struct ComparisonTraits<greater_equal<T>> {
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrderOrEquals;
+            };
+            template <typename T>
+            struct ComparisonTraits<ThreeWayCompare<T>> {
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eThreeWayCompare;
+            };
+
+            /**
+             */
+            template <typename COMPARER>
+            constexpr bool IsEqualsComparer ()
+            {
+                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eEquals;
+            }
+            template <typename COMPARER>
+            constexpr bool IsEqualsComparer (const COMPARER&)
+            {
+                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eEquals;
+            }
+
+            /**
+             */
+            template <typename COMPARER>
+            constexpr bool IsInOrderComparer ()
+            {
+                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eInOrder;
+            }
+            template <typename COMPARER>
+            constexpr bool IsInOrderComparer (const COMPARER&)
+            {
+                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eInOrder;
+            }
 
             /**
              *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
              *  the type.
+             *
+             *  \par Example Usage
+             *      \code
+             *          using EqualityComparerType = Common::FunctionComparerAdapter<Common::OrderingRelationType::eEquals, function<bool(T, T)>>;
+             *      \endcode
              */
-            template <ComparisonFunction TYPE, typename ACTUAL_COMPARER>
+            template <OrderingRelationType TYPE, typename ACTUAL_COMPARER>
             struct FunctionComparerAdapter {
-                static constexpr ComparisonFunction kType = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
-                ACTUAL_COMPARER                     fActualComparer;
+                static constexpr OrderingRelationType kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                ACTUAL_COMPARER                       fActualComparer;
                 constexpr FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
                     : fActualComparer (actualComparer)
                 {
@@ -358,97 +385,23 @@ namespace Stroika {
             };
 
             /**
-             *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
-             *  specific user-defined types.
-             */
-            template <typename COMPARE_FUNCTION>
-            struct ComparisonTraits {
-                static constexpr ComparisonFunction kComparisonFunctionKind = COMPARE_FUNCTION::kType; // default - so user-defined types can do this to automatically define their Comparison Traits
-                //static constexpr OrderingRelationType kOrderingRelationKind = COMPARE_FUNCTION::kOrderingRelationKind; // default - so user-defined types can do this to automatically define their Comparison Traits
-            };
-            template <typename T>
-            struct ComparisonTraits<equal_to<T>> {
-                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eEquals;
-                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eEquals;
-            };
-            template <typename T>
-            struct ComparisonTraits<not_equal_to<T>> {
-                static constexpr ComparisonFunction kComparisonFunctionKind = ComparisonFunction::eNotEquals;
-            };
-            template <typename T>
-            struct ComparisonTraits<less<T>> {
-                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eLess;
-                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrder;
-            };
-            template <typename T>
-            struct ComparisonTraits<greater<T>> {
-                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eGreater;
-                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrder;
-            };
-            template <typename T>
-            struct ComparisonTraits<less_equal<T>> {
-                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eLessOrEqual;
-                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrderOrEquals;
-            };
-            template <typename T>
-            struct ComparisonTraits<greater_equal<T>> {
-                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eGreaterOrEqual;
-                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eInOrderOrEquals;
-            };
-            template <typename T>
-            struct ComparisonTraits<ThreeWayCompare<T>> {
-                static constexpr ComparisonFunction   kComparisonFunctionKind = ComparisonFunction::eThreeWayCompare;
-                static constexpr OrderingRelationType kOrderingRelationKind   = OrderingRelationType::eThreeWayCompare;
-            };
-
-            /**
-             */
-            template <typename COMPARER>
-            constexpr bool IsEqualsComparer ()
-            {
-                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eEquals;
-            }
-            template <typename COMPARER>
-            constexpr bool IsEqualsComparer (const COMPARER&)
-            {
-                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eEquals;
-            }
-
-            /**
-             */
-            template <typename COMPARER>
-            constexpr bool IsLessComparer ()
-            {
-                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eLess;
-            }
-            template <typename COMPARER>
-            constexpr bool IsLessComparer (const COMPARER&)
-            {
-                return ComparisonTraits<COMPARER>::kComparisonFunctionKind == ComparisonFunction::eLess;
-            }
-
-            /**
              *  \brief Use this to wrap any basic comparer, and produce a Less comparer
              */
             template <typename BASE_COMPARER>
-            struct LessComparerAdapter {
-                constexpr LessComparerAdapter (const BASE_COMPARER& baseComparer)
+            struct InOrderComparerAdapter {
+                constexpr InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
                     : fBASE_COMPARER_ (baseComparer)
                 {
                 }
                 template <typename T>
                 constexpr bool operator() (const T& lhs, const T& rhs) const
                 {
-                    switch (ComparisonTraits<BASE_COMPARER>::kComparisonFunctionKind) {
-                        case ComparisonFunction::eLess:
+                    switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
+                        case OrderingRelationType::eInOrder:
                             return fBASE_COMPARER_ (lhs, rhs);
-                        case ComparisonFunction::eLessOrEqual:
+                        case OrderingRelationType::eInOrderOrEquals:
                             return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-                        case ComparisonFunction::eGreaterOrEqual:
-                            return not fBASE_COMPARER_ (lhs, rhs);
-                        case ComparisonFunction::eGreater:
-                            return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-                        case ComparisonFunction::eThreeWayCompare:
+                        case OrderingRelationType::eThreeWayCompare:
                             return fBASE_COMPARER_ (lhs, rhs) < 0;
                         default:
                             AssertNotReached ();
@@ -472,18 +425,14 @@ namespace Stroika {
                 template <typename T>
                 constexpr bool operator() (const T& lhs, const T& rhs) const
                 {
-                    switch (ComparisonTraits<BASE_COMPARER>::kComparisonFunctionKind) {
-                        case ComparisonFunction::eEquals:
+                    switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
+                        case OrderingRelationType::eEquals:
                             return fBASE_COMPARER_ (lhs, rhs);
-                        case ComparisonFunction::eNotEquals:
-                            return not fBASE_COMPARER_ (lhs, rhs);
-                        case ComparisonFunction::eLess:
-                        case ComparisonFunction::eGreater:
+                        case OrderingRelationType::eInOrder:
                             return not fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-                        case ComparisonFunction::eLessOrEqual:
-                        case ComparisonFunction::eGreaterOrEqual:
+                        case OrderingRelationType::eInOrderOrEquals:
                             return fBASE_COMPARER_ (lhs, rhs) and fBASE_COMPARER_ (rhs, lhs);
-                        case ComparisonFunction::eThreeWayCompare:
+                        case OrderingRelationType::eThreeWayCompare:
                             return fBASE_COMPARER_ (lhs, rhs) == 0;
                         default:
                             AssertNotReached ();
@@ -507,19 +456,10 @@ namespace Stroika {
                 template <typename T>
                 constexpr int operator() (const T& lhs, const T& rhs) const
                 {
-                    switch (ComparisonTraits<BASE_COMPARER>::kComparisonFunctionKind) {
-                        case ComparisonFunction::eLess:
-                            return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
-                        case ComparisonFunction::eLessOrEqual:
-                            AssertNotImplemented ();
-                            return false;
-                        case ComparisonFunction::eGreaterOrEqual:
-                            AssertNotImplemented ();
-                            return false;
-                        case ComparisonFunction::eGreater:
-                            AssertNotImplemented ();
-                            return false;
-                        case ComparisonFunction::eThreeWayCompare:
+                    switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
+                        case OrderingRelationType::eInOrder return fBASE_COMPARER_ (lhs, rhs) ? -1:
+                            (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
+                        case OrderingRelationType::eThreeWayCompare:
                             return fBASE_COMPARER_ (lhs, rhs);
                         default:
                             AssertNotReached ();
