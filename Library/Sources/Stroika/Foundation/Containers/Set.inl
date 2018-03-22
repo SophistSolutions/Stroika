@@ -39,9 +39,24 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
+            inline Set<T>::Set (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
+                : Set (equalsComparer)
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T>
             template <typename CONTAINER_OF_T, typename ENABLE_IF>
             inline Set<T>::Set (const CONTAINER_OF_T& src)
                 : Set ()
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T>
+            template <typename CONTAINER_OF_T, typename ENABLE_IF>
+            inline Set<T>::Set (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+                : Set (equalsComparer)
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -62,6 +77,14 @@ namespace Stroika {
             template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
             inline Set<T>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : Set ()
+            {
+                AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename T>
+            template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
+            inline Set<T>::Set (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : Set (equalsComparer)
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
