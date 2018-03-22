@@ -289,11 +289,11 @@ namespace Stroika {
                  *  be be defined, but obviously to compare if the containers are equal, you must
                  *  compare the individual elements (at least sometimes).
                  *
-                 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-                 *  to compare with an alternative comparer, just pass it as a template parameter.
+                 *  If operator==(T,T) is predefined, you can just call Equals() - but if its not, or if you wish
+                 *  to compare with an alternative comparer.
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool Equals (const Sequence<T>& rhs) const;
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual bool Equals (const Sequence& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
             public:
                 /**

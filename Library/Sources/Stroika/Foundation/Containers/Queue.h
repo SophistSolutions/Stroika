@@ -208,8 +208,8 @@ namespace Stroika {
                  *
                  *  Computational Complexity: O(N)
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool Equals (const Queue<T>& rhs) const;
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual bool Equals (const Queue& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
             protected:
                 /**
