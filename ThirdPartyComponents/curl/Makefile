@@ -232,14 +232,14 @@ ifeq ($(shell uname),AIX)
 endif
 endif
 	@$(ECHO) done
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n ``$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building configure tools (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/BUILD-CONF-TOOLS.OUT ) ... "`
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building configure tools (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/BUILD-CONF-TOOLS.OUT ) ... "`
 	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR);./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@$(ECHO) done
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Running Configure (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT) ... "`
 	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
 	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@$(ECHO) done
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Building (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT) ... "
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT) ... "`
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT
 	@$(MAKE) --directory $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT 2>&1
 	@$(ECHO) done
