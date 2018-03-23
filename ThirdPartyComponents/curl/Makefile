@@ -223,7 +223,7 @@ ifeq ($(CONFIGURATION),)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Copy/Create/Patch (destination: $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)) ... "
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copy/Create/Patch (destination: $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)) ... "`
 	@mkdir -p $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
 	@cp -r CURRENT/* $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
 	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
