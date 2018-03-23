@@ -146,6 +146,9 @@ ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFoundationSupportLibs	=
 
+	#
+	# Store root/--prefix installed files for third party components in Builds/$(CONFIGURATION)/ThirdPartyComponents
+	#
 	StroikaFoundationSupportLibs	+= -L $(StroikaPlatformTargetBuildDir)/ThirdPartyComponents/lib/
 
 	ifneq ($(qFeatureFlag_Xerces), 'no')
