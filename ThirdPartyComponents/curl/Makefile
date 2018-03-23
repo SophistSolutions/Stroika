@@ -11,14 +11,15 @@ SHELL=/bin/bash
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
+export StroikaRoot=$(shell realpath ../..)/
 
 
 DoCreateSymLink=0
 
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
-VERSION=7.58.0
-#VERSION=7.56.1
+VERSION=7.59.0
+#VERSION=7.58.0
 BASENAME=curl-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -36,6 +37,8 @@ FETCHURLS+=http://curl.askapache.com/download/curl-$(VERSION).tar.gz
 
 INTERMEDIATEFILES_ROOT=../../IntermediateFiles/
 BUILDS_ROOT=../../Builds/
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
+PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/curl/)
 
 
 qFeatureFlag_OpenSSL	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL)
@@ -92,7 +95,6 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@$(MAKE) --no-print-directory doCreate CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
-	@$(MAKE) --no-print-directory doPatching_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
 	@$(MAKE) --no-print-directory doBuilds CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
 
 
@@ -214,39 +216,35 @@ endif
 
 
 
-doPatching_:
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Curl ... ";
-	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
-ifeq ($(qFeatureFlag_OpenSSL), use)
-ifeq ($(shell uname),AIX)
-	@patch --quiet -p0 CURRENT/configure.ac < Patches/AIX-Lose-SSLv2_client_method_check.patch
-endif
-endif
-	@$(ECHO) "done"
-
-
+	
 doBuilds:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --no-print-directory check_prerequisites_ CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) 
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building configure tools CURRENT/BUILD-CONF-TOOLS.OUT ... "
-	@mkdir -p $(INTERMEDIATEFILES_ROOT)$(CONFIGURATION)/ThirdPartyComponents $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/bin
-	@cd CURRENT;./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Configure (see CURRENT/CONFIGURE.OUT) ... "
-	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE)" > CURRENT/CONFIGURE.OUT
-	@cd CURRENT && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "Building (see CURRENT/MAKE.OUT) ... "
-	@echo $(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" > CURRENT/MAKE.OUT
-	@$(MAKE) --directory CURRENT --no-print-directory install CC="$(CC)" >> CURRENT/MAKE.OUT 2>&1
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents && cp Builds/bin/* $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp -r Builds/lib/*.a Builds/lib/*.la Builds/lib/pkgconfig $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
-ifeq (Darwin,$(shell uname -s))
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -R -L Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
-else
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r --dereference Builds/include/curl $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copy/Create/Patch (destination: $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)) ... "`
+	@mkdir -p $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
+	@cp -r CURRENT/* $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
+	@patch --quiet -p0 CURRENT/scripts/Makefile.am < Patches/ZSH-Completion-Buggy.patch
+ifeq ($(qFeatureFlag_OpenSSL), use)
+ifeq ($(shell uname),AIX)
+	@patch --quiet -p0 $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/configure.ac < Patches/AIX-Lose-SSLv2_client_method_check.patch
 endif
+endif
+	@$(ECHO) done
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building configure tools (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/BUILD-CONF-TOOLS.OUT ) ... "`
+	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR);./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
+	@$(ECHO) done
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Running Configure (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT) ... "`
+	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
+	@$(ECHO) done
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT) ... "`
+	@echo $(MAKE) --directory $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT
+	@$(MAKE) --directory $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) --no-print-directory install CC="$(CC)" >> $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT 2>&1
+	@$(ECHO) done
+
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) ".Building libcurl CURRENT into $(BUILDS_DIR) ... "
@@ -289,8 +287,12 @@ endif
 
 
 clean:
-	@rm -rf CURRENT
-
+	@rm -rf CURRENT ORIGS
+ifeq ($(CONFIGURATION),)
+	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/curl/
+else
+	@rm -rf $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
+endif
 
 clobber:	clean
 	@rm -rf $(BUILDS_DIR)

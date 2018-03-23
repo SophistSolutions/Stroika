@@ -140,27 +140,26 @@ endif
 
 
 
-TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir)Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
-
+TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
 
 ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFoundationSupportLibs	=
 
-	ifeq ($(qFeatureFlag_Xerces), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libxerces-c.a
-	endif
-	ifeq ($(qFeatureFlag_Xerces), 'use-system')
-		StroikaFoundationSupportLibs	+=  -lxerces
+	#
+	# Store root/--prefix installed files for third party components in Builds/$(CONFIGURATION)/ThirdPartyComponents
+	#
+	StroikaFoundationSupportLibs	+= -L $(StroikaPlatformTargetBuildDir)/ThirdPartyComponents/lib/
+
+	ifneq ($(qFeatureFlag_Xerces), 'no')
+		StroikaFoundationSupportLibs	+=  -lxerces-c
 	endif
 
 	ifeq ($(qFeatureFlag_LibCurl), 'use')
-		# using curl-config better, but @todo - must fix ./configure script/args to point to right place to make that work
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs libcurl)
-		#StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libcurl.a
 	endif
 	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
-		StroikaFoundationSupportLibs	+=  -lcurl
+		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --libs libcurl)
 	endif
 
 	ifeq ($(qFeatureFlag_LZMA), 'use')
@@ -176,10 +175,10 @@ ifndef StroikaFoundationSupportLibs
 	endif
 
 	ifeq ($(qFeatureFlag_OpenSSL), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libssl.a $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libcrypto.a -ldl
+		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs openssl)
 	endif
 	ifeq ($(qFeatureFlag_OpenSSL), 'use-system')
-		StroikaFoundationSupportLibs	+=  -lssl -lcrypto
+		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --libs openssl)
 	endif
 
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
