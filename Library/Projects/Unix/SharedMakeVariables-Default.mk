@@ -140,8 +140,7 @@ endif
 
 
 
-TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir)Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
-
+TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
 
 ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
