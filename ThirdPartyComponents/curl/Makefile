@@ -287,15 +287,15 @@ endif
 
 
 clean:
+	@rm -rf CURRENT ORIGS
 ifeq ($(CONFIGURATION),)
-	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
+	@rm -rf =../../IntermediateFiles/*/ThirdPartyComponents/curl/
 else
 	@rm -rf $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)
 endif
 
 clobber:	clean
 	@rm -rf $(BUILDS_DIR)
-	@rm -rf CURRENT
 ifeq ($(CONFIGURATION),)
 	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/{libcurl}* $(BUILDS_ROOT)*/ThirdPartyComponents/include/curl
 else
