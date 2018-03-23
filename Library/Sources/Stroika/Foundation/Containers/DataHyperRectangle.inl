@@ -54,7 +54,7 @@ namespace Stroika {
             }
             template <typename T, typename... INDEXES>
             template <typename EQUALS_COMPARER>
-			inline bool DataHyperRectangle<T, INDEXES...>::Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer) const
+            inline bool DataHyperRectangle<T, INDEXES...>::Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
                 return Private::Equals_<T, EQUALS_COMPARER> (*this, rhs, equalsComparer);
             }

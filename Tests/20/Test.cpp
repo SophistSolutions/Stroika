@@ -241,8 +241,8 @@ namespace {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (21 + i);
             }
-			using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
-			VerifyTestResult (s.template IndexOf<EQC> (5).IsMissing ());
+            using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            VerifyTestResult (s.template IndexOf<EQC> (5).IsMissing ());
             VerifyTestResult (not s.empty ());
 
             s.RemoveAll ();
@@ -256,8 +256,8 @@ namespace {
             VerifyTestResult (s.size () == 1000);
 
             Sequence<T> s2 = s;
-			using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
-			VerifyTestResult (s.template IndexOf<EQC> (s2) == 0);
+            using EQC      = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            VerifyTestResult (s.template IndexOf<EQC> (s2) == 0);
             VerifyTestResult (s2.template IndexOf<EQC> (s) == 0);
 
             Sequence<T> s3;
