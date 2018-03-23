@@ -175,10 +175,6 @@ ReadConfiguration_();
 
 
 
-#if ($forceRecreate) {
-#	print "Forcing recreate...\n";
-#}
-
 mkdir ($intermediateFiles);
 
 
@@ -193,19 +189,6 @@ my $configFileMakeName	=	"$intermediateFiles$activeConfiguration/Configuration.m
 my $stkRoot	=	trim(`realpath .`);
 
 
-sub mkSymLink
-{
-	local $from = $_[0];
-	local $to = $_[1];
-	if ("$^O" eq "cygwin") {
-		# sometimes doesn't work on cygwin (JohnB's machine), but not needed anyhow... @todo find a way to make this work!!!
-	}
-	else {
-		system ("ln -s $from $to");
-	}
-}
-
-
 
 
 sub MakeUnixDirs {
@@ -215,9 +198,6 @@ sub MakeUnixDirs {
 	unless (-e "$intermediateFiles/$activeConfiguration") {
 		mkdir "$intermediateFiles$activeConfiguration";
 		mkdir "$intermediateFiles$activeConfiguration/Library";
-		system ("cp Library/Projects/Unix/SharedBuildRules-Default.mk $intermediateFiles$activeConfiguration/Library/SharedBuildRules.mk");
-		#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
-		system ("cp Library/Projects/Unix/SharedMakeVariables-Default.mk $intermediateFiles$activeConfiguration/Library/SharedMakeVariables.mk");
 	}
 }
 
@@ -538,6 +518,7 @@ sub WriteStroikaConfigMakeHeader
 
 
 	#@todo DEPRECATED - BACKWARD COMPAT - REMOVE SOON --LGP 2017-03-14
+	#But still dependended on as of 2018-03-23
 	system ("cp $configFileMakeName  $intermediateFiles$activeConfiguration/Library/Configuration.mk")
 }
 
