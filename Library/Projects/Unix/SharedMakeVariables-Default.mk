@@ -140,6 +140,7 @@ endif
 
 
 
+TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir)Builds/$(CONFIGURATION))/ThirdPartyComponents/lib/pkgconfig
 
 
 ifndef StroikaFoundationSupportLibs
@@ -155,8 +156,8 @@ ifndef StroikaFoundationSupportLibs
 
 	ifeq ($(qFeatureFlag_LibCurl), 'use')
 		# using curl-config better, but @todo - must fix ./configure script/args to point to right place to make that work
-		#StroikaFoundationSupportLibs += $(shell $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/curl-config --static-libs)
-		StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libcurl.a
+		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --libs libcurl)
+		#StroikaFoundationSupportLibs += $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libcurl.a
 	endif
 	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
 		StroikaFoundationSupportLibs	+=  -lcurl
