@@ -366,10 +366,10 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *          using EqualityComparerType = Common::FunctionComparerAdapter<Common::OrderingRelationType::eEquals, function<bool(T, T)>>;
+             *          using EqualityComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eEquals>;
              *      \endcode
              */
-            template <OrderingRelationType TYPE, typename ACTUAL_COMPARER>
+            template <typename ACTUAL_COMPARER, OrderingRelationType TYPE = ACTUAL_COMPARER::kOrderingRelationKind>
             struct FunctionComparerAdapter {
                 static constexpr OrderingRelationType kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
                 ACTUAL_COMPARER                       fActualComparer;
@@ -377,7 +377,12 @@ namespace Stroika {
                     : fActualComparer (actualComparer)
                 {
                 }
-                template <typename T>
+				template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kOrderingRelationKind == kOrderingRelationKind>>
+				constexpr FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer)
+					: fActualComparer (actualComparer)
+				{
+				}
+				template <typename T>
                 constexpr bool operator() (const T& lhs, const T& rhs) const
                 {
                     return fActualComparer (lhs, rhs);
