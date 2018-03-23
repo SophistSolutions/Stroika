@@ -70,8 +70,10 @@ namespace Stroika {
             };
 
             // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
+            // was called - NEW_EQUALS_COMPARER
+            // dont release this
             template <typename OLD_COMPARER>
-            struct NEW_EQUALS_COMPARER {
+            struct NewStyleEqualsComparerFromOldStyleEqualsComparer {
                 template <typename T>
                 constexpr bool operator() (T v1, T v2) const
                 {
@@ -377,12 +379,12 @@ namespace Stroika {
                     : fActualComparer (actualComparer)
                 {
                 }
-				template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kOrderingRelationKind == kOrderingRelationKind>>
-				constexpr FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer)
-					: fActualComparer (actualComparer)
-				{
-				}
-				template <typename T>
+                template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kOrderingRelationKind == kOrderingRelationKind>>
+                constexpr FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer)
+                    : fActualComparer (actualComparer)
+                {
+                }
+                template <typename T>
                 constexpr bool operator() (const T& lhs, const T& rhs) const
                 {
                     return fActualComparer (lhs, rhs);

@@ -155,12 +155,12 @@ namespace Stroika {
                     virtual bool Contains (T item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item, Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>{}) != nullptr;
+                        return fData_.Lookup (item, Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<typename TRAITS::EqualsCompareFunctionType>{}) != nullptr;
                     }
                     virtual void Remove (T item) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        fData_.Remove (item, Common::NEW_EQUALS_COMPARER<typename TRAITS::EqualsCompareFunctionType>{});
+                        fData_.Remove (item, Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<typename TRAITS::EqualsCompareFunctionType>{});
                     }
 
                 private:

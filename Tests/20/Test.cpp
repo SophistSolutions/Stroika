@@ -166,7 +166,7 @@ namespace {
             s.Append (1);
             Sequence<T> s2 = s;
             s2.Append (2);
-            using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
             VerifyTestResult (not s.template Equals<EQC> (s2));
             VerifyTestResult (not s2.template Equals<EQC> (s));
             s.Append (2);
@@ -241,7 +241,7 @@ namespace {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (21 + i);
             }
-            using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
             VerifyTestResult (s.template IndexOf<EQC> (5).IsMissing ());
             VerifyTestResult (not s.empty ());
 
@@ -256,7 +256,7 @@ namespace {
             VerifyTestResult (s.size () == 1000);
 
             Sequence<T> s2 = s;
-            using EQC      = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            using EQC      = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
             VerifyTestResult (s.template IndexOf<EQC> (s2) == 0);
             VerifyTestResult (s2.template IndexOf<EQC> (s) == 0);
 
@@ -325,7 +325,7 @@ namespace {
             x.Append (12);
 
             s.PrependAll (x);
-            using EQC = Common::NEW_EQUALS_COMPARER<EQUALS_COMPARER>;
+            using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
             VerifyTestResult (s.template Equals<EQC> (x));
             s.AppendAll (x);
             VerifyTestResult (EQUALS_COMPARER::Equals (s[1], 11));
