@@ -362,7 +362,7 @@ namespace Stroika {
                  *      This algorithm is O(N).
                  *
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual bool Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:

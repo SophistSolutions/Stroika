@@ -296,7 +296,7 @@ namespace Stroika {
             {
                 // grab iterator to first matching item, and contains if not at end; this is faster than using iterators
                 return static_cast<bool> (this->FindFirstThat ([&element, &equalsComparer](T i) -> bool {
-                    return equalsComparer.Equals (i, element);
+                    return equalsComparer (i, element);
                 }));
             }
             template <typename T>

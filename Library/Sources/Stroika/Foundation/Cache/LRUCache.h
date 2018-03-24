@@ -64,7 +64,7 @@ namespace Stroika {
                     void IncrementMisses ();
                 };
 
-/**
+                /**
                  *  Helper for DefaultTraits.
                  */
 #if qDebug

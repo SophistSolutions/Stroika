@@ -38,7 +38,7 @@ namespace CommonTests {
                 s.Add (3);
                 s.Add (9);
                 IterableTests::SimpleIterableTest_All_For_Type<Iterable<value_type>> (s);
-                IterableTests::SimpleIterableTest_RequiringEqualsComparer<Iterable<value_type>> (s, Common::OldStyleEqualsComparerFromNewStyleEqualsComparer<function<bool(value_type, value_type)>> (s.GetEqualsComparer ()));
+                IterableTests::SimpleIterableTest_RequiringEqualsComparer<Iterable<value_type>> (s, s.GetEqualsComparer ());
             }
         }
 
