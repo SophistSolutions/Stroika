@@ -259,6 +259,7 @@ namespace Stroika {
              */
             template <typename T>
             struct ThreeWayCompare {
+                constexpr ThreeWayCompare () = default;
                 constexpr int operator() (const T& _Left, const T& _Right) const
                 {
                     // in general, can do this much more efficiently (subtract left and right), but for now, KISS
