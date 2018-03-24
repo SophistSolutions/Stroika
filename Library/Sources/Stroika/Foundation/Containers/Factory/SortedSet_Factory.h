@@ -48,7 +48,7 @@ namespace Stroika {
                     nonvirtual SortedSet<T> operator() () const;
 
                 private:
-                    INORDER_COMPARER fLessComparer_;
+                    INORDER_COMPARER fInorderComparer_;
 
                 public:
                     /**

@@ -45,14 +45,14 @@ namespace Stroika {
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
-                        : fLessComparer_ (inorderComparer)
+                        : fInorderComparer_ (inorderComparer)
                         , fData_ (inorderComparer)
                     {
                     }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
-                        , fLessComparer_ (from->fLessComparer_)
+                        , fInorderComparer_ (from->fInorderComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -62,7 +62,7 @@ namespace Stroika {
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
 
                 private:
-                    INORDER_COMPARER fLessComparer_;
+                    INORDER_COMPARER fInorderComparer_;
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -108,7 +108,7 @@ namespace Stroika {
                 public:
                     virtual function<bool(T, T)> PeekEqualsComparer () const override
                     {
-                        return Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_};
+                        return Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_};
                     }
                     virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -119,7 +119,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> (fLessComparer_);
+                            return Iterable<T>::template MakeSharedPtr<Rep_> (fInorderComparer_);
                         }
                     }
                     virtual bool Equals (const typename Set<T>::_IRep& rhs) const override

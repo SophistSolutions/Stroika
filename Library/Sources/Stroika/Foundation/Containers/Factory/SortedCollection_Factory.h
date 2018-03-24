@@ -57,7 +57,7 @@ namespace Stroika {
                     static void Register (SortedCollection<T> (*factory) (const INORDER_COMPARER&) = nullptr);
 
                 private:
-                    INORDER_COMPARER fLessComparer_;
+                    INORDER_COMPARER fInorderComparer_;
 
                 private:
                     static SortedCollection<T> Default_ (const INORDER_COMPARER& inorderComparer);

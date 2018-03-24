@@ -47,13 +47,13 @@ namespace Stroika {
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
-                        : fLessComparer_ (inorderComparer)
+                        : fInorderComparer_ (inorderComparer)
                     {
                     }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
-                        , fLessComparer_ (from->fLessComparer_)
+                        , fInorderComparer_ (from->fInorderComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -66,7 +66,7 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
-                    INORDER_COMPARER fLessComparer_;
+                    INORDER_COMPARER fInorderComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -121,7 +121,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> (fLessComparer_);
+                            return Iterable<T>::template MakeSharedPtr<Rep_> (fInorderComparer_);
                         }
                     }
                     virtual void Add (ArgByValueType<T> item) override
@@ -137,7 +137,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // equals might examine a subset of the object and we still want to update the whole object, but
                         // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-                        if (Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_}(mir.fIterator.Current (), newValue)) {
+                        if (Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_}(mir.fIterator.Current (), newValue)) {
                             fData_.SetAt (mir.fIterator, newValue);
                         }
                         else {
@@ -172,12 +172,12 @@ namespace Stroika {
                     virtual bool Contains (T item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_}) != nullptr;
+                        return fData_.Lookup (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_}) != nullptr;
                     }
                     virtual void Remove (T item) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        fData_.Remove (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_});
+                        fData_.Remove (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_});
                     }
 
                 private:
@@ -186,7 +186,7 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
                         // skip the smaller items
-                        while (it.More (nullptr, true) and fLessComparer_ (it.Current (), item)) {
+                        while (it.More (nullptr, true) and fInorderComparer_ (it.Current (), item)) {
                         }
                         // at this point - we are pointing at the first link >= item, so insert before it
                         fData_.AddBefore (it, item);

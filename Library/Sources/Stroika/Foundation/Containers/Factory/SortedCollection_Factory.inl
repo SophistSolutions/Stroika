@@ -27,7 +27,7 @@ namespace Stroika {
                 atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> SortedCollection_Factory<T, INORDER_COMPARER>::sFactory_ (nullptr);
                 template <typename T, typename INORDER_COMPARER>
                 inline SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const INORDER_COMPARER& inorderComparer)
-                    : fLessComparer_ (inorderComparer)
+                    : fInorderComparer_ (inorderComparer)
                 {
                 }
                 template <typename T, typename INORDER_COMPARER>
@@ -41,10 +41,10 @@ namespace Stroika {
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
                     if (auto f = sFactory_.load ()) {
-                        return f (fLessComparer_);
+                        return f (fInorderComparer_);
                     }
                     else {
-                        return Default_ (fLessComparer_);
+                        return Default_ (fInorderComparer_);
                     }
                 }
                 template <typename T, typename INORDER_COMPARER>
