@@ -20,18 +20,18 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 **************** SortedCollection_Factory<T, LESS_COMPARER> ********************
+                 **************** SortedCollection_Factory<T, INORDER_COMPARER> *****************
                  ********************************************************************************
                  */
-                template <typename T, typename LESS_COMPARER>
-                atomic<SortedCollection<T> (*) (const LESS_COMPARER&)> SortedCollection_Factory<T, LESS_COMPARER>::sFactory_ (nullptr);
-                template <typename T, typename LESS_COMPARER>
-                inline SortedCollection_Factory<T, LESS_COMPARER>::SortedCollection_Factory (const LESS_COMPARER& lessComparer)
-                    : fLessComparer_ (lessComparer)
+                template <typename T, typename INORDER_COMPARER>
+                atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> SortedCollection_Factory<T, INORDER_COMPARER>::sFactory_ (nullptr);
+                template <typename T, typename INORDER_COMPARER>
+                inline SortedCollection_Factory<T, INORDER_COMPARER>::SortedCollection_Factory (const INORDER_COMPARER& inorderComparer)
+                    : fLessComparer_ (inorderComparer)
                 {
                 }
-                template <typename T, typename LESS_COMPARER>
-                inline SortedCollection<T> SortedCollection_Factory<T, LESS_COMPARER>::operator() () const
+                template <typename T, typename INORDER_COMPARER>
+                inline SortedCollection<T> SortedCollection_Factory<T, INORDER_COMPARER>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -47,15 +47,15 @@ namespace Stroika {
                         return Default_ (fLessComparer_);
                     }
                 }
-                template <typename T, typename LESS_COMPARER>
-                void SortedCollection_Factory<T, LESS_COMPARER>::Register (SortedCollection<T> (*factory) (const LESS_COMPARER&))
+                template <typename T, typename INORDER_COMPARER>
+                void SortedCollection_Factory<T, INORDER_COMPARER>::Register (SortedCollection<T> (*factory) (const INORDER_COMPARER&))
                 {
                     sFactory_ = factory;
                 }
-                template <typename T, typename LESS_COMPARER>
-                inline SortedCollection<T> SortedCollection_Factory<T, LESS_COMPARER>::Default_ (const LESS_COMPARER& lessComparer)
+                template <typename T, typename INORDER_COMPARER>
+                inline SortedCollection<T> SortedCollection_Factory<T, INORDER_COMPARER>::Default_ (const INORDER_COMPARER& inorderComparer)
                 {
-                    return Concrete::SortedCollection_LinkedList<T> (lessComparer);
+                    return Concrete::SortedCollection_LinkedList<T> (inorderComparer);
                 }
             }
         }

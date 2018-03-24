@@ -34,7 +34,7 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T>
-                template <typename LESS_COMPARER>
+                template <typename INORDER_COMPARER>
                 class SortedCollection_LinkedList<T>::Rep_ : public IImplRepBase_ {
                 private:
                     using inherited = IImplRepBase_;
@@ -46,8 +46,8 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE     = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ (const LESS_COMPARER& lessComparer)
-                        : fLessComparer_ (lessComparer)
+                    Rep_ (const INORDER_COMPARER& inorderComparer)
+                        : fLessComparer_ (inorderComparer)
                     {
                     }
                     Rep_ (const Rep_& from) = delete;
@@ -66,7 +66,7 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
-                    LESS_COMPARER fLessComparer_;
+                    INORDER_COMPARER fLessComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -137,7 +137,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // equals might examine a subset of the object and we still want to update the whole object, but
                         // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-                        if (Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_}(mir.fIterator.Current (), newValue)) {
+                        if (Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_}(mir.fIterator.Current (), newValue)) {
                             fData_.SetAt (mir.fIterator, newValue);
                         }
                         else {
@@ -172,12 +172,12 @@ namespace Stroika {
                     virtual bool Contains (T item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item, Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_}) != nullptr;
+                        return fData_.Lookup (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_}) != nullptr;
                     }
                     virtual void Remove (T item) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        fData_.Remove (item, Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_});
+                        fData_.Remove (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_});
                     }
 
                 private:
@@ -212,11 +212,11 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename LESS_COMPARER>
-                inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (LESS_COMPARER lessComparer)
-                    : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> (lessComparer))
+                template <typename INORDER_COMPARER>
+                inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
                 {
-                    static_assert (Common::IsInOrderComparer<LESS_COMPARER> (), "InOrder comparer required with SortedCollection");
+                    static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedCollection");
                     AssertRepValidType_ ();
                 }
                 template <typename T>

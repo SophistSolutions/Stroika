@@ -43,8 +43,8 @@ namespace Stroika {
                     /**
                      */
                     Set_stdset ();
-                    template <typename LESS_COMPARER>
-                    explicit Set_stdset (const LESS_COMPARER& lessComparer);
+                    template <typename INORDER_COMPARER>
+                    explicit Set_stdset (const INORDER_COMPARER& inorderComparer);
                     Set_stdset (const Set_stdset& src) = default;
                     Set_stdset (const std::initializer_list<T>& src);
                     Set_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src);
@@ -64,7 +64,7 @@ namespace Stroika {
 
                 private:
                     class IImplRepBase_;
-                    template <typename LESS_COMPARER>
+                    template <typename INORDER_COMPARER>
                     class Rep_;
 
                 private:

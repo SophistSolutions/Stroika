@@ -42,8 +42,8 @@ namespace Stroika {
 
                 public:
                     SortedCollection_LinkedList ();
-                    template <typename LESS_COMPARER>
-                    explicit SortedCollection_LinkedList (LESS_COMPARER lessComparer);
+                    template <typename INORDER_COMPARER>
+                    explicit SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer);
                     SortedCollection_LinkedList (const T* start, const T* end);
                     SortedCollection_LinkedList (const SortedCollection<T>& src);
                     SortedCollection_LinkedList (const SortedCollection_LinkedList& src) noexcept = default;
@@ -56,7 +56,7 @@ namespace Stroika {
 
                 private:
                     class IImplRepBase_;
-                    template <typename LESS_COMPARER>
+                    template <typename INORDER_COMPARER>
                     class Rep_;
 
                 private:

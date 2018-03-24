@@ -26,8 +26,8 @@ using namespace Stroika::Foundation::Common;
 using Concrete::SortedSet_stdset;
 
 namespace {
-    template <typename CONCRETE_CONTAINER, typename LESS_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
-    void RunTests_ (const LESS_COMPARER& lessComparer, CONCRETE_CONTAINER_FACTORY factory)
+    template <typename CONCRETE_CONTAINER, typename INORDER_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
+    void RunTests_ (const INORDER_COMPARER& inorderComparer, CONCRETE_CONTAINER_FACTORY factory)
     {
         typedef typename CONCRETE_CONTAINER::value_type T;
         auto                                            testFunc = [&](const SortedSet<T>& s) {
@@ -35,7 +35,7 @@ namespace {
             Memory::Optional<T> last;
             for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (lessComparer (*last, i));
+                    VerifyTestResult (inorderComparer (*last, i));
                 }
                 last = i;
             }

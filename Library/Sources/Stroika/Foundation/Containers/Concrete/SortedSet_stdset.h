@@ -42,9 +42,12 @@ namespace Stroika {
                     using EqualityComparerType = typename inherited::EqualityComparerType;
 
                 public:
+                    /**
+                     *  \req IsInOrderComparer<INORDER_COMPARER> ()
+                     */
                     SortedSet_stdset ();
-                    template <typename LESS_COMPARER>
-                    explicit SortedSet_stdset (LESS_COMPARER lessComparer);
+                    template <typename INORDER_COMPARER>
+                    explicit SortedSet_stdset (const INORDER_COMPARER& inorderComparer);
                     SortedSet_stdset (const SortedSet_stdset& src) = default;
                     SortedSet_stdset (const std::initializer_list<T>& src);
                     SortedSet_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src);
@@ -64,7 +67,7 @@ namespace Stroika {
 
                 private:
                     class IImplRepBase_;
-                    template <typename LESS_COMPARER>
+                    template <typename INORDER_COMPARER>
                     class Rep_;
 
                 private:

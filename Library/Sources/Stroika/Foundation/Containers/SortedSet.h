@@ -76,10 +76,11 @@ namespace Stroika {
 
             public:
                 /**
+                 * \req IsInOrderComparer<INORDER_COMPARER> ()
                  */
                 SortedSet ();
-                template <typename LESS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<LESS_COMPARER>::value>>
-                explicit SortedSet (const LESS_COMPARER& lessComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>
+                explicit SortedSet (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedSet (const SortedSet& src) noexcept = default;
                 SortedSet (SortedSet&& src) noexcept      = default;
                 SortedSet (const initializer_list<T>& src);

@@ -23,11 +23,11 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename LESS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline SortedCollection<T>::SortedCollection (const LESS_COMPARER& lessComparer, ENABLE_IF_IS_COMPARER*)
-                : inherited (move (Factory::SortedCollection_Factory<T, LESS_COMPARER> (lessComparer) ()))
+            template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline SortedCollection<T>::SortedCollection (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::SortedCollection_Factory<T, INORDER_COMPARER> (inorderComparer) ()))
             {
-                static_assert (Common::IsInOrderComparer<LESS_COMPARER> (), "InOrder comparer required with SortedCollection");
+                static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedCollection");
                 _AssertRepValidType ();
             }
             template <typename T>

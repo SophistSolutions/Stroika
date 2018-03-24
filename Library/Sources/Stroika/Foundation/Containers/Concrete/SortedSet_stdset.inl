@@ -29,7 +29,7 @@ namespace Stroika {
                 /*
                  */
                 template <typename T>
-                template <typename LESS_COMPARER>
+                template <typename INORDER_COMPARER>
                 class SortedSet_stdset<T>::Rep_ : public IImplRepBase_ {
                 private:
                     using inherited = IImplRepBase_;
@@ -41,9 +41,9 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ (const LESS_COMPARER& lessComparer)
-                        : fLessComparer_ (lessComparer)
-                        , fData_ (lessComparer)
+                    Rep_ (const INORDER_COMPARER& inorderComparer)
+                        : fLessComparer_ (inorderComparer)
+                        , fData_ (inorderComparer)
                     {
                     }
                     Rep_ (const Rep_& from) = delete;
@@ -62,7 +62,7 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
-                    LESS_COMPARER fLessComparer_;
+                    INORDER_COMPARER fLessComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -104,7 +104,7 @@ namespace Stroika {
                 public:
                     virtual function<bool(T, T)> PeekEqualsComparer () const override
                     {
-                        return Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_};
+                        return Common::EqualsComparerAdapter<INORDER_COMPARER>{fLessComparer_};
                     }
                     virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -165,7 +165,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, LESS_COMPARER>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, INORDER_COMPARER>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
@@ -184,11 +184,11 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename LESS_COMPARER>
-                inline SortedSet_stdset<T>::SortedSet_stdset (LESS_COMPARER lessComparer)
-                    : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> (lessComparer))
+                template <typename INORDER_COMPARER>
+                inline SortedSet_stdset<T>::SortedSet_stdset (const INORDER_COMPARER& inorderComparer)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
                 {
-                    static_assert (Common::IsInOrderComparer<LESS_COMPARER> (), "InOrder comparer required with SortedSet");
+                    static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedSet");
                     AssertRepValidType_ ();
                 }
                 template <typename T>

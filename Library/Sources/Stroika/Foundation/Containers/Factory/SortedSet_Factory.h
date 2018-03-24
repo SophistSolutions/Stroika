@@ -25,18 +25,21 @@ namespace Stroika {
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedSet<> container
                  *
-                 *  Note - you can override the underlying factory dynamically by calling SortedSet_Factory<T,LESS_COMPARER>::Register (), or
+                 *  Note - you can override the underlying factory dynamically by calling SortedSet_Factory<T,INORDER_COMPARER>::Register (), or
                  *  replace it statically by template-specailizing SortedSet_Factory<T,TRAITS>::operator() () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename T, typename LESS_COMPARER = less<T>>
+                template <typename T, typename INORDER_COMPARER = less<T>>
                 class SortedSet_Factory {
                 private:
-                    static atomic<SortedSet<T> (*) (const LESS_COMPARER&)> sFactory_;
+                    static atomic<SortedSet<T> (*) (const INORDER_COMPARER&)> sFactory_;
 
                 public:
-                    SortedSet_Factory (const LESS_COMPARER& lessComparer);
+                    static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedSet");
+
+                public:
+                    SortedSet_Factory (const INORDER_COMPARER& inorderComparer);
 
                 public:
                     /**
@@ -45,16 +48,16 @@ namespace Stroika {
                     nonvirtual SortedSet<T> operator() () const;
 
                 private:
-                    LESS_COMPARER fLessComparer_;
+                    INORDER_COMPARER fLessComparer_;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SortedSet<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (SortedSet<T> (*factory) (const LESS_COMPARER&) = nullptr);
+                    static void Register (SortedSet<T> (*factory) (const INORDER_COMPARER&) = nullptr);
 
                 private:
-                    static SortedSet<T> Default_ (const LESS_COMPARER& lessComparer);
+                    static SortedSet<T> Default_ (const INORDER_COMPARER& inorderComparer);
                 };
             }
         }
