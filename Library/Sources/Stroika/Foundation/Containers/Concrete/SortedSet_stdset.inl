@@ -42,14 +42,12 @@ namespace Stroika {
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
-                        : fInorderComparer_ (inorderComparer)
-                        , fData_ (inorderComparer)
+                        : fData_ (inorderComparer)
                     {
                     }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
-                        , fInorderComparer_ (from->fInorderComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -60,9 +58,6 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-
-                private:
-                    INORDER_COMPARER fInorderComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -104,7 +99,7 @@ namespace Stroika {
                 public:
                     virtual function<bool(T, T)> PeekEqualsComparer () const override
                     {
-                        return Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_};
+                        return Common::EqualsComparerAdapter<INORDER_COMPARER>{fData_.key_comp ()};
                     }
                     virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -115,7 +110,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> (fInorderComparer_);
+                            return Iterable<T>::template MakeSharedPtr<Rep_> (fData_.key_comp ());
                         }
                     }
                     virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
