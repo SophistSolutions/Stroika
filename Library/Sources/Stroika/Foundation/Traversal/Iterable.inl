@@ -310,7 +310,7 @@ namespace Stroika {
                 for (auto ti : *this) {
                     bool contained = false;
                     for (auto ri : rhs) {
-                        if (equalsComparer.Equals (ti, ri)) {
+                        if (equalsComparer (ti, ri)) {
                             contained = true;
                             break;
                         }
@@ -322,7 +322,7 @@ namespace Stroika {
                 for (auto ri : rhs) {
                     bool contained = false;
                     for (auto ti : *this) {
-                        if (equalsComparer.Equals (ti, ri)) {
+                        if (equalsComparer (ti, ri)) {
                             contained = true;
                             break;
                         }
@@ -340,7 +340,7 @@ namespace Stroika {
                 auto tallyOf = [equalsComparer](const Iterable<T>& c, T item) -> size_t {
                     size_t total = 0;
                     for (auto ti : c) {
-                        if (equalsComparer.Equals (ti, item)) {
+                        if (equalsComparer (ti, item)) {
                             total++;
                         }
                     }
@@ -371,7 +371,7 @@ namespace Stroika {
                 auto        ri = rhs.begin ();
                 auto        re = rhs.end ();
                 for (; li != le and ri != re; ++ri, ++li) {
-                    if (not equalsComparer.Equals (*li, *ri)) {
+                    if (not equalsComparer (*li, *ri)) {
                         return false;
                     }
                 }

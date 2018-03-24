@@ -39,21 +39,24 @@ namespace CommonTests {
         void Test3_SetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer)));
+            using NEWEQT      = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
+            VerifyTestResult ((iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, NEWEQT> (container, NEWEQT{equalsComparer})));
         }
 
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
         void Test4_MultiSetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.template MultiSetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer)));
+            using NEWEQT      = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
+            VerifyTestResult ((iterableCopy.template MultiSetEquals<USING_ITERABLE_CONTAINER, NEWEQT> (container, NEWEQT{equalsComparer})));
         }
 
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
         void Test5_SequnceEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::value_type>& container, EQUALS_COMPARER equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.template SequnceEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer)));
+            using NEWEQT      = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
+            VerifyTestResult ((iterableCopy.template SequnceEquals<USING_ITERABLE_CONTAINER, NEWEQT> (container, NEWEQT{equalsComparer})));
         }
 
         template <typename USING_ITERABLE_CONTAINER>

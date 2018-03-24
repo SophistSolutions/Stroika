@@ -382,7 +382,7 @@ namespace Stroika {
                  *                That's a little better (but at the cost of more RAM usage).
                  *
                  */
-                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
@@ -394,7 +394,7 @@ namespace Stroika {
                  *  \em Performance:
                  *      This algorithm is O(N^^3)
                  */
-                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
@@ -405,7 +405,7 @@ namespace Stroika {
                  *  \em Performance:
                  *      This algorithm is O(N)
                  */
-                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual bool SequnceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
