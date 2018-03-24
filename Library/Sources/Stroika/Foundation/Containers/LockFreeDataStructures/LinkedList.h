@@ -32,21 +32,13 @@ namespace Stroika {
 
                 using Configuration::ArgByValueType;
 
-                /**
-                 * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
-                 */
-                template <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<T>>
-                struct LinkedList_DefaultTraits {
-                    using EqualsCompareFunctionType = EQUALS_COMPARER;
-                };
-
                 /*
                  *      https://en.wikipedia.org/wiki/Non-blocking_linked_list
                  *
                  *      or better – Herb Sutter provides a C++ implementation:
                  *      https://www.infoq.com/news/2014/10/cpp-lock-free-programming
                  */
-                template <typename T, typename TRAITS = LinkedList_DefaultTraits<T>>
+                template <typename T>
                 class LinkedList : public Debug::AssertExternallySynchronizedLock {
                 public:
                     using value_type = T;
