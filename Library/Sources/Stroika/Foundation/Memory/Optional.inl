@@ -732,7 +732,8 @@ namespace Stroika {
                 return equalsComparer (*this->fStorage_.peek (), rhs);
             }
             template <typename T, typename TRAITS>
-            inline int Optional<T, TRAITS>::Compare (const Optional& rhs) const
+            template <typename THREEWAY_COMPARER>
+            inline int Optional<T, TRAITS>::Compare (const Optional& rhs, const THREEWAY_COMPARER& comparer) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
@@ -744,17 +745,18 @@ namespace Stroika {
                 }
                 AssertNotNull (this->fStorage_.peek ());
                 AssertNotNull (rhs.fStorage_.peek ());
-                return Common::ComparerWithWellOrder<T>::Compare (*this->fStorage_.peek (), *rhs.fStorage_.peek ());
+                return comparer (*this->fStorage_.peek (), *rhs.fStorage_.peek ());
             }
             template <typename T, typename TRAITS>
-            inline int Optional<T, TRAITS>::Compare (T rhs) const
+            template <typename THREEWAY_COMPARER>
+            inline int Optional<T, TRAITS>::Compare (T rhs, const THREEWAY_COMPARER& comparer) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
                     return -1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
                 AssertNotNull (this->fStorage_.peek ());
-                return Common::ComparerWithWellOrder<T>::Compare (*this->fStorage_.peek (), rhs);
+                return comparer (*this->fStorage_.peek (), rhs);
             }
             template <typename T, typename TRAITS>
             inline T Optional<T, TRAITS>::value () const

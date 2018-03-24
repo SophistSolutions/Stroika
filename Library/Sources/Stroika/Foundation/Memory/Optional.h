@@ -737,8 +737,10 @@ namespace Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
                  */
-                nonvirtual int Compare (const Optional& rhs) const;
-                nonvirtual int Compare (T rhs) const;
+                template <typename THREEWAY_COMPARER = Compare::ThreeWayCompare<T>>
+                nonvirtual int Compare (const Optional& rhs, const THREEWAY_COMPARER& comparer = {}) const;
+                template <typename THREEWAY_COMPARER = Compare::ThreeWayCompare<T>>
+                nonvirtual int Compare (T rhs, const THREEWAY_COMPARER& comparer = {}) const;
 
             public:
                 /**
