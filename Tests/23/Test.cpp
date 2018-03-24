@@ -27,22 +27,26 @@ using Concrete::SortedCollection_LinkedList;
 using Memory::Optional;
 
 namespace {
-    template <typename CONCRETE_CONTAINER>
-    void RunTests_ ()
+    template <typename CONCRETE_CONTAINER, typename LESS_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
+    void RunTests_ (const LESS_COMPARER& lessComparer, CONCRETE_CONTAINER_FACTORY factory)
     {
-        using T          = typename CONCRETE_CONTAINER::value_type;
-        using TraitsType = typename CONCRETE_CONTAINER::TraitsType;
-        auto testFunc    = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& s) {
+        typedef typename CONCRETE_CONTAINER::value_type T;
+        auto                                            testFunc = [&](const SortedCollection<T>& s) {
             // verify in sorted order
-            Optional<T> last;
+            Memory::Optional<T> last;
             for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
+                    VerifyTestResult (lessComparer (*last, i));
                 }
                 last = i;
             }
         };
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (testFunc);
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (factory, testFunc);
+    }
+    template <typename CONCRETE_CONTAINER>
+    void RunTests_ ()
+    {
+        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, []() { return CONCRETE_CONTAINER (); });
     }
 }
 
@@ -62,26 +66,20 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_Comparer_ {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2)
+        struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eInOrder> {
+            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
-                return v1.GetValue () == v2.GetValue ();
-            }
-            static int Compare (value_type v1, value_type v2)
-            {
-                return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
+                return lhs.GetValue () < rhs.GetValue ();
             }
         };
-        using SimpleClassWithoutComparisonOperators_CollectionTRAITS = DefaultTraits::SortedCollection<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>;
 
         RunTests_<SortedCollection<size_t>> ();
         RunTests_<SortedCollection<SimpleClass>> ();
-        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedCollection<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
-        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
         TestOverwriteContainerWhileIteratorRunning_ ();
     }

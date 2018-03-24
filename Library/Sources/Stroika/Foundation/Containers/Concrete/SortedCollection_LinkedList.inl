@@ -21,13 +21,23 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *** SortedCollection_LinkedList<T, TRAITS>::Rep_ ***
+                 ************************* SortedCollection_LinkedList<T>::Rep_ *****************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                class SortedCollection_LinkedList<T, TRAITS>::Rep_ : public SortedCollection<T, TRAITS>::_IRep {
+                template <typename T>
+                class SortedCollection_LinkedList<T>::IImplRepBase_ : public SortedCollection_LinkedList<T>::_IRep {
+                };
+
+                /*
+                 ********************************************************************************
+                 ************************* SortedCollection_LinkedList<T>::Rep_ *****************
+                 ********************************************************************************
+                 */
+                template <typename T>
+                template <typename LESS_COMPARER>
+                class SortedCollection_LinkedList<T>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename SortedCollection<T, TRAITS>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr   = typename Iterable<T>::_IterableRepSharedPtr;
@@ -36,10 +46,14 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE     = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const LESS_COMPARER& lessComparer)
+                        : fLessComparer_ (lessComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
+                        , fLessComparer_ (from->fLessComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -50,6 +64,9 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
+                private:
+                    LESS_COMPARER fLessComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -104,7 +121,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<T>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<T>::template MakeSharedPtr<Rep_> (fLessComparer_);
                         }
                     }
                     virtual void Add (ArgByValueType<T> item) override
@@ -120,7 +137,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // equals might examine a subset of the object and we still want to update the whole object, but
                         // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-                        if (TRAITS::EqualsCompareFunctionType::Equals (mir.fIterator.Current (), newValue)) {
+                        if (Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_}(mir.fIterator.Current (), newValue)) {
                             fData_.SetAt (mir.fIterator, newValue);
                         }
                         else {
@@ -155,12 +172,12 @@ namespace Stroika {
                     virtual bool Contains (T item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item, Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<typename TRAITS::EqualsCompareFunctionType>{}) != nullptr;
+                        return fData_.Lookup (item, Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_}) != nullptr;
                     }
                     virtual void Remove (T item) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        fData_.Remove (item, Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<typename TRAITS::EqualsCompareFunctionType>{});
+                        fData_.Remove (item, Common::EqualsComparerAdapter<LESS_COMPARER>{fLessComparer_});
                     }
 
                 private:
@@ -169,7 +186,7 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
                         // skip the smaller items
-                        while (it.More (nullptr, true) and TRAITS::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
+                        while (it.More (nullptr, true) and fLessComparer_ (it.Current (), item)) {
                         }
                         // at this point - we are pointing at the first link >= item, so insert before it
                         fData_.AddBefore (it, item);
@@ -185,41 +202,42 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ***************** SortedCollection_LinkedList<T, TRAITS> ***********************
+                 ********************* SortedCollection_LinkedList<T> ***************************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                inline SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                template <typename T>
+                inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList ()
+                    : SortedCollection_LinkedList (less<T>{})
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                inline SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end)
+                template <typename T>
+                template <typename LESS_COMPARER>
+                inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (LESS_COMPARER lessComparer)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> (lessComparer))
+                {
+                    AssertRepValidType_ ();
+                }
+                template <typename T>
+                inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const T* start, const T* end)
                     : SortedCollection_LinkedList ()
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src)
+                template <typename T>
+                SortedCollection_LinkedList<T>::SortedCollection_LinkedList (const SortedCollection<T>& src)
                     : SortedCollection_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename T, typename TRAITS>
-                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename T, typename TRAITS>
-                inline void SortedCollection_LinkedList<T, TRAITS>::AssertRepValidType_ () const
+                template <typename T>
+                inline void SortedCollection_LinkedList<T>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }

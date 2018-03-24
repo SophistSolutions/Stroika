@@ -162,11 +162,11 @@ namespace CommonTests {
 #endif
             }
 
-            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void DoAllTests_ (TEST_FUNCTION applyToContainer)
+            template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
+            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test1_OldMiscBagTests_"};
-                CONCRETE_CONTAINER        s;
+                CONCRETE_CONTAINER        s = factory ();
                 On_Container_<CONCRETE_CONTAINER> (s);
             }
         }
@@ -248,13 +248,13 @@ namespace CommonTests {
 
         namespace Test4_IteratorsBasics_ {
 
-            template <typename CONCRETE_CONTAINER>
-            void BasicIteratorTest_ ()
+            template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
+            void BasicIteratorTest_ (CONCRETE_CONTAINER_FACTORY factory)
             {
-                CONCRETE_CONTAINER                      collection;
-                typename CONCRETE_CONTAINER::value_type t1 = 1;
-                typename CONCRETE_CONTAINER::value_type t2 = 2;
-                typename CONCRETE_CONTAINER::value_type t3 = 3;
+                CONCRETE_CONTAINER                      collection = factory ();
+                typename CONCRETE_CONTAINER::value_type t1         = 1;
+                typename CONCRETE_CONTAINER::value_type t2         = 2;
+                typename CONCRETE_CONTAINER::value_type t3         = 3;
                 VerifyTestResult (collection.IsEmpty ());
                 collection.Add (t1);
                 collection.Add (t1);
@@ -288,21 +288,21 @@ namespace CommonTests {
                 }
             }
 
-            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void DoAllTests_ (TEST_FUNCTION applyToContainer)
+            template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
+            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test4_IteratorsBasics_"};
-                BasicIteratorTest_<CONCRETE_CONTAINER> ();
+                BasicIteratorTest_<CONCRETE_CONTAINER> (factory);
             }
         }
 
         namespace Test5_Apply_ {
 
-            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void DoIt_ (TEST_FUNCTION applyToContainer)
+            template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
+            void DoIt_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
             {
                 typedef typename CONCRETE_CONTAINER::value_type T;
-                CONCRETE_CONTAINER                              b;
+                CONCRETE_CONTAINER                              b = factory ();
 
                 constexpr int FIRST = 0;
                 constexpr int LAST  = 100;
@@ -326,29 +326,29 @@ namespace CommonTests {
                 applyToContainer (b);
             }
 
-            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-            void DoAllTests_ (TEST_FUNCTION applyToContainer)
+            template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
+            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test5_Apply_"};
-                DoIt_<CONCRETE_CONTAINER> (applyToContainer);
+                DoIt_<CONCRETE_CONTAINER> (factory, applyToContainer);
             }
         }
 
         /**
          */
-        template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
-        void SimpleCollectionTest_Generic (TEST_FUNCTION applyToContainer)
+        template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
+        void SimpleCollectionTest_Generic (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
         {
             Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleCollectionTest_Generic"};
-            Test1_OldMiscBagTests_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
-            Test4_IteratorsBasics_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
-            Test5_Apply_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
+            Test1_OldMiscBagTests_::DoAllTests_<CONCRETE_CONTAINER> (factory, applyToContainer);
+            Test4_IteratorsBasics_::DoAllTests_<CONCRETE_CONTAINER> (factory, applyToContainer);
+            Test5_Apply_::DoAllTests_<CONCRETE_CONTAINER> (factory, applyToContainer);
         }
 
         /**
         */
-        template <typename USING_Collection_CONTAINER, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
-        void SimpleCollectionTest_TestsWhichRequireEquals (TEST_FUNCTION applyToContainer)
+        template <typename USING_Collection_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
+        void SimpleCollectionTest_TestsWhichRequireEquals (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
         {
             Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::SimpleCollectionTest_TestsWhichRequireEquals"};
             Test2_TestsWithComparer_::DoAllTests_<USING_Collection_CONTAINER> (applyToContainer, WITH_COMPARE_EQUALS ());

@@ -35,23 +35,28 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
-                class SortedCollection_LinkedList : public SortedCollection<T, TRAITS> {
+                template <typename T>
+                class SortedCollection_LinkedList : public SortedCollection<T> {
                 private:
-                    using inherited = SortedCollection<T, TRAITS>;
+                    using inherited = SortedCollection<T>;
 
                 public:
                     SortedCollection_LinkedList ();
+                    template <typename LESS_COMPARER>
+                    explicit SortedCollection_LinkedList (LESS_COMPARER lessComparer);
                     SortedCollection_LinkedList (const T* start, const T* end);
-                    SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src);
-                    SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& src);
+                    SortedCollection_LinkedList (const SortedCollection<T>& src);
+                    SortedCollection_LinkedList (const SortedCollection_LinkedList& src) noexcept = default;
+                    SortedCollection_LinkedList (SortedCollection_LinkedList&& src) noexcept      = default;
 
                 public:
                     /**
                      */
-                    nonvirtual SortedCollection_LinkedList<T, TRAITS>& operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs) = default;
+                    nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs) = default;
 
                 private:
+                    class IImplRepBase_;
+                    template <typename LESS_COMPARER>
                     class Rep_;
 
                 private:

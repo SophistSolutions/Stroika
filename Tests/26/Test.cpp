@@ -35,7 +35,7 @@ namespace {
             Memory::Optional<T> last;
             for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (ThreeWayComparerAdapter<LESS_COMPARER>{LESS_COMPARER{}}(*last, i) <= 0);
+                    VerifyTestResult (lessComparer (*last, i));
                 }
                 last = i;
             }

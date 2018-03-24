@@ -9,7 +9,6 @@
 #include "../Configuration/Concepts.h"
 
 #include "Collection.h"
-#include "DefaultTraits/SortedCollection.h"
 
 /**
  *  \file
@@ -53,9 +52,9 @@ namespace Stroika {
              *      Items inserted at the current index remain undefined if they will
              *      be encountered or not.
              *
-             *  @see Collection<T, TRAITS>
+             *  @see Collection<T>
              *  @see SortedMapping<Key,T>
-             *  @see SortedSet<T, TRAITS>
+             *  @see SortedSet<T>
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-LEGACY_Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
@@ -66,7 +65,7 @@ namespace Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template <typename T, typename TRAITS = DefaultTraits::SortedCollection<T>>
+            template <typename T>
             class SortedCollection : public Collection<T> {
             private:
                 using inherited = Collection<T>;
@@ -81,30 +80,18 @@ namespace Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using ArchetypeContainerType = SortedCollection<T, TRAITS>;
-
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of SortedCollection<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                using TraitsType = TRAITS;
-
-            public:
-                /**
-                 *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
+                using ArchetypeContainerType = SortedCollection<T>;
 
             public:
                 /**
                  */
                 SortedCollection ();
+                template <typename LESS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<LESS_COMPARER>::value>>
+                explicit SortedCollection (const LESS_COMPARER& lessComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedCollection (const SortedCollection& src) noexcept = default;
                 SortedCollection (SortedCollection&& src) noexcept      = default;
                 SortedCollection (const std::initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T, TRAITS>*>::value>::type>
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value>::type>
                 SortedCollection (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
@@ -136,13 +123,13 @@ namespace Stroika {
             };
 
             /**
-             *  \brief  Implementation detail for SortedCollection<T, TRAITS> implementors.
+             *  \brief  Implementation detail for SortedCollection<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the SortedCollection<T, TRAITS> container API.
+             *  the SortedCollection<T> container API.
              */
-            template <typename T, typename TRAITS>
-            class SortedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
+            template <typename T>
+            class SortedCollection<T>::_IRep : public Collection<T>::_IRep {
             public:
                 virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
                 virtual bool Contains (T item) const                                 = 0;

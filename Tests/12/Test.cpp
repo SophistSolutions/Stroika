@@ -32,8 +32,9 @@ namespace {
     void RunTests_ ()
     {
         Debug::TraceContextBumper ctx{L"{}::RunTests_"};
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> ([](const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {
-        });
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
+            []() { return CONCRETE_CONTAINER (); },
+            [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
     }
 }
 

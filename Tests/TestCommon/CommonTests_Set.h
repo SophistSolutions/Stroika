@@ -18,10 +18,10 @@ namespace CommonTests {
         using namespace Stroika::Foundation::Containers;
 
         namespace {
-            template <typename FACTORY, typename CONTAINER = decltype (FACTORY ()), typename T = typename CONTAINER::value_type>
-            auto mk_ (const FACTORY& f, const initializer_list<T>& il) -> CONTAINER
+            template <typename FACTORY, typename DEFAULT_VALUES_ITERABLE>
+            auto mk_ (const FACTORY& f, const DEFAULT_VALUES_ITERABLE& il)
             {
-                CONTAINER c = f ();
+                auto c = f ();
                 for (auto i : il) {
                     c.Add (i);
                 }
@@ -55,7 +55,7 @@ namespace CommonTests {
                 applyToContainer (s2);
                 IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
                 IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2);
-                USING_BASESET_CONTAINER s3 = mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1, 3, 4, 2});
+                USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1, 3, 4, 2});
                 VerifyTestResult (s3.GetLength () == 4);
                 VerifyTestResult (s3.Contains (1));
                 VerifyTestResult (s3.Contains (2));
@@ -63,9 +63,9 @@ namespace CommonTests {
                 VerifyTestResult (s3.Contains (4));
                 VerifyTestResult (not s3.Contains (5));
                 {
-                    USING_SET_CONTAINER     s1 = mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1});
-                    USING_SET_CONTAINER     s2 = mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1});
-                    USING_BASESET_CONTAINER s3 = mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1});
+                    USING_SET_CONTAINER     s1 = mk_ (factory, initializer_list<int>{1});
+                    USING_SET_CONTAINER     s2 = mk_ (factory, initializer_list<int>{1});
+                    USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1});
                     VerifyTestResult (s1.length () == 1);
                     VerifyTestResult (s2.length () == 1);
                     VerifyTestResult (s3.length () == 1);
@@ -143,23 +143,23 @@ namespace CommonTests {
 
                 VerifyTestResult (s2 == s1.Union (s2));
                 VerifyTestResult (s2 == s1 + s2);
-                VerifyTestResult ((s1 == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1, 2})));
-                VerifyTestResult ((s2 == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1, 2})));
+                VerifyTestResult ((s1 == mk_ (factory, initializer_list<int>{1, 2})));
+                VerifyTestResult ((s2 == mk_ (factory, initializer_list<int>{1, 2})));
 
                 VerifyTestResult (s1.Difference (s2).empty ());
                 VerifyTestResult ((s1 - s2).empty ());
                 s2.Add (3);
-                VerifyTestResult ((s1 == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1, 2})));
-                VerifyTestResult ((s2 == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1, 2, 3})));
+                VerifyTestResult ((s1 == mk_ (factory, initializer_list<int>{1, 2})));
+                VerifyTestResult ((s2 == mk_ (factory, initializer_list<int>{1, 2, 3})));
 
                 VerifyTestResult ((s1 - s2).empty ());
                 VerifyTestResult ((s2 - s1).length () == 1);
-                VerifyTestResult (((s1 - s2) == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {})));
-                VerifyTestResult (((s2 - s1) == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {3})));
+                VerifyTestResult (((s1 - s2) == factory ()));
+                VerifyTestResult (((s2 - s1) == mk_ (factory, initializer_list<int>{3})));
 
                 Verify (s1.Intersects (s2));
-                VerifyTestResult ((s1.Intersection (s2) == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1, 2})));
-                VerifyTestResult (((s1 ^ s2) == mk_<CONCRETE_CONTAINER_FACTORY, USING_SET_CONTAINER> (factory, {1, 2})));
+                VerifyTestResult ((s1.Intersection (s2) == mk_ (factory, initializer_list<int>{1, 2})));
+                VerifyTestResult (((s1 ^ s2) == mk_ (factory, initializer_list<int>{1, 2})));
                 Verify (s1.Intersection (s2).length () == 2);
             }
         }

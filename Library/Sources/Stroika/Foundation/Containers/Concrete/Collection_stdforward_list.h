@@ -41,8 +41,8 @@ namespace Stroika {
                     Collection_stdforward_list ();
                     Collection_stdforward_list (const T* start, const T* end);
                     Collection_stdforward_list (const Collection<T>& src);
-					Collection_stdforward_list (const Collection_stdforward_list& src) noexcept = default;
-					Collection_stdforward_list ( Collection_stdforward_list&& src) noexcept = default;
+                    Collection_stdforward_list (const Collection_stdforward_list& src) noexcept = default;
+                    Collection_stdforward_list (Collection_stdforward_list&& src) noexcept      = default;
 
                     nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs) = default;
 

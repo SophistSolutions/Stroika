@@ -1737,9 +1737,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\MultiSet.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedCollection.h">
-      <Filter>Sources\Containers\DefaultTraits</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMapping.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
