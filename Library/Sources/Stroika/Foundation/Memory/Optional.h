@@ -727,8 +727,10 @@ namespace Stroika {
                  *  Return true if *this logically equals rhs. Note if either side 'IsMissing'
                  *  is different, then they compare as not Equals()
                  */
-                nonvirtual bool Equals (const Optional& rhs) const;
-                nonvirtual bool Equals (T rhs) const;
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual bool Equals (const Optional& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual bool Equals (T rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
             public:
                 /**

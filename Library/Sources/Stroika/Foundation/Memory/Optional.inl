@@ -705,7 +705,8 @@ namespace Stroika {
                 return *this;
             }
             template <typename T, typename TRAITS>
-            inline bool Optional<T, TRAITS>::Equals (const Optional<T, TRAITS>& rhs) const
+            template <typename EQUALS_COMPARER>
+            inline bool Optional<T, TRAITS>::Equals (const Optional<T, TRAITS>& rhs, const EQUALS_COMPARER& equalsComparer) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
@@ -717,17 +718,18 @@ namespace Stroika {
                 }
                 AssertNotNull (this->fStorage_.peek ());
                 AssertNotNull (rhs.fStorage_.peek ());
-                return Common::DefaultEqualsComparer<T>::Equals (*this->fStorage_.peek (), *rhs.fStorage_.peek ());
+                return equalsComparer (*this->fStorage_.peek (), *rhs.fStorage_.peek ());
             }
             template <typename T, typename TRAITS>
-            inline bool Optional<T, TRAITS>::Equals (T rhs) const
+            template <typename EQUALS_COMPARER>
+            inline bool Optional<T, TRAITS>::Equals (T rhs, const EQUALS_COMPARER& equalsComparer) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
                 if (this->fStorage_.peek () == nullptr) {
                     return false;
                 }
                 AssertNotNull (this->fStorage_.peek ());
-                return Common::DefaultEqualsComparer<T>::Equals (*this->fStorage_.peek (), rhs);
+                return equalsComparer (*this->fStorage_.peek (), rhs);
             }
             template <typename T, typename TRAITS>
             inline int Optional<T, TRAITS>::Compare (const Optional& rhs) const
