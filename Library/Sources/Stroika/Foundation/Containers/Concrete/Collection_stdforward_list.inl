@@ -184,20 +184,6 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Collection_stdforward_list<T>::Collection_stdforward_list (const Collection_stdforward_list<T>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
-                inline Collection_stdforward_list<T>& Collection_stdforward_list<T>::operator= (const Collection_stdforward_list<T>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename T>
                 inline void Collection_stdforward_list<T>::AssertRepValidType_ () const
                 {
 #if qDebug

@@ -36,11 +36,12 @@ namespace Stroika {
                 public:
                     Collection_Array ();
                     Collection_Array (const Collection<T>& src);
-                    Collection_Array (const Collection_Array<T>& src);
-                    Collection_Array (const T* start, const T* end);
+					Collection_Array (const Collection_Array& src) noexcept = default;
+					Collection_Array ( Collection_Array&& src) noexcept = default;
+					Collection_Array (const T* start, const T* end);
 
                 public:
-                    nonvirtual Collection_Array<T>& operator= (const Collection_Array<T>& rhs);
+                    nonvirtual Collection_Array& operator= (const Collection_Array& rhs) = default;
 
                 public:
                     /**

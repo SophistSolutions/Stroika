@@ -25,12 +25,6 @@ namespace Stroika {
                  */
                 template <typename T>
                 class Collection_LinkedList<T>::IImplRep_ : public Collection<T>::_IRep {
-                private:
-                    using inherited = typename Collection<T>::_IRep;
-
-                protected:
-                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                 };
 
                 /*
@@ -178,12 +172,6 @@ namespace Stroika {
                     : Collection_LinkedList ()
                 {
                     this->AddAll (src);
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
-                inline Collection_LinkedList<T>::Collection_LinkedList (const Collection_LinkedList<T>& src)
-                    : inherited (src)
-                {
                     AssertRepValidType_ ();
                 }
                 template <typename T>

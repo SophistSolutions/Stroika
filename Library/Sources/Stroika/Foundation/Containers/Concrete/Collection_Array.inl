@@ -179,20 +179,6 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Collection_Array<T>::Collection_Array (const Collection_Array<T>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
-                inline Collection_Array<T>& Collection_Array<T>::operator= (const Collection_Array<T>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename T>
                 inline void Collection_Array<T>::Compact ()
                 {
                     using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;

@@ -40,10 +40,11 @@ namespace Stroika {
                 public:
                     Collection_stdforward_list ();
                     Collection_stdforward_list (const T* start, const T* end);
-                    Collection_stdforward_list (const Collection<T>& collection);
-                    Collection_stdforward_list (const Collection_stdforward_list<T>& collection);
+                    Collection_stdforward_list (const Collection<T>& src);
+					Collection_stdforward_list (const Collection_stdforward_list& src) noexcept = default;
+					Collection_stdforward_list ( Collection_stdforward_list&& src) noexcept = default;
 
-                    nonvirtual Collection_stdforward_list<T>& operator= (const Collection_stdforward_list<T>& collection);
+                    nonvirtual Collection_stdforward_list& operator= (const Collection_stdforward_list& rhs) = default;
 
                 private:
                     class Rep_;

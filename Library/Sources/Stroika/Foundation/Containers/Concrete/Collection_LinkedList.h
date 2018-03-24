@@ -41,10 +41,11 @@ namespace Stroika {
                     Collection_LinkedList ();
                     Collection_LinkedList (const T* start, const T* end);
                     Collection_LinkedList (const Collection<T>& src);
-                    Collection_LinkedList (const Collection_LinkedList<T>& src);
+                    Collection_LinkedList (const Collection_LinkedList& src) noexcept = default;
+                    Collection_LinkedList (Collection_LinkedList&& src) noexcept      = default;
 
                 public:
-                    nonvirtual Collection_LinkedList<T>& operator= (const Collection_LinkedList<T>& rhs) = default;
+                    nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList& rhs) = default;
 
                 private:
                     class IImplRep_;
