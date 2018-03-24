@@ -684,7 +684,7 @@ namespace {
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
     void SimpleSequenceTest_All_For_Type_ ()
     {
-		using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
+        using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
 
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_All_For_Type_ ()");
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
