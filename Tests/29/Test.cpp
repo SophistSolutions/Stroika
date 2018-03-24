@@ -126,8 +126,8 @@ namespace {
             namespace {
                 void DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
                 {
-                    Verify (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
-                    Verify (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
+                    VerifyTestResult (Encoding::Algorithm::EncodeBase64 (ExternallyOwnedMemoryInputStream<Byte>::New (begin (originalUnEncodedBytes), end (originalUnEncodedBytes))) == base64EncodedString);
+                    VerifyTestResult (Encoding::Algorithm::DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
                     VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
                     VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
                 }
