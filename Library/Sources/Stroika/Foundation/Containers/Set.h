@@ -162,8 +162,8 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Set<T>& operator= (const Set<T>& rhs) = default;
-                nonvirtual Set<T>& operator= (Set<T>&& rhs) = default;
+                nonvirtual Set& operator= (const Set& rhs) = default;
+                nonvirtual Set& operator= (Set&& rhs) = default;
 
             public:
                 /**
