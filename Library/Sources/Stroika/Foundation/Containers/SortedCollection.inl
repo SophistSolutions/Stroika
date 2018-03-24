@@ -51,6 +51,14 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR_OF_T>
+            inline SortedCollection<T, TRAITS>::SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : SortedCollection ()
+            {
+                this->AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
             inline void SortedCollection<T, TRAITS>::_AssertRepValidType () const
             {
 #if qDebug

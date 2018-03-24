@@ -94,8 +94,8 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Deque<T>& operator= (const Deque<T>& rhs) = default;
-                nonvirtual Deque<T>& operator= (Deque<T>&& rhs) = default;
+                nonvirtual Deque& operator= (const Deque& rhs) = default;
+                nonvirtual Deque& operator= (Deque > &&rhs) = default;
 
             public:
                 /**

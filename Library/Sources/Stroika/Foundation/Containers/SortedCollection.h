@@ -116,8 +116,8 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual SortedCollection<T, TRAITS>& operator= (const SortedCollection<T, TRAITS>& rhs) = default;
-                nonvirtual SortedCollection<T, TRAITS>& operator= (SortedCollection<T, TRAITS>&& rhs) = default;
+                nonvirtual SortedCollection& operator= (const SortedCollection& rhs) = default;
+                nonvirtual SortedCollection& operator= (SortedCollection&& rhs) = default;
 
             protected:
                 /**
