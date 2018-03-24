@@ -338,6 +338,10 @@ namespace Stroika {
             };
 
             /**
+             *  \brief An Equals comparer is one that takes two arguments of type T, and returns a bool, and compares
+             *         if one of the items equal to the other (e.g. std::equals).
+             *
+             *  \note @see FunctionComparerAdapter<> to construct an Equals comparer from an arbitrary std::function...
              */
             template <typename COMPARER>
             constexpr bool IsEqualsComparer ()
@@ -351,6 +355,11 @@ namespace Stroika {
             }
 
             /**
+             *  \brief An InOrder comparer is one that takes two arguments of type T, and returns a bool, and compares
+             *         if one of the items is STRICTLY in-order with respect to the other - e.g. std::less, or std::greater, but
+             *         but notably NOT std::equal_to, or std::less_equal.
+             *
+             *  \note @see FunctionComparerAdapter<> to construct an InOrder comparer from an arbitrary std::function...
              */
             template <typename COMPARER>
             constexpr bool IsInOrderComparer ()
