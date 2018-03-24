@@ -157,15 +157,15 @@ namespace Stroika {
                 ~Collection ();
 #endif
             public:
-                nonvirtual Collection<T>& operator= (const Collection<T>& rhs) = default;
-                nonvirtual Collection<T>& operator= (Collection<T>&& rhs) = default;
+                nonvirtual Collection& operator= (const Collection& rhs) = default;
+                nonvirtual Collection& operator= (Collection&& rhs) = default;
 
             public:
                 /**
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual bool Contains (ArgByValueType<T> item) const;
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
 
             public:
                 /**
@@ -208,8 +208,8 @@ namespace Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual void Remove (ArgByValueType<T> item);
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
                 nonvirtual void Remove (const Iterator<T>& i);
 
             public:
@@ -221,10 +221,10 @@ namespace Stroika {
                  *  The no-argument verison Produces an empty bag.
                  */
                 nonvirtual void RemoveAll ();
-                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual void RemoveAll (const CONTAINER_OF_T& c);
+                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, const EQUALS_COMPARER& equalsComparer = {});
+                template <typename CONTAINER_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual void RemoveAll (const CONTAINER_OF_T& c, const EQUALS_COMPARER& equalsComparer = {});
 
             public:
                 /**
@@ -244,8 +244,8 @@ namespace Stroika {
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
-                nonvirtual void erase (ArgByValueType<T> item);
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual void erase (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
                 nonvirtual void erase (const Iterator<T>& i);
 
             public:

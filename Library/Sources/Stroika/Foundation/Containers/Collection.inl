@@ -77,10 +77,10 @@ namespace Stroika {
 #endif
             template <typename T>
             template <typename EQUALS_COMPARER>
-            bool Collection<T>::Contains (ArgByValueType<T> item) const
+            bool Collection<T>::Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
             {
                 for (auto i : *this) {
-                    if (EQUALS_COMPARER::Equals (i, item)) {
+                    if (equalsComparer (i, item)) {
                         return true;
                     }
                 }
@@ -124,10 +124,10 @@ namespace Stroika {
             }
             template <typename T>
             template <typename EQUALS_COMPARER>
-            inline void Collection<T>::Remove (ArgByValueType<T> item)
+            inline void Collection<T>::Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
             {
                 for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
-                    if (EQUALS_COMPARER::Equals (*i, item)) {
+                    if (equalsComparer (*i, item)) {
                         _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Remove (i);
                         return;
                     }
@@ -143,21 +143,21 @@ namespace Stroika {
             }
             template <typename T>
             template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER>
-            void Collection<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            void Collection<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, const EQUALS_COMPARER& equalsComparer)
             {
                 for (auto i = start; i != end; ++i) {
-                    Remove<EQUALS_COMPARER> (*i);
+                    Remove (*i, equalsComparer);
                 }
             }
             template <typename T>
             template <typename CONTAINER_OF_T, typename EQUALS_COMPARER>
-            inline void Collection<T>::RemoveAll (const CONTAINER_OF_T& c)
+            inline void Collection<T>::RemoveAll (const CONTAINER_OF_T& c, const EQUALS_COMPARER& equalsComparer)
             {
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {
-                    RemoveAll ();
+                    RemoveAll (equalsComparer);
                 }
                 else {
-                    RemoveAll (std::begin (c), std::end (c));
+                    RemoveAll (std::begin (c), std::end (c), equalsComparer);
                 }
             }
             template <typename T>
@@ -172,9 +172,9 @@ namespace Stroika {
             }
             template <typename T>
             template <typename EQUALS_COMPARER>
-            inline void Collection<T>::erase (ArgByValueType<T> item)
+            inline void Collection<T>::erase (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer)
             {
-                Remove<EQUALS_COMPARER> (item);
+                Remove (item, equalsComparer);
             }
             template <typename T>
             inline void Collection<T>::erase (const Iterator<T>& i)
