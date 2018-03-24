@@ -25,7 +25,7 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T>
-                class SortedCollection_LinkedList<T>::IImplRepBase_ : public SortedCollection_LinkedList<T>::_IRep {
+                class SortedCollection_LinkedList<T>::IImplRepBase_ : public SortedCollection<T>::_IRep {
                 };
 
                 /*
