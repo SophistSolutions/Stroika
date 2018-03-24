@@ -216,6 +216,7 @@ namespace Stroika {
                 inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList (LESS_COMPARER lessComparer)
                     : inherited (inherited::template MakeSharedPtr<Rep_<LESS_COMPARER>> (lessComparer))
                 {
+                    static_assert (Common::IsInOrderComparer<LESS_COMPARER> (), "InOrder comparer required with SortedCollection");
                     AssertRepValidType_ ();
                 }
                 template <typename T>
