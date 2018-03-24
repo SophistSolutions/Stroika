@@ -199,8 +199,8 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                SortedSet_stdset<T>::SortedSet_stdset (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
-                    : SortedSet_stdset (equalsComparer)
+                SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src)
+                    : SortedSet_stdset (inOrderComparer)
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
@@ -215,8 +215,8 @@ namespace Stroika {
                 }
                 template <typename T>
                 template <typename CONTAINER_OF_T, typename ENABLE_IF>
-                SortedSet_stdset<T>::SortedSet_stdset (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
-                    : SortedSet_stdset (equalsComparer)
+                SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src)
+                    : SortedSet_stdset (inOrderComparer)
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
@@ -231,8 +231,8 @@ namespace Stroika {
                 }
                 template <typename T>
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                inline SortedSet_stdset<T>::SortedSet_stdset (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                    : SortedSet_stdset (equalsComparer)
+                inline SortedSet_stdset<T>::SortedSet_stdset (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : SortedSet_stdset (inOrderComparer)
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();

@@ -71,8 +71,10 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
+                 *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsInOrderComparer () concept (need better name).
                  */
-                using EqualityComparerType = typename inherited::EqualityComparerType;
+                using InOrderComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eInOrder>;
 
             public:
                 /**
@@ -84,15 +86,15 @@ namespace Stroika {
                 SortedSet (const SortedSet& src) noexcept = default;
                 SortedSet (SortedSet&& src) noexcept      = default;
                 SortedSet (const initializer_list<T>& src);
-                SortedSet (const EqualityComparerType& equalityComparer, const initializer_list<T>& src);
+                SortedSet (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet*>::value>>
                 SortedSet (const CONTAINER_OF_T& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet*>::value>>
-                SortedSet (const EqualityComparerType& equalityComparer, const CONTAINER_OF_T& src);
+                SortedSet (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
-                SortedSet (const EqualityComparerType& equalityComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                SortedSet (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit SortedSet (const _SortedSetRepSharedPtr& src) noexcept;

@@ -41,6 +41,8 @@ namespace Stroika {
                     using inherited = SortedCollection<T>;
 
                 public:
+                    /**
+                     */
                     SortedCollection_LinkedList ();
                     template <typename INORDER_COMPARER>
                     explicit SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer);

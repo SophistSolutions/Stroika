@@ -21,7 +21,7 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************* SortedCollection_LinkedList<T>::Rep_ *****************
+                 ****************** SortedCollection_LinkedList<T>::IImplRepBase_ ***************
                  ********************************************************************************
                  */
                 template <typename T>
@@ -30,7 +30,7 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************* SortedCollection_LinkedList<T>::Rep_ *****************
+                 *********************** SortedCollection_LinkedList<T>::Rep_ *******************
                  ********************************************************************************
                  */
                 template <typename T>
@@ -186,8 +186,8 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
                         // skip the smaller items
-                        while (it.More (nullptr, true) and fInorderComparer_ (it.Current (), item)) {
-                        }
+						while (it.More (nullptr, true) and fInorderComparer_ (it.Current (), item))
+							;
                         // at this point - we are pointing at the first link >= item, so insert before it
                         fData_.AddBefore (it, item);
                     }

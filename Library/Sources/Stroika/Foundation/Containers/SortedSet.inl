@@ -51,8 +51,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline SortedSet<T>::SortedSet (const EqualityComparerType& equalityComparer, const initializer_list<T>& src)
-                : SortedSet (equalityComparer)
+            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src)
+                : SortedSet (inOrderComparer)
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -67,8 +67,8 @@ namespace Stroika {
             }
             template <typename T>
             template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (const EqualityComparerType& equalityComparer, const CONTAINER_OF_T& src)
-                : SortedSet (equalityComparer)
+            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src)
+                : SortedSet (inOrderComparer)
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -83,8 +83,8 @@ namespace Stroika {
             }
             template <typename T>
             template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (const EqualityComparerType& equalityComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : SortedSet (equalityComparer)
+            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : SortedSet (inOrderComparer)
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();

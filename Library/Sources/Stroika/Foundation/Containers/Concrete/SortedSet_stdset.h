@@ -39,7 +39,7 @@ namespace Stroika {
                 public:
                     /**
                      */
-                    using EqualityComparerType = typename inherited::EqualityComparerType;
+                    using InOrderComparerType = typename inherited::InOrderComparerType;
 
                 public:
                     /**
@@ -50,15 +50,15 @@ namespace Stroika {
                     explicit SortedSet_stdset (const INORDER_COMPARER& inorderComparer);
                     SortedSet_stdset (const SortedSet_stdset& src) = default;
                     SortedSet_stdset (const std::initializer_list<T>& src);
-                    SortedSet_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src);
+                    SortedSet_stdset (const InOrderComparerType& inOrderComparer, const std::initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>::value>::type>
                     SortedSet_stdset (const CONTAINER_OF_T& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>::value>::type>
-                    SortedSet_stdset (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
+                    SortedSet_stdset (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                     template <typename COPY_FROM_ITERATOR_OF_T>
-                    SortedSet_stdset (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                    SortedSet_stdset (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     /**
