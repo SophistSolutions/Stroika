@@ -115,7 +115,7 @@ namespace Stroika {
              *  @todo - writeup !!! NOTE - ASSERTS ComparerWithWellOrder and ComparerWithEquals compatible - namely a < b and b > a iff .... writeup!!!
              */
             template <typename T>
-            [[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method")]] struct ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
+            struct /*[[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method")]]*/ ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
                 using value_type = T;
 
                 static_assert (Configuration::LessThanComparable<T> (), "T must be LessThanComparable");

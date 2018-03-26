@@ -30,7 +30,7 @@ namespace {
     struct UseBasicTestingSchemas_ : CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER> {
         static void ApplyToContainerExtraTest (const typename CONCRETE_CONTAINER::ArchetypeContainerType& t)
         {
-			using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
+            using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
             // verify in sorted order
             Memory::Optional<MultiSetOfElementType> last;
             using COMPARER_TYPE = less<MultiSetOfElementType>;
