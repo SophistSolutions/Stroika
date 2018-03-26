@@ -280,8 +280,8 @@ namespace Stroika {
                  *      (CONSIDER NEW code to detect methods in templates)
                  *      (MAYBE always use compare() - not Compare)
                  */
-                template <typename ELEMENT_COMPARER = Common::ComparerWithWellOrder<T>>
-                nonvirtual int Compare (const Iterable<T>& rhs) const;
+                template <typename ELEMENT_COMPARER = Common::ThreeWayCompare<T>>
+                nonvirtual int Compare (const Iterable<T>& rhs, const ELEMENT_COMPARER& comparer = {}) const;
 
             public:
                 /**

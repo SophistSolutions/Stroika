@@ -91,7 +91,7 @@ namespace Stroika {
                 /**
                  * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
                  */
-                template <typename KEY, typename VALUE, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY>, bool TRACK_READ_ACCESS = false>
+                template <typename KEY, typename VALUE, typename WELL_ORDER_COMPARER = Common::ThreeWayCompare<KEY>, bool TRACK_READ_ACCESS = false>
                 struct DefaultTraits {
                     using KeyType    = KEY;
                     using ResultType = VALUE;
@@ -298,7 +298,7 @@ namespace Stroika {
                 };
 
             private:
-                using MyMapType_ = map<KEY, MyResult_, Common::STL::less<KEY, typename TRAITS::WellOrderCompareFunctionType>>;
+                using MyMapType_ = map<KEY, MyResult_, typename TRAITS::WellOrderCompareFunctionType>;
                 MyMapType_ fMap_;
             };
         }
