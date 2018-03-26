@@ -31,7 +31,7 @@ namespace Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template <typename T, typename TRAITS = DefaultTraits::SortedMultiSet<T>>
+                template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
                 class SortedMultiSet_stdmap : public SortedMultiSet<T, TRAITS> {
                 private:
                     using inherited = SortedMultiSet<T, TRAITS>;
@@ -40,20 +40,24 @@ namespace Stroika {
                     /**
                      */
                     SortedMultiSet_stdmap ();
-                    SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src);
+                    template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>
+                    explicit SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                    SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) = default;
                     SortedMultiSet_stdmap (const std::initializer_list<T>& src);
                     SortedMultiSet_stdmap (const std::initializer_list<CountedValue<T>>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>::value>::type>
-                    explicit SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
+                    /*explicit*/ SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
                     SortedMultiSet_stdmap (const T* start, const T* end);
                     SortedMultiSet_stdmap (const CountedValue<T>* start, const CountedValue<T>* end);
 
                 public:
                     /**
                      */
-                    nonvirtual SortedMultiSet_stdmap<T, TRAITS>& operator= (const SortedMultiSet_stdmap<T, TRAITS>& rhs) = default;
+                    nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap& rhs) = default;
 
                 private:
+                    class IImplRepBase_;
+                    template <typename INORDER_COMPARER>
                     class Rep_;
 
                 private:

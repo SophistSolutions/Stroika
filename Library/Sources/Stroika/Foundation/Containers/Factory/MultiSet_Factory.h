@@ -34,10 +34,13 @@ namespace Stroika {
                 *
                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                 */
-                template <typename T, typename TRAITS>
+                template <typename T, typename TRAITS, typename EQUALS_COMPARER>
                 class MultiSet_Factory {
                 private:
-                    static atomic<MultiSet<T, TRAITS> (*) ()> sFactory_;
+                    static atomic<MultiSet<T, TRAITS> (*) (const EQUALS_COMPARER&)> sFactory_;
+
+                public:
+                    MultiSet_Factory (const EQUALS_COMPARER& equalsComparer);
 
                 public:
                     /**
@@ -49,10 +52,13 @@ namespace Stroika {
                     /**
                      *  Register a replacement creator/factory for the given MultiSet<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (MultiSet<T, TRAITS> (*factory) () = nullptr);
+                    static void Register (MultiSet<T, TRAITS> (*factory) (const EQUALS_COMPARER&) = nullptr);
 
                 private:
-                    static MultiSet<T, TRAITS> Default_ ();
+                    EQUALS_COMPARER fEqualsComparer_;
+
+                private:
+                    static MultiSet<T, TRAITS> Default_ (const EQUALS_COMPARER&);
                 };
             }
         }

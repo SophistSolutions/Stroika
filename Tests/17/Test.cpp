@@ -31,14 +31,11 @@ using Concrete::MultiSet_LinkedList;
 using Concrete::MultiSet_stdmap;
 
 namespace {
-    template <typename CONCRETE_CONTAINER>
-    void DoTestForConcreteContainer_ ()
+    template <typename CONCRETE_CONTAINER, typename SCHEMA = CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>>
+    void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
     {
         Debug::TraceContextBumper ctx{L"{}::DoTestForConcreteContainer_"};
-        auto                      extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& t) {
-            // only work todo on sorted mappings
-        };
-        CommonTests::MultiSetTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+        CommonTests::MultiSetTests::All_For_Type (schema);
     }
 }
 
@@ -66,41 +63,49 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2)
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eEquals> {
+            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
-                return v1.GetValue () == v2.GetValue ();
+                return lhs.GetValue () == rhs.GetValue ();
             }
         };
-        using SimpleClassWithoutComparisonOperators_MultiSetTRAITS = DefaultTraits::MultiSet<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eInOrder> {
+            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
+            {
+                return lhs.GetValue () < rhs.GetValue ();
+            }
+        };
 
-        DoTestForConcreteContainer_<MultiSet<size_t>> ();
-        DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();
-        DoTestForConcreteContainer_<MultiSet<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MultiSetTRAITS>> ();
-
-        DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
-        DoTestForConcreteContainer_<MultiSet_Array<SimpleClass>> ();
-        DoTestForConcreteContainer_<MultiSet_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MultiSetTRAITS>> ();
-
-        DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
-        DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClass>> ();
-        DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MultiSetTRAITS>> ();
-
-        DoTestForConcreteContainer_<MultiSet_stdmap<size_t>> ();
-        DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClass>> ();
         {
-            struct MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-                using value_type = SimpleClassWithoutComparisonOperators;
-                static int Compare (value_type v1, value_type v2)
-                {
-                    return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
-                }
-            };
-            using SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS = Concrete::MultiSet_stdmap_DefaultTraits<
-                SimpleClassWithoutComparisonOperators,
-                MySimpleClassWithoutComparisonOperators_ComparerWithCompare_>;
-            DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
+            DoTestForConcreteContainer_<MultiSet<size_t>> ();
+            DoTestForConcreteContainer_<MultiSet<SimpleClass>> ();
+            auto msFactory = []() { return MultiSet<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            DoTestForConcreteContainer_<MultiSet<SimpleClassWithoutComparisonOperators>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
+        }
+
+        {
+            DoTestForConcreteContainer_<MultiSet_Array<size_t>> ();
+            DoTestForConcreteContainer_<MultiSet_Array<SimpleClass>> ();
+            auto msFactory = []() { return MultiSet_Array<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            DoTestForConcreteContainer_<MultiSet_Array<SimpleClassWithoutComparisonOperators>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
+        }
+
+        {
+            DoTestForConcreteContainer_<MultiSet_LinkedList<size_t>> ();
+            DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClass>> ();
+            auto msFactory = []() { return MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}}; };
+            DoTestForConcreteContainer_<MultiSet_LinkedList<SimpleClassWithoutComparisonOperators>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
+        }
+
+        {
+            DoTestForConcreteContainer_<MultiSet_stdmap<size_t>> ();
+            DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClass>> ();
+            auto msFactory = []() { return MultiSet_stdmap<SimpleClassWithoutComparisonOperators>{MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}}; };
+            DoTestForConcreteContainer_<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>> (
+                CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<MultiSet_stdmap<SimpleClassWithoutComparisonOperators>, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, decltype (msFactory)> (msFactory));
         }
 
         ExampleCTORS_Test_2_::DoTest ();

@@ -23,13 +23,27 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
+                 ********************* MultiSet_Array<T, TRAITS>::IImplRepBase_ *****************
+                 ********************************************************************************
+                 */
+                template <typename T, typename TRAITS>
+                class MultiSet_Array<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
+                public:
+                    virtual size_t GetCapacity () const              = 0;
+                    virtual void   SetCapacity (size_t slotsAlloced) = 0;
+                    virtual void   Compact ()                        = 0;
+                };
+
+                /*
+                 ********************************************************************************
                  ************************** MultiSet_Array<T, TRAITS>::Rep_ *********************
                  ********************************************************************************
                  */
                 template <typename T, typename TRAITS>
-                class MultiSet_Array<T, TRAITS>::Rep_ : public MultiSet<T, TRAITS>::_IRep {
+                template <typename EQUALS_COMPARER>
+                class MultiSet_Array<T, TRAITS>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename MultiSet<T, TRAITS>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
@@ -39,10 +53,14 @@ namespace Stroika {
                     using CounterType           = typename inherited::CounterType;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const EQUALS_COMPARER& equalsComparer)
+                        : fEqualsComparer_ (equalsComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
+                        , fEqualsComparer_ (from->fEqualsComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -53,6 +71,9 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
+                private:
+                    EQUALS_COMPARER fEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -110,7 +131,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (fEqualsComparer_);
                         }
                     }
                     virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
@@ -206,8 +227,19 @@ namespace Stroika {
 
                     // MultiSet_Array<T, TRAITS>::_IRep overrides
                 public:
-                    nonvirtual void Compact ()
+                    virtual size_t GetCapacity () const override
                     {
+                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        return fData_.GetCapacity ();
+                    }
+                    virtual void SetCapacity (size_t slotsAlloced) override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        fData_.SetCapacity (slotsAlloced);
+                    }
+                    virtual void Compact () override
+                    {
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Compact ();
                     }
 
@@ -227,7 +259,7 @@ namespace Stroika {
                         // this code assumes locking done by callers
                         size_t length = fData_.GetLength ();
                         for (size_t i = 0; i < length; i++) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (fData_.GetAt (i).fValue, item.fValue)) {
+                            if (fEqualsComparer_ (fData_.GetAt (i).fValue, item.fValue)) {
                                 item = fData_.GetAt (i);
                                 return i;
                             }
@@ -246,22 +278,25 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline MultiSet_Array<T, TRAITS>::MultiSet_Array ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : inherited (std::equal_to<T>{})
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
-                inline MultiSet_Array<T, TRAITS>::MultiSet_Array (const T* start, const T* end)
+                template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                inline MultiSet_Array<T, TRAITS>::MultiSet_Array (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
+                {
+                    static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Array");
+                    AssertRepValidType_ ();
+                }
+                template <typename T, typename TRAITS>
+                template <typename COPY_FROM_ITERATOR>
+                MultiSet_Array<T, TRAITS>::MultiSet_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
                     : MultiSet_Array ()
                 {
                     SetCapacity (end - start);
                     this->AddAll (start, end);
-                    AssertRepValidType_ ();
-                }
-                template <typename T, typename TRAITS>
-                inline MultiSet_Array<T, TRAITS>::MultiSet_Array (const MultiSet_Array<T, TRAITS>& src)
-                    : inherited (src)
-                {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
@@ -287,31 +322,23 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
-                inline MultiSet_Array<T, TRAITS>& MultiSet_Array<T, TRAITS>::operator= (const MultiSet_Array<T, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename T, typename TRAITS>
                 inline size_t MultiSet_Array<T, TRAITS>::GetCapacity () const
                 {
-                    using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
+                    using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<IImplRepBase_>;
                     _SafeReadRepAccessor accessor{this};
-                    return accessor._ConstGetRep ().fData_.GetCapacity ();
+                    return accessor._ConstGetRep ().GetCapacity ();
                 }
                 template <typename T, typename TRAITS>
                 inline void MultiSet_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
                 {
-                    using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
+                    using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<IImplRepBase_>;
                     _SafeReadWriteRepAccessor accessor{this};
-                    accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
+                    accessor._GetWriteableRep ().SetCapacity (slotsAlloced);
                 }
                 template <typename T, typename TRAITS>
                 inline void MultiSet_Array<T, TRAITS>::Compact ()
                 {
-                    using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
+                    using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<IImplRepBase_>;
                     _SafeReadWriteRepAccessor accessor{this};
                     accessor._GetWriteableRep ().Compact ();
                 }
@@ -329,7 +356,7 @@ namespace Stroika {
                 inline void MultiSet_Array<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
                 }
             }

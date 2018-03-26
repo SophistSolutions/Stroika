@@ -25,20 +25,8 @@ namespace Stroika {
                 /**
                  *  Default MultiSet<> Traits
                  */
-                template <typename T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename T>
                 struct MultiSet {
-                    /**
-                     */
-                    using EqualsCompareFunctionType = EQUALS_COMPARER;
-
-                    RequireConceptAppliesToTypeMemberOfClass (Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-
-                    /**
-                     *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
-                     *  underlying Mapping's TRAITS objects.
-                     */
-                    using MultisetTraitsType = MultiSet<T, EQUALS_COMPARER>;
-
                     /**
                      *      \brief
                      */
@@ -56,7 +44,7 @@ namespace Stroika {
 
 /*
  ********************************************************************************
- ******************************* Implementation Details *************************
+ **************************** Implementation Details ****************************
  ********************************************************************************
  */
 

@@ -38,16 +38,21 @@ namespace Stroika {
 
                 public:
                     MultiSet_LinkedList ();
+                    template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                    explicit MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
                     MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);
                     MultiSet_LinkedList (const initializer_list<T>& src);
                     MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src);
-                    MultiSet_LinkedList (const T* start, const T* end);
+                    template <typename COPY_FROM_ITERATOR>
+                    MultiSet_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
                 public:
                     nonvirtual MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;
 
                 private:
+                    class IImplRepBase_;
+                    template <typename EQUALS_COMPARER>
                     class Rep_;
 
                 private:

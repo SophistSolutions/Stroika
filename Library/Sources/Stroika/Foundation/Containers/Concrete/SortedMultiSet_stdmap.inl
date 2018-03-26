@@ -23,23 +23,32 @@ namespace Stroika {
         namespace Containers {
             namespace Concrete {
 
-                /*
+                /**
                  */
                 template <typename T, typename TRAITS>
-                class SortedMultiSet_stdmap<T, TRAITS>::Rep_ : public SortedMultiSet<T, TRAITS>::_IRep {
+                class SortedMultiSet_stdmap<T, TRAITS>::IImplRepBase_ : public SortedMultiSet<T, TRAITS>::_IRep {
+                };
+
+                /**
+                 */
+                template <typename T, typename TRAITS>
+                template <typename INORDER_COMPARER>
+                class SortedMultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename SortedMultiSet<T, TRAITS>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
-                    using MultiSetType          = MultiSet<T, typename TRAITS::MultisetTraitsType>;
                     using _IterableRepSharedPtr = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
-                    using _MultiSetRepSharedPtr = typename MultiSetType::_MultiSetRepSharedPtr;
+                    using _MultiSetRepSharedPtr = typename inherited::_MultiSetRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using CounterType           = typename inherited::CounterType;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const INORDER_COMPARER& inorderComparer)
+                        : fData_ (inorderComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
@@ -97,10 +106,10 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (fData_.key_comp ());
                         }
                     }
-                    virtual bool Equals (const typename MultiSetType::_IRep& rhs) const override
+                    virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
@@ -189,7 +198,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<T, CounterType, Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<T, CounterType, INORDER_COMPARER>>;
                     using IteratorRep_           = Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
 
                 private:
@@ -203,7 +212,14 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : SortedMultiSet_stdmap (std::less<T>{})
+                {
+                    AssertRepValidType_ ();
+                }
+                template <typename T, typename TRAITS>
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
                 {
                     AssertRepValidType_ ();
                 }
@@ -212,12 +228,6 @@ namespace Stroika {
                     : SortedMultiSet_stdmap ()
                 {
                     this->AddAll (start, end);
-                    AssertRepValidType_ ();
-                }
-                template <typename T, typename TRAITS>
-                inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const SortedMultiSet_stdmap<T, TRAITS>& src)
-                    : inherited (src)
-                {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
@@ -246,7 +256,7 @@ namespace Stroika {
                 inline void SortedMultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }

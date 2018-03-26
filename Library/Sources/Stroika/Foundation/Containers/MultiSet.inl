@@ -277,8 +277,16 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet ()
-                : inherited (move (Factory::MultiSet_Factory<T, TRAITS> () ()))
+                : MultiSet (std::equal_to<T>{})
             {
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
+            template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline MultiSet<T, TRAITS>::MultiSet (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> (equalsComparer) ()))
+            {
+                static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see FunctionComparerAdapter<Common::OrderingRelationType::eEquals, function<bool(T, T)>");
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>

@@ -8,7 +8,7 @@
 
 #include "../Configuration/Concepts.h"
 
-#include "DefaultTraits/SortedMultiSet.h"
+#include "DefaultTraits/MultiSet.h"
 #include "MultiSet.h"
 
 /**
@@ -48,10 +48,10 @@ namespace Stroika {
              *      o   Stroika container iterators are all automatically patched, so that if you change the underlying container
              *          the iterators are automatically updated internally to behave sensibly.
              */
-            template <typename T, typename TRAITS = DefaultTraits::SortedMultiSet<T>>
-            class SortedMultiSet : public MultiSet<T, typename TRAITS::MultisetTraitsType> {
+            template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
+            class SortedMultiSet : public MultiSet<T, TRAITS> {
             private:
-                using inherited = MultiSet<T, typename TRAITS::MultisetTraitsType>;
+                using inherited = MultiSet<T, TRAITS>;
 
             public:
                 /**
@@ -67,6 +67,8 @@ namespace Stroika {
 
             public:
                 SortedMultiSet ();
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>
+                explicit SortedMultiSet (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedMultiSet (const SortedMultiSet& src) noexcept = default;
                 SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
                 SortedMultiSet (const initializer_list<T>& src);
@@ -83,8 +85,8 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual SortedMultiSet<T, TRAITS>& operator= (const SortedMultiSet<T, TRAITS>& rhs) = default;
-                nonvirtual SortedMultiSet<T, TRAITS>& operator= (SortedMultiSet<T, TRAITS>&& rhs) = default;
+                nonvirtual SortedMultiSet& operator= (const SortedMultiSet& rhs) = default;
+                nonvirtual SortedMultiSet& operator= (SortedMultiSet&& rhs) = default;
 
             public:
                 /**
@@ -92,16 +94,6 @@ namespace Stroika {
                  *  building other templates.
                  */
                 using TraitsType = TRAITS;
-
-            public:
-                /**
-                 *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
-
-            public:
-                RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
 
             protected:
                 /**
@@ -129,7 +121,7 @@ namespace Stroika {
              *  testing/validation that the subtype information is correct (it is sorted).
              */
             template <typename T, typename TRAITS>
-            class SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, typename TRAITS::MultisetTraitsType>::_IRep {
+            class SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, TRAITS>::_IRep {
             };
         }
     }

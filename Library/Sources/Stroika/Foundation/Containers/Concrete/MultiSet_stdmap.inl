@@ -24,14 +24,24 @@ namespace Stroika {
             namespace Concrete {
 
                 /*
-                ********************************************************************************
-                ********* MultiSet_stdmap<T, TRAITS>::Rep_ *********
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 ******************** MultiSet_stdmap<T, TRAITS>::IImplRepBase_ *****************
+                 ********************************************************************************
+                 */
                 template <typename T, typename TRAITS>
-                class MultiSet_stdmap<T, TRAITS>::Rep_ : public MultiSet<T, TRAITS>::_IRep {
+                class MultiSet_stdmap<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
+                };
+
+                /*
+                 ********************************************************************************
+                 ********************* MultiSet_stdmap<T, TRAITS>::Rep_ *************************
+                 ********************************************************************************
+                 */
+                template <typename T, typename TRAITS>
+                template <typename INORDER_COMPARER>
+                class MultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename MultiSet<T, TRAITS>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
@@ -41,7 +51,10 @@ namespace Stroika {
                     using CounterType           = typename inherited::CounterType;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const INORDER_COMPARER& inorderComparer)
+                        : fData_ (inorderComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
@@ -103,7 +116,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (fData_.key_comp ());
                         }
                     }
                     virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
@@ -124,7 +137,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         auto                                                           i = fData_.find (item);
                         if (i == fData_.end ()) {
-                            fData_.insert (typename map<T, CounterType>::value_type (item, count));
+                            fData_.insert (typename map<T, CounterType, INORDER_COMPARER>::value_type (item, count));
                         }
                         else {
                             i->second += count;
@@ -195,7 +208,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<T, CounterType, Common::STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<T, CounterType, INORDER_COMPARER>>;
                     using IteratorRep_           = Private::IteratorImplHelper_<CountedValue<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, CounterType>>;
 
                 private:
@@ -209,13 +222,14 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : MultiSet_stdmap (std::less<T>{})
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
-                MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src)
-                    : inherited (src)
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
                 {
                     AssertRepValidType_ ();
                 }
@@ -245,7 +259,7 @@ namespace Stroika {
                 inline void MultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
                 }
             }

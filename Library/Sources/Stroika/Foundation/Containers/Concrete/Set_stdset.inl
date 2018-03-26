@@ -23,13 +23,13 @@ namespace Stroika {
         namespace Containers {
             namespace Concrete {
 
-                /*
+                /**
                  */
                 template <typename T>
                 class Set_stdset<T>::IImplRepBase_ : public Set<T>::_IRep {
                 };
 
-                /*
+                /**
                  */
                 template <typename T>
                 template <typename INORDER_COMPARER>

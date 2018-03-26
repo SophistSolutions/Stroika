@@ -1740,9 +1740,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMapping.h">
       <Filter>Sources\Containers\DefaultTraits</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DefaultTraits\SortedMultiSet.h">
-      <Filter>Sources\Containers\DefaultTraits</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\CountedValue.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>

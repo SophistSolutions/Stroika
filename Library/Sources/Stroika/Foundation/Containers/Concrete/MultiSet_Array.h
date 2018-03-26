@@ -38,17 +38,20 @@ namespace Stroika {
 
                 public:
                     MultiSet_Array ();
+                    template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                    explicit MultiSet_Array (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                    MultiSet_Array (const MultiSet_Array& src) = default;
+                    MultiSet_Array (MultiSet_Array&& src)      = default;
                     MultiSet_Array (const MultiSet<T, TRAITS>& src);
                     MultiSet_Array (const std::initializer_list<T>& src);
                     MultiSet_Array (const std::initializer_list<CountedValue<T>>& src);
-                    MultiSet_Array (const MultiSet_Array<T, TRAITS>& src);
-                    MultiSet_Array (const T* start, const T* end);
-                    MultiSet_Array (const CountedValue<T>* start, const CountedValue<T>* end);
+                    template <typename COPY_FROM_ITERATOR>
+                    MultiSet_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
                 public:
                     /**
                      */
-                    nonvirtual MultiSet_Array<T, TRAITS>& operator= (const MultiSet_Array<T, TRAITS>& rhs);
+                    nonvirtual MultiSet_Array& operator= (const MultiSet_Array& rhs) = default;
 
                 public:
                     nonvirtual size_t GetCapacity () const;
@@ -70,6 +73,8 @@ namespace Stroika {
                     nonvirtual void reserve (size_t slotsAlloced);
 
                 private:
+                    class IImplRepBase_;
+                    template <typename EQUALS_COMPARER>
                     class Rep_;
 
                 private:

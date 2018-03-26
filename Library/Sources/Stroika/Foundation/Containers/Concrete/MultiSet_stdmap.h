@@ -24,20 +24,8 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  MultiSet_stdmap requires its own traits (besides DefaultTraits::MultiSet) because of the neeed for a compare function for std::map<>
                  */
-                template <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-                struct MultiSet_stdmap_DefaultTraits : DefaultTraits::MultiSet<T, WELL_ORDER_COMPARER> {
-                    /**
-                     */
-                    using WellOrderCompareFunctionType = WELL_ORDER_COMPARER;
-
-                    RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
-                };
-
-                /**
-                 */
-                template <typename T, typename TRAITS = MultiSet_stdmap_DefaultTraits<T>>
+                template <typename T, typename TRAITS = MultiSet<T>>
                 class MultiSet_stdmap : public MultiSet<T, TRAITS> {
                 private:
                     using inherited = MultiSet<T, TRAITS>;
@@ -48,26 +36,23 @@ namespace Stroika {
                     using TraitsType = TRAITS;
 
                 public:
-                    /**
-                     */
-                    using WellOrderCompareFunctionType = typename TraitsType::WellOrderCompareFunctionType;
-
-                public:
-                    RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
-
-                public:
                     MultiSet_stdmap ();
+                    template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>
+                    explicit MultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>::value>::type>
                     MultiSet_stdmap (const CONTAINER_OF_T& src);
-                    MultiSet_stdmap (const MultiSet_stdmap<T, TRAITS>& src);
+                    MultiSet_stdmap (const MultiSet_stdmap& src) = default;
                     MultiSet_stdmap (const initializer_list<T>& src);
                     MultiSet_stdmap (const initializer_list<CountedValue<T>>& src);
-                    MultiSet_stdmap (const T* start, const T* end);
+                    template <typename COPY_FROM_ITERATOR>
+                    MultiSet_stdmap (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
                 public:
-                    nonvirtual MultiSet_stdmap<T, TRAITS>& operator= (const MultiSet_stdmap<T, TRAITS>& rhs) = default;
+                    nonvirtual MultiSet_stdmap& operator= (const MultiSet_stdmap& rhs) = default;
 
                 private:
+                    class IImplRepBase_;
+                    template <typename INORDER_COMPARER>
                     class Rep_;
 
                 private:

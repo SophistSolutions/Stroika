@@ -120,13 +120,6 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                using EqualsCompareFunctionType = typename TraitsType::EqualsCompareFunctionType;
-
-            public:
-                /**
                  *      \brief  MultiSetOfElementType is just a handly copy of the *T* template type which this
                  *              MultiSet<T, TRAITS> parameterizes counting.
                  */
@@ -162,6 +155,8 @@ namespace Stroika {
                  *      \endcode
                  */
                 MultiSet ();
+                template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                explicit MultiSet (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 MultiSet (const MultiSet& src) noexcept = default;
                 MultiSet (MultiSet&& src) noexcept      = default;
                 MultiSet (const initializer_list<T>& src);

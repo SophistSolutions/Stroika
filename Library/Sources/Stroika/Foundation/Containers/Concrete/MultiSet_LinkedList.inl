@@ -21,13 +21,23 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ****** MultiSet_LinkedList<T, TRAITS>::Rep_ ********
+                 ******************** MultiSet_LinkedList<T, TRAITS>::IImplRepBase_ *************
                  ********************************************************************************
                  */
                 template <typename T, typename TRAITS>
-                class MultiSet_LinkedList<T, TRAITS>::Rep_ : public MultiSet<T, TRAITS>::_IRep {
+                class MultiSet_LinkedList<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
+                };
+
+                /*
+                 ********************************************************************************
+                 ********************** MultiSet_LinkedList<T, TRAITS>::Rep_ ********************
+                 ********************************************************************************
+                 */
+                template <typename T, typename TRAITS>
+                template <typename EQUALS_COMPARER>
+                class MultiSet_LinkedList<T, TRAITS>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename MultiSet<T, TRAITS>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<CountedValue<T>>::_IterableRepSharedPtr;
@@ -37,10 +47,14 @@ namespace Stroika {
                     using CounterType           = typename inherited::CounterType;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const EQUALS_COMPARER& equalsComparer)
+                        : fEqualsComparer_ (equalsComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
+                        , fEqualsComparer_ (from->fEqualsComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -51,6 +65,9 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
+                private:
+                    EQUALS_COMPARER fEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -105,7 +122,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (fEqualsComparer_);
                         }
                     }
                     virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
@@ -117,7 +134,7 @@ namespace Stroika {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         CountedValue<T>                                                 c = item;
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true);) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
+                            if (fEqualsComparer_ (c.fValue, item)) {
                                 Assert (c.fCount != 0);
                                 return (true);
                             }
@@ -131,7 +148,7 @@ namespace Stroika {
                             CountedValue<T>                                                current (item);
                             std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true);) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
+                                if (fEqualsComparer_ (current.fValue, item)) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
                                     return;
@@ -147,7 +164,7 @@ namespace Stroika {
                             CountedValue<T>                                                current (item);
                             std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                             for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true);) {
-                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fValue, item)) {
+                                if (fEqualsComparer_ (current.fValue, item)) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;
                                     }
@@ -193,7 +210,7 @@ namespace Stroika {
                         CountedValue<T>                                                 c = item;
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true);) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fValue, item)) {
+                            if (fEqualsComparer_ (c.fValue, item)) {
                                 Ensure (c.fCount != 0);
                                 return c.fCount;
                             }
@@ -232,12 +249,20 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : MultiSet_LinkedList (std::equal_to<T>{})
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
-                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const T* start, const T* end)
+                template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
+                {
+                    AssertRepValidType_ ();
+                }
+                template <typename T, typename TRAITS>
+                template <typename COPY_FROM_ITERATOR>
+                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
                     : MultiSet_LinkedList ()
                 {
                     this->AddAll (start, end);
@@ -274,7 +299,7 @@ namespace Stroika {
                 inline void MultiSet_LinkedList<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
                 }
             }

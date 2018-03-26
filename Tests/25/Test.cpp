@@ -27,21 +27,26 @@ using Concrete::SortedMultiSet_stdmap;
 
 namespace {
     template <typename CONCRETE_CONTAINER>
-    void DoTestForConcreteContainer_ ()
-    {
-        using TraitsType            = typename CONCRETE_CONTAINER::TraitsType;
-        using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
-        auto extraChecksFunction    = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& t) {
+    struct UseBasicTestingSchemas_ : CommonTests::MultiSetTests::DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER> {
+        static void ApplyToContainerExtraTest (const typename CONCRETE_CONTAINER::ArchetypeContainerType& t)
+        {
             // verify in sorted order
             Memory::Optional<MultiSetOfElementType> last;
+            using COMPARER_TYPE = less<MultiSetOfElementType>;
             for (CountedValue<MultiSetOfElementType> i : t) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i.fValue) <= 0);
+                    VerifyTestResult (COMPARER_TYPE () (*last, i.fValue));
                 }
                 last = i.fValue;
             }
-        };
-        CommonTests::MultiSetTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+        }
+    };
+
+    template <typename CONCRETE_CONTAINER, typename SCHEMA = UseBasicTestingSchemas_<CONCRETE_CONTAINER>>
+    void DoTestForConcreteContainer_ (const SCHEMA& schema = {})
+    {
+        Debug::TraceContextBumper ctx{L"{}::DoTestForConcreteContainer_"};
+        CommonTests::MultiSetTests::All_For_Type (schema);
     }
 }
 
@@ -49,28 +54,20 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithComparer_ {
-            using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2)
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eInOrder> {
+            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
-                return v1.GetValue () == v2.GetValue ();
-            }
-            static int Compare (value_type v1, value_type v2)
-            {
-                return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
+                return lhs.GetValue () < rhs.GetValue ();
             }
         };
-        using SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS = DefaultTraits::SortedMultiSet<
-            SimpleClassWithoutComparisonOperators,
-            MySimpleClassWithoutComparisonOperators_ComparerWithComparer_>;
 
         DoTestForConcreteContainer_<SortedMultiSet<size_t>> ();
         DoTestForConcreteContainer_<SortedMultiSet<SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedMultiSet<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS>> ();
+        //RunTests_<SortedMultiSet<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS>> ();
 
         DoTestForConcreteContainer_<SortedMultiSet_stdmap<size_t>> ();
         DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS>> ();
+        //RunTests_<SortedMultiSet_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedMultiSetTRAITS>> ();
     }
 }
 
