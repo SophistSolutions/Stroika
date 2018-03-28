@@ -16,6 +16,8 @@ ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
 PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/boost)
 
+
+
 -include $(shell pwd)/../../IntermediateFiles/$(CONFIGURATION)/Library/Configuration.mk
 
 export StroikaRoot=$(shell realpath ../..)/
@@ -121,9 +123,11 @@ clobber:	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/include/boost
 	@rm -f $(BUILDS_ROOT)*/ThirdPartyComponents/lib/libboost_*
+	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/share/boost-build
 else
 	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/boost
 	@rm -f $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libboost_*
+	@rm -rf $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/share/boost-build
 endif
 	@rm -rf CURRENT
 
@@ -184,7 +188,9 @@ $(B2FullPath):
 bootstrap_:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building Bootstap (b2) in $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR); log2=BOOTSTRAP.OUT"` "... "
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "./bootstrap.bat" > BOOTSTRAP.OUT)
+	@### From http://www.boost.org/doc/libs/1_66_0/more/getting_started/windows.html - section 5.2
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
+	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
 else
 	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo "./bootstrap.sh" > BOOTSTRAP.OUT)
 	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (./bootstrap.sh >> BOOTSTRAP.OUT)
@@ -193,64 +199,63 @@ endif
 
 
 ### Run b2.exe --help
-CONFIGURE_ARGS_=
-CONFIGURE_ARGS_ +=	link=static
-CONFIGURE_ARGS_ +=	runtime-link=static
-CONFIGURE_ARGS_ +=	threading=multi
-CONFIGURE_ARGS_ +=	--layout=system
+B2_CONFIGURATION_ARGS=
+B2_CONFIGURATION_ARGS +=	link=static
+B2_CONFIGURATION_ARGS +=	runtime-link=static
+B2_CONFIGURATION_ARGS +=	threading=multi
+B2_CONFIGURATION_ARGS +=	--layout=system
 
 ### omit some things unlikely to be intersted (mostly cuz already adopted into STL) in (due to build speed)
-CONFIGURE_ARGS_ +=	--without-atomic
-CONFIGURE_ARGS_ +=	--without-chrono
-CONFIGURE_ARGS_ +=	--without-filesystem
-CONFIGURE_ARGS_ +=	--without-python
-CONFIGURE_ARGS_ +=	--without-regex
-CONFIGURE_ARGS_ +=	--without-signals
-CONFIGURE_ARGS_ +=	--without-system
-CONFIGURE_ARGS_ +=	--without-wave
+B2_CONFIGURATION_ARGS +=	--without-atomic
+B2_CONFIGURATION_ARGS +=	--without-chrono
+B2_CONFIGURATION_ARGS +=	--without-filesystem
+B2_CONFIGURATION_ARGS +=	--without-python
+B2_CONFIGURATION_ARGS +=	--without-regex
+B2_CONFIGURATION_ARGS +=	--without-signals
+B2_CONFIGURATION_ARGS +=	--without-system
+B2_CONFIGURATION_ARGS +=	--without-wave
 
 ### shorter paths avoids problems building on windows (abbrevpaths not enuf on windows when root dir is maybe 100 chars, so use --hash which works better)
-#CONFIGURE_ARGS_ +=	--abbreviate-paths
-CONFIGURE_ARGS_ +=	--hash
+#B2_CONFIGURATION_ARGS +=	--abbreviate-paths
+B2_CONFIGURATION_ARGS +=	--hash
 
 #output verbosity (default is -d1, but use -d0 cuz faster)
-CONFIGURE_ARGS_ +=	-d0
-#CONFIGURE_ARGS_ +=	-d+2
-#SHOW VARIABLES - CONFIGURE_ARGS_ +=	-d7
+B2_CONFIGURATION_ARGS +=	-d0
+#B2_CONFIGURATION_ARGS +=	-d+2
+#SHOW VARIABLES - B2_CONFIGURATION_ARGS +=	-d7
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
-CONFIGURE_ARGS_ +=	--prefix=$(PER_CONFIGURATION_BUILDS_DIR)
+B2_CONFIGURATION_ARGS +=	--prefix=$(PER_CONFIGURATION_BUILDS_DIR)
 else
-CONFIGURE_ARGS_ +=	--prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))
+B2_CONFIGURATION_ARGS +=	--prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))
 endif
 ifeq (0,$(ENABLE_ASSERTIONS))
-CONFIGURE_ARGS_ += variant=release
+B2_CONFIGURATION_ARGS += variant=release
 else
-CONFIGURE_ARGS_ += variant=debug
+B2_CONFIGURATION_ARGS += variant=debug
 endif
 ifeq (1,$(ENABLE_GLIBCXX_DEBUG))
-CONFIGURE_ARGS_ += define=_GLIBCXX_DEBUG
+B2_CONFIGURATION_ARGS += define=_GLIBCXX_DEBUG
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-CONFIGURE_ARGS_ += toolset=msvc
+B2_CONFIGURATION_ARGS += toolset=msvc
 ### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE file
 ifeq ($(ARCH),x86)
-CONFIGURE_ARGS_ +=	address-model=32
+B2_CONFIGURATION_ARGS +=	address-model=32
 else ifeq ($(ARCH),x86_64)
-CONFIGURE_ARGS_ +=	address-model=64
+B2_CONFIGURATION_ARGS +=	address-model=64
 endif
 else
 ifeq ($(shell uname -s),Darwin)
-CONFIGURE_ARGS_ +=	toolset=darwin-$(ARCH)
+B2_CONFIGURATION_ARGS +=	toolset=darwin-$(ARCH)
 else
-CONFIGURE_ARGS_ +=	toolset=gcc-$(ARCH)
+B2_CONFIGURATION_ARGS +=	toolset=gcc-$(ARCH)
 endif
 endif
-CONFIGURE_ARGS_ +=	install
 
 ifndef IF_PARALLEL_MAKE_USE_NJOBS
 #no easy way to know right number...
-IF_PARALLEL_MAKE_USE_NJOBS=	-j10
+IF_PARALLEL_MAKE_USE_NJOBS=	-j5
 endif
 
 #on windows, we want parallel b2 make, but -j doesn't work with makefile
@@ -262,8 +267,10 @@ FORCE_PARALLEL_b2_MAKE=0
 endif
 endif
 
+
+
 ifeq ($(FORCE_PARALLEL_b2_MAKE),1)
-CONFIGURE_ARGS_ +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
+B2_CONFIGURATION_ARGS +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
 endif
 
 
@@ -275,16 +282,29 @@ ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 	@MAXCHAR=120 && PWD=`realpath --canonicalize-missing $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)` && if [[ $${#PWD} -gt $$MAXCHAR ]] ; then $(ECHO) && ../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "WARNING: STRLEN(boost-build-dir) == $${#PWD}: sometimes if its more than $$MAXCHAR characters on windows it may cause boost build problem (https://stroika.atlassian.net/browse/STK-633)" && ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n; fi;
 endif
 	@##NB: using ; separator cuz / appears in file names (sed call)
+ifneq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
 	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && cp project-config.jam project-config.jam.ORIG
 ifeq ($(shell uname -s),Darwin)
 	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && gsed -i 's;using darwin; using darwin : $(ARCH) : $(CC);' project-config.jam
 else
 	@cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && sed -i 's;using gcc; using gcc : $(ARCH) : $(CC);' project-config.jam
 endif
+endif
+	@#
+	@### NOTE - sometimes if this starts failing, from a DOS shell, type rm -f %tmp%/b2*.cmd
+	@#
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
-	@export CFA="$(CONFIGURE_ARGS_)" && \
-	cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
-	if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
-	(echo ./$(B2) $$CFA > ConfigureAndBuild.OUT) && \
-	(sh -c "./$(B2) $$CFA >> ConfigureAndBuild.OUT")
+	@rm -f $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
+	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
+		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
+		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
+		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
+		(echo $(B2) $$CFA stage >> ConfigureAndBuild.OUT) && \
+		(sh -c "$(B2) $$CFA stage >> ConfigureAndBuild.OUT")
+	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
+		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
+		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
+		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
+		(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
+		(sh -c "$(B2) $$CFA install >> ConfigureAndBuild.OUT")
 	@echo done
