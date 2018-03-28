@@ -199,57 +199,57 @@ endif
 
 
 ### Run b2.exe --help
-CONFIGURE_ARGS_=
-CONFIGURE_ARGS_ +=	link=static
-CONFIGURE_ARGS_ +=	runtime-link=static
-CONFIGURE_ARGS_ +=	threading=multi
-CONFIGURE_ARGS_ +=	--layout=system
+B2_CONFIGURATION_ARGS=
+B2_CONFIGURATION_ARGS +=	link=static
+B2_CONFIGURATION_ARGS +=	runtime-link=static
+B2_CONFIGURATION_ARGS +=	threading=multi
+B2_CONFIGURATION_ARGS +=	--layout=system
 
 ### omit some things unlikely to be intersted (mostly cuz already adopted into STL) in (due to build speed)
-CONFIGURE_ARGS_ +=	--without-atomic
-CONFIGURE_ARGS_ +=	--without-chrono
-CONFIGURE_ARGS_ +=	--without-filesystem
-CONFIGURE_ARGS_ +=	--without-python
-CONFIGURE_ARGS_ +=	--without-regex
-CONFIGURE_ARGS_ +=	--without-signals
-CONFIGURE_ARGS_ +=	--without-system
-CONFIGURE_ARGS_ +=	--without-wave
+B2_CONFIGURATION_ARGS +=	--without-atomic
+B2_CONFIGURATION_ARGS +=	--without-chrono
+B2_CONFIGURATION_ARGS +=	--without-filesystem
+B2_CONFIGURATION_ARGS +=	--without-python
+B2_CONFIGURATION_ARGS +=	--without-regex
+B2_CONFIGURATION_ARGS +=	--without-signals
+B2_CONFIGURATION_ARGS +=	--without-system
+B2_CONFIGURATION_ARGS +=	--without-wave
 
 ### shorter paths avoids problems building on windows (abbrevpaths not enuf on windows when root dir is maybe 100 chars, so use --hash which works better)
-#CONFIGURE_ARGS_ +=	--abbreviate-paths
-CONFIGURE_ARGS_ +=	--hash
+#B2_CONFIGURATION_ARGS +=	--abbreviate-paths
+B2_CONFIGURATION_ARGS +=	--hash
 
 #output verbosity (default is -d1, but use -d0 cuz faster)
-CONFIGURE_ARGS_ +=	-d0
-#CONFIGURE_ARGS_ +=	-d+2
-#SHOW VARIABLES - CONFIGURE_ARGS_ +=	-d7
+B2_CONFIGURATION_ARGS +=	-d0
+#B2_CONFIGURATION_ARGS +=	-d+2
+#SHOW VARIABLES - B2_CONFIGURATION_ARGS +=	-d7
 
 ifeq (,$(findstring CYGWIN,$(shell uname)))
-CONFIGURE_ARGS_ +=	--prefix=$(PER_CONFIGURATION_BUILDS_DIR)
+B2_CONFIGURATION_ARGS +=	--prefix=$(PER_CONFIGURATION_BUILDS_DIR)
 else
-CONFIGURE_ARGS_ +=	--prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))
+B2_CONFIGURATION_ARGS +=	--prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))
 endif
 ifeq (0,$(ENABLE_ASSERTIONS))
-CONFIGURE_ARGS_ += variant=release
+B2_CONFIGURATION_ARGS += variant=release
 else
-CONFIGURE_ARGS_ += variant=debug
+B2_CONFIGURATION_ARGS += variant=debug
 endif
 ifeq (1,$(ENABLE_GLIBCXX_DEBUG))
-CONFIGURE_ARGS_ += define=_GLIBCXX_DEBUG
+B2_CONFIGURATION_ARGS += define=_GLIBCXX_DEBUG
 endif
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-CONFIGURE_ARGS_ += toolset=msvc
+B2_CONFIGURATION_ARGS += toolset=msvc
 ### @todo - redo this using new ADDRESS_MODEL field in CONFIGURE file
 ifeq ($(ARCH),x86)
-CONFIGURE_ARGS_ +=	address-model=32
+B2_CONFIGURATION_ARGS +=	address-model=32
 else ifeq ($(ARCH),x86_64)
-CONFIGURE_ARGS_ +=	address-model=64
+B2_CONFIGURATION_ARGS +=	address-model=64
 endif
 else
 ifeq ($(shell uname -s),Darwin)
-CONFIGURE_ARGS_ +=	toolset=darwin-$(ARCH)
+B2_CONFIGURATION_ARGS +=	toolset=darwin-$(ARCH)
 else
-CONFIGURE_ARGS_ +=	toolset=gcc-$(ARCH)
+B2_CONFIGURATION_ARGS +=	toolset=gcc-$(ARCH)
 endif
 endif
 
@@ -270,7 +270,7 @@ endif
 
 
 ifeq ($(FORCE_PARALLEL_b2_MAKE),1)
-CONFIGURE_ARGS_ +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
+B2_CONFIGURATION_ARGS +=	$(IF_PARALLEL_MAKE_USE_NJOBS)
 endif
 
 
@@ -294,17 +294,17 @@ endif
 	@### NOTE - sometimes if this starts failing, from a DOS shell, type rm -f %tmp%/b2*.cmd
 	@#
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
-	rm -f $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
-	-export CFA="$(CONFIGURE_ARGS_)" && \
-	export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
-	cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
-	if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
-	(echo $(B2) $$CFA stage >> ConfigureAndBuild.OUT) && \
-	(sh -c "$(B2) $$CFA stage >> ConfigureAndBuild.OUT")
-	export CFA="$(CONFIGURE_ARGS_)" && \
-	export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
-	cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
-	if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
-	(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
-	(sh -c "$(B2) $$CFA install >> ConfigureAndBuild.OUT")
+	@rm -f $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
+	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
+	@export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
+		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
+		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
+		(echo $(B2) $$CFA stage >> ConfigureAndBuild.OUT) && \
+		(sh -c "$(B2) $$CFA stage >> ConfigureAndBuild.OUT")
+	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
+		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
+		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
+		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
+		(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
+		(sh -c "$(B2) $$CFA install >> ConfigureAndBuild.OUT")
 	@echo done
