@@ -299,12 +299,6 @@ endif
 		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:.:$$PATH && \
 		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
 		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
-		(echo $(B2) $$CFA stage >> ConfigureAndBuild.OUT) && \
-		(sh -c "$(B2) $$CFA stage >> ConfigureAndBuild.OUT")
-	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:.:$$PATH && \
-		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
-		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
 		(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
 		(sh -c "$(B2) $$CFA install >> ConfigureAndBuild.OUT")
 	@echo done
