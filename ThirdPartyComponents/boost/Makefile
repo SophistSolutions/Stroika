@@ -296,13 +296,13 @@ endif
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
 	@rm -f $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
 	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
+		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:.:$$PATH && \
 		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
 		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
 		(echo $(B2) $$CFA stage >> ConfigureAndBuild.OUT) && \
 		(sh -c "$(B2) $$CFA stage >> ConfigureAndBuild.OUT")
 	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
+		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:.:$$PATH && \
 		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
 		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
 		(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
