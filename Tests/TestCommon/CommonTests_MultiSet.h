@@ -24,7 +24,7 @@ namespace CommonTests {
 
         template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER = std::equal_to<typename CONCRETE_CONTAINER::MultiSetOfElementType>, typename FACTORY = DefaultFactory<CONCRETE_CONTAINER>>
         struct DEFAULT_TESTING_SCHEMA {
-            DEFAULT_TESTING_SCHEMA (FACTORY factory = {})
+            constexpr inline DEFAULT_TESTING_SCHEMA (FACTORY factory = {})
                 : Factory (factory)
             {
             }
