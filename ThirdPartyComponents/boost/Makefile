@@ -192,8 +192,8 @@ ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
 	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && bootstrap.bat" > BOOTSTRAP.OUT)
 	@SL=`realpath ../../ScriptsLib` && cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (perl $$SL/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "cd tools\build && b2 install --prefix=$(shell cygpath --mixed $(PER_CONFIGURATION_BUILDS_DIR))" >> BOOTSTRAP.OUT)
 else
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo "./bootstrap.sh" > BOOTSTRAP.OUT)
-	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (./bootstrap.sh >> BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (echo "./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR)" > BOOTSTRAP.OUT)
+	@cd $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && (./bootstrap.sh --prefix=$(PER_CONFIGURATION_BUILDS_DIR) >> BOOTSTRAP.OUT)
 endif
 	@echo done
 
@@ -296,13 +296,7 @@ endif
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
 	@rm -f $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
 	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
-		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
-		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
-		(echo $(B2) $$CFA stage >> ConfigureAndBuild.OUT) && \
-		(sh -c "$(B2) $$CFA stage >> ConfigureAndBuild.OUT")
-	@export CFA="$(B2_CONFIGURATION_ARGS)" && \
-		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:$$PATH && \
+		export PATH=$(PER_CONFIGURATION_BUILDS_DIR)/bin:.:$$PATH && \
 		cd  $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR) && \
 		if [ "-j" = "$(findstring -j,$(MAKEFLAGS))" ] ; then CFA="$$CFA $(IF_PARALLEL_MAKE_USE_NJOBS)"; fi && \
 		(echo $(B2) $$CFA install >> ConfigureAndBuild.OUT) && \
