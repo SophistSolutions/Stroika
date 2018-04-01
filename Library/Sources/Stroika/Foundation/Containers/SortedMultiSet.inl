@@ -18,8 +18,16 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             inline SortedMultiSet<T, TRAITS>::SortedMultiSet ()
-                : inherited (move (Factory::SortedMultiSet_Factory<T, TRAITS> () ()))
+                : SortedMultiSet (std::less<T>{})
             {
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
+            template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline SortedMultiSet<T, TRAITS>::SortedMultiSet (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER> (inorderComparer) ()))
+            {
+                static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "SortedMultiSet constructor with INORDER_COMPARER - comparer not valid IsInOrderComparer- see FunctionComparerAdapter<Common::OrderingRelationType::eInOrder, function<bool(T, T)>");
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>

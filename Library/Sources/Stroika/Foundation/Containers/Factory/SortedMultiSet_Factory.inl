@@ -18,23 +18,21 @@ namespace Stroika {
         namespace Containers {
             namespace Factory {
 
-#if 0
-                // Not sure why this pre-declare needed on GCC 4.7? Either a bug with my mutual #include file stuff or??? Hmmm...
-                // no biggie for now...
-                // -- LGP 2013-07-23
-                template <typename T, typename TRAITS>
-                class SortedMultiSet_stdmap;
-#endif
-
                 /*
                  ********************************************************************************
                  ********************* SortedMultiSet_Factory<T, TRAITS> ************************
                  ********************************************************************************
                  */
-                template <typename T, typename TRAITS>
-                atomic<SortedMultiSet<T, TRAITS> (*) ()> SortedMultiSet_Factory<T, TRAITS>::sFactory_ (nullptr);
-                template <typename T, typename TRAITS>
-                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS>::operator() () const
+                template <typename T, typename TRAITS, typename INORDER_COMPARER>
+                atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::sFactory_ (nullptr);
+                template <typename T, typename TRAITS, typename INORDER_COMPARER>
+                inline SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::SortedMultiSet_Factory (const INORDER_COMPARER& inOrderComparer)
+                    : fInOrderComparer_ (inOrderComparer)
+                {
+                    static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedMultiSet_Factory");
+                }
+                template <typename T, typename TRAITS, typename INORDER_COMPARER>
+                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -44,21 +42,21 @@ namespace Stroika {
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
                     if (auto f = sFactory_.load ()) {
-                        return f ();
+                        return f (fInOrderComparer_);
                     }
                     else {
-                        return Default_ ();
+                        return Default_ (fInOrderComparer_);
                     }
                 }
-                template <typename T, typename TRAITS>
-                void SortedMultiSet_Factory<T, TRAITS>::Register (SortedMultiSet<T, TRAITS> (*factory) ())
+                template <typename T, typename TRAITS, typename INORDER_COMPARER>
+                void SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::Register (SortedMultiSet<T, TRAITS> (*factory) (const INORDER_COMPARER&))
                 {
                     sFactory_ = factory;
                 }
-                template <typename T, typename TRAITS>
-                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS>::Default_ ()
+                template <typename T, typename TRAITS, typename INORDER_COMPARER>
+                inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::Default_ (const INORDER_COMPARER& inOrderComparer)
                 {
-                    return Concrete::SortedMultiSet_stdmap<T, TRAITS> ();
+                    return Concrete::SortedMultiSet_stdmap<T, TRAITS> (inOrderComparer);
                 }
             }
         }

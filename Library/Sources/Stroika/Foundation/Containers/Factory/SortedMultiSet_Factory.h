@@ -27,17 +27,20 @@ namespace Stroika {
             namespace Factory {
 
                 /**
-                *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedMultiSet<> container
-                *
-                *  Note - you can override the underlying factory dynamically by calling SortedMultiSet_Factory<T,TRAITS>::Register (), or
-                *  replace it statically by template-specailizing SortedMultiSet_Factory<T,TRAITS>::New () - though the later is trickier.
-                *
-                *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                */
-                template <typename T, typename TRAITS>
+                 *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedMultiSet<> container
+                 *
+                 *  Note - you can override the underlying factory dynamically by calling SortedMultiSet_Factory<T,TRAITS>::Register (), or
+                 *  replace it statically by template-specailizing SortedMultiSet_Factory<T,TRAITS>::New () - though the later is trickier.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+                 */
+                template <typename T, typename TRAITS, typename INORDER_COMPARER>
                 class SortedMultiSet_Factory {
                 private:
-                    static atomic<SortedMultiSet<T, TRAITS> (*) ()> sFactory_;
+                    static atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_;
+
+                public:
+                    SortedMultiSet_Factory (const INORDER_COMPARER& inorderComparer);
 
                 public:
                     /**
@@ -49,10 +52,13 @@ namespace Stroika {
                     /**
                      *  Register a replacement creator/factory for the given SortedMultiSet<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (SortedMultiSet<T, TRAITS> (*factory) () = nullptr);
+                    static void Register (SortedMultiSet<T, TRAITS> (*factory) (const INORDER_COMPARER&) = nullptr);
 
                 private:
-                    static SortedMultiSet<T, TRAITS> Default_ ();
+                    INORDER_COMPARER fInOrderComparer_;
+
+                private:
+                    static SortedMultiSet<T, TRAITS> Default_ (const INORDER_COMPARER&);
                 };
             }
         }
