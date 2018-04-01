@@ -84,6 +84,9 @@ namespace Stroika {
 
             public:
                 /**
+                 *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER_COMPARER for 'T'.
+                 *
+                 * \req IsInOrderComparer<INORDER_COMPARER> () - for constructors with that type parameter
                  */
                 SortedCollection ();
                 template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>

@@ -37,8 +37,8 @@ namespace Stroika {
              *      Items inserted at the current index remain undefined if they will
              *      be encountered or not.
              *
-			 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-			 *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+             *
              *  \note Note About Iterators
              *      o   Stroika container iterators must have shorter lifetime than the container they are iterating over.
              *

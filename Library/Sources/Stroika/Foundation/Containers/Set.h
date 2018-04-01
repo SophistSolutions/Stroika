@@ -119,6 +119,8 @@ namespace Stroika {
                  *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  *
+                 *  All constructors either copy their source comparer (copy/move CTOR), or use the default EQUALS_COMPARER for 'T'.
+                 *
                  *  \par Example Usage
                  *      \code
                  *        Collection<int> c;

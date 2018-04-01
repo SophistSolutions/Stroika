@@ -139,6 +139,8 @@ namespace Stroika {
 
             public:
                 /**
+                 * \req IsEqualsComparer<EQUALS_COMPARER> () - for constructors with that type parameter
+                 *
                  *  \par Example Usage
                  *      \code
                  *        Collection<int> c;
