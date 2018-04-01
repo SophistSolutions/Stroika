@@ -64,7 +64,15 @@ namespace Stroika {
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename T, typename TRAITS>
+			template <typename T, typename TRAITS>
+			template <typename COPY_FROM_ITERATOR>
+			SortedMultiSet<T, TRAITS>::SortedMultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+				: SortedMultiSet ()
+			{
+				AddAll (start, end);
+				_AssertRepValidType ();
+			}
+			template <typename T, typename TRAITS>
             inline void SortedMultiSet<T, TRAITS>::_AssertRepValidType () const
             {
 #if qDebug
