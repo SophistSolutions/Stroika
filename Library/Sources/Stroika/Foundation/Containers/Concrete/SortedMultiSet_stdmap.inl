@@ -251,7 +251,7 @@ namespace Stroika {
                     : SortedMultiSet_stdmap ()
                 {
                     AddAll (start, end);
-					AssertRepValidType_ ();
+                    AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
                 inline void SortedMultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
