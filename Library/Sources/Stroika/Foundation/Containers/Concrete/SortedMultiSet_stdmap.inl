@@ -245,15 +245,15 @@ namespace Stroika {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-				template <typename T, typename TRAITS>
-				template <typename COPY_FROM_ITERATOR>
-				SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-					: SortedMultiSet_stdmap ()
-				{
-					AddAll (start, end);
-					_AssertRepValidType ();
-				}
-				template <typename T, typename TRAITS>
+                template <typename T, typename TRAITS>
+                template <typename COPY_FROM_ITERATOR>
+                SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+                    : SortedMultiSet_stdmap ()
+                {
+                    AddAll (start, end);
+                    _AssertRepValidType ();
+                }
+                template <typename T, typename TRAITS>
                 inline void SortedMultiSet_stdmap<T, TRAITS>::AssertRepValidType_ () const
                 {
 #if qDebug
