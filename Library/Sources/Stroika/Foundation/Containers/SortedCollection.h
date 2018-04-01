@@ -84,6 +84,13 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
+                 *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsInOrderComparer () concept (need better name).
+                 */
+                using InOrderComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eInOrder>;
+
+            public:
+                /**
                  *  All constructors either copy their source comparer (copy/move CTOR), or use the default INORDER_COMPARER for 'T'.
                  *
                  * \req IsInOrderComparer<INORDER_COMPARER> () - for constructors with that type parameter
@@ -94,10 +101,15 @@ namespace Stroika {
                 SortedCollection (const SortedCollection& src) noexcept = default;
                 SortedCollection (SortedCollection&& src) noexcept      = default;
                 SortedCollection (const std::initializer_list<T>& src);
+                SortedCollection (const InOrderComparerType& inOrderComparer, const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value>::type>
                 SortedCollection (const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value>::type>
+                SortedCollection (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                SortedCollection (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit SortedCollection (const _SortedCollectionRepSharedPtr& src) noexcept;
