@@ -194,9 +194,6 @@ namespace Stroika {
                                 if (InverseLookup (newElt, &back)) {
                                     Require (fDomainEqualsComparer_ (key, *back));
                                 }
-                                else {
-                                    Require (not fDomainEqualsComparer_ (key, *back));
-                                }
 
 #endif
                             } break;
@@ -204,11 +201,6 @@ namespace Stroika {
                                 Memory::Optional<DOMAIN_TYPE> back;
                                 if (InverseLookup (newElt, &back)) {
                                     if (not fDomainEqualsComparer_ (key, *back)) {
-                                        Execution::Throw (Bijection_Base::InjectivityViolation{});
-                                    }
-                                }
-                                else {
-                                    if (fDomainEqualsComparer_ (key, *back)) {
                                         Execution::Throw (Bijection_Base::InjectivityViolation{});
                                     }
                                 }
