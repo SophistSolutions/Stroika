@@ -204,12 +204,12 @@ namespace Stroika {
                                 Memory::Optional<DOMAIN_TYPE> back;
                                 if (InverseLookup (newElt, &back)) {
                                     if (not fDomainEqualsComparer_ (key, *back)) {
-                                        Execution::Throw (InjectivityViolation{});
+                                        Execution::Throw (Bijection_Base::InjectivityViolation{});
                                     }
                                 }
                                 else {
                                     if (fDomainEqualsComparer_ (key, *back)) {
-                                        Execution::Throw (InjectivityViolation{});
+                                        Execution::Throw (Bijection_Base::InjectivityViolation{});
                                     }
                                 }
                             } break;
