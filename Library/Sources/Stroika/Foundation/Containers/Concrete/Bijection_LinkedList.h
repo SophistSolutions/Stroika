@@ -34,6 +34,7 @@ namespace Stroika {
                     using inherited = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
 
                 public:
+                    using InjectivityViolationPolicy      = typename inherited::InjectivityViolationPolicy;
                     using DomainEqualsCompareFunctionType = typename inherited::DomainEqualsCompareFunctionType;
                     using RangeEqualsCompareFunctionType  = typename inherited::RangeEqualsCompareFunctionType;
 
