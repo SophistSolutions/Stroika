@@ -131,11 +131,11 @@ namespace Stroika {
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
-                    virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const override
+					virtual function<bool (DOMAIN_TYPE, DOMAIN_TYPE)> PeekDomainEqualsComparer () const override
                     {
                         return fDomainEqualsComparer_;
                     }
-                    virtual RangeEqualsCompareFunctionType GetRangeEqualsComparer () const override
+					virtual function<bool (RANGE_TYPE, RANGE_TYPE)> PeekRangeEqualsComparer () const override
                     {
                         return fRangeEqualsComparer_;
                     }

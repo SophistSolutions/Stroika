@@ -90,7 +90,7 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::GetRangeEqualsComparer () const -> RangeEqualsCompareFunctionType
             {
-                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetRangeEqualsComparer ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekRangeEqualsComparer ();
             }
 
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -210,7 +210,6 @@ namespace Stroika {
             inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::ContainsRangeElement (ArgByValueType<RangeType> v) const
             {
                 // REIMPLEMENT USING InverseLookup()!!! @todo
-                //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 for (pair<DOMAIN_TYPE, RANGE_TYPE> t : *this) {
                     if (GetRangeEqualsComparer () (t.second, v)) {
                         return true;
@@ -440,7 +439,7 @@ namespace Stroika {
                 // are present, and with the same Bijection in the second.
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     Memory::Optional<RangeType> tmp;
-                    if (not rhs.Lookup (i->first, &tmp) or not GetRangeEqualsComparer () (*tmp, i->second)) {
+                    if (not rhs.Lookup (i->first, &tmp) or not PeekRangeEqualsComparer () (*tmp, i->second)) {
                         return false;
                     }
                 }
