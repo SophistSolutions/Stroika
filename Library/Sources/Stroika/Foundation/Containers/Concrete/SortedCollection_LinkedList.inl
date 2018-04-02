@@ -66,7 +66,7 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
-                    INORDER_COMPARER fInorderComparer_;
+                    const INORDER_COMPARER fInorderComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:

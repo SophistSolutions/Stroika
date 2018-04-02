@@ -55,7 +55,7 @@ namespace Stroika {
                     static void Register (MultiSet<T, TRAITS> (*factory) (const EQUALS_COMPARER&) = nullptr);
 
                 private:
-                    EQUALS_COMPARER fEqualsComparer_;
+                    const EQUALS_COMPARER fEqualsComparer_;
 
                 private:
                     static MultiSet<T, TRAITS> Default_ (const EQUALS_COMPARER&);

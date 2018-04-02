@@ -55,7 +55,7 @@ namespace Stroika {
                     static void Register (SortedMultiSet<T, TRAITS> (*factory) (const INORDER_COMPARER&) = nullptr);
 
                 private:
-                    INORDER_COMPARER fInOrderComparer_;
+                    const INORDER_COMPARER fInOrderComparer_;
 
                 private:
                     static SortedMultiSet<T, TRAITS> Default_ (const INORDER_COMPARER&);

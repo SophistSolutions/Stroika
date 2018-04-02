@@ -73,7 +73,7 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
-                    EQUALS_COMPARER fEqualsComparer_;
+                    const EQUALS_COMPARER fEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:

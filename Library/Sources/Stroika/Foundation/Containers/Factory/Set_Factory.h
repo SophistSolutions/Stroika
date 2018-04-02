@@ -59,7 +59,7 @@ namespace Stroika {
                     static void Register (Set<T> (*factory) (const EQUALS_COMPARER&) = nullptr);
 
                 private:
-                    EQUALS_COMPARER fEqualsComparer_;
+                    const EQUALS_COMPARER fEqualsComparer_;
 
                 private:
                     static Set<T> Default_ (const EQUALS_COMPARER& equalsComparer);
