@@ -45,7 +45,7 @@ namespace CommonTests {
                 template <typename TESTING_SCHEMA>
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
                 {
-                    using USING_BIJECTION_CONTAINER = TESTING_SCHEMA::ConcreteContainerType;
+                    using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
                     using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
                     using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
                     USING_BIJECTION_CONTAINER s     = testingSchema.Factory ();
@@ -65,8 +65,8 @@ namespace CommonTests {
                 template <typename TESTING_SCHEMA>
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
                 {
-                    using USING_BIJECTION_CONTAINER = TESTING_SCHEMA::ConcreteContainerType;
-                    using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
+					using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
+					using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
                     using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
                     USING_BIJECTION_CONTAINER s     = testingSchema.Factory ();
                     for (int i = 0; i < 100; ++i) {
@@ -85,8 +85,8 @@ namespace CommonTests {
                 template <typename TESTING_SCHEMA>
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
                 {
-                    using USING_BIJECTION_CONTAINER = TESTING_SCHEMA::ConcreteContainerType;
-                    {
+					using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
+					{
                         map<int, int> t;
                         t.insert (map<int, int>::value_type (2, 4));
                         typename USING_BIJECTION_CONTAINER::ArchetypeContainerType s = USING_BIJECTION_CONTAINER (t);
@@ -124,8 +124,8 @@ namespace CommonTests {
                 template <typename TESTING_SCHEMA>
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
                 {
-                    using USING_BIJECTION_CONTAINER = TESTING_SCHEMA::ConcreteContainerType;
-                    using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
+					using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
+					using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
                     using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
                     {
                         USING_BIJECTION_CONTAINER b = testingSchema.Factory ();
@@ -164,8 +164,8 @@ namespace CommonTests {
                 template <typename TESTING_SCHEMA>
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
                 {
-                    using USING_BIJECTION_CONTAINER = TESTING_SCHEMA::ConcreteContainerType;
-                    using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
+					using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
+					using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
                     using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
                     {
                         USING_BIJECTION_CONTAINER b = testingSchema.Factory ();
