@@ -158,7 +158,7 @@ namespace Stroika {
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection*>::value>::type>
                 Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
-                template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
+                template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_KVP_T>::value>>
                 Bijection (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end);
 
             protected:
