@@ -216,9 +216,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Trace.cpp">
       <Filter>Sources\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
@@ -486,9 +483,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
@@ -556,9 +550,6 @@
       <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\SharedPtr.cpp">
-      <Filter>Sources\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Bits.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp">

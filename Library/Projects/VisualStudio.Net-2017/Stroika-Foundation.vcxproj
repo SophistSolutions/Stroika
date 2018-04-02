@@ -1128,10 +1128,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Vector.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Bits.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BLOB.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocated.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\BlockAllocator.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\Common.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Memory-Common.obj</ObjectFileName>
