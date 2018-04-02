@@ -68,8 +68,8 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
-                    const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
-                    const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
+                    /*const*/ DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
+					/*const*/ RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
