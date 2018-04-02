@@ -107,7 +107,7 @@ namespace Stroika {
             template <typename ENUM>
             constexpr ENUM OffsetFromStart (make_unsigned_t<typename underlying_type<ENUM>::type> offset);
 
-/**
+            /**
              *  \def Stroika_Define_Enum_Bounds
              *
              *      Define meta information on enums using standardized names, so you can generically

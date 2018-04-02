@@ -46,14 +46,16 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
-                        : fDomainEqualsComparer_ (domainEqualsComparer)
+                    Rep_ (Bijection_Base::InjectivityViolationPolicy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
+                        : fInjectivityViolationPolicy_ (injectivityViolationPolicy)
+                        , fDomainEqualsComparer_ (domainEqualsComparer)
                         , fRangeEqualsComparer_ (rangeEqualsComparer)
                     {
                     }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
+                        , fInjectivityViolationPolicy_ (from->fInjectivityViolationPolicy_)
                         , fDomainEqualsComparer_ (from->fDomainEqualsComparer_)
                         , fRangeEqualsComparer_ (from->fRangeEqualsComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
@@ -68,8 +70,9 @@ namespace Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
-                    const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
-                    const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
+                    const Bijection_Base::InjectivityViolationPolicy fInjectivityViolationPolicy_;
+                    const DOMAIN_EQUALS_COMPARER                     fDomainEqualsComparer_;
+                    const RANGE_EQUALS_COMPARER                      fRangeEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -124,7 +127,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<Rep_> (fDomainEqualsComparer_, fRangeEqualsComparer_);
+                            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<Rep_> (fInjectivityViolationPolicy_, fDomainEqualsComparer_, fRangeEqualsComparer_);
                         }
                     }
                     virtual bool Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep& rhs) const override
@@ -181,8 +184,38 @@ namespace Stroika {
                     }
                     virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt) override
                     {
+                        // @todo check fInjectivityViolationPolicy_
                         using Traversal::kUnknownIteratorOwnerID;
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        switch (fInjectivityViolationPolicy_) {
+                            case Bijection_Base::InjectivityViolationPolicy::eAssertionError: {
+#if qDebug
+                                Memory::Optional<DOMAIN_TYPE> back;
+                                if (InverseLookup (newElt, &back)) {
+                                    Require (fDomainEqualsComparer_ (key, *back));
+                                }
+                                else {
+                                    Require (not fDomainEqualsComparer_ (key, *back));
+                                }
+
+#endif
+                            } break;
+                            case Bijection_Base::InjectivityViolationPolicy::eThrowException: {
+                                Memory::Optional<DOMAIN_TYPE> back;
+                                if (InverseLookup (newElt, &back)) {
+                                    if (not fDomainEqualsComparer_ (key, *back)) {
+                                        Execution::Throw (InjectivityViolation{});
+                                    }
+                                }
+                                else {
+                                    if (fDomainEqualsComparer_ (key, *back)) {
+                                        Execution::Throw (InjectivityViolation{});
+                                    }
+                                }
+                            } break;
+                            default:
+                                AssertNotReached ();
+                        }
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                                 fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
@@ -250,7 +283,13 @@ namespace Stroika {
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE>
                 template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
                 inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
-                    : inherited (inherited::template MakeSharedPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (domainEqualsComparer, rangeEqualsComparer))
+                    : Bijection_LinkedList (InjectivityViolationPolicy::eDEFAULT, domainEqualsComparer, rangeEqualsComparer)
+                {
+                }
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer))
                 {
                 }
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE>

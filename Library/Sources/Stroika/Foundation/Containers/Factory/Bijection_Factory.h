@@ -40,10 +40,11 @@ namespace Stroika {
                  */
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
                 class Bijection_Factory {
-                private:
-                    static atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_;
+                public:
+                    using InjectivityViolationPolicy = Bijection_Base::InjectivityViolationPolicy;
 
                 public:
+                    Bijection_Factory (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
                     Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
 
                 public:
@@ -56,14 +57,18 @@ namespace Stroika {
                     /**
                      *  Register a replacement creator/factory for the given Bijection<DOMAIN_TYPE, RANGE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&) = nullptr);
+                    static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&) = nullptr);
 
                 private:
+                    InjectivityViolationPolicy   fInjectivityViolationPolicy_;
                     const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
                     const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
                 private:
-                    static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);
+                    static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);
+
+                private:
+                    static atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (InjectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_;
                 };
             }
         }

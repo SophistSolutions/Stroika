@@ -20,6 +20,16 @@ namespace Stroika {
 
             /*
              ********************************************************************************
+             ******************** Bijection_Base::InjectivityViolation **********************
+             ********************************************************************************
+             */
+            inline Bijection_Base::InjectivityViolation::InjectivityViolation ()
+                : StringException (L"Injectivity violation")
+            {
+            }
+
+            /*
+             ********************************************************************************
              ******************** Bijection<DOMAIN_TYPE, RANGE_TYPE> ************************
              ********************************************************************************
              */
@@ -32,7 +42,14 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
             inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
-                : inherited (move (Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER> (domainEqualsComparer, rangeEqualsComparer) ()))
+                : Bijection (InjectivityViolationPolicy::eDEFAULT, domainEqualsComparer, rangeEqualsComparer)
+            {
+                _AssertRepValidType ();
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER> (injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer) ()))
             {
                 _AssertRepValidType ();
             }

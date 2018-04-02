@@ -12,7 +12,7 @@
 #include "../Common/KeyValuePair.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
-#include "../Execution/Synchronized.h"
+#include "../Execution/StringException.h"
 #include "../Memory/Optional.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
@@ -25,11 +25,6 @@
  *  TODO:
  *
  *      @todo   Support Where (hide iterable one)
- *
- *      @todo   Bijection_InjectivityViolationPolicy not respected.
- *              and instead of enum, COULD be a function in the TRAITS (HandleInjectivityVioldation) - which could 
- *              throw or assert.
-
  *
  *      @todo   Best backend I can think of would be two opposing maps (or hash tables). Discuss with
  *              Sterl to see if he can think of any way todo this that doesn't double the storage
@@ -49,23 +44,25 @@ namespace Stroika {
             using Traversal::Iterable;
             using Traversal::Iterator;
 
-#if 0
-            /**
-            */
-            enum Bijection_InjectivityViolationPolicy {
-                eAssertionError,
-                eThrowException,
-            };
-
-            /**
-            *  Default Bijection<> Traits
-            */
-            struct Bijection {
+            class Bijection_Base {
+            public:
                 /**
                 */
-                static constexpr Bijection_InjectivityViolationPolicy InjectivityViolationPolicy = Bijection_InjectivityViolationPolicy::eAssertionError;
+                enum class InjectivityViolationPolicy {
+                    eAssertionError,
+                    eThrowException,
+
+                    eDEFAULT = eAssertionError,
+
+                    Stroika_Define_Enum_Bounds (eAssertionError, eThrowException)
+                };
+
+            public:
+                class InjectivityViolation : public Execution::StringException {
+                public:
+                    InjectivityViolation ();
+                };
             };
-#endif
 
             /**
              * \brief   Bijection which allows for the bijective (1-1) association of two elements.
@@ -103,7 +100,7 @@ namespace Stroika {
              *
              */
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            class Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {
+            class Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>, public Bijection_Base {
             private:
                 using inherited = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>;
 
@@ -153,6 +150,8 @@ namespace Stroika {
                 Bijection ();
                 template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<DOMAIN_EQUALS_COMPARER>::value and Configuration::is_callable<RANGE_EQUALS_COMPARER>::value>>
                 explicit Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<DOMAIN_EQUALS_COMPARER>::value and Configuration::is_callable<RANGE_EQUALS_COMPARER>::value>>
+                explicit Bijection (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 Bijection (const Bijection& src) noexcept = default;
                 Bijection (Bijection&& src) noexcept      = default;
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
@@ -263,11 +262,9 @@ namespace Stroika {
 
             public:
                 /**
-                 *   @todo Need InverseLookup () too!
-                 *
-                 *  Note - as since Lookup/1 returns an Optional<T> - it can be used very easily to provide
+                 *  Note - as since InverseLookup/1 returns an Optional<T> - it can be used very easily to provide
                  *  a default value on Lookup (so for case where not present) - as in:
-                 *      returm m.Lookup (key).Value (putDefaultValueHere);
+                 *      returm m.InverseLookup (key).Value (putDefaultValueHere);
                  *
                  *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
