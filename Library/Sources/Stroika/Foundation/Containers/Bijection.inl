@@ -337,7 +337,7 @@ namespace Stroika {
                     struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep {
                         using inherited             = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
                         using _IterableRepSharedPtr = typename Iterable<DOMAIN_TYPE>::_IterableRepSharedPtr;
-						Bijection fBijection_;
+                        Bijection fBijection_;
                         DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const Bijection& b)
                             : inherited ()

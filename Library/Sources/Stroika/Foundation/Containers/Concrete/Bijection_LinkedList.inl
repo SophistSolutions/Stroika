@@ -69,7 +69,7 @@ namespace Stroika {
 
                 private:
                     /*const*/ DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
-					/*const*/ RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
+                    /*const*/ RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
