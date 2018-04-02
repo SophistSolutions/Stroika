@@ -23,28 +23,36 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> is an LinkedList-based concrete implementation of the Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType> container pattern.
+                 *  \brief   Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE> is an LinkedList-based concrete implementation of the Bijection<DOMAIN_TYPE, RANGE_TYPE> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = DefaultTraits::Bijection<DOMAIN_TYPE, RANGE_TYPE>>
-                class Bijection_LinkedList : public Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType> {
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                class Bijection_LinkedList : public Bijection<DOMAIN_TYPE, RANGE_TYPE> {
                 private:
-                    using inherited = Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>;
+                    using inherited = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
+
+                public:
+                    using DomainEqualsCompareFunctionType = typename inherited::DomainEqualsCompareFunctionType;
+                    using RangeEqualsCompareFunctionType  = typename inherited::RangeEqualsCompareFunctionType;
 
                 public:
                     Bijection_LinkedList ();
-                    Bijection_LinkedList (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
+                    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<DOMAIN_EQUALS_COMPARER>::value and Configuration::is_callable<RANGE_EQUALS_COMPARER>::value>>
+                    explicit Bijection_LinkedList (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                    Bijection_LinkedList (const Bijection_LinkedList& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T>
-                    explicit Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
-                    template <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Bijection_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
+                    Bijection_LinkedList (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end);
 
                 public:
-                    nonvirtual Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);
+                    nonvirtual Bijection_LinkedList& operator= (const Bijection_LinkedList& rhs) = default;
 
                 private:
+                    class IImplRepBase_;
+                    template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
                     class Rep_;
 
                 private:

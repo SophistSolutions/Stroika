@@ -20,13 +20,19 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *********** Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *****************
+                 * Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER> *
                  ********************************************************************************
                  */
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::sFactory_ (nullptr);
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator() () const
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
+                atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::sFactory_ (nullptr);
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
+                inline Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
+                    : fDomainEqualsComparer_ (domainEqualsComparer)
+                    , fRangeEqualsComparer_ (rangeEqualsComparer)
+                {
+                }
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
+                inline Bijection<DOMAIN_TYPE, RANGE_TYPE> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -36,27 +42,19 @@ namespace Stroika {
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
                     if (auto f = sFactory_.load ()) {
-                        return f ();
+                        return f (fDomainEqualsComparer_, fRangeEqualsComparer_);
                     }
                     else {
-                        return Default_ ();
+                        return Default_ (fDomainEqualsComparer_, fRangeEqualsComparer_);
                     }
                 }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) ())
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
+                void Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&))
                 {
                     sFactory_ = factory;
                 }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ ()
-                {
-                    /*
-                     *  Use SFINAE to select best default implementation.
-                     */
-                    return Default_SFINAE_ (static_cast<DOMAIN_TYPE*> (nullptr));
-                }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (...)
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
+                inline Bijection<DOMAIN_TYPE, RANGE_TYPE> Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>::Default_ (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Bijection<> for large sizes, its probably the most
@@ -66,7 +64,7 @@ namespace Stroika {
                      *  Calls may use an explicit initializer of Bijection_xxx<> to get better performance for large sized
                      *  maps.
                      */
-                    return Concrete::Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ();
+                    return Concrete::Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE> (domainEqualsComparer, rangeEqualsComparer);
                 }
             }
         }

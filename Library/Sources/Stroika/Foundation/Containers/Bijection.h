@@ -16,7 +16,6 @@
 #include "../Memory/Optional.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
-#include "DefaultTraits/Bijection.h"
 
 /*
  *  \file
@@ -28,6 +27,9 @@
  *      @todo   Support Where (hide iterable one)
  *
  *      @todo   Bijection_InjectivityViolationPolicy not respected.
+ *              and instead of enum, COULD be a function in the TRAITS (HandleInjectivityVioldation) - which could 
+ *              throw or assert.
+
  *
  *      @todo   Best backend I can think of would be two opposing maps (or hash tables). Discuss with
  *              Sterl to see if he can think of any way todo this that doesn't double the storage
@@ -46,6 +48,24 @@ namespace Stroika {
             using Configuration::ArgByValueType;
             using Traversal::Iterable;
             using Traversal::Iterator;
+
+#if 0
+            /**
+            */
+            enum Bijection_InjectivityViolationPolicy {
+                eAssertionError,
+                eThrowException,
+            };
+
+            /**
+            *  Default Bijection<> Traits
+            */
+            struct Bijection {
+                /**
+                */
+                static constexpr Bijection_InjectivityViolationPolicy InjectivityViolationPolicy = Bijection_InjectivityViolationPolicy::eAssertionError;
+            };
+#endif
 
             /**
              * \brief   Bijection which allows for the bijective (1-1) association of two elements.
@@ -82,7 +102,7 @@ namespace Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = DefaultTraits::Bijection<DOMAIN_TYPE, RANGE_TYPE>>
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             class Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {
             private:
                 using inherited = Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>;
@@ -97,12 +117,7 @@ namespace Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using ArchetypeContainerType = Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>;
-
-            public:
-                /**
-                 */
-                using TraitsType = TRAITS;
+                using ArchetypeContainerType = Bijection;
 
             public:
                 /**
@@ -116,17 +131,17 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Just a short-hand for the DomainEqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
+                 *  This is the type returned by GetDomainEqualsComparer () and CAN be used as the argument to a Bijection<> as EqualityComparer, but
+                 *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
                  */
-                using DomainEqualsCompareFunctionType = typename TraitsType::DomainEqualsCompareFunctionType;
+                using DomainEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool(DomainType, DomainType)>, Common::OrderingRelationType::eEquals>;
 
             public:
                 /**
-                 *  Just a short-hand for the RangeEqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
+                 *  This is the type returned by GetRangeEqualsComparer () and CAN be used as the argument to a Bijection<> as EqualityComparer, but
+                 *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
                  */
-                using RangeEqualsCompareFunctionType = typename TraitsType::RangeEqualsCompareFunctionType;
+                using RangeEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool(RangeType, RangeType)>, Common::OrderingRelationType::eEquals>;
 
             public:
                 /**
@@ -136,13 +151,15 @@ namespace Stroika {
                  *  The underlying data structure of the Bijection is defined by @see Concrete::Bijection_Factory<>
                  */
                 Bijection ();
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<DOMAIN_EQUALS_COMPARER>::value and Configuration::is_callable<RANGE_EQUALS_COMPARER>::value>>
+                explicit Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 Bijection (const Bijection& src) noexcept = default;
                 Bijection (Bijection&& src) noexcept      = default;
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*>::value>::type>
+                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection*>::value>::type>
                 Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
-                template <typename COPY_FROM_ITERATOR_KEY_T>
-                Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
+                Bijection (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end);
 
             protected:
                 explicit Bijection (const _BijectionRepSharedPtr& src) noexcept;
@@ -156,8 +173,18 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) = default;
-                nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual Bijection& operator= (const Bijection& rhs) = default;
+                nonvirtual Bijection& operator= (Bijection&& rhs) = default;
+
+            public:
+                /**
+                 */
+                nonvirtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const;
+
+            public:
+                /**
+                 */
+                nonvirtual RangeEqualsCompareFunctionType GetRangeEqualsComparer () const;
 
             public:
                 /**
@@ -342,7 +369,7 @@ namespace Stroika {
                  *
                  *  Note - this returns a copy (by value) of this Bijections data.
                  */
-                template <typename TARGET_CONTAINER = Bijection<RANGE_TYPE, DOMAIN_TYPE, DefaultTraits::Bijection<RANGE_TYPE, DOMAIN_TYPE, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>>>
+                template <typename TARGET_CONTAINER = Bijection<RangeType, DomainType>>
                 nonvirtual TARGET_CONTAINER Inverse () const;
 
             public:
@@ -376,7 +403,7 @@ namespace Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                nonvirtual bool Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
+                nonvirtual bool Equals (const Bijection& rhs) const;
 
             public:
                 /**
@@ -388,13 +415,13 @@ namespace Stroika {
                 /**
                  */
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual Bijection& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual Bijection& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             protected:
                 /**
@@ -420,13 +447,13 @@ namespace Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Bijection<T> container API.
              */
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            class Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            class Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
             private:
                 using inherited = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep;
 
             protected:
-                using _BijectionRepSharedPtr = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_BijectionRepSharedPtr;
+                using _BijectionRepSharedPtr = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_BijectionRepSharedPtr;
 
             protected:
                 _IRep () = default;
@@ -435,10 +462,12 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             public:
-                virtual _BijectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual bool                   Equals (const _IRep& rhs) const                        = 0;
-                virtual Iterable<DomainType>   Preimage () const                                      = 0;
-                virtual Iterable<RangeType>    Image () const                                         = 0;
+                virtual _BijectionRepSharedPtr          CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual bool                            Equals (const _IRep& rhs) const                        = 0;
+                virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                       = 0;
+                virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                        = 0;
+                virtual Iterable<DomainType>            Preimage () const                                      = 0;
+                virtual Iterable<RangeType>             Image () const                                         = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RangeType>* item) const        = 0;
@@ -470,14 +499,14 @@ namespace Stroika {
             /**
              *      Syntactic sugar on Equals()
              */
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            nonvirtual bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            nonvirtual bool operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
 
             /**
              *      Syntactic sugar on not Equals()
              */
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs);
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            bool operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE>& lhs, const Bijection<DOMAIN_TYPE, RANGE_TYPE>& rhs);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             class Bijection;
 
             namespace Factory {
@@ -38,28 +38,32 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
                 class Bijection_Factory {
                 private:
-                    static atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()> sFactory_;
+                    static atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE> (*) (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&)> sFactory_;
+
+                public:
+                    Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Bijection<T,TRAITS> CTOR does so automatically.
                      */
-                    nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> operator() () const;
+                    nonvirtual Bijection<DOMAIN_TYPE, RANGE_TYPE> operator() () const;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Bijection<DOMAIN_TYPE, RANGE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static void Register (Bijection<DOMAIN_TYPE, RANGE_TYPE> (*factory) (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&) = nullptr);
 
                 private:
-                    static Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Default_ ();
+                    const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
+                    const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
                 private:
-                    static Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> Default_SFINAE_ (...);
+                    static Bijection<DOMAIN_TYPE, RANGE_TYPE> Default_ (const DOMAIN_EQUALS_COMPARER&, const RANGE_EQUALS_COMPARER&);
                 };
             }
         }
@@ -68,7 +72,7 @@ namespace Stroika {
 
 /*
  ********************************************************************************
- ******************************* Implementation Details *************************
+ **************************** Implementation Details ****************************
  ********************************************************************************
  */
 #include "Bijection_Factory.inl"

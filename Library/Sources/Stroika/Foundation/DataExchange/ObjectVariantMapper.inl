@@ -267,12 +267,12 @@ namespace Stroika {
                 // NB: beacuse of how we match on MakeCommonSerializer_, the type it sees maybe a base class of T, and we want to actually register the type the user specified.
                 return TypeMappingDetails{typeid (T), tmp.fFromObjecttMapper, tmp.fToObjectMapper};
             }
-            template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*)
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*)
             {
                 using Characters::String_Constant;
                 using Containers::Bijection;
-                FromObjectMapperType<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>> fromObjectMapper = [](const ObjectVariantMapper& mapper, const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>* fromObjOfTypeT) -> VariantValue {
+                FromObjectMapperType<Bijection<DOMAIN_TYPE, RANGE_TYPE>> fromObjectMapper = [](const ObjectVariantMapper& mapper, const Bijection<DOMAIN_TYPE, RANGE_TYPE>* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     FromObjectMapperType<DOMAIN_TYPE> domainMapper{mapper.FromObjectMapper<DOMAIN_TYPE> ()};
                     FromObjectMapperType<RANGE_TYPE>  rangeMapper{mapper.FromObjectMapper<RANGE_TYPE> ()};
@@ -285,7 +285,7 @@ namespace Stroika {
                     }
                     return VariantValue (s);
                 };
-                ToObjectMapperType<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>* intoObjOfTypeT) -> void {
+                ToObjectMapperType<Bijection<DOMAIN_TYPE, RANGE_TYPE>> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Bijection<DOMAIN_TYPE, RANGE_TYPE>* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     ToObjectMapperType<DOMAIN_TYPE> domainMapper{mapper.ToObjectMapper<DOMAIN_TYPE> ()};
                     ToObjectMapperType<RANGE_TYPE>  rangeMapper{mapper.ToObjectMapper<RANGE_TYPE> ()};
@@ -294,13 +294,13 @@ namespace Stroika {
                     for (VariantValue encodedPair : s) {
                         Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
-                            DbgTrace (L"Bijection ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>)).c_str (), static_cast<int> (p.size ()));
+                            DbgTrace (L"Bijection ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)).c_str (), static_cast<int> (p.size ()));
                             Execution::Throw (BadFormatException (String_Constant (L"Mapping element with item count other than 2")));
                         }
                         intoObjOfTypeT->Add (mapper.ToObject<DOMAIN_TYPE> (domainMapper, p[0]), mapper.ToObject<RANGE_TYPE> (rangeMapper, p[1]));
                     }
                 };
-                return TypeMappingDetails{typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>), fromObjectMapper, toObjectMapper};
+                return TypeMappingDetails{typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>), fromObjectMapper, toObjectMapper};
             }
             template <typename T>
             inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Collection<T>*)

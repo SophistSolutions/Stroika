@@ -595,8 +595,8 @@ namespace Stroika {
 
             private:
                 static TypeMappingDetails MakeCommonSerializer_ (const void*);
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                static TypeMappingDetails MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*);
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE>*);
                 template <typename T>
                 static TypeMappingDetails MakeCommonSerializer_ (const Containers::Collection<T>*);
                 template <typename T, typename TRAITS>

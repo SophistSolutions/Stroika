@@ -21,13 +21,23 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_****
+                 ********** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::IImplRepBase_*********
                  ********************************************************************************
                  */
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_ : public Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep {
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::IImplRepBase_ : public Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep {
+                };
+
+                /*
+                 ********************************************************************************
+                 *********** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_*****************
+                 ********************************************************************************
+                 */
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
+                class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr  = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IterableRepSharedPtr;
@@ -36,10 +46,16 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
+                        : fDomainEqualsComparer_ (domainEqualsComparer)
+                        , fRangeEqualsComparer_ (rangeEqualsComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
+                        , fDomainEqualsComparer_ (from->fDomainEqualsComparer_)
+                        , fRangeEqualsComparer_ (from->fRangeEqualsComparer_)
                         , fData_ (&from->fData_, forIterableEnvelope)
                     {
                         RequireNotNull (from);
@@ -50,6 +66,10 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
+                private:
+                    const DOMAIN_EQUALS_COMPARER fDomainEqualsComparer_;
+                    const RANGE_EQUALS_COMPARER  fRangeEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -93,7 +113,7 @@ namespace Stroika {
                         return RESULT_TYPE (resultRep);
                     }
 
-                    // Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep overrides
+                    // Bijection<DOMAIN_TYPE, RANGE_TYPE::BijectionTraitsType>::_IRep overrides
                 public:
                     virtual _BijectionRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -104,12 +124,20 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<Rep_> (fDomainEqualsComparer_, fRangeEqualsComparer_);
                         }
                     }
-                    virtual bool Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep& rhs) const override
+                    virtual bool Equals (const typename Bijection<DomainType, RangeType>::_IRep& rhs) const override
                     {
                         return this->_Equals_Reference_Implementation (rhs);
+                    }
+                    virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const override
+                    {
+                        return fDomainEqualsComparer_;
+                    }
+                    virtual RangeEqualsCompareFunctionType GetRangeEqualsComparer () const override
+                    {
+                        return fRangeEqualsComparer_;
                     }
                     virtual Iterable<DOMAIN_TYPE> Preimage () const override
                     {
@@ -123,7 +151,7 @@ namespace Stroika {
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
+                            if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
                                 }
@@ -139,7 +167,7 @@ namespace Stroika {
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, key)) {
+                            if (fRangeEqualsComparer_ (it.Current ().second, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().first;
                                 }
@@ -156,7 +184,7 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
+                            if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                                 fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
                                 return;
                             }
@@ -168,7 +196,7 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, d)) {
+                            if (fDomainEqualsComparer_ (it.Current ().first, d)) {
                                 fData_.RemoveAt (it);
                                 return;
                             }
@@ -179,7 +207,7 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                            if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, r)) {
+                            if (fRangeEqualsComparer_ (it.Current ().second, r)) {
                                 fData_.RemoveAt (it);
                                 return;
                             }
@@ -200,11 +228,6 @@ namespace Stroika {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
-
-                public:
-                    using DomainEqualsCompareFunctionType = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::DomainEqualsCompareFunctionType;
-                    using RangeEqualsCompareFunctionType  = typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::RangeEqualsCompareFunctionType;
-
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>;
                     using IteratorRep_           = Private::IteratorImplHelper_<pair<DOMAIN_TYPE, RANGE_TYPE>, DataStructureImplType_>;
@@ -215,50 +238,42 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *********** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> **************
+                 **************** Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE> *****************
                  ********************************************************************************
                  */
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList ()
+                    : Bijection_LinkedList (std::equal_to<DOMAIN_TYPE>{}, std::equal_to<RANGE_TYPE>{})
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src)
-                    : inherited (src)
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> (domainEqualsComparer, rangeEqualsComparer))
                 {
-                    AssertRepValidType_ ();
                 }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
                     : Bijection_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                template <typename COPY_FROM_ITERATOR_KEY_T>
-                Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF>
+                Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end)
                     : Bijection_LinkedList ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator= (const Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                inline void Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AssertRepValidType_ () const
+                template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+                inline void Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
                 }
             }
