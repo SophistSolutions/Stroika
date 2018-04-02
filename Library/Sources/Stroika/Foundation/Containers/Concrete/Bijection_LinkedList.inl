@@ -127,7 +127,7 @@ namespace Stroika {
                             return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::template MakeSharedPtr<Rep_> (fDomainEqualsComparer_, fRangeEqualsComparer_);
                         }
                     }
-                    virtual bool Equals (const typename Bijection<DomainType, RangeType>::_IRep& rhs) const override
+                    virtual bool Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::_IRep& rhs) const override
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
