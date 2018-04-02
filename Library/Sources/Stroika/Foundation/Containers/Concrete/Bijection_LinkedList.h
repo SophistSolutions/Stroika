@@ -44,7 +44,7 @@ namespace Stroika {
                     Bijection_LinkedList (const Bijection_LinkedList& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T>
                     Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
-                    template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
+                    template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_KVP_T>::value>>
                     Bijection_LinkedList (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end);
 
                 public:
