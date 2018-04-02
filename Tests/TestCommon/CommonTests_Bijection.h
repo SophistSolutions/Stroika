@@ -55,8 +55,8 @@ namespace CommonTests {
                     VerifyTestResult (not s.ContainsDomainElement (5));
                     VerifyTestResult (s.ContainsRangeElement (5));
                     VerifyTestResult (not s.ContainsRangeElement (3));
-                    //     VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (3), 5));
-                    //    VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (5), 3));
+                    VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (3), RangeType{5}));
+                    VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (5), DomainType{3}));
                 }
             }
 
@@ -75,8 +75,8 @@ namespace CommonTests {
                     VerifyTestResult (s.length () == 100);
                     VerifyTestResult (s.ContainsDomainElement (3));
                     VerifyTestResult (s.ContainsRangeElement (5));
-                    //VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (3), 5));
-                    //VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (5), 3));
+                    VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (3), RangeType{5}));
+                    VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (5), DomainType{3}));
                 }
             }
 
@@ -86,6 +86,8 @@ namespace CommonTests {
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
                 {
                     using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
+                    using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
+                    using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
                     {
                         map<int, int> t;
                         t.insert (map<int, int>::value_type (2, 4));
@@ -93,18 +95,17 @@ namespace CommonTests {
                         VerifyTestResult (s.length () == 1);
                         VerifyTestResult (s.ContainsDomainElement (2));
                         VerifyTestResult (s.ContainsRangeElement (4));
-                        //VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (2), 4));
-                        // VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (4), 2));
+                        VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
+                        VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
                     }
                     {
-                        pair<int, int> t[] = {
-                            {2, 4}};
-                        typename USING_BIJECTION_CONTAINER::ArchetypeContainerType s = USING_BIJECTION_CONTAINER (t);
+                        pair<int, int>                                             t[] = {{2, 4}};
+                        typename USING_BIJECTION_CONTAINER::ArchetypeContainerType s   = USING_BIJECTION_CONTAINER (t);
                         VerifyTestResult (s.length () == 1);
                         VerifyTestResult (s.ContainsDomainElement (2));
                         VerifyTestResult (s.ContainsRangeElement (4));
-                        //VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (2), 4));
-                        //VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (4), 2));
+                        VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
+                        VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
                     }
                     {
                         Mapping<int, int> t;
@@ -113,8 +114,8 @@ namespace CommonTests {
                         VerifyTestResult (s.length () == 1);
                         VerifyTestResult (s.ContainsDomainElement (2));
                         VerifyTestResult (s.ContainsRangeElement (4));
-                        // VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (2), 4));
-                        //VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (4), 2));
+                        VerifyTestResult (s.GetRangeEqualsComparer () (*s.Lookup (2), RangeType{4}));
+                        VerifyTestResult (s.GetDomainEqualsComparer () (*s.InverseLookup (4), DomainType{2}));
                     }
                 }
             }

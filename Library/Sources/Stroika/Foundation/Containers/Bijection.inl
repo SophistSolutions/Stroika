@@ -85,7 +85,7 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::GetDomainEqualsComparer () const -> DomainEqualsCompareFunctionType
             {
-                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetDomainEqualsComparer ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekDomainEqualsComparer ();
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::GetRangeEqualsComparer () const -> RangeEqualsCompareFunctionType
