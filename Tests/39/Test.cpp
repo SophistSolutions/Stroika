@@ -114,7 +114,7 @@ namespace {
             static const initializer_list<int>            kOrigValueInit_       = {1, 3, 4, 5, 6, 33, 12, 13};
             static const initializer_list<int>            kUpdateValueInit_     = {4, 5, 6, 33, 12, 34, 596, 13, 1, 3, 99, 33, 4, 5};
             static const initializer_list<pair<int, int>> kOrigPairValueInit_   = {pair<int, int> (1, 3), pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 13)};
-            static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 34), pair<int, int> (596, 13), pair<int, int> (1, 3), pair<int, int> (99, 33), pair<int, int> (4, 5)};
+            static const initializer_list<pair<int, int>> kUPairpdateValueInit_ = {pair<int, int> (4, 5), pair<int, int> (6, 33), pair<int, int> (12, 34), pair<int, int> (596, 13), pair<int, int> (1, 3), pair<int, int> (99, 35), pair<int, int> (4, 5)};
             DoItOnce_<String> (String (L"123456789"), String (L"abcdedfghijkqlmopqrstuvwxyz"), kRepeatCount_);
             DoItOnce_<Bijection<int, int>> (Bijection<int, int> (kOrigPairValueInit_), Bijection<int, int> (kUPairpdateValueInit_), kRepeatCount_);
             DoItOnce_<Collection<int>> (Collection<int> (kOrigValueInit_), Collection<int> (kUpdateValueInit_), kRepeatCount_);
