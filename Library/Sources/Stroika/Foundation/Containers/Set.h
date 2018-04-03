@@ -406,6 +406,7 @@ namespace Stroika {
                 using _SetRepSharedPtr = typename Set<T>::_SetRepSharedPtr;
 
             public:
+                // PeekEqualsComparer may return nullptr for equal_to<T>
                 virtual function<bool(T, T)> PeekEqualsComparer () const                            = 0;
                 virtual _SetRepSharedPtr     CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
                 virtual bool                 Equals (const _IRep& rhs) const                        = 0;
