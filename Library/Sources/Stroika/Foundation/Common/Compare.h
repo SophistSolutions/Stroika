@@ -59,7 +59,7 @@ namespace Stroika {
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
              */
             template <typename T>
-            struct ComparerWithEqualsOptionally {
+            struct [[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEqualsOptionally {
                 using value_type = T;
 
                 /**
@@ -69,6 +69,7 @@ namespace Stroika {
                 static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
             };
 
+#if 0
             // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
             // was called - NEW_EQUALS_COMPARER
             // dont release this
@@ -80,7 +81,9 @@ namespace Stroika {
                     return OLD_COMPARER::Equals (v1, v2);
                 }
             };
+#endif
 
+#if 0
             // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
             template <typename EQUALS_COMPARER>
             struct OldStyleEqualsComparerFromNewStyleEqualsComparer {
@@ -96,6 +99,7 @@ namespace Stroika {
                     return fEqualsComparer_ (v1, v2);
                 }
             };
+#endif
 
             /**
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
@@ -115,64 +119,37 @@ namespace Stroika {
              *  @todo - writeup !!! NOTE - ASSERTS ComparerWithWellOrder and ComparerWithEquals compatible - namely a < b and b > a iff .... writeup!!!
              */
             template <typename T>
-            struct [[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method")]] ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
-                                                                                                                                                                                           using value_type = T;
+            struct [[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method)")]] ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
+                                                                                                                                                                                            using value_type = T;
 
-                                                                                                                                                                                           static_assert (Configuration::LessThanComparable<T> (), "T must be LessThanComparable");
-                                                                                                                                                                                           RequireConceptAppliesToTypeMemberOfClass (RequireOperatorLess, T);
+                                                                                                                                                                                            static_assert (Configuration::LessThanComparable<T> (), "T must be LessThanComparable");
+                                                                                                                                                                                            RequireConceptAppliesToTypeMemberOfClass (RequireOperatorLess, T);
 
-                                                                                                                                                                                           /**
+                                                                                                                                                                                            /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
-                                                                                                                                                                                           static constexpr int  Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
-                                                                                                                                                                                           static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
-                                                                                                                                                                                           {
+                                                                                                                                                                                            static constexpr int  Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+                                                                                                                                                                                            static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
+                                                                                                                                                                                            {
 #if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                                                                                                                                                                                               return not(v1 < v2 or v2 < v1);
+                                                                                                                                                                                                return not(v1 < v2 or v2 < v1);
 #else
-                                                                                                                                                                                               bool result{not(v1 < v2 or v2 < v1)};
-                                                                                                                                                                                               //Ensure (not Configuration::EqualityComparable<T> () or result == (v1 == v2));  must check more indirectly to avoid compile error when not equality comparable
-                                                                                                                                                                                               return result;
+                                                                                                                                                                                                bool result{not(v1 < v2 or v2 < v1)};
+                                                                                                                                                                                                //Ensure (not Configuration::EqualityComparable<T> () or result == (v1 == v2));  must check more indirectly to avoid compile error when not equality comparable
+                                                                                                                                                                                                return result;
 #endif
-                                                                                                                                                                                           }
+                                                                                                                                                                                            }
             };
 
-            /**
-             *  DefaultEqualsComparer will procduce an Equals() method from a variety of sources automatically:
-             *      o   operator==
-             *      o   operator< (!(a<b or b<a)
-             *
-             *  and SOON
-             *      existing Equals() function(global?/method of T?)
-             *      existing Compares() function(global?/method of T?)
-             *      maybe also other variants like operator!=, etc.
-             *
-             *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
-             */
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             DISABLE_COMPILER_MSC_WARNING_START (4996)
             template <typename T, typename SFINAE = typename conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value), ComparerWithEquals<T>, typename conditional<Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value, ComparerWithWellOrder<T>, shared_ptr<int>>::type>::type>
             struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T> instead")]] DefaultEqualsComparer : SFINAE{};
-            DISABLE_COMPILER_MSC_WARNING_END (4996)
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-
-            /**
-             *  DefaultEqualsComparerOptionally will procduce an Equals() if possible, but will still compile otherwise. Its just
-             *  that attempts to call its Equals() method will fail.
-             *
-             *      @todo improve this so it has an Equals () method with a static_assert, so we get a clearer message when used.
-             *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
-             */
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
             template <typename T>
             struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T> instead")]] DefaultEqualsComparerOptionally : conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value) or (Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value), DefaultEqualsComparer<T>, shared_ptr<int>>::type{};
             DISABLE_COMPILER_MSC_WARNING_END (4996)
-            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
             /**

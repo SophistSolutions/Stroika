@@ -166,13 +166,12 @@ namespace {
             s.Append (1);
             Sequence<T> s2 = s;
             s2.Append (2);
-            using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
-            VerifyTestResult (not s.template Equals<EQC> (s2));
-            VerifyTestResult (not s2.template Equals<EQC> (s));
+            VerifyTestResult (not s.template Equals<EQUALS_COMPARER> (s2));
+            VerifyTestResult (not s2.template Equals<EQUALS_COMPARER> (s));
             s.Append (2);
-            VerifyTestResult (s2.template Equals<EQC> (s));
+            VerifyTestResult (s2.template Equals<EQUALS_COMPARER> (s));
             s.RemoveAll ();
-            VerifyTestResult (not s.template Equals<EQC> (s2));
+            VerifyTestResult (not s.template Equals<EQUALS_COMPARER> (s2));
             VerifyTestResult (s.empty ());
         }
     }
@@ -241,8 +240,7 @@ namespace {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (21 + i);
             }
-            using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
-            VerifyTestResult (s.template IndexOf<EQC> (5).IsMissing ());
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (5).IsMissing ());
             VerifyTestResult (not s.empty ());
 
             s.RemoveAll ();
@@ -256,15 +254,14 @@ namespace {
             VerifyTestResult (s.size () == 1000);
 
             Sequence<T> s2 = s;
-            using EQC      = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
-            VerifyTestResult (s.template IndexOf<EQC> (s2) == 0);
-            VerifyTestResult (s2.template IndexOf<EQC> (s) == 0);
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s2) == 0);
+            VerifyTestResult (s2.template IndexOf<EQUALS_COMPARER> (s) == 0);
 
             Sequence<T> s3;
             s3.Append (3);
             s3.Append (4);
-            VerifyTestResult (s3.template IndexOf<EQC> (s).IsMissing ());
-            VerifyTestResult (s.template IndexOf<EQC> (s3) == 3);
+            VerifyTestResult (s3.template IndexOf<EQUALS_COMPARER> (s).IsMissing ());
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s3) == 3);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
@@ -325,8 +322,7 @@ namespace {
             x.Append (12);
 
             s.PrependAll (x);
-            using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
-            VerifyTestResult (s.template Equals<EQC> (x));
+            VerifyTestResult (s.template Equals<EQUALS_COMPARER> (x));
             s.AppendAll (x);
             VerifyTestResult (EQUALS_COMPARER::Equals (s[1], 11));
             VerifyTestResult (EQUALS_COMPARER::Equals (s[2], 12));
@@ -684,12 +680,10 @@ namespace {
     template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
     void SimpleSequenceTest_All_For_Type_ ()
     {
-        using EQC = Common::NewStyleEqualsComparerFromOldStyleEqualsComparer<EQUALS_COMPARER>;
-
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_All_For_Type_ ()");
         SimpleSequenceTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_1_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
-        SimpleSequenceTest_2_Contains_<CONCRETE_SEQUENCE_TYPE, EQC> ();
+        SimpleSequenceTest_2_Contains_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_3_Compare_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_4_Equals_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
         SimpleSequenceTest_7_IndexOf_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
