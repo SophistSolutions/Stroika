@@ -55,85 +55,36 @@ namespace Stroika {
             struct Has_Compare : Configuration::substitution_succeeded<typename Private_::Has_Compare_Helper_::get_Compare_result<T>::type> {
             };
 
-            /**
-             *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
-             */
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
             template <typename T>
             struct [[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEqualsOptionally {
                 using value_type = T;
 
                 /**
-                 *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
-                 *  replace these, but they must remain consistent.
-                 */
+            *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
+            *  replace these, but they must remain consistent.
+            */
                 static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
             };
 
-#if 0
-            // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
-            // was called - NEW_EQUALS_COMPARER
-            // dont release this
-            template <typename OLD_COMPARER>
-            struct NewStyleEqualsComparerFromOldStyleEqualsComparer {
-                template <typename T>
-                constexpr bool operator() (T v1, T v2) const
-                {
-                    return OLD_COMPARER::Equals (v1, v2);
-                }
-            };
-#endif
-
-#if 0
-            // ADAPT OLD STYLE EQUALS COMPARER TO NEW STYLE (really C++ style)
-            template <typename EQUALS_COMPARER>
-            struct OldStyleEqualsComparerFromNewStyleEqualsComparer {
-                EQUALS_COMPARER fEqualsComparer_;
-                constexpr OldStyleEqualsComparerFromNewStyleEqualsComparer (const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{})
-                    : fEqualsComparer_ (equalsComparer)
-                {
-                }
-
-                template <typename T>
-                bool Equals (const T& v1, const T& v2) const
-                {
-                    return fEqualsComparer_ (v1, v2);
-                }
-            };
-#endif
-
-            /**
-             *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
-             *
-             *  \note   Generally use DefaultEqualsComparer<> instead of this, as it automatically selects the right way to compare.
-             */
             template <typename T>
             struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEquals : ComparerWithEqualsOptionally<T>{};
-
-            /**
-             *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
-             *  The default implementation only requires you define operator< (T,T) - and it fiugres out other cases from just that.
-             *
-             *  @todo - writeup !!! NOTE - ASSERTS ComparerWithWellOrder and ComparerWithEquals compatible - namely a < b and b > a iff .... writeup!!!
-             */
             template <typename T>
-            struct [[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method)")]] 
-				ComparerWithWellOrder { 
-					using value_type = T;
-					static constexpr int  Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
-					static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
-					{
-					#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-					return not(v1 < v2 or v2 < v1);
-					#else
-					bool result{not(v1 < v2 or v2 < v1)};
-					return result;
-					#endif
-					}
+            struct [[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method)")]] ComparerWithWellOrder {
+                using value_type = T;
+                static constexpr int  Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+                static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
+                {
+#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                    return not(v1 < v2 or v2 < v1);
+#else
+                    bool result{not(v1 < v2 or v2 < v1)};
+                    return result;
+#endif
+                }
             };
-
-            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-            DISABLE_COMPILER_MSC_WARNING_START (4996)
             template <typename T, typename SFINAE = typename conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value), ComparerWithEquals<T>, typename conditional<Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value, ComparerWithWellOrder<T>, shared_ptr<int>>::type>::type>
             struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T> instead")]] DefaultEqualsComparer : SFINAE{};
             template <typename T>

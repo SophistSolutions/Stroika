@@ -340,7 +340,7 @@ namespace Stroika {
             private:
                 struct CacheEltLRUCacheTraits_ : Foundation::Cache::LRUCacheSupport::DefaultTraits<CacheElt::COMPARE_ITEM, CacheElt> {
                     struct KeyEqualsCompareFunctionType {
-                        static bool Equals (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs)
+                        bool operator() (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs) const
                         {
                             return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
                         };
