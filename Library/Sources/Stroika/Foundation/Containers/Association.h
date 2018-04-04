@@ -73,8 +73,7 @@ namespace Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using ArchetypeContainerType = Association<KEY_TYPE, VALUE_TYPE, TRAITS>;
-
+                using ArchetypeContainerType = Association<KEY_TYPE, VALUE_TYPE>;
 
             public:
                 /**
@@ -86,19 +85,19 @@ namespace Stroika {
                  */
                 using ValueType = VALUE_TYPE;
 
-			public:
-				/**
-				*  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Mapping<> as KeyEqualityComparer, but
-				*  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the Common::IsEqualsComparer () concept (need better name).
-				*/
-				using KeyEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool (KeyType, KeyType)>, Common::OrderingRelationType::eEquals>;
+            public:
+                /**
+                *  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Mapping<> as KeyEqualityComparer, but
+                *  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the Common::IsEqualsComparer () concept (need better name).
+                */
+                using KeyEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool(KeyType, KeyType)>, Common::OrderingRelationType::eEquals>;
 
-			public:
+            public:
                 /**
                  *  Just a short-hand for the ValueEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                using ValueEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool (ValueType, ValueType)>, Common::OrderingRelationType::eEquals>;
+                using ValueEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool(ValueType, ValueType)>, Common::OrderingRelationType::eEquals>;
 
             public:
                 /**
@@ -133,21 +132,19 @@ namespace Stroika {
                 nonvirtual Association& operator= (const Association& src) = default;
                 nonvirtual Association& operator= (Association&& rhs) = default;
 
+            public:
+                nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const
+                {
+                    // tmphack
+                    return KeyEqualsCompareFunctionType{equal_to<KeyType>{}};
+                }
 
-			public:
-				nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const
-				{
-					// tmphack
-					return KeyEqualsCompareFunctionType{ equal_to<KeyType>{} };
-				}
-
-			public:
-				nonvirtual ValueEqualsCompareFunctionType GetValueEqualsComparer () const
-				{
-					// tmphack
-					return ValueEqualsCompareFunctionType{ equal_to<ValueType>{} };
-				}
-
+            public:
+                nonvirtual ValueEqualsCompareFunctionType GetValueEqualsComparer () const
+                {
+                    // tmphack
+                    return ValueEqualsCompareFunctionType{equal_to<ValueType>{}};
+                }
 
             public:
                 /**
@@ -279,7 +276,7 @@ namespace Stroika {
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
                 template <typename VALUE_EQUALS_COMPARER = equal_to<VALUE_TYPE>>
-                nonvirtual bool Equals (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
+                nonvirtual bool Equals (const Association<KEY_TYPE, VALUE_TYPE>& rhs) const;
 
             public:
                 /**
@@ -291,13 +288,13 @@ namespace Stroika {
                 /**
                  */
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual Association<KEY_TYPE, VALUE_TYPE>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual Association<KEY_TYPE, VALUE_TYPE>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
 #if 0
             protected:
@@ -329,8 +326,8 @@ namespace Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Association<T> container API.
              */
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
+            template <typename KEY_TYPE, typename VALUE_TYPE>
+            class Association<KEY_TYPE, VALUE_TYPE>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
             protected:
                 _IRep () = default;
 
@@ -338,7 +335,7 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _SharedPtrIRep = typename Association<KEY_TYPE, VALUE_TYPE, TRAITS>::_SharedPtrIRep;
+                using _SharedPtrIRep = typename Association<KEY_TYPE, VALUE_TYPE>::_SharedPtrIRep;
 
             public:
                 virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
@@ -374,14 +371,14 @@ namespace Stroika {
             /**
              *      Syntactic sugar on Equals()
              */
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            bool operator== (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+            template <typename KEY_TYPE, typename VALUE_TYPE>
+            bool operator== (const Association<KEY_TYPE, VALUE_TYPE>& lhs, const Association<KEY_TYPE, VALUE_TYPE>& rhs);
 
             /**
              *      Syntactic sugar on not Equals()
              */
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            bool operator!= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& lhs, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+            template <typename KEY_TYPE, typename VALUE_TYPE>
+            bool operator!= (const Association<KEY_TYPE, VALUE_TYPE>& lhs, const Association<KEY_TYPE, VALUE_TYPE>& rhs);
         }
     }
 }

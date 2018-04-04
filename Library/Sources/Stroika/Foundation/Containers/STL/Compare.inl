@@ -30,7 +30,7 @@ namespace Stroika {
 #endif
                     auto li = lhsStart;
                     auto ri = rhsStart;
-					while ((li != lhsEnd) and STROIKA_EQUALS_COMPARER{} (*li, *ri)) {
+                    while ((li != lhsEnd) and STROIKA_EQUALS_COMPARER{}(*li, *ri)) {
                         ++li;
                         ++ri;
                     }

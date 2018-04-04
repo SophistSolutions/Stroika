@@ -65,11 +65,11 @@ namespace {
             VerifyTestResult (s.size () == 0);
             s.Append (1);
             VerifyTestResult (s.size () == 1);
-            VerifyTestResult (EQUALS_COMPARER{} (s.GetAt (0), 1));
+            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (0), 1));
             s.Append (2);
             VerifyTestResult (s.size () == 2);
-            VerifyTestResult (EQUALS_COMPARER{} (s.GetAt (0), 1));
-            VerifyTestResult (EQUALS_COMPARER{} (s.GetAt (1), 2));
+            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (0), 1));
+            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (1), 2));
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
@@ -79,13 +79,13 @@ namespace {
                 s.Append (i);
             }
             VerifyTestResult (s.size () == 1000);
-			VerifyTestResult (EQUALS_COMPARER{} (s[0], 0));
-            VerifyTestResult (EQUALS_COMPARER{} (s[1], 1));
-            VerifyTestResult (EQUALS_COMPARER{} (s[100], 100));
+            VerifyTestResult (EQUALS_COMPARER{}(s[0], 0));
+            VerifyTestResult (EQUALS_COMPARER{}(s[1], 1));
+            VerifyTestResult (EQUALS_COMPARER{}(s[100], 100));
             s.Remove (0);
             VerifyTestResult (s.size () == 999);
             for (size_t i = 0; i < 999; ++i) {
-                VerifyTestResult (EQUALS_COMPARER{} (s[i], i + 1));
+                VerifyTestResult (EQUALS_COMPARER{}(s[i], i + 1));
             }
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
@@ -211,15 +211,15 @@ namespace {
         VerifyTestResult (s.empty ());
         for (size_t i = 0; i < K; ++i) {
             s.Append (1);
-            VerifyTestResult (EQUALS_COMPARER{} (s.GetAt (i), 1));
-            VerifyTestResult (EQUALS_COMPARER{} (s[i], 1));
+            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (i), 1));
+            VerifyTestResult (EQUALS_COMPARER{}(s[i], 1));
         }
         for (size_t i = 0; i < K; ++i) {
             s.SetAt (i, 5000 + i);
-            VerifyTestResult (EQUALS_COMPARER{} (s[i], 5000 + i));
+            VerifyTestResult (EQUALS_COMPARER{}(s[i], 5000 + i));
         }
         for (size_t i = 0; i < K; ++i) {
-            VerifyTestResult (EQUALS_COMPARER{} (s.GetAt (i), 5000 + i));
+            VerifyTestResult (EQUALS_COMPARER{}(s.GetAt (i), 5000 + i));
         }
         VerifyTestResult (not s.empty ());
         s.RemoveAll ();
@@ -295,7 +295,7 @@ namespace {
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (EQUALS_COMPARER{} (*i, j));
+                VerifyTestResult (EQUALS_COMPARER{}(*i, j));
             }
             VerifyTestResult (s.size () == K);
             s.RemoveAll ();
@@ -307,7 +307,7 @@ namespace {
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (EQUALS_COMPARER{} (*i, K - j - 1));
+                VerifyTestResult (EQUALS_COMPARER{}(*i, K - j - 1));
             }
             VerifyTestResult (s.size () == K);
             s.RemoveAll ();
@@ -324,9 +324,9 @@ namespace {
             s.PrependAll (x);
             VerifyTestResult (s.template Equals<EQUALS_COMPARER> (x));
             s.AppendAll (x);
-            VerifyTestResult (EQUALS_COMPARER{} (s[1], 11));
-            VerifyTestResult (EQUALS_COMPARER{} (s[2], 12));
-            VerifyTestResult (EQUALS_COMPARER{} (s[3], 10));
+            VerifyTestResult (EQUALS_COMPARER{}(s[1], 11));
+            VerifyTestResult (EQUALS_COMPARER{}(s[2], 12));
+            VerifyTestResult (EQUALS_COMPARER{}(s[3], 10));
         }
     }
 }
@@ -346,17 +346,17 @@ namespace {
                 s.Update (i, 5);
             }
             for (auto i : s) {
-                VerifyTestResult (EQUALS_COMPARER{} (i, 5));
+                VerifyTestResult (EQUALS_COMPARER{}(i, 5));
             }
             s.SetAt (16, 16);
             for (auto i = s.begin (); i != s.end (); ++i) {
-                if (EQUALS_COMPARER{} (*i, 16)) {
+                if (EQUALS_COMPARER{}(*i, 16)) {
                     s.Update (i, 17);
                 }
             }
-			VerifyTestResult (EQUALS_COMPARER{} (s[16], 17));
+            VerifyTestResult (EQUALS_COMPARER{}(s[16], 17));
             for (auto i = s.begin (); i != s.end (); ++i) {
-                VerifyTestResult (EQUALS_COMPARER{} (*i, 5) or s.IndexOf (i) == 16);
+                VerifyTestResult (EQUALS_COMPARER{}(*i, 5) or s.IndexOf (i) == 16);
             }
 
             s.RemoveAll ();
@@ -381,10 +381,10 @@ namespace {
             VerifyTestResult (s.size () == 99);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (EQUALS_COMPARER{} (*i, s.IndexOf (i)));
+                    VerifyTestResult (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult (EQUALS_COMPARER{} ((*i), s.IndexOf (i) + 1));
+                    VerifyTestResult (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 1));
                 }
             }
         }
@@ -398,10 +398,10 @@ namespace {
             VerifyTestResult (s.size () == 10);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (EQUALS_COMPARER{} (*i, s.IndexOf (i)));
+                    VerifyTestResult (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult (EQUALS_COMPARER{} ((*i), s.IndexOf (i) + 90));
+                    VerifyTestResult (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 90));
                 }
             }
         }
@@ -420,10 +420,10 @@ namespace {
             VerifyTestResult (s.size () == 99);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-					VerifyTestResult (EQUALS_COMPARER{} (*i, s.IndexOf (i)));
+                    VerifyTestResult (EQUALS_COMPARER{}(*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult (EQUALS_COMPARER{} ((*i), s.IndexOf (i) + 1));
+                    VerifyTestResult (EQUALS_COMPARER{}((*i), s.IndexOf (i) + 1));
                 }
             }
             s.RemoveAll ();
@@ -451,14 +451,14 @@ namespace {
                 s.As (&vs);
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult (EQUALS_COMPARER{} (T (i - vs.begin ()), *i));
+                    VerifyTestResult (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
                 }
             }
             {
                 vector<T> vs = s.template As<vector<T>> ();
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult (EQUALS_COMPARER{} (T (i - vs.begin ()), *i));
+                    VerifyTestResult (EQUALS_COMPARER{}(T (i - vs.begin ()), *i));
                 }
             }
             {
@@ -467,7 +467,7 @@ namespace {
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult (EQUALS_COMPARER{} (T (idx), *i));
+                    VerifyTestResult (EQUALS_COMPARER{}(T (idx), *i));
                 }
             }
             {
@@ -475,7 +475,7 @@ namespace {
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult (EQUALS_COMPARER{} (T (idx), *i));
+                    VerifyTestResult (EQUALS_COMPARER{}(T (idx), *i));
                 }
             }
         }

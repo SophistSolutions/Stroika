@@ -223,19 +223,19 @@ namespace CommonTests {
                 using KeyEqualsCompareFunctionType   = typename USING_ASSOCIATION_CONTAINER::KeyEqualsCompareFunctionType;
                 using ValueEqualsCompareFunctionType = VALUE_EQUALS_COMPARER_TYPE;
                 USING_ASSOCIATION_CONTAINER m;
-				using KeyType = typename USING_ASSOCIATION_CONTAINER::KeyType;
-				using ValueType = typename USING_ASSOCIATION_CONTAINER::ValueType;
+                using KeyType = typename USING_ASSOCIATION_CONTAINER::KeyType;
+                using ValueType = typename USING_ASSOCIATION_CONTAINER::ValueType;
 
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-					VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 1 }));
-					VerifyTestResult (ValueEqualsCompareFunctionType{} (i.fValue, 2));
+                    VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 1 }));
+                    VerifyTestResult (ValueEqualsCompareFunctionType{} (i.fValue, 2));
                 }
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-					VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 1 }));
+                    VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 1 }));
                     VerifyTestResult (ValueEqualsCompareFunctionType{} (i.fValue, 2));
                 }
                 m.Remove (1);
@@ -250,15 +250,15 @@ namespace CommonTests {
                 for (auto i : m) {
                     cnt++;
                     if (cnt == 1) {
-						VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 1 }));
+                        VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 1 }));
                         VerifyTestResult (ValueEqualsCompareFunctionType{} (i.fValue, 2));
                     }
                     if (cnt == 2) {
-						VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 2 }));
+                        VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 2 }));
                         VerifyTestResult (ValueEqualsCompareFunctionType{} (i.fValue, 3));
                     }
                     if (cnt == 3) {
-						VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 3 }));
+                        VerifyTestResult (KeyEqualsCompareFunctionType{} (i.fKey, KeyType{ 3 }));
                         VerifyTestResult (ValueEqualsCompareFunctionType{} (i.fValue, 4));
                     }
                 }

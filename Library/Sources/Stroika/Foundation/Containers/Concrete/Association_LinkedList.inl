@@ -23,13 +23,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_*
+                 ************ Association_LinkedList<KEY_TYPE, VALUE_TYPE>::Rep_*****************
                  ********************************************************************************
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep {
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                class Association_LinkedList<KEY_TYPE, VALUE_TYPE>::Rep_ : public Association<KEY_TYPE, VALUE_TYPE>::_IRep {
                 private:
-                    using inherited = typename Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep;
+                    using inherited = typename Association<KEY_TYPE, VALUE_TYPE>::_IRep;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IterableRepSharedPtr;
@@ -95,7 +95,7 @@ namespace Stroika {
                         return RESULT_TYPE (resultRep);
                     }
 
-                    // Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep overrides
+                    // Association<KEY_TYPE, VALUE_TYPE>::_IRep overrides
                 public:
                     virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -169,7 +169,7 @@ namespace Stroika {
 #endif
 
                 public:
-                    using KeyEqualsCompareFunctionType = typename Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::KeyEqualsCompareFunctionType;
+                    using KeyEqualsCompareFunctionType = typename Association<KEY_TYPE, VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::LinkedList<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
@@ -181,39 +181,39 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *********** Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
+                 ***************** Association_LinkedList<KEY_TYPE, VALUE_TYPE> *****************
                  ********************************************************************************
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList ()
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                inline Association_LinkedList<KEY_TYPE, VALUE_TYPE>::Association_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (const Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                inline Association_LinkedList<KEY_TYPE, VALUE_TYPE>::Association_LinkedList (const Association_LinkedList<KEY_TYPE, VALUE_TYPE>& src)
                     : inherited (src)
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename VALUE_TYPE>
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                inline Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline Association_LinkedList<KEY_TYPE, VALUE_TYPE>::Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
                     : Association_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename VALUE_TYPE>
                 template <typename COPY_FROM_ITERATOR_KEY_T>
-                Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                Association_LinkedList<KEY_TYPE, VALUE_TYPE>::Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                     : Association_LinkedList ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline void Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                inline void Association_LinkedList<KEY_TYPE, VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber

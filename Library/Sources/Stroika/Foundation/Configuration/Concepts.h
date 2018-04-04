@@ -160,8 +160,6 @@ namespace Stroika {
                 return has_lt<T>::value && is_convertible<lt_result<T>, bool>::value;
             }
 
-
-
             /*
              * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
              */
@@ -184,7 +182,6 @@ namespace Stroika {
 
                 static bool const value = test<From, To> (0);
             };
-
 
             /**
              *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator

@@ -30,21 +30,21 @@ namespace Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Association<KEY_TYPE, VALUE_TYPE>>
-                class Association_LinkedList : public Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType> {
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                class Association_LinkedList : public Association<KEY_TYPE, VALUE_TYPE> {
                 private:
-                    using inherited = Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>;
+                    using inherited = Association<KEY_TYPE, VALUE_TYPE>;
 
                 public:
                     Association_LinkedList ();
-                    Association_LinkedList (const Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+                    Association_LinkedList (const Association_LinkedList& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
                 public:
-                    nonvirtual Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) = default;
+                    nonvirtual Association_LinkedList& operator= (const Association_LinkedList& rhs) = default;
 
                 private:
                     class Rep_;

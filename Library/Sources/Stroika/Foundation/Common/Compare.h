@@ -107,8 +107,7 @@ namespace Stroika {
              *  \note   Generally use DefaultEqualsComparer<> instead of this, as it automatically selects the right way to compare.
              */
             template <typename T>
-            struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEquals : ComparerWithEqualsOptionally<T>{
-                                                                                                     };
+            struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEquals : ComparerWithEqualsOptionally<T>{};
 
             /**
              *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
@@ -186,12 +185,15 @@ namespace Stroika {
                  *  Stroika comparares (almost directly) with std STL classes such as map<>, and set<>.
                  */
                 template <typename T, typename STROIKA_COMPARER>
-                struct less {
+                struct [[deprecated ("in Stroika v2.0a231 - these are now the same type - use as is.)")]] less {
                     // @todo not sure we need first_argument_type/second_argument_type/result_type but there for backward compat (std::binary_function<T,T,bool>)
                     typedef T       first_argument_type;
                     typedef T       second_argument_type;
                     typedef bool    result_type;
-                    nonvirtual bool operator() (Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const;
+                    nonvirtual bool operator() (Configuration::ArgByValueType<T> _Left, Configuration::ArgByValueType<T> _Right) const
+                    {
+                        return STROIKA_COMPARER::Compare (_Left, _Right) < 0;
+                    }
                 };
             }
 

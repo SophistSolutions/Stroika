@@ -166,8 +166,8 @@ namespace Stroika {
                 Mapping ();
                 Mapping (const Mapping& src) noexcept = default;
 #if 0
-				// I think this casuses crash in IO::Transfer regression test - not sure how - only on UNIX - retest...
-				// reproduced (not carefully) 2018-04-04
+                // I think this casuses crash in IO::Transfer regression test - not sure how - only on UNIX - retest...
+                // reproduced (not carefully) 2018-04-04
                 Mapping (Mapping&& src) noexcept = default; //  https://stroika.atlassian.net/browse/STK-541
 #endif
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
