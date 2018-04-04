@@ -9,8 +9,6 @@
 #include <atomic>
 #include <type_traits>
 
-#include "../DefaultTraits/Mapping.h"
-
 /**
  *  \file
  *
@@ -27,7 +25,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template <typename KEY_TYPE, typename VALUE_TYPE>
             class Mapping;
 
             namespace Factory {
@@ -40,30 +38,51 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
                 class Mapping_Factory {
                 private:
-                    static atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> sFactory_;
+                    static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
                      */
-                    nonvirtual Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> operator() () const;
+                    nonvirtual Mapping<KEY_TYPE, VALUE_TYPE> operator() () const;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static void Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static void Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) () = nullptr);
 
                 private:
-                    static Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_ ();
+                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_ ();
+                };
+
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                class Mapping_Factory<KEY_TYPE, VALUE_TYPE, false_type> {
+                private:
+                    static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
+
+                public:
+                    /**
+                    *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
+                    */
+                    nonvirtual Mapping<KEY_TYPE, VALUE_TYPE> operator() () const;
+
+                public:
+                    /**
+                    *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+                    */
+                    static void Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) () = nullptr);
+
+                private:
+                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_ ();
 
                 private:
                     template <typename CHECK_KEY>
-                    static Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_SFINAE_ (CHECK_KEY*, typename enable_if<Configuration::has_lt<CHECK_KEY>::value and is_same<TRAITS, DefaultTraits::Mapping<CHECK_KEY, VALUE_TYPE>>::value>::type* = 0);
-                    static Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_SFINAE_ (...);
+                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (CHECK_KEY*, typename enable_if<Configuration::has_lt<CHECK_KEY>::value>::type* = 0);
+                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (...);
                 };
             }
         }

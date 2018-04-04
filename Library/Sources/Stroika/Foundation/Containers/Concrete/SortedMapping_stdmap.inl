@@ -25,10 +25,10 @@ namespace Stroika {
 
                 /*
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::IImplRep_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRep_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
-                    using inherited = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep;
+                    using inherited = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
                 protected:
                     using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
@@ -37,8 +37,8 @@ namespace Stroika {
 
                 /*
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Rep_ : public IImplRep_ {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRep_ {
                 private:
                     using inherited = IImplRep_;
 
@@ -179,7 +179,8 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, Common::STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
+                    //using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, Common::STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, less<KEY_TYPE>>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
@@ -191,28 +192,22 @@ namespace Stroika {
                  ************* SortedMapping_stdmap<KEY_TYPE,MAPPED_VALUE_TYPE> *****************
                  ********************************************************************************
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping_stdmap ()
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
                     : SortedMapping_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline void SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline void SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMember

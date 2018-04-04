@@ -13,62 +13,62 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ********* SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> *******************
+             ************* SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE> ***********************
              ********************************************************************************
              */
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping ()
-                : inherited (move (Factory::SortedMapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> () ()))
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping ()
+                : inherited (move (Factory::SortedMapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE> () ()))
             {
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
                 : SortedMapping ()
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
                 : SortedMapping ()
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src)
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src)
                 : SortedMapping ()
             {
                 _AssertRepValidType ();
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             template <typename COPY_FROM_ITERATOR_KEY_T>
-            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : SortedMapping ()
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (const _SortedMappingRepSharedPtr& src) noexcept
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const _SortedMappingRepSharedPtr& src) noexcept
                 : inherited (src)
             {
                 RequireNotNull (src);
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::SortedMapping (_SortedMappingRepSharedPtr&& src) noexcept
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (_SortedMappingRepSharedPtr&& src) noexcept
                 : inherited (move (src))
             {
                 //RequireNotNull (src); -- logically required, but we cannot test here, must test before mem-initializers
                 _AssertRepValidType ();
             }
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            inline void SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_AssertRepValidType () const
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            inline void SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssertRepValidType () const
             {
 #if qDebug
                 _SafeReadRepAccessor<_IRep>{this};

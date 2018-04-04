@@ -601,8 +601,8 @@ namespace Stroika {
                 static TypeMappingDetails MakeCommonSerializer_ (const Containers::Collection<T>*);
                 template <typename T, typename TRAITS>
                 static TypeMappingDetails MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>*);
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
                 template <typename T, typename TRAITS>
                 static TypeMappingDetails MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*);
                 template <typename T, typename TRAITS>
@@ -613,8 +613,8 @@ namespace Stroika {
                 static TypeMappingDetails MakeCommonSerializer_ (const Set<T>*);
                 template <typename T>
                 static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedCollection<T>*);
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*);
                 template <typename T>
                 static TypeMappingDetails MakeCommonSerializer_ (const Containers::SortedSet<T>*);
                 template <typename T, typename TRAITS>

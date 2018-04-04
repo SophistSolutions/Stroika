@@ -23,13 +23,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ******* Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Rep_***********
+                 *********** Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_***************
                  ********************************************************************************
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                class Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Rep_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
-                    using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep;
+                    using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
                 public:
                     using _IterableRepSharedPtr = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
@@ -52,6 +52,9 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
+                private:
+                    equal_to<KEY_TYPE> fKeyEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -95,7 +98,7 @@ namespace Stroika {
                         return RESULT_TYPE (resultRep);
                     }
 
-                    // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
+                    // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
                 public:
                     virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -121,7 +124,7 @@ namespace Stroika {
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                            if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().fValue;
                                 }
@@ -138,7 +141,7 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                            if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_.SetAt (it, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
                                 return;
                             }
@@ -150,7 +153,7 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                            if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it);
                                 return;
                             }
@@ -173,7 +176,7 @@ namespace Stroika {
 #endif
 
                 public:
-                    using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType;
+                    using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::LinkedList<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
@@ -185,39 +188,33 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ******* Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> ****************
+                 ******* Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
                  ********************************************************************************
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping_LinkedList ()
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
                     : Mapping_LinkedList ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename COPY_FROM_ITERATOR_KEY_T>
-                Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                     : Mapping_LinkedList ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline void Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline void Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber

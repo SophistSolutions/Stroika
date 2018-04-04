@@ -21,7 +21,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Containers {
 
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template <typename KEY_TYPE, typename VALUE_TYPE>
             class SortedMapping;
 
             namespace Factory {
@@ -34,25 +34,25 @@ namespace Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = false_type>
                 class SortedMapping_Factory {
                 private:
-                    static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> sFactory_;
+                    static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the SortedMapping<T,TRAITS> CTOR does so automatically.
                      */
-                    nonvirtual SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> operator() () const;
+                    nonvirtual SortedMapping<KEY_TYPE, VALUE_TYPE> operator() () const;
 
                 public:
                     /**
                      *  Register a replacement creator/factory for the given SortedMapping<T,TRAITS>. Note this is a global change.
                      */
-                    static void Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static void Register (SortedMapping<KEY_TYPE, VALUE_TYPE> (*factory) () = nullptr);
 
                 private:
-                    static SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> Default_ ();
+                    static SortedMapping<KEY_TYPE, VALUE_TYPE> Default_ ();
                 };
             }
         }

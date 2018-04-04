@@ -29,21 +29,21 @@ namespace Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
-                class Mapping_Array : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class Mapping_Array : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
                 private:
-                    using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>;
+                    using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
                 public:
                     Mapping_Array ();
-                    Mapping_Array (const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src);
+                    Mapping_Array (const Mapping_Array& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value>::type>
-                    explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src);
+                    Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
                 public:
-                    nonvirtual Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& m);
+                    nonvirtual Mapping_Array& operator= (const Mapping_Array& rhs) = default;
 
                 public:
                     /**

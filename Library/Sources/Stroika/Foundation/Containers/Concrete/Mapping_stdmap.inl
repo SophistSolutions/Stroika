@@ -24,16 +24,16 @@ namespace Stroika {
 
                 /*
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                class Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::IImplRep_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRep_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
-                    using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep;
+                    using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
                 };
 
                 /*
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                class Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Rep_ : public IImplRep_ {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRep_ {
                 private:
                     using inherited = IImplRep_;
 
@@ -175,7 +175,8 @@ namespace Stroika {
 #endif
 
                 private:
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, Common::STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
+                    //using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, Common::STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, less<KEY_TYPE>>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
@@ -184,31 +185,25 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 **************** Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> ***********
+                 ******************* Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
                  ********************************************************************************
                  */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping_stdmap ()
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping_stdmap (const Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
+                inline Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
                     : Mapping_stdmap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-                inline void Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline void Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
                     typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMemeber

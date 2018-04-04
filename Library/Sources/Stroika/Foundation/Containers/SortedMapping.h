@@ -8,7 +8,6 @@
 
 #include "../Configuration/Concepts.h"
 
-#include "DefaultTraits/SortedMapping.h"
 #include "Mapping.h"
 
 /**
@@ -48,10 +47,10 @@ namespace Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
-            class SortedMapping : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType> {
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            class SortedMapping : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> {
             private:
-                using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>;
+                using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
             protected:
                 class _IRep;
@@ -63,7 +62,14 @@ namespace Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using ArchetypeContainerType = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
+                using ArchetypeContainerType = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
+
+            public:
+                /**
+                 *  This CAN be used as the argument to a SortedMapping<> as InOrderComparerType, but
+                 *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsInOrderComparer () concept
+                 */
+                using InOrderKeyComparerType = Common::FunctionComparerAdapter<function<bool(KEY_TYPE, KEY_TYPE)>, Common::OrderingRelationType::eInOrder>;
 
             public:
                 /**
@@ -77,7 +83,7 @@ namespace Stroika {
                 SortedMapping (SortedMapping&& src) noexcept      = default;
                 SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<(Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value>::type>
+                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<(Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                 SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template <typename COPY_FROM_ITERATOR_KEY_T>
                 SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -89,18 +95,17 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) = default;
-                nonvirtual SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual SortedMapping& operator= (const SortedMapping& rhs) = default;
+                nonvirtual SortedMapping& operator= (SortedMapping&& rhs) = default;
 
             public:
                 /**
                  */
-                using TraitsType = TRAITS;
-
-            public:
-                /**
-                 */
-                using KeyWellOrderCompareFunctionType = typename TraitsType::KeyWellOrderCompareFunctionType;
+                nonvirtual InOrderKeyComparerType GetInOrderKeyComparer () const
+                {
+                    // tmphack
+                    return less<KEY_TYPE>{};
+                }
 
             protected:
                 /**
@@ -127,8 +132,8 @@ namespace Stroika {
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            class SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            class SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
             };
         }
     }

@@ -307,13 +307,13 @@ namespace Stroika {
             {
                 return MakeCommonSerializer_WithAdder<Containers::Collection<T>> ();
             }
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*)
+            template <typename KEY_TYPE, typename VALUE_TYPE>
+            inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*)
             {
-                // NB: We default to aa because this is the overwhelmingly most commonly expected mapping (especially to JSON), but
+                // NB: We default to 'json object/mapping' because this is the overwhelmingly most commonly expected mapping (especially to JSON), but
                 // MakeCommonSerializer_MappingAsArrayOfKeyValuePairs is more general. If KEY_TYPE is not convertible to a string, or you wish to strucutre
                 // the VariantValue (typically think JSON representation) as an array of Key/Value pairs, then use MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
-                return MakeCommonSerializer_MappingWithStringishKey<Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>> ();
+                return MakeCommonSerializer_MappingWithStringishKey<Containers::Mapping<KEY_TYPE, VALUE_TYPE>> ();
             }
             template <typename T, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*)
@@ -374,13 +374,13 @@ namespace Stroika {
             {
                 return MakeCommonSerializer_WithAdder<Containers::SortedCollection<T>> ();
             }
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>*)
+            template <typename KEY_TYPE, typename VALUE_TYPE>
+            inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>*)
             {
-                // NB: We default to aa because this is the overwhelmingly most commonly expected mapping (especially to JSON), but
+                // NB: We default to 'json object/mapping' because this is the overwhelmingly most commonly expected mapping (especially to JSON), but
                 // MakeCommonSerializer_MappingAsArrayOfKeyValuePairs is more general. If KEY_TYPE is not convertible to a string, or you wish to strucutre
                 // the VariantValue (typically think JSON representation) as an array of Key/Value pairs, then use MakeCommonSerializer_MappingAsArrayOfKeyValuePairs
-                return MakeCommonSerializer_MappingWithStringishKey<Containers::SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>> ();
+                return MakeCommonSerializer_MappingWithStringishKey<Containers::SortedMapping<KEY_TYPE, VALUE_TYPE>> ();
             }
             template <typename T>
             inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Containers::SortedSet<T>*)

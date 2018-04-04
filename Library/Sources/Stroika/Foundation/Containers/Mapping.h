@@ -14,7 +14,6 @@
 #include "../Memory/Optional.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
-#include "DefaultTraits/Mapping.h"
 
 /*
  *  \file
@@ -99,7 +98,7 @@ namespace Stroika {
              *          the iterators are automatically updated internally to behave sensibly.
              *
              */
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS = DefaultTraits::Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>>
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             class Mapping : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> {
             private:
                 using inherited = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
@@ -114,12 +113,7 @@ namespace Stroika {
                 /**
                  *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
                  */
-                using ArchetypeContainerType = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>;
-
-            public:
-                /**
-                 */
-                using TraitsType = TRAITS;
+                using ArchetypeContainerType = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
             public:
                 /**
@@ -141,10 +135,10 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Just a short-hand for the KeyEqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
+                 *  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Mapping<> as KeyEqualityComparer, but
+                 *  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the Common::IsEqualsComparer () concept (need better name).
                  */
-                using KeyEqualsCompareFunctionType = typename TraitsType::KeyEqualsCompareFunctionType;
+                using KeyEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool(key_type, key_type)>, Common::OrderingRelationType::eEquals>;
 
             public:
                 /**
@@ -172,11 +166,11 @@ namespace Stroika {
                 Mapping ();
                 Mapping (const Mapping& src) noexcept = default;
 #if 0
-                Mapping (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& src) noexcept;      //  https://stroika.atlassian.net/browse/STK-541
+                Mapping (Mapping& src) noexcept = default;      //  https://stroika.atlassian.net/browse/STK-541
 #endif
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>*>::value>::type>
+                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                 Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
                 template <typename COPY_FROM_ITERATOR_KEY_T>
                 Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -193,8 +187,15 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) = default;
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator= (Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual Mapping& operator= (const Mapping& rhs) = default;
+                nonvirtual Mapping& operator= (Mapping&& rhs) = default;
+
+            public:
+                nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const
+                {
+                    // tmphack
+                    return equal_to<key_type>{};
+                }
 
             public:
                 /**
@@ -302,8 +303,8 @@ namespace Stroika {
                  *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
                  *  true if contained. Perhpas not very useful but symetric to ContainsKey().
                  */
-                template <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
-                nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v) const;
+                template <typename VALUE_EQUALS_COMPARER = std::equal_to<MAPPED_VALUE_TYPE>>
+                nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
             public:
                 /**
@@ -443,8 +444,8 @@ namespace Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                template <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<MAPPED_VALUE_TYPE>>
-                nonvirtual bool Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs) const;
+                template <typename VALUE_EQUALS_COMPARER = std::equal_to<MAPPED_VALUE_TYPE>>
+                nonvirtual bool Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
             public:
                 /**
@@ -468,19 +469,19 @@ namespace Stroika {
                 /**
                  */
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
 
             public:
                 /**
                  */
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
                 template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             protected:
                 /**
@@ -506,12 +507,12 @@ namespace Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Mapping<T> container API.
              */
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            class Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep
                 : public Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep
 #if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
                 ,
-                  public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_IRep>
+                  public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>
 #endif
             {
             protected:
@@ -521,7 +522,7 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             protected:
-                using _MappingRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>::_MappingRepSharedPtr;
+                using _MappingRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_MappingRepSharedPtr;
 
             public:
                 virtual _MappingRepSharedPtr  CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
@@ -545,14 +546,14 @@ namespace Stroika {
             /**
              *      Syntactic sugar on Equals()
              */
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            bool operator== (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
 
             /**
              *      Syntactic sugar on not Equals()
              */
-            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE, typename TRAITS>
-            bool operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS>& rhs);
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            bool operator!= (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs);
         }
     }
 }

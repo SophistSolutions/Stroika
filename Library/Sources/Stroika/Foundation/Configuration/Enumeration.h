@@ -151,7 +151,7 @@ namespace Stroika {
                 using BasicArrayInitializer = array<EnumName<ENUM_TYPE>, static_cast<size_t> (ENUM_TYPE::eCOUNT)>;
 
             public:
-/**
+                /**
                  */
 #if qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_
                 EnumNames () = default; //hack to allow CTOR EnumNames (const initializer_list<EnumName<ENUM_TYPE>>& origEnumNames)

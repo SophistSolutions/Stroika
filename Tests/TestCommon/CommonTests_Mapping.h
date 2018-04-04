@@ -81,15 +81,16 @@ namespace CommonTests {
                 Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test_3_Iteration"};
                 using KeyEqualsCompareFunctionType = typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType;
                 USING_MAPPING_CONTAINER m;
+                using key_type = typename USING_MAPPING_CONTAINER::key_type;
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+                    VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                 }
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+                    VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                 }
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
@@ -103,13 +104,13 @@ namespace CommonTests {
                 for (auto i : m) {
                     cnt++;
                     if (cnt == 1) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
                     }
                     if (cnt == 2) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 2));
+                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{2}));
                     }
                     if (cnt == 3) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 3));
+                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{3}));
                     }
                 }
                 VerifyTestResult (cnt == 3);
@@ -228,17 +229,18 @@ namespace CommonTests {
                 using KeyEqualsCompareFunctionType   = typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType;
                 using ValueEqualsCompareFunctionType = VALUE_EQUALS_COMPARER_TYPE;
                 USING_MAPPING_CONTAINER m;
+                using key_type = typename USING_MAPPING_CONTAINER::key_type;
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
-                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
+                    VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                    VerifyTestResult (VALUE_EQUALS_COMPARER_TYPE{}(i.fValue, 2));
                 }
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
-                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
+                    VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                    VerifyTestResult (VALUE_EQUALS_COMPARER_TYPE{}(i.fValue, 2));
                 }
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
@@ -252,16 +254,16 @@ namespace CommonTests {
                 for (auto i : m) {
                     cnt++;
                     if (cnt == 1) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
-                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 2));
+                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{1}));
+                        VerifyTestResult (VALUE_EQUALS_COMPARER_TYPE{}(i.fValue, 2));
                     }
                     if (cnt == 2) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 2));
-                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 3));
+                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{2}));
+                        VerifyTestResult (VALUE_EQUALS_COMPARER_TYPE{}(i.fValue, 3));
                     }
                     if (cnt == 3) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 3));
-                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.fValue, 4));
+                        VerifyTestResult (m.GetKeyEqualsComparer () (i.fKey, key_type{3}));
+                        VerifyTestResult (VALUE_EQUALS_COMPARER_TYPE{}(i.fValue, 4));
                     }
                 }
                 VerifyTestResult (cnt == 3);

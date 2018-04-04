@@ -431,6 +431,16 @@ namespace Stroika {
             };
 
             /**
+             *  mkInOrderComparerAdapter is a trivial wrapper on InOrderComparerAdapter, but takes advantage of the fact that you
+             *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
+             */
+            template <typename BASE_COMPARER>
+            inline constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer)
+            {
+                return InOrderComparerAdapter<BASE_COMPARER>{baseComparer};
+            }
+
+            /**
              *  \brief Use this to wrap any basic comparer, and produce an Equals comparer
              */
             template <typename BASE_COMPARER>
@@ -462,6 +472,16 @@ namespace Stroika {
             };
 
             /**
+             *  mkEqualsComparerAdapter is a trivial wrapper on EqualsComparerAdapter, but takes advantage of the fact that you
+             *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
+             */
+            template <typename BASE_COMPARER>
+            inline constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer)
+            {
+                return EqualsComparerAdapter<BASE_COMPARER>{baseComparer};
+            }
+
+            /**
              *  \brief Use this to wrap any basic comparer, and produce a Three-Way comparer
              */
             template <typename BASE_COMPARER>
@@ -489,10 +509,14 @@ namespace Stroika {
             };
 
             /**
-             *           *  THEN can add enable_if or static_assert() into Set/SortedSet so we know rihgt type of comparer? Maybe?
-             *  Maybe not easy with getCompareEquals() result (may need differnt type).
-             *
+             *  mkThreeWayComparerAdapter is a trivial wrapper on ThreeWayComparerAdapter, but takes advantage of the fact that you
+             *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              */
+            template <typename BASE_COMPARER>
+            inline constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
+            {
+                return ThreeWayComparerAdapter<BASE_COMPARER>{baseComparer};
+            }
         }
     }
 }
