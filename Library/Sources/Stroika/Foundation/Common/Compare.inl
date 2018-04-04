@@ -15,33 +15,9 @@ namespace Stroika {
     namespace Foundation {
         namespace Common {
 
-#if 0
-            template <typename T>
-            inline  int Comparer<T>::Compare (T v1, T v2)
-            {
-                if (v1 < v2) {
-                    return -1;
-                }
-                else if (v2 < v1) {
-                    return 1;
-                }
-                else {
-                    Assert (v1 == v2);  // should only do if operator== defined
-                    return 0;
-                }
-            }
-            template <typename T>
-            inline  bool    Comparer<T>::Equals (T v1, T v2)
-            {
-                return Compare (v1, v2) == 0;
-            }
-#endif
-
-            template <typename T>
-            inline constexpr bool ComparerWithEqualsOptionally<T>::Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
-            {
-                return v1 == v2;
-            }
+			DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
+			DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+			DISABLE_COMPILER_MSC_WARNING_START (4996)
 
             namespace Private_ {
                 template <typename T>
@@ -79,6 +55,10 @@ namespace Stroika {
                 return result;
 #endif
             }
+			DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
+			DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+			DISABLE_COMPILER_MSC_WARNING_END (4996)
+
         }
     }
 }

@@ -66,7 +66,10 @@ namespace Stroika {
             *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
             *  replace these, but they must remain consistent.
             */
-                static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+                static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
+                {
+                    return v1 == v2;
+                }
             };
 
             template <typename T>
