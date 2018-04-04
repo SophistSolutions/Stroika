@@ -66,7 +66,7 @@ namespace {
     }
     void Test3_SimpleAssociationTest_WhichRequiresExplcitValueComparer ()
     {
-        doIt_t3_<Association_LinkedList<size_t, size_t>, Common::ComparerWithEquals<size_t>> ();
+        doIt_t3_<Association_LinkedList<size_t, size_t>, std::equal_to<size_t>> ();
     }
 }
 

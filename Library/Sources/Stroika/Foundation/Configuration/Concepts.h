@@ -25,21 +25,12 @@
  *      @todo   Think out if/when qCheckConceptRequirements SB defined? See if it takes up any runtime space/time? And decide
  *              according to that!
  *
- *      @todo   I think the RequireConceptAppliesToTypeInFunction can be replaced with RequireConceptAppliesToTypeMemberOfClass,
- *              and then both renamed to something simpler... test...
- *
  *
  * Notes:
  *
  *
  *
  */
-
-/**
- */
-#ifndef qCheckConceptRequirements
-#define qCheckConceptRequirements 1
-#endif
 
 namespace Stroika {
     namespace Foundation {
@@ -169,93 +160,7 @@ namespace Stroika {
                 return has_lt<T>::value && is_convertible<lt_result<T>, bool>::value;
             }
 
-            /*
-             * See GCC /usr/include/c++/4.7/bits/boost_concept_check.h
-             *      @todo OBSOLETE - USE static_assert<EqualityComparable<T>>
-             */
 
-            template <typename T>
-            struct RequireOperatorEquals {
-                static void check ()
-                {
-                    if (false) {
-                        if (*static_cast<const T*> (nullptr) == *static_cast<const T*> (nullptr)) {
-                        }
-                    }
-                }
-                RequireOperatorEquals ()
-                {
-                    check ();
-                }
-            };
-
-            /*
-             * See GCC /usr/include/c++/4.7/bits/boost_concept_check.h
-             *      @todo OBSOLETE - USE static_assert<EqualityComparable<T>>
-             */
-            template <typename T>
-            struct RequireOperatorNotEquals {
-                static void check ()
-                {
-                    if (false) {
-                        if (*static_cast<const T*> (nullptr) != *static_cast<const T*> (nullptr)) {
-                        }
-                    }
-                }
-                RequireOperatorNotEquals ()
-                {
-                    check ();
-                }
-            };
-
-            /*
-             *      @todo OBSOLETE - USE static_assert<LessThanComparable<T>>
-             */
-            template <typename T>
-            struct RequireOperatorLess {
-                static void check ()
-                {
-                    if (false) {
-                        if (*static_cast<const T*> (nullptr) < *static_cast<const T*> (nullptr)) {
-                        }
-                    }
-                }
-                RequireOperatorLess ()
-                {
-                    check ();
-                }
-            };
-
-            template <typename TRAITS>
-            struct Concept_EqualsCompareFunctionType {
-                static void check ()
-                {
-                    using T = typename TRAITS::value_type;
-                    if (false) {
-                        if (TRAITS::Equals (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr))) {
-                        }
-                    }
-                }
-                Concept_EqualsCompareFunctionType ()
-                {
-                    check ();
-                }
-            };
-
-            template <typename TRAITS>
-            struct Concept_WellOrderCompareFunctionType {
-                static void check ()
-                {
-                    using T = typename TRAITS::value_type;
-                    if (false) {
-                        int i = TRAITS::Compare (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr));
-                    }
-                }
-                Concept_WellOrderCompareFunctionType ()
-                {
-                    check ();
-                }
-            };
 
             /*
              * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
@@ -280,23 +185,6 @@ namespace Stroika {
                 static bool const value = test<From, To> (0);
             };
 
-#if qCheckConceptRequirements
-
-#define RequireConceptAppliesToTypeMemberOfClass1(TEMPLATE, T, REQUIREMEMENT_NAME) \
-    Stroika::Foundation::Configuration::TEMPLATE<T> _IGNORE_##REQUIREMEMENT_NAME;
-
-#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE, T) \
-    RequireConceptAppliesToTypeMemberOfClass1 (TEMPLATE, T, _REQ_##TEMPLATE)
-
-#define RequireConceptAppliesToTypeInFunction(TEMPLATE, T) \
-    Stroika::Foundation::Configuration::TEMPLATE<T> ();
-
-#else
-
-#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE, T, REQUIREMEMENT_NAME)
-#define RequireConceptAppliesToTypeInFunction(TEMPLATE, T)
-
-#endif
 
             /**
              *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator

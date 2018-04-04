@@ -272,19 +272,19 @@ namespace Stroika {
                 auto li = lhs._ConstGetRep ().MakeIterator (this);
                 auto ri = rhs.MakeIterator ();
                 while (not li.Done ()) {
-                    bool keysEqual = KeyEqualsCompareFunctionType::Equals (li->fKey, ri->fKey);
-                    if (keysEqual and VALUE_EQUALS_COMPARER::Equals (li->fValue, ri->fValue)) {
+                    bool keysEqual = GetKeyEqualsComparer () (li->fKey, ri->fKey);
+                    if (keysEqual and GetValueEqualsComparer () (li->fValue, ri->fValue)) {
                         // then this element matches
                     }
                     else {
                         // check if li maps to right value in rhs
                         auto o = rhs.Lookup (li->fKey);
-                        if (o.IsMissing () or not VALUE_EQUALS_COMPARER::Equals (*o, li->fValue)) {
+                        if (o.IsMissing () or not GetValueEqualsComparer () (*o, li->fValue)) {
                             return false;
                         }
                         // if the keys were differnt, we must check the reverse direction too
                         if (not keysEqual) {
-                            if (not lhs._ConstGetRep ().Lookup (ri->fKey, &o) or not VALUE_EQUALS_COMPARER::Equals (*o, ri->fValue)) {
+                            if (not lhs._ConstGetRep ().Lookup (ri->fKey, &o) or not GetValueEqualsComparer () (*o, ri->fValue)) {
                                 return false;
                             }
                         }

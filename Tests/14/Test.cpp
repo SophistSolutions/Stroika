@@ -55,7 +55,7 @@ namespace {
         using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
         struct COMPARE_SimpleClassWithoutComparisonOperators {
             using value_type = SimpleClassWithoutComparisonOperators;
-             bool operator () (value_type v1, value_type v2) const
+            bool operator() (value_type v1, value_type v2) const
             {
                 return v1.GetValue () == v2.GetValue ();
             }

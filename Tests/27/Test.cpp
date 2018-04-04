@@ -137,11 +137,11 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        using COMPARE_SIZET       = Common::ComparerWithEquals<size_t>;
-        using COMPARE_SimpleClass = Common::ComparerWithEquals<SimpleClass>;
+        using COMPARE_SIZET       = std::equal_to<size_t>;
+        using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
         struct COMPARE_SimpleClassWithoutComparisonOperators {
             using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2)
+            bool operator() (value_type v1, value_type v2) const
             {
                 return v1.GetValue () == v2.GetValue ();
             }

@@ -16,8 +16,6 @@
 #include "../Memory/Optional.h"
 #include "../Traversal/Iterable.h"
 
-#include "DefaultTraits/Association.h"
-
 #include "Common.h"
 
 /*
@@ -60,7 +58,7 @@ namespace Stroika {
              *      \note   Alias
              *              Analagous to stl::multimap<>, and often called a MultiMap<>, like MultiSet<>.
              */
-            template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = DefaultTraits::Association<KEY_TYPE, VALUE_TYPE>>
+            template <typename KEY_TYPE, typename VALUE_TYPE>
             class Association : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
                 using inherited = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
@@ -70,7 +68,6 @@ namespace Stroika {
 
             protected:
                 using _SharedPtrIRep = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
-                ;
 
             public:
                 /**
@@ -78,10 +75,6 @@ namespace Stroika {
                  */
                 using ArchetypeContainerType = Association<KEY_TYPE, VALUE_TYPE, TRAITS>;
 
-            public:
-                /**
-                 */
-                using TraitsType = TRAITS;
 
             public:
                 /**
@@ -93,19 +86,19 @@ namespace Stroika {
                  */
                 using ValueType = VALUE_TYPE;
 
-            public:
-                /**
-                 *  Just a short-hand for the KeyEqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                using KeyEqualsCompareFunctionType = typename TraitsType::KeyEqualsCompareFunctionType;
+			public:
+				/**
+				*  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Mapping<> as KeyEqualityComparer, but
+				*  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the Common::IsEqualsComparer () concept (need better name).
+				*/
+				using KeyEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool (KeyType, KeyType)>, Common::OrderingRelationType::eEquals>;
 
-            public:
+			public:
                 /**
                  *  Just a short-hand for the ValueEqualsCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                using ValueEqualsCompareFunctionType = typename TraitsType::ValueEqualsCompareFunctionType;
+                using ValueEqualsCompareFunctionType = Common::FunctionComparerAdapter<function<bool (ValueType, ValueType)>, Common::OrderingRelationType::eEquals>;
 
             public:
                 /**
@@ -120,9 +113,7 @@ namespace Stroika {
                 Association (const initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& src);
                 Association (const initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& src);
                 Association (const multimap<KEY_TYPE, VALUE_TYPE>& src);
-                template <typename TRAITS2>
-                Association (const Association<KEY_TYPE, VALUE_TYPE, TRAITS2>& src);
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Association<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value>::type>
+                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Association<KEY_TYPE, VALUE_TYPE>*>::value>::type>
                 explicit Association (const CONTAINER_OF_PAIR_KEY_T& src);
                 template <typename COPY_FROM_ITERATOR_KEY_T>
                 Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -139,8 +130,24 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& src) = default;
-                nonvirtual Association<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (Association<KEY_TYPE, VALUE_TYPE, TRAITS>&& rhs) = default;
+                nonvirtual Association& operator= (const Association& src) = default;
+                nonvirtual Association& operator= (Association&& rhs) = default;
+
+
+			public:
+				nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const
+				{
+					// tmphack
+					return KeyEqualsCompareFunctionType{ equal_to<KeyType>{} };
+				}
+
+			public:
+				nonvirtual ValueEqualsCompareFunctionType GetValueEqualsComparer () const
+				{
+					// tmphack
+					return ValueEqualsCompareFunctionType{ equal_to<ValueType>{} };
+				}
+
 
             public:
                 /**

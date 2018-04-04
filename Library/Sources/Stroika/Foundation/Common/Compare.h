@@ -107,10 +107,8 @@ namespace Stroika {
              *  \note   Generally use DefaultEqualsComparer<> instead of this, as it automatically selects the right way to compare.
              */
             template <typename T>
-            struct ComparerWithEquals : ComparerWithEqualsOptionally<T> {
-                RequireConceptAppliesToTypeMemberOfClass (RequireOperatorEquals, T);
-                static_assert (Configuration::EqualityComparable<T> (), "T must be EqualityComparable");
-            };
+            struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEquals : ComparerWithEqualsOptionally<T>{
+                                                                                                     };
 
             /**
              *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
@@ -123,8 +121,6 @@ namespace Stroika {
                                                                                                                                                                                             using value_type = T;
 
                                                                                                                                                                                             static_assert (Configuration::LessThanComparable<T> (), "T must be LessThanComparable");
-                                                                                                                                                                                            RequireConceptAppliesToTypeMemberOfClass (RequireOperatorLess, T);
-
                                                                                                                                                                                             /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */

@@ -37,7 +37,7 @@ namespace CommonTests {
                 VerifyTestResult (s.size () == 1);
                 s.Enqueue (1);
                 VerifyTestResult (s.size () == 2);
-                VerifyTestResult (EQUALS_COMPARER::Equals (s.Dequeue (), 1));
+                VerifyTestResult (EQUALS_COMPARER{}(s.Dequeue (), ELEMENT_TYPE{1}));
                 VerifyTestResult (s.size () == 1);
                 s.RemoveAll ();
                 VerifyTestResult (s.size () == 0);
