@@ -116,24 +116,19 @@ namespace Stroika {
              *  @todo - writeup !!! NOTE - ASSERTS ComparerWithWellOrder and ComparerWithEquals compatible - namely a < b and b > a iff .... writeup!!!
              */
             template <typename T>
-            struct [[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method)")]] ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
-                                                                                                                                                                                            using value_type = T;
-
-                                                                                                                                                                                            static_assert (Configuration::LessThanComparable<T> (), "T must be LessThanComparable");
-                                                                                                                                                                                            /**
-                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                 */
-                                                                                                                                                                                            static constexpr int  Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
-                                                                                                                                                                                            static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
-                                                                                                                                                                                            {
-#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                                                                                                                                                                                                return not(v1 < v2 or v2 < v1);
-#else
-                                                                                                                                                                                                bool result{not(v1 < v2 or v2 < v1)};
-                                                                                                                                                                                                //Ensure (not Configuration::EqualityComparable<T> () or result == (v1 == v2));  must check more indirectly to avoid compile error when not equality comparable
-                                                                                                                                                                                                return result;
-#endif
-                                                                                                                                                                                            }
+            struct [[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare instead - but not slight change of API (functor instead of static ::Compare method)")]] 
+				ComparerWithWellOrder { 
+					using value_type = T;
+					static constexpr int  Compare (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2);
+					static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
+					{
+					#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+					return not(v1 < v2 or v2 < v1);
+					#else
+					bool result{not(v1 < v2 or v2 < v1)};
+					return result;
+					#endif
+					}
             };
 
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
