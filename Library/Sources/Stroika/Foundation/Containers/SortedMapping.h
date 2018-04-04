@@ -104,7 +104,7 @@ namespace Stroika {
                 nonvirtual InOrderKeyComparerType GetInOrderKeyComparer () const
                 {
                     // tmphack
-                    return less<KEY_TYPE>{};
+					return InOrderKeyComparerType{ less<KEY_TYPE>{} };
                 }
 
             protected:

@@ -194,7 +194,7 @@ namespace Stroika {
                 nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const
                 {
                     // tmphack
-					return KeyEqualsCompareFunctionType{ equal_to<key_type>{} };
+                    return KeyEqualsCompareFunctionType{equal_to<key_type>{}};
                 }
 
             public:
