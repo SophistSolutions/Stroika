@@ -78,15 +78,16 @@ namespace CommonTests {
             {
                 using KeyEqualsCompareFunctionType = typename USING_ASSOCIATION_CONTAINER::KeyEqualsCompareFunctionType;
                 USING_ASSOCIATION_CONTAINER m;
+				using KeyType = typename USING_ASSOCIATION_CONTAINER::KeyType;
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+					VerifyTestResult (equal_to<KeyType>{} (i.fKey, KeyType{ 1 }));
                 }
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+					VerifyTestResult (equal_to<KeyType>{} (i.fKey, KeyType{ 1 }));
                 }
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
@@ -100,13 +101,13 @@ namespace CommonTests {
                 for (auto i : m) {
                     cnt++;
                     if (cnt == 1) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 1));
+						VerifyTestResult (equal_to<KeyType>{} (i.fKey, KeyType{ 1 }));
                     }
                     if (cnt == 2) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 2));
+						VerifyTestResult (equal_to<KeyType>{} (i.fKey, KeyType{ 2 }));
                     }
                     if (cnt == 3) {
-                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.fKey, 3));
+						VerifyTestResult (equal_to<KeyType>{} (i.fKey, KeyType{ 3 }));
                     }
                 }
                 VerifyTestResult (cnt == 3);

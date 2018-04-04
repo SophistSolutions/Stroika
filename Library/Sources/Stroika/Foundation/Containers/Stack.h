@@ -198,7 +198,7 @@ namespace Stroika {
             /**
              *      Syntactic sugar for Equals()
              *
-             *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
+             *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
             template <typename T>
@@ -207,7 +207,7 @@ namespace Stroika {
             /**
              *      Syntactic sugar for not Equals()
              *
-             *  \note   This function uses Common::DefaultEqualsComparer<T>, which in turn uses operator==(T,T). To
+             *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
              *          use a different comparer, call Equals() directly.
              */
             template <typename T>

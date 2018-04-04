@@ -113,7 +113,7 @@ namespace Stroika {
                 /**
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual bool Contains (T item) const;
 
             public:
@@ -157,7 +157,7 @@ namespace Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual void Remove (T item);
                 nonvirtual void Remove (const Iterator<T>& i);
 
@@ -170,9 +170,9 @@ namespace Stroika {
                  *  The no-argument verison Produces an empty bag.
                  */
                 nonvirtual void RemoveAll ();
-                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename CONTAINER_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual void RemoveAll (const CONTAINER_OF_T& c);
 
             public:
@@ -193,7 +193,7 @@ namespace Stroika {
                 /**
                  * \brief STL-ish alias for Remove ().
                  */
-                template <typename EQUALS_COMPARER = Common::DefaultEqualsComparer<T>>
+                template <typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual void erase (T item);
                 nonvirtual void erase (const Iterator<T>& i);
 

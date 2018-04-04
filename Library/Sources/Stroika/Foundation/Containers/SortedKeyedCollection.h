@@ -33,19 +33,8 @@ namespace Stroika {
              *  that as well.
              *
              */
-            template <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
+            template <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = Common::equal_to<KEY_TYPE>, typename KEY_WELL_ORDER_COMPARER = less<KEY_TYPE>>
             struct SortedKeyedCollection_DefaultTraits : KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER> {
-                /**
-                */
-                using EqualsCompareFunctionType = KEY_EQUALS_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass (Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-
-                /**
-                 */
-                using WellOrderCompareFunctionType = WELL_ORDER_COMPARER;
-
-                RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
             };
 
             /**

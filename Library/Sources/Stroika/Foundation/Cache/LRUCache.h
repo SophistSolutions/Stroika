@@ -75,7 +75,7 @@ namespace Stroika {
 
                 /**
                  */
-                template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = Common::DefaultEqualsComparer<KEY>>
+                template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = std::equal_to<KEY>>
                 struct DefaultTraits {
                     using KeyType = KEY;
 

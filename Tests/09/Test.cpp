@@ -73,6 +73,7 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
+#if 0
         struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             using value_type = SimpleClassWithoutComparisonOperators;
             static bool Equals (value_type v1, value_type v2)
@@ -119,6 +120,7 @@ namespace {
         Test2_SimpleBaseClassConversionTraitsConfusion_ ();
 
         Test3_SimpleAssociationTest_WhichRequiresExplcitValueComparer ();
+#endif
     }
 }
 

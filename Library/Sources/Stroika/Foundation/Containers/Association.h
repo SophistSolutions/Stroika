@@ -198,8 +198,6 @@ namespace Stroika {
                  *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
                  *  and applies operator== on each value, and returns true if contained. Perhpas not
                  *  very useful but symetric to ContainsKey().
-                 *
-                 *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
                 nonvirtual bool ContainsValue (ValueType v) const;
 
@@ -273,7 +271,7 @@ namespace Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                template <typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparer<VALUE_TYPE>>
+                template <typename VALUE_EQUALS_COMPARER = equal_to<VALUE_TYPE>>
                 nonvirtual bool Equals (const Association<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
