@@ -240,6 +240,8 @@ namespace Stroika {
                     LRUCache_ (const LRUCache_&)  = delete;
                     nonvirtual LRUCache_& operator= (const LRUCache_&) = delete;
 
+                    KeyEqualsCompareFunctionType fKeyEqualsComparer_;
+
                     nonvirtual size_t GetMaxCacheSize () const;
                     nonvirtual void   SetMaxCacheSize (size_t maxCacheSize);
 

@@ -236,7 +236,7 @@ namespace Stroika {
                 size_t chainIdx = Hash_ (item) % TraitsType::kHashTableSize;
                 Assert (0 <= chainIdx and chainIdx < TraitsType::kHashTableSize);
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
-                    if (cur->fElement and TraitsType::KeyEqualsCompareFunctionType{}(cur->fElement->fKey, item)) {
+                    if (cur->fElement and fKeyEqualsComparer_ (cur->fElement->fKey, item)) {
                         ShuffleToHead_ (chainIdx, cur);
                         this->IncrementHits ();
                         return &fCachedElts_First_[chainIdx]->fElement;
@@ -354,7 +354,7 @@ namespace Stroika {
                 if (v == nullptr) {
                     return OptionalValueType ();
                 }
-                Ensure (TraitsType::KeyEqualsCompareFunctionType{}(key, (*v)->fKey));
+                Ensure (fRealCache_.fKeyEqualsComparer_ (key, (*v)->fKey));
                 return (*v)->fValue;
             }
             template <typename KEY, typename VALUE, typename TRAITS>
