@@ -165,8 +165,8 @@ namespace Stroika {
                  */
                 Mapping ();
                 Mapping (const Mapping& src) noexcept = default;
-#if 0
-                Mapping (Mapping& src) noexcept = default;      //  https://stroika.atlassian.net/browse/STK-541
+#if 1
+                Mapping (Mapping&& src) noexcept = default; //  https://stroika.atlassian.net/browse/STK-541
 #endif
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
