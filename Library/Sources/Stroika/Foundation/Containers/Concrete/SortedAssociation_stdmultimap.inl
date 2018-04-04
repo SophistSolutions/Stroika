@@ -1,14 +1,15 @@
 /*
-* Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
-*/
-#ifndef _Stroika_Foundation_Containers_Concrete_Association_stdmultimap_inl_
-#define _Stroika_Foundation_Containers_Concrete_Association_stdmultimap_inl_
+ * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ */
 
 /*
-********************************************************************************
-***************************** Implementation Details ***************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_inl_
+
 #include <map>
 
 #include "../../Memory/BlockAllocated.h"
@@ -23,22 +24,26 @@ namespace Stroika {
             namespace Concrete {
 
                 /*
-                */
+                 */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRep_ : public Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+                class SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRep_ : public SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
-                    using inherited = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
+                    using inherited = typename SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
+
+                protected:
+                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                 };
 
                 /*
-                */
+                 */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRep_ {
+                class SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRep_ {
                 private:
                     using inherited = IImplRep_;
 
                 public:
-                    using _IterableRepSharedPtr    = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
+                    using _IterableRepSharedPtr    = typename inherited::_IterableRepSharedPtr;
                     using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
                     using _APPLY_ARGTYPE           = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE      = typename inherited::_APPLYUNTIL_ARGTYPE;
@@ -85,7 +90,6 @@ namespace Stroika {
                     }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
@@ -184,29 +188,29 @@ namespace Stroika {
                 };
 
                 /*
-                ********************************************************************************
-                ******************* Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 ************* SortedAssociation_stdmultimap<KEY_TYPE,MAPPED_VALUE_TYPE> *****************
+                 ********************************************************************************
+                 */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                inline Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_stdmultimap ()
+                inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_stdmultimap (const CONTAINER_OF_PAIR_KEY_T& src)
-                    : Association_stdmultimap ()
+                inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (const CONTAINER_OF_PAIR_KEY_T& src)
+                    : SortedAssociation_stdmultimap ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                inline void Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
+                inline void SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }
@@ -214,4 +218,4 @@ namespace Stroika {
     }
 }
 
-#endif /* _Stroika_Foundation_Containers_Concrete_Association_stdmultimap_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_SortedAssociation_stdmultimap_inl_ */

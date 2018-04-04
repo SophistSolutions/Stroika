@@ -79,7 +79,6 @@ namespace Stroika {
                 return result;
 #endif
             }
-
         }
     }
 }

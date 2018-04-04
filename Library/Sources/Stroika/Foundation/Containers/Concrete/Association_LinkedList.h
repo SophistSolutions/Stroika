@@ -1,6 +1,6 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
- */
+* Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+*/
 #include "../../StroikaPreComp.h"
 
 #include "../Association.h"
@@ -11,7 +11,8 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Early</a>
+ ***VERY ROUGH UNUSABLE DRAFT*
  *
  *  TODO:
  *
@@ -25,21 +26,21 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   Association_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> is an LinkedList-based concrete implementation of the Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType> container pattern.
+                 *  \brief   Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an LinkedList-based concrete implementation of the Association<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::AssociationTraitsType> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE>
-                class Association_LinkedList : public Association<KEY_TYPE, VALUE_TYPE> {
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class Association_LinkedList : public Association<KEY_TYPE, MAPPED_VALUE_TYPE> {
                 private:
-                    using inherited = Association<KEY_TYPE, VALUE_TYPE>;
+                    using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
                 public:
                     Association_LinkedList ();
                     Association_LinkedList (const Association_LinkedList& src) = default;
-                    template <typename CONTAINER_OF_PAIR_KEY_T>
-                    explicit Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+                    explicit Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 

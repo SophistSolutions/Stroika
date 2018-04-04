@@ -1,14 +1,14 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
- */
+* Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+*/
 #ifndef _Stroika_Foundation_Containers_Concrete_Association_Array_inl_
 #define _Stroika_Foundation_Containers_Concrete_Association_Array_inl_
 
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
+********************************************************************************
+***************************** Implementation Details ***************************
+********************************************************************************
+*/
 #include "../../Memory/BlockAllocated.h"
 
 #include "../Private/PatchingDataStructures/Array.h"
@@ -19,20 +19,20 @@ namespace Stroika {
             namespace Concrete {
 
                 /*
-                 ********************************************************************************
-                 * Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_
-                 ********************************************************************************
-                 */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep {
+                ********************************************************************************
+                ******* Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ***************
+                ********************************************************************************
+                */
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
-                    using inherited = typename Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep;
+                    using inherited = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
                 public:
-                    using _IterableRepSharedPtr = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IterableRepSharedPtr;
-                    using _SharedPtrIRep        = typename inherited::_SharedPtrIRep;
-                    using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _IterableRepSharedPtr    = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
+                    using _AssociationRepSharedPtr = typename inherited::_AssociationRepSharedPtr;
+                    using _APPLY_ARGTYPE           = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE      = typename inherited::_APPLYUNTIL_ARGTYPE;
 
                 public:
                     Rep_ ()                 = default;
@@ -55,12 +55,12 @@ namespace Stroika {
                     virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                        return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
-                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> MakeIterator (IteratorOwnerID suggestedOwner) const override
                     {
                         Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-                        return Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+                        return Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> (Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
                     }
                     virtual size_t GetLength () const override
                     {
@@ -77,41 +77,45 @@ namespace Stroika {
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
                     }
-                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        using RESULT_TYPE     = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                        using RESULT_TYPE     = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         size_t i              = fData_.FindFirstThat (doToElement);
                         if (i == fData_.GetLength ()) {
                             return RESULT_TYPE::GetEmptyIterator ();
                         }
                         Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-                        SHARED_REP_TYPE resultRep      = Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+                        SHARED_REP_TYPE resultRep      = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
                         resultRep->fIterator.SetIndex (i);
                         // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-                        return RESULT_TYPE (typename RESULT_TYPE::IteratorRepSharedPtr (resultRep));
+                        return RESULT_TYPE (resultRep);
                     }
 
-                    // Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::_IRep overrides
+                    // Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
                 public:
-                    virtual _SharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
+                    virtual _AssociationRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
                             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                            auto r = Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                            auto r = Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                             r->fData_.RemoveAll ();
                             return r;
                         }
                         else {
-                            return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<Rep_> ();
                         }
                     }
                     virtual Iterable<KEY_TYPE> Keys () const override
                     {
                         return this->_Keys_Reference_Implementation ();
                     }
-                    virtual bool Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override
+                    virtual Iterable<MAPPED_VALUE_TYPE> MappedValues () const override
+                    {
+                        return this->_Values_Reference_Implementation ();
+                    }
+                    virtual bool Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<MAPPED_VALUE_TYPE>* item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -127,7 +131,7 @@ namespace Stroika {
                         }
                         return false;
                     }
-                    virtual void Add (KEY_TYPE key, VALUE_TYPE newElt) override
+                    virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -136,9 +140,9 @@ namespace Stroika {
                                 return;
                             }
                         }
-                        fData_.InsertAt (fData_.GetLength (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (key, newElt));
+                        fData_.InsertAt (fData_.GetLength (), KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
                     }
-                    virtual void Remove (KEY_TYPE key) override
+                    virtual void Remove (ArgByValueType<KEY_TYPE> key) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -148,12 +152,12 @@ namespace Stroika {
                             }
                         }
                     }
-                    virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i) override
+                    virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
                     {
-                        const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep& ir = i.GetRep ();
+                        std::lock_guard<const Debug::AssertExternallySynchronizedLock>            critSec{fData_};
+                        const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                          mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.RemoveAt (mir.fIterator);
                     }
 #if qDebug
@@ -165,99 +169,85 @@ namespace Stroika {
 #endif
 
                 public:
-                    using KeyEqualsCompareFunctionType = typename Association<KEY_TYPE, VALUE_TYPE, typename TRAITS::AssociationTraitsType>::KeyEqualsCompareFunctionType;
+                    using KeyEqualsCompareFunctionType = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
                 private:
-                    using NonPatchingDataStructureImplType_ = DataStructures::Array<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
-                    using DataStructureImplType_            = Private::PatchingDataStructures::Array<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using NonPatchingDataStructureImplType_ = DataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
+                    using DataStructureImplType_            = Private::PatchingDataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
 
                 private:
-                    using IteratorRep_ = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
+                    using IteratorRep_ = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
                     DataStructureImplType_ fData_;
                 };
 
                 /*
-                 ********************************************************************************
-                 ************** Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS> *****************
-                 ********************************************************************************
-                 */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array ()
+                ********************************************************************************
+                *********** Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE> *****************
+                ********************************************************************************
+                */
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
                 {
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (const Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                inline Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (const CONTAINER_OF_PAIR_KEY_T& src)
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
+                inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (const CONTAINER_OF_PAIR_KEY_T& src)
                     : Association_Array ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename COPY_FROM_ITERATOR_KEY_T>
-                Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                     : Association_Array ()
                 {
                     this->AddAll (start, end);
                     AssertRepValidType_ ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline void Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Compact ()
                 {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline void Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Compact ()
-                {
-                    using _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadWriteRepAccessor<Rep_>;
+                    using _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor                                       accessor{this};
                     std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
                     accessor._GetWriteableRep ().fData_.Compact ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline size_t Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::GetCapacity () const
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline size_t Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::GetCapacity () const
                 {
-                    using _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadRepAccessor<Rep_>;
+                    using _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template _SafeReadRepAccessor<Rep_>;
                     _SafeReadRepAccessor                                            accessor{this};
                     std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
                     return accessor._ConstGetRep ().fData_.GetCapacity ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline void Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::SetCapacity (size_t slotsAlloced)
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline void Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::SetCapacity (size_t slotsAlloced)
                 {
-                    using _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::template _SafeReadWriteRepAccessor<Rep_>;
+                    using _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template _SafeReadWriteRepAccessor<Rep_>;
                     _SafeReadWriteRepAccessor                                       accessor{this};
                     std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
                     accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline size_t Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::capacity () const
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline size_t Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::capacity () const
                 {
                     return GetCapacity ();
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline void Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::reserve (size_t slotsAlloced)
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline void Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::reserve (size_t slotsAlloced)
                 {
                     SetCapacity (slotsAlloced);
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline void Association_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::AssertRepValidType_ () const
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                inline void Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
                 }
             }

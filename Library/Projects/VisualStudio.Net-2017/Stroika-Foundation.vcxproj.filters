@@ -2001,6 +2001,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.h">
+      <Filter>Sources\Containers\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_stdmultimap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3236,6 +3242,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.inl">
+      <Filter>Sources\Containers\Factory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_stdmultimap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

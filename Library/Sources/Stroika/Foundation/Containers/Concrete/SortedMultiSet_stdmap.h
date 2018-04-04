@@ -9,16 +9,16 @@
 #define _Stroika_Foundation_Containers_Concrete_SortedMultiSet_stdmap_h_ 1
 
 /**
- *  \file
- *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- *  TODO:
- *
- *      @todo   Get use of Private::IteratorImplHelper_ working
- *
- *      @todo   Correctly implement override of Iterator<T>::IRep::Equals ()
- */
+  *  \file
+  *
+  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
+  *
+  *  TODO:
+  *
+  *      @todo   Get use of Private::IteratorImplHelper_ working
+  *
+  *      @todo   Correctly implement override of Iterator<T>::IRep::Equals ()
+  */
 
 namespace Stroika {
     namespace Foundation {
@@ -26,11 +26,11 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
+                  *
+                  *
+                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+                  *
+                  */
                 template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
                 class SortedMultiSet_stdmap : public SortedMultiSet<T, TRAITS> {
                 private:
