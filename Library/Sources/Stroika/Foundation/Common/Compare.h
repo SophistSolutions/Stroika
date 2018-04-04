@@ -149,10 +149,14 @@ namespace Stroika {
              *
              *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
              */
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             DISABLE_COMPILER_MSC_WARNING_START (4996)
             template <typename T, typename SFINAE = typename conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value), ComparerWithEquals<T>, typename conditional<Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value, ComparerWithWellOrder<T>, shared_ptr<int>>::type>::type>
             struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T> instead")]] DefaultEqualsComparer : SFINAE{};
             DISABLE_COMPILER_MSC_WARNING_END (4996)
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
             /**
              *  DefaultEqualsComparerOptionally will procduce an Equals() if possible, but will still compile otherwise. Its just
@@ -161,10 +165,15 @@ namespace Stroika {
              *      @todo improve this so it has an Equals () method with a static_assert, so we get a clearer message when used.
              *      @todo kind of a kludge how we implement - (shared_ptr<int> - but void not a valid base class).
              */
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+
             DISABLE_COMPILER_MSC_WARNING_START (4996)
             template <typename T>
             struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T> instead")]] DefaultEqualsComparerOptionally : conditional<(Configuration::has_eq<T>::value and is_convertible<Configuration::eq_result<T>, bool>::value) or (Configuration::has_lt<T>::value and is_convertible<Configuration::lt_result<T>, bool>::value), DefaultEqualsComparer<T>, shared_ptr<int>>::type{};
             DISABLE_COMPILER_MSC_WARNING_END (4996)
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
 
             /**
              *  \par Example Usage
