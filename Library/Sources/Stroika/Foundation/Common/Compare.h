@@ -16,12 +16,6 @@
 /**
  * TODO:
  *
- *      @todo   REPLACE
- *                  Has_Operator_LessThan<T>::value
- *              with:
- *                  Configuration::LessThanComparable<T> ()
- *              BUT - CANNOT DO until we have vc++ fixed for constexpr functions
- *
  *      @todo   use http://en.cppreference.com/w/cpp/types/enable_if to make this work better
  *              So for example - we want something like:
  *                  enable_if<is_integral<T>> int compare (T, T) { return v1 - v2; }
@@ -61,17 +55,11 @@ namespace Stroika {
             template <typename T>
             struct [[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEqualsOptionally {
                 using value_type = T;
-
-                /**
-            *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
-            *  replace these, but they must remain consistent.
-            */
                 static constexpr bool Equals (Configuration::ArgByValueType<T> v1, Configuration::ArgByValueType<T> v2)
                 {
                     return v1 == v2;
                 }
             };
-
             template <typename T>
             struct[[deprecated ("in Stroika v2.0a231 - use std::equal_to<T>")]] ComparerWithEquals : ComparerWithEqualsOptionally<T>{};
             template <typename T>

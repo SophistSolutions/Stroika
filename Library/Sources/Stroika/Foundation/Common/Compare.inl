@@ -15,9 +15,9 @@ namespace Stroika {
     namespace Foundation {
         namespace Common {
 
-			DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
-			DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-			DISABLE_COMPILER_MSC_WARNING_START (4996)
+            DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_MSC_WARNING_START (4996)
 
             namespace Private_ {
                 template <typename T>
@@ -55,10 +55,9 @@ namespace Stroika {
                 return result;
 #endif
             }
-			DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
-			DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-			DISABLE_COMPILER_MSC_WARNING_END (4996)
-
+            DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wdeprecated\"");
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_MSC_WARNING_END (4996)
         }
     }
 }
