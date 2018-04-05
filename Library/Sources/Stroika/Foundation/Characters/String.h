@@ -1216,7 +1216,7 @@ namespace Stroika {
              *  Equivilent to std::less<String>, except doing case insensitive compares
              */
             struct String::LessCI {
-                static constexpr Common::OrderingRelationType kOrderingRelationKind = Common::OrderingRelationType::eInOrder;
+                static constexpr Common::OrderingRelationType kOrderingRelationKind = Common::OrderingRelationType::eStrictInOrder;
                 nonvirtual bool                               operator() (const String& lhs, const String& rhs) const;
             };
 

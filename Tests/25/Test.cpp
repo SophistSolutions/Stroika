@@ -51,7 +51,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eInOrder> {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonTraitsBase<Common::OrderingRelationType::eStrictInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () < rhs.GetValue ();

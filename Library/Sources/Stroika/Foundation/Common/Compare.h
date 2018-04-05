@@ -198,18 +198,25 @@ namespace Stroika {
 
                 /**
                  *   e.g. less<T>, or greater<T>
+                 *
+                 *  From http://mathworld.wolfram.com/StrictOrder.html
+                 *      A relation < is a strict order on a set S if it is
+                 *          1. Irreflexive: a<a does not hold for any a in S.
+                 *          2. Asymmetric: if a<b, then b<a does not hold.
+                 *          3. Transitive: a<b and b<c implies a<c.
                  */
-                eInOrder,
+                eStrictInOrder,
 
                 /**
-                 *   e.g. less_equal<T>, or greater_equal<T>
+                 *  \brief <=, or >=, e.g. less_equal<T>, or greater_equal<T>
+                 *
                  *   \note considered the name 'partial' order here but that could be confusing, since partial order frequently
                  *         refers to not covering the entire domain - not less vs. less_equal.
                  */
                 eInOrderOrEquals,
 
                 /**
-                 *   e.g. function<int(T,T)> - where < 0 return is 'in order', 0 means equal, and > 0 means reversed order
+                 *   e.g. function<int(T,T)> - where < 0 return is 'in order' (eStrictInOrder), 0 means equal, and > 0 means reversed order
                  */
                 eThreeWayCompare
             };
@@ -238,11 +245,11 @@ namespace Stroika {
             };
             template <typename T>
             struct ComparisonTraits<less<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrder;
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eStrictInOrder;
             };
             template <typename T>
             struct ComparisonTraits<greater<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrder;
+                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eStrictInOrder;
             };
             template <typename T>
             struct ComparisonTraits<less_equal<T>> {
@@ -284,12 +291,12 @@ namespace Stroika {
             template <typename COMPARER>
             constexpr bool IsInOrderComparer ()
             {
-                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eInOrder;
+                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eStrictInOrder;
             }
             template <typename COMPARER>
             constexpr bool IsInOrderComparer (const COMPARER&)
             {
-                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eInOrder;
+                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eStrictInOrder;
             }
 
             /**
@@ -334,7 +341,7 @@ namespace Stroika {
                 constexpr bool operator() (const T& lhs, const T& rhs) const
                 {
                     switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                        case OrderingRelationType::eInOrder:
+                        case OrderingRelationType::eStrictInOrder:
                             return fBASE_COMPARER_ (lhs, rhs);
                         case OrderingRelationType::eInOrderOrEquals:
                             return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
@@ -375,7 +382,7 @@ namespace Stroika {
                     switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
                         case OrderingRelationType::eEquals:
                             return fBASE_COMPARER_ (lhs, rhs);
-                        case OrderingRelationType::eInOrder:
+                        case OrderingRelationType::eStrictInOrder:
                             return not fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
                         case OrderingRelationType::eInOrderOrEquals:
                             return fBASE_COMPARER_ (lhs, rhs) and fBASE_COMPARER_ (rhs, lhs);
@@ -414,7 +421,7 @@ namespace Stroika {
                 constexpr int operator() (const T& lhs, const T& rhs) const
                 {
                     switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                        case OrderingRelationType::eInOrder:
+                        case OrderingRelationType::eStrictInOrder:
                             return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
                         case OrderingRelationType::eThreeWayCompare:
                             return fBASE_COMPARER_ (lhs, rhs);

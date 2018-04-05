@@ -87,7 +87,7 @@ namespace {
     {
         using namespace CommonTests::SetTests;
 
-        struct MySimpleClassWithoutComparisonOperators_LESS_ : ComparisonTraitsBase<OrderingRelationType::eInOrder> {
+        struct MySimpleClassWithoutComparisonOperators_LESS_ : ComparisonTraitsBase<OrderingRelationType::eStrictInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () < rhs.GetValue ();

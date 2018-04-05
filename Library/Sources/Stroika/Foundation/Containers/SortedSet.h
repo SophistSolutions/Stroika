@@ -74,7 +74,7 @@ namespace Stroika {
                  *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
                  *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsInOrderComparer () concept (need better name).
                  */
-                using InOrderComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eInOrder>;
+                using InOrderComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eStrictInOrder>;
 
             public:
                 /**
