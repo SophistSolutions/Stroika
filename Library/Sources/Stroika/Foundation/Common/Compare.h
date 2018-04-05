@@ -46,8 +46,7 @@ namespace Stroika {
              *  has value member which is true iff 'T' supports the less than operator.
              */
             template <typename T>
-            struct Has_Compare : Configuration::substitution_succeeded<typename Private_::Has_Compare_Helper_::get_Compare_result<T>::type> {
-            };
+            struct[[deprecated ("in Stroika v2.0a231 - use ThreeWayCompare -- not quite - no way to check for it now... but add if needed")]] Has_Compare : Configuration::substitution_succeeded<typename Private_::Has_Compare_Helper_::get_Compare_result<T>::type>{};
 
             DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\"");
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
@@ -173,8 +172,6 @@ namespace Stroika {
              *  essentially unrelated to typeid(equal_to<char>). There is no 'tag' (as with bidirectional iterators etc) to 
              *  identify different classes of comparison and so no easy to to leverage the natural relationships between
              *  equal_to and less_equal.
-             *
-             *  So to get started, we fill that gap: ComparisonTraits.
              */
 
             /**

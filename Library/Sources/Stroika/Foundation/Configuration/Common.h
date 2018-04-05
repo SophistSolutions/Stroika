@@ -18,7 +18,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Configuration {
 
-/**
+            /**
              *  \def nonvirtual
              *      Is for documentation purposes, to make clear a method is intended to be not 'virtual'
              */
