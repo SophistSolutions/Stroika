@@ -22,7 +22,8 @@ PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-m
 
 export StroikaRoot=$(shell realpath ../..)/
 
-VERSION=1_66_0
+VERSION=1_67_0_b1
+#VERSION=1_66_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 
@@ -76,6 +77,7 @@ endif
 ### Haven't found any backup/mirrors and this only stores the last few versions. @todo - find a better backup! 
 FETCHURLS=
 FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
+FETCHURLS+=https://dl.bintray.com/boostorg/beta/1.67.0.beta.1/source/boost_1_67_0_b1.tar.gz
 
 
 BUILDS_ROOT=../../Builds/
@@ -291,7 +293,7 @@ else
 endif
 endif
 	@#
-	@### NOTE - sometimes if this starts failing, from a DOS shell, type rm -f %tmp%/b2*.cmd
+	@### NOTE - sometimes if this starts failing (e.g. *** [Makefile:288: configureAndBuild_] Error 1), from a DOS shell, type del %tmp%\b2_*.cmd
 	@#
 	@#Cannot use ifeq() macro stuff cuz thats done in first phase of make eval, and MAKEFLAGs is only defined later
 	@rm -f $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)ConfigureAndBuild.OUT
