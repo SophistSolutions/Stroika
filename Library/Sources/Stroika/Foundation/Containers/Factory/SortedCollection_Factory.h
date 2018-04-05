@@ -39,7 +39,7 @@ namespace Stroika {
                     static atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> sFactory_;
 
                 public:
-                    static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedCollection");
+                    static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
 
                 public:
                     SortedCollection_Factory (const INORDER_COMPARER& inorderComparer);

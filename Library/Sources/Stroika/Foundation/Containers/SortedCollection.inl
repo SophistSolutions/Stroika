@@ -27,7 +27,7 @@ namespace Stroika {
             inline SortedCollection<T>::SortedCollection (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
                 : inherited (move (Factory::SortedCollection_Factory<T, INORDER_COMPARER> (inorderComparer) ()))
             {
-                static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedCollection");
+                static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");
                 _AssertRepValidType ();
             }
             template <typename T>

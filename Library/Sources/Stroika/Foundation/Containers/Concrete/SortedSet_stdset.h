@@ -43,7 +43,7 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  \req IsInOrderComparer<INORDER_COMPARER> ()
+                     *  \req IsStrictInOrderComparer<INORDER_COMPARER> ()
                      */
                     SortedSet_stdset ();
                     template <typename INORDER_COMPARER>

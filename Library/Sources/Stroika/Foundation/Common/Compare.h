@@ -289,12 +289,12 @@ namespace Stroika {
              *  \note @see FunctionComparerAdapter<> to construct an InOrder comparer from an arbitrary std::function...
              */
             template <typename COMPARER>
-            constexpr bool IsInOrderComparer ()
+            constexpr bool IsStrictInOrderComparer ()
             {
                 return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eStrictInOrder;
             }
             template <typename COMPARER>
-            constexpr bool IsInOrderComparer (const COMPARER&)
+            constexpr bool IsStrictInOrderComparer (const COMPARER&)
             {
                 return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eStrictInOrder;
             }

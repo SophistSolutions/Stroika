@@ -29,7 +29,7 @@ namespace Stroika {
                 inline SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::SortedMultiSet_Factory (const INORDER_COMPARER& inOrderComparer)
                     : fInOrderComparer_ (inOrderComparer)
                 {
-                    static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedMultiSet_Factory");
+                    static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMultiSet_Factory");
                 }
                 template <typename T, typename TRAITS, typename INORDER_COMPARER>
                 inline SortedMultiSet<T, TRAITS> SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER>::operator() () const

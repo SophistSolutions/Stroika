@@ -69,7 +69,7 @@ namespace Stroika {
             public:
                 /**
                 *  This CAN be used as the argument to a SortedAssociation<> as InOrderComparerType, but
-                *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsInOrderComparer () concept
+                *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsStrictInOrderComparer () concept
                 */
                 using InOrderKeyComparerType = Common::FunctionComparerAdapter<function<bool(KEY_TYPE, KEY_TYPE)>, Common::OrderingRelationType::eStrictInOrder>;
 

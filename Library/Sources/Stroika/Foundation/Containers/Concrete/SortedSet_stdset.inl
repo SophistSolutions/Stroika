@@ -183,7 +183,7 @@ namespace Stroika {
                 inline SortedSet_stdset<T>::SortedSet_stdset (const INORDER_COMPARER& inorderComparer)
                     : inherited (inherited::template MakeSharedPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
                 {
-                    static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "InOrder comparer required with SortedSet");
+                    static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
                     AssertRepValidType_ ();
                 }
                 template <typename T>

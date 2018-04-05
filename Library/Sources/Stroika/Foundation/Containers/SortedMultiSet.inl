@@ -27,7 +27,7 @@ namespace Stroika {
             inline SortedMultiSet<T, TRAITS>::SortedMultiSet (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
                 : inherited (move (Factory::SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER> (inorderComparer) ()))
             {
-                static_assert (Common::IsInOrderComparer<INORDER_COMPARER> (), "SortedMultiSet constructor with INORDER_COMPARER - comparer not valid IsInOrderComparer- see FunctionComparerAdapter<Common::OrderingRelationType::eStrictInOrder, function<bool(T, T)>");
+                static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "SortedMultiSet constructor with INORDER_COMPARER - comparer not valid IsStrictInOrderComparer- see FunctionComparerAdapter<Common::OrderingRelationType::eStrictInOrder, function<bool(T, T)>");
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
