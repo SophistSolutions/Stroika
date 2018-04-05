@@ -514,7 +514,7 @@ namespace Stroika {
                  *          }
                  *      \endcode
                  *
-                 *  @see First ()
+                 *  @see First () - often more handy
                  */
                 nonvirtual Iterator<T> FindFirstThat (const function<bool(ArgByValueType<T> item)>& doToElement) const;
                 nonvirtual Iterator<T> FindFirstThat (const Iterator<T>& startAt, const function<bool(ArgByValueType<T> item)>& doToElement) const;
@@ -714,6 +714,14 @@ namespace Stroika {
                  *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
                  *          VerifyTestResult (*c.First () == 3);
                  *          VerifyTestResult (*c.First ([](int i){ return i % 2 == 0;}) == 38);
+                 *      \endcode
+                 *
+                 *  \par Example Usage
+                 *      \code
+                 *          Collection<SomeStruct> c;
+                 *          if (Optional<SomeStruct> o = c.First ([=](SomeStruct smi) { return smi.fID == substanceId; })) {
+                 *              somthing_with_o (o);
+                 *          }
                  *      \endcode
                  *
                  *  \note
