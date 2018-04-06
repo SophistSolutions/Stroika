@@ -699,11 +699,21 @@ namespace Stroika {
                  *          VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
                  *      \endcode
                  *
+                 *  \par Example Usage
+                 *      \code
+                 *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+                 *          VerifyTestResult (c.OrderBy ([](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }).SequnceEquals (Iterable<int> { 3, 3, 5, 5, 9, 38 }));
+                 *      \endcode
+                 *
+                 * \note alias for Sort ()
+                 *
+                 *  \note Should be of type IsStrictInOrderComparer (), but not required - for convenience of use (so can be used with any lambda functor)
+                 *
                  *  See:
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
                  */
-                nonvirtual Iterable<T> OrderBy (const function<bool(T, T)>& compareLess =
-                                                    [](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
+                template <typename INORDER_COMPARER_TYPE = std::less<T>>
+                nonvirtual Iterable<T> OrderBy (const INORDER_COMPARER_TYPE& inorderComparer = INORDER_COMPARER_TYPE{}) const;
 
             public:
                 /**

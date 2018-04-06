@@ -726,6 +726,7 @@ namespace {
         {
             Iterable<int> c{3, 5, 9, 38, 3, 5};
             VerifyTestResult (c.OrderBy ().SequnceEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
+            VerifyTestResult (c.OrderBy ([](int lhs, int rhs) -> bool { return lhs < rhs; }).SequnceEquals (Iterable<int>{3, 3, 5, 5, 9, 38}));
         }
         {
             Iterable<int> c{1, 2, 3, 4, 5, 6};

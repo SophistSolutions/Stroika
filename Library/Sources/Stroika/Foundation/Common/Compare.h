@@ -312,6 +312,10 @@ namespace Stroika {
             struct FunctionComparerAdapter {
                 static constexpr OrderingRelationType kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
                 ACTUAL_COMPARER                       fActualComparer;
+                constexpr FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer)
+                    : fActualComparer (move (actualComparer))
+                {
+                }
                 constexpr FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
                     : fActualComparer (actualComparer)
                 {
@@ -327,6 +331,15 @@ namespace Stroika {
                     return fActualComparer (lhs, rhs);
                 }
             };
+
+            /*
+             *  Wrap an arbitrary functor which acts like bool(T,T) - as an InOrderComparer functor (just adds a type signature to make it declared in-order).
+             */
+            template <typename T, typename FUNCTOR>
+            constexpr inline Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f)
+            {
+                return Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eStrictInOrder>{move (f)};
+            }
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Less comparer

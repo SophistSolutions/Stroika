@@ -534,14 +534,15 @@ namespace Stroika {
                 return CreateGenerator (getNext);
             }
             template <typename T>
-            Iterable<T> Iterable<T>::OrderBy (const function<bool(T, T)>& compareLess) const
+            template <typename INORDER_COMPARER_TYPE>
+            Iterable<T> Iterable<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const
             {
                 using Memory::Optional;
                 vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
 #if qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
-                sort (tmp.begin (), tmp.end (), [compareLess](const T& l, const T& r) -> bool { return compareLess (l, r); });
+                sort (tmp.begin (), tmp.end (), [inorderComparer](const T& l, const T& r) -> bool { return compareLess (l, r); });
 #else
-                sort (tmp.begin (), tmp.end (), compareLess);
+                sort (tmp.begin (), tmp.end (), inorderComparer);
 #endif
                 size_t                   idx{0};
                 function<Optional<T> ()> getNext = [tmp, idx]() mutable -> Optional<T> {
