@@ -344,7 +344,7 @@ namespace Stroika {
                  *  \req RequireNotNull (rep.get ())
                  */
                 explicit Iterator (const IteratorRepSharedPtr& rep);
-                Iterator (const Iterator& from);
+                Iterator (const Iterator& src) = default;
                 Iterator () = delete;
 
             private:
@@ -354,7 +354,7 @@ namespace Stroika {
                 /**
                  *  \brief  Iterators are safely copyable, preserving their current position.
                  */
-                nonvirtual Iterator& operator= (const Iterator& rhs);
+                nonvirtual Iterator& operator= (const Iterator& rhs) = default;
 
             public:
                 /**

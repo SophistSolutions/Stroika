@@ -46,13 +46,6 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T, typename ITERATOR_TRAITS>
-            inline Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& from)
-                : fIterator_ (from.fIterator_)
-                , fCurrent_ (from.fCurrent_)
-            {
-                Require (fIterator_.cget () != nullptr or Done ()); // if not special 'auto-done' we must have legit iterator rep
-            }
-            template <typename T, typename ITERATOR_TRAITS>
             inline Iterator<T, ITERATOR_TRAITS>::Iterator (const IteratorRepSharedPtr& rep)
                 : fIterator_ (rep)
                 , fCurrent_ ()
@@ -67,14 +60,6 @@ namespace Stroika {
                 , fCurrent_ ()
             {
                 Assert (Done ());
-            }
-            template <typename T, typename ITERATOR_TRAITS>
-            inline Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
-            {
-                Require (rhs.fIterator_.cget () != nullptr or rhs.Done ()); // if not special 'auto-done' we must have legit iterator rep
-                fIterator_ = rhs.fIterator_;
-                fCurrent_  = rhs.fCurrent_;
-                return *this;
             }
             template <typename T, typename ITERATOR_TRAITS>
             inline typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::GetRep ()
