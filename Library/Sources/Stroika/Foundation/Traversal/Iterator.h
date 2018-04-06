@@ -88,7 +88,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Traversal {
 
-/**
+            /**
              *  You can configure this to always use shared_ptr using ./configure, but by default
              *  qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr uses whichever implementation is faster.
              *
@@ -122,7 +122,7 @@ namespace Stroika {
              */
             struct IteratorBase {
             public:
-/**
+                /**
                  *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
                  *      Experimental, so dont use directly (yet) - til stablized.
                  *          -- LGP 2014-02-23
@@ -419,15 +419,15 @@ namespace Stroika {
                 /*
                  *  \req operator++ can be called 'i' times (on a copy of this), and the result returned.
                  *
-                                 *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
-                                 *  \note   similar to std::advance, but allows for simpler usage (i + n)
+                 *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
+                 *  \note   similar to std::advance, but allows for simpler usage (i + n)
                  */
                 nonvirtual Iterator operator+ (int i) const;
 
             public:
                 /*
-                                 *      \brief  return not Done ()
-                                 *
+                 *      \brief  return not Done ()
+                 *
                  *  \em Design Note:
                  *      I HATE type punning - which this is. And I may want to lose this.
                  *
@@ -568,13 +568,13 @@ namespace Stroika {
 
             public:
                 /**
-                *  \brief
-                *      Set to done and disassociate with owner.
-                *
-                *   Equivilent to *this = GetEmptyIterator();
-                *
-                *  @see clear () - and alias
-                */
+                 *  \brief
+                 *      Set to done and disassociate with owner.
+                 *
+                 *   Equivilent to *this = GetEmptyIterator();
+                 *
+                 *  @see clear () - and alias
+                 */
                 nonvirtual void reset ();
 
             public:
