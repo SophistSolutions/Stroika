@@ -140,7 +140,7 @@ namespace Stroika {
                 using OptionalValueType = typename TRAITS::OptionalValueType;
 
             public:
-                LRUCache (size_t size = 1);
+                LRUCache (size_t size = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {});
                 LRUCache (const LRUCache& from);
 
             public:

@@ -268,14 +268,16 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename KEY, typename VALUE, typename TRAITS>
-            inline LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size)
+            inline LRUCache<KEY, VALUE, TRAITS>::LRUCache (size_t size, const KeyEqualsCompareFunctionType& keyEqualsComparer)
                 : fRealCache_ (size)
             {
+                fRealCache_.fKeyEqualsComparer_ = keyEqualsComparer;
             }
             template <typename KEY, typename VALUE, typename TRAITS>
             LRUCache<KEY, VALUE, TRAITS>::LRUCache (const LRUCache& from)
                 : fRealCache_ (1)
             {
+                fRealCache_.fKeyEqualsComparer_ = from.fRealCache_.fKeyEqualsComparer_;
                 fRealCache_.SetMaxCacheSize (from.GetMaxCacheSize ());
                 lock_guard<const Debug::AssertExternallySynchronizedLock> fromCritSec{from}; // after above getMaxCacheSize to avoid recursive access
                 for (auto i : from.fRealCache_) {
