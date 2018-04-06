@@ -341,10 +341,13 @@ namespace Stroika {
                  *
                  *  Iterators are safely copyable, preserving their current position.
                  *
+                 *  CTOR overload taking nullptr - is the same as GetEmptyIterator ()
+                 *
                  *  \req RequireNotNull (rep.get ())
                  */
                 explicit Iterator (const IteratorRepSharedPtr& rep);
                 Iterator (const Iterator& src) = default;
+                Iterator (nullptr_t);
                 Iterator () = delete;
 
             private:
