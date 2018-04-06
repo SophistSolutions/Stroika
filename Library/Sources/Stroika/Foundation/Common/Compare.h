@@ -201,8 +201,8 @@ namespace Stroika {
 
                 /**
                  */
-                constexpr FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer);
                 constexpr FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer);
+                constexpr FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer);
                 template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kOrderingRelationKind == kOrderingRelationKind>>
                 constexpr FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer);
 
@@ -222,6 +222,8 @@ namespace Stroika {
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename FUNCTOR>
+            constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f);
+            template <typename FUNCTOR>
             constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f);
 
             /**
@@ -231,6 +233,7 @@ namespace Stroika {
             struct InOrderComparerAdapter {
                 /**
                  */
+                constexpr InOrderComparerAdapter (const BASE_COMPARER& baseComparer);
                 constexpr InOrderComparerAdapter (BASE_COMPARER&& baseComparer);
 
                 /**
@@ -252,6 +255,8 @@ namespace Stroika {
              *        Whereas this function looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename BASE_COMPARER>
+            constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>;
+            template <typename BASE_COMPARER>
             constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>;
 
             /**
@@ -261,6 +266,7 @@ namespace Stroika {
             struct EqualsComparerAdapter {
                 /**
                  */
+                constexpr EqualsComparerAdapter (const BASE_COMPARER& baseComparer);
                 constexpr EqualsComparerAdapter (BASE_COMPARER&& baseComparer);
 
                 /**
@@ -277,7 +283,9 @@ namespace Stroika {
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              */
             template <typename BASE_COMPARER>
-            inline constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
+            constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
+            template <typename BASE_COMPARER>
+            constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Three-Way comparer
@@ -286,6 +294,7 @@ namespace Stroika {
             struct ThreeWayComparerAdapter {
                 /**
                  */
+                constexpr ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer);
                 constexpr ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer);
 
                 /**
@@ -301,6 +310,8 @@ namespace Stroika {
              *  mkThreeWayComparerAdapter is a trivial wrapper on ThreeWayComparerAdapter, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              */
+            template <typename BASE_COMPARER>
+            constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>;
             template <typename BASE_COMPARER>
             constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>;
         }

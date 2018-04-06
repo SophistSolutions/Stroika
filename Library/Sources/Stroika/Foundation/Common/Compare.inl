@@ -219,13 +219,13 @@ namespace Stroika {
             template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
             constexpr OrderingRelationType FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
             template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
-            inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer)
-                : fActualComparer (move (actualComparer))
+            inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
+                : fActualComparer (actualComparer)
             {
             }
             template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
-            inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
-                : fActualComparer (actualComparer)
+            inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer)
+                : fActualComparer (move (actualComparer))
             {
             }
             template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
@@ -247,6 +247,11 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename FUNCTOR>
+            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f)
+            {
+                return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder>{f};
+            }
+            template <typename FUNCTOR>
             constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f)
             {
                 return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder>{move (f)};
@@ -257,6 +262,11 @@ namespace Stroika {
              *********************** InOrderComparerAdapter<BASE_COMPARER> ******************
              ********************************************************************************
              */
+            template <typename BASE_COMPARER>
+            constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
+                : fBASE_COMPARER_ (baseComparer)
+            {
+            }
             template <typename BASE_COMPARER>
             constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (BASE_COMPARER&& baseComparer)
                 : fBASE_COMPARER_ (move (baseComparer))
@@ -285,6 +295,11 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename BASE_COMPARER>
+            inline constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
+            {
+                return InOrderComparerAdapter<BASE_COMPARER>{baseComparer};
+            }
+            template <typename BASE_COMPARER>
             inline constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
             {
                 return InOrderComparerAdapter<BASE_COMPARER>{move (baseComparer)};
@@ -295,6 +310,11 @@ namespace Stroika {
              ********************* EqualsComparerAdapter<BASE_COMPARER> *********************
              ********************************************************************************
              */
+            template <typename BASE_COMPARER>
+            constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (const BASE_COMPARER& baseComparer)
+                : fBASE_COMPARER_ (baseComparer)
+            {
+            }
             template <typename BASE_COMPARER>
             constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (BASE_COMPARER&& baseComparer)
                 : fBASE_COMPARER_ (std::move (baseComparer))
@@ -325,6 +345,11 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename BASE_COMPARER>
+            inline constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
+            {
+                return EqualsComparerAdapter<BASE_COMPARER>{baseComparer};
+            }
+            template <typename BASE_COMPARER>
             inline constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
             {
                 return EqualsComparerAdapter<BASE_COMPARER>{std::move (baseComparer)};
@@ -336,8 +361,13 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename BASE_COMPARER>
+            constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
+                : fBASE_COMPARER_ (baseComparer)
+            {
+            }
+            template <typename BASE_COMPARER>
             constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer)
-                : fBASE_COMPARER_ (std::forward<BASE_COMPARER> (baseComparer))
+                : fBASE_COMPARER_ (move (baseComparer))
             {
             }
             template <typename BASE_COMPARER>
@@ -361,9 +391,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename BASE_COMPARER>
+            inline constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
+            {
+                return ThreeWayComparerAdapter<BASE_COMPARER>{baseComparer};
+            }
+            template <typename BASE_COMPARER>
             inline constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
             {
-                return ThreeWayComparerAdapter<BASE_COMPARER>{std::forward<BASE_COMPARER> (baseComparer)};
+                return ThreeWayComparerAdapter<BASE_COMPARER>{std::move (baseComparer)};
             }
         }
     }

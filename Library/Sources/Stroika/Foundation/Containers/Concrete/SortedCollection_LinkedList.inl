@@ -137,7 +137,7 @@ namespace Stroika {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // equals might examine a subset of the object and we still want to update the whole object, but
                         // if its not already equal, the sort order could have changed so we must simulate with a remove/add
-                        if (Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_}(mir.fIterator.Current (), newValue)) {
+                        if (Common::mkEqualsComparerAdapter (fInorderComparer_) (mir.fIterator.Current (), newValue)) {
                             fData_.SetAt (mir.fIterator, newValue);
                         }
                         else {
@@ -172,12 +172,12 @@ namespace Stroika {
                     virtual bool Contains (T item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        return fData_.Lookup (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_}) != nullptr;
+                        return fData_.Lookup (item, Common::mkEqualsComparerAdapter (fInorderComparer_)) != nullptr;
                     }
                     virtual void Remove (T item) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        fData_.Remove (item, Common::EqualsComparerAdapter<INORDER_COMPARER>{fInorderComparer_});
+                        fData_.Remove (item, Common::mkEqualsComparerAdapter (fInorderComparer_));
                     }
 
                 private:
