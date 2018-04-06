@@ -229,25 +229,14 @@ namespace Stroika {
              */
             template <typename BASE_COMPARER>
             struct InOrderComparerAdapter {
-                constexpr InOrderComparerAdapter (const BASE_COMPARER& baseComparer)
-                    : fBASE_COMPARER_ (baseComparer)
-                {
-                }
+                /**
+                 */
+                constexpr InOrderComparerAdapter (BASE_COMPARER&& baseComparer);
+
+                /**
+                */
                 template <typename T>
-                constexpr bool operator() (const T& lhs, const T& rhs) const
-                {
-                    switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                        case OrderingRelationType::eStrictInOrder:
-                            return fBASE_COMPARER_ (lhs, rhs);
-                        case OrderingRelationType::eInOrderOrEquals:
-                            return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-                        case OrderingRelationType::eThreeWayCompare:
-                            return fBASE_COMPARER_ (lhs, rhs) < 0;
-                        default:
-                            AssertNotReached ();
-                            return false;
-                    }
-                }
+                constexpr bool operator() (const T& lhs, const T& rhs) const;
 
             private:
                 BASE_COMPARER fBASE_COMPARER_;
@@ -263,37 +252,21 @@ namespace Stroika {
              *        Whereas this function looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename BASE_COMPARER>
-            inline constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer)
-            {
-                return InOrderComparerAdapter<BASE_COMPARER>{baseComparer};
-            }
+            constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>;
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce an Equals comparer
              */
             template <typename BASE_COMPARER>
             struct EqualsComparerAdapter {
-                constexpr EqualsComparerAdapter (const BASE_COMPARER& baseComparer)
-                    : fBASE_COMPARER_ (baseComparer)
-                {
-                }
+                /**
+                 */
+                constexpr EqualsComparerAdapter (BASE_COMPARER&& baseComparer);
+
+                /**
+                 */
                 template <typename T>
-                constexpr bool operator() (const T& lhs, const T& rhs) const
-                {
-                    switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                        case OrderingRelationType::eEquals:
-                            return fBASE_COMPARER_ (lhs, rhs);
-                        case OrderingRelationType::eStrictInOrder:
-                            return not fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-                        case OrderingRelationType::eInOrderOrEquals:
-                            return fBASE_COMPARER_ (lhs, rhs) and fBASE_COMPARER_ (rhs, lhs);
-                        case OrderingRelationType::eThreeWayCompare:
-                            return fBASE_COMPARER_ (lhs, rhs) == 0;
-                        default:
-                            AssertNotReached ();
-                            return false;
-                    }
-                }
+                constexpr bool operator() (const T& lhs, const T& rhs) const;
 
             private:
                 BASE_COMPARER fBASE_COMPARER_;
@@ -304,33 +277,21 @@ namespace Stroika {
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              */
             template <typename BASE_COMPARER>
-            inline constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer)
-            {
-                return EqualsComparerAdapter<BASE_COMPARER>{baseComparer};
-            }
+            inline constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Three-Way comparer
              */
             template <typename BASE_COMPARER>
             struct ThreeWayComparerAdapter {
-                constexpr ThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
-                    : fBASE_COMPARER_ (baseComparer)
-                {
-                }
+                /**
+                 */
+                constexpr ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer);
+
+                /**
+                */
                 template <typename T>
-                constexpr int operator() (const T& lhs, const T& rhs) const
-                {
-                    switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                        case OrderingRelationType::eStrictInOrder:
-                            return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
-                        case OrderingRelationType::eThreeWayCompare:
-                            return fBASE_COMPARER_ (lhs, rhs);
-                        default:
-                            AssertNotReached ();
-                            return false;
-                    }
-                }
+                constexpr int operator() (const T& lhs, const T& rhs) const;
 
             private:
                 BASE_COMPARER fBASE_COMPARER_;
@@ -341,10 +302,7 @@ namespace Stroika {
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              */
             template <typename BASE_COMPARER>
-            inline constexpr auto mkThreeWayComparerAdapter (const BASE_COMPARER& baseComparer)
-            {
-                return ThreeWayComparerAdapter<BASE_COMPARER>{baseComparer};
-            }
+            constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>;
         }
     }
 }

@@ -251,6 +251,120 @@ namespace Stroika {
             {
                 return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder>{move (f)};
             }
+
+            /*
+             ********************************************************************************
+             *********************** InOrderComparerAdapter<BASE_COMPARER> ******************
+             ********************************************************************************
+             */
+            template <typename BASE_COMPARER>
+            constexpr inline InOrderComparerAdapter<BASE_COMPARER>::InOrderComparerAdapter (BASE_COMPARER&& baseComparer)
+                : fBASE_COMPARER_ (move (baseComparer))
+            {
+            }
+            template <typename BASE_COMPARER>
+            template <typename T>
+            constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
+            {
+                switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
+                    case OrderingRelationType::eStrictInOrder:
+                        return fBASE_COMPARER_ (lhs, rhs);
+                    case OrderingRelationType::eInOrderOrEquals:
+                        return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
+                    case OrderingRelationType::eThreeWayCompare:
+                        return fBASE_COMPARER_ (lhs, rhs) < 0;
+                    default:
+                        AssertNotReached ();
+                        return false;
+                }
+            }
+
+            /*
+             ********************************************************************************
+             ********************* mkInOrderComparerAdapter<BASE_COMPARER> ******************
+             ********************************************************************************
+             */
+            template <typename BASE_COMPARER>
+            inline constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>
+            {
+                return InOrderComparerAdapter<BASE_COMPARER>{move (baseComparer)};
+            }
+
+            /*
+             ********************************************************************************
+             ********************* EqualsComparerAdapter<BASE_COMPARER> *********************
+             ********************************************************************************
+             */
+            template <typename BASE_COMPARER>
+            constexpr EqualsComparerAdapter<BASE_COMPARER>::EqualsComparerAdapter (BASE_COMPARER&& baseComparer)
+                : fBASE_COMPARER_ (std::move (baseComparer))
+            {
+            }
+            template <typename BASE_COMPARER>
+            template <typename T>
+            constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
+            {
+                switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
+                    case OrderingRelationType::eEquals:
+                        return fBASE_COMPARER_ (lhs, rhs);
+                    case OrderingRelationType::eStrictInOrder:
+                        return not fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
+                    case OrderingRelationType::eInOrderOrEquals:
+                        return fBASE_COMPARER_ (lhs, rhs) and fBASE_COMPARER_ (rhs, lhs);
+                    case OrderingRelationType::eThreeWayCompare:
+                        return fBASE_COMPARER_ (lhs, rhs) == 0;
+                    default:
+                        AssertNotReached ();
+                        return false;
+                }
+            }
+
+            /*
+             ********************************************************************************
+             ********************* mkEqualsComparerAdapter<BASE_COMPARER> *******************
+             ********************************************************************************
+             */
+            template <typename BASE_COMPARER>
+            inline constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>
+            {
+                return EqualsComparerAdapter<BASE_COMPARER>{std::move (baseComparer)};
+            }
+
+            /*
+             ********************************************************************************
+             ********************* ThreeWayComparerAdapter<BASE_COMPARER> *******************
+             ********************************************************************************
+             */
+            template <typename BASE_COMPARER>
+            constexpr ThreeWayComparerAdapter<BASE_COMPARER>::ThreeWayComparerAdapter (BASE_COMPARER&& baseComparer)
+                : fBASE_COMPARER_ (std::forward<BASE_COMPARER> (baseComparer))
+            {
+            }
+            template <typename BASE_COMPARER>
+            template <typename T>
+            constexpr int ThreeWayComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
+            {
+                switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
+                    case OrderingRelationType::eStrictInOrder:
+                        return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
+                    case OrderingRelationType::eThreeWayCompare:
+                        return fBASE_COMPARER_ (lhs, rhs);
+                    default:
+                        AssertNotReached ();
+                        return false;
+                }
+            }
+
+            /*
+             ********************************************************************************
+             ********************* mkThreeWayComparerAdapter<BASE_COMPARER> *****************
+             ********************************************************************************
+             */
+            template <typename BASE_COMPARER>
+            inline constexpr auto mkThreeWayComparerAdapter (BASE_COMPARER&& baseComparer) -> ThreeWayComparerAdapter<BASE_COMPARER>
+            {
+                return ThreeWayComparerAdapter<BASE_COMPARER>{std::forward<BASE_COMPARER> (baseComparer)};
+            }
         }
     }
 }
