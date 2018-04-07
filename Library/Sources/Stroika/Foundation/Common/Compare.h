@@ -185,9 +185,9 @@ namespace Stroika {
              *          using EqualityComparerType = Common::ComparisonRelationDeclaration<function<bool(T, T)>, Common::ComparisonRelationType::eEquals>;
              *      \endcode
              */
-            template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+            template <ComparisonRelationType KIND, typename ACTUAL_COMPARER>
             struct ComparisonRelationDeclaration {
-                static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // default - so user-defined types can do this to automatically define their Comparison Traits
                 ACTUAL_COMPARER                         fActualComparer;
 
                 /**
@@ -205,15 +205,15 @@ namespace Stroika {
              *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
              *  the type.
              */
-            template <ComparisonRelationType TYPE>
+            template <ComparisonRelationType KIND>
             struct ComparisonTraitsBase {
-                static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // default - so user-defined types can do this to automatically define their Comparison Traits
             };
 
             /// EXPERIEMNT???
-            template <ComparisonRelationType TYPE>
-            struct ComparisonRelationDeclaration<TYPE, void> {
-                static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+            template <ComparisonRelationType KIND>
+            struct ComparisonRelationDeclaration<KIND, void> {
+                static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // default - so user-defined types can do this to automatically define their Comparison Traits
             };
 
             /*
