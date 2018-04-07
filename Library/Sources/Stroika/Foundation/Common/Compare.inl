@@ -213,30 +213,24 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ****************** ComparisonRelationDeclaration<COMPARER> *********************
+             ********** ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER> ****************
              ********************************************************************************
              */
-            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            constexpr ComparisonRelationType ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::kComparisonRelationKind;
-            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            inline constexpr ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
+            template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+            constexpr ComparisonRelationType ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::kComparisonRelationKind;
+			template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+			inline constexpr ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
                 : fActualComparer (actualComparer)
             {
             }
-            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            inline constexpr ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
+			template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+			inline constexpr ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
                 : fActualComparer (move (actualComparer))
             {
             }
-            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF>
-            inline constexpr ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::ComparisonRelationDeclaration (const OTHER_ACTUAL_COMPARER& actualComparer)
-                : fActualComparer (actualComparer)
-            {
-            }
-            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            template <typename T>
-            inline constexpr bool ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::operator() (const T& lhs, const T& rhs) const
+			template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+			template <typename T>
+            inline constexpr bool ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
                 return fActualComparer (lhs, rhs);
             }
@@ -247,14 +241,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> mkEqualsComparer (const FUNCTOR& f)
             {
-                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals>{f};
+                return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> mkEqualsComparer (FUNCTOR&& f)
             {
-                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals>{move (f)};
+                return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{move (f)};
             }
 
             /*
@@ -263,14 +257,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> mkInOrderComparer (const FUNCTOR& f)
             {
-                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder>{f};
+                return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> mkInOrderComparer (FUNCTOR&& f)
             {
-                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder>{move (f)};
+                return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{move (f)};
             }
 
             /*
