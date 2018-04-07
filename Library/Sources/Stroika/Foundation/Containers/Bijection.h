@@ -131,14 +131,14 @@ namespace Stroika {
                  *  This is the type returned by GetDomainEqualsComparer () and CAN be used as the argument to a Bijection<> as EqualityComparer, but
                  *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
                  */
-                using DomainEqualsCompareFunctionType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(DomainType, DomainType)>>;
+                using DomainEqualsCompareFunctionType = Common::ComparisonRelationDeclaration<function<bool(DomainType, DomainType)>, Common::ComparisonRelationType::eEquals>;
 
             public:
                 /**
                  *  This is the type returned by GetRangeEqualsComparer () and CAN be used as the argument to a Bijection<> as EqualityComparer, but
                  *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
                  */
-                using RangeEqualsCompareFunctionType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(RangeType, RangeType)>>;
+                using RangeEqualsCompareFunctionType = Common::ComparisonRelationDeclaration<function<bool(RangeType, RangeType)>, Common::ComparisonRelationType::eEquals>;
 
             public:
                 /**
