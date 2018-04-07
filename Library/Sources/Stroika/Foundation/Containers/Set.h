@@ -173,11 +173,6 @@ namespace Stroika {
                  */
                 nonvirtual EqualityComparerType GetEqualsComparer () const;
 
-            private:
-                template <typename CHECK = T, typename ENABLE_IF_HAS_EQUALS = enable_if_t<Configuration::has_eq<CHECK>::value>>
-                nonvirtual function<bool(T, T)> GetEqualsComparer_ () const;
-                nonvirtual function<bool(T, T)> GetEqualsComparer_ (...) const;
-
             public:
                 /**
                 */
@@ -406,8 +401,7 @@ namespace Stroika {
                 using _SetRepSharedPtr = typename Set<T>::_SetRepSharedPtr;
 
             public:
-                // PeekEqualsComparer may return nullptr for equal_to<T>
-                virtual function<bool(T, T)> PeekEqualsComparer () const                            = 0;
+                virtual EqualityComparerType GetEqualsComparer () const                             = 0;
                 virtual _SetRepSharedPtr     CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
                 virtual bool                 Equals (const _IRep& rhs) const                        = 0;
                 virtual bool                 Contains (ArgByValueType<T> item) const                = 0;

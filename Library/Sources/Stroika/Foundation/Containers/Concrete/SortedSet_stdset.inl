@@ -39,6 +39,7 @@ namespace Stroika {
                     using _SetSharedPtrIRep     = typename Set<T>::_SetRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using EqualityComparerType  = typename Set<T>::EqualityComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -97,7 +98,7 @@ namespace Stroika {
 
                     // Set<T>::_IRep overrides
                 public:
-                    virtual function<bool(T, T)> PeekEqualsComparer () const override
+                    virtual EqualityComparerType GetEqualsComparer () const override
                     {
                         return Common::EqualsComparerAdapter<INORDER_COMPARER>{fData_.key_comp ()};
                     }
