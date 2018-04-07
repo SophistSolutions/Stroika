@@ -217,7 +217,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
-            constexpr OrderingRelationType FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+            constexpr OrderingRelationType FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::kOrderingRelationKind;
             template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
             inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
                 : fActualComparer (actualComparer)
