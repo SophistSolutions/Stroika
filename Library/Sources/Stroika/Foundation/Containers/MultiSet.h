@@ -142,7 +142,7 @@ namespace Stroika {
                  *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
                  *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
                  */
-                using EqualityComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eEquals>;
+                using EqualityComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::ComparisonRelationType::eEquals>;
 
             public:
                 /**

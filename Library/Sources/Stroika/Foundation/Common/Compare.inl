@@ -187,12 +187,12 @@ namespace Stroika {
             template <typename COMPARER>
             constexpr bool IsEqualsComparer ()
             {
-                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eEquals;
+                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
             }
             template <typename COMPARER>
             constexpr bool IsEqualsComparer (const COMPARER&)
             {
-                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eEquals;
+                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
             }
 
             /*
@@ -203,12 +203,12 @@ namespace Stroika {
             template <typename COMPARER>
             constexpr bool IsStrictInOrderComparer ()
             {
-                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eStrictInOrder;
+                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
             }
             template <typename COMPARER>
             constexpr bool IsStrictInOrderComparer (const COMPARER&)
             {
-                return ComparisonTraits<COMPARER>::kOrderingRelationKind == OrderingRelationType::eStrictInOrder;
+                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
             }
 
             /*
@@ -216,25 +216,25 @@ namespace Stroika {
              ********************* FunctionComparerAdapter<COMPARER> ************************
              ********************************************************************************
              */
-            template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
-            constexpr OrderingRelationType FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::kOrderingRelationKind;
-            template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
+            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
+            constexpr ComparisonRelationType FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::kComparisonRelationKind;
+            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
             inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
                 : fActualComparer (actualComparer)
             {
             }
-            template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
+            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
             inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer)
                 : fActualComparer (move (actualComparer))
             {
             }
-            template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
+            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
             template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF>
             inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer)
                 : fActualComparer (actualComparer)
             {
             }
-            template <typename ACTUAL_COMPARER, OrderingRelationType TYPE>
+            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
             template <typename T>
             inline constexpr bool FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::operator() (const T& lhs, const T& rhs) const
             {
@@ -247,14 +247,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f)
+            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals>{f};
+                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f)
+            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals>{move (f)};
+                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals>{move (f)};
             }
 
             /*
@@ -263,14 +263,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f)
+            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder>{f};
+                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f)
+            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder>{move (f)};
+                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder>{move (f)};
             }
 
             /*
@@ -292,12 +292,12 @@ namespace Stroika {
             template <typename T>
             constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
-                switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                    case OrderingRelationType::eStrictInOrder:
+                switch (ComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
+                    case ComparisonRelationType::eStrictInOrder:
                         return fBASE_COMPARER_ (lhs, rhs);
-                    case OrderingRelationType::eInOrderOrEquals:
+                    case ComparisonRelationType::eInOrderOrEquals:
                         return fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-                    case OrderingRelationType::eThreeWayCompare:
+                    case ComparisonRelationType::eThreeWayCompare:
                         return fBASE_COMPARER_ (lhs, rhs) < 0;
                     default:
                         AssertNotReached ();
@@ -340,14 +340,14 @@ namespace Stroika {
             template <typename T>
             constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
-                switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                    case OrderingRelationType::eEquals:
+                switch (ComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
+                    case ComparisonRelationType::eEquals:
                         return fBASE_COMPARER_ (lhs, rhs);
-                    case OrderingRelationType::eStrictInOrder:
+                    case ComparisonRelationType::eStrictInOrder:
                         return not fBASE_COMPARER_ (lhs, rhs) and not fBASE_COMPARER_ (rhs, lhs);
-                    case OrderingRelationType::eInOrderOrEquals:
+                    case ComparisonRelationType::eInOrderOrEquals:
                         return fBASE_COMPARER_ (lhs, rhs) and fBASE_COMPARER_ (rhs, lhs);
-                    case OrderingRelationType::eThreeWayCompare:
+                    case ComparisonRelationType::eThreeWayCompare:
                         return fBASE_COMPARER_ (lhs, rhs) == 0;
                     default:
                         AssertNotReached ();
@@ -390,10 +390,10 @@ namespace Stroika {
             template <typename T>
             constexpr int ThreeWayComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
-                switch (ComparisonTraits<BASE_COMPARER>::kOrderingRelationKind) {
-                    case OrderingRelationType::eStrictInOrder:
+                switch (ComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
+                    case ComparisonRelationType::eStrictInOrder:
                         return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
-                    case OrderingRelationType::eThreeWayCompare:
+                    case ComparisonRelationType::eThreeWayCompare:
                         return fBASE_COMPARER_ (lhs, rhs);
                     default:
                         AssertNotReached ();

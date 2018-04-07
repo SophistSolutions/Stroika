@@ -28,7 +28,7 @@ namespace Stroika {
             inline Set<T>::Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
                 : inherited (move (Factory::Set_Factory<T, EQUALS_COMPARER> (equalsComparer) ()))
             {
-                static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see FunctionComparerAdapter<Common::OrderingRelationType::eEquals, function<bool(T, T)>");
+                static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see FunctionComparerAdapter<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
                 _AssertRepValidType ();
             }
             template <typename T>

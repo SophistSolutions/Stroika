@@ -91,7 +91,7 @@ namespace Stroika {
             /**
              *  THIS is what drives how we do containers/related algorithms (less is equiv to greater for most of them)
              */
-            enum class OrderingRelationType {
+            enum class ComparisonRelationType {
                 eEquals,
 
                 /**
@@ -120,46 +120,37 @@ namespace Stroika {
             };
 
             /**
-             *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
-             *  the type.
-             */
-            template <OrderingRelationType TYPE>
-            struct ComparisonTraitsBase {
-                static constexpr OrderingRelationType kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
-            };
-
-            /**
              *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
              *  specific user-defined types.
              */
             template <typename COMPARE_FUNCTION>
             struct ComparisonTraits {
-                static constexpr OrderingRelationType kOrderingRelationKind = COMPARE_FUNCTION::kOrderingRelationKind;
+                static constexpr ComparisonRelationType kComparisonRelationKind = COMPARE_FUNCTION::kComparisonRelationKind;
             };
 
             template <typename T>
             struct ComparisonTraits<equal_to<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eEquals;
+                static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eEquals;
             };
             template <typename T>
             struct ComparisonTraits<less<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eStrictInOrder;
+                static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
             };
             template <typename T>
             struct ComparisonTraits<greater<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eStrictInOrder;
+                static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eStrictInOrder;
             };
             template <typename T>
             struct ComparisonTraits<less_equal<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrderOrEquals;
+                static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
             };
             template <typename T>
             struct ComparisonTraits<greater_equal<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eInOrderOrEquals;
+                static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eInOrderOrEquals;
             };
             template <typename T>
             struct ComparisonTraits<ThreeWayCompare<T>> {
-                static constexpr OrderingRelationType kOrderingRelationKind = OrderingRelationType::eThreeWayCompare;
+                static constexpr ComparisonRelationType kComparisonRelationKind = ComparisonRelationType::eThreeWayCompare;
             };
 
             /**
@@ -188,22 +179,31 @@ namespace Stroika {
             /**
              *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
              *  the type.
+             */
+            template <ComparisonRelationType TYPE>
+            struct ComparisonTraitsBase {
+                static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+            };
+
+            /**
+             *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
+             *  the type.
              *
              *  \par Example Usage
              *      \code
-             *          using EqualityComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eEquals>;
+             *          using EqualityComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::ComparisonRelationType::eEquals>;
              *      \endcode
              */
-            template <typename ACTUAL_COMPARER, OrderingRelationType TYPE = ACTUAL_COMPARER::kOrderingRelationKind>
+            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE = ACTUAL_COMPARER::kComparisonRelationKind>
             struct FunctionComparerAdapter {
-                static constexpr OrderingRelationType kOrderingRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
-                ACTUAL_COMPARER                       fActualComparer;
+                static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                ACTUAL_COMPARER                         fActualComparer;
 
                 /**
                  */
                 constexpr FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer);
                 constexpr FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer);
-                template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kOrderingRelationKind == kOrderingRelationKind>>
+                template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kComparisonRelationKind == kComparisonRelationKind>>
                 constexpr FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer);
 
                 /**
@@ -222,9 +222,9 @@ namespace Stroika {
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f);
+            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f);
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f);
+            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f);
 
             /*
              *  mkInOrderComparer is a trivial wrapper on FunctionComparerAdapter, but takes advantage of the fact that you
@@ -236,9 +236,9 @@ namespace Stroika {
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f);
+            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f);
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f);
+            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f);
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Less comparer

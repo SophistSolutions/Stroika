@@ -1208,16 +1208,16 @@ namespace Stroika {
              *  Equivilent to std::equal_to<String>, except doing case insensitive compares
              */
             struct String::EqualToCI {
-                static constexpr Common::OrderingRelationType kOrderingRelationKind = Common::OrderingRelationType::eEquals;
-                nonvirtual bool                               operator() (const String& lhs, const String& rhs) const;
+                static constexpr Common::ComparisonRelationType kComparisonRelationKind = Common::ComparisonRelationType::eEquals;
+                nonvirtual bool                                 operator() (const String& lhs, const String& rhs) const;
             };
 
             /*
              *  Equivilent to std::less<String>, except doing case insensitive compares
              */
             struct String::LessCI {
-                static constexpr Common::OrderingRelationType kOrderingRelationKind = Common::OrderingRelationType::eStrictInOrder;
-                nonvirtual bool                               operator() (const String& lhs, const String& rhs) const;
+                static constexpr Common::ComparisonRelationType kComparisonRelationKind = Common::ComparisonRelationType::eStrictInOrder;
+                nonvirtual bool                                 operator() (const String& lhs, const String& rhs) const;
             };
 
             /**
