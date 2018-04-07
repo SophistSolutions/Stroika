@@ -138,7 +138,7 @@ namespace Stroika {
                  *  This is the type returned by GetKeyEqualsComparer () and CAN be used as the argument to a Mapping<> as KeyEqualityComparer, but
                  *  we allow any template in the Mapping<> CTOR for a keyEqualityComparer that follows the Common::IsEqualsComparer () concept (need better name).
                  */
-                using KeyEqualsCompareFunctionType = Common::ComparisonRelationDeclaration<function<bool(key_type, key_type)>, Common::ComparisonRelationType::eEquals>;
+                using KeyEqualsCompareFunctionType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(key_type, key_type)>>;
 
             public:
                 /**
