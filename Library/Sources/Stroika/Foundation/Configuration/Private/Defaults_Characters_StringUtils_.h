@@ -41,4 +41,13 @@
 #define qPlatformSupports_wcsncasecmp qPlatformSupports_wcscasecmp
 #endif
 
+// See https://stroika.atlassian.net/browse/STK-650
+#ifndef qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8
+#define qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8 1
+#endif
+
+#if qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#endif
+
 #endif /*_Stroika_Foundation_Configuration_Private_Defaults_Chracters_Common_h_*/
