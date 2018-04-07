@@ -243,6 +243,22 @@ namespace Stroika {
 
             /*
              ********************************************************************************
+             ********************************* mkEqualsComparer *****************************
+             ********************************************************************************
+             */
+            template <typename FUNCTOR>
+            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f)
+            {
+                return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals>{f};
+            }
+            template <typename FUNCTOR>
+            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f)
+            {
+                return Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals>{move (f)};
+            }
+
+            /*
+             ********************************************************************************
              ********************************* mkInOrderComparer ****************************
              ********************************************************************************
              */

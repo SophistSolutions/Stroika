@@ -73,7 +73,7 @@ bool SimpleClass::operator< (const SimpleClass& rhs) const
 
 /*
  ********************************************************************************
- ********************************** SimpleClassWithoutComparisonOperators *********************************
+ ******************* SimpleClassWithoutComparisonOperators **********************
  ********************************************************************************
  */
 size_t SimpleClassWithoutComparisonOperators::sTotalLiveObjects = 0;

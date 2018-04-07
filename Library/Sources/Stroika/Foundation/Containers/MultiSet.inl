@@ -298,6 +298,14 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
+            template <typename CONTAINER_OF_T, typename ENABLE_IF>
+            inline MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+                : MultiSet (equalsComparer)
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
             inline MultiSet<T, TRAITS>::MultiSet (const _MultiSetRepSharedPtr& rep) noexcept
                 : inherited ((RequireNotNull (rep), rep))
             {
@@ -317,8 +325,22 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
+            MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
+                : MultiSet (equalsComparer)
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
             MultiSet<T, TRAITS>::MultiSet (const initializer_list<CountedValue<T>>& src)
                 : MultiSet ()
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
+            MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<CountedValue<T>>& src)
+                : MultiSet (equalsComparer)
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -327,6 +349,14 @@ namespace Stroika {
             template <typename COPY_FROM_ITERATOR>
             MultiSet<T, TRAITS>::MultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
                 : MultiSet ()
+            {
+                AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR>
+            MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+                : MultiSet (equalsComparer)
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
@@ -383,6 +413,11 @@ namespace Stroika {
 #endif
                 AssertNotNull (ss.get ());
                 return ss->UniqueElements (ss);
+            }
+            template <typename T, typename TRAITS>
+            inline auto MultiSet<T, TRAITS>::GetEqualsComparer () const -> EqualityComparerType
+            {
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetEqualsComparer ();
             }
             template <typename T, typename TRAITS>
             inline bool MultiSet<T, TRAITS>::Equals (const MultiSet<T, TRAITS>& rhs) const

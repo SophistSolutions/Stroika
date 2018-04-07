@@ -104,7 +104,7 @@ namespace Stroika {
                 public:
                     virtual EqualityComparerType GetEqualsComparer () const override
                     {
-                        return Common::EqualsComparerAdapter<INORDER_COMPARER>{fData_.key_comp ()};
+                        return Common::mkEqualsComparerAdapter (fData_.key_comp ());
                     }
                     virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {

@@ -43,6 +43,7 @@ namespace Stroika {
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using CounterType           = typename inherited::CounterType;
+                    using EqualityComparerType  = typename MultiSet<T, TRAITS>::EqualityComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -97,6 +98,10 @@ namespace Stroika {
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
+                    virtual EqualityComparerType GetEqualsComparer () const override
+                    {
+                        return Common::mkEqualsComparerAdapter (fData_.key_comp ());
+                    }
                     virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {

@@ -222,6 +222,20 @@ namespace Stroika {
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename FUNCTOR>
+            constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f);
+            template <typename FUNCTOR>
+            constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f);
+
+            /*
+             *  mkInOrderComparer is a trivial wrapper on FunctionComparerAdapter, but takes advantage of the fact that you
+             *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
+             *
+             *  @see mkInOrderComparerAdapter
+             *
+             *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
+             *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
+             */
+            template <typename FUNCTOR>
             constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f);
             template <typename FUNCTOR>
             constexpr Common::FunctionComparerAdapter<FUNCTOR, OrderingRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f);

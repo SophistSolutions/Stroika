@@ -51,6 +51,7 @@ namespace Stroika {
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using CounterType           = typename inherited::CounterType;
+                    using EqualityComparerType  = typename MultiSet<T, TRAITS>::EqualityComparerType;
 
                 public:
                     Rep_ (const EQUALS_COMPARER& equalsComparer)
@@ -77,6 +78,10 @@ namespace Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
+                    virtual EqualityComparerType GetEqualsComparer () const override
+                    {
+                        return fEqualsComparer_;
+                    }
                     virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
                     {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists

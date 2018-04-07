@@ -139,21 +139,35 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a MultiSet<> as EqualityComparer, but
+                 *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
+                 */
+                using EqualityComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::OrderingRelationType::eEquals>;
+
+            public:
+                /**
+                 *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
+                 *  (which in turn defaults to equal_to<T>).
+                 *
+                 *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>, but
+                 *        for simplicity sake, many of the other constructors force that conversion.
+                 *
                  * \req IsEqualsComparer<EQUALS_COMPARER> () - for constructors with that type parameter
                  *
                  *  \par Example Usage
                  *      \code
-                 *        Collection<int> c;
-                 *        std::vector<int> v;
+                 *          Collection<int> c;
+                 *          std::vector<int> v;
                  *
-                 *        MultiSet<int> s1  = {1, 2, 3};
-                 *        MultiSet<int> s2  = s1;
-                 *        MultiSet<int> s3  { s1 };
-                 *        MultiSet<int> s4  { s1.begin (), s1.end () };
-                 *        MultiSet<int> s5  { c };
-                 *        MultiSet<int> s6  { v };
-                 *        //@todo - make this work - use ITERATOR NOT PTR - MultiSet<int> s7  { v.begin (), v.end () };
-                 *        MultiSet<int> s8  { move (s1) };
+                 *          MultiSet<int> s1  = {1, 2, 3};
+                 *          MultiSet<int> s2  = s1;
+                 *          MultiSet<int> s3  { s1 };
+                 *          MultiSet<int> s4  { s1.begin (), s1.end () };
+                 *          MultiSet<int> s5  { c };
+                 *          MultiSet<int> s6  { v };
+                 *          MultiSet<int> s7  { v.begin (), v.end () };
+                 *          MultiSet<int> s8  { move (s1) };
+                 *          MultiSet<int> s9  { Common::mkEqualsComparer([](int l, int r) { return l == r; }), c};
                  *      \endcode
                  */
                 MultiSet ();
@@ -162,11 +176,17 @@ namespace Stroika {
                 MultiSet (const MultiSet& src) noexcept = default;
                 MultiSet (MultiSet&& src) noexcept      = default;
                 MultiSet (const initializer_list<T>& src);
+                MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
                 MultiSet (const initializer_list<CountedValue<T>>& src);
+                MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<CountedValue<T>>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
                 MultiSet (const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
+                MultiSet (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR>
                 MultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template <typename COPY_FROM_ITERATOR>
+                MultiSet (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit MultiSet (const _MultiSetRepSharedPtr& rep) noexcept;
@@ -290,6 +310,12 @@ namespace Stroika {
                 nonvirtual Iterable<T> UniqueElements () const;
 
             public:
+                /**
+                 *  Return the function used to compare if two elements are equal
+                 */
+                nonvirtual EqualityComparerType GetEqualsComparer () const;
+
+            public:
                 /*
                  *  Two MultiSet are considered equal if they contain the same elements (by comparing them with operator==)
                  *  with the same count. In short, they are equal if OccurrencesOf() each item in the LHS equals the OccurrencesOf()
@@ -349,6 +375,7 @@ namespace Stroika {
                 _IRep () = default;
 
             public:
+                virtual EqualityComparerType  GetEqualsComparer () const                                             = 0;
                 virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                 = 0;
                 virtual bool                  Equals (const _IRep& rhs) const                                        = 0;
                 virtual bool                  Contains (ArgByValueType<T> item) const                                = 0;

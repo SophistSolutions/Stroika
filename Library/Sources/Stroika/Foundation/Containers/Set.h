@@ -119,7 +119,13 @@ namespace Stroika {
                  *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  *
-                 *  All constructors either copy their source comparer (copy/move CTOR), or use the default EQUALS_COMPARER for 'T'.
+                 *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
+                 *  (which in turn defaults to equal_to<T>).
+                 *
+                 *  \note For efficiency sake, the base constructor takes a templated EQUALS_COMPARER (avoiding translation to function<bool(T,T)>>, but
+                 *        for simplicity sake, many of the other constructors force that conversion.
+                 *
+                 * \req IsEqualsComparer<EQUALS_COMPARER> () - for constructors with that type parameter
                  *
                  *  \par Example Usage
                  *      \code

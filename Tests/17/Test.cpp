@@ -43,7 +43,7 @@ namespace {
     namespace ExampleCTORS_Test_2_ {
         void DoTest ()
         {
-            // From Set<> CTOR docs
+            // From MultiSet<> CTOR docs
             Collection<int>  c;
             std::vector<int> v;
 
@@ -53,8 +53,9 @@ namespace {
             MultiSet<int> s4{s1.begin (), s1.end ()};
             MultiSet<int> s5{c};
             MultiSet<int> s6{v};
-            //@todo - make this work - use ITERATOR NOT PTR -  MultiSet<int> s7{v.begin (), v.end ()};
+            MultiSet<int> s7{v.begin (), v.end ()};
             MultiSet<int> s8{move (s1)};
+            MultiSet<int> s9{Common::mkEqualsComparer ([](int l, int r) { return l == r; }), c};
         }
     }
 }
