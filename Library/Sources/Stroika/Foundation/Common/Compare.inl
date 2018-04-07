@@ -218,18 +218,18 @@ namespace Stroika {
              */
             template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
             constexpr ComparisonRelationType ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::kComparisonRelationKind;
-            template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
-            inline constexpr ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
+			template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+			inline constexpr ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
                 : fActualComparer (actualComparer)
             {
             }
-            template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
-            inline constexpr ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
+			template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+			inline constexpr ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
                 : fActualComparer (move (actualComparer))
             {
             }
-            template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
-            template <typename T>
+			template <ComparisonRelationType TYPE, typename ACTUAL_COMPARER>
+			template <typename T>
             inline constexpr bool ComparisonRelationDeclaration<TYPE, ACTUAL_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
                 return fActualComparer (lhs, rhs);
