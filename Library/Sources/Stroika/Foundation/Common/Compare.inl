@@ -213,30 +213,30 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ********************* FunctionComparerAdapter<COMPARER> ************************
+             ****************** ComparisonRelationDeclaration<COMPARER> *********************
              ********************************************************************************
              */
             template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            constexpr ComparisonRelationType FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::kComparisonRelationKind;
+            constexpr ComparisonRelationType ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::kComparisonRelationKind;
             template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer)
+            inline constexpr ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer)
                 : fActualComparer (actualComparer)
             {
             }
             template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
-            inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer)
+            inline constexpr ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer)
                 : fActualComparer (move (actualComparer))
             {
             }
             template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
             template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF>
-            inline constexpr FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer)
+            inline constexpr ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::ComparisonRelationDeclaration (const OTHER_ACTUAL_COMPARER& actualComparer)
                 : fActualComparer (actualComparer)
             {
             }
             template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
             template <typename T>
-            inline constexpr bool FunctionComparerAdapter<ACTUAL_COMPARER, TYPE>::operator() (const T& lhs, const T& rhs) const
+            inline constexpr bool ComparisonRelationDeclaration<ACTUAL_COMPARER, TYPE>::operator() (const T& lhs, const T& rhs) const
             {
                 return fActualComparer (lhs, rhs);
             }
@@ -247,14 +247,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f)
+            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals>{f};
+                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f)
+            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals>{move (f)};
+                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals>{move (f)};
             }
 
             /*
@@ -263,14 +263,14 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f)
+            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder>{f};
+                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f)
+            constexpr inline Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f)
             {
-                return Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder>{move (f)};
+                return Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder>{move (f)};
             }
 
             /*

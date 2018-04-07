@@ -157,7 +157,7 @@ namespace Stroika {
              *  \brief An Equals comparer is one that takes two arguments of type T, and returns a bool, and compares
              *         if one of the items equal to the other (e.g. std::equals).
              *
-             *  \note @see FunctionComparerAdapter<> to construct an Equals comparer from an arbitrary std::function...
+             *  \note @see ComparisonRelationDeclaration<> to construct an Equals comparer from an arbitrary std::function...
              */
             template <typename COMPARER>
             constexpr bool IsEqualsComparer ();
@@ -169,12 +169,39 @@ namespace Stroika {
              *         if one of the items is STRICTLY in-order with respect to the other - e.g. std::less, or std::greater, but
              *         but notably NOT std::equal_to, or std::less_equal.
              *
-             *  \note @see FunctionComparerAdapter<> to construct an InOrder comparer from an arbitrary std::function...
+             *  \note @see ComparisonRelationDeclaration<> to construct an InOrder comparer from an arbitrary std::function...
              */
             template <typename COMPARER>
             constexpr bool IsStrictInOrderComparer ();
             template <typename COMPARER>
             constexpr bool IsStrictInOrderComparer (const COMPARER&);
+
+            /**
+             *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
+             *  the type.
+             *
+             *  \par Example Usage
+             *      \code
+             *          using EqualityComparerType = Common::ComparisonRelationDeclaration<function<bool(T, T)>, Common::ComparisonRelationType::eEquals>;
+             *      \endcode
+             */
+            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE>
+            struct ComparisonRelationDeclaration {
+                static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
+                ACTUAL_COMPARER                         fActualComparer;
+
+                /**
+                 */
+                constexpr ComparisonRelationDeclaration (const ACTUAL_COMPARER& actualComparer);
+                constexpr ComparisonRelationDeclaration (ACTUAL_COMPARER&& actualComparer);
+                template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kComparisonRelationKind == kComparisonRelationKind>>
+                constexpr ComparisonRelationDeclaration (const OTHER_ACTUAL_COMPARER& actualComparer);
+
+                /**
+                 */
+                template <typename T>
+                constexpr bool operator() (const T& lhs, const T& rhs) const;
+            };
 
             /**
              *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
@@ -185,35 +212,14 @@ namespace Stroika {
                 static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
             };
 
-            /**
-             *  Utility class to serve as base class when constructing user-defined 'function' object comparer so ComparisonTraits<> knows
-             *  the type.
-             *
-             *  \par Example Usage
-             *      \code
-             *          using EqualityComparerType = Common::FunctionComparerAdapter<function<bool(T, T)>, Common::ComparisonRelationType::eEquals>;
-             *      \endcode
-             */
-            template <typename ACTUAL_COMPARER, ComparisonRelationType TYPE = ACTUAL_COMPARER::kComparisonRelationKind>
-            struct FunctionComparerAdapter {
+            /// EXPERIEMNT???
+            template <ComparisonRelationType TYPE>
+            struct ComparisonRelationDeclaration<void, TYPE> {
                 static constexpr ComparisonRelationType kComparisonRelationKind = TYPE; // default - so user-defined types can do this to automatically define their Comparison Traits
-                ACTUAL_COMPARER                         fActualComparer;
-
-                /**
-                 */
-                constexpr FunctionComparerAdapter (const ACTUAL_COMPARER& actualComparer);
-                constexpr FunctionComparerAdapter (ACTUAL_COMPARER&& actualComparer);
-                template <typename OTHER_ACTUAL_COMPARER, typename ENABLE_IF = enable_if_t<OTHER_ACTUAL_COMPARER::kComparisonRelationKind == kComparisonRelationKind>>
-                constexpr FunctionComparerAdapter (const OTHER_ACTUAL_COMPARER& actualComparer);
-
-                /**
-                 */
-                template <typename T>
-                constexpr bool operator() (const T& lhs, const T& rhs) const;
             };
 
             /*
-             *  mkInOrderComparer is a trivial wrapper on FunctionComparerAdapter, but takes advantage of the fact that you
+             *  mkInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              *
              *  @see mkInOrderComparerAdapter
@@ -222,12 +228,12 @@ namespace Stroika {
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f);
+            constexpr Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (const FUNCTOR& f);
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f);
+            constexpr Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eEquals> mkEqualsComparer (FUNCTOR&& f);
 
             /*
-             *  mkInOrderComparer is a trivial wrapper on FunctionComparerAdapter, but takes advantage of the fact that you
+             *  mkInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              *
              *  @see mkInOrderComparerAdapter
@@ -236,9 +242,9 @@ namespace Stroika {
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f);
+            constexpr Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (const FUNCTOR& f);
             template <typename FUNCTOR>
-            constexpr Common::FunctionComparerAdapter<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f);
+            constexpr Common::ComparisonRelationDeclaration<FUNCTOR, ComparisonRelationType::eStrictInOrder> mkInOrderComparer (FUNCTOR&& f);
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Less comparer
