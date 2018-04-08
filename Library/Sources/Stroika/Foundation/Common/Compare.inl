@@ -183,29 +183,34 @@ namespace Stroika {
              ************************ ThreeWayCompareNormalizer *****************************
              ********************************************************************************
              */
-#if 0
-            template <typename TYPE, typename ENABLE_IF_INTISH>
-            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH*)
-            {
-                return lhs - rhs;
-            }
-#endif
-            template <typename TYPE>
-            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ...)
-            {
+            namespace PRIVATE_ {
+                template <typename TYPE, typename ENABLE_IF_INTISH>
+                constexpr int ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH*)
+                {
+                    return lhs - rhs;
+                }
+                template <typename TYPE>
+                constexpr int ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, ...)
+                {
 #if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                return (lhs < rhs) ? -1 : ((lhs == rhs) ? 0 : 1);
+                    return (lhs < rhs) ? -1 : ((lhs == rhs) ? 0 : 1);
 #else
-                if (lhs < rhs) {
-                    return -1;
-                }
-                else if (lhs == rhs) {
-                    return 0;
-                }
-                else {
-                    return 1;
-                }
+                    if (lhs < rhs) {
+                        return -1;
+                    }
+                    else if (lhs == rhs) {
+                        return 0;
+                    }
+                    else {
+                        return 1;
+                    }
 #endif
+                }
+            }
+            template <typename TYPE>
+            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs)
+            {
+                return PRIVATE_::ThreeWayCompareNormalizer_ (lhs, rhs, nullptr);
             }
 
             /*
