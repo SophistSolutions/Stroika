@@ -221,6 +221,7 @@ namespace Stroika {
             template <typename FUNCTOR>
             constexpr bool IsPotentiallyComparerRelation ()
             {
+                // @todo add check that callable with 2 args T,T and return value is int or bool (maybe just convertable to int)
                 return Configuration::is_callable<FUNCTOR>::value;
             }
             template <typename FUNCTOR>
