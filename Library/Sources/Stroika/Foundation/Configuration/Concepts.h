@@ -90,6 +90,7 @@ namespace Stroika {
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));
+            STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x < x));
 
             /*
              *  has_beginend<T>::value is true iff T has a begin/end method
@@ -158,6 +159,12 @@ namespace Stroika {
             constexpr bool LessThanComparable ()
             {
                 return has_lt<T>::value && is_convertible<lt_result<T>, bool>::value;
+            }
+
+            template <typename T>
+            constexpr bool HasMinusWithIntegerResult ()
+            {
+                return has_minus<T>::value && is_convertible<minus_result<T>, int>::value;
             }
 
             /*

@@ -73,14 +73,14 @@ namespace {
             }
             static int Compare (value_type v1, value_type v2)
             {
-                return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
+                return Common::ThreeWayCompareNormalizer (v1.GetValue (), v2.GetValue ());
             }
         };
         struct MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             using value_type = SimpleClassWithoutComparisonOperators;
             static int Compare (value_type v1, value_type v2)
             {
-                return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
+                return Common::ThreeWayCompareNormalizer (v1.GetValue (), v2.GetValue ());
             }
         };
 #if 0

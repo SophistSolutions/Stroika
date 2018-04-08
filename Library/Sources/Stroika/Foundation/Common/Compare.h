@@ -11,71 +11,18 @@
 
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
+#include "../Configuration/Enumeration.h"
 #include "../Configuration/TypeHints.h"
 
 /**
- *  NEW (as of 2.0a231) Comparison logic
+ *  \file
  *
- *  \par Total Ordering (http://mathworld.wolfram.com/TotallyOrderedSet.html)
- *          o   Reflexivity: a <= a
- *          o   Antisymmetry:  a <= b and b <= a implies a=b
- *          o   Transitivity: a <= b and b <= c implies a <= c
- *          o   Comparability: either a <= b or b <= a
- *
- *  Our comparisons ALL require Comparability; and all the <,<=,>,>= comparisons require Transitivity
- *
- *  Types of Comparers:
- *      <, <=, ==, etc, are functions from SxS => bool. They are also called relations (where the
- *      relationship need not be comparable). But in our domain, they are all comparable, so all comparers
- *      are function<bool(T,T)> - at least logically.
- *
- *      Most of Stroika's containers concern themselves with == testing. The value of == can always be derived from
- *      !=, <=, <, >, >=, though not necessarily very efficiently (the greater/less than ones translate one call to two).
- *
- *      A frequently more efficient strategy is compare(T,T)-> int (<0 is <, ==0, means equals, >0 means >).
- *      This strategy was widely used in the "C" world (e.g. strcmp, quicksort, etc).
- *
- *      It also appears to be making a comeback for C++20 (http://open-std.org/JTC1/SC22/WG21/docs/papers/2017/p0515r0.pdf)
- *
- *  std-c++ favors a handful of these predefined functions
- *      >   less
- *      >   equal_to ( to a lesser degree)
- *  but also provides
- *      >   greater
- *      >   less_equal
- *      >   greater_equal
- *      >   not_equal_to
- *
- *  c++ also appears to support this funtion<int(T,T)> approach rarely (eg. string<>::compare).
- *
- *  The biggest problem with how std-c++ supports these comparison operators, is that typeid(equal_to<int>) is
- *  essentially unrelated to typeid(equal_to<char>). There is no 'tag' (as with bidirectional iterators etc) to
- *  identify different classes of comparison and so no easy to to leverage the natural relationships between
- *  equal_to and less_equal.
- *
- * TODO:
- *
- *      @todo   use http://en.cppreference.com/w/cpp/types/enable_if to make this work better
- *              So for example - we want something like:
- *                  enable_if<is_integral<T>> int compare (T, T) { return v1 - v2; }
- *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika {
     namespace Foundation {
         namespace Common {
-
-            /**
-             *  \par Example Usage
-             *      \code
-             *        return Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
-             *      \endcode
-             */
-            template <typename INTEGERLIKETYPE>
-            constexpr int CompareNormalizer (INTEGERLIKETYPE lhs, INTEGERLIKETYPE rhs);
-            // @todo more specializations
-            template <>
-            constexpr int CompareNormalizer (int lhs, int rhs);
 
             /**
              *  Stand-in until C++20, three way compare
@@ -87,6 +34,57 @@ namespace Stroika {
             };
 
             /**
+             *  \par Example Usage
+             *      \code
+             *        return Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
+             *      \endcode
+             */
+            template <typename TYPE, typename ENABLE_IF_INTISH = enable_if_t<HasMinusWithIntegerResult<TYPE> ()>>
+            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH* = nullptr);
+            template <typename TYPE>
+            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ...);
+
+            /**
+             *
+             *  NEW (as of 2.0a231) Comparison logic
+             *
+             *  \par Total Ordering (http://mathworld.wolfram.com/TotallyOrderedSet.html)
+             *          o   Reflexivity: a <= a
+             *          o   Antisymmetry:  a <= b and b <= a implies a=b
+             *          o   Transitivity: a <= b and b <= c implies a <= c
+             *          o   Comparability: either a <= b or b <= a
+             *
+             *  Our comparisons ALL require Comparability; and all the <,<=,>,>= comparisons require Transitivity
+             *
+             *  Types of Comparers:
+             *      <, <=, ==, etc, are functions from SxS => bool. They are also called relations (where the
+             *      relationship need not be comparable). But in our domain, they are all comparable, so all comparers
+             *      are function<bool(T,T)> - at least logically.
+             *
+             *      Most of Stroika's containers concern themselves with == testing. The value of == can always be derived from
+             *      !=, <=, <, >, >=, though not necessarily very efficiently (the greater/less than ones translate one call to two).
+             *
+             *      A frequently more efficient strategy is compare(T,T)-> int (<0 is <, ==0, means equals, >0 means >).
+             *      This strategy was widely used in the "C" world (e.g. strcmp, quicksort, etc).
+             *
+             *      It also appears to be making a comeback for C++20 (http://open-std.org/JTC1/SC22/WG21/docs/papers/2017/p0515r0.pdf)
+             *
+             *  std-c++ favors a handful of these predefined functions
+             *      >   less
+             *      >   equal_to ( to a lesser degree)
+             *  but also provides
+             *      >   greater
+             *      >   less_equal
+             *      >   greater_equal
+             *      >   not_equal_to
+             *
+             *  c++ also appears to support this funtion<int(T,T)> approach rarely (eg. string<>::compare).
+             *
+             *  The biggest problem with how std-c++ supports these comparison operators, is that typeid(equal_to<int>) is
+             *  essentially unrelated to typeid(equal_to<char>). There is no 'tag' (as with bidirectional iterators etc) to
+             *  identify different classes of comparison and so no easy to to leverage the natural relationships between
+             *  equal_to and less_equal.
+             *
              *  THIS is what drives how we do containers/related algorithms (less is equiv to greater for most of them)
              */
             enum class ComparisonRelationType {
@@ -114,7 +112,9 @@ namespace Stroika {
                 /**
                  *   e.g. function<int(T,T)> - where < 0 return is 'in order' (eStrictInOrder), 0 means equal, and > 0 means reversed order
                  */
-                eThreeWayCompare
+                eThreeWayCompare,
+
+                Stroika_Define_Enum_Bounds (eEquals, eThreeWayCompare)
             };
 
             /**
@@ -190,7 +190,7 @@ namespace Stroika {
              */
             template <ComparisonRelationType KIND, typename ACTUAL_COMPARER = void>
             struct ComparisonRelationDeclaration {
-                static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // default - so user-defined types can do this to automatically define their Comparison Traits
+                static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // accessed by ExtractComparisonTraits<>
                 ACTUAL_COMPARER                         fActualComparer;
 
                 /**
@@ -205,7 +205,7 @@ namespace Stroika {
             };
             template <ComparisonRelationType KIND>
             struct ComparisonRelationDeclaration<KIND, void> {
-                static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // default - so user-defined types can do this to automatically define their Comparison Traits
+                static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // accessed by ExtractComparisonTraits<>
             };
 
             /*
@@ -214,7 +214,8 @@ namespace Stroika {
              *  DeclareEqualsComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              *
-             *  @see mkInOrderComparerAdapter
+             *  @see DeclareInOrderComparer
+             *  @see mkEqualsComparerAdapter
              *
              *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
@@ -227,9 +228,10 @@ namespace Stroika {
             /*
              *  \brief  DeclareInOrderComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for in-order
              * 
-             *  mkInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
+             *  DeclareInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              *
+             *  @see DeclareEqualsComparer
              *  @see mkInOrderComparerAdapter
              *
              *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
@@ -239,6 +241,34 @@ namespace Stroika {
             constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (const FUNCTOR& f);
             template <typename FUNCTOR>
             constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f);
+
+            /**
+             *  \brief Use this to wrap any basic comparer, and produce an Equals comparer
+             */
+            template <typename BASE_COMPARER>
+            struct EqualsComparerAdapter {
+                /**
+                 */
+                constexpr EqualsComparerAdapter (const BASE_COMPARER& baseComparer);
+                constexpr EqualsComparerAdapter (BASE_COMPARER&& baseComparer);
+
+                /**
+                 */
+                template <typename T>
+                constexpr bool operator() (const T& lhs, const T& rhs) const;
+
+            private:
+                BASE_COMPARER fBASE_COMPARER_;
+            };
+
+            /**
+             *  mkEqualsComparerAdapter is a trivial wrapper on EqualsComparerAdapter, but takes advantage of the fact that you
+             *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
+             */
+            template <typename BASE_COMPARER>
+            constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
+            template <typename BASE_COMPARER>
+            constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Less comparer
@@ -272,34 +302,6 @@ namespace Stroika {
             constexpr auto mkInOrderComparerAdapter (const BASE_COMPARER& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>;
             template <typename BASE_COMPARER>
             constexpr auto mkInOrderComparerAdapter (BASE_COMPARER&& baseComparer) -> InOrderComparerAdapter<BASE_COMPARER>;
-
-            /**
-             *  \brief Use this to wrap any basic comparer, and produce an Equals comparer
-             */
-            template <typename BASE_COMPARER>
-            struct EqualsComparerAdapter {
-                /**
-                 */
-                constexpr EqualsComparerAdapter (const BASE_COMPARER& baseComparer);
-                constexpr EqualsComparerAdapter (BASE_COMPARER&& baseComparer);
-
-                /**
-                 */
-                template <typename T>
-                constexpr bool operator() (const T& lhs, const T& rhs) const;
-
-            private:
-                BASE_COMPARER fBASE_COMPARER_;
-            };
-
-            /**
-             *  mkEqualsComparerAdapter is a trivial wrapper on EqualsComparerAdapter, but takes advantage of the fact that you
-             *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
-             */
-            template <typename BASE_COMPARER>
-            constexpr auto mkEqualsComparerAdapter (const BASE_COMPARER& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
-            template <typename BASE_COMPARER>
-            constexpr auto mkEqualsComparerAdapter (BASE_COMPARER&& baseComparer) -> EqualsComparerAdapter<BASE_COMPARER>;
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Three-Way comparer

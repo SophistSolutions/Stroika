@@ -103,29 +103,7 @@ namespace Stroika {
             template <typename T>
             inline auto Set<T>::GetEqualsComparer () const -> EqualityComparerType
             {
-                return this->GetEqualsComparer_ ();
-            }
-            template <typename T>
-            template <typename CHECK, typename ENABLE_IF_HAS_EQUALS>
-            inline function<bool(T, T)> Set<T>::GetEqualsComparer_ () const
-            {
-                if (auto f = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekEqualsComparer ()) {
-                    return f;
-                }
-                else {
-                    return std::equal_to<T> ();
-                }
-            }
-            template <typename T>
-            inline function<bool(T, T)> Set<T>::GetEqualsComparer_ (...) const
-            {
-                if (auto f = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekEqualsComparer ()) {
-                    return f;
-                }
-                else {
-                    AssertNotReached ();
-                    return nullptr;
-                }
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetEqualsComparer ();
             }
             template <typename T>
             inline bool Set<T>::Contains (ArgByValueType<T> item) const

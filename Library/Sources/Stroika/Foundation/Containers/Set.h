@@ -62,7 +62,7 @@ namespace Stroika {
              *      page 148.
              *
              *      The basic idea here is that you cannot have multiple copies of the same
-             *      thing into the set (like a mathemactical set).
+             *      thing into the set (like a mathematical set).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
@@ -413,8 +413,7 @@ namespace Stroika {
                 using _SetRepSharedPtr = typename Set<T>::_SetRepSharedPtr;
 
             public:
-                // PeekEqualsComparer may return nullptr for equal_to<T>
-                virtual function<bool(T, T)> PeekEqualsComparer () const                            = 0;
+                virtual function<bool(T, T)> GetEqualsComparer () const                             = 0;
                 virtual _SetRepSharedPtr     CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
                 virtual bool                 Equals (const _IRep& rhs) const                        = 0;
                 virtual bool                 Contains (ArgByValueType<T> item) const                = 0;

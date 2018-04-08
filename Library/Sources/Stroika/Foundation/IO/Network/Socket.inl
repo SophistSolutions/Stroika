@@ -132,13 +132,13 @@ namespace Stroika {
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     /* 
-                     *  Used to check Common::CompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
+                     *  Used to check Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
                      *  but this is better. It practically always amounts to the same thing (since one typically constructs
                      *  a Socket object, and copies that as a Ref - thought it CAN be differnt if you manually attach
                      *  the same low level socket to another Stroika socket object). And comparing with GetNativeSocket () - requires
                      *  being careful about null ptrs.
                      */
-                    return Common::CompareNormalizer (_GetSharedRep (), rhs._GetSharedRep ());
+                    return Common::ThreeWayCompareNormalizer (_GetSharedRep (), rhs._GetSharedRep ());
                 }
 
                 /*

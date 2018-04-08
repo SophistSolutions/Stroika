@@ -105,7 +105,7 @@ namespace {
                 using value_type = SimpleClassWithoutComparisonOperators;
                 static int Compare (value_type v1, value_type v2)
                 {
-                    return Common::CompareNormalizer (v1.GetValue (), v2.GetValue ());
+                    return Common::ThreeWayCompareNormalizer (v1.GetValue (), v2.GetValue ());
                 }
             };
             using SimpleClassWithoutComparisonOperators_Association_stdmultimap_TRAITS =

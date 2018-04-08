@@ -138,7 +138,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename INTEGERLIKETYPE>
-            constexpr int CompareNormalizer (INTEGERLIKETYPE lhs, INTEGERLIKETYPE rhs)
+            [[deprecated ("deprecated in v2.0a231, use ThreeWayCompareNormalizer")]] constexpr int CompareNormalizer (INTEGERLIKETYPE lhs, INTEGERLIKETYPE rhs)
             {
 #if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 return (lhs < rhs) ? -1 : ((lhs == rhs) ? 0 : 1);
@@ -158,7 +158,7 @@ namespace Stroika {
             }
             // @todo more specializations
             template <>
-            inline constexpr int CompareNormalizer (int lhs, int rhs)
+            [[deprecated ("deprecated in v2.0a231, use ThreeWayCompareNormalizer")]] inline constexpr int CompareNormalizer (int lhs, int rhs)
             {
                 return lhs - rhs;
             }
@@ -168,7 +168,6 @@ namespace Stroika {
              ***************************** ThreeWayCompare<T> *******************************
              ********************************************************************************
              */
-
             template <typename T>
             constexpr int ThreeWayCompare<T>::operator() (const T& lhs, const T& rhs) const
             {
@@ -177,6 +176,34 @@ namespace Stroika {
                     return 0;
                 }
                 return less<T>{}(lhs, rhs) ? -1 : 1;
+            }
+
+            /*
+             ********************************************************************************
+             ************************ ThreeWayCompareNormalizer *****************************
+             ********************************************************************************
+             */
+            template <typename TYPE, typename ENABLE_IF_INTISH>
+            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH*)
+            {
+                return lhs - rhs;
+            }
+            template <typename TYPE>
+            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ...)
+            {
+#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                return (lhs < rhs) ? -1 : ((lhs == rhs) ? 0 : 1);
+#else
+                if (lhs < rhs) {
+                    return -1;
+                }
+                else if (lhs == rhs) {
+                    return 0;
+                }
+                else {
+                    return 1;
+                }
+#endif
             }
 
             /*

@@ -118,7 +118,7 @@ namespace Stroika {
 
                     // Set<T>::_IRep overrides
                 public:
-                    virtual function<bool(T, T)> PeekEqualsComparer () const override
+                    virtual function<bool(T, T)> GetEqualsComparer () const override
                     {
                         return fEqualsComparer_;
                     }

@@ -56,7 +56,7 @@ namespace Stroika {
             template <typename ATOM_MANAGER>
             inline int Atom<ATOM_MANAGER>::Compare (Atom rhs) const
             {
-                return Common::CompareNormalizer (fValue_, rhs.fValue_);
+                return Common::ThreeWayCompareNormalizer (fValue_, rhs.fValue_);
             }
             template <typename ATOM_MANAGER>
             inline constexpr bool Atom<ATOM_MANAGER>::empty () const
