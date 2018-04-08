@@ -63,8 +63,8 @@ namespace {
             Set<int> s8{move (s1)};
             Set<int> s9{1, 2, 3};
             VerifyTestResult (s9.size () == 3);
-			Set<int> s10{ Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c };
-		}
+            Set<int> s10{Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c};
+        }
     }
 }
 
