@@ -108,7 +108,7 @@ namespace Stroika {
 
                     // MultiSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual function<bool(T, T)> GetEqualsComparer () const override
+                    virtual EqualityComparerType GetEqualsComparer () const override
                     {
                         return Common::mkEqualsComparerAdapter (fData_.key_comp ());
                     }

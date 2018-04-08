@@ -377,7 +377,7 @@ namespace Stroika {
                 _IRep () = default;
 
             public:
-                virtual function<bool(T, T)>  GetEqualsComparer () const                                             = 0;
+                virtual EqualityComparerType  GetEqualsComparer () const                                             = 0;
                 virtual _MultiSetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const                 = 0;
                 virtual bool                  Equals (const _IRep& rhs) const                                        = 0;
                 virtual bool                  Contains (ArgByValueType<T> item) const                                = 0;

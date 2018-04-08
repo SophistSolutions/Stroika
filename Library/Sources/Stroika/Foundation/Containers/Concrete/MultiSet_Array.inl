@@ -78,7 +78,7 @@ namespace Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual function<bool(T, T)> GetEqualsComparer () const override
+                    virtual EqualityComparerType GetEqualsComparer () const override
                     {
                         return fEqualsComparer_;
                     }
