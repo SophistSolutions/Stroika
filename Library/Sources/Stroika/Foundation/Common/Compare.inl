@@ -187,12 +187,12 @@ namespace Stroika {
             template <typename COMPARER>
             constexpr bool IsEqualsComparer ()
             {
-                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+                return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
             }
             template <typename COMPARER>
             constexpr bool IsEqualsComparer (const COMPARER&)
             {
-                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
+                return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eEquals;
             }
 
             /*
@@ -203,12 +203,12 @@ namespace Stroika {
             template <typename COMPARER>
             constexpr bool IsStrictInOrderComparer ()
             {
-                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+                return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
             }
             template <typename COMPARER>
             constexpr bool IsStrictInOrderComparer (const COMPARER&)
             {
-                return ComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
+                return ExtractComparisonTraits<COMPARER>::kComparisonRelationKind == ComparisonRelationType::eStrictInOrder;
             }
 
             /*
@@ -237,16 +237,16 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ********************************* mkEqualsComparer *****************************
+             **************************** DeclareEqualsComparer *****************************
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> mkEqualsComparer (const FUNCTOR& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (const FUNCTOR& f)
             {
                 return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> mkEqualsComparer (FUNCTOR&& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f)
             {
                 return Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR>{move (f)};
             }
@@ -286,7 +286,7 @@ namespace Stroika {
             template <typename T>
             constexpr inline bool InOrderComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
-                switch (ComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
+                switch (ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
                     case ComparisonRelationType::eStrictInOrder:
                         return fBASE_COMPARER_ (lhs, rhs);
                     case ComparisonRelationType::eInOrderOrEquals:
@@ -334,7 +334,7 @@ namespace Stroika {
             template <typename T>
             constexpr bool EqualsComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
-                switch (ComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
+                switch (ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
                     case ComparisonRelationType::eEquals:
                         return fBASE_COMPARER_ (lhs, rhs);
                     case ComparisonRelationType::eStrictInOrder:
@@ -384,7 +384,7 @@ namespace Stroika {
             template <typename T>
             constexpr int ThreeWayComparerAdapter<BASE_COMPARER>::operator() (const T& lhs, const T& rhs) const
             {
-                switch (ComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
+                switch (ExtractComparisonTraits<BASE_COMPARER>::kComparisonRelationKind) {
                     case ComparisonRelationType::eStrictInOrder:
                         return fBASE_COMPARER_ (lhs, rhs) ? -1 : (fBASE_COMPARER_ (rhs, lhs) ? 1 : 0);
                     case ComparisonRelationType::eThreeWayCompare:

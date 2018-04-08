@@ -55,9 +55,9 @@ namespace {
             MultiSet<int>                       s6{v};
             MultiSet<int>                       s7{v.begin (), v.end ()};
             MultiSet<int>                       s8{move (s1)};
-            MultiSet<int>::EqualityComparerType a = Common::mkEqualsComparer ([](int l, int r) { return l == r; });
+            MultiSet<int>::EqualityComparerType a = Common::DeclareEqualsComparer ([](int l, int r) { return l == r; });
             MultiSet<int>                       s9{a, c};
-            //MultiSet<int> s9{Common::mkEqualsComparer ([](int l, int r) { return l == r; }), c};
+            MultiSet<int> s9a{Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c};
         }
     }
 }
