@@ -1207,14 +1207,14 @@ namespace Stroika {
             /*
              *  Equivilent to std::equal_to<String>, except doing case insensitive compares
              */
-            struct String::EqualToCI : Common::ComparisonTraitsBase<Common::ComparisonRelationType::eEquals> {
+            struct String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
                 nonvirtual bool operator() (const String& lhs, const String& rhs) const;
             };
 
             /*
              *  Equivilent to std::less<String>, except doing case insensitive compares
              */
-            struct String::LessCI : Common::ComparisonTraitsBase<Common::ComparisonRelationType::eStrictInOrder> {
+            struct String::LessCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
                 nonvirtual bool operator() (const String& lhs, const String& rhs) const;
             };
 
