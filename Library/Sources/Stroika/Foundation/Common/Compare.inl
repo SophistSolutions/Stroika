@@ -215,6 +215,22 @@ namespace Stroika {
 
             /*
              ********************************************************************************
+             **************** IsPotentiallyComparerRelation<FUNCTOR> ************************
+             ********************************************************************************
+             */
+            template <typename FUNCTOR>
+            constexpr bool IsPotentiallyComparerRelation ()
+            {
+                return Configuration::is_callable<FUNCTOR>::value;
+            }
+            template <typename FUNCTOR>
+            constexpr bool IsPotentiallyComparerRelation (const FUNCTOR&)
+            {
+                return IsPotentiallyComparerRelation<FUNCTOR> ();
+            }
+
+            /*
+             ********************************************************************************
              ********************* IsEqualsComparer<COMPARER> *******************************
              ********************************************************************************
              */

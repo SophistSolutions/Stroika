@@ -43,6 +43,17 @@ namespace Stroika {
             constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs);
 
             /**
+             *  \brief return true if argument is a function like object (callable) taking 2 arguments and
+             *         returning a bool or integer.
+             *
+             *  \note - the current implementation only checks if the argument is callable
+             */
+            template <typename FUNCTOR>
+            constexpr bool IsPotentiallyComparerRelation ();
+            template <typename FUNCTOR>
+            constexpr bool IsPotentiallyComparerRelation (const FUNCTOR&);
+
+            /**
              *
              *  NEW (as of 2.0a231) Comparison logic
              *

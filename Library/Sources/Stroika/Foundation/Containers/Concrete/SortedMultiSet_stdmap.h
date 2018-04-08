@@ -40,7 +40,7 @@ namespace Stroika {
                     /**
                      */
                     SortedMultiSet_stdmap ();
-                    template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>
+                    template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
                     explicit SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) = default;
                     SortedMultiSet_stdmap (const std::initializer_list<T>& src);

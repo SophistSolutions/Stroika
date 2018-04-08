@@ -64,7 +64,7 @@ namespace Stroika {
 
             public:
                 SortedMultiSet ();
-                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
                 explicit SortedMultiSet (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedMultiSet (const SortedMultiSet& src) noexcept = default;
                 SortedMultiSet (SortedMultiSet&& src) noexcept      = default;

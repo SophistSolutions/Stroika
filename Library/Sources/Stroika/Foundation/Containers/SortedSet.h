@@ -83,7 +83,7 @@ namespace Stroika {
                  * \req IsStrictInOrderComparer<INORDER_COMPARER> () - for constructors with that type parameter
                  */
                 SortedSet ();
-                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<INORDER_COMPARER>::value>>
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
                 explicit SortedSet (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedSet (const SortedSet& src) noexcept = default;
                 SortedSet (SortedSet&& src) noexcept      = default;

@@ -38,7 +38,7 @@ namespace Stroika {
 
                 public:
                     MultiSet_LinkedList ();
-                    template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                    template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
                     explicit MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
                     MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);

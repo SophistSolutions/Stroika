@@ -38,7 +38,7 @@ namespace Stroika {
 
                 public:
                     MultiSet_Array ();
-                    template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                    template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
                     explicit MultiSet_Array (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     MultiSet_Array (const MultiSet_Array& src) = default;
                     MultiSet_Array (MultiSet_Array&& src)      = default;

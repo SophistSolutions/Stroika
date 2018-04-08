@@ -143,12 +143,12 @@ namespace Stroika {
                  *      \endcode
                  */
                 Set ();
-                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
                 explicit Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF* = nullptr);
                 Set (const Set& src) noexcept = default;
                 Set (Set&& src) noexcept      = default;
                 Set (const initializer_list<T>& src);
-                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
                 Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T>*>::value>>
                 Set (const CONTAINER_OF_T& src);
@@ -156,7 +156,7 @@ namespace Stroika {
                 Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
+                template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
