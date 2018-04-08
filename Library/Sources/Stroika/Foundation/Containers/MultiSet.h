@@ -171,22 +171,24 @@ namespace Stroika {
                  *      \endcode
                  */
                 MultiSet ();
-                template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
-                explicit MultiSet (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                explicit MultiSet (EQUALS_COMPARER&& equalsComparer, ENABLE_IF* = nullptr);
                 MultiSet (const MultiSet& src) noexcept = default;
                 MultiSet (MultiSet&& src) noexcept      = default;
                 MultiSet (const initializer_list<T>& src);
-                MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
                 MultiSet (const initializer_list<CountedValue<T>>& src);
-                MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<CountedValue<T>>& src);
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<CountedValue<T>>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
                 MultiSet (const CONTAINER_OF_T& src);
-                template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
-                MultiSet (const EQUALS_COMPARER& equalsComparer, const CONTAINER_OF_T& src);
+                template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::is_callable<EQUALS_COMPARER>::value and Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
+                MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR>
                 MultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
-                template <typename COPY_FROM_ITERATOR>
-                MultiSet (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit MultiSet (const _MultiSetRepSharedPtr& rep) noexcept;

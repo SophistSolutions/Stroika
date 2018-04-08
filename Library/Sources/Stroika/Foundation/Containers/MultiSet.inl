@@ -282,9 +282,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline MultiSet<T, TRAITS>::MultiSet (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
-                : inherited (move (Factory::MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> (equalsComparer) ()))
+            template <typename EQUALS_COMPARER, typename ENABLE_IF>
+            inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, ENABLE_IF*)
+                : inherited (move (Factory::MultiSet_Factory<T, TRAITS, EQUALS_COMPARER> (std::forward<EQUALS_COMPARER> (equalsComparer)) ()))
             {
                 static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "MultiSet constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
                 _AssertRepValidType ();
@@ -299,8 +299,8 @@ namespace Stroika {
             }
             template <typename T, typename TRAITS>
             template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline MultiSet<T, TRAITS>::MultiSet (const EQUALS_COMPARER& equalsComparer, const CONTAINER_OF_T& src)
-                : MultiSet (equalsComparer)
+            inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src)
+                : MultiSet (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -325,8 +325,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
-                : MultiSet (equalsComparer)
+            template <typename EQUALS_COMPARER, typename ENABLE_IF>
+            MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
+                : MultiSet (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -339,8 +340,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<CountedValue<T>>& src)
-                : MultiSet (equalsComparer)
+            template <typename EQUALS_COMPARER, typename ENABLE_IF>
+            MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<CountedValue<T>>& src)
+                : MultiSet (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -354,9 +356,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename COPY_FROM_ITERATOR>
-            MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-                : MultiSet (equalsComparer)
+            template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR, typename ENABLE_IF>
+            MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+                : MultiSet (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
