@@ -37,6 +37,8 @@ namespace Stroika {
 
                 public:
                     Mapping_LinkedList ();
+                    template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_EQUALS_COMPARER> ()>>
+                    explicit Mapping_LinkedList (const KEY_EQUALS_COMPARER& keyEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     Mapping_LinkedList (const Mapping_LinkedList& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                     explicit Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src);
@@ -47,6 +49,8 @@ namespace Stroika {
                     nonvirtual Mapping_LinkedList& operator= (const Mapping_LinkedList& rhs) = default;
 
                 private:
+                    class IImplRepBase_;
+                    template <typename KEY_EQUALS_COMPARER>
                     class Rep_;
 
                 private:

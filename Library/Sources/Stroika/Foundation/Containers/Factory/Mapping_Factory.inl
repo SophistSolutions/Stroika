@@ -64,7 +64,7 @@ namespace Stroika {
                      *  Calls may use an explicit initializer of Mapping_xxx<> to get better performance for large sized
                      *  maps.
                      */
-                    return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE> ();
+                    return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE> (keyEqualsComparer);
                 }
 
                 template <typename KEY_TYPE, typename VALUE_TYPE>
