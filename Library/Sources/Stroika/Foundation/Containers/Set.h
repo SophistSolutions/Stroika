@@ -110,7 +110,7 @@ namespace Stroika {
             public:
                 /**
                  *  This is the type returned by GetEqualsComparer () and CAN be used as the argument to a Set<> as EqualityComparer, but
-                 *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept (need better name).
+                 *  we allow any template in the Set<> CTOR for an equalityComparer that follows the Common::IsEqualsComparer () concept.
                  */
                 using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>>;
 
@@ -143,20 +143,21 @@ namespace Stroika {
                  *      \endcode
                  */
                 Set ();
-                template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
-                explicit Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                explicit Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF* = nullptr);
                 Set (const Set& src) noexcept = default;
                 Set (Set&& src) noexcept      = default;
                 Set (const initializer_list<T>& src);
-                Set (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value>>
+                Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T>*>::value>>
                 Set (const CONTAINER_OF_T& src);
                 template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T>*>::value>>
-                Set (const EQUALS_COMPARER& equalsComparer, const CONTAINER_OF_T& src);
+                Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
-                Set (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_callable<EQUALS_COMPARER>::value and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
+                Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Set (const _SetRepSharedPtr& rep) noexcept;

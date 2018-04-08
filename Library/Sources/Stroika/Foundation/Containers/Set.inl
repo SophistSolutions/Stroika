@@ -24,8 +24,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline Set<T>::Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
+            template <typename EQUALS_COMPARER, typename ENABLE_IF>
+            inline Set<T>::Set (const EQUALS_COMPARER& equalsComparer, ENABLE_IF*)
                 : inherited (move (Factory::Set_Factory<T, EQUALS_COMPARER> (equalsComparer) ()))
             {
                 static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
@@ -39,8 +39,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline Set<T>::Set (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
-                : Set (equalsComparer)
+            template <typename EQUALS_COMPARER, typename ENABLE_IF>
+            inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
+                : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -55,8 +56,8 @@ namespace Stroika {
             }
             template <typename T>
             template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Set<T>::Set (const EQUALS_COMPARER& equalsComparer, const CONTAINER_OF_T& src)
-                : Set (equalsComparer)
+            inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src)
+                : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -82,9 +83,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
-            inline Set<T>::Set (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : Set (equalsComparer)
+            template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
+            inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
