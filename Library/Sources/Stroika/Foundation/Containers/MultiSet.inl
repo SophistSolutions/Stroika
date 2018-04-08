@@ -298,8 +298,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline MultiSet<T, TRAITS>::MultiSet (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+            template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
+            inline MultiSet<T, TRAITS>::MultiSet (const EQUALS_COMPARER& equalsComparer, const CONTAINER_OF_T& src)
                 : MultiSet (equalsComparer)
             {
                 AddAll (src);

@@ -54,8 +54,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Set<T>::Set (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
+            template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
+            inline Set<T>::Set (const EQUALS_COMPARER& equalsComparer, const CONTAINER_OF_T& src)
                 : Set (equalsComparer)
             {
                 AddAll (src);

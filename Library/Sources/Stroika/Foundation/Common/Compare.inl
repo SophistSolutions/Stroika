@@ -253,16 +253,16 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ********************************* mkInOrderComparer ****************************
+             ********************************* DeclareInOrderComparer ***********************
              ********************************************************************************
              */
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> mkInOrderComparer (const FUNCTOR& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (const FUNCTOR& f)
             {
                 return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{f};
             }
             template <typename FUNCTOR>
-            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> mkInOrderComparer (FUNCTOR&& f)
+            constexpr inline Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f)
             {
                 return Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR>{move (f)};
             }

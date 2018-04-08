@@ -210,7 +210,9 @@ namespace Stroika {
             };
 
             /*
-             *  mkInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
+             *  \brief  DeclareEqualsComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for equality
+             *
+             *  DeclareEqualsComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              *
              *  @see mkInOrderComparerAdapter
@@ -224,6 +226,8 @@ namespace Stroika {
             constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f);
 
             /*
+             *  \brief  DeclareInOrderComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for in-order
+             * 
              *  mkInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              *
@@ -233,9 +237,9 @@ namespace Stroika {
              *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename FUNCTOR>
-            constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> mkInOrderComparer (const FUNCTOR& f);
+            constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (const FUNCTOR& f);
             template <typename FUNCTOR>
-            constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> mkInOrderComparer (FUNCTOR&& f);
+            constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f);
 
             /**
              *  \brief Use this to wrap any basic comparer, and produce a Less comparer
@@ -260,9 +264,9 @@ namespace Stroika {
              *  mkInOrderComparerAdapter is a trivial wrapper on InOrderComparerAdapter, but takes advantage of the fact that you
              *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
              *
-             *  @see mkInOrderComparer
+             *  @see DeclareInOrderComparer
              *
-             *  \note similar to mkInOrderComparer(), except mkInOrderComparer ignores the TYEP of 'f' and just marks it as an InOrder comparer
+             *  \note similar to DeclareInOrderComparer(), except DeclareInOrderComparer ignores the TYEP of 'f' and just marks it as an InOrder comparer
              *        Whereas this function looks at the type of 'f' and does the appropriate mapping logic.
              */
             template <typename BASE_COMPARER>

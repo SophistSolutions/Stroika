@@ -181,8 +181,8 @@ namespace Stroika {
                 MultiSet (const EqualityComparerType& equalsComparer, const initializer_list<CountedValue<T>>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
                 MultiSet (const CONTAINER_OF_T& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
-                MultiSet (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
+                template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const MultiSet<T, TRAITS>*>::value>::type>
+                MultiSet (const EQUALS_COMPARER& equalsComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR>
                 MultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
                 template <typename COPY_FROM_ITERATOR>
