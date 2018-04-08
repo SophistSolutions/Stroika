@@ -540,7 +540,7 @@ namespace Stroika {
                 using Memory::Optional;
                 vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
 #if qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy
-                sort (tmp.begin (), tmp.end (), [inorderComparer](const T& l, const T& r) -> bool { return compareLess (l, r); });
+                sort (tmp.begin (), tmp.end (), [inorderComparer](const T& l, const T& r) -> bool { return inorderComparer (l, r); });
 #else
                 sort (tmp.begin (), tmp.end (), inorderComparer);
 #endif
