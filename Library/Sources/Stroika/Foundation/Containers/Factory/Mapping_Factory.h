@@ -37,11 +37,17 @@ namespace Stroika {
                  *  replace it statically by template-specailizing Mapping_Factory<T,TRAITS>::New () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+                 *
+                 *  \note   Mapping_Factory<K,P> makes up its own default comparer, and so can use order mappings, like Mapping_stdmap, whereas
+                 *          Mapping_Factory<K,P,E> - since it takes an equals comparer - is restricted to backends that work with an equals comparere.
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = void>
                 class Mapping_Factory {
                 private:
-                    static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
+                    static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> sFactory_;
+
+                public:
+                    Mapping_Factory (const KEY_EQUALS_COMPARER& equalsComparer);
 
                 public:
                     /**
@@ -53,14 +59,16 @@ namespace Stroika {
                     /**
                      *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static void Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) () = nullptr);
+                    static void Register (Mapping<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_EQUALS_COMPARER&) = nullptr);
 
                 private:
-                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_ ();
-                };
+                    KEY_EQUALS_COMPARER fKeyEqualsComparer_;
 
+                private:
+                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_EQUALS_COMPARER&);
+                };
                 template <typename KEY_TYPE, typename VALUE_TYPE>
-                class Mapping_Factory<KEY_TYPE, VALUE_TYPE, false_type> {
+                class Mapping_Factory<KEY_TYPE, VALUE_TYPE, void> {
                 private:
                     static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 

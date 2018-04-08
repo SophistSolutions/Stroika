@@ -164,6 +164,8 @@ namespace Stroika {
                  *      \endcode
                  */
                 Mapping ();
+                template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_EQUALS_COMPARER> ()>>
+                explicit Mapping (const KEY_EQUALS_COMPARER& keyEqualsComparer, ENABLE_IF* = nullptr);
                 Mapping (const Mapping& src) noexcept = default;
 #if 0
                 // I think this casuses crash in IO::Transfer regression test - not sure how - only on UNIX - retest...
