@@ -183,11 +183,13 @@ namespace Stroika {
              ************************ ThreeWayCompareNormalizer *****************************
              ********************************************************************************
              */
+#if 0
             template <typename TYPE, typename ENABLE_IF_INTISH>
             constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH*)
             {
                 return lhs - rhs;
             }
+#endif
             template <typename TYPE>
             constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ...)
             {

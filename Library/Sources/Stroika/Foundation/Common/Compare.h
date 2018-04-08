@@ -39,8 +39,8 @@ namespace Stroika {
              *        return Common::ThreeWayCompareNormalizer (GetNativeSocket (), rhs.GetNativeSocket ());
              *      \endcode
              */
-            template <typename TYPE, typename ENABLE_IF_INTISH = enable_if_t<HasMinusWithIntegerResult<TYPE> ()>>
-            constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH* = nullptr);
+            //template <typename TYPE, typename ENABLE_IF_INTISH = enable_if_t<Configuration::HasMinusWithIntegerResult<TYPE> ()>>
+            //constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH* = nullptr);
             template <typename TYPE>
             constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs, ...);
 
