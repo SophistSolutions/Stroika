@@ -120,7 +120,7 @@ namespace Stroika {
                 public:
                     virtual EqualityComparerType GetEqualsComparer () const override
                     {
-                        return fEqualsComparer_;
+						return EqualityComparerType{ fEqualsComparer_ };
                     }
                     virtual _SetRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
