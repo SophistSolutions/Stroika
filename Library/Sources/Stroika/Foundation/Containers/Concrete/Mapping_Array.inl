@@ -99,7 +99,7 @@ namespace Stroika {
                     virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
                     {
                         //tmphack
-                        return equal_to<KEY_TYPE>{};
+						return KeyEqualsCompareFunctionType{ equal_to<KEY_TYPE>{} };
                     }
                     virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {

@@ -117,7 +117,7 @@ namespace Stroika {
                 public:
                     virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
                     {
-                        return fKeyEqualsComparer_;
+						return KeyEqualsCompareFunctionType{ fKeyEqualsComparer_ };
                     }
                     virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {

@@ -39,7 +39,7 @@ namespace Stroika {
                     using _SetSharedPtrIRep     = typename Set<T>::_SetRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
-					using EqualityComparerType = typename Set<T>::EqualityComparerType;
+                    using EqualityComparerType  = typename Set<T>::EqualityComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
