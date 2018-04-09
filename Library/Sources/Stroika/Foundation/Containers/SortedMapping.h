@@ -87,6 +87,8 @@ namespace Stroika {
                 SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<(Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                 SortedMapping (const CONTAINER_OF_PAIR_KEY_T& src);
+                template <typename KEY_INORDER_COMPARER, typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<(Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> () > and Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+                SortedMapping (const KEY_INORDER_COMPARER& inorderComparer, const CONTAINER_OF_PAIR_KEY_T& src);
                 template <typename COPY_FROM_ITERATOR_KEYVALUE>
                 SortedMapping (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 

@@ -53,6 +53,15 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_INORDER_COMPARER, typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const KEY_INORDER_COMPARER& inorderComparer, const CONTAINER_OF_PAIR_KEY_T& src)
+                : SortedMapping (inorderComparer)
+            {
+                _AssertRepValidType ();
+                this->AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             template <typename COPY_FROM_ITERATOR_KEYVALUE>
             SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
                 : SortedMapping ()
