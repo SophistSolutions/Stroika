@@ -69,7 +69,7 @@ namespace Stroika {
             template <typename T>
             template <typename INORDER_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
             inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_T& src)
-                : SortedCollection (std::foward<INORDER_COMPARER> (inOrderComparer))
+                : SortedCollection (std::forward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -85,7 +85,7 @@ namespace Stroika {
             template <typename T>
             template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
             inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : SortedCollection (std::foward<INORDER_COMPARER> (inOrderComparer))
+                : SortedCollection (std::forward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();
