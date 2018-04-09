@@ -40,6 +40,9 @@ namespace Stroika {
                     static atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_;
 
                 public:
+                    static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMultiSet");
+
+                public:
                     SortedMultiSet_Factory (const INORDER_COMPARER& inorderComparer);
 
                 public:

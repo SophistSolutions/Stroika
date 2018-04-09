@@ -47,6 +47,9 @@ namespace Stroika {
                     static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> sFactory_;
 
                 public:
+                    static_assert (Common::IsEqualsComparer<KEY_EQUALS_COMPARER> (), "Equals comparer required with Mapping_Factory");
+
+                public:
                     Mapping_Factory (const KEY_EQUALS_COMPARER& equalsComparer);
 
                 public:

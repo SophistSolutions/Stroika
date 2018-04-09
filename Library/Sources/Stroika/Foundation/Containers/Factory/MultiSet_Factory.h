@@ -40,6 +40,9 @@ namespace Stroika {
                     static atomic<MultiSet<T, TRAITS> (*) (const EQUALS_COMPARER&)> sFactory_;
 
                 public:
+                    static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Factory");
+
+                public:
                     MultiSet_Factory (const EQUALS_COMPARER& equalsComparer);
 
                 public:

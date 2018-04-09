@@ -44,6 +44,10 @@ namespace Stroika {
                     using InjectivityViolationPolicy = Bijection_Base::InjectivityViolationPolicy;
 
                 public:
+                    static_assert (Common::IsEqualsComparer<DOMAIN_EQUALS_COMPARER> (), "Domain Equals comparer required with Bijection_Factory");
+                    static_assert (Common::IsEqualsComparer<RANGE_EQUALS_COMPARER> (), "Range Equals comparer required with Bijection_Factory");
+
+                public:
                     Bijection_Factory (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
                     Bijection_Factory (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer);
 

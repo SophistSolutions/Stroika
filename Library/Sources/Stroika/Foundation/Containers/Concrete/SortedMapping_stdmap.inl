@@ -55,7 +55,7 @@ namespace Stroika {
                     using _APPLY_ARGTYPE               = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
-                    using KeyInOrderKeyComparerType = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyInOrderKeyComparerType;
+                    using KeyInOrderKeyComparerType    = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyInOrderKeyComparerType;
 
                 public:
                     Rep_ (const KEY_INORDER_COMPARER& inorderComparer)

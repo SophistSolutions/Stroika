@@ -32,6 +32,9 @@ namespace Stroika {
                     static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_;
 
                 public:
+                    static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMapping");
+
+                public:
                     SortedMapping_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer = {});
 
                 public:

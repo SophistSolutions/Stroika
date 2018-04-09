@@ -44,6 +44,9 @@ namespace Stroika {
                     static atomic<Set<T> (*) (const EQUALS_COMPARER&)> sFactory_;
 
                 public:
+                    static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_Factory");
+
+                public:
                     Set_Factory (const EQUALS_COMPARER& equalsComparer);
 
                 public:

@@ -29,7 +29,6 @@ namespace Stroika {
                 inline MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::MultiSet_Factory (const EQUALS_COMPARER& equalsComparer)
                     : fEqualsComparer_ (equalsComparer)
                 {
-                    static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_Factory");
                 }
                 template <typename T, typename TRAITS, typename EQUALS_COMPARER>
                 inline MultiSet<T, TRAITS> MultiSet_Factory<T, TRAITS, EQUALS_COMPARER>::operator() () const
