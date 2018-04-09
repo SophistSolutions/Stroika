@@ -42,7 +42,7 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (value_type v1, value_type v2) const
             {
