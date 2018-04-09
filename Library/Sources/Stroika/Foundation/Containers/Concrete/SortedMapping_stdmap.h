@@ -27,7 +27,7 @@ namespace Stroika {
             namespace Concrete {
 
                 /**
-                 *  \brief   SortedMapping_stdmap<Key,T> is an std::map-based concrete implementation of the SortedMapping<Key,T> container pattern.
+                 *  \brief   SortedMapping_stdmap<KEY_TYPE,MAPPED_VALUE_TYPE> is an std::map-based concrete implementation of the SortedMapping<KEY_TYPE,MAPPED_VALUE_TYPE> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  *
@@ -39,8 +39,10 @@ namespace Stroika {
 
                 public:
                     SortedMapping_stdmap ();
+                    template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>
+                    explicit SortedMapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     SortedMapping_stdmap (const SortedMapping_stdmap& src) = default;
-                    template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+                    template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                     SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
                     SortedMapping_stdmap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
@@ -51,7 +53,8 @@ namespace Stroika {
                     nonvirtual SortedMapping_stdmap& operator= (const SortedMapping_stdmap& rhs) = default;
 
                 private:
-                    class IImplRep_;
+                    class IImplRepBase_;
+                    template <typename KEY_INORDER_COMPARER>
                     class Rep_;
 
                 private:

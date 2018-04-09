@@ -24,9 +24,12 @@ namespace Stroika {
             namespace Concrete {
 
                 /*
+                 ********************************************************************************
+                 ******* SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ *******
+                 ********************************************************************************
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRep_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
                     using inherited = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
@@ -36,11 +39,15 @@ namespace Stroika {
                 };
 
                 /*
+                 ********************************************************************************
+                 ********** SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ *************
+                 ********************************************************************************
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRep_ {
+                template <typename KEY_INORDER_COMPARER>
+                class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = IImplRep_;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
@@ -50,7 +57,10 @@ namespace Stroika {
                     using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const KEY_INORDER_COMPARER& inorderComparer)
+                        : fData_ (inorderComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
@@ -116,7 +126,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<Rep_> (fData_.key_comp ());
                         }
                     }
                     virtual Iterable<KEY_TYPE> Keys () const override
@@ -184,8 +194,7 @@ namespace Stroika {
 #endif
 
                 private:
-                    //using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, Common::STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
-                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, less<KEY_TYPE>>>;
+                    using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
@@ -199,7 +208,14 @@ namespace Stroika {
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : SortedMapping_stdmap (less<KEY_TYPE>{})
+                {
+                    AssertRepValidType_ ();
+                }
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<KEY_INORDER_COMPARER>> (inorderComparer))
                 {
                     AssertRepValidType_ ();
                 }
@@ -215,7 +231,7 @@ namespace Stroika {
                 inline void SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMember
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
                 }
             }
