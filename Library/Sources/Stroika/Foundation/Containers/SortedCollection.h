@@ -101,15 +101,16 @@ namespace Stroika {
                 SortedCollection (const SortedCollection& src) noexcept = default;
                 SortedCollection (SortedCollection&& src) noexcept      = default;
                 SortedCollection (const std::initializer_list<T>& src);
-                SortedCollection (const InOrderComparerType& inOrderComparer, const std::initializer_list<T>& src);
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                SortedCollection (INORDER_COMPARER&& inOrderComparer, const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value>::type>
                 SortedCollection (const CONTAINER_OF_T& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value>::type>
-                SortedCollection (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src);
+                template <typename INORDER_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedCollection<T>*>::value>::type>
+                SortedCollection (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                SortedCollection (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                SortedCollection (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit SortedCollection (const _SortedCollectionRepSharedPtr& src) noexcept;

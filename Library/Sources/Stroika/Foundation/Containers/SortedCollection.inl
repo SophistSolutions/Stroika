@@ -51,8 +51,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline SortedCollection<T>::SortedCollection (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src)
-                : SortedCollection (inOrderComparer)
+            template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
+                : SortedCollection (std::forward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -66,9 +67,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline SortedCollection<T>::SortedCollection (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src)
-                : SortedCollection (inOrderComparer)
+            template <typename INORDER_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
+            inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_T& src)
+                : SortedCollection (std::foward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -82,9 +83,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline SortedCollection<T>::SortedCollection (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : SortedCollection (inOrderComparer)
+            template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
+            inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : SortedCollection (std::foward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();
