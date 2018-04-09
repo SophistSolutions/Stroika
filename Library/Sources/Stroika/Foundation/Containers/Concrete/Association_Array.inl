@@ -184,7 +184,7 @@ namespace Stroika {
 
                 /*
                 ********************************************************************************
-                *********** Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE> *****************
+                ************** Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE> ******************
                 ********************************************************************************
                 */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

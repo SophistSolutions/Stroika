@@ -54,9 +54,9 @@ namespace Stroika {
                     using _MappingRepSharedPtr         = typename inherited::_MappingRepSharedPtr;
                     using _APPLY_ARGTYPE               = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
-					using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
-					using InOrderKeyComparerType = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::InOrderKeyComparerType;
-					
+                    using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
+                    using KeyInOrderKeyComparerType = typename SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyInOrderKeyComparerType;
+
                 public:
                     Rep_ (const KEY_INORDER_COMPARER& inorderComparer)
                         : fData_ (inorderComparer)
@@ -196,11 +196,10 @@ namespace Stroika {
 
                     // SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
                 public:
-                    virtual InOrderKeyComparerType GetInOrderKeyComparer () const override
+                    virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const override
                     {
-                        return InOrderKeyComparerType{fData_.key_comp ()};
+                        return KeyInOrderKeyComparerType{fData_.key_comp ()};
                     }
-
 
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER>>;

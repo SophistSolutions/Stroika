@@ -91,7 +91,7 @@ namespace Stroika {
 #endif
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            inline auto SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::GetInOrderKeyComparer () const -> InOrderKeyComparerType
+            inline auto SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::GetInOrderKeyComparer () const -> KeyInOrderKeyComparerType
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderKeyComparer ();
             }

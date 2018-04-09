@@ -69,7 +69,7 @@ namespace Stroika {
                  *  This CAN be used as the argument to a SortedMapping<> as InOrderComparerType, but
                  *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsStrictInOrderComparer () concept
                  */
-                using InOrderKeyComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(KEY_TYPE, KEY_TYPE)>>;
+                using KeyInOrderKeyComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(KEY_TYPE, KEY_TYPE)>>;
 
             public:
                 /**
@@ -106,7 +106,7 @@ namespace Stroika {
                 /**
                 *  Return the function used to compare if two elements are in-order (sorted properly)
                 */
-                nonvirtual InOrderKeyComparerType GetInOrderKeyComparer () const;
+                nonvirtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const;
 
             protected:
                 /**
@@ -133,7 +133,7 @@ namespace Stroika {
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             class SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
             public:
-                virtual InOrderKeyComparerType GetInOrderKeyComparer () const = 0;
+                virtual KeyInOrderKeyComparerType GetInOrderKeyComparer () const = 0;
             };
         }
     }
