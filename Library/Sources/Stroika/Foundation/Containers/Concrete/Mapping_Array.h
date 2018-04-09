@@ -36,6 +36,8 @@ namespace Stroika {
 
                 public:
                     Mapping_Array ();
+                    template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_EQUALS_COMPARER> ()>>
+                    explicit Mapping_Array (const KEY_EQUALS_COMPARER& keyEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     Mapping_Array (const Mapping_Array& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                     Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src);
@@ -74,6 +76,8 @@ namespace Stroika {
                     nonvirtual void reserve (size_t slotsAlloced);
 
                 private:
+                    class IImplRepBase_;
+                    template <typename KEY_EQUALS_COMPARER>
                     class Rep_;
 
                 private:

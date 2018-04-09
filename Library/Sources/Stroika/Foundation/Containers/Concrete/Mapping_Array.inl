@@ -20,13 +20,23 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
+                 *********** Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ **********
+                 ********************************************************************************
+                 */
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+                };
+
+                /*
+                 ********************************************************************************
                  ************ Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ******************
                  ********************************************************************************
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+                template <typename KEY_EQUALS_COMPARER>
+                class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_ {
                 private:
-                    using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
+                    using inherited = IImplRepBase_;
 
                 public:
                     using _IterableRepSharedPtr        = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
@@ -36,7 +46,10 @@ namespace Stroika {
                     using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
                 public:
-                    Rep_ ()                 = default;
+                    Rep_ (const KEY_EQUALS_COMPARER& keyEqualsComparer)
+                        : fKeyEqualsComparer_ (keyEqualsComparer)
+                    {
+                    }
                     Rep_ (const Rep_& from) = delete;
                     Rep_ (Rep_* from, IteratorOwnerID forIterableEnvelope)
                         : inherited ()
@@ -50,6 +63,9 @@ namespace Stroika {
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+
+                private:
+                    KEY_EQUALS_COMPARER fKeyEqualsComparer_;
 
                     // Iterable<T>::_IRep overrides
                 public:
@@ -98,8 +114,7 @@ namespace Stroika {
                 public:
                     virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
                     {
-                        //tmphack
-                        return KeyEqualsCompareFunctionType{equal_to<KEY_TYPE>{}};
+                        return KeyEqualsCompareFunctionType{fKeyEqualsComparer_};
                     }
                     virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
@@ -110,7 +125,7 @@ namespace Stroika {
                             return r;
                         }
                         else {
-                            return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<Rep_> ();
+                            return Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template MakeSharedPtr<Rep_> (fKeyEqualsComparer_);
                         }
                     }
                     virtual Iterable<KEY_TYPE> Keys () const override
@@ -187,21 +202,20 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 *********** Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE> *****************
+                 ***************** Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE> *******************
                  ********************************************************************************
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array ()
-                    : inherited (inherited::template MakeSharedPtr<Rep_> ())
+                    : Mapping_Array (std::equal_to<KEY_TYPE>{})
                 {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src)
-                    : Mapping_Array ()
+                template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const KEY_EQUALS_COMPARER& keyEqualsComparer, ENABLE_IF_IS_COMPARER*)
+                    : inherited (inherited::template MakeSharedPtr<Rep_<KEY_EQUALS_COMPARER>> (keyEqualsComparer))
                 {
-                    this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
