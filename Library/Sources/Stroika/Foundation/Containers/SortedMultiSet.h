@@ -87,7 +87,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
+                 *  Just a short-hand for the 'TRAITS' part of SortedMultiSet<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
                 using TraitsType = TRAITS;
