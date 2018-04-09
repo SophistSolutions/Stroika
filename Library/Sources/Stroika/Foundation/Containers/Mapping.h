@@ -195,11 +195,9 @@ namespace Stroika {
                 nonvirtual Mapping& operator= (Mapping&& rhs) = default;
 
             public:
-                nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const
-                {
-                    // tmphack
-                    return KeyEqualsCompareFunctionType{equal_to<key_type>{}};
-                }
+                /**
+                 */
+                nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const;
 
             public:
                 /**

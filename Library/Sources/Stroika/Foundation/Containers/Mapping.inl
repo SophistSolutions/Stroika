@@ -100,6 +100,11 @@ namespace Stroika {
             }
 #endif
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            inline auto Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::GetKeyEqualsComparer () const -> KeyEqualsCompareFunctionType
+            {
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetKeyEqualsComparer ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             inline Iterable<KEY_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Keys () const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Keys ();
