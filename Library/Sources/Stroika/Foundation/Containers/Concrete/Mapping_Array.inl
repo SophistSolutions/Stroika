@@ -20,7 +20,7 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ******* Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ***************
+                 ************ Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ ******************
                  ********************************************************************************
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -29,10 +29,11 @@ namespace Stroika {
                     using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
                 public:
-                    using _IterableRepSharedPtr = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
-                    using _MappingRepSharedPtr  = typename inherited::_MappingRepSharedPtr;
-                    using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _IterableRepSharedPtr        = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IterableRepSharedPtr;
+                    using _MappingRepSharedPtr         = typename inherited::_MappingRepSharedPtr;
+                    using _APPLY_ARGTYPE               = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
                 public:
                     Rep_ ()                 = default;
@@ -95,6 +96,11 @@ namespace Stroika {
 
                     // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
                 public:
+                    virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
+                    {
+                        //tmphack
+                        return equal_to<KEY_TYPE>{};
+                    }
                     virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {

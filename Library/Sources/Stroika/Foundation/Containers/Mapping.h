@@ -529,9 +529,10 @@ namespace Stroika {
                 using _MappingRepSharedPtr = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_MappingRepSharedPtr;
 
             public:
-                virtual _MappingRepSharedPtr  CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual Iterable<key_type>    Keys () const                                          = 0;
-                virtual Iterable<mapped_type> MappedValues () const                                  = 0;
+                virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const                          = 0;
+                virtual _MappingRepSharedPtr         CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual Iterable<key_type>           Keys () const                                          = 0;
+                virtual Iterable<mapped_type>        MappedValues () const                                  = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual bool Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const = 0;

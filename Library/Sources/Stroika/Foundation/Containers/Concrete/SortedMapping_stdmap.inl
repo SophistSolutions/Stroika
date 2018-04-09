@@ -43,10 +43,11 @@ namespace Stroika {
                     using inherited = IImplRep_;
 
                 public:
-                    using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
-                    using _MappingRepSharedPtr  = typename inherited::_MappingRepSharedPtr;
-                    using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _IterableRepSharedPtr        = typename inherited::_IterableRepSharedPtr;
+                    using _MappingRepSharedPtr         = typename inherited::_MappingRepSharedPtr;
+                    using _APPLY_ARGTYPE               = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE          = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
 
                 public:
                     Rep_ ()                 = default;
@@ -100,8 +101,12 @@ namespace Stroika {
                         return this->_FindFirstThat (doToElement, suggestedOwner);
                     }
 
-                    // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
+                    // Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
                 public:
+                    virtual KeyEqualsCompareFunctionType GetKeyEqualsComparer () const override
+                    {
+                        return Common::mkEqualsComparerAdapter (fData_.key_comp ());
+                    }
                     virtual _MappingRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
                         if (fData_.HasActiveIterators ()) {
