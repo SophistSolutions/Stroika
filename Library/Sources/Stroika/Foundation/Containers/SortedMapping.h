@@ -102,12 +102,9 @@ namespace Stroika {
 
             public:
                 /**
-                 */
-                nonvirtual InOrderKeyComparerType GetInOrderKeyComparer () const
-                {
-                    // tmphack
-                    return InOrderKeyComparerType{less<KEY_TYPE>{}};
-                }
+                *  Return the function used to compare if two elements are in-order (sorted properly)
+                */
+                nonvirtual InOrderKeyComparerType GetInOrderKeyComparer () const;
 
             protected:
                 /**
@@ -130,12 +127,11 @@ namespace Stroika {
              *
              *  Protected abstract interface to support concrete implementations of
              *  the SortedMapping<T> container API.
-             *
-             *  Note that this doesn't add any methods, but still serves the purpose of allowing
-             *  testing/validation that the subtype information is correct (it is sorted).
              */
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             class SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+            public:
+                virtual InOrderKeyComparerType GetInOrderKeyComparer () const = 0;
             };
         }
     }

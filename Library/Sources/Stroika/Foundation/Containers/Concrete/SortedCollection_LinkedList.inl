@@ -44,6 +44,7 @@ namespace Stroika {
                     using _CollectionRepSharedPtr = typename Collection<T>::_CollectionRepSharedPtr;
                     using _APPLY_ARGTYPE          = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE     = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using InOrderComparerType     = typename SortedCollection<T>::InOrderComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -163,6 +164,10 @@ namespace Stroika {
 
                     // SortedCollection<T>::_IRep overrides
                 public:
+                    virtual InOrderComparerType GetInOrderComparer () const override
+                    {
+                        return InOrderComparerType{fInorderComparer_};
+                    }
                     virtual bool Equals (const typename Collection<T>::_IRep& rhs) const override
                     {
                         AssertNotImplemented ();

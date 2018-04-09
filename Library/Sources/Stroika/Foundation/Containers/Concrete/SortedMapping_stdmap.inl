@@ -193,6 +193,13 @@ namespace Stroika {
                     }
 #endif
 
+                    // SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep overrides
+                public:
+                    virtual InOrderKeyComparerType GetInOrderKeyComparer () const override
+                    {
+                        return KeyEqualsCompareFunctionType{fData_.key_comp ()};
+                    }
+
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER>>;
                     using IteratorRep_           = typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>, DataStructureImplType_>;

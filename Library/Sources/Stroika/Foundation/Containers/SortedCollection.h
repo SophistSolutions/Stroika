@@ -121,6 +121,12 @@ namespace Stroika {
                 nonvirtual SortedCollection& operator= (const SortedCollection& rhs) = default;
                 nonvirtual SortedCollection& operator= (SortedCollection&& rhs) = default;
 
+            public:
+                /**
+                 *  Return the function used to compare if two elements are in-order (sorted properly)
+                 */
+                nonvirtual InOrderComparerType GetInOrderComparer () const;
+
             protected:
                 /**
                  */
@@ -146,8 +152,9 @@ namespace Stroika {
             template <typename T>
             class SortedCollection<T>::_IRep : public Collection<T>::_IRep {
             public:
-                virtual bool Equals (const typename Collection<T>::_IRep& rhs) const = 0;
-                virtual bool Contains (T item) const                                 = 0;
+                virtual InOrderComparerType GetInOrderComparer () const                             = 0;
+                virtual bool                Equals (const typename Collection<T>::_IRep& rhs) const = 0;
+                virtual bool                Contains (T item) const                                 = 0;
                 using Collection<T>::_IRep::Remove;
                 virtual void Remove (T item) = 0;
             };
