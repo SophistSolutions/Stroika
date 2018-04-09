@@ -23,10 +23,16 @@ namespace Stroika {
                  ************ SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
                  ********************************************************************************
                  */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) ()> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline SortedMapping<KEY_TYPE, VALUE_TYPE> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::operator() () const
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::sFactory_ (nullptr);
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+                inline SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory (const KEY_INORDER_COMPARER& inOrderComparer)
+                    : fInOrderComparer_ (inOrderComparer)
+                {
+                    static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMapping_Factory");
+                }
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+                inline SortedMapping<KEY_TYPE, VALUE_TYPE> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::operator() () const
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -36,21 +42,21 @@ namespace Stroika {
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
                     if (auto f = sFactory_.load ()) {
-                        return f ();
+                        return f (fInOrderComparer_);
                     }
                     else {
-                        return Default_ ();
+                        return Default_ (fInOrderComparer_);
                     }
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (SortedMapping<KEY_TYPE, VALUE_TYPE> (*factory) ())
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+                void SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Register (SortedMapping<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_INORDER_COMPARER&))
                 {
                     sFactory_ = factory;
                 }
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline SortedMapping<KEY_TYPE, VALUE_TYPE> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
+                inline SortedMapping<KEY_TYPE, VALUE_TYPE> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::Default_ (const KEY_INORDER_COMPARER& inOrderComparer)
                 {
-                    return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE> ();
+                    return Concrete::SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE> (inOrderComparer);
                 }
             }
         }

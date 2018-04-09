@@ -26,33 +26,31 @@ namespace Stroika {
 
             namespace Factory {
 
-                /**
-                 *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedMapping<> container
-                 *
-                 *  Note - you can override the underlying factory dynamically by calling SortedMapping_Factory<T,TRAITS>::Register (), or
-                 *  replace it statically by template-specailizing SortedMapping_Factory<T,TRAITS>::New () - though the later is trickier.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = false_type>
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
                 class SortedMapping_Factory {
                 private:
-                    static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
+                    static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_;
+
+                public:
+                    SortedMapping_Factory (const KEY_INORDER_COMPARER& equalsComparer = {});
 
                 public:
                     /**
-                     *  You can call this directly, but there is no need, as the SortedMapping<T,TRAITS> CTOR does so automatically.
-                     */
+                    *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
+                    */
                     nonvirtual SortedMapping<KEY_TYPE, VALUE_TYPE> operator() () const;
 
                 public:
                     /**
-                     *  Register a replacement creator/factory for the given SortedMapping<T,TRAITS>. Note this is a global change.
-                     */
-                    static void Register (SortedMapping<KEY_TYPE, VALUE_TYPE> (*factory) () = nullptr);
+                    *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+                    */
+                    static void Register (SortedMapping<KEY_TYPE, VALUE_TYPE> (*factory) (const KEY_INORDER_COMPARER&) = nullptr);
 
                 private:
-                    static SortedMapping<KEY_TYPE, VALUE_TYPE> Default_ ();
+                    KEY_INORDER_COMPARER fInOrderComparer_;
+
+                private:
+                    static SortedMapping<KEY_TYPE, VALUE_TYPE> Default_ (const KEY_INORDER_COMPARER&);
                 };
             }
         }

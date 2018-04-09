@@ -79,6 +79,8 @@ namespace Stroika {
                  *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                  */
                 SortedMapping ();
+                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>
+                explicit SortedMapping (const KEY_INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedMapping (const SortedMapping& src) noexcept = default;
                 SortedMapping (SortedMapping&& src) noexcept      = default;
                 SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);

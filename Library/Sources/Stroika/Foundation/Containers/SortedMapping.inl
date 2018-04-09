@@ -17,8 +17,15 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping ()
-                : inherited (move (Factory::SortedMapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE> () ()))
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping ()
+                : SortedMapping (less<KEY_TYPE>{})
+            {
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const KEY_INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::SortedMapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER> (inorderComparer) ()))
             {
                 _AssertRepValidType ();
             }
