@@ -174,9 +174,6 @@ namespace Stroika {
                     }
 #endif
 
-                public:
-                    using KeyEqualsCompareFunctionType = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::KeyEqualsCompareFunctionType;
-
                 private:
                     using NonPatchingDataStructureImplType_ = DataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
                     using DataStructureImplType_            = Private::PatchingDataStructures::Array<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
