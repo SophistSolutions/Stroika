@@ -40,6 +40,7 @@ namespace Stroika {
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using EqualityComparerType  = typename Set<T>::EqualityComparerType;
+                    using InOrderComparerType   = typename SortedSet<T>::InOrderComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -159,6 +160,13 @@ namespace Stroika {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
+
+                    // SortedSet<T>::_IRep overrides
+                public:
+                    virtual InOrderComparerType GetInOrderComparer () const override
+                    {
+                        return InOrderComparerType{fData_.key_comp ()};
+                    }
 
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<set<T, INORDER_COMPARER>>;

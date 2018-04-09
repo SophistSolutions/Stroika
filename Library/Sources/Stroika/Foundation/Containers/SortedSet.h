@@ -71,8 +71,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  This CAN be used as the argument to a SortedSet<> as InOrderComparerType, but
-                 *  we allow any template in the SortedSet<> CTOR for an inorderComparer that follows Common::IsStrictInOrderComparer () concept (need better name).
+                 *  Ordering reletion applied to sort a 'SortedSet'. Returned by GetInOrderComparer ();
                  */
                 using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>>;
 
@@ -108,6 +107,12 @@ namespace Stroika {
                 nonvirtual SortedSet& operator= (const SortedSet& rhs) = default;
                 nonvirtual SortedSet& operator= (SortedSet&& rhs) = default;
 
+            public:
+                /**
+                 *  Return the function used to compare if two elements are in-order (sorted properly)
+                 */
+                nonvirtual InOrderComparerType GetInOrderComparer () const;
+
             protected:
                 /**
                  */
@@ -129,12 +134,11 @@ namespace Stroika {
              *
              *  Protected abstract interface to support concrete implementations of
              *  the SortedSet<T> container API.
-             *
-             *  Note that this doesn't add any methods, but still serves the purpose of allowing
-             *  testing/validation that the subtype information is correct (it is sorted).
              */
             template <typename T>
             class SortedSet<T>::_IRep : public Set<T>::_IRep {
+            public:
+                virtual InOrderComparerType GetInOrderComparer () const = 0;
             };
         }
     }

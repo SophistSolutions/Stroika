@@ -96,6 +96,11 @@ namespace Stroika {
                 _SafeReadRepAccessor<_IRep>{this};
 #endif
             }
+            template <typename T>
+            inline auto SortedSet<T>::GetInOrderComparer () const -> InOrderComparerType
+            {
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetInOrderComparer ();
+            }
         }
     }
 }
