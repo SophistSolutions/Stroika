@@ -176,8 +176,8 @@ namespace Stroika {
                 Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                 Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
-                template <typename COPY_FROM_ITERATOR_KEY_T>
-                Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                template <typename COPY_FROM_ITERATOR_KEYVALUE>
+                Mapping (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
             protected:
                 explicit Mapping (const _MappingRepSharedPtr& rep) noexcept;
@@ -348,8 +348,8 @@ namespace Stroika {
                 nonvirtual void RemoveAll ();
                 template <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual void RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items);
-                template <typename COPY_FROM_ITERATOR_KEY_T>
-                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                template <typename COPY_FROM_ITERATOR_KEYVALUE>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
             public:
                 /**

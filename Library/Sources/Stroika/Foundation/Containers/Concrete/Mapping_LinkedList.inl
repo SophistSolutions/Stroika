@@ -229,8 +229,8 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                template <typename COPY_FROM_ITERATOR_KEY_T>
-                Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                template <typename COPY_FROM_ITERATOR_KEYVALUE>
+                Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
                     : Mapping_LinkedList ()
                 {
                     this->AddAll (start, end);

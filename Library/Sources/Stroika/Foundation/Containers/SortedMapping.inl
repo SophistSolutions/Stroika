@@ -53,8 +53,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_KEY_T>
-            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            template <typename COPY_FROM_ITERATOR_KEYVALUE>
+            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
                 : SortedMapping ()
             {
                 this->AddAll (start, end);

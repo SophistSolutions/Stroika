@@ -26,8 +26,8 @@ namespace Stroika {
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
                 atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::sFactory_ (nullptr);
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER>
-                inline SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory (const KEY_INORDER_COMPARER& inOrderComparer)
-                    : fInOrderComparer_ (inOrderComparer)
+                inline SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_INORDER_COMPARER>::SortedMapping_Factory (const KEY_INORDER_COMPARER& keyInOrderComparer)
+                    : fInOrderComparer_ (keyInOrderComparer)
                 {
                     static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMapping_Factory");
                 }

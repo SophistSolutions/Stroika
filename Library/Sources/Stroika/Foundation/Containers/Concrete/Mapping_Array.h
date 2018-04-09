@@ -41,8 +41,8 @@ namespace Stroika {
                     Mapping_Array (const Mapping_Array& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                     Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& src);
-                    template <typename COPY_FROM_ITERATOR_KEY_T>
-                    Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    template <typename COPY_FROM_ITERATOR_KEYVALUE>
+                    Mapping_Array (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
                 public:
                     nonvirtual Mapping_Array& operator= (const Mapping_Array& rhs) = default;

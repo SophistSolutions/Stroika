@@ -69,8 +69,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_KEY_T>
-            Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            template <typename COPY_FROM_ITERATOR_KEYVALUE>
+            Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
                 : Mapping ()
             {
                 AddAll (start, end);
@@ -239,8 +239,8 @@ namespace Stroika {
                 }
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_KEY_T>
-            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            template <typename COPY_FROM_ITERATOR_KEYVALUE>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (i->first);

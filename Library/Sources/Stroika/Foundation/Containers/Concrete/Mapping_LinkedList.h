@@ -42,8 +42,8 @@ namespace Stroika {
                     Mapping_LinkedList (const Mapping_LinkedList& src) = default;
                     template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value && !std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                     explicit Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src);
-                    template <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Mapping_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    template <typename COPY_FROM_ITERATOR_KEYVALUE>
+                    explicit Mapping_LinkedList (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
                 public:
                     nonvirtual Mapping_LinkedList& operator= (const Mapping_LinkedList& rhs) = default;
