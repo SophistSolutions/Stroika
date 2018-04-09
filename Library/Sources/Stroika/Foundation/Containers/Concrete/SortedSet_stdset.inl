@@ -39,6 +39,7 @@ namespace Stroika {
                     using _SetSharedPtrIRep     = typename Set<T>::_SetRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+					using EqualityComparerType = typename Set<T>::EqualityComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -99,7 +100,7 @@ namespace Stroika {
                 public:
                     virtual EqualityComparerType GetEqualsComparer () const override
                     {
-						return EqualityComparerType{ Common::mkEqualsComparerAdapter (fData_.key_comp ()) };
+                        return EqualityComparerType{Common::mkEqualsComparerAdapter (fData_.key_comp ())};
                     }
                     virtual _SetSharedPtrIRep CloneEmpty (IteratorOwnerID forIterableEnvelope) const override
                     {
