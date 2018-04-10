@@ -30,7 +30,7 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_ADDABLE typename ENABLE_IF>
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
             inline Deque<T>::Deque (const CONTAINER_OF_ADDABLE& src)
                 : Deque ()
             {
