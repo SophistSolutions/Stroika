@@ -189,7 +189,7 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************* SortedAssociation_stdmultimap<KEY_TYPE,MAPPED_VALUE_TYPE> *****************
+                 ******** SortedAssociation_stdmultimap<KEY_TYPE,MAPPED_VALUE_TYPE> *************
                  ********************************************************************************
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -199,8 +199,8 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (const CONTAINER_OF_PAIR_KEY_T& src)
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+                inline SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation_stdmultimap (const CONTAINER_OF_ADDABLE& src)
                     : SortedAssociation_stdmultimap ()
                 {
                     this->AddAll (src);

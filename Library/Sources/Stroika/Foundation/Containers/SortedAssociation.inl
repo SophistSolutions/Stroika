@@ -37,8 +37,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (const CONTAINER_OF_PAIR_KEY_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (const CONTAINER_OF_ADDABLE& src)
                 : SortedAssociation ()
             {
                 _AssertRepValidType ();

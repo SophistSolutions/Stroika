@@ -285,8 +285,8 @@ namespace Stroika {
                 {
                 }
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
+                template <typename CONTAINER_OF_ADDABLE>
+                inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (const CONTAINER_OF_ADDABLE& src)
                     : Bijection_LinkedList ()
                 {
                     this->AddAll (src);

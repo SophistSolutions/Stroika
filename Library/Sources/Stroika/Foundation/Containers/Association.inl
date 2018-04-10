@@ -54,8 +54,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const CONTAINER_OF_PAIR_KEY_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const CONTAINER_OF_ADDABLE& src)
                 : Association ()
             {
                 AddAll (src);
@@ -219,8 +219,8 @@ namespace Stroika {
                 }
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_ADDABLE>
+            void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
             {
                 for (auto i : items) {
                     Remove (i.first);
@@ -376,23 +376,23 @@ namespace Stroika {
                 RemoveAll ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const
+            template <typename CONTAINER_OF_ADDABLE>
+            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const CONTAINER_OF_ADDABLE& items) const
             {
                 Association<KEY_TYPE, MAPPED_VALUE_TYPE> result = *this;
                 result.AddAll (items);
                 return result;
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_ADDABLE>
+            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const CONTAINER_OF_ADDABLE& items)
             {
                 AddAll (items);
                 return *this;
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_ADDABLE>
+            inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>& Association<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const CONTAINER_OF_ADDABLE& items)
             {
                 RemoveAll (items);
                 return *this;

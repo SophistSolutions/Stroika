@@ -228,8 +228,8 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+                inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap (const CONTAINER_OF_ADDABLE& src)
                     : SortedMapping_stdmap ()
                 {
                     this->AddAll (src);

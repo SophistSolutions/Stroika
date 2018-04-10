@@ -173,8 +173,8 @@ namespace Stroika {
 #endif
                 Mapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
-                Mapping (const CONTAINER_OF_PAIR_KEY_T& src);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+                Mapping (const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
                 Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
@@ -345,8 +345,8 @@ namespace Stroika {
                 /**
                  */
                 nonvirtual void RemoveAll ();
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual void RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& items);
                 template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
                 nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
@@ -469,20 +469,20 @@ namespace Stroika {
             public:
                 /**
                  */
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const;
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> operator+ (const CONTAINER_OF_ADDABLE& items) const;
 
             public:
                 /**
                  */
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator+= (const CONTAINER_OF_ADDABLE& items);
 
             public:
                 /**
                  */
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& operator-= (const CONTAINER_OF_ADDABLE& items);
 
             protected:
                 /**

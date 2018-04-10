@@ -61,8 +61,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const CONTAINER_OF_PAIR_KEY_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const CONTAINER_OF_ADDABLE& src)
                 : Mapping ()
             {
                 AddAll (src);
@@ -231,8 +231,8 @@ namespace Stroika {
                 }
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_ADDABLE>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (const CONTAINER_OF_ADDABLE& items)
             {
                 for (auto i : items) {
                     Remove (i.first);
@@ -388,23 +388,23 @@ namespace Stroika {
                 RemoveAll ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const CONTAINER_OF_PAIR_KEY_T& items) const
+            template <typename CONTAINER_OF_ADDABLE>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+ (const CONTAINER_OF_ADDABLE& items) const
             {
                 Mapping<KEY_TYPE, MAPPED_VALUE_TYPE> result = *this;
                 result.AddAll (items);
                 return result;
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_ADDABLE>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator+= (const CONTAINER_OF_ADDABLE& items)
             {
                 AddAll (items);
                 return *this;
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_ADDABLE>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::operator-= (const CONTAINER_OF_ADDABLE& items)
             {
                 RemoveAll (items);
                 return *this;

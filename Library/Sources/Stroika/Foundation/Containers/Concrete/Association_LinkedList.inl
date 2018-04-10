@@ -187,10 +187,10 @@ namespace Stroika {
                 };
 
                 /*
-                ********************************************************************************
-                ******* Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
-                ********************************************************************************
-                */
+                 ********************************************************************************
+                 *********** Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE> ****************
+                 ********************************************************************************
+                 */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 inline Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_LinkedList ()
                     : inherited (inherited::template MakeSharedPtr<Rep_> ())
@@ -198,8 +198,8 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_LinkedList (const CONTAINER_OF_PAIR_KEY_T& src)
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+                inline Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_LinkedList (const CONTAINER_OF_ADDABLE& src)
                     : Association_LinkedList ()
                 {
                     this->AddAll (src);

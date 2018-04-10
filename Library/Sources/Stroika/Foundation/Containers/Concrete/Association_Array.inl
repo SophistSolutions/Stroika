@@ -194,8 +194,8 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-                inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (const CONTAINER_OF_PAIR_KEY_T& src)
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+                inline Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_Array (const CONTAINER_OF_ADDABLE& src)
                     : Association_Array ()
                 {
                     this->AddAll (src);
