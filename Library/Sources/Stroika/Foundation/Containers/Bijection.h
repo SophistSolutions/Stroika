@@ -142,6 +142,15 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add ()
+                 *
+                 *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
+                 */
+                template <typename POTENTIALLY_ADDABLE_T>
+                static constexpr bool IsAddable = is_convertible<POTENTIALLY_ADDABLE_T, pair<DOMAIN_TYPE, RANGE_TYPE>>::value;
+
+            public:
+                /**
                  *  This constructor creates a concrete Bijection object, either empty, or initialized with any argument
                  *  values.
                  *

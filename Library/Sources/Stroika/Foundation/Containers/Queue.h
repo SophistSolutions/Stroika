@@ -105,6 +105,15 @@ namespace Stroika {
 
             public:
                 /**
+                 *  \brief check if the argument type can be passed as argument to the arity/1 overload of Add (Enqueue)
+                 *
+                 *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
+                 */
+                template <typename POTENTIALLY_ADDABLE_T>
+                static constexpr bool IsAddable = is_convertible<POTENTIALLY_ADDABLE_T, T>::value;
+
+            public:
+                /**
                  *  Construct a new Queue object. Overloads that take an argument container or start/end iterators, iterate from
                  *  start to end, adding the items to the tail of the Queue, so the resulting Queue will be in the same order (when iterated or dequeued)
                  *  as the order of the items its created from.
