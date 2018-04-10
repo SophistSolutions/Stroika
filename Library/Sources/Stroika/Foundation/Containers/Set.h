@@ -31,10 +31,8 @@
  *      @todo   Implement more backends
  *              >   Set_BitString
  *              >   Set_Array
- *              >   Set_LinkedList
  *              >   Set_HashTable
  *              >   Set_RedBlackTree
- *              >   Set_stlset
  *              >   Set_stlunordered_set (really is hashset)
  *              >   Set_Treap
  *
