@@ -90,8 +90,8 @@ namespace Stroika {
                 Bag (const Bag& src) = default;
                 Bag (Bag&& src)      = default;
                 Bag (const std::initializer_list<T>& src);
-                template <typename CONTAINER_OF_T>
-                explicit Bag (const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_ADDABLE>
+                explicit Bag (const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -129,8 +129,8 @@ namespace Stroika {
                  */
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename CONTAINER_OF_T>
-                nonvirtual void AddAll (const CONTAINER_OF_T& s);
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual void AddAll (const CONTAINER_OF_ADDABLE& s);
 
             public:
                 /**
@@ -172,8 +172,8 @@ namespace Stroika {
                 nonvirtual void RemoveAll ();
                 template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename CONTAINER_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
-                nonvirtual void RemoveAll (const CONTAINER_OF_T& c);
+                template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c);
 
             public:
                 /**

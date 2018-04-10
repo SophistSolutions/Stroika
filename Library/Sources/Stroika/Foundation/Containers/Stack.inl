@@ -25,8 +25,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Stack<T>::Stack (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Stack<T>::Stack (const CONTAINER_OF_ADDABLE& src)
                 : Stack ()
             {
                 AssertNotImplemented ();

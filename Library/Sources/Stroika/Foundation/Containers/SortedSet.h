@@ -88,10 +88,10 @@ namespace Stroika {
                 SortedSet (SortedSet&& src) noexcept      = default;
                 SortedSet (const initializer_list<T>& src);
                 SortedSet (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet*>::value>>
-                SortedSet (const CONTAINER_OF_T& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedSet*>::value>>
-                SortedSet (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedSet*>::value>>
+                SortedSet (const CONTAINER_OF_ADDABLE& src);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedSet*>::value>>
+                SortedSet (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>

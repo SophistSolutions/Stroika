@@ -30,8 +30,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Deque<T>::Deque (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE typename ENABLE_IF>
+            inline Deque<T>::Deque (const CONTAINER_OF_ADDABLE& src)
                 : Deque ()
             {
                 this->AddAllToTail (src);
@@ -50,8 +50,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Deque ()
             {
                 this->AddAllToTail (start, end);

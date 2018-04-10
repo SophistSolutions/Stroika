@@ -290,16 +290,16 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline MultiSet<T, TRAITS>::MultiSet (const CONTAINER_OF_ADDABLE& src)
                 : MultiSet ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src)
+            template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
                 : MultiSet (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (src);
@@ -463,8 +463,8 @@ namespace Stroika {
                 }
             }
             template <typename T, typename TRAITS>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            void MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            void MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_ADDABLE& src)
             {
                 // see https://stroika.atlassian.net/browse/STK-645
                 for (auto i : src) {

@@ -58,16 +58,16 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (const CONTAINER_OF_ADDABLE& src)
                 : SortedSet ()
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_ADDABLE& src)
                 : SortedSet (inOrderComparer)
             {
                 this->AddAll (src);

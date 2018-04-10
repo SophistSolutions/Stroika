@@ -32,8 +32,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Queue<T>::Queue (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Queue<T>::Queue (const CONTAINER_OF_ADDABLE& src)
                 : Queue ()
             {
                 AssertNotImplemented ();
@@ -54,8 +54,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Queue ()
             {
                 AddAllToTail (start, end);
@@ -107,8 +107,8 @@ namespace Stroika {
                 return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline void Queue<T>::AddAllToTail (const CONTAINER_OF_T& s)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline void Queue<T>::AddAllToTail (const CONTAINER_OF_ADDABLE& s)
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 for (auto i : s) {
@@ -116,8 +116,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline void Queue<T>::AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            inline void Queue<T>::AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 for (auto i = start; i != end; ++i) {

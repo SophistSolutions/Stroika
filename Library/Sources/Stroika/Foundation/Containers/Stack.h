@@ -93,8 +93,8 @@ namespace Stroika {
                 Stack ();
                 Stack (const Stack& src) noexcept = default;
                 Stack (Stack&& src) noexcept      = default;
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Stack<T>*>::value>::type>
-                Stack (const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Stack<T>*>::value>::type>
+                Stack (const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 Stack (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

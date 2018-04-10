@@ -59,16 +59,16 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline SortedCollection<T>::SortedCollection (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedCollection<T>::SortedCollection (const CONTAINER_OF_ADDABLE& src)
                 : SortedCollection ()
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename INORDER_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_T& src)
+            template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedCollection<T>::SortedCollection (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_ADDABLE& src)
                 : SortedCollection (std::forward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (src);

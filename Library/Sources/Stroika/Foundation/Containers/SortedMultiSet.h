@@ -70,10 +70,10 @@ namespace Stroika {
                 SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
                 SortedMultiSet (const initializer_list<T>& src);
                 SortedMultiSet (const initializer_list<CountedValue<T>>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const SortedMultiSet<T, TRAITS>*>::value>::type>
-                SortedMultiSet (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                SortedMultiSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_ADDABLE typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>::value>::type>
+                SortedMultiSet (const CONTAINER_OF_ADDABLE& src);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE_OF_T>
+                SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE_OF_T start, COPY_FROM_ITERATOR_OF_ADDABLE_OF_T end);
 
             protected:
                 explicit SortedMultiSet (const _SortedMultiSetRepSharedPtr& src) noexcept;

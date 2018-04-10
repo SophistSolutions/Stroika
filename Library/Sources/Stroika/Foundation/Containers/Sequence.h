@@ -223,7 +223,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
+                 *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  *
                  *  \par Example Usage
@@ -245,8 +245,8 @@ namespace Stroika {
                 Sequence (const Sequence& src) noexcept = default;
                 Sequence (Sequence&& src) noexcept      = default;
                 Sequence (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Sequence<T>*>::value>::type>
-                Sequence (const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>::value>::type>
+                Sequence (const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -381,8 +381,8 @@ namespace Stroika {
                  */
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual void InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
-                nonvirtual void InsertAll (size_t i, const CONTAINER_OF_T& s);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
+                nonvirtual void InsertAll (size_t i, const CONTAINER_OF_ADDABLE& s);
 
             public:
                 /**
@@ -392,8 +392,8 @@ namespace Stroika {
             public:
                 /**
                  */
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
-                nonvirtual void PrependAll (const CONTAINER_OF_T& s);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
+                nonvirtual void PrependAll (const CONTAINER_OF_ADDABLE& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual void PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -411,8 +411,8 @@ namespace Stroika {
                  *  the appended items wont necesarily all get appended at once, since other threads could make
                  *  changes in between.
                  */
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
-                nonvirtual void AppendAll (const CONTAINER_OF_T& s);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
+                nonvirtual void AppendAll (const CONTAINER_OF_ADDABLE& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual void AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -449,10 +449,10 @@ namespace Stroika {
                  *      o   list<T>
                  *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but dont count on that yet...
                  */
-                template <typename CONTAINER_OF_T>
-                nonvirtual CONTAINER_OF_T As () const;
-                template <typename CONTAINER_OF_T>
-                nonvirtual void As (CONTAINER_OF_T* into) const;
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual CONTAINER_OF_ADDABLE As () const;
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual void As (CONTAINER_OF_ADDABLE* into) const;
 
             public:
                 /**

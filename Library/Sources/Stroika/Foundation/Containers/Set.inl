@@ -47,16 +47,16 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Set<T>::Set (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Set<T>::Set (const CONTAINER_OF_ADDABLE& src)
                 : Set ()
             {
                 AddAll (src);
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src)
+            template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
                 : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (src);
@@ -156,8 +156,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline void Set<T>::AddAll (const CONTAINER_OF_T& s)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline void Set<T>::AddAll (const CONTAINER_OF_ADDABLE& s)
             {
                 // Note - unlike Collection<T, TRAITS> - we dont need to check for this != &s because if we
                 // attempt to add items that already exist, it would do nothing, and not lead to
@@ -199,8 +199,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename CONTAINER_OF_T>
-            inline void Set<T>::RemoveAll (const CONTAINER_OF_T& s)
+            template <typename CONTAINER_OF_ADDABLE>
+            inline void Set<T>::RemoveAll (const CONTAINER_OF_ADDABLE& s)
             {
                 RemoveAll (std::begin (s), std::end (s));
             }

@@ -98,8 +98,8 @@ namespace Stroika {
                 SortedKeyedCollection (const SortedKeyedCollection& src)  = default;
                 SortedKeyedCollection (const SortedKeyedCollection&& src) = default;
                 SortedKeyedCollection (const std::initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const SortedKeyedCollection<T>*>::value>::type>
-                explicit SortedKeyedCollection (const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedKeyedCollection<T>*>::value>::type>
+                explicit SortedKeyedCollection (const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 SortedKeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

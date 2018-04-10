@@ -44,8 +44,8 @@ namespace Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template <typename T>
-            template <typename CONTAINER_OF_T>
-            inline Bag<T>::Bag (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE>
+            inline Bag<T>::Bag (const CONTAINER_OF_ADDABLE& src)
                 : Bag ()
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
@@ -100,15 +100,15 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename CONTAINER_OF_T>
-            inline void Bag<T>::AddAll (const CONTAINER_OF_T& c)
+            template <typename CONTAINER_OF_ADDABLE>
+            inline void Bag<T>::AddAll (const CONTAINER_OF_ADDABLE& c)
             {
                 /*
                  * Because adding items to a Bag COULD result in those items appearing in a running iterator,
                  * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
                  */
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {
-                    CONTAINER_OF_T tmp = c;
+					CONTAINER_OF_ADDABLE tmp = c;
                     AddAll (std::begin (tmp), std::end (tmp));
                 }
                 else {
@@ -151,8 +151,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename EQUALS_COMPARER>
-            inline void Bag<T>::RemoveAll (const CONTAINER_OF_T& c)
+            template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER>
+            inline void Bag<T>::RemoveAll (const CONTAINER_OF_ADDABLE& c)
             {
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {
                     RemoveAll ();

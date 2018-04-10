@@ -80,10 +80,10 @@ namespace Stroika {
                 Deque (const Deque& src) noexcept = default;
                 Deque (Deque&& src) noexcept      = default;
                 Deque (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Deque<T>*>::value>::type>
-                Deque (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Deque<T>*>::value>::type>
+                Deque (const CONTAINER_OF_ADDABLE& src);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                Deque (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:
                 /**

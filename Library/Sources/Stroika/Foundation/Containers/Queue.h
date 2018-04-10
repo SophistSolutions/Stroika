@@ -113,10 +113,10 @@ namespace Stroika {
                 Queue (const Queue& src) noexcept = default;
                 Queue (Queue&& src) noexcept      = default;
                 Queue (const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Queue<T>*>::value>::type>
-                Queue (const CONTAINER_OF_T& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Queue<T>*>::value>::type>
+                Queue (const CONTAINER_OF_ADDABLE& src);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:
                 explicit Queue (const _QueueRepSharedPtr& rep) noexcept;
@@ -179,10 +179,10 @@ namespace Stroika {
                  *
                  *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
                  */
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
-                nonvirtual void AddAllToTail (const CONTAINER_OF_T& s);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
+                nonvirtual void AddAllToTail (const CONTAINER_OF_ADDABLE& s);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             public:
                 /**

@@ -115,7 +115,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
+                 *  For the CTOR overload with CONTAINER_OF_ADDABLE, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  *
                  *  All constructors either copy their source comparer (copy/move CTOR), or use the provided argument comparer
@@ -151,10 +151,10 @@ namespace Stroika {
                 Set (const initializer_list<T>& src);
                 template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
                 Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T>*>::value>>
-                Set (const CONTAINER_OF_T& src);
-                template <typename EQUALS_COMPARER, typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value and not std::is_convertible<const CONTAINER_OF_T*, const Set<T>*>::value>>
-                Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_T& src);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Set<T>*>::value>>
+                Set (const CONTAINER_OF_ADDABLE& src);
+                template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Set<T>*>::value>>
+                Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
                 Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_T>::value>>
@@ -234,8 +234,8 @@ namespace Stroika {
                  */
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value>::type>
-                nonvirtual void AddAll (const CONTAINER_OF_T& s);
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
+                nonvirtual void AddAll (const CONTAINER_OF_ADDABLE& s);
 
             public:
                 /**
@@ -272,8 +272,8 @@ namespace Stroika {
                  */
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template <typename CONTAINER_OF_T>
-                nonvirtual void RemoveAll (const CONTAINER_OF_T& s);
+                template <typename CONTAINER_OF_ADDABLE>
+                nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& s);
                 nonvirtual void RemoveAll ();
 
             public:

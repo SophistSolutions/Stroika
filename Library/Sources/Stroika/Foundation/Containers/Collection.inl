@@ -58,8 +58,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline Collection<T>::Collection (const CONTAINER_OF_T& src)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Collection<T>::Collection (const CONTAINER_OF_ADDABLE& src)
                 : Collection ()
             {
                 AddAll (src);
@@ -96,15 +96,15 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename ENABLE_IF>
-            inline void Collection<T>::AddAll (const CONTAINER_OF_T& c)
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline void Collection<T>::AddAll (const CONTAINER_OF_ADDABLE& c)
             {
                 /*
                  * Because adding items to a Collection COULD result in those items appearing in a running iterator,
                  * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
                  */
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {
-                    CONTAINER_OF_T tmp = c;
+					CONTAINER_OF_ADDABLE tmp = c;
                     AddAll (std::begin (tmp), std::end (tmp));
                 }
                 else {
@@ -150,8 +150,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, typename EQUALS_COMPARER>
-            inline void Collection<T>::RemoveAll (const CONTAINER_OF_T& c, const EQUALS_COMPARER& equalsComparer)
+            template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER>
+            inline void Collection<T>::RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer)
             {
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {
                     RemoveAll (equalsComparer);
