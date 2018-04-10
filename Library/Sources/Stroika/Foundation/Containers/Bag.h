@@ -92,8 +92,8 @@ namespace Stroika {
                 Bag (const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_ADDABLE>
                 explicit Bag (const CONTAINER_OF_ADDABLE& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                Bag (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:
                 explicit Bag (const _SharedPtrIRep& rep) noexcept;
@@ -127,8 +127,8 @@ namespace Stroika {
                 /**
                  *  \note   AddAll/2 is alias for .net AddRange ()
                  */
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
                 template <typename CONTAINER_OF_ADDABLE>
                 nonvirtual void AddAll (const CONTAINER_OF_ADDABLE& s);
 
@@ -170,8 +170,8 @@ namespace Stroika {
                  *  The no-argument verison Produces an empty bag.
                  */
                 nonvirtual void RemoveAll ();
-                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
-                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
                 template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c);
 

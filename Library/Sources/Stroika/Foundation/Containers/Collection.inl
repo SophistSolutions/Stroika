@@ -30,8 +30,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline Collection<T>::Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            inline Collection<T>::Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Collection ()
             {
                 AddAll (start, end);
@@ -87,8 +87,8 @@ namespace Stroika {
                 return false;
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            void Collection<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            void Collection<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 for (auto i = start; i != end; ++i) {
@@ -104,7 +104,7 @@ namespace Stroika {
                  * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
                  */
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {
-					CONTAINER_OF_ADDABLE tmp = c;
+                    CONTAINER_OF_ADDABLE tmp = c;
                     AddAll (std::begin (tmp), std::end (tmp));
                 }
                 else {
@@ -142,8 +142,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER>
-            void Collection<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, const EQUALS_COMPARER& equalsComparer)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER>
+            void Collection<T>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, const EQUALS_COMPARER& equalsComparer)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (*i, equalsComparer);

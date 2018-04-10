@@ -74,16 +74,16 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : SortedSet ()
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : SortedSet (inOrderComparer)
             {
                 this->AddAll (start, end);

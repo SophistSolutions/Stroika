@@ -92,8 +92,8 @@ namespace Stroika {
                 return false;
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            void Bag<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            void Bag<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
@@ -108,7 +108,7 @@ namespace Stroika {
                  * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
                  */
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {
-					CONTAINER_OF_ADDABLE tmp = c;
+                    CONTAINER_OF_ADDABLE tmp = c;
                     AddAll (std::begin (tmp), std::end (tmp));
                 }
                 else {
@@ -143,8 +143,8 @@ namespace Stroika {
                 _GetRep ().RemoveAll ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER>
-            void Bag<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER>
+            void Bag<T>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove<EQUALS_COMPARER> (*i);

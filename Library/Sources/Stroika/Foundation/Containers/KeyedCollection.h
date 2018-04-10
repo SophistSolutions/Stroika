@@ -165,8 +165,8 @@ namespace Stroika {
                 KeyedCollection (const std::initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value>::type>
                 explicit KeyedCollection (const CONTAINER_OF_ADDABLE& src, KeyExtractorFunctionType keyExtractor);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                KeyedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, KeyExtractorFunctionType keyExtractor);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, KeyExtractorFunctionType keyExtractor);
 
             protected:
                 explicit KeyedCollection (const _KeyedCollectionRepSharedPtr& src);

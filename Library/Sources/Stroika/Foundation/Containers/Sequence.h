@@ -247,8 +247,8 @@ namespace Stroika {
                 Sequence (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>::value>::type>
                 Sequence (const CONTAINER_OF_ADDABLE& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:
                 explicit Sequence (const _SequenceRepSharedPtr& rep) noexcept;
@@ -379,8 +379,8 @@ namespace Stroika {
                 /**
                  *  \brief Insert all the given items into this sequence, starting at offset 'i'.
                  */
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual void InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                nonvirtual void InsertAll (size_t i, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
                 nonvirtual void InsertAll (size_t i, const CONTAINER_OF_ADDABLE& s);
 
@@ -394,8 +394,8 @@ namespace Stroika {
                  */
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
                 nonvirtual void PrependAll (const CONTAINER_OF_ADDABLE& s);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual void PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                nonvirtual void PrependAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             public:
                 /**
@@ -413,8 +413,8 @@ namespace Stroika {
                  */
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
                 nonvirtual void AppendAll (const CONTAINER_OF_ADDABLE& s);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual void AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                nonvirtual void AppendAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             public:
                 /**

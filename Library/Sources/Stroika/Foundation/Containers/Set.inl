@@ -75,16 +75,16 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
-            inline Set<T>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            inline Set<T>::Set (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Set ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_T, typename ENABLE_IF>
-            inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (start, end);
@@ -147,8 +147,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            void Set<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            void Set<T>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 _SafeReadWriteRepAccessor<_IRep> tmp{this};
                 for (auto i = start; i != end; ++i) {
@@ -191,8 +191,8 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            void Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            void Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (*i);

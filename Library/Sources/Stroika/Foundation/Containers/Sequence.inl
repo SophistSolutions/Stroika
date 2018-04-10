@@ -130,8 +130,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Sequence ()
             {
                 AppendAll (start, end);
@@ -241,8 +241,8 @@ namespace Stroika {
                 return accessor._GetWriteableRep ().Insert (idx, &item, &item + 1);
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            void Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            void Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 Require (i <= this->GetLength ());
                 size_t insertAt = i;
@@ -269,8 +269,8 @@ namespace Stroika {
                 InsertAll (0, s);
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline void Sequence<T>::PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            inline void Sequence<T>::PrependAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 InsertAll (0, start, end);
             }
@@ -303,8 +303,8 @@ namespace Stroika {
 #endif
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_T>
-            inline void Sequence<T>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            inline void Sequence<T>::AppendAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 _SafeReadWriteRepAccessor<_IRep> accessor = {this};
                 for (auto i = start; i != end; ++i) {

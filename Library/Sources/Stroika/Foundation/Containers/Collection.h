@@ -144,8 +144,8 @@ namespace Stroika {
                 Collection (const initializer_list<T>& src);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Collection<T>*>::value>::type>
                 Collection (const CONTAINER_OF_ADDABLE& src);
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                Collection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:
                 explicit Collection (const _CollectionRepSharedPtr& src) noexcept;
@@ -177,8 +177,8 @@ namespace Stroika {
                 /**
                  *  \note   AddAll/2 is alias for .net AddRange ()
                  */
-                template <typename COPY_FROM_ITERATOR_OF_T>
-                nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+                nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
                 nonvirtual void AddAll (const CONTAINER_OF_ADDABLE& s);
 
@@ -220,8 +220,8 @@ namespace Stroika {
                  *  The no-argument verison Produces an empty bag.
                  */
                 nonvirtual void RemoveAll ();
-                template <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = std::equal_to<T>>
-                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end, const EQUALS_COMPARER& equalsComparer = {});
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
+                nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, const EQUALS_COMPARER& equalsComparer = {});
                 template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
                 nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
 
