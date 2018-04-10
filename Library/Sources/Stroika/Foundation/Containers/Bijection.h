@@ -155,8 +155,8 @@ namespace Stroika {
                 Bijection (const Bijection& src) noexcept = default;
                 Bijection (Bijection&& src) noexcept      = default;
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-                template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Bijection*>::value>::type>
-                Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
+                template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>::type>
+                Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
                 template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_KVP_T>::value>>
                 Bijection (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end);
 
@@ -411,14 +411,14 @@ namespace Stroika {
             public:
                 /**
                  */
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Bijection& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
+                nonvirtual Bijection& operator+= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items);
 
             public:
                 /**
                  */
-                template <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual Bijection& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
+                nonvirtual Bijection& operator-= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items);
 
             protected:
                 /**

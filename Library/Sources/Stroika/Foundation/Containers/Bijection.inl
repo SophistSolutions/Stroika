@@ -61,8 +61,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T, typename ENABLE_IF>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
+            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
                 : Bijection ()
             {
                 AddAll (src);
@@ -320,15 +320,15 @@ namespace Stroika {
                 RemoveAll ();
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator+= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items)
             {
                 AddAll (items);
                 return *this;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            template <typename CONTAINER_OF_PAIR_KEY_T>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
+            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>& Bijection<DOMAIN_TYPE, RANGE_TYPE>::operator-= (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& items)
             {
                 RemoveAll (items);
                 return *this;
