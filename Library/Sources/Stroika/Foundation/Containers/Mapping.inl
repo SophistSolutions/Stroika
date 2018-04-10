@@ -69,8 +69,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_ADDABLE>
-            Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_ADDABLE start, COPY_FROM_ITERATOR_ADDABLE end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Mapping ()
             {
                 AddAll (start, end);
@@ -194,8 +194,8 @@ namespace Stroika {
                 _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_ADDABLE>
-            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (COPY_FROM_ITERATOR_ADDABLE start, COPY_FROM_ITERATOR_ADDABLE end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
@@ -239,8 +239,8 @@ namespace Stroika {
                 }
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_ADDABLE>
-            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (COPY_FROM_ITERATOR_ADDABLE start, COPY_FROM_ITERATOR_ADDABLE end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (i->first);
