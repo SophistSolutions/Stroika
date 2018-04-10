@@ -187,7 +187,7 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *          using EqualityComparerType = Common::ComparisonRelationDeclaration<function<bool(T, T)>, Common::ComparisonRelationType::eEquals>;
+             *          using EqualityComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>>;
              *      \endcode
              *
              *  \par Example Usage
