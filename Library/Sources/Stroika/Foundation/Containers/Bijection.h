@@ -155,10 +155,16 @@ namespace Stroika {
                 Bijection (const Bijection& src) noexcept = default;
                 Bijection (Bijection&& src) noexcept      = default;
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_EQUALS_COMPARER> ()>>
+                Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
                 template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>::type>
                 Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
-                template <typename COPY_FROM_ITERATOR_KVP_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_KVP_T>::value>>
-                Bijection (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end);
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>::type>
+                Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
+                template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>>
+                Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
+                template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>>
+                Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
 
             protected:
                 explicit Bijection (const _BijectionRepSharedPtr& src) noexcept;
