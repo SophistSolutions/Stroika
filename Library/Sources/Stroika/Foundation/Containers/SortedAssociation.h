@@ -78,7 +78,7 @@ namespace Stroika {
                 *  This constructor creates a concrete sorted Association object, either empty,
                 *  or initialized with any argument values.
                 *
-                *  The underlying data structure of the Association is defined by @see Concrete::Association_Factory<>
+                *  The underlying data structure of the Association is defined by @see Factory::Association_Factory<>
                 */
                 SortedAssociation ();
                 SortedAssociation (const SortedAssociation& src) noexcept = default;

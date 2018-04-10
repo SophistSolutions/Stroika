@@ -145,7 +145,7 @@ namespace Stroika {
                  *  This constructor creates a concrete Bijection object, either empty, or initialized with any argument
                  *  values.
                  *
-                 *  The underlying data structure of the Bijection is defined by @see Concrete::Bijection_Factory<>
+                 *  The underlying data structure of the Bijection is defined by @see Factory::Bijection_Factory<>
                  */
                 Bijection ();
                 template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_EQUALS_COMPARER> ()>>

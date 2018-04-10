@@ -53,53 +53,53 @@ namespace Stroika {
             {
                 _AssertRepValidType ();
             }
-			template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-			inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
-				: Bijection ()
-			{
-				AddAll (src);
-				_AssertRepValidType ();
-			}
-			template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-			template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-			inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
-				: Bijection (domainEqualsComparer, rangeEqualsComparer)
-			{
-				AddAll (src);
-				_AssertRepValidType ();
-			}
-			template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-			template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF>
-			inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
-				: Bijection ()
-			{
-				AddAll (src);
-				_AssertRepValidType ();
-			}
-			template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-			template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF>
-			inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
-				: Bijection (domainEqualsComparer, rangeEqualsComparer)
-			{
-				AddAll (src);
-				_AssertRepValidType ();
-			}
-			template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-			template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF>
-			Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
-				: Bijection ()
-			{
-				AddAll (start, end);
-				_AssertRepValidType ();
-			}
-			template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-			template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF>
-			Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
-				: Bijection (domainEqualsComparer, rangeEqualsComparer)
-			{
-				AddAll (start, end);
-				_AssertRepValidType ();
-			}
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
+                : Bijection ()
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
+                : Bijection (domainEqualsComparer, rangeEqualsComparer)
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
+                : Bijection ()
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF>
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
+                : Bijection (domainEqualsComparer, rangeEqualsComparer)
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF>
+            Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
+                : Bijection ()
+            {
+                AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF>
+            Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
+                : Bijection (domainEqualsComparer, rangeEqualsComparer)
+            {
+                AddAll (start, end);
+                _AssertRepValidType ();
+            }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const _BijectionRepSharedPtr& src) noexcept
                 : inherited (src)

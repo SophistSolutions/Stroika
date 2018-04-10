@@ -71,7 +71,7 @@ namespace Stroika {
              *      o   @see Concrete::Set_stdset<>
              *
              *  \em Factory:
-             *      @see Concrete::Set_Factory<> to see default implementations.
+             *      @see Factory::Set_Factory<> to see default implementations.
              *
              *  \em Design Note:
              *      Included <set> and have explicit CTOR for set<> so that Stroika Set can be used more interoperably

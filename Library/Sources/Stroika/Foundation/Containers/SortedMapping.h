@@ -76,7 +76,7 @@ namespace Stroika {
                  *  This constructor creates a concrete sorted mapping object, either empty,
                  *  or initialized with any argument values.
                  *
-                 *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
+                 *  The underlying data structure of the Mapping is defined by @see Factory::SortedMapping_Factory<>
                  */
                 SortedMapping ();
                 template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>

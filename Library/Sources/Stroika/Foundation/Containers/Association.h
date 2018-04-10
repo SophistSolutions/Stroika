@@ -126,7 +126,7 @@ namespace Stroika {
                 *  values.
                 *
                 *  The underlying data structure (and performance characteristcs) of the Association is
-                *  defined by @see Concrete::Association_Factory<>
+                *  defined by @see Factory::Association_Factory<>
                 *
                 *  \par Example Usage
                 *      \code

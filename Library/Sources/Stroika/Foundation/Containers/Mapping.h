@@ -145,7 +145,7 @@ namespace Stroika {
                  *  values.
                  *
                  *  The underlying data structure (and performance characteristcs) of the Mapping is
-                 *  defined by @see Concrete::Mapping_Factory<>
+                 *  defined by @see Factory::Mapping_Factory<>
                  *
                  *  \par Example Usage
                  *      \code
