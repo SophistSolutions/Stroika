@@ -41,15 +41,15 @@ namespace Stroika {
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
-                : Bijection (InjectivityViolationPolicy::eDEFAULT, domainEqualsComparer, rangeEqualsComparer)
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
+                : Bijection (InjectivityViolationPolicy::eDEFAULT, std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
             {
                 _AssertRepValidType ();
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (InjectivityViolationPolicy injectivityCheckPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
-                : inherited (move (Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER> (injectivityCheckPolicy, domainEqualsComparer, rangeEqualsComparer) ()))
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (InjectivityViolationPolicy injectivityCheckPolicy, DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, ENABLE_IF_IS_COMPARER*)
+                : inherited (move (Factory::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER> (injectivityCheckPolicy, std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer)) ()))
             {
                 _AssertRepValidType ();
             }
@@ -62,8 +62,8 @@ namespace Stroika {
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
-                : Bijection (domainEqualsComparer, rangeEqualsComparer)
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
+                : Bijection (std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -78,8 +78,8 @@ namespace Stroika {
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF>
-            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
-                : Bijection (domainEqualsComparer, rangeEqualsComparer)
+            inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
+                : Bijection (std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -94,8 +94,8 @@ namespace Stroika {
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF>
-            Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
-                : Bijection (domainEqualsComparer, rangeEqualsComparer)
+            Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
+                : Bijection (std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
             {
                 AddAll (start, end);
                 _AssertRepValidType ();

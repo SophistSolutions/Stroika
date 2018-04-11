@@ -83,7 +83,7 @@ namespace Stroika {
                  */
                 SortedSet ();
                 template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
-                explicit SortedSet (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                explicit SortedSet (INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedSet (const SortedSet& src) noexcept = default;
                 SortedSet (SortedSet&& src) noexcept      = default;
                 SortedSet (const initializer_list<T>& src);

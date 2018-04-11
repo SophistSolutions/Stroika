@@ -32,8 +32,8 @@ namespace Stroika {
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF>
-            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const KEY_EQUALS_COMPARER& keyEqualsComparer, ENABLE_IF*)
-                : inherited (move (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER> (keyEqualsComparer) ()))
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, ENABLE_IF*)
+                : inherited (move (Factory::Mapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_EQUALS_COMPARER> (std::forward<KEY_EQUALS_COMPARER> (keyEqualsComparer)) ()))
             {
                 _AssertRepValidType ();
             }

@@ -97,7 +97,7 @@ namespace Stroika {
                  */
                 SortedCollection ();
                 template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
-                explicit SortedCollection (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                explicit SortedCollection (INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedCollection (const SortedCollection& src) noexcept = default;
                 SortedCollection (SortedCollection&& src) noexcept      = default;
                 SortedCollection (const std::initializer_list<T>& src);

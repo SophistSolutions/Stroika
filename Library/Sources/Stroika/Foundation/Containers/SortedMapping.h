@@ -80,7 +80,7 @@ namespace Stroika {
                  */
                 SortedMapping ();
                 template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>
-                explicit SortedMapping (const KEY_INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                explicit SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedMapping (const SortedMapping& src) noexcept = default;
                 SortedMapping (SortedMapping&& src) noexcept      = default;
                 SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
@@ -88,7 +88,7 @@ namespace Stroika {
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<(Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                 SortedMapping (const CONTAINER_OF_ADDABLE& src);
                 template <typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> () and (Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
-                SortedMapping (const KEY_INORDER_COMPARER& inorderComparer, const CONTAINER_OF_ADDABLE& src);
+                SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_KEYVALUE>
                 SortedMapping (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
