@@ -54,8 +54,24 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+                : Mapping (std::forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
                 : Mapping ()
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+                : Mapping (std::forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
             {
                 AddAll (src);
                 _AssertRepValidType ();
@@ -69,9 +85,25 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const CONTAINER_OF_ADDABLE& src)
+                : Mapping (std::forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
+            {
+                AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
             Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : Mapping ()
+            {
+                AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+                : Mapping (std::forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
