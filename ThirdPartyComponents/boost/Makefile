@@ -22,10 +22,13 @@ PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-m
 
 export StroikaRoot=$(shell realpath ../..)/
 
-VERSION=1_67_0_b1
+VERSION=1_67_0_rc1
 #VERSION=1_66_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
+VERSION_WITH_2DOTS=$(VERSION_WITH_DOTS)
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
+###tmphack for pre-release 1.67 release
+VERSION_WITH_2DOTS=1.67.0
 
 
 # Needed for $(PRODUCED_OUTPUT_ARTIFACTS): rule (is there a simple way to disable parallel for just that one rule)?
@@ -77,7 +80,8 @@ endif
 ### Haven't found any backup/mirrors and this only stores the last few versions. @todo - find a better backup! 
 FETCHURLS=
 FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_DOTS)/source/boost_$(VERSION).tar.gz
-FETCHURLS+=https://dl.bintray.com/boostorg/beta/1.67.0.beta.1/source/boost_1_67_0_b1.tar.gz
+FETCHURLS+=https://dl.bintray.com/boostorg/release/$(VERSION_WITH_2DOTS)/source/boost_$(VERSION).tar.gz
+###FETCHURLS+=https://dl.bintray.com/boostorg/beta/1.67.0.beta.1/source/boost_$(VERSION).tar.gz
 
 
 BUILDS_ROOT=../../Builds/
