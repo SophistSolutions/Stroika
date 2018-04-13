@@ -93,10 +93,10 @@ namespace Stroika {
                 SortedMultiSet (const CONTAINER_OF_ADDABLE& src);
                 template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>::value>::type>
                 SortedMultiSet (INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src);
-                template <typename COPY_FROM_ITERATOR_OF_ADDABLE_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
-                SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE_OF_T start, COPY_FROM_ITERATOR_OF_ADDABLE_OF_T end);
-                template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE_OF_T, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
-                SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE_OF_T start, COPY_FROM_ITERATOR_OF_ADDABLE_OF_T end);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
+                SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
+                template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
+                SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:
                 explicit SortedMultiSet (const _SortedMultiSetRepSharedPtr& src) noexcept;
