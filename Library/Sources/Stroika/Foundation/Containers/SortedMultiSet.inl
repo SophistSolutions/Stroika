@@ -23,8 +23,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER*)
+            template <typename INORDER_COMPARER, typename ENABLE_IF>
+            inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, ENABLE_IF*)
                 : inherited (move (Factory::SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER> (std::forward<INORDER_COMPARER> (inorderComparer)) ()))
             {
                 static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "SortedMultiSet constructor with INORDER_COMPARER - comparer not valid IsStrictInOrderComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
@@ -42,6 +42,7 @@ namespace Stroika {
             {
                 _AssertRepValidType ();
             }
+
             template <typename T, typename TRAITS>
             SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<T>& src)
                 : SortedMultiSet ()
@@ -50,8 +51,24 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
+            template <typename INORDER_COMPARER, typename ENABLE_IF>
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src)
+                : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
+            {
+                this->AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
             SortedMultiSet<T, TRAITS>::SortedMultiSet (const initializer_list<CountedValue<T>>& src)
                 : SortedMultiSet ()
+            {
+                this->AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
+            template <typename INORDER_COMPARER, typename ENABLE_IF>
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<CountedValue<T>>& src)
+                : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -65,9 +82,25 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
+            template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src)
+                : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
+            {
+                this->AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
             SortedMultiSet<T, TRAITS>::SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : SortedMultiSet ()
+            {
+                AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename T, typename TRAITS>
+            template <ttypename INORDER_COMPARER, ypename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+                : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
             {
                 AddAll (start, end);
                 _AssertRepValidType ();

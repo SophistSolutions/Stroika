@@ -348,16 +348,16 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename COPY_FROM_ITERATOR>
-            MultiSet<T, TRAITS>::MultiSet (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            MultiSet<T, TRAITS>::MultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : MultiSet ()
             {
                 AddAll (start, end);
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR, typename ENABLE_IF>
-            MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            MultiSet<T, TRAITS>::MultiSet (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : MultiSet (std::forward<EQUALS_COMPARER> (equalsComparer))
             {
                 AddAll (start, end);

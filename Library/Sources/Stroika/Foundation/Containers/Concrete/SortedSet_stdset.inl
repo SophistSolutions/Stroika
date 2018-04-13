@@ -22,11 +22,19 @@ namespace Stroika {
         namespace Containers {
             namespace Concrete {
 
+                /*
+                 ********************************************************************************
+                 *********************** SortedSet_stdset<T>::IImplRepBase_ *********************
+                 ********************************************************************************
+                 */
                 template <typename T>
                 class SortedSet_stdset<T>::IImplRepBase_ : public SortedSet<T>::_IRep {
                 };
 
                 /*
+                 ********************************************************************************
+                 *************************** SortedSet_stdset<T>::Rep_ **************************
+                 ********************************************************************************
                  */
                 template <typename T>
                 template <typename INORDER_COMPARER>

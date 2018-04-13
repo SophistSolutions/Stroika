@@ -63,17 +63,40 @@ namespace Stroika {
                 using _SortedMultiSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
 
             public:
+                /**
+                 *  Ordering reletion applied to sort a 'SortedMultiSet'. Returned by GetInOrderComparer ();
+                 */
+                using InOrderComparerType = Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>>;
+
+            public:
+                /**
+                 *  Just a short-hand for the 'TRAITS' part of SortedMultiSet<T,TRAITS>. This is often handy to use in
+                 *  building other templates.
+                 */
+                using TraitsType = TRAITS;
+
+            public:
+                /**
+                 */
                 SortedMultiSet ();
-                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
-                explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                template <typename INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                explicit SortedMultiSet (INORDER_COMPARER&& inorderComparer, ENABLE_IF* = nullptr);
                 SortedMultiSet (const SortedMultiSet& src) noexcept = default;
                 SortedMultiSet (SortedMultiSet&& src) noexcept      = default;
                 SortedMultiSet (const initializer_list<T>& src);
+                template <typename INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src);
                 SortedMultiSet (const initializer_list<CountedValue<T>>& src);
+                template <typename INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<CountedValue<T>>& src);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>::value>::type>
                 SortedMultiSet (const CONTAINER_OF_ADDABLE& src);
-                template <typename COPY_FROM_ITERATOR_OF_ADDABLE_OF_T>
+                template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>::value>::type>
+                SortedMultiSet (INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src);
+                template <typename COPY_FROM_ITERATOR_OF_ADDABLE_OF_T, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
                 SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE_OF_T start, COPY_FROM_ITERATOR_OF_ADDABLE_OF_T end);
+                template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE_OF_T, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
+                SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE_OF_T start, COPY_FROM_ITERATOR_OF_ADDABLE_OF_T end);
 
             protected:
                 explicit SortedMultiSet (const _SortedMultiSetRepSharedPtr& src) noexcept;
@@ -87,10 +110,9 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Just a short-hand for the 'TRAITS' part of SortedMultiSet<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
+                 *  Return the function used to compare if two elements are in-order (sorted properly)
                  */
-                using TraitsType = TRAITS;
+                nonvirtual InOrderComparerType GetInOrderComparer () const;
 
             protected:
                 /**
@@ -119,6 +141,8 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             class SortedMultiSet<T, TRAITS>::_IRep : public MultiSet<T, TRAITS>::_IRep {
+            public:
+                virtual InOrderComparerType GetInOrderComparer () const = 0;
             };
         }
     }

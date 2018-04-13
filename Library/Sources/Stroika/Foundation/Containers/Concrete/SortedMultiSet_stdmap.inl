@@ -44,6 +44,7 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using CounterType           = typename inherited::CounterType;
                     using EqualityComparerType  = typename MultiSet<T, TRAITS>::EqualityComparerType;
+                    using InOrderComparerType   = typename MultiSet<T, TRAITS>::InOrderComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
@@ -201,6 +202,13 @@ namespace Stroika {
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
+
+                    // SortedMultiSet<T,TRAITS>::_IRep overrides
+                public:
+                    virtual InOrderComparerType GetInOrderComparer () const override
+                    {
+                        return InOrderComparerType{fData_.key_comp ()};
+                    }
 
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<T, CounterType, INORDER_COMPARER>>;
