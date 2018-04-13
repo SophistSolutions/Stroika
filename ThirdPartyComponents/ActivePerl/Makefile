@@ -11,7 +11,7 @@ VERSION=5.26.0
 VER=ActivePerl-$(VERSION)-MSWin32-x86
 
 
-TARGET_TAR=$(shell pwd)/../Origs-Cache/$(VER).tar
+TARGET_TAR=../Origs-Cache/$(VER).tar
 TARGET_ZIP=$(TARGET_TAR).gz
 EXTRACT_FROM=/cygdrive/c/Perl/
 
