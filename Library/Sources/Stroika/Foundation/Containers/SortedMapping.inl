@@ -23,8 +23,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER*)
+            template <typename KEY_INORDER_COMPARER, typename ENABLE_IF>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, ENABLE_IF*)
                 : inherited (move (Factory::SortedMapping_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER> (std::forward<KEY_INORDER_COMPARER> (inorderComparer)) ()))
             {
                 _AssertRepValidType ();
@@ -37,8 +37,24 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_INORDER_COMPARER, typename ENABLE_IF>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+                : SortedMapping (std::forward<KEY_INORDER_COMPARER> (inorderComparer))
+            {
+                this->AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
                 : SortedMapping ()
+            {
+                this->AddAll (src);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_INORDER_COMPARER, typename ENABLE_IF>
+            inline SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
+                : SortedMapping (std::forward<KEY_INORDER_COMPARER> (inorderComparer))
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -62,9 +78,17 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename COPY_FROM_ITERATOR_KEYVALUE>
-            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : SortedMapping ()
+            {
+                this->AddAll (start, end);
+                _AssertRepValidType ();
+            }
+            template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+            template <typename KEY_INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+                : SortedMapping (std::forward<KEY_INORDER_COMPARER> (inorderComparer))
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();
