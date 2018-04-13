@@ -98,7 +98,7 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T, typename TRAITS>
-            template <ttypename INORDER_COMPARER, ypename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
             SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
                 : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
             {
