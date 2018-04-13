@@ -126,12 +126,12 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::GetDomainEqualsComparer () const -> DomainEqualsCompareFunctionType
             {
-                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekDomainEqualsComparer ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetDomainEqualsComparer ();
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::GetRangeEqualsComparer () const -> RangeEqualsCompareFunctionType
             {
-                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().PeekRangeEqualsComparer ();
+                return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetRangeEqualsComparer ();
             }
 
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -480,7 +480,7 @@ namespace Stroika {
                 // are present, and with the same Bijection in the second.
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     Memory::Optional<RangeType> tmp;
-                    if (not rhs.Lookup (i->first, &tmp) or not PeekRangeEqualsComparer () (*tmp, i->second)) {
+                    if (not rhs.Lookup (i->first, &tmp) or not GetRangeEqualsComparer () (*tmp, i->second)) {
                         return false;
                     }
                 }

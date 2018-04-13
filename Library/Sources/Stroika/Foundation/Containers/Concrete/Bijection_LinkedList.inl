@@ -40,10 +40,12 @@ namespace Stroika {
                     using inherited = IImplRepBase_;
 
                 public:
-                    using _IterableRepSharedPtr  = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IterableRepSharedPtr;
-                    using _BijectionRepSharedPtr = typename inherited::_BijectionRepSharedPtr;
-                    using _APPLY_ARGTYPE         = typename inherited::_APPLY_ARGTYPE;
-                    using _APPLYUNTIL_ARGTYPE    = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using _IterableRepSharedPtr           = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_IterableRepSharedPtr;
+                    using _BijectionRepSharedPtr          = typename inherited::_BijectionRepSharedPtr;
+                    using _APPLY_ARGTYPE                  = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE             = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using DomainEqualsCompareFunctionType = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::DomainEqualsCompareFunctionType;
+                    using RangeEqualsCompareFunctionType  = typename Bijection<DOMAIN_TYPE, RANGE_TYPE>::RangeEqualsCompareFunctionType;
 
                 public:
                     Rep_ (Bijection_Base::InjectivityViolationPolicy injectivityViolationPolicy, const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer)
@@ -134,11 +136,11 @@ namespace Stroika {
                     {
                         return this->_Equals_Reference_Implementation (rhs);
                     }
-                    virtual function<bool(DOMAIN_TYPE, DOMAIN_TYPE)> PeekDomainEqualsComparer () const override
+                    virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const override
                     {
                         return fDomainEqualsComparer_;
                     }
-                    virtual function<bool(RANGE_TYPE, RANGE_TYPE)> PeekRangeEqualsComparer () const override
+                    virtual RangeEqualsCompareFunctionType GetRangeEqualsComparer () const override
                     {
                         return fRangeEqualsComparer_;
                     }

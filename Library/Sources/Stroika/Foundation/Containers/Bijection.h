@@ -474,12 +474,12 @@ namespace Stroika {
                 virtual ~_IRep () = default;
 
             public:
-                virtual _BijectionRepSharedPtr                   CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual bool                                     Equals (const _IRep& rhs) const                        = 0;
-                virtual function<bool(DOMAIN_TYPE, DOMAIN_TYPE)> PeekDomainEqualsComparer () const                      = 0;
-                virtual function<bool(RANGE_TYPE, RANGE_TYPE)>   PeekRangeEqualsComparer () const                       = 0;
-                virtual Iterable<DomainType>                     Preimage () const                                      = 0;
-                virtual Iterable<RangeType>                      Image () const                                         = 0;
+                virtual _BijectionRepSharedPtr          CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual bool                            Equals (const _IRep& rhs) const                        = 0;
+                virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const                       = 0;
+                virtual RangeEqualsCompareFunctionType  GetRangeEqualsComparer () const                        = 0;
+                virtual Iterable<DomainType>            Preimage () const                                      = 0;
+                virtual Iterable<RangeType>             Image () const                                         = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RangeType>* item) const        = 0;
