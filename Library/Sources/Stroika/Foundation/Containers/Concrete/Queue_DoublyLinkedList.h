@@ -37,6 +37,8 @@ namespace Stroika {
                     using inherited = Queue<T>;
 
                 public:
+                    /**
+                     */
                     Queue_DoublyLinkedList ();
                     Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Queue_DoublyLinkedList<T>*>::value>::type>

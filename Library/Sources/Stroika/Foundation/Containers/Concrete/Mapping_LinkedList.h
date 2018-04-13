@@ -36,6 +36,9 @@ namespace Stroika {
                     using inherited = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     Mapping_LinkedList ();
                     template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_EQUALS_COMPARER> ()>>
                     explicit Mapping_LinkedList (const KEY_EQUALS_COMPARER& keyEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);

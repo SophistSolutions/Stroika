@@ -37,6 +37,9 @@ namespace Stroika {
                     using inherited = MultiSet<T, TRAITS>;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     MultiSet_Array ();
                     template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
                     explicit MultiSet_Array (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);

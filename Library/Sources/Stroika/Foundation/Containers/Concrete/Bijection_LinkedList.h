@@ -41,6 +41,9 @@ namespace Stroika {
                     using RangeEqualsCompareFunctionType  = typename inherited::RangeEqualsCompareFunctionType;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     Bijection_LinkedList ();
                     template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_EQUALS_COMPARER> ()>>
                     explicit Bijection_LinkedList (const DOMAIN_EQUALS_COMPARER& domainEqualsComparer, const RANGE_EQUALS_COMPARER& rangeEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);

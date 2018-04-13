@@ -38,6 +38,8 @@ namespace Stroika {
                     using inherited = Stack<T>;
 
                 public:
+                    /**
+                     */
                     Stack_LinkedList ();
                     Stack_LinkedList (const Stack_LinkedList<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Stack_LinkedList<T>*>::value>::type>

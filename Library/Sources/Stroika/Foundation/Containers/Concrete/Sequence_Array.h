@@ -37,6 +37,8 @@ namespace Stroika {
                     using inherited = Sequence<T>;
 
                 public:
+                    /**
+                     */
                     Sequence_Array ();
                     Sequence_Array (const Sequence_Array<T>& src);
                     Sequence_Array (const initializer_list<T>& src);

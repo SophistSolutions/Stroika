@@ -37,6 +37,9 @@ namespace Stroika {
                     using inherited = Deque<T>;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     Deque_DoublyLinkedList ();
                     Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>::value>::type>

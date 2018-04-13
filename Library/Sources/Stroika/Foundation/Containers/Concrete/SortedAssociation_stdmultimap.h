@@ -39,6 +39,9 @@ namespace Stroika {
                     using inherited = SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     SortedAssociation_stdmultimap ();
                     SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap& src) = default;
                     template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>

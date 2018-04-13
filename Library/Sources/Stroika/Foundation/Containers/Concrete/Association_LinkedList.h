@@ -37,6 +37,9 @@ namespace Stroika {
                     using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     Association_LinkedList ();
                     Association_LinkedList (const Association_LinkedList& src) = default;
                     template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>

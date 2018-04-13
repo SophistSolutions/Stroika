@@ -38,6 +38,9 @@ namespace Stroika {
                     using inherited = SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     SortedMapping_stdmap ();
                     template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>
                     explicit SortedMapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);

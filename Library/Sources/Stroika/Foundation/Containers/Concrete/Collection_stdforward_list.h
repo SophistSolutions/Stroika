@@ -38,6 +38,8 @@ namespace Stroika {
                     using inherited = Collection<T>;
 
                 public:
+                    /**
+                     */
                     Collection_stdforward_list ();
                     Collection_stdforward_list (const T* start, const T* end);
                     Collection_stdforward_list (const Collection<T>& src);

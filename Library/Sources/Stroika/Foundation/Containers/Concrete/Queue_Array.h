@@ -43,6 +43,8 @@ namespace Stroika {
                     using inherited = Queue<T>;
 
                 public:
+                    /**
+                     */
                     Queue_Array ();
                     Queue_Array (const Queue_Array<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Queue_Array<T>*>::value>::type>

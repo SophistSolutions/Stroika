@@ -36,6 +36,9 @@ namespace Stroika {
                     using TraitsType = TRAITS;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     MultiSet_stdmap ();
                     template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
                     explicit MultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);

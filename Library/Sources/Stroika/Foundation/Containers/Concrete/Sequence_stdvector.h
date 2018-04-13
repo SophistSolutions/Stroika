@@ -41,6 +41,8 @@ namespace Stroika {
                     using inherited = Sequence<T>;
 
                 public:
+                    /**
+                     */
                     Sequence_stdvector ();
                     Sequence_stdvector (const Sequence_stdvector<T>& src);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>::value>::type>

@@ -38,6 +38,8 @@ namespace Stroika {
                     using inherited = Collection<T>;
 
                 public:
+                    /**
+                     */
                     Collection_LinkedList ();
                     Collection_LinkedList (const T* start, const T* end);
                     Collection_LinkedList (const Collection<T>& src);

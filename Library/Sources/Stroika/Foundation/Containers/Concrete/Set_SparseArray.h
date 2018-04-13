@@ -40,6 +40,9 @@ namespace Stroika {
                     using inherited = Set<T, typename TRAITS::SetTraitsType>;
 
                 public:
+                    /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+                     */
                     Set_SparseArray ();
                     Set_SparseArray (const Set_SparseArray<T, TRAITS>& src);
                     Set_SparseArray (const std::initializer_list<T>& src);

@@ -40,6 +40,7 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
                      */
                     Mapping_stdmap ();
                     template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>

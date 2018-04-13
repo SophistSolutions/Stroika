@@ -41,6 +41,7 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
                      */
                     Set_stdset ();
                     template <typename INORDER_COMPARER>

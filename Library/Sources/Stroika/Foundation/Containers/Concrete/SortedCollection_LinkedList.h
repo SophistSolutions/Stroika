@@ -42,6 +42,7 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
                      */
                     SortedCollection_LinkedList ();
                     template <typename INORDER_COMPARER>

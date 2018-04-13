@@ -34,6 +34,8 @@ namespace Stroika {
                     using inherited = Collection<T>;
 
                 public:
+                    /**
+                     */
                     Collection_Array ();
                     Collection_Array (const Collection<T>& src);
                     Collection_Array (const Collection_Array& src) noexcept = default;

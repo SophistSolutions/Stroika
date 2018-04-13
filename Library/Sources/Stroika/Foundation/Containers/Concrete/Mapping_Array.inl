@@ -219,6 +219,14 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+                Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (const CONTAINER_OF_ADDABLE& src)
+                    : Mapping_Array ()
+                {
+                    this->AddAll (src);
+                    AssertRepValidType_ ();
+                }
+                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename COPY_FROM_ITERATOR_KEYVALUE>
                 Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
                     : Mapping_Array ()

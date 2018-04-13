@@ -43,6 +43,7 @@ namespace Stroika {
 
                 public:
                     /**
+                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
                      *  \req IsStrictInOrderComparer<INORDER_COMPARER> ()
                      */
                     SortedSet_stdset ();
