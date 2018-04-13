@@ -23,8 +23,8 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
-            inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER*)
+            template <typename INORDER_COMPARER, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inorderComparer, ENABLE_IF*)
                 : inherited (move (Factory::SortedSet_Factory<T, INORDER_COMPARER> (std::forward<INORDER_COMPARER> (inorderComparer)) ()))
             {
                 static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
@@ -51,8 +51,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src)
-                : SortedSet (inOrderComparer)
+            template <typename INORDER_COMPARER, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
+                : SortedSet (std::forward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -66,9 +67,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_ADDABLE& src)
-                : SortedSet (inOrderComparer)
+            template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_ADDABLE& src)
+                : SortedSet (std::forward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (src);
                 _AssertRepValidType ();
@@ -82,9 +83,9 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename T>
-            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
-            inline SortedSet<T>::SortedSet (const InOrderComparerType& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-                : SortedSet (inOrderComparer)
+            template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+            inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
+                : SortedSet (std::forward<INORDER_COMPARER> (inOrderComparer))
             {
                 this->AddAll (start, end);
                 _AssertRepValidType ();
