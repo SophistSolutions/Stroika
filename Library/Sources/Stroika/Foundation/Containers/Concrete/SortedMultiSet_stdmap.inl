@@ -44,7 +44,7 @@ namespace Stroika {
                     using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using CounterType           = typename inherited::CounterType;
                     using EqualityComparerType  = typename MultiSet<T, TRAITS>::EqualityComparerType;
-                    using InOrderComparerType   = typename MultiSet<T, TRAITS>::InOrderComparerType;
+                    using InOrderComparerType   = typename SortedMultiSet<T, TRAITS>::InOrderComparerType;
 
                 public:
                     Rep_ (const INORDER_COMPARER& inorderComparer)
