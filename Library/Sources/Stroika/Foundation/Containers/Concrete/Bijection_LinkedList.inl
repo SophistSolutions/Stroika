@@ -138,11 +138,11 @@ namespace Stroika {
                     }
                     virtual DomainEqualsCompareFunctionType GetDomainEqualsComparer () const override
                     {
-                        return fDomainEqualsComparer_;
+                        return DomainEqualsCompareFunctionType{fDomainEqualsComparer_};
                     }
                     virtual RangeEqualsCompareFunctionType GetRangeEqualsComparer () const override
                     {
-                        return fRangeEqualsComparer_;
+                        return RangeEqualsCompareFunctionType{fRangeEqualsComparer_};
                     }
                     virtual Iterable<DOMAIN_TYPE> Preimage () const override
                     {
