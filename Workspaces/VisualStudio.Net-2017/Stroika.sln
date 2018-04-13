@@ -123,7 +123,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\GetVisualStudioConfigLine.pl = ..\..\ScriptsLib\GetVisualStudioConfigLine.pl
 		..\..\ScriptsLib\HasCompiler.sh = ..\..\ScriptsLib\HasCompiler.sh
 		..\..\ScriptsLib\MakeBuildRoot.sh = ..\..\ScriptsLib\MakeBuildRoot.sh
-		..\..\ScriptsLib\MakeDirectorySymbolicLink.sh = ..\..\ScriptsLib\MakeDirectorySymbolicLink.sh
 		..\..\ScriptsLib\MakeVersionFile.sh = ..\..\ScriptsLib\MakeVersionFile.sh
 		..\..\ScriptsLib\PrintConfigurationVariable.pl = ..\..\ScriptsLib\PrintConfigurationVariable.pl
 		..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl = ..\..\ScriptsLib\PrintEnvVarFromCommonBuildVars.pl
