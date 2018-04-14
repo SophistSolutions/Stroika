@@ -140,7 +140,7 @@ namespace Stroika {
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                            if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().fValue;
                                 }
@@ -156,7 +156,7 @@ namespace Stroika {
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                            if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_[it.CurrentIndex ()].fValue = newElt;
                                 return;
                             }
@@ -167,7 +167,7 @@ namespace Stroika {
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                            if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;
                             }
@@ -272,7 +272,7 @@ namespace Stroika {
                 inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
                 {
 #if qDebug
-                    typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
+                    typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
                 }
             }
