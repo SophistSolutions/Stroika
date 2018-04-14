@@ -42,12 +42,16 @@
 #endif
 
 // See https://stroika.atlassian.net/browse/STK-650
+#if __cplusplus
 #ifndef qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8
 #define qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8 1
 #endif
+#endif
 
+#if __cplusplus
 #if qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#endif
 #endif
 
 #endif /*_Stroika_Foundation_Configuration_Private_Defaults_Chracters_Common_h_*/
