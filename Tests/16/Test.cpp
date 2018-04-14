@@ -91,18 +91,6 @@ namespace {
             using VALUE_TYPE              = B;
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
             using T                       = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
-
-            struct aaaaaa {
-                //              template    <typename X>
-                using X = T;
-                static auto check (const X& x) -> std::conditional<
-                    Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and
-                        std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, T>::value,
-                    Configuration::substitution_succeeded<T>,
-                    Configuration::substitution_failure>::type;
-                //                  static Configuration::substitution_failure check (...);
-                using type = decltype (check (declval<T> ()));
-            };
         }
         void DoIt ()
         {
@@ -115,7 +103,6 @@ namespace {
             using VALUE_TYPE              = B;
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
             bool n1                       = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
-            //bool n2 = Configuration::IsIterableOfT2<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
 
             using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
             using ttt =
@@ -129,21 +116,6 @@ namespace {
             using aaaa3   = Configuration::Private_::IsIterableOfT_Impl2_<CONTAINER_OF_PAIR_KEY_T, T>::type;
             const bool n4 = is_same<aaaa3, Configuration::substitution_failure>::value;
 
-            const bool n5 = is_same<aaaaaa::type, Configuration::substitution_failure>::value;
-
-#if 0
-            bool xxx1 = std::is_convertible<const Mapping<int, A>*, const Mapping<int, B>*>::value;
-            bool xxx2 = Configuration::IsIterableOfT<Mapping<int, A>, KeyValuePair<int, B>>::value;
-            using Common::KeyValuePair;
-            using KEY_TYPE = int;
-            using VALUE_TYPE = B;
-            using TRAITS = DefaultTraits::Mapping<KEY_TYPE, VALUE_TYPE>;
-            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
-            bool xxxxx1 = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
-            bool xxxxx2 = (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value;
-            //bool xxxxx3 = (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, VALUE_TYPE>>::value);
-            //bool xxxxx = (Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, pair<KEY_TYPE, VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_PAIR_KEY_T*, const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*>::value;
-#endif
             Mapping<int, B> to1;
             for (auto i : from) {
                 to1.Add (i);
@@ -198,29 +170,23 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
             static bool Equals (value_type v1, value_type v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-#if 0
-        // @todo FIX
-        using SimpleClassWithoutComparisonOperators_MappingTRAITS = DefaultTraits::Mapping<
-            SimpleClassWithoutComparisonOperators,
-            SimpleClassWithoutComparisonOperators,
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>;
-#endif
 
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
         // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
 
-#if 0
         DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_Array<SimpleClass, SimpleClass>> ();
+#if 0
         //DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+#endif
 
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
@@ -228,7 +194,6 @@ namespace {
 
         DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
-#endif
         {
             struct MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
                 using value_type = SimpleClassWithoutComparisonOperators;
