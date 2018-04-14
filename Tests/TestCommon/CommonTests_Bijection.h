@@ -120,7 +120,7 @@ namespace CommonTests {
                 }
             }
 
-            namespace Test4_As_ {
+            namespace Test4_As_Generic_ {
 
                 template <typename TESTING_SCHEMA>
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
@@ -132,22 +132,6 @@ namespace CommonTests {
                         USING_BIJECTION_CONTAINER b = testingSchema.Factory ();
                         b.Add (3, 5);
                         b.Add (4, 19);
-#if 0
-                        {
-                            map<DomainType, RangeType>  m = b.As<map<DomainType, RangeType>> ();
-                            VerifyTestResult (m.size () == 2);
-                            VerifyTestResult (m.find (3) != m.end ());
-                            VerifyTestResult (m.find (9) == m.end ());
-                        }
-#endif
-                        {
-#if 0
-                            Mapping<DomainType, RangeType, MAPPING_TRAITS> m = b.template As<Mapping<DomainType, RangeType, MAPPING_TRAITS>> ();
-                            VerifyTestResult (m.size () == 2);
-                            VerifyTestResult (m.ContainsKey (3));
-                            VerifyTestResult (not m.ContainsKey (9));
-#endif
-                        }
                         {
                             vector<pair<DomainType, RangeType>> m = b.template As<vector<pair<DomainType, RangeType>>> ();
                             VerifyTestResult (m.size () == 2);
@@ -160,7 +144,7 @@ namespace CommonTests {
                 }
             }
 
-            namespace Test5_Inverse_ {
+            namespace Test5_As_WithDefaultComparers_ {
 
                 template <typename TESTING_SCHEMA>
                 void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
@@ -172,23 +156,34 @@ namespace CommonTests {
                         USING_BIJECTION_CONTAINER b = testingSchema.Factory ();
                         b.Add (3, 5);
                         b.Add (4, 19);
-#if 0
                         {
-                            map<DomainType, RangeType>  m = b.As<map<DomainType, RangeType>> ();
+                            map<DomainType, RangeType> m = b.As<map<DomainType, RangeType>> ();
                             VerifyTestResult (m.size () == 2);
                             VerifyTestResult (m.find (3) != m.end ());
                             VerifyTestResult (m.find (9) == m.end ());
                         }
-#endif
-#if 0
                         {
-                            using   MAPPING_TRAITS = typename DefaultTraits::Mapping<RangeType, DomainType, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>;
-                            Mapping<RangeType, DomainType, MAPPING_TRAITS>  m = b.Inverse<Mapping<RangeType, DomainType, MAPPING_TRAITS>> ();
+                            Mapping<DomainType, RangeType> m = b.template As<Mapping<DomainType, RangeType>> ();
                             VerifyTestResult (m.size () == 2);
-                            //VerifyTestResult (m.ContainsKey (5));
-                            //VerifyTestResult (not m.ContainsKey (9));
+                            VerifyTestResult (m.ContainsKey (3));
+                            VerifyTestResult (not m.ContainsKey (9));
                         }
-#endif
+                    }
+                }
+            }
+
+            namespace Test6_Inverse_ {
+
+                template <typename TESTING_SCHEMA>
+                void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
+                {
+                    using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
+                    using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;
+                    using RangeType                 = typename USING_BIJECTION_CONTAINER::RangeType;
+                    {
+                        USING_BIJECTION_CONTAINER b = testingSchema.Factory ();
+                        b.Add (3, 5);
+                        b.Add (4, 19);
                     }
                 }
             }
@@ -199,14 +194,15 @@ namespace CommonTests {
         {
             Private_::Test1_VeryBasics_::DoAllTests_ (testingSchema);
             Private_::Test2_MultipeItems_::DoAllTests_ (testingSchema);
-            Private_::Test4_As_::DoAllTests_ (testingSchema);
-            Private_::Test5_Inverse_::DoAllTests_ (testingSchema);
+            Private_::Test4_As_Generic_::DoAllTests_ (testingSchema);
+            Private_::Test6_Inverse_::DoAllTests_ (testingSchema);
         }
 
         template <typename TESTING_SCHEMA>
         void For_TypesWithDefaultFactory (const TESTING_SCHEMA& testingSchema)
         {
             Private_::Test3_ConstructFromOtherTypes_::DoAllTests_ (testingSchema);
+            Private_::Test5_As_WithDefaultComparers_::DoAllTests_ (testingSchema);
         }
     }
 }
