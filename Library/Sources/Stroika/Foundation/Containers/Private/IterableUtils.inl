@@ -12,7 +12,7 @@ namespace Stroika {
             namespace Private {
 
                 template <typename T, typename ELEMENT_COMPARER_TYPE>
-                int Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_COMPARER_TYPE& comparer)
+                int ThreeWayCompare_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_COMPARER_TYPE& threeWayComparer)
                 {
                     auto li = lhs.begin ();
                     auto le = lhs.end ();
@@ -23,7 +23,7 @@ namespace Stroika {
                     // no need for c' initialization cuz only used in else return at end, but never get there
                     // unless set at least once
                     int c;
-                    while ((li != le) and (ri != re) and (c = comparer (*li, *ri)) == 0) {
+                    while ((li != le) and (ri != re) and (c = threeWayComparer (*li, *ri)) == 0) {
                         ++li;
                         ++ri;
                     }
@@ -40,7 +40,7 @@ namespace Stroika {
                     }
                     else {
                         Assert (li != le and ri != re);
-                        Assert (c == comparer (*li, *ri));
+                        Assert (c == threeWayComparer (*li, *ri));
                         return c;
                     }
                     DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")

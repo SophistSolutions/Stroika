@@ -27,7 +27,7 @@ namespace Stroika {
             namespace Private {
 
                 template <typename T, typename ELEMENT_COMPARER_TYPE>
-                int Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
+                int ThreeWayCompare_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_COMPARER_TYPE& threeWayComparer);
 
                 template <typename T, typename ELEMENT_ELEMENT_EQUALS_COMPARER>
                 bool Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_ELEMENT_EQUALS_COMPARER& equalsComparer = {});
