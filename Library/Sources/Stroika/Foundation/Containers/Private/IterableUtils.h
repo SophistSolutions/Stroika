@@ -26,19 +26,6 @@ namespace Stroika {
         namespace Containers {
             namespace Private {
 
-                // This contains has the advantage that can be interrupted between iteration steps to update the container,
-                // and if calling lambdas was slow, this might be quicker.
-                template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                bool Contains_ByDirectIteration_ (const Iterable<T>& c, ArgByValueType<T> item);
-
-                // This contains has the advantage that the contains operation is atomic (not quite guaranteed), but
-                // also avoids re-locking the iterator for each more
-                template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                bool Contains_ByFunctional_ (const Iterable<T>& c, ArgByValueType<T> item);
-
-                template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                bool Contains_ (const Iterable<T>& c, ArgByValueType<T> item);
-
                 template <typename T, typename ELEMENT_COMPARER_TYPE>
                 int Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 

@@ -11,32 +11,6 @@ namespace Stroika {
         namespace Containers {
             namespace Private {
 
-                template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                bool Contains_ByDirectIteration_ (const Iterable<T>& c, ArgByValueType<T> item)
-                {
-                    for (T i : c) {
-                        if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item)) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
-
-                template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                inline bool Contains_ByFunctional_ (const Iterable<T>& c, ArgByValueType<T> item)
-                {
-                    // grab ptr to first matching item, and contains if not at end
-                    return c.FindFirstThat ([item](T i) -> bool {
-                        return ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item);
-                    });
-                }
-
-                template <typename ELEMENT_COMPARE_EQUALS_TYPE, typename T>
-                inline bool Contains_ (const Iterable<T>& c, ArgByValueType<T> item)
-                {
-                    return Contains_ByFunctional_<ELEMENT_COMPARE_EQUALS_TYPE> (c, item);
-                }
-
                 template <typename T, typename ELEMENT_COMPARER_TYPE>
                 int Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_COMPARER_TYPE& comparer)
                 {
