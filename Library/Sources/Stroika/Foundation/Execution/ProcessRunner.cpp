@@ -1303,19 +1303,19 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
          *  Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
          *
          *  @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
+         *
+         *  Tried using 
+         *      #if defined _DEFAULT_SOURCE
+         *              daemon (0, 0);
+         *      #endif
+         *      to workaround systemd defaulting to KillMode=control-group
          */
         (void)::setsid ();
 
-        (void)chdir ("/"); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
+        int ignored{};
+        ignored = chdir ("/"); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
 
-        (void)umask (027); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
-
-        //WAG - SEE IF HELPS runing dtached/daemon
-#if 0
-#if defined _DEFAULT_SOURCE
-        daemon (0, 0);
-#endif
-#endif
+        ignored = umask (027); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
 
         // @todo - CONSIDER ALSO DOING -                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
         // check and extra closer
