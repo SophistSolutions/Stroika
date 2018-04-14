@@ -157,7 +157,7 @@ namespace CommonTests {
                         b.Add (3, 5);
                         b.Add (4, 19);
                         {
-                            map<DomainType, RangeType> m = b.As<map<DomainType, RangeType>> ();
+                            map<DomainType, RangeType> m = b.template As<map<DomainType, RangeType>> ();
                             VerifyTestResult (m.size () == 2);
                             VerifyTestResult (m.find (3) != m.end ());
                             VerifyTestResult (m.find (9) == m.end ());
