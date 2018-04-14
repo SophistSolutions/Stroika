@@ -1267,21 +1267,55 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
     pid_t pid = Execution::ThrowErrNoIfNegative (UseFork_ ());
     if (pid == 0) {
         /*
-         * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
+         *  @see http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html for some considerations in daemonizing a child process.
+         * 
          *
+         * Very primitive code to detatch the console. No error checking cuz at this stage, not too much to be done.
+         */
+
+        /*
          * Possibly should close more descriptors?
          */
+#if 1
+#if _BSD_SOURCE || _XOPEN_SOURCE >= 500
+        int maxfd = getdtablesize ();
+#else
+        int maxfd = sysconf (_SC_OPEN_MAX);
+#endif
+        for (int i = 0; i < maxfd; i++) {
+            ::close (i);
+        }
+#else
         for (int i = 0; i < 3; ++i) {
             ::close (i);
         }
+#endif
         int id = ::open ("/dev/null", O_RDWR);
         (void)::dup2 (id, 0);
         (void)::dup2 (id, 1);
         (void)::dup2 (id, 2);
 
-        // Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
-        // @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
+        /*
+         *  See http://pubs.opengroup.org/onlinepubs/007904875/functions/setsid.html
+         *  This is similar to setpgrp () but makes doing setpgrp unnecessary.
+         *  This is also similar to setpgid (0, 0) - but makes doing that unneeded.
+         *
+         *  Avoid signals like SIGHUP when the terminal session ends as well as potentially SIGTTIN and SIGTTOU
+         *
+         *  @see http://stackoverflow.com/questions/8777602/why-must-detach-from-tty-when-writing-a-linux-daemon
+         */
         (void)::setsid ();
+
+        (void)chdir ("/"); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
+
+        (void)umask (027); // mostly harmless, not clearly needed, but suggested in http://codingfreak.blogspot.com/2012/03/daemon-izing-process-in-linux.html
+
+        //WAG - SEE IF HELPS runing dtached/daemon
+#if 0
+#if defined _DEFAULT_SOURCE
+        daemon (0, 0);
+#endif
+#endif
 
         // @todo - CONSIDER ALSO DOING -                 constexpr bool kCloseAllExtraneousFDsInChild_ = true;
         // check and extra closer
