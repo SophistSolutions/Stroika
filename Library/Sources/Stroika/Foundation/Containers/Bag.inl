@@ -85,7 +85,7 @@ namespace Stroika {
             bool Bag<T>::Contains (T item) const
             {
                 for (auto i : *this) {
-                    if (EQUALS_COMPARER::Equals (i, item)) {
+                    if (EQUALS_COMPARER{}(i, item)) {
                         return true;
                     }
                 }
@@ -131,7 +131,7 @@ namespace Stroika {
             inline void Bag<T>::Remove (T item)
             {
                 for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
-                    if (EQUALS_COMPARER::Equals (*i, item)) {
+                    if (EQUALS_COMPARER{}(*i, item)) {
                         _GetRep ().Remove (i);
                         return;
                     }
