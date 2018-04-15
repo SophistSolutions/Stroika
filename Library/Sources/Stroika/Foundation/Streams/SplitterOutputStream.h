@@ -6,10 +6,6 @@
 
 #include "../StroikaPreComp.h"
 
-#include <vector>
-
-#include "../Configuration/Common.h"
-
 #include "InternallySyncrhonizedOutputStream.h"
 #include "OutputStream.h"
 
