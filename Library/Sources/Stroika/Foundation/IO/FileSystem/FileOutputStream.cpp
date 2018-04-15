@@ -222,7 +222,7 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fileName, AppendFlag::eDEFAULT, flushFlag);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (fileName, AppendFlag::eDEFAULT, flushFlag);
         default:
             RequireNotReached ();
@@ -235,7 +235,7 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fileName, appendFlag, flushFlag);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (fileName, appendFlag, flushFlag);
         default:
             RequireNotReached ();
@@ -248,7 +248,7 @@ auto FileOutputStream::New (Execution::InternallySyncrhonized internallySyncrhon
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fd, adoptFDPolicy, seekableFlag, flushFlag);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (fd, adoptFDPolicy, seekableFlag, flushFlag);
         default:
             RequireNotReached ();

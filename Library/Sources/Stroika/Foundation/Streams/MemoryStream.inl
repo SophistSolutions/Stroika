@@ -258,7 +258,7 @@ namespace Stroika {
                 switch (internallySyncrhonized) {
                     case Execution::eInternallySynchronized:
                         return InternalSyncRep_::New ();
-                    case Execution::eNotKnwonInternallySynchronized:
+                    case Execution::eNotKnownInternallySynchronized:
                         return make_shared<Rep_> ();
                     default:
                         RequireNotReached ();
@@ -276,7 +276,7 @@ namespace Stroika {
                 switch (internallySyncrhonized) {
                     case Execution::eInternallySynchronized:
                         return InternalSyncRep_::New (start, end);
-                    case Execution::eNotKnwonInternallySynchronized:
+                    case Execution::eNotKnownInternallySynchronized:
                         return New (start, end);
                     default:
                         RequireNotReached ();
@@ -296,7 +296,7 @@ namespace Stroika {
                 switch (internallySyncrhonized) {
                     case Execution::eInternallySynchronized:
                         return InternalSyncRep_::New (New (blob));
-                    case Execution::eNotKnwonInternallySynchronized:
+                    case Execution::eNotKnownInternallySynchronized:
                         return New (blob);
                     default:
                         RequireNotReached ();

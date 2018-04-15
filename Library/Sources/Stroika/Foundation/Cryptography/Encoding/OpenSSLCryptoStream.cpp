@@ -407,7 +407,7 @@ auto OpenSSLInputStream::New (Execution::InternallySyncrhonized internallySyncrh
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (cryptoParams, direction, realIn);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (cryptoParams, direction, realIn);
         default:
             RequireNotReached ();
@@ -442,7 +442,7 @@ auto OpenSSLOutputStream::New (Execution::InternallySyncrhonized internallySyncr
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (cryptoParams, direction, realOut);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (cryptoParams, direction, realOut);
         default:
             RequireNotReached ();

@@ -253,7 +253,7 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return src;
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return src;
         default:
             RequireNotReached ();
@@ -267,7 +267,7 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return Ptr{mk_ (src, format)};
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return Ptr{mk_ (src, format)};
         default:
             RequireNotReached ();

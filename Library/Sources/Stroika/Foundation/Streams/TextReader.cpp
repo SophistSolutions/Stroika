@@ -520,7 +520,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return src;
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return src;
         default:
             RequireNotReached ();
@@ -535,7 +535,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return New (src, charset);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (src, charset);
         default:
             RequireNotReached ();
@@ -550,7 +550,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return New (src, seekable);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (src, seekable);
         default:
             RequireNotReached ();
@@ -565,7 +565,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return New (src, charset, seekable);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (src, charset, seekable);
         default:
             RequireNotReached ();
@@ -580,7 +580,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return New (src, codeConverter, seekable);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (src, codeConverter, seekable);
         default:
             RequireNotReached ();
@@ -595,7 +595,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             AssertNotImplemented ();
             //return InternalSyncRep_::New ();
             return New (src);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (src);
         default:
             RequireNotReached ();

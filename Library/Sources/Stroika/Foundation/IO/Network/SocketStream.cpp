@@ -130,7 +130,7 @@ auto SocketStream::New (Execution::InternallySyncrhonized internallySyncrhonized
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (sd);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (sd);
         default:
             RequireNotReached ();

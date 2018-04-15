@@ -257,7 +257,7 @@ auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhoni
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fileName, seekable);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (fileName, seekable);
         default:
             RequireNotReached ();
@@ -270,7 +270,7 @@ auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhoni
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
             return InternalSyncRep_::New (fd, adoptFDPolicy, seekable);
-        case Execution::eNotKnwonInternallySynchronized:
+        case Execution::eNotKnownInternallySynchronized:
             return New (fd, adoptFDPolicy, seekable);
         default:
             RequireNotReached ();

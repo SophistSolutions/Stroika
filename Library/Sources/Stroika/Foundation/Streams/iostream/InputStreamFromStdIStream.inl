@@ -155,7 +155,7 @@ namespace Stroika {
                     switch (internallySyncrhonized) {
                         case Execution::eInternallySynchronized:
                             return InternalSyncRep_::New (originalStream);
-                        case Execution::eNotKnwonInternallySynchronized:
+                        case Execution::eNotKnownInternallySynchronized:
                             return New (originalStream);
                         default:
                             RequireNotReached ();
@@ -168,7 +168,7 @@ namespace Stroika {
                     switch (internallySyncrhonized) {
                         case Execution::eInternallySynchronized:
                             return InternalSyncRep_::New (originalStream, seekable);
-                        case Execution::eNotKnwonInternallySynchronized:
+                        case Execution::eNotKnownInternallySynchronized:
                             return New (originalStream, seekable);
                         default:
                             RequireNotReached ();
