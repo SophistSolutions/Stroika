@@ -2007,6 +2007,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_stdmultimap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.h">
+      <Filter>Sources\Streams</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3248,6 +3251,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_stdmultimap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.inl">
+      <Filter>Sources\Streams</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
