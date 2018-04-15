@@ -26,7 +26,6 @@ using Memory::Optional;
 
 using Concrete::SortedMapping_stdmap;
 
-
 namespace {
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
@@ -89,13 +88,13 @@ namespace {
         DoTestForConcreteContainer_<SortedMapping<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             []() { return SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
-			MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
             []() { return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
-			MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
     }
 }
 
