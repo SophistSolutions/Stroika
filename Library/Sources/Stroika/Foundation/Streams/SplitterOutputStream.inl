@@ -27,7 +27,7 @@ namespace Stroika {
                 Rep_ (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2)
                     : OutputStream<ELEMENT_TYPE>::_IRep ()
                     , fRealOut1_ (realOut1)
-                    , fRealOut1_ (realOut2)
+                    , fRealOut2_ (realOut2)
                 {
                 }
 
