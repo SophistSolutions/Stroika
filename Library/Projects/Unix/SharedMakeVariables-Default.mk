@@ -134,7 +134,7 @@ else
   STDCPPLIBArgs			:=		-lstdc++ -lstdc++fs
 endif
 ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
-	STDCPPLIBArgs	+=  -static-libstdc++ -static-libstdc++fs
+	STDCPPLIBArgs	+=  -static-libstdc++
 endif
 
 
