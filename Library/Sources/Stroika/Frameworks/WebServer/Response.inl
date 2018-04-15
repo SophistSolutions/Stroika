@@ -15,7 +15,11 @@ namespace Stroika {
     namespace Frameworks {
         namespace WebServer {
 
-            //  class   Response
+            /*
+             ********************************************************************************
+             ********************* Framework::WebServer::Response ***************************
+             ********************************************************************************
+             */
             inline Response::State Response::GetState () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -63,7 +67,7 @@ namespace Stroika {
             inline void Response::writeln (const String& e)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                const wchar_t                                      kEOL[] = L"\r\n";
+                constexpr wchar_t                                  kEOL[] = L"\r\n";
                 if (not e.empty ()) {
                     wstring tmp{e.As<wstring> ()};
                     write (Containers::Start (tmp), Containers::End (tmp));
