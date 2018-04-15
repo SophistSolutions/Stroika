@@ -24,23 +24,14 @@ namespace CommonTests {
             void DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test1_BasicConstruction"};
-                using ELEMENT_TYPE = typename USING_MAPPING_CONTAINER::value_type;
+                using key_type    = typename USING_MAPPING_CONTAINER::key_type;
+                using mapped_type = typename USING_MAPPING_CONTAINER::mapped_type;
                 USING_MAPPING_CONTAINER s;
                 applyToContainer (s);
                 USING_MAPPING_CONTAINER s1 = s;
                 applyToContainer (s1);
-#if 0
-                Mapping<ELEMENT_TYPE>   s2 = s;
+                Mapping<key_type, mapped_type> s2 = s;
                 applyToContainer (s2);
-                ELEMENT_TYPE kVec_[] = {1, 3, 4, 2 };
-                Set<ELEMENT_TYPE> s3 = USING_SET_CONTAINER (kVec_);
-                VerifyTestResult (s3.GetLength () == 4);
-                VerifyTestResult (s3.Contains (1));
-                VerifyTestResult (s3.Contains (2));
-                VerifyTestResult (s3.Contains (3));
-                VerifyTestResult (s3.Contains (4));
-                VerifyTestResult (not s3.Contains (5));
-#endif
             }
         }
 
