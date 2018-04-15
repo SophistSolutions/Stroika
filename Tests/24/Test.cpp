@@ -26,26 +26,8 @@ using Memory::Optional;
 
 using Concrete::SortedMapping_stdmap;
 
+
 namespace {
-    template <typename CONCRETE_CONTAINER>
-    void DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
-    {
-#if 0
-        using value_type         = typename CONCRETE_CONTAINER::value_type;
-        using TraitsType         = typename CONCRETE_CONTAINER::TraitsType;
-        auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
-            // verify in sorted order
-            Optional<value_type> last;
-            for (value_type i : m) {
-                if (last.IsPresent ()) {
-                    VerifyTestResult (Common::mkThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
-                }
-                last = i;
-            }
-        };
-        CommonTests::MappingTests::SimpleMappingTest_All_<CONCRETE_CONTAINER> (extraChecksFunction);
-#endif
-    }
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
     {
@@ -63,10 +45,16 @@ namespace {
             }
         };
         SimpleMappingTest_All_ (testSchema);
-#if 0
-        using value_type         = typename CONCRETE_CONTAINER::value_type;
-        auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+        SimpleMappingTest_WithDefaultEqCompaerer_ (testSchema);
+    }
+    template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
+    void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
+    {
+        using namespace CommonTests::MappingTests;
+        auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        testSchema.ApplyToContainerExtraTest = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
+            using value_type = typename CONCRETE_CONTAINER::value_type;
             Optional<value_type> last;
             for (value_type i : m) {
                 if (last.IsPresent ()) {
@@ -75,48 +63,39 @@ namespace {
                 last = i;
             }
         };
-        CommonTests::MappingTests::SimpleMappingTest_All_<CONCRETE_CONTAINER> (extraChecksFunction);
-#endif
+        SimpleMappingTest_All_ (testSchema);
     }
 }
 
 namespace {
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2)
+            bool operator() (const value_type& v1, const value_type& v2) const
             {
                 return v1.GetValue () == v2.GetValue ();
             }
-            static int Compare (value_type v1, value_type v2)
-            {
-                return Common::ThreeWayCompareNormalizer (v1.GetValue (), v2.GetValue ());
-            }
         };
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
             using value_type = SimpleClassWithoutComparisonOperators;
-            static int Compare (value_type v1, value_type v2)
+            bool operator() (const value_type& v1, const value_type& v2) const
             {
-                return Common::ThreeWayCompareNormalizer (v1.GetValue (), v2.GetValue ());
+                return v1.GetValue () < v2.GetValue ();
             }
         };
-#if 0
-        // @todo FIX this case
-        using SimpleClassWithoutComparisonOperators_MappingTRAITS = DefaultTraits::SortedMapping<
-            SimpleClassWithoutComparisonOperators,
-            SimpleClassWithoutComparisonOperators,
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_>;
-#endif
 
         DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping<SimpleClass, SimpleClass>> ();
-        //DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        DoTestForConcreteContainer_<SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            []() { return SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+			MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
 
         DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
-        // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            []() { return SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+			MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
     }
 }
 

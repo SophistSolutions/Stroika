@@ -49,14 +49,15 @@ namespace CommonTests {
                 void DoAllTests_ (const DEFAULT_TESTING_SCHEMA& testingSchema)
                 {
                     Debug::TraceContextBumper ctx{L"CommonTests::MappingTests::Test1_BasicConstruction"};
-                    using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
-                    using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
-                    using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType s     = testingSchema.Factory ();
+                    using key_type               = typename DEFAULT_TESTING_SCHEMA::key_type;
+                    using mapped_type            = typename DEFAULT_TESTING_SCHEMA::mapped_type;
+                    using ConcreteContainerType  = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
+                    using ArchetypeContainerType = typename DEFAULT_TESTING_SCHEMA::ArchetypeContainerType;
+                    ConcreteContainerType s      = testingSchema.Factory ();
                     testingSchema.ApplyToContainerExtraTest (s);
                     ConcreteContainerType s1 = s;
                     testingSchema.ApplyToContainerExtraTest (s1);
-                    Mapping<key_type, mapped_type> s2 = s;
+                    ArchetypeContainerType s2 = s;
                     testingSchema.ApplyToContainerExtraTest (s2);
                 }
             }
