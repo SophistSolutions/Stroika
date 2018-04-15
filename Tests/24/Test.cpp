@@ -30,6 +30,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
+#if 0
         using value_type         = typename CONCRETE_CONTAINER::value_type;
         using TraitsType         = typename CONCRETE_CONTAINER::TraitsType;
         auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
@@ -42,11 +43,27 @@ namespace {
                 last = i;
             }
         };
-        CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
+        CommonTests::MappingTests::SimpleMappingTest_All_<CONCRETE_CONTAINER> (extraChecksFunction);
+#endif
     }
     template <typename CONCRETE_CONTAINER>
     void DoTestForConcreteContainer_ ()
     {
+        using namespace CommonTests::MappingTests;
+        auto testSchema                      = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{};
+        testSchema.ApplyToContainerExtraTest = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
+            // verify in sorted order
+            using value_type = typename CONCRETE_CONTAINER::value_type;
+            Optional<value_type> last;
+            for (value_type i : m) {
+                if (last.IsPresent ()) {
+                    VerifyTestResult (Common::mkThreeWayComparerAdapter (m.GetInOrderKeyComparer ()) (last->fKey, i.fKey) <= 0);
+                }
+                last = i;
+            }
+        };
+        SimpleMappingTest_All_ (testSchema);
+#if 0
         using value_type         = typename CONCRETE_CONTAINER::value_type;
         auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& m) {
             // verify in sorted order
@@ -58,7 +75,8 @@ namespace {
                 last = i;
             }
         };
-        CommonTests::MappingTests::SimpleMappingTest_All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+        CommonTests::MappingTests::SimpleMappingTest_All_<CONCRETE_CONTAINER> (extraChecksFunction);
+#endif
     }
 }
 
