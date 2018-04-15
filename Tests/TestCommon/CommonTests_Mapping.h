@@ -52,7 +52,7 @@ namespace CommonTests {
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType s = testingSchema.Factory ();
+                    ConcreteContainerType s     = testingSchema.Factory ();
                     testingSchema.ApplyToContainerExtraTest (s);
                     ConcreteContainerType s1 = s;
                     testingSchema.ApplyToContainerExtraTest (s1);
@@ -69,7 +69,7 @@ namespace CommonTests {
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType m = testingSchema.Factory ();
+                    ConcreteContainerType m     = testingSchema.Factory ();
                     m.Add (1, 2);
                     VerifyTestResult (m.size () == 1);
                     Verify (m.Lookup (1, nullptr));
@@ -103,7 +103,7 @@ namespace CommonTests {
                     using mapped_type                  = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType        = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     using KeyEqualsCompareFunctionType = typename ConcreteContainerType::KeyEqualsCompareFunctionType;
-                    ConcreteContainerType m = testingSchema.Factory ();
+                    ConcreteContainerType m            = testingSchema.Factory ();
                     m.Add (1, 2);
                     VerifyTestResult (m.size () == 1);
                     for (auto i : m) {
@@ -149,8 +149,8 @@ namespace CommonTests {
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType m = testingSchema.Factory ();
-                    ConcreteContainerType m2 = m;
+                    ConcreteContainerType m     = testingSchema.Factory ();
+                    ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
                     VerifyTestResult (m.size () == 2);
@@ -176,8 +176,8 @@ namespace CommonTests {
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType m = testingSchema.Factory ();
-                    ConcreteContainerType m2 = m;
+                    ConcreteContainerType m     = testingSchema.Factory ();
+                    ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
 
@@ -200,8 +200,8 @@ namespace CommonTests {
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType m = testingSchema.Factory ();
-                    ConcreteContainerType m2 = m;
+                    ConcreteContainerType m     = testingSchema.Factory ();
+                    ConcreteContainerType m2    = m;
                     m.Add (1, 88);
                     m.Add (2, 101);
                     VerifyTestResult (m.size () == 2);
@@ -226,7 +226,7 @@ namespace CommonTests {
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     static const size_t   K     = qDebug ? (Debug::IsRunningUnderValgrind () ? 25 : 50) : 100;
-                    ConcreteContainerType c = testingSchema.Factory ();
+                    ConcreteContainerType c     = testingSchema.Factory ();
                     for (size_t i = 0; i < K; ++i) {
                         c.Add (i, i);
                     }
@@ -258,7 +258,7 @@ namespace CommonTests {
                     using mapped_type                  = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType        = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     using KeyEqualsCompareFunctionType = typename ConcreteContainerType::KeyEqualsCompareFunctionType;
-                    ConcreteContainerType m = testingSchema.Factory ();
+                    ConcreteContainerType m            = testingSchema.Factory ();
                     m.Add (1, 2);
                     VerifyTestResult (m.size () == 1);
                     for (auto i : m) {
@@ -309,7 +309,7 @@ namespace CommonTests {
                     using key_type              = typename DEFAULT_TESTING_SCHEMA::key_type;
                     using mapped_type           = typename DEFAULT_TESTING_SCHEMA::mapped_type;
                     using ConcreteContainerType = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
-                    ConcreteContainerType c = testingSchema.Factory ();
+                    ConcreteContainerType c     = testingSchema.Factory ();
                     for (int i = 0; i < 100; ++i) {
                         c.Add (i, i);
                     }
