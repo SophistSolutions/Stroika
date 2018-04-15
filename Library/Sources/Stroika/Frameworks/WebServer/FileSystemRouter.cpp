@@ -7,6 +7,7 @@
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/DataExchange/InternetMediaTypeRegistry.h"
 #include "../../Foundation/IO/FileAccessException.h"
+#include "../../Foundation/IO/FileSystem/Common.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/IO/FileSystem/PathName.h"
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
@@ -24,16 +25,16 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
     struct FSRouterRep_ {
-        String           fFSRoot_;
+        filesystem::path fFSRoot_;
         Optional<String> fURLPrefix2Strip;
         Sequence<String> fDefaultIndexFileNames;
 
         FSRouterRep_ (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
-            : fFSRoot_ (IO::FileSystem::AssureDirectoryPathSlashTerminated (filesystemRoot))
+            : fFSRoot_ (filesystem::canonical (filesystem::path (filesystemRoot.As<wstring> ())))
             , fURLPrefix2Strip (urlPrefix2Strip)
             , fDefaultIndexFileNames (defaultIndexFileNames)
         {
@@ -53,7 +54,7 @@ namespace {
                 if (Optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
                     m->PeekResponse ()->SetContentType (*oMediaType);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ())
+                    DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
 #endif
                 }
             }
@@ -76,7 +77,7 @@ namespace {
                 //@todo tmphack - need to try a bunch and look for 'access'
                 urlRelPath += fDefaultIndexFileNames[0];
             }
-            return fFSRoot_ + urlRelPath;
+            return (fFSRoot_ / filesystem::path (urlRelPath.As<wstring> ())).wstring ();
         }
     };
 
