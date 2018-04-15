@@ -19,6 +19,7 @@
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Streams/SplitterOutputStream.h"
 
 #include "ClientErrorException.h"
 
@@ -48,6 +49,7 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Created connection for socket %s", Characters::ToString (s).c_str ());
 #endif
+    fSocketStream_ = SocketStream::New (fSocket_);
 }
 
 Connection::~Connection ()
@@ -160,8 +162,7 @@ bool Connection::ReadAndProcessMessage ()
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
     {
-        fSocketStream_ = SocketStream::New (fSocket_);
-        fMessage_      = make_shared<Message> (
+        fMessage_ = make_shared<Message> (
             move (Request (fSocketStream_)),
             move (Response (fSocket_, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
             fSocket_.GetPeerAddress ());
