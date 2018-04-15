@@ -72,7 +72,7 @@ namespace Stroika {
             };
 
             /**
-             *  Ptr is a copyable smart pointer to a MemoryStream.
+             *  Ptr is a copyable smart pointer to a BufferedOutputStream.
              */
             template <typename ELEMENT_TYPE>
             class BufferedOutputStream<ELEMENT_TYPE>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
