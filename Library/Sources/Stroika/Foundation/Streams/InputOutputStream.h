@@ -139,6 +139,20 @@ namespace Stroika {
 
             public:
                 /**
+                 *  Return true, unless a call to CloseRead () has been done on the underlying stream (not just Ptr).
+                 *  @see CloseRead ()
+                 */
+                nonvirtual bool IsReadOpen () const;
+
+            public:
+                /**
+                 *  Return true, unless a call to CloseWrite () has been done on the underlying stream (not just Ptr).
+                 *  @see CloseWrite ()
+                 */
+                nonvirtual bool IsWriteOpen () const;
+
+            public:
+                /**
                  *
                  */
                 nonvirtual SeekOffsetType GetReadOffset () const;
@@ -181,20 +195,20 @@ namespace Stroika {
 
             protected:
                 /**
-                *  \brief protected access to underlying stream smart pointer
-                */
+                 *  \brief protected access to underlying stream smart pointer
+                 */
                 nonvirtual _SharedIRep _GetSharedRep () const;
 
             protected:
                 /**
-                * \req *this != nullptr
-                */
+                 * \req *this != nullptr
+                 */
                 nonvirtual const _IRep& _GetRepConstRef () const;
 
             protected:
                 /**
-                * \req *this != nullptr
-                */
+                 * \req *this != nullptr
+                 */
                 nonvirtual _IRep& _GetRepRWRef () const;
             };
 
