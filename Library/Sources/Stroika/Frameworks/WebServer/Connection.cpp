@@ -15,10 +15,13 @@
 #include "../../Foundation/DataExchange/BadFormatException.h"
 #include "../../Foundation/Debug/Assertions.h"
 #include "../../Foundation/Execution/Exceptions.h"
+#include "../../Foundation/IO/FileSystem/FileOutputStream.h"
+#include "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Streams/LoggingInputOutputStream.h"
 #include "../../Foundation/Streams/SplitterOutputStream.h"
 
 #include "ClientErrorException.h"
@@ -50,6 +53,17 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
     DbgTrace (L"Created connection for socket %s", Characters::ToString (s).c_str ());
 #endif
     fSocketStream_ = SocketStream::New (fSocket_);
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    constexpr bool kWriteLogData_ = true;
+#else
+    constexpr bool kWriteLogData_ = false;
+#endif
+    if (kWriteLogData_) {
+        fSocketStream_ = Streams::LoggingInputOutputStream<Memory::Byte>::New (
+            fSocketStream_,
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-input-trace.txt", Characters::ToString (s).c_str ())),
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-output-trace.txt", Characters::ToString (s).c_str ())));
+    }
 }
 
 Connection::~Connection ()

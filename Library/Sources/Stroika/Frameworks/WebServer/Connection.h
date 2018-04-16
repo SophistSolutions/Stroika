@@ -126,11 +126,11 @@ namespace Stroika {
                 nonvirtual void SetRemainingConnectionMessages (const Memory::Optional<Remaining>& remainingConnectionLimits);
 
             private:
-                InterceptorChain              fInterceptorChain_;
-                ConnectionOrientedSocket::Ptr fSocket_;
-                SocketStream::Ptr             fSocketStream_;
-                shared_ptr<Message>           fMessage_; // always there, but ptr so it can be replaced
-                Memory::Optional<Remaining>   fRemaining_;
+                InterceptorChain                              fInterceptorChain_;
+                ConnectionOrientedSocket::Ptr                 fSocket_;
+                Streams::InputOutputStream<Memory::Byte>::Ptr fSocketStream_;
+                shared_ptr<Message>                           fMessage_; // always there, but ptr so it can be replaced
+                Memory::Optional<Remaining>                   fRemaining_;
 
             private:
                 friend ConnectionManager;
