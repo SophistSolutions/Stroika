@@ -28,13 +28,14 @@ namespace Stroika {
                     , fLogInput_ (logInput)
                     , fLogOutput_ (logOutput)
                 {
+                    Require (not realStream.IsSeekable () or (logInput.IsSeekable () and logOutput.IsSeekable ())); // since may need to delegate seeks
                 }
 
                 // Stream<ELEMENT_TYPE>::_IRep
             public:
                 virtual bool IsSeekable () const override
                 {
-                    return fRealOut1_.IsSeekable ();
+                    return fRealStream_.IsSeekable ();
                 }
 
                 // InputStream::_IRep
@@ -66,8 +67,10 @@ namespace Stroika {
                 }
                 virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
                 {
-                    size_t result = fRealStream_.ReadNonBlocking (intoStart, intoEnd);
-                    fLogInput_.Write (intoStart, intoStart + result);
+                    Memory::Optional<size_t> result = fRealStream_.ReadNonBlocking (intoStart, intoEnd);
+                    if (result) {
+                        fLogInput_.Write (intoStart, intoStart + *result);
+                    }
                     return result;
                 }
 
@@ -91,7 +94,7 @@ namespace Stroika {
                 {
                     Require (IsOpenWrite ());
                     SeekOffsetType o1 = fRealStream_.SeekWrite (whence, offset);
-                    SeekOffsetType o2 = fLogOutput_.SeekWrite (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
+                    SeekOffsetType o2 = fLogOutput_.Seek (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
                     return o1;
                 }
                 virtual void Flush () override
