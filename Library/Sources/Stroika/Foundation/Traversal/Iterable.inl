@@ -120,7 +120,7 @@ namespace Stroika {
 #if qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy
                 typename Iterable<T>::template _SafeReadRepAccessor<REP_SUB_TYPE>&
 #else
-                typename Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>&
+                Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>&
 #endif
                 Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept
             {
