@@ -23,6 +23,7 @@
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Streams/LoggingInputOutputStream.h"
 #include "../../Foundation/Streams/SplitterOutputStream.h"
+#include "../../Foundation/Time/DateTime.h"
 
 #include "ClientErrorException.h"
 
@@ -59,10 +60,11 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
     constexpr bool kWriteLogData_ = false;
 #endif
     if (kWriteLogData_) {
-        fSocketStream_ = Streams::LoggingInputOutputStream<Memory::Byte>::New (
+        String socketName = Characters::Format (L"%s-%d", Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eISO8601).ReplaceAll (L":", L"-").c_str (), s.GetNativeSocket ());
+        fSocketStream_    = Streams::LoggingInputOutputStream<Memory::Byte>::New (
             fSocketStream_,
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-input-trace.txt", Characters::ToString (s).c_str ())),
-            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-output-trace.txt", Characters::ToString (s).c_str ())));
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-input-trace.txt", socketName.c_str ())),
+            IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-output-trace.txt", socketName.c_str ())));
     }
 }
 
