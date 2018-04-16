@@ -142,14 +142,14 @@ namespace Stroika {
                  *  Return true, unless a call to CloseRead () has been done on the underlying stream (not just Ptr).
                  *  @see CloseRead ()
                  */
-                nonvirtual bool IsReadOpen () const;
+                nonvirtual bool IsOpenRead () const;
 
             public:
                 /**
                  *  Return true, unless a call to CloseWrite () has been done on the underlying stream (not just Ptr).
                  *  @see CloseWrite ()
                  */
-                nonvirtual bool IsWriteOpen () const;
+                nonvirtual bool IsOpenWrite () const;
 
             public:
                 /**

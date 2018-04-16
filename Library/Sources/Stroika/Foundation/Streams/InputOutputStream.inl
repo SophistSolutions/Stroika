@@ -91,12 +91,12 @@ namespace Stroika {
                 OutputStream<ELEMENT_TYPE>::Ptr::Close (reset);
             }
             template <typename ELEMENT_TYPE>
-            inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::IsReadOpen () const
+            inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::IsOpenRead () const
             {
                 return InputStream<ELEMENT_TYPE>::Ptr::IsOpen ();
             }
             template <typename ELEMENT_TYPE>
-            inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::IsWriteOpen () const
+            inline bool InputOutputStream<ELEMENT_TYPE>::Ptr::IsOpenWrite () const
             {
                 return OutputStream<ELEMENT_TYPE>::Ptr::IsOpen ();
             }
