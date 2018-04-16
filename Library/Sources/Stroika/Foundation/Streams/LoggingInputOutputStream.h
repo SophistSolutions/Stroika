@@ -34,8 +34,14 @@ namespace Stroika {
             public:
                 using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
 
-            public:
-                using Ptr = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+            private:
+                struct Ptr_ :  InputOutputStream<ELEMENT_TYPE>::Ptr {
+                    template <typename ARG>
+                    Ptr_ (ARG arg)
+                         : Ptr (arg)
+                    {
+                    }
+                };
 
             public:
                 /**

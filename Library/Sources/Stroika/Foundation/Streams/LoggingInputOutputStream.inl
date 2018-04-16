@@ -128,7 +128,7 @@ namespace Stroika {
             template <typename ELEMENT_TYPE>
             typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
             {
-                return make_shared<Rep_> (realStream, logInput, logOutput);
+                return Ptr_ (make_shared<Rep_> (realStream, logInput, logOutput));
             }
             template <typename ELEMENT_TYPE>
             typename LoggingInputOutputStream<ELEMENT_TYPE>::Ptr LoggingInputOutputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputOutputStream<ELEMENT_TYPE>::Ptr& realStream, const typename OutputStream<ELEMENT_TYPE>::Ptr& logInput, const typename OutputStream<ELEMENT_TYPE>::Ptr& logOutput)
