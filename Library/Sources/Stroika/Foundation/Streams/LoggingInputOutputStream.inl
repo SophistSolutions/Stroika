@@ -34,7 +34,7 @@ namespace Stroika {
             public:
                 virtual bool IsSeekable () const override
                 {
-                    return fRealOut1_.IsSeekable () and fLogOutput_.IsSeekable ();
+                    return fRealOut1_.IsSeekable ();
                 }
 
                 // InputStream::_IRep
@@ -55,17 +55,19 @@ namespace Stroika {
                 virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
                 {
                     SeekOffsetType result = fRealStream_.SeekRead (whence, offset);
+                    // @todo - perhaps should seek the fLogInput_ stream? But not clear by how much
                     return result;
                 }
                 virtual size_t Read (ElementType* intoStart, ElementType* intoEnd) override
                 {
                     size_t result = fRealStream_.Read (intoStart, intoEnd);
-					fLogInput_.Write (intoStart, intoStart + result);
-					return result;
+                    fLogInput_.Write (intoStart, intoStart + result);
+                    return result;
                 }
                 virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
                 {
                     size_t result = fRealStream_.ReadNonBlocking (intoStart, intoEnd);
+                    fLogInput_.Write (intoStart, intoStart + result);
                     return result;
                 }
 
@@ -76,25 +78,20 @@ namespace Stroika {
                     Require (IsOpenWrite ());
                     fRealStream_.CloseWrite ();
                     Assert (fRealStream_ == nullptr);
-                    fLogOutput_.CloseWrite ();
-                    Assert (fLogOutput_ == nullptr);
                 }
                 virtual bool IsOpenWrite () const override
                 {
-                    Assert (fRealStream_.IsOpenWrite () == fLogOutput_.IsOpenWrite ());
                     return fRealStream_.IsOpenWrite ();
                 }
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
-                    Assert (fRealStream_.GetWriteOffset () == fLogOutput_.GetWriteOffset ());
                     return fRealStream_.GetWriteOffset ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
                     Require (IsOpenWrite ());
                     SeekOffsetType o1 = fRealStream_.SeekWrite (whence, offset);
-                    SeekOffsetType o2 = fLogOutput_.SeekWrite (whence, offset);
-                    Assert (o1 == o2);
+                    SeekOffsetType o2 = fLogOutput_.SeekWrite (whence, offset); // @todo - not sure if/how mcuh to see - since not totally in sync
                     return o1;
                 }
                 virtual void Flush () override
@@ -102,7 +99,6 @@ namespace Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Require (IsOpenWrite ());
                     fRealStream_.Flush ();
-                    fLogOutput_.Flush ();
                 }
                 // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
                 // Writes always succeed fully or throw.
