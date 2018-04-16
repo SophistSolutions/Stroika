@@ -12,7 +12,7 @@
 #elif __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
 #elif qHasFeature_boost
-#include <boost/filesystem>
+#include <boost/filesystem.hpp>
 #endif
 // clang-format on
 
