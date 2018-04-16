@@ -11,6 +11,8 @@
 #include <filesystem>
 #elif __has_include(<experimental/filesystem>)
 #include <experimental/filesystem>
+#elif qHasFeature_boost
+#include <boost/filesystem>
 #endif
 // clang-format on
 
@@ -27,12 +29,20 @@
  */
 
 // clang-format off
-#if !(__cpp_lib_filesystem >= 201603) && (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>))
+#if !(__cpp_lib_filesystem >= 201603) 
+#if (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>))
 namespace std {
     namespace filesystem {
         using namespace std::experimental::filesystem;
     }
 }
+#elif qHasFeature_boost
+namespace std {
+    namespace filesystem {
+        using namespace boost::filesystem;
+    }
+}
+#endif
 #endif
 // clang-format on
 
