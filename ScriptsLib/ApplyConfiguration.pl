@@ -322,6 +322,8 @@ sub WriteStroikaConfigCHeader
 	else {
 		print (OUT "#define	qHasFeature_LZMA	0\n");
 	}
+	print (OUT "\n");
+
     print (OUT "//--boost {build-only|use|use-system|no}\n");
 	if (($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP) || ($FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseSystem)) {
 		print (OUT "#define	qHasFeature_boost	1\n");
