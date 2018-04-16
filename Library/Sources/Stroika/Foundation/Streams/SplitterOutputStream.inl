@@ -52,7 +52,7 @@ namespace Stroika {
                 virtual SeekOffsetType GetWriteOffset () const override
                 {
                     Assert (fRealOut1_.GetWriteOffset () == fRealOut2_.GetWriteOffset ());
-					return fRealOut1_.GetWriteOffset ();
+                    return fRealOut1_.GetWriteOffset ();
                 }
                 virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
                 {
