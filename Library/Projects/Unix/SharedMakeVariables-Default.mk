@@ -210,7 +210,9 @@ ifndef StroikaSupportLibs
 endif
 ifndef StroikaLibsWithSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaLibsWithSupportLibs	=	$(StroikaLibs) $(StroikaSupportLibs) 
+
+	#tmphack - added $(EXTRA_LINKER_ARGS) here as so stdlib etc come AFTER stroika libs so they get pulled in - need double listing of libs sometimes
+	StroikaLibsWithSupportLibs	=	$(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_LINKER_ARGS)
 endif
 
 
