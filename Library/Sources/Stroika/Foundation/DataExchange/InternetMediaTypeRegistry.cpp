@@ -55,10 +55,8 @@ namespace {
             DbgTrace (L"returning %s", Characters::ToString (results).c_str ());
 #endif
             return results;
-        }
-
-                                     static const Mapping<FileSuffixType, InternetMediaType>
-                                         kData_ = readGlobsFile ();
+		};
+		static const Mapping<FileSuffixType, InternetMediaType> kData_ = readGlobsFile ();
         return kData_;
     }
 }
