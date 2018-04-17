@@ -380,6 +380,7 @@ namespace {
                 DateTime dt = DateTime::FromTickCount (ds);
                 VerifyTestResult (Math::NearlyEquals (dt, DateTime::FromTickCount (dt.ToTickCount ())));
                 VerifyTestResult (Math::NearlyEquals (dt.ToTickCount (), ds, 1.1)); // crazy large epsilon for now because we represent datetime to nearest second
+                                                                                    // (note - failed once with clang++ on vm - could be something else slowed vm down - LGP 2018-04-17 - ignore for now)
             }
         }
         {
