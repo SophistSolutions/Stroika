@@ -1087,6 +1087,54 @@ sub PostProcessOptions_ ()
 			$ARCH = trim (`./ScriptsLib/GetCompilerArch.sh $COMPILER_DRIVER_CPlusPlus`);
 		}
 	}
+
+
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
+		#if ($STATIC_LINK_GCCRUNTIME == DEFAULT_BOOL_OPTIONS) {
+		#	$STATIC_LINK_GCCRUNTIME = 1;
+		#}
+		if ($STATIC_LINK_GCCRUNTIME == 1) {
+			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
+			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
+				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=libstdc++.a`);
+				$EXTRA_LINKER_ARGS .= " $lib";
+			}
+			else {
+				$EXTRA_LINKER_ARGS .= " -lstdc++";
+			}
+		}
+		if ($STATIC_LINK_GCCRUNTIME == 1) {
+				$EXTRA_LINKER_ARGS .= " -static-libstdc++";
+		}
+
+		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8') {
+				$EXTRA_LINKER_ARGS .= " -lstdc++fs";
+			}
+		}
+		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if ("$^O" eq "darwin") {
+				#xcode not supporting filesystem API (so use boost)
+				#$EXTRA_LINKER_ARGS .= " -lc++experimental";
+				if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
+					$EXTRA_LINKER_ARGS .= " -lboost_system";
+					$EXTRA_LINKER_ARGS .= " -lboost_filesystem";
+				}
+			}
+			else {
+				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '4.0' && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '6.0') {
+					if (index ($EXTRA_LINKER_ARGS, "-stdlib=libc++") != -1) {
+						$EXTRA_LINKER_ARGS .= " -lc++experimental";
+					}
+					else {
+						$EXTRA_LINKER_ARGS .= " -lstdc++fs";
+					}
+				}
+			}
+		}
+
+
+	}
 }
 
 
