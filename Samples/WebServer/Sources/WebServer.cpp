@@ -8,6 +8,7 @@
 #include "Stroika/Foundation/Characters/String2Int.h"
 #include "Stroika/Foundation/Characters/ToString.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
+#include "Stroika/Foundation/Execution/Module.h"
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/TimeOutException.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
@@ -54,7 +55,10 @@ namespace {
                   Sequence<Route>{
                       Route{RegularExpression (L""), DefaultPage_},
                       Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
-                      Route{RegularExpression (L"Files/.*"), FileSystemRouter{L"sample-html-folder", String (L"Files"), Sequence<String>{L"index.html"}}},
+                      Route{
+                          RegularExpression (L"Files/.*"),
+                          FileSystemRouter{Execution::GetEXEDir () + L"html", String (L"Files"), Sequence<String>{L"index.html"}},
+                      },
                   }}
             , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), fRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {
