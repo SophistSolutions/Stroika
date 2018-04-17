@@ -35,29 +35,30 @@ using Stroika::Foundation::Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS
 #if qPlatform_Linux
 // not sure what platforms have this
 namespace {
-    Bijection<InternetMediaType, FileSuffixType> ReadGlobsFile_ ()
+    Mapping<FileSuffixType, InternetMediaType> GetGlobsFile_ ()
     {
+        auto readGlobsFile = []() -> Mapping<FileSuffixType, InternetMediaType> {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper ctx{L"ReadGlobsFile_"};
+            Debug::TraceContextBumper ctx{L"{}readGlobsFile"};
 #endif
-        Bijection<InternetMediaType, FileSuffixType> results{};
-        for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
-            if (line.length () == 2) {
-                String glob = line[1];
-                if (glob.StartsWith ('*')) {
-                    glob = glob.SubString (1);
+            Mapping<FileSuffixType, InternetMediaType> results{};
+            for (Sequence<String> line : DataExchange::Variant::CharacterDelimitedLines::Reader{{':'}}.ReadMatrix (IO::FileSystem::FileInputStream::New (L"/usr/share/mime/globs"))) {
+                if (line.length () == 2) {
+                    String glob = line[1];
+                    if (glob.StartsWith ('*')) {
+                        glob = glob.SubString (1);
+                    }
+                    results.Add (glob, InternetMediaType{line[0]});
                 }
-                results.Add (InternetMediaType{line[0]}, glob);
             }
-        }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"returning %s", Characters::ToString (results).c_str ());
+            DbgTrace (L"returning %s", Characters::ToString (results).c_str ());
 #endif
-        return results;
-    }
-    Bijection<InternetMediaType, FileSuffixType> GetGlobsFile_ ()
-    {
-        static const Bijection<InternetMediaType, FileSuffixType> kData_ = ReadGlobsFile_ ();
+            return results;
+        }
+
+                                     static const Mapping<FileSuffixType, InternetMediaType>
+                                         kData_ = readGlobsFile ();
         return kData_;
     }
 }
@@ -267,7 +268,7 @@ Optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType 
 {
     FileSuffixType suffix = IO::FileSystem::GetFileSuffix (fileNameOrSuffix);
 #if qPlatform_Linux
-    return GetGlobsFile_ ().InverseLookup (suffix);
+    return GetGlobsFile_ ().Lookup (suffix);
 #elif qPlatform_Windows
     if (Optional<String> oct = GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"%s\\Content Type", suffix.c_str ()))) {
         return InternetMediaType{*oct};
