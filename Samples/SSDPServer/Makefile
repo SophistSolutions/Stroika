@@ -18,10 +18,11 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
+TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SSDPServer/SSDPServer.exe
+TARGETEXE				=	$(TARGETDIR)SSDPServer.exe
 else
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_SSDPServer
+TARGETEXE				=	$(TARGETDIR)SSDPServer
 endif
 
 VPATH	=			$(SrcDir)/Sources/
@@ -33,10 +34,11 @@ Objs	=	\
 
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Samples/SSDPServer:"
+	@mkdir -p $(TARGETDIR)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 else
-	if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
+	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/SSDPServer.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build";\
 	else\
 		$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\

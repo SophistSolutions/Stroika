@@ -23,10 +23,11 @@ ECHO_BUILD_LINES?=0
 Includes				+=	-I.
 Includes				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleService/
 
+TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleService/
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleService/SimpleService.exe
+TARGETEXE				=	$(TARGETDIR)SimpleService.exe
 else
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleService
+TARGETEXE				=	$(TARGETDIR)SimpleService
 endif
 
 
@@ -49,12 +50,13 @@ $(Objs):	$(VERSION_FILE_OUT)
 
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Samples/SimpleService:"
+	@mkdir -p $(TARGETDIR)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 	@$(MAKE) --silent installers MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 else
 	@$(MAKE) --silent $(VERSION_FILE_OUT)
-	if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
+	@if [[ "$(CONFIGURATION)" == "Debug-U-32" || "$(CONFIGURATION)" == "Release-U-32" || "$(CONFIGURATION)" == "Debug-U-64" || "$(CONFIGURATION)" == "Release-U-64" ]] ; then\
 		perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary Projects/$(ProjectPlatformSubdir)/SimpleService.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build";\
 	else\
 		$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) "SKIPPED for unsupported configuration";\

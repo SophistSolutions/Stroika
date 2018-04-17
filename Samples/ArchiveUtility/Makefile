@@ -18,10 +18,11 @@ ECHO_BUILD_LINES?=0
 
 Includes				+=	-I.
 
+TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ArchiveUtility/
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-ArchiveUtility/ArchiveUtility.exe
+TARGETEXE				=	$(TARGETDIR)ArchiveUtility.exe
 else
-TARGETEXE				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples_ArchiveUtility
+TARGETEXE				=	$(TARGETDIR)ArchiveUtility
 endif
 
 
@@ -34,6 +35,7 @@ Objs	=	\
 
 all:
 	@$(StroikaRoot)/ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Samples/ArchiveUtility:"
+	@mkdir -p $(TARGETDIR)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --silent $(TARGETEXE) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ECHO_BUILD_LINES=$(ECHO_BUILD_LINES)
 else
