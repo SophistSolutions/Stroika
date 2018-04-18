@@ -1096,8 +1096,10 @@ sub PostProcessOptions_ ()
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
 			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
-				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=libstdc++.a`);
-				$EXTRA_LINKER_ARGS .= " $lib";
+				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=libstdc++.a 2>&/dev/null`);
+				if ($lib != null) {
+					$EXTRA_LINKER_ARGS .= " $lib";
+				}
 			}
 			else {
 				$EXTRA_LINKER_ARGS .= " -lstdc++";
@@ -1270,6 +1272,6 @@ if ($generate) {
 	print("done\n");
 }
 else {
-	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because compiler $COMPILER_DRIVER_CPlusPlus not present and configuration invoiked with --only-if-has-compiler\n");
+	print(`ScriptsLib/PrintLevelLeader.sh $MAKE_INDENT_LEVEL` . "Skipping configuration $configurationName because compiler $COMPILER_DRIVER_CPlusPlus not present and configuration invoked with --only-if-has-compiler\n");
 }
 
