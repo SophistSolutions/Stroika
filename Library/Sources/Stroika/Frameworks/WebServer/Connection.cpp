@@ -241,12 +241,18 @@ bool Connection::ReadAndProcessMessage ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ());
 #endif
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+    WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ()));
+#endif
     try {
         fInterceptorChain_.HandleMessage (fMessage_.get ());
     }
     catch (...) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
+#endif
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+        WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ()));
 #endif
     }
 
