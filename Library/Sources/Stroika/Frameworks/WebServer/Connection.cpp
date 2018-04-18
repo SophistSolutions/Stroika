@@ -54,24 +54,25 @@ Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const Intercepto
     DbgTrace (L"Created connection for socket %s", Characters::ToString (s).c_str ());
 #endif
     fSocketStream_ = SocketStream::New (fSocket_);
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    constexpr bool kWriteLogData_ = true;
-#else
-    constexpr bool kWriteLogData_ = false;
-#endif
-    if (kWriteLogData_) {
-        String socketName = Characters::Format (L"%s-%d", Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eISO8601).ReplaceAll (L":", L"-").c_str (), s.GetNativeSocket ());
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+    {
+        String socketName = Characters::Format (L"%ld-%d", (long)Time::DateTime::Now ().As<time_t> (), (int)s.GetNativeSocket ());
         fSocketStream_    = Streams::LoggingInputOutputStream<Memory::Byte>::New (
             fSocketStream_,
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-input-trace.txt", socketName.c_str ())),
             IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-output-trace.txt", socketName.c_str ())));
+        fLogConnectionState_ = Streams::TextWriter::New (IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + Characters::Format (L"socket-%s-highlevel-trace.txt", socketName.c_str ())), Streams::TextWriter::Format::eUTF8WithoutBOM);
     }
+#endif
 }
 
 Connection::~Connection ()
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"Destroying connection for socket %s, message=%s", Characters::ToString (fSocket_).c_str (), Characters::ToString (fMessage_).c_str ());
+#endif
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+    WriteLogConnectionMsg_ (L"DestroyingConnection");
 #endif
     if (fMessage_ != nullptr) {
         if (fMessage_->PeekResponse ()->GetState () != Response::State::eCompleted) {
@@ -96,6 +97,9 @@ Connection::~Connection ()
 
 bool Connection::ReadHeaders_ (Message* msg)
 {
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+    WriteLogConnectionMsg_ (L"Starting ReadHeaders_");
+#endif
     /*
      * DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true 
      * (and probably isn't here anymore)
@@ -116,6 +120,9 @@ bool Connection::ReadHeaders_ (Message* msg)
                  *
                  * I've seen this not so uncommonly with chrome (hit refresh button fast and wait a while) -- LGP 2018-03-04
                  */
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+                WriteLogConnectionMsg_ (L"got EOF from src stream reading headers(incomplete)");
+#endif
                 return false;
             }
         }
@@ -157,6 +164,9 @@ bool Connection::ReadHeaders_ (Message* msg)
             request->AddHeader (hdr, value);
         }
     }
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+    WriteLogConnectionMsg_ (L"ReadHeaders completed normally");
+#endif
     return true;
 }
 
@@ -213,10 +223,16 @@ bool Connection::ReadAndProcessMessage ()
                     }
                     else {
                         DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+                        WriteLogConnectionMsg_ (L"Keep-Alive header bad1");
+#endif
                     }
                 }
                 else {
                     DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+                    WriteLogConnectionMsg_ (L"Keep-Alive header bad2");
+#endif
                 }
             }
         }
@@ -272,6 +288,9 @@ bool Connection::ReadAndProcessMessage ()
          *      or Transfer-Encoding header field in the request's message-headers/
          */
         if (GetRequest ().GetContentLength ()) {
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+            WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
+#endif
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
 #endif
@@ -299,5 +318,16 @@ bool Connection::ReadAndProcessMessage ()
                               thisMessageKeepAlive ? String_Constant{L"Keep-Alive"} : String_Constant{L"close"});
 
     GetResponse ().End ();
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+    WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
+#endif
     return thisMessageKeepAlive;
 }
+
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+void Connection::WriteLogConnectionMsg_ (const String& msg) const
+{
+    String useMsg = Time::DateTime::Now ().Format () + L" -- " + msg.Trim ();
+    fLogConnectionState_.WriteLn (useMsg);
+}
+#endif
