@@ -11,7 +11,7 @@
 #
 VER=`ScriptsLib/ExtractVersionInformation.sh STROIKA_VERSION FullVersionString`
 
-: ${USE_TEST_BASENAME:=UNKNOWN}
+: "${USE_TEST_BASENAME:=UNKNOWN}"
 
 MULTIPLIER=${MULTIPLIER-15}
 if [ "$(uname -s)" == "Darwin" ] ; then
