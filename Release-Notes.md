@@ -18,6 +18,127 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a231">v2.0a231</a><br/>2018-04-19x</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a230...v2.0a231</li>
+		<li>Major rework of Compare objects in Stroika, and (nearly) call containers
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-642</li>
+				<li>Use term ThreeWayComparer for old Compare API</li>
+				<li>Fully support existing stdc++ compare objects, like less, in containers - either by type or value - so you can use lambdas etc to be compare objects</li>
+				<li>Lose most of the TRAITS from containers - sort and equals now done by assigned object in CTOR for container.</li>
+				<li>New ComparisonRelationType and traits-like mechanism for these comparers, along with adapters leveraging this to convert.</li>
+				<li>Old compare APIs all deprecated (but they were rarely used outside of Stroika internals)</li>
+				<li>https://stroika.atlassian.net/browse/STK-651  experiment with IsAddable member template</li>
+				<li>Many other container cleanups (esp CTOR)</li>
+				<li>ComparisonRelationDeclaration</li>
+				<li>String::LessCI/EqualsCI, comparison functors</li>
+				<li>Minor container performance tweak and noted more todo - https://stroika.atlassian.net/browse/STK-645</li>
+			</ul>
+		</li>
+		<li>Supported Compilers
+			<ul>
+				<li>Support _MS_VS_2k17_15Pt6Pt0_ Vs 2k17 15.6.0 - no bugfixes found (of our identified bugs)</li>
+			</ul>
+		</li>
+		<li>ProcessRunner
+			<ul>
+				<li>enhanced POSIX ProcessRunner code to capture the trailing bits of the stderr, and include them in the error message; and otherwise reformattied teh default error message</li>
+				<li>tweaks to Execution::DetachedProcessRunner ()  docs on daemonizing, chdir, etc.</li>
+			</ul>
+		</li>
+		<li>Samples
+			<ul>
+				<li>On UNIX, change naming to be Samples-XX, instead of Samples_XX - to match what we did on windows</li>
+				<li>sample webserver exe-relative dir for html folder - makefile + code</li>
+			</ul>
+		</li>
+		<li>Framework::WebServer/WebService
+			<ul>
+				<li>qStroika_Framework_WebServer_Connection_DetailedMessagingLog - dump transaction log to /tmp of connections</li>
+				<li>simplifided if (thisMessageKeepAlive) { case of http webserver - cuz if no content length (and we dont support transfercoding) -</li>
+				<li>chagned behavior of WebServer HTTP Request GetBody when no HTTP header. Documented that we MSUT either supprot tranfer encoding (which we dont) or it must be empty (at least for http 1.1). So change of behavior (used to readall). Docuemtned todo fix</li>
+				<li>use WebServer/ClientErrorException in a few more palaces in WebService framework</li>
+				<li>WebService::Server::ExpectedMethod () now takes iterable (cuz must do case insensitive compare of strings) -and does that - and now reports better message</li>
+			</ul>
+		</li>
+		<li>Streams
+			<ul>
+				<li>new class LoggingInputOutputStream (to help debug stream IO - like socket IO - code)</li>
+				<li>OutputStream<>::WriteLn</li>
+				<li>Added InputOutputStream accessor for IsReadOpen/IsWriteOpen</li>
+				<li>SplitterOutputStream<></li>
+			</ul>
+		</li>
+		<li>Build System changes
+			<ul>
+				<li>Start including more lib dependencies (for stuff like fs extensions in libstdc++) - into CONFIG file (generated with configure) instead of #includes common-variables .mk file</li>
+				<li>unix makefile hack to StroikaLibsWithSupportLibs listing $(EXTRA_LINKER_ARGS) a second time - need to have some libs args listed at start, and some at end
+				(NOTE- this is a tmphack and needs alot of rework)</li>
+				<li>Lose obsolete ScriptsLib/MakeDirectorySymbolicLink.sh now that microsoft (Appears to) support ln -s properly</li>
+				<li>remove some obsolete files (intermediatefiles/activeconfig/library/*.mk) from ApplyConfiguraiton</li>
+				<li>Improved ScriptsLib/GetMessageForMissingTool.sh for MacOSX</li>
+				<li>workaround https://stroika.atlassian.net/browse/STK-643 boost broken on windows with hack to disable boost by default on windows:</li>
+			</ul>
+		</li>
+		<li>IO::FileSystem
+			<ul>
+				<li>Started DIRECTLY using std::filesystem, and deprecating some of my duplicate (and incomplete) Filesystem APIs</li>
+				<li>FileOutputStream - default is eUnBuffered</li>
+				<li>used BOOST on macos - because filesystem support doesnt work on their compilers</li>
+				<li>use std::filesystem::path in FSRouterRep_</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents
+			<ul>
+				<li>curl 7.47.1</li>
+				<li>boost 1.67.0</li>
+				<li>update sqlite version to 3.23</li>
+				<li>3.2.1 version of Xerces</li>
+				<li>curl makefile tweaks (fix makefile for more use of pkg-config etc)</li>
+			</ul>
+		</li>
+		<li>improved erro message report from ProessRunner for posix</li>
+		<li>Added (experiemntal) concept is_iterator<T>; Concept 'is_callable<> added</li>
+		<li>touchup to ProcessRunner exception output</li>
+		<li>fixed  serious bug with String::FromISOLatin1 ()</li>
+		<li>Tweaks to PIDLoop () - code - exception handling, trace messages, autostart, etc</li>
+		<li>operator bool () for Ptr classes (Stream::Ptr,Thread::Ptr,SharedPtr)</li>
+		<li>https://stroika.atlassian.net/browse/STK-644 helgrind warning suppression/workaround</li>
+		<li>Clenaup Iterable<>::OrderBy - docs and name inordercompaer etc</li>
+		<li>https://stroika.atlassian.net/browse/STK-650 qStroika_Foundation_Characters_StillDependOnDeprecatedCodeCvtUtf8 warning suppression</li>
+		<li>qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy</li>
+		<li>InternetMediaTypeRegistry use of Bijection was inappropriate</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a231.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a231-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.2 (apple clang 9.2)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>ONE INNCUOUS REGTEST REPORT ON WINDOWS - PERFORMANCE - IGNORED</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
 
 
 
