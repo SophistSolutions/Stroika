@@ -31,7 +31,7 @@ namespace Stroika {
 
             class ConnectionManager;
 
-			/**
+            /**
              *  Write out files to %TEMP% dir, with logs of the details of the HTTP conversation, for debugging
              *  HTTP conversations.
              */
@@ -82,9 +82,9 @@ namespace Stroika {
                 //
                 // Return false if 'silent exception' - like empty connection
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-				nonvirtual bool ReadHeaders_ (Message* msg);
+                nonvirtual bool ReadHeaders_ (Message* msg);
 #else
-				static bool ReadHeaders_ (Message* msg);
+                static bool ReadHeaders_ (Message* msg);
 #endif
 
             public:
