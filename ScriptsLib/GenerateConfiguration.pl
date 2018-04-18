@@ -1124,7 +1124,7 @@ sub PostProcessOptions_ ()
 				}
 			}
 			else {
-				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) >= '4.0' && GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '6.0') {
+				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '6.0') {
 					if (index ($EXTRA_LINKER_ARGS, "-stdlib=libc++") != -1) {
 						$EXTRA_LINKER_ARGS .= " -lc++experimental";
 					}
