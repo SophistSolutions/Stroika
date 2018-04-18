@@ -1097,7 +1097,7 @@ sub PostProcessOptions_ ()
 			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
 				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=libstdc++.a 2>&/dev/null`);
-				if ($lib != null) {
+				if (defined $lib) {
 					$EXTRA_LINKER_ARGS .= " $lib";
 				}
 			}
