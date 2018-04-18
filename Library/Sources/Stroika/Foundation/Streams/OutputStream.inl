@@ -115,7 +115,7 @@ namespace Stroika {
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const wchar_t* cStr) const
             {
-                Write (String (cStr));
+                Write (Characters::String (cStr));
             }
             template <typename ELEMENT_TYPE>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
