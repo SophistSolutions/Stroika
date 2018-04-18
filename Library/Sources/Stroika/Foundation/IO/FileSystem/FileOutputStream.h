@@ -104,7 +104,7 @@ namespace Stroika {
                         eBuffered,
                         eUnbuffered,
 
-                        eDEFAULT = eBuffered,
+                        eDEFAULT = eUnbuffered,
 
                         Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
                     };
@@ -128,6 +128,8 @@ namespace Stroika {
                      *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
                      *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
                      *          but then the results are 'on you.
+                     *
+                     *  \note   The overloads taking no BufferFlag produce a non-buffered stream.
                      */
                     static Ptr                             New (const String& fileName, FlushFlag flushFlag = FlushFlag::eDEFAULT);
                     static Ptr                             New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag = FlushFlag::eDEFAULT);
