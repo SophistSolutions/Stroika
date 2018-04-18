@@ -11,6 +11,7 @@
  */
 #include <mutex>
 
+#include "../Characters/LineEndings.h"
 #include "../Characters/String.h"
 #include "../Debug/Assertions.h"
 #include "../Memory/BLOB.h"
@@ -109,6 +110,18 @@ namespace Stroika {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Require (IsOpen ());
                 Write (&e, &e + 1);
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const wchar_t* cStr) const
+            {
+                Write (String (cStr));
+            }
+            template <typename ELEMENT_TYPE>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+            inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const Characters::String& s) const
+            {
+                Write (s + Characters::GetEOL<wchar_t> ());
             }
             template <typename ELEMENT_TYPE>
             template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>

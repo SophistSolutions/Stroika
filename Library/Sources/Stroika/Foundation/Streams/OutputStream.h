@@ -205,6 +205,14 @@ namespace Stroika {
 
             public:
                 /**
+                 */
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual void WriteLn (const wchar_t* cStr) const;
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+                nonvirtual void WriteLn (const Characters::String& s) const;
+
+            public:
+                /**
                  *      WriteRaw () only applies to binary (ELEMENT_TYPE=Byte) streams. It allows easily writing POD (plain old data) types
                  *      to the stream.
                  *
