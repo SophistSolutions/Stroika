@@ -68,7 +68,7 @@ namespace Stroika {
                 virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
                 {
                     Memory::Optional<size_t> result = fRealStream_.ReadNonBlocking (intoStart, intoEnd);
-                    if (result) {
+                    if (result and intoStart != nullptr) {
                         fLogInput_.Write (intoStart, intoStart + *result);
                     }
                     return result;
