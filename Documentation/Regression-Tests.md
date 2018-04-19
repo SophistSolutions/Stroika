@@ -41,5 +41,5 @@ MACHINE=StroikaTestVM-Ubuntu1604-1 USE_TEST_BASENAME=Ubuntu1604_x86_64 ./Scripts
    * Checkin results:
 
 ~~~
-    VER=2.0a231 git add Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/*TestResults/PerformanceDump-*-$VER.txt
+    VER=2.0a231 sh -c 'git add Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/*TestResults/PerformanceDump-*-$VER.txt'
 ~~~
