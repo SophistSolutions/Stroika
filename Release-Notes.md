@@ -19,7 +19,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a231">v2.0a231</a><br/>2018-04-19x</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a231">v2.0a231</a><br/>2018-04-19</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a230...v2.0a231</li>
@@ -47,6 +47,7 @@ History
 			<ul>
 				<li>enhanced POSIX ProcessRunner code to capture the trailing bits of the stderr, and include them in the error message; and otherwise reformattied teh default error message</li>
 				<li>tweaks to Execution::DetachedProcessRunner ()  docs on daemonizing, chdir, etc.</li>
+				<li>improved erro message report from ProessRunner for posix</li>
 			</ul>
 		</li>
 		<li>Samples
@@ -100,9 +101,7 @@ History
 				<li>curl makefile tweaks (fix makefile for more use of pkg-config etc)</li>
 			</ul>
 		</li>
-		<li>improved erro message report from ProessRunner for posix</li>
 		<li>Added (experiemntal) concept is_iterator<T>; Concept 'is_callable<> added</li>
-		<li>touchup to ProcessRunner exception output</li>
 		<li>fixed  serious bug with String::FromISOLatin1 ()</li>
 		<li>Tweaks to PIDLoop () - code - exception handling, trace messages, autostart, etc</li>
 		<li>operator bool () for Ptr classes (Stream::Ptr,Thread::Ptr,SharedPtr)</li>
@@ -120,13 +119,12 @@ History
 				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
 				<li>gcc 6.4</li>
 				<li>gcc 7.2</li>
-				<li>clang++3.9.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++}</li>
 				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
 				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
 				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
 				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
 				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
-				<li>ONE INNCUOUS REGTEST REPORT ON WINDOWS - PERFORMANCE - IGNORED</li>
 				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
 				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
 			</ul>
