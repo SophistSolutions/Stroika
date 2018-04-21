@@ -225,6 +225,9 @@ namespace Stroika {
                 using TraitsType = TRAITS;
 
             public:
+                static_assert (Common::IsStrictInOrderComparer<typename TraitsType::InOrderComparerType> (), "TraitsType::InOrderComparerType - comparer not valid IsStrictInOrderComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
+
+            public:
                 /**
                  */
                 TimedCache (Time::DurationSecondsType timeoutInSeconds);
