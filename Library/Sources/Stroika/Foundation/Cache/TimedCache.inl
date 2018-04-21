@@ -77,7 +77,7 @@ namespace Stroika {
                 }
             }
             template <typename KEY, typename VALUE, typename TRAITS>
-            inline Memory::Optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key)
+            Memory::Optional<VALUE> TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 ClearIfNeeded_ ();
@@ -130,13 +130,13 @@ namespace Stroika {
                 }
             }
             template <typename KEY, typename VALUE, typename TRAITS>
-            void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
+            inline void TimedCache<KEY, VALUE, TRAITS>::Remove (typename Configuration::ArgByValueType<KEY> key)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fMap_.erase (key);
             }
             template <typename KEY, typename VALUE, typename TRAITS>
-            void TimedCache<KEY, VALUE, TRAITS>::clear ()
+            inline void TimedCache<KEY, VALUE, TRAITS>::clear ()
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fMap_.clear ();
