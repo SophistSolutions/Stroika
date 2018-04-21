@@ -45,6 +45,7 @@ namespace Stroika {
                         constexpr wchar_t kAuthorization[]                 = L"Authorization";
                         constexpr wchar_t kAllow[]                         = L"Allow";
                         constexpr wchar_t kKeepAlive[]                     = L"Keep-Alive";
+                        constexpr wchar_t kReferrer[]                      = L"Referer"; // intentionally spelled this way - misspelled in the HTTP RFC
                     }
                 }
             }
