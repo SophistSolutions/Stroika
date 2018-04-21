@@ -295,43 +295,6 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     return result;
 }
 
-#if 1
-// DEPRECATED
-/*
- ********************************************************************************
- ********************************* Time::GetTimezone ****************************
- ********************************************************************************
- */
-DISABLE_COMPILER_MSC_WARNING_START (4996)
-DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-String Time::GetTimezone ()
-{
-    return GetTimezone (DateTime::Now ());
-}
-
-String Time::GetTimezone (bool applyDST)
-{
-#if qPlatform_Windows
-    TIME_ZONE_INFORMATION tzInfo{};
-    (void)::GetTimeZoneInformation (&tzInfo);
-    return tzInfo.StandardName;
-#elif qPlatform_POSIX
-    // @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/tzset.html
-    return String::FromSDKString (IsDaylightSavingsTime_ (DateTime::Now ()) ? tzname[1] : tzname[0]);
-#else
-    AssertNotImplemented ();
-    return String ();
-#endif
-}
-
-String Time::GetTimezone (const DateTime& d)
-{
-    return GetTimezone (IsDaylightSavingsTime_ (d));
-}
-DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
-DISABLE_COMPILER_MSC_WARNING_END (4996)
-#endif
-
 /*
  ********************************************************************************
  **************************** IsDaylightSavingsTime_ ****************************
@@ -389,22 +352,7 @@ namespace {
 
 /*
  ********************************************************************************
- *********************** Time::IsDaylightSavingsTime ****************************
- ********************************************************************************
- */
-bool Time::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
-{
-    return IsDaylightSavingsTime_ (date, tod);
-}
-
-bool Time::IsDaylightSavingsTime (const DateTime& d)
-{
-    return IsDaylightSavingsTime_ (d);
-}
-
-/*
- ********************************************************************************
- ********************* GetLocaltimeToGMTOffset_ ****************************
+ ************************** GetLocaltimeToGMTOffset_ ****************************
  ********************************************************************************
  */
 namespace {
@@ -449,19 +397,4 @@ namespace {
     {
         return GetLocaltimeToGMTOffset_ (IsDaylightSavingsTime_ (forTime));
     }
-}
-
-/*
- ********************************************************************************
- ********************* Time::GetLocaltimeToGMTOffset ****************************
- ********************************************************************************
- */
-time_t Time::GetLocaltimeToGMTOffset (bool applyDST)
-{
-    return GetLocaltimeToGMTOffset_ (applyDST);
-}
-
-time_t Time::GetLocaltimeToGMTOffset (const DateTime& forTime)
-{
-    return GetLocaltimeToGMTOffset_ (forTime);
 }
