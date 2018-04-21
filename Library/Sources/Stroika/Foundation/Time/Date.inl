@@ -159,9 +159,6 @@ namespace Stroika {
                 return Date{UINT_MAX - 1};
             }
 
-            [[deprecated ("use Date::min () in version 2.0a227")]] constexpr Date Date_kMin{Date::JulianRepType (Date::kMinJulianRep)};
-            [[deprecated ("use Date::max () in version 2.0a227")]] constexpr Date Date_kMax{Date::JulianRepType (UINT_MAX - 1)};
-
             /*
              ********************************************************************************
              ************************* Time::Date operators *********************************

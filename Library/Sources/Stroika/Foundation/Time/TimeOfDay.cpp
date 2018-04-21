@@ -216,9 +216,6 @@ constexpr TimeOfDay TimeOfDay::kMin;
 constexpr TimeOfDay TimeOfDay::kMax;
 #endif
 
-[[deprecated ("use TimeOfDay::min () in Stroika v2.0a227")]] constexpr TimeOfDay TimeOfDay_kMin;
-[[deprecated ("use TimeOfDay::max () in Stroika v2.0a227")]] constexpr TimeOfDay TimeOfDay_kMax;
-
 TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {

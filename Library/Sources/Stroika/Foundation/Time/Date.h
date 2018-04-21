@@ -101,8 +101,6 @@ namespace Stroika {
                 eFriday    = 5,
                 eSaturday  = 6,
                 eSunday    = 7,
-                //eFirstDayOfWeek = eMonday,    // deprecated - use eSTART
-                //eLastDayOfWeek  = eSunday,// deprecated - use eEND
 
                 Stroika_Define_Enum_Bounds (eMonday, eSunday)
             };
@@ -124,8 +122,6 @@ namespace Stroika {
                 eOctober          = 10,
                 eNovember         = 11,
                 eDecember         = 12,
-                //eFirstMonthOfYear = eJanuary,// deprecated - use eSTART
-                //eLastMonthOfYear  = eDecember,// deprecated - use eEND
 
                 Stroika_Define_Enum_Bounds (eJanuary, eDecember)
             };
@@ -165,8 +161,6 @@ namespace Stroika {
                 e29,
                 e30,
                 e31,
-                //eFirstDayOfMonth = 1,// deprecated - use eSTART
-                // eLastDayOfMonth  = 31,// deprecated - use e
 
                 Stroika_Define_Enum_Bounds (e1, e31)
             };

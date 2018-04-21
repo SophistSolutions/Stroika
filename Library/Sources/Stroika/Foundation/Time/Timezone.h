@@ -77,11 +77,6 @@ namespace Stroika {
              */
             TimeZoneInformationType GetCurrentLocaleTimezoneInfo ();
 
-            [[deprecated ("use GetCurrentLocaleTimezoneInfo () in Stroika v2.0a227")]] inline TimeZoneInformationType GetTimezoneInfo ()
-            {
-                return GetCurrentLocaleTimezoneInfo ();
-            }
-
             /**
              *  The Timezone class represents what one would think of as a timezone - mostly.
              *
@@ -219,15 +214,6 @@ namespace Stroika {
                 };
             }
             static_assert (sizeof (Timezone) <= sizeof (_HACK_2_TEST_4_static_assert_), "Timezone can/should be packed as much as practical since we could use a single uint16_ probably"); // make sure full struct as small as possible
-
-            [[deprecated ("use Timezone::Unknown () in Stroika v2.0a227")]] constexpr Memory::Optional<Timezone>                                                   Timezone_kUnknown{};
-            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fStandardTime.fNameor fDaylightSavingsTime if currentlt DST in Stroika v2.0a227")]] String GetTimezone ();
-            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo (). {fDaylightSavingsTime OR fStandardTime} in Stroika v2.0a227")]] String                   GetTimezone (bool applyDST);
-            [[deprecated ("use Timezone::GetCurrentLocaleTimezoneInfo ()fDaylightSavingsTime OR fStandardTime in Stroika v2.0a227")]] String                       GetTimezone (const DateTime& d);
-            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime () in Stroika v2.0a227")]] bool                                                        IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
-            [[deprecated ("use Timezone::LocalTime ().IsDaylightSavingsTime () in Stroika v2.0a227")]] bool                                                        IsDaylightSavingsTime (const DateTime& d);
-            [[deprecated ("use - Timezone::LocalTime ().GetOffset () in Stroika v2.0a227")]] time_t                                                                GetLocaltimeToGMTOffset (bool applyDST);
-            [[deprecated ("use - Timezone::LocalTime ().GetOffset () in Stroika v2.0a227")]] time_t                                                                GetLocaltimeToGMTOffset (const DateTime& forTime);
         }
     }
 }
