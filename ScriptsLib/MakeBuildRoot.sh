@@ -18,10 +18,10 @@ TARGET_BUILDS=$ROOT/Builds
 TARGET_CONFIGURATIONFILES=$ROOT/ConfigurationFiles
 
 mkdir -p $TARGET_INTERMEDIATEFILES
-ln -s $ROOT/IntermediateFiles IntermediateFiles
+sh ScriptsLib/MakeDirectorySymolicLink.sh $ROOT/IntermediateFiles IntermediateFiles
 
 mkdir -p $TARGET_BUILDS
-ln -s $ROOT/Builds Builds
+sh ScriptsLib/MakeDirectorySymolicLink.sh $ROOT/Builds Builds
 
 mkdir -p $TARGET_CONFIGURATIONFILES
-ln -s $ROOT/ConfigurationFiles ConfigurationFiles
+sh ScriptsLib/MakeDirectorySymolicLink.sh $ROOT/ConfigurationFiles ConfigurationFiles

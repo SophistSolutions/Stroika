@@ -131,7 +131,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptsLib", "ScriptsLib", 
 		..\..\ScriptsLib\PrintProgressLine.sh = ..\..\ScriptsLib\PrintProgressLine.sh
 		..\..\ScriptsLib\RegressionTests.sh = ..\..\ScriptsLib\RegressionTests.sh
 		..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl = ..\..\ScriptsLib\RunArgumentsWithCommonBuildVars.pl
-		..\..\ScriptsLib\RunMKLinkViaUAC.bat = ..\..\ScriptsLib\RunMKLinkViaUAC.bat
 		..\..\ScriptsLib\RunPerformanceRegressionTests.sh = ..\..\ScriptsLib\RunPerformanceRegressionTests.sh
 		..\..\ScriptsLib\RunRemoteRegressionTests.sh = ..\..\ScriptsLib\RunRemoteRegressionTests.sh
 		..\..\ScriptsLib\StringUtils.pl = ..\..\ScriptsLib\StringUtils.pl
