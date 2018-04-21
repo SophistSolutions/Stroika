@@ -34,7 +34,7 @@ namespace Stroika {
                 using Containers::Mapping;
 
                 /**
-                 * Parse will throw an exception if it encouters any errors parsing.
+                 * Parse will throw an exception if it encounters any errors parsing.
                  *
                  *  @see ObjectReaderRegistry for examples of one way to use this
                  */

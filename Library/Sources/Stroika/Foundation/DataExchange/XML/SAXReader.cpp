@@ -133,33 +133,6 @@ namespace {
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-namespace {
-    //tmphack - move to headers eventually
-
-    class ValidationFailed {
-    public:
-        ValidationFailed (const String& reason, unsigned int lineNum, unsigned int linePos, unsigned int filePos);
-
-    public:
-        String       fReason;
-        unsigned int fLineNum;
-        unsigned int fLinePos;
-        unsigned int fFilePos;
-    };
-
-    /*
-     ********************************************************************************
-     ****************************** ValidationFailed ********************************
-     ********************************************************************************
-     */
-    ValidationFailed::ValidationFailed (const String& reason, unsigned int lineNum, unsigned int linePos, unsigned int filePos)
-        : fReason (reason)
-        , fLineNum (lineNum)
-        , fLinePos (linePos)
-        , fFilePos (filePos)
-    {
-    }
-}
 
 #if qHasFeature_Xerces
 namespace {
@@ -252,7 +225,7 @@ public:
     virtual void error (
         const unsigned int errCode, const XMLCh* const errDomain, const ErrTypes type, const XMLCh* const errorText, const XMLCh* const systemId, const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
     {
-        Execution::Throw (ValidationFailed (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
+        Execution::Throw (BadFormatException (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
     }
     virtual void resetErrors () override
     {
@@ -266,13 +239,11 @@ public:
     }
     virtual void error (const SAXParseException& exc) override
     {
-        AssertNotImplemented ();
-        //Execution::Throw (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
+       Execution::Throw (BadFormatException (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
     virtual void fatalError (const SAXParseException& exc) override
     {
-        AssertNotImplemented ();
-        //Execution::Throw (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
+        Execution::Throw (BadFormatException (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
 };
 static MyErrorReproter_ sMyErrorReproter_;
