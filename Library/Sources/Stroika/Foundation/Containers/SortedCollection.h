@@ -96,20 +96,20 @@ namespace Stroika {
                  * \req IsStrictInOrderComparer<INORDER_COMPARER> () - for constructors with that type parameter
                  */
                 SortedCollection ();
-                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>>
                 explicit SortedCollection (INORDER_COMPARER&& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                 SortedCollection (const SortedCollection& src) noexcept = default;
                 SortedCollection (SortedCollection&& src) noexcept      = default;
                 SortedCollection (const std::initializer_list<T>& src);
-                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>>
                 SortedCollection (INORDER_COMPARER&& inOrderComparer, const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedCollection<T>*>::value>::type>
                 SortedCollection (const CONTAINER_OF_ADDABLE& src);
-                template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedCollection<T>*>::value>::type>
+                template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedCollection<T>*>::value>::type>
                 SortedCollection (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
                 SortedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-                template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<INORDER_COMPARER> ()>>
+                template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>>
                 SortedCollection (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:

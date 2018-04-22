@@ -43,14 +43,14 @@ namespace Stroika {
             constexpr int ThreeWayCompareNormalizer (TYPE lhs, TYPE rhs);
 
             /**
-             *  \brief return true if argument is a function like object (callable) taking 2 arguments and
+             *  \brief return true if argument is a function like object (callable) taking 2 arguments (FUNCTOR_ARG) and
              *         returning a bool or integer.
              *
-             *  \note - the current implementation only checks if the argument is callable
+             *  \note - this just checks if its a callable (not necessarily valid argument to ExtractComparisonTraits). Its just used to filter which templates get into the overload set.
              */
-            template <typename FUNCTOR>
+            template <typename FUNCTOR_ARG, typename FUNCTOR>
             constexpr bool IsPotentiallyComparerRelation ();
-            template <typename FUNCTOR>
+            template <typename FUNCTOR_ARG, typename FUNCTOR>
             constexpr bool IsPotentiallyComparerRelation (const FUNCTOR&);
 
             /**

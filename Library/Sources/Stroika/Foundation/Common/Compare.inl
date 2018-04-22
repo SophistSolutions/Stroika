@@ -215,19 +215,30 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             **************** IsPotentiallyComparerRelation<FUNCTOR> ************************
+             ****************** IsPotentiallyComparerRelation<FUNCTOR> **********************
              ********************************************************************************
              */
-            template <typename FUNCTOR>
+            namespace PRIVATE_ {
+                template <typename FUNCTOR_ARG, typename FUNCTOR, typename RESULT = result_of_t<FUNCTOR (FUNCTOR_ARG, FUNCTOR_ARG)>>
+                constexpr bool IsPotentiallyComparerRelation_Helper_ ()
+                {
+                    return Configuration::is_callable<FUNCTOR>::value and is_convertible<RESULT, bool>::value;
+                }
+                template <typename FUNCTOR_ARG, typename FUNCTOR>
+                constexpr bool IsPotentiallyComparerRelation_Helper_ (...)
+                {
+                    return false;
+                }
+            }
+            template <typename FUNCTOR_ARG, typename FUNCTOR>
             constexpr bool IsPotentiallyComparerRelation ()
             {
-                // @todo add check that callable with 2 args T,T and return value is int or bool (maybe just convertable to int)
-                return Configuration::is_callable<FUNCTOR>::value;
+                return PRIVATE_::IsPotentiallyComparerRelation_Helper_<FUNCTOR_ARG, FUNCTOR> ();
             }
-            template <typename FUNCTOR>
+            template <typename FUNCTOR_ARG, typename FUNCTOR>
             constexpr bool IsPotentiallyComparerRelation (const FUNCTOR&)
             {
-                return IsPotentiallyComparerRelation<FUNCTOR> ();
+                return IsPotentiallyComparerRelation<FUNCTOR_ARG, FUNCTOR> ();
             }
 
             /*

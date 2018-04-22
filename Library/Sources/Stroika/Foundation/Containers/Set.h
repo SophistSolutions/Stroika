@@ -151,20 +151,20 @@ namespace Stroika {
                  *      \endcode
                  */
                 Set ();
-                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>>
                 explicit Set (EQUALS_COMPARER&& equalsComparer, ENABLE_IF* = nullptr);
                 Set (const Set& src) noexcept = default;
                 Set (Set&& src) noexcept      = default;
                 Set (const initializer_list<T>& src);
-                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> ()>>
+                template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>>
                 Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Set<T>*>::value>>
                 Set (const CONTAINER_OF_ADDABLE& src);
-                template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Set<T>*>::value>>
+                template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Set<T>*>::value>>
                 Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
                 Set (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-                template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
+                template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
                 Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:

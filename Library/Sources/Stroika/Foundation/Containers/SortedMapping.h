@@ -79,23 +79,23 @@ namespace Stroika {
                  *  The underlying data structure of the Mapping is defined by @see Factory::SortedMapping_Factory<>
                  */
                 SortedMapping ();
-                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>
+                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>>
                 explicit SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, ENABLE_IF* = nullptr);
                 SortedMapping (const SortedMapping& src) noexcept = default;
                 SortedMapping (SortedMapping&& src) noexcept      = default;
                 SortedMapping (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>
+                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>>
                 SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 SortedMapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> ()>>
+                template <typename KEY_INORDER_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>>
                 SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
                 template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<(Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                 SortedMapping (const CONTAINER_OF_ADDABLE& src);
-                template <typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> () and Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> () and (Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+                template <typename KEY_INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and (Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
                 SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src);
                 template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
                 SortedMapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-                template <typename KEY_INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_INORDER_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
+                template <typename KEY_INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
                 SortedMapping (KEY_INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
 
             protected:

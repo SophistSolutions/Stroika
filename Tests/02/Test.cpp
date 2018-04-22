@@ -1184,6 +1184,7 @@ namespace {
 namespace {
     void Test45_Tokenize_ ()
     {
+        using Containers::Set;
         {
             String           t{L"ABC DEF G"};
             Sequence<String> tt{t.Tokenize ()};

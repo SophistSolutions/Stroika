@@ -47,7 +47,7 @@ namespace {
 
 namespace {
     namespace ExampleCTORS_Test_2_ {
-        void DoTest ()
+        void DoTest_examples_from_docs_ ()
         {
             // From Set<> CTOR docs
             Collection<int>  c;
@@ -64,6 +64,25 @@ namespace {
             Set<int> s9{1, 2, 3};
             VerifyTestResult (s9.size () == 3);
             Set<int> s10{Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c};
+        }
+
+        void TEstCTORFromOtherContainer_ ()
+        {
+            using Characters::Character;
+            using Characters::String;
+            Sequence<String> x;
+            Set<String>      cx{x};
+            Set<String>      cx1  = Set<String> (x);
+            Set<String>      tmp5 = Set<String> (String ().Trim ().Tokenize (Set<Character>{';', ' '}));
+            auto             cccc = String ().Trim ().Tokenize ();
+            Set<String>      tmp2 = Set<String> (cccc);
+            Set<String>      tmp3 = Set<String> (Sequence<String>{});
+            Set<String>      tmp4 = Set<String> (String ().Trim ().Tokenize ());
+        }
+        void DoTest ()
+        {
+            DoTest_examples_from_docs_ ();
+            TEstCTORFromOtherContainer_ ();
         }
     }
 }

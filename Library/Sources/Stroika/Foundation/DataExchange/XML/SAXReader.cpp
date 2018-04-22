@@ -133,7 +133,6 @@ namespace {
 XERCES_CPP_NAMESPACE_USE
 #endif
 
-
 #if qHasFeature_Xerces
 namespace {
     /*
@@ -239,7 +238,7 @@ public:
     }
     virtual void error (const SAXParseException& exc) override
     {
-       Execution::Throw (BadFormatException (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
+        Execution::Throw (BadFormatException (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
     virtual void fatalError (const SAXParseException& exc) override
     {
