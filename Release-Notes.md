@@ -16,6 +16,48 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a232">v2.0a232</a><br/>2018-04-23xxx</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a231...v2.0a232</li>
+		<li>ln -s / MakeDirectorySymbolicLink.sh
+			<ul>
+				<li>ScriptsLib/MakeDirectorySymbolicLink.sh  reinstate, and fixed, and used again in MakeBuildRoot</li>
+				<li>lose obsolete ScriptsLib\RunMKLinkViaUAC.bat,</li>
+				<li>re-order slashes in ScriptsLib/MakeDirectorySymbolicLink.sh - so expects unix order slashes</li>
+			</ul>
+		</li>
+		<li>Fixed TImedCache use of new INORDERCOMPARER code</li>
+		<li>lose stuff deprecated in 2.0a227: Timezone_kUnknown, GetTimezone, IsDaylightSavingsTime, GetLocaltimeToGMTOffset, TimeOfDay_kMin, TimeOfDay_kMax, etc</li>
+		<li>Fixd SAXParser on parse errors, to throw BadFormatException (instead of assertnotreached)</li>
+		<li>There was a bug in the last release with confusion about overloads for Set constructor - constructor from other container versus comparer - so fixed IsPotentiallyComparerRelation () to be more restrictive</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a232.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1710_x86_64,MacOS_XCode9.2}-2.0a232-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.2 (apple clang 9.2)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++}</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
 
 
 <tr>
