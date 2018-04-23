@@ -28,7 +28,8 @@ MACHINE=StroikaTestVM-Ubuntu1710-1 USE_TEST_BASENAME=Ubuntu1710_x86_64 DO_ONLY_D
        PerformanceDump-MacOS_XCode9.2-$VER.txt REGRESSION-TESTS-MacOS_XCode9.2-$VER-OUT.txt
      
 ~~~
-       MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.2 ./ScriptsLib/RunRemoteRegressionTests.sh
+MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.2 \
+    ./ScriptsLib/RunRemoteRegressionTests.sh
 ~~~
 
      * $TEST_TARGET=Windows_VS2k17 
@@ -38,15 +39,15 @@ MACHINE=StroikaTestVM-Ubuntu1710-1 USE_TEST_BASENAME=Ubuntu1710_x86_64 DO_ONLY_D
 {on windows bash shell run)
 ~~~
 USE_TEST_BASENAME=Windows_VS2k17 \
-      ./ScriptsLib/RegressionTests.sh
+    ./ScriptsLib/RegressionTests.sh
 
 USE_TEST_BASENAME=Windows_VS2k17 \
-      ./ScriptsLib/RunPerformanceRegressionTests.sh
+    ./ScriptsLib/RunPerformanceRegressionTests.sh
 ~~~
 
    * Checkin results:
 
 ~~~
-    VER=2.0a231 sh -c \
-        'git add Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/*TestResults/PerformanceDump-*-$VER.txt'
+VER=2.0a231 sh -c \
+    'git add Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/*TestResults/PerformanceDump-*-$VER.txt'
 ~~~
