@@ -17,7 +17,7 @@ History
 
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a232">v2.0a232</a><br/>2018-04-23xxx</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a232">v2.0a232</a><br/>2018-04-23</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a231...v2.0a232</li>
