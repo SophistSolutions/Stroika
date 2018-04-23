@@ -40,7 +40,8 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            inline [[noreturn]] void Throw (const T& e2Throw) {
+            [[noreturn]] inline void Throw (const T& e2Throw)
+            {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
                 DbgTrace ("Throwing exception: %s from %s", Private_::Except2String_ (e2Throw).c_str (), Private_::GetBT_s ().c_str ());
@@ -49,22 +50,26 @@ namespace Stroika {
 #endif
 #endif
                 throw e2Throw;
-            } template <typename T>
-                   inline [[noreturn]] void Throw (const T& e2Throw, const char* traceMsg) {
-                       DbgTrace ("%s", traceMsg);
-                       Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
-                   } template <typename T>
-                          inline [[noreturn]] void Throw (const T& e2Throw, const wchar_t* traceMsg) {
-                              DbgTrace (L"%s", traceMsg);
-                              Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
-                          }
+            }
+            template <typename T>
+            [[noreturn]] inline void Throw (const T& e2Throw, const char* traceMsg)
+            {
+                DbgTrace ("%s", traceMsg);
+                Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
+            }
+            template <typename T>
+            [[noreturn]] inline void Throw (const T& e2Throw, const wchar_t* traceMsg)
+            {
+                DbgTrace (L"%s", traceMsg);
+                Throw (e2Throw); // important todo this way to get its template specialization (even though the cost is an extra trace message)
+            }
 
-                                     /*
+            /*
              ********************************************************************************
              ***************************** Execution::ReThrow *******************************
              ********************************************************************************
              */
-                                     [[noreturn]] inline void ReThrow ()
+            [[noreturn]] inline void ReThrow ()
             {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
