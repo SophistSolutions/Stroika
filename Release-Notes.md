@@ -28,7 +28,8 @@ History
 				<li>re-order slashes in ScriptsLib/MakeDirectorySymbolicLink.sh - so expects unix order slashes</li>
 			</ul>
 		</li>
-		<li>Fixed TImedCache use of new INORDERCOMPARER code</li>
+		<li>WebServer ConnectionMgr - kDefault_MaxConnections{10} - temporarily - until we can fix https://stroika.atlassian.net/browse/STK-638</li>
+		<li>Fixed TimedCache use of new INORDERCOMPARER code</li>
 		<li>lose stuff deprecated in 2.0a227: Timezone_kUnknown, GetTimezone, IsDaylightSavingsTime, GetLocaltimeToGMTOffset, TimeOfDay_kMin, TimeOfDay_kMax, etc</li>
 		<li>Fixd SAXParser on parse errors, to throw BadFormatException (instead of assertnotreached)</li>
 		<li>There was a bug in the last release with confusion about overloads for Set constructor - constructor from other container versus comparer - so fixed IsPotentiallyComparerRelation () to be more restrictive</li>

@@ -330,7 +330,7 @@ namespace Stroika {
                 }
 #endif
 
-                static constexpr unsigned int              kDefault_MaxConnections{1};
+                static constexpr unsigned int              kDefault_MaxConnections{10}; // temporarily - until we can fix https://stroika.atlassian.net/browse/STK-638
                 static constexpr Socket::BindFlags         kDefault_BindFlags{};
                 static const Optional<String>              kDefault_ServerHeader;
                 static constexpr CORSModeSupport           kDefault_CORSModeSupport{CORSModeSupport::eDEFAULT};
