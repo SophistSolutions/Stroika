@@ -517,6 +517,10 @@
     <None Include="..\..\Makefile" />
     <None Include="..\..\ReadMe.md" />
     <None Include="..\..\sample-html-folder\index.html" />
+    <None Include="..\..\sample-html-folder\js\0.js" />
+    <None Include="..\..\sample-html-folder\js\1.js" />
+    <None Include="..\..\sample-html-folder\js\2.js" />
+    <None Include="..\..\sample-html-folder\js\3.js" />
     <None Include="..\..\Todo.md" />
   </ItemGroup>
   <ItemGroup>
