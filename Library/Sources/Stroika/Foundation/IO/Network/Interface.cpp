@@ -360,7 +360,7 @@ Optional<Interface> Network::GetInterfaceById (const String& internalInterfaceID
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Network::GetInterfaceById");
 #endif
-    // @todo - a much more efficent implemenation - maybe good enuf to use caller staleness cache with a few seconds staleness
+    // @todo - a much more efficent implementation - maybe good enuf to use caller staleness cache with a few seconds staleness
     for (Interface i : Network::GetInterfaces ()) {
         if (i.fInternalInterfaceID == internalInterfaceID) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

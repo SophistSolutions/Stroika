@@ -37,7 +37,7 @@
  *  Notes:
  *
  *  Warning:
- *      This implemenation prohibits use of internal pointers within T
+ *      This implementation prohibits use of internal pointers within T
  *  since we sometimes copy the contents of the array without excplicitly using
  *  the X(X&) and T::operator= functions.
  *
@@ -62,7 +62,7 @@
  *  fCurrent point to the current item, and in the Next() code, when
  *  going backwards, reset fCurrent to _fEnd - bizzare as this may seem
  *  then the test code can be shared among the forwards and backwards
- *  implemenations, all the patching code can be shared, with only this
+ *  implementations, all the patching code can be shared, with only this
  *  one minor check. Other potential choices are presented in the TODO
  *  below.
  *
@@ -81,7 +81,7 @@
  *      @todo   For each class (Array/Array_Patchikng, and all iteraotrs, add explicit
  *              declares about COPY CTORs etc. NOT safe (generally) to use default (esp for patching iterators)
  *
- *      @todo   Alot of implemenation uses 'last' paradim. Switch to modern C++ / STL begin/end style.
+ *      @todo   Alot of implementation uses 'last' paradim. Switch to modern C++ / STL begin/end style.
  *
  *      @todo   ADD DATA MEMBERS TO ARRAYITERATORBASE WHCI ALLOW MANIP OF NEEDED STUFF IN ARRAY
  *              SO NOT COPIED!!! - like fLength, fPtr etc. THEN - we can do stuff safely

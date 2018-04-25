@@ -260,7 +260,7 @@ namespace Stroika {
 
                 /**
                  *      ForwardIterator<T> allows you to iterate over a DoublyLinkedList<T>. Its API
-                 *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
+                 *  is designed to make easy implementations of subclasses of IteratorRep<T>.
                  *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListIterator_Patch<T>
                  *  for that.
                  */

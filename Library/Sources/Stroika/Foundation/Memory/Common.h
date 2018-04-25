@@ -73,7 +73,7 @@ namespace Stroika {
             namespace Private {
                 /**
                  *  Sadly, using pragmas to disable warnings didn't work with VC11. VC_BWA_std_copy
-                 *  provides a little shared code for a worakround - implemenation of std::copy that - while probably
+                 *  provides a little shared code for a worakround - implementation of std::copy that - while probably
                  *  inferior to the default - at least isn't much inferior, and doesn't give those
                  *  annoying warnings.
                  */

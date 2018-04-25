@@ -1084,7 +1084,7 @@ namespace Stroika {
                     GetTextStore ().Replace (0, 0, initialText.c_str (), initialText.length ());
                 }
 
-                // In case the imager is a TextInteractor - provide dummy implemenations...
+                // In case the imager is a TextInteractor - provide dummy implementations...
             public:
                 using UpdateMode = typename IMAGER::UpdateMode;
                 virtual bool QueryInputKeyStrokesPending () const override { return false; };
@@ -1520,7 +1520,7 @@ namespace Stroika {
             @DESCRIPTION:   <p>Cause the given region of the edit window to be updated. The given 'windowRectArea'
                         is given in the same coordinates as the window rect
                         specified by @'TextImager::SetWindowRect': it is not relative to that rectangle.</p>
-                            <p>This simply calls @'TextInteractor::RefreshWindowRect_' to delegate its implemenation.</p>
+                            <p>This simply calls @'TextInteractor::RefreshWindowRect_' to delegate its implementation.</p>
             */
             inline void TextInteractor::RefreshWindowRect (const Led_Rect& windowRectArea, UpdateMode updateMode) const
             {

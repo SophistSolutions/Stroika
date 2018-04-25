@@ -229,7 +229,7 @@ namespace Stroika {
 
             /*
             @METHOD:        MultiRowTextImager::GetMarkerPositionOfStartOfWindow
-            @DESCRIPTION:   <p>Efficient implemenation of @'TextImager::GetMarkerPositionOfStartOfWindow'</p>
+            @DESCRIPTION:   <p>Efficient implementation of @'TextImager::GetMarkerPositionOfStartOfWindow'</p>
             */
             size_t MultiRowTextImager::GetMarkerPositionOfStartOfWindow () const
             {
@@ -238,7 +238,7 @@ namespace Stroika {
 
             /*
             @METHOD:        MultiRowTextImager::GetMarkerPositionOfEndOfWindow
-            @DESCRIPTION:   <p>Efficient implemenation of @'TextImager::GetMarkerPositionOfEndOfWindow'</p>
+            @DESCRIPTION:   <p>Efficient implementation of @'TextImager::GetMarkerPositionOfEndOfWindow'</p>
             */
             size_t MultiRowTextImager::GetMarkerPositionOfEndOfWindow () const
             {

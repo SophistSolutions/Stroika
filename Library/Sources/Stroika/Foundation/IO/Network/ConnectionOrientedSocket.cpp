@@ -156,7 +156,7 @@ namespace {
 #elif qPlatform_Windows
                 /*
                  *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
-                 *  file descriptors in windows implemenation.
+                 *  file descriptors in windows implementation.
                  *      WONT WORK:
                  *          int       n   =   ::_write (fSD_, start, end - start);
                  */

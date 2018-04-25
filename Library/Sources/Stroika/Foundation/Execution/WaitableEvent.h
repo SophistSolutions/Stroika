@@ -27,7 +27,7 @@
  *              NON-AUTO-RESET waitable events
  *
  *      @todo   Consider doing an #if qPlatform_Windows implemeantion using Windows 'CreateEvent'. I had this in Stroika
- *              circa 2013-06-01, and could just grab that implemenation (really pretty simple).
+ *              circa 2013-06-01, and could just grab that implementation (really pretty simple).
  *
  *              But unless there is a performance or other such issue, it maybe better to stick to a single portable
  *              implementation.

@@ -5330,14 +5330,14 @@ StyledTextIOWriter::SrcStream* WordProcessorTextIOSrcStream::TableIOMapper::Make
 
 size_t WordProcessorTextIOSrcStream::TableIOMapper::GetOffsetEnd () const
 {
-    // The current implemenation of tables uses a single embedding object with a single sentinal character
+    // The current implementation of tables uses a single embedding object with a single sentinal character
     // for the entire table (no matter how many rows)
     return 1;
 }
 
 Led_TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellMarginsForRow (size_t /*row*/) const
 {
-    // Right now - our table implemenation just has ONE value for the entire table
+    // Right now - our table implementation just has ONE value for the entire table
     Led_TWIPS_Rect cellMargins = Led_TWIPS_Rect (Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0), Led_TWIPS (0));
     fRealTable.GetDefaultCellMargins (&cellMargins.top, &cellMargins.left, &cellMargins.bottom, &cellMargins.right);
     return cellMargins;
@@ -5345,7 +5345,7 @@ Led_TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellMargin
 
 Led_TWIPS_Rect WordProcessorTextIOSrcStream::TableIOMapper::GetDefaultCellSpacingForRow (size_t /*row*/) const
 {
-    // Right now - our table implemenation just has ONE value for the entire table
+    // Right now - our table implementation just has ONE value for the entire table
     Led_TWIPS cellSpacing = fRealTable.GetCellSpacing ();
     return Led_TWIPS_Rect (cellSpacing, cellSpacing, Led_TWIPS (0), Led_TWIPS (0)); // carefull - TLBR sb cellSpacing and last 2 args to Led_TWIPS_Rect::CTOR are height/width!
 }

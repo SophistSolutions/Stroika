@@ -11,7 +11,7 @@ TODO (Foundation::Containers)
 			cotnainer. Especially code to track iterators.
 
 			Try writing  a GENERIC helper layer - that can be used to share code among these
-			various Patching implemenations.
+			various Patching implementations.
 
 			Do that BEFORE trying to incorporate SkipLists and other sterl stuff, as it will make doing
 			so easier.

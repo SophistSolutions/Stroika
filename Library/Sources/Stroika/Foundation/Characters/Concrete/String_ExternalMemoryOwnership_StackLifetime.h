@@ -75,7 +75,7 @@ namespace Stroika {
                  *  Note that the memory passed in must be READ/WRITE - and may be modified by the String_ExternalMemoryOwnership_StackLifetime ()!
                  *
                  *  Strings constructed with this String_ExternalMemoryOwnership_StackLifetime maybe treated like normal strings - passed anywhere, and even modified via the
-                 *  String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
+                 *  String APIs. However, the underlying implementation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
                  *  and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
                  *
                  *  This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
@@ -102,7 +102,7 @@ namespace Stroika {
                  *  based memory maybe more efficient than the previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
                  *
                  *      <<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
-                 *          real optimized implemenation >>
+                 *          real optimized implementation >>
                  *
                  *
                  *  TODO::::COOPY SOME OF THIS - CLEANUP THESE DCOS

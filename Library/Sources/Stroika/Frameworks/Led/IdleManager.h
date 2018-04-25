@@ -8,7 +8,7 @@
 
 /*
 @MODULE:    IdleManager
-@DESCRIPTION:   <p>Note that this implemenation is for SYNCRONOUS, and not THREADED idle time
+@DESCRIPTION:   <p>Note that this implementation is for SYNCRONOUS, and not THREADED idle time
             processing.
             </p>
 

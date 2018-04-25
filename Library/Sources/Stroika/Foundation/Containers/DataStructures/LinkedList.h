@@ -244,7 +244,7 @@ namespace Stroika {
 
                 /*
                  *      ForwardIterator<T> allows you to iterate over a LinkedList<T,TRAITS>. Its API
-                 *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
+                 *  is designed to make easy implementations of subclasses of IteratorRep<T>.
                  *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
                  *  for that.
                  */

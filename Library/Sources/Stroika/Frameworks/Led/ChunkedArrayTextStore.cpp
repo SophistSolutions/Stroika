@@ -1231,7 +1231,7 @@ void ChunkedArrayTextStore::RemoveMarkers (Marker* const markerArray[], size_t m
     Assert (markerCount == 0 or markerArray != NULL);
 
     /*
-     *  This is a fairly primitive implemenation, and I can easily imagine doing much better.
+     *  This is a fairly primitive implementation, and I can easily imagine doing much better.
      *  But this is so simple, and runs at least 20x faster than the old code (for 500K delete
      *  all text test case). It seems fast enough for now - LGP 950416.
      */

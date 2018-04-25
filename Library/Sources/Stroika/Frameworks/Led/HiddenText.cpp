@@ -530,7 +530,7 @@ void UniformHidableTextMarkerOwner::MakeRegionHidable (size_t from, size_t to)
 {
     Require (from <= to);
 
-    //Not so great implemenation - could look at particular objects created - and make sure THEY have the hidden bit set...
+    //Not so great implementation - could look at particular objects created - and make sure THEY have the hidden bit set...
     inherited::MakeRegionHidable (from, to);
     if (fHidden) {
         inherited::HideAll ();

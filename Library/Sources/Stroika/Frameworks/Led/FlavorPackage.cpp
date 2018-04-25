@@ -447,7 +447,7 @@ ReadWriteMemBufferPackage::ReadWriteMemBufferPackage ()
     , WriterFlavorPackage ()
     , fPackages ()
 {
-    // Tuned to the MWERKS CWPro1 STL implemenation. If you don't call vector::reserve () it uses 361 (pagesize/size(T) apx)
+    // Tuned to the MWERKS CWPro1 STL implementation. If you don't call vector::reserve () it uses 361 (pagesize/size(T) apx)
     // which means this is HUGE. And since we keep several of these (one per char typed for undo), it helps mem usage
     // alot to keep this down.
     //

@@ -8145,7 +8145,7 @@ arguments, including this)
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a39">v2.0a39</a><br/>2014-08-06</td>
 <td>
 <ul>
-	<li>Simple (POSIX ONLY for now) implemenation of Network Interfaces, and enumerator to list interfaces (and address bindings and status)</li>
+	<li>Simple (POSIX ONLY for now) implementation of Network Interfaces, and enumerator to list interfaces (and address bindings and status)</li>
 </ul>
 </td>
 </tr>

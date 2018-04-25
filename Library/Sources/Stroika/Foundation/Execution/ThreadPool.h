@@ -38,7 +38,7 @@
  *      @todo   Current approach to aborting a running task is to abort the thread. But the current
  *              thread code doesn't support restarting a thread once its been aborted. We PROBABLY
  *              should correct that at some point - and allow a thread to undo its abort-in-progress.
- *              However - no need immediately. Instead - the current ThreadPool implemenation simply
+ *              However - no need immediately. Instead - the current ThreadPool implementation simply
  *              drops that thread and builds a new one. Performacne overhead yes - but only for the
  *              likely rare case of aborting a running task.
  *

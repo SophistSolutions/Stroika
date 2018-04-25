@@ -21,7 +21,7 @@ TODO (Foundation::Containers::Concrete)
 
 
 	o	MAJOR and most important thing todo is copy forward Stroika 1.0 Archive concrete
-		implemenations and update them for Stroika 2.0
+		implementations and update them for Stroika 2.0
 
 	o	Better documentation of THREAINDG support/control
 
