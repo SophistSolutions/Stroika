@@ -135,7 +135,9 @@ sub	ReadConfiguration_
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_GLIBCXX_DEBUG"));
 	$CPPSTD_VERSION_FLAG = GetConfigurationParameter($activeConfiguration, "CPPSTD_VERSION_FLAG");
 	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguration, "CWARNING_FLAGS");
-
+	$INCLUDES_PATH = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH"));
+	$LIBS_PATH = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "LIBS_PATH"));
+	$LIB_DEPENDENCIES = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "LIB_DEPENDENCIES"));
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_TRACE2FILE"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguration, "OptimizerFlag");
 	if (not (defined $COPTIMIZE_FLAGS)) {
@@ -357,7 +359,6 @@ sub WriteStroikaConfigCHeader
 		print (OUT "\n");
 	}
 
-
 	print (OUT "\n");
 	print (OUT "//Configure Command Line Arguments (-c-define)\n");
 	foreach $var (@useExtraCDefines)
@@ -482,6 +483,26 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "$var\n");
 	}
 	
+
+	print (OUT "INCLUDES_PATH_COMPILER_DIRECTIVES=");
+	for my $i (split / /, $INCLUDES_PATH) {
+		print (OUT "-I$i ");
+	}
+	print (OUT "\n");
+	print (OUT "LIBS_PATH_DIRECTIVES=");
+	for my $l (split / /, $INCLUDES_PATH) {
+		print (OUT "-L$l ");
+	}
+	print (OUT "\n");
+	print (OUT "LIB_DEPENDENCIES=$LIB_DEPENDENCIES");
+	print (OUT "\n");
+
+	print (OUT "\n\n");
+
+
+
+
+
 	
 	print (OUT "\n");
 	print (OUT "STATIC_LINK_GCCRUNTIME=	$STATIC_LINK_GCCRUNTIME\n");

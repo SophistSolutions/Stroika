@@ -107,6 +107,9 @@ my $EXTRA_LINKER_ARGS = "";
 my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
+my $INCLUDES_PATH = "";			# space separated list
+my $LIBS_PATH = "";				# space separated list
+my $LIB_DEPENDENCIES  = "";		# space separated list
 
 
 
@@ -153,6 +156,12 @@ sub	DoHelp_
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
         print("	    --append-extra-linker-args {ARG}                /* Appends ARG to 'extra linker */\n");
         print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
+        print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (space separated) */\n");
+        print("	    --append-2-includes-path {ARG}                  /* Appends ARG to 'INCLUDES_PATH */\n");
+        print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (space separated) */\n");
+        print("	    --append-2-libs-path {ARG}                      /* Appends ARG to 'LIBS_PATH */\n");
+        print("	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */\n");
+        print("	    --append-2-lib-dependencies {ARG}               /* Appends ARG to 'LIB_DEPENDENCIES */\n");
         print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
         print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
         print("	    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */\n");
@@ -781,6 +790,45 @@ sub	ParseCommandLine_Remaining_
 			}
 			$EXTRA_LINKER_ARGS .= $var;
 		}
+		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
+			$i++;
+			$var = $ARGV[$i];
+			$INCLUDES_PATH = $var;
+		}
+		elsif ((lc ($var) eq "-append-2-includes-path") or (lc ($var) eq "--append-2-includes-path")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($INCLUDES_PATH eq "")) {
+				$INCLUDES_PATH .= " ";
+			}
+			$INCLUDES_PATH .= $var;
+		}
+		elsif ((lc ($var) eq "-libs-path") or (lc ($var) eq "--libs-path")) {
+			$i++;
+			$var = $ARGV[$i];
+			$LIBS_PATH = $var;
+		}
+		elsif ((lc ($var) eq "-append-2-libs-path") or (lc ($var) eq "--append-2-libs-path")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($LIBS_PATH eq "")) {
+				$LIBS_PATH .= " ";
+			}
+			$LIBS_PATH .= $var;
+		}
+		elsif ((lc ($var) eq "-lib-dependencies") or (lc ($var) eq "--lib-dependencies")) {
+			$i++;
+			$var = $ARGV[$i];
+			$LIB_DEPENDENCIES = $var;
+		}
+		elsif ((lc ($var) eq "-append-2-lib-dependencies") or (lc ($var) eq "--append-2-lib-dependencies")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($LIB_DEPENDENCIES eq "")) {
+				$LIB_DEPENDENCIES .= " ";
+			}
+			$LIB_DEPENDENCIES .= $var;
+		}
 		elsif ((lc ($var) eq "-run-prefix") or (lc ($var) eq "--run-prefix")) {
 			$i++;
 			$var = $ARGV[$i];
@@ -1234,6 +1282,9 @@ sub	WriteConfigFile_
 		print (OUT "    <STATIC_LINK_GCCRUNTIME>$STATIC_LINK_GCCRUNTIME</STATIC_LINK_GCCRUNTIME>\n");
 	}
 
+	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
+	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
+	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
 
 	print (OUT "    <ExtraCDefines>\n");
 		foreach my $var (@useExtraCDefines)

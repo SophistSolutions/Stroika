@@ -198,6 +198,18 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'EXTRA_COMPILER_ARGS'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<INCLUDES_PATH>");
+		if (defined $pps) {
+			$configuration {'INCLUDES_PATH'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<LIBS_PATH>");
+		if (defined $pps) {
+			$configuration {'LIBS_PATH'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<LIB_DEPENDENCIES>");
+		if (defined $pps) {
+			$configuration {'LIB_DEPENDENCIES'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CrossCompiling>");
 		if (defined $pps) {
 			$configuration {'CrossCompiling'} = $pps;
