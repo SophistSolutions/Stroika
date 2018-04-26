@@ -135,9 +135,9 @@ sub	ReadConfiguration_
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_GLIBCXX_DEBUG"));
 	$CPPSTD_VERSION_FLAG = GetConfigurationParameter($activeConfiguration, "CPPSTD_VERSION_FLAG");
 	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguration, "CWARNING_FLAGS");
-	$INCLUDES_PATH = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH"));
-	$LIBS_PATH = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "LIBS_PATH"));
-	$LIB_DEPENDENCIES = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "LIB_DEPENDENCIES"));
+	$INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
+	$LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
+	$LIB_DEPENDENCIES = GetConfigurationParameter($activeConfiguration, "LIB_DEPENDENCIES");
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_TRACE2FILE"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguration, "OptimizerFlag");
 	if (not (defined $COPTIMIZE_FLAGS)) {
