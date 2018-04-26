@@ -241,8 +241,12 @@ endif
 
 
 
-CFLAGS	+=			$(EXTRA_COMPILER_ARGS)
-LinkerPrefixArgs+=	$(EXTRA_LINKER_ARGS)
+CFLAGS	+=			$(EXTRA_COMPILER_ARGS) $(INCLUDES_PATH)
+LinkerPrefixArgs+=	$(EXTRA_LINKER_ARGS) $(LIBS_PATH) $(LIB_DEPENDENCIES)
+
+
+# Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
+LinkerSuffixArgs+=	$(LIB_DEPENDENCIES)
 
 ifndef AR
 	AR	= ar
