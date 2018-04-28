@@ -677,7 +677,7 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #ifndef qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 5 && (__GLIBC_MINOR__ > 23))
+#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy (__GNUC__ == 5 && (__GLIBC_MINOR__ > 23))
 #else
 #define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy 0
 #endif
