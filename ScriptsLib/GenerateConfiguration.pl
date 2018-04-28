@@ -107,7 +107,7 @@ my $EXTRA_LINKER_ARGS = "";
 my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
-my $INCLUDES_PATH = "";			# space separated list
+my $INCLUDES_PATH = undef;		# space separated list
 my $LIBS_PATH = "";				# space separated list
 my $LIB_DEPENDENCIES  = "";		# space separated list
 
@@ -256,6 +256,28 @@ sub     IsMSVCCompiler_
 	}
 	return false
 }
+
+
+
+
+sub     FillDefaultIncludesPathIfNeeded_
+{
+	if (!defined ($INCLUDES_PATH)) {
+		$INCLUDES_PATH = "";
+		if (
+			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
+		) {
+			$INCLUDES_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`);
+		}
+	}
+}
+
 
 
 
@@ -798,6 +820,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-2-includes-path") or (lc ($var) eq "--append-2-includes-path")) {
 			$i++;
 			$var = $ARGV[$i];
+			FillDefaultIncludesPathIfNeeded_();
 			if (not ($INCLUDES_PATH eq "")) {
 				$INCLUDES_PATH .= " ";
 			}
@@ -1282,6 +1305,7 @@ sub	WriteConfigFile_
 		print (OUT "    <STATIC_LINK_GCCRUNTIME>$STATIC_LINK_GCCRUNTIME</STATIC_LINK_GCCRUNTIME>\n");
 	}
 
+	FillDefaultIncludesPathIfNeeded_();
 	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
