@@ -116,13 +116,7 @@ namespace Stroika {
             }
             template <typename T>
             template <typename REP_SUB_TYPE>
-            inline
-#if qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy
-                typename Iterable<T>::template _SafeReadRepAccessor<REP_SUB_TYPE>&
-#else
-                Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>&
-#endif
-                Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept
+            inline auto Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::operator= (const _SafeReadRepAccessor& rhs) noexcept -> Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>&
             {
                 shared_lock<const Debug::AssertExternallySynchronizedLock>::operator= (rhs);
                 fConstRef_                                                          = rhs.fConstRef_;

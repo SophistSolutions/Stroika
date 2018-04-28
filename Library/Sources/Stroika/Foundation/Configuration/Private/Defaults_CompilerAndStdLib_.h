@@ -434,20 +434,6 @@ ABORTING...
 #endif
 
 /*
- */
-#ifndef qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 1)))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy (((__clang_major__ == 5) && (__clang_minor__ <= 0)))
-#else
-#define qCompilerAndStdLib_template_extra_picky_templatetypenametemplate_Buggy 0
-#endif
-
-#endif
-
-/*
 @DESCRIPTION:   
 
 @see https://stroika.atlassian.net/browse/STK-635
