@@ -95,6 +95,8 @@ namespace Stroika {
              */
             class Interceptor::_IRep {
             public:
+                virtual ~_IRep () = default;
+
                 /**
                  *  Called any interceptor which HandleMessage was invoked on, when a fault prevented completion of
                  *  the interceptor chain.
