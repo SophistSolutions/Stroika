@@ -44,20 +44,21 @@ endif
 Includes	+=	-I$(StroikaRoot)Library/Sources/
 Includes	+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/
 
+Includes	+=	$(INCLUDES_PATH_COMPILER_DIRECTIVES)
 
-ifeq ($(qFeatureFlag_Xerces), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
-else ifeq ($(qFeatureFlag_LibCurl), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
-else ifeq ($(qFeatureFlag_LZMA), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
-else ifeq ($(qFeatureFlag_OpenSSL), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
-else ifeq ($(qFeatureFlag_ZLib), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
-else ifeq ($(qFeatureFlag_sqlite), 'use')
-	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
-endif
+#ifeq ($(qFeatureFlag_Xerces), 'use')
+#	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
+#else ifeq ($(qFeatureFlag_LibCurl), 'use')
+#	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
+#else ifeq ($(qFeatureFlag_LZMA), 'use')
+#	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
+#else ifeq ($(qFeatureFlag_OpenSSL), 'use')
+#	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
+#else ifeq ($(qFeatureFlag_ZLib), 'use')
+#	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
+#else ifeq ($(qFeatureFlag_sqlite), 'use')
+#	Includes	+=  -I$(StroikaPlatformTargetBuildDir)ThirdPartyComponents/include/
+#endif
 
 
 IncludeDebugSymbolsInExecutables	=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInExecutables)
