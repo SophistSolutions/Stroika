@@ -137,6 +137,8 @@ namespace Stroika {
              */
             class InterceptorChain::_IRep {
             public:
+                virtual ~_IRep () = default;
+
                 virtual Sequence<Interceptor> GetInterceptors () const = 0;
 
                 // note - this is const and returns a new _IRep - so that the actual rep can be immutable.
