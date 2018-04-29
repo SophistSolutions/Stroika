@@ -457,7 +457,7 @@ that doesn't work (duplicate definitions - works in a single file but not across
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
