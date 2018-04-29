@@ -67,7 +67,7 @@
 #if (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 9))
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 3.9 (non-apple)"
 #endif
-#if (__clang_major__ > 5) || (__clang_major__ == 5 && (__clang_minor__ > 0))
+#if (__clang_major__ > 6) || (__clang_major__ == 6 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -457,7 +457,7 @@ that doesn't work (duplicate definitions - works in a single file but not across
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
 #elif defined(__GNUC__)
 // APPEARS still broken with gcc 6.2
 // APPEARS still broken with gcc 6.3
@@ -518,7 +518,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
 #elif defined(_MSC_VER)
 // still broken in _MS_VS_2k17_15Pt1_
 // still broken in _MS_VS_2k17_15Pt3Pt2_
@@ -542,7 +542,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
 #elif defined(__GNUC__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
@@ -554,7 +554,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
 #else
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy 0
 #endif
@@ -663,7 +663,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #ifndef qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
 
 #if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy (__GNUC__ == 5 && (__GLIBC_MINOR__ > 23))
+// broken with __GLIBC_MINOR__==24, and fixed with __GLIBC_MINOR__==27, not sure in between
+#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy (__GNUC__ == 5 && ( 24 <= __GLIBC_MINOR__ && __GLIBC_MINOR__ <= 24))
 #else
 #define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy 0
 #endif
@@ -791,7 +792,7 @@ CLANG 5.0:
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
 #else
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy 0
 #endif
@@ -857,7 +858,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
 #elif defined(__GNUC__)
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy (__GNUC__ == 5 && (__GNUC_MINOR__ <= 5))
 #elif defined(_MSC_VER)
@@ -993,7 +994,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 9) || ((__clang_major__ == 9) && (__clang_minor__ <= 0)))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 5) || ((__clang_major__ == 5)))
 #elif defined(__GNUC__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ <= 2)))
 #else
@@ -1294,7 +1295,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #if !defined(qCompiler_SanitizerFunctionPtrConversionSuppressionBug)
 
 #if defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ < 5 or ((__clang_major__ == 5) && (__clang_minor__ <= 0)))
+#define qCompiler_SanitizerFunctionPtrConversionSuppressionBug (__clang_major__ < 5 or ((__clang_major__ == 5)))
 #else
 #define qCompiler_SanitizerFunctionPtrConversionSuppressionBug 0
 #endif
