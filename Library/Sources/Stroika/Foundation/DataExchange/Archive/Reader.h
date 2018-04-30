@@ -69,6 +69,7 @@ namespace Stroika {
                  */
                 class Reader::_IRep {
                 public:
+                    virtual ~_IRep ()                                          = default;
                     virtual Set<String> GetContainedFiles () const             = 0;
                     virtual BLOB        GetData (const String& fileName) const = 0;
                 };
