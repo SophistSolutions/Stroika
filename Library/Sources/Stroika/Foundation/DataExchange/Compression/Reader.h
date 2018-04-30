@@ -65,6 +65,9 @@ namespace Stroika {
                  */
                 class Reader::_IRep {
                 public:
+                    virtual ~_IRep () = default;
+
+                public:
                     virtual InputStream<Byte>::Ptr Compress (const InputStream<Byte>::Ptr& src) const = 0;
 
                 public:
