@@ -75,7 +75,7 @@
 
 #elif defined(__GNUC__)
 
-#if __GNUC__ < 5 || (__GNUC__ == 5)
+#if __GNUC__ < 5
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to GCC 5.0"
 #endif
 #if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 3))
