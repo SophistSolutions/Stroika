@@ -48,19 +48,7 @@
    https://stroika.atlassian.net/browse/STK-628
    Helgrind:Misc
    obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
-   fun:__condvar_cancel_waiting
-   fun:__pthread_cond_wait_common
-   ...
-   fun:_ZN7Stroika10Foundation9Execution17ConditionVariableISt5mutexSt18condition_variableE10wait_untilERSt11unique_lockIS3_Ed
-}
-{
-   https://stroika.atlassian.net/browse/STK-628
-   Helgrind:Misc
-   obj:/usr/lib/valgrind/vgpreload_helgrind-amd64-linux.so
-   fun:__condvar_cancel_waiting
-   fun:__pthread_cond_wait_common
-   ...
-   fun:wait_until<Stroika::Foundation::Execution::WaitableEvent::WE_::WaitUntilQuietly(Stroika::Foundation::Time::DurationSecondsType)::<lambda()> >
+   fun:_ZN7Stroika10Foundation9Execution13WaitableEvent3WE_16WaitUntilQuietlyEd
 }
 {
    https://stroika.atlassian.net/browse/STK-644
