@@ -8,6 +8,7 @@
 
 #include <shellapi.h>
 #include <winerror.h>
+#include <winhttp.h> // for error codes
 #include <wininet.h> // for error codes
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
@@ -157,7 +158,8 @@ void Execution::Platform::Windows::Exception::Throw (DWORD error)
 #endif
             Execution::Throw (IO::FileAccessException ()); // don't know if they were reading or writing at this level..., and don't know file name...
         }
-        case WAIT_TIMEOUT: {
+        case WAIT_TIMEOUT:
+        case ERROR_WINHTTP_TIMEOUT: {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
             DbgTrace ("Platform::Windows::Exception::Throw (0x%x) - throwing TimeOutException", error);
 #endif
