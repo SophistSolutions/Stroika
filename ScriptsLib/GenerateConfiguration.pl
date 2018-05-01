@@ -277,7 +277,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 		$INCLUDES_PATH .= $var;
 	}
 
-	if ($includeAutomaticLibDependencies) {
+	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
