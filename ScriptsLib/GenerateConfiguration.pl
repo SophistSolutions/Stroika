@@ -346,14 +346,14 @@ sub     FillDefaultLibDependencies_
 			if (not ($LIB_DEPENDENCIES eq "")) {
 				$LIB_DEPENDENCIES .= " ";
 			}
-			$LIB_DEPENDENCIES .= "lzma.a"
+			$LIB_DEPENDENCIES .= "-llzma.a"
 		}
 
 		if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
 			if (not ($LIB_DEPENDENCIES eq "")) {
 				$LIB_DEPENDENCIES .= " ";
 			}
-			$LIB_DEPENDENCIES .= "sqlite.a"
+			$LIB_DEPENDENCIES .= "-lsqlite.a"
 		}
 
 		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
