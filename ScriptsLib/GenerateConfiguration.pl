@@ -273,7 +273,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
-			$INCLUDES_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`);
+			$INCLUDES_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
 		}
 	}
 }
@@ -290,7 +290,7 @@ sub     FillDefaultLibsPathIfNeeded_
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
-			$LIBS_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`);
+			$LIBS_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
 		}
 	}
 }
