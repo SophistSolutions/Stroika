@@ -108,6 +108,7 @@ my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
 my $INCLUDES_PATH = undef;		# space separated list
+my @$INCLUDES_PATH_ADD  = qw();
 my $LIBS_PATH = undef;			# space separated list
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
@@ -263,8 +264,20 @@ sub     IsMSVCCompiler_
 
 sub     FillDefaultIncludesPathIfNeeded_
 {
+	#IF we set include path  explicitly, then suppress adding include path automatically (based on features etc) - just explicitly added ones from the commandline
+	my $includeAutomaticDependencies = !defined ($INCLUDES_PATH);
 	if (!defined ($INCLUDES_PATH)) {
 		$INCLUDES_PATH = "";
+	}
+	my $var;
+	foreach $var (@$INCLUDES_PATH_ADD) {
+		if (not ($INCLUDES_PATH eq "")) {
+			$INCLUDES_PATH .= " ";
+		}
+		$INCLUDES_PATH .= $var;
+	}
+
+	if ($includeAutomaticLibDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -274,8 +287,19 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
-			$INCLUDES_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
+			if (not ($INCLUDES_PATH eq "")) {
+				$INCLUDES_PATH .= " ";
+			}
+			$INCLUDES_PATH .= trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`) . "/";
 		}
+
+		if (not ($INCLUDES_PATH eq "")) {
+			$INCLUDES_PATH .= " ";
+		}
+		$INCLUDES_PATH .= trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
+
+		$INCLUDES_PATH .= " ";
+		$INCLUDES_PATH .= trim (`realpath --canonicalize-missing Builds/$configurationName`) . "/";
 	}
 }
 sub     FillDefaultLibsPathIfNeeded_
@@ -877,11 +901,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-2-includes-path") or (lc ($var) eq "--append-2-includes-path")) {
 			$i++;
 			$var = $ARGV[$i];
-			FillDefaultIncludesPathIfNeeded_();
-			if (not ($INCLUDES_PATH eq "")) {
-				$INCLUDES_PATH .= " ";
-			}
-			$INCLUDES_PATH .= $var;
+			push @$INCLUDES_PATH_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-libs-path") or (lc ($var) eq "--libs-path")) {
 			$i++;

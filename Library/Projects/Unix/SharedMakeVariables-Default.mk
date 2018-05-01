@@ -41,8 +41,8 @@ ifndef Includes
 	Includes	=	
 endif
 
-Includes	+=	-I$(StroikaRoot)Library/Sources/
-Includes	+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/
+#Includes	+=	-I$(StroikaRoot)Library/Sources/
+#Includes	+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/
 
 Includes	+=	$(INCLUDES_PATH_COMPILER_DIRECTIVES)
 
