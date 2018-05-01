@@ -43,7 +43,7 @@ int main (int argc, char** argv)
         // super-primitive impl - wont work with funny (quote) chars in pathnames
         string dirName  = backTick ("dirname " + string (path));
         string basename = backTick ("basename " + string (path));
-        if (dirName.length () != 0 && dirName[0] == '.') {
+        if (dirName.length () != 0 && dirName[0] != '/') {
             dirName = backTick ("pwd") + "/" + dirName;
         }
         dirName += "/";
