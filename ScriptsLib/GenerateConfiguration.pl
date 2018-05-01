@@ -270,7 +270,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 		$INCLUDES_PATH = "";
 	}
 	my $var;
-	foreach $var (@$INCLUDES_PATH_ADD) {
+	foreach $var (@INCLUDES_PATH_ADD) {
 		if (not ($INCLUDES_PATH eq "")) {
 			$INCLUDES_PATH .= " ";
 		}
@@ -901,7 +901,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-2-includes-path") or (lc ($var) eq "--append-2-includes-path")) {
 			$i++;
 			$var = $ARGV[$i];
-			push @$INCLUDES_PATH_ADD, $var;
+			push @INCLUDES_PATH_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-libs-path") or (lc ($var) eq "--libs-path")) {
 			$i++;
