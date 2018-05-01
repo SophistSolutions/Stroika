@@ -328,7 +328,7 @@ sub     FillDefaultLibDependencies_
 		if (not ($LIB_DEPENDENCIES eq "")) {
 			$LIB_DEPENDENCIES .= " ";
 		}
-		$LIB_DEPENDENCIES .= "-lm"
+		$LIB_DEPENDENCIES .= "-lm";
 		$LIB_DEPENDENCIES .= " ";
 		$LIB_DEPENDENCIES .= "-lpthread"
 
