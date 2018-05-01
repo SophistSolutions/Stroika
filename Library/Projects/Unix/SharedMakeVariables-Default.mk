@@ -27,7 +27,7 @@ ifndef StroikaLibDir
 endif
 
 
-qFeatureFlag_librt				=	$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_librt)
+#qFeatureFlag_librt				=	$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_librt)
 
 
 ifndef StroikaLinkerArgs
@@ -148,17 +148,17 @@ ifndef StroikaFoundationSupportLibs
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --libs libcurl)
 	endif
 
-	ifeq ($(qFeatureFlag_LZMA), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/lzma.a
-	endif
+	#ifeq ($(qFeatureFlag_LZMA), 'use')
+	#	StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/lzma.a
+	#endif
 
 	#ifeq ($(qFeatureFlag_ZLib), 'use')
 	#	StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libz.a
 	#endif
 
-	ifeq ($(qFeatureFlag_sqlite), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/sqlite.a
-	endif
+	#ifeq ($(qFeatureFlag_sqlite), 'use')
+	#	StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/sqlite.a
+	#endif
 
 	ifeq ($(qFeatureFlag_OpenSSL), 'use')
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs openssl)
@@ -170,9 +170,9 @@ ifndef StroikaFoundationSupportLibs
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
 
 	#StroikaFoundationSupportLibs	+=	  -lpthread
-	ifeq ($(qFeatureFlag_librt), 'use-system')
-		StroikaFoundationSupportLibs	+=	  -lrt
-	endif
+	#ifeq ($(qFeatureFlag_librt), 'use-system')
+	#	StroikaFoundationSupportLibs	+=	  -lrt
+	#endif
 	#StroikaFoundationSupportLibs	+=	  -lm
 endif
 ifndef StroikaFrameworksSupportLibs
