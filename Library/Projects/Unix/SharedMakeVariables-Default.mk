@@ -135,7 +135,7 @@ ifndef StroikaFoundationSupportLibs
 	#
 	# Store root/--prefix installed files for third party components in Builds/$(CONFIGURATION)/ThirdPartyComponents
 	#
-	StroikaFoundationSupportLibs	+= -L $(StroikaPlatformTargetBuildDir)/ThirdPartyComponents/lib/
+	#StroikaFoundationSupportLibs	+= -L $(StroikaPlatformTargetBuildDir)/ThirdPartyComponents/lib/
 
 	ifneq ($(qFeatureFlag_Xerces), 'no')
 		StroikaFoundationSupportLibs	+=  -lxerces-c
@@ -198,7 +198,7 @@ ifndef StroikaLibsWithSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 
 	#tmphack - added $(EXTRA_LINKER_ARGS) here as so stdlib etc come AFTER stroika libs so they get pulled in - need double listing of libs sometimes
-	StroikaLibsWithSupportLibs	=	$(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_LINKER_ARGS)
+	StroikaLibsWithSupportLibs	=	$(LIBS_PATH_DIRECTIVES) $(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_LINKER_ARGS)
 endif
 
 

@@ -108,7 +108,7 @@ my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
 my $INCLUDES_PATH = undef;		# space separated list
-my $LIBS_PATH = "";				# space separated list
+my $LIBS_PATH = undef;			# space separated list
 my $LIB_DEPENDENCIES  = "";		# space separated list
 
 
@@ -274,6 +274,23 @@ sub     FillDefaultIncludesPathIfNeeded_
 			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
 		) {
 			$INCLUDES_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`);
+		}
+	}
+}
+sub     FillDefaultLibsPathIfNeeded_
+{
+	if (!defined ($LIBS_PATH)) {
+		$LIBS_PATH = "";
+		if (
+			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_boost eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_OpenSSL eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_ZLib eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_sqlite eq $LIBFEATUREFLAG_UseStaticTPP ||
+			$FEATUREFLAG_LZMA eq $LIBFEATUREFLAG_UseStaticTPP
+		) {
+			$LIBS_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/include/`);
 		}
 	}
 }
@@ -834,6 +851,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-2-libs-path") or (lc ($var) eq "--append-2-libs-path")) {
 			$i++;
 			$var = $ARGV[$i];
+			FillDefaultLibsPathIfNeeded_();
 			if (not ($LIBS_PATH eq "")) {
 				$LIBS_PATH .= " ";
 			}
