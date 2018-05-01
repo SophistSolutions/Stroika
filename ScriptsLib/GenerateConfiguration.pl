@@ -1324,6 +1324,7 @@ sub	WriteConfigFile_
 	}
 
 	FillDefaultIncludesPathIfNeeded_();
+	FillDefaultLibsPathIfNeeded_();
 	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
