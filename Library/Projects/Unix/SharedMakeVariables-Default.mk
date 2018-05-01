@@ -27,9 +27,6 @@ ifndef StroikaLibDir
 endif
 
 
-#qFeatureFlag_librt				=	$(shell perl $(StroikaRoot)ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_librt)
-
-
 ifndef StroikaLinkerArgs
 	StroikaLinkerArgs	= 
 endif
@@ -40,9 +37,6 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ifndef Includes
 	Includes	=	
 endif
-
-#Includes	+=	-I$(StroikaRoot)Library/Sources/
-#Includes	+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/
 
 Includes	+=	$(INCLUDES_PATH_COMPILER_DIRECTIVES)
 
@@ -82,10 +76,7 @@ endif
 #default to latest released version (except latest gcc is 4.9 and it only supports up to c++11)
 # as of stroika 2.0a211 - we require at least c++14 (at least testing if this is OK)
 ifndef CPPSTD_VERSION_FLAG
-	#CPPSTD_VERSION_FLAG	=	--std=c++1z
-	#CPPSTD_VERSION_FLAG	=	--std=c++1y
-	#CPPSTD_VERSION_FLAG	=	--std=c++14
-	#CPPSTD_VERSION_FLAG	=	--std=c++11
+	#CPPSTD_VERSION_FLAG	=	--std=c++17
 	CPPSTD_VERSION_FLAG		=	--std=c++14
 endif
 
@@ -132,33 +123,12 @@ ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFoundationSupportLibs	=
 
-	#
-	# Store root/--prefix installed files for third party components in Builds/$(CONFIGURATION)/ThirdPartyComponents
-	#
-	#StroikaFoundationSupportLibs	+= -L $(StroikaPlatformTargetBuildDir)/ThirdPartyComponents/lib/
-
-	#ifneq ($(qFeatureFlag_Xerces), 'no')
-	#	StroikaFoundationSupportLibs	+=  -lxerces-c
-	#endif
-
 	ifeq ($(qFeatureFlag_LibCurl), 'use')
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs libcurl)
 	endif
 	ifeq ($(qFeatureFlag_LibCurl), 'use-system')
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --libs libcurl)
 	endif
-
-	#ifeq ($(qFeatureFlag_LZMA), 'use')
-	#	StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/lzma.a
-	#endif
-
-	#ifeq ($(qFeatureFlag_ZLib), 'use')
-	#	StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libz.a
-	#endif
-
-	#ifeq ($(qFeatureFlag_sqlite), 'use')
-	#	StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/sqlite.a
-	#endif
 
 	ifeq ($(qFeatureFlag_OpenSSL), 'use')
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs openssl)
@@ -169,11 +139,6 @@ ifndef StroikaFoundationSupportLibs
 
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
 
-	#StroikaFoundationSupportLibs	+=	  -lpthread
-	#ifeq ($(qFeatureFlag_librt), 'use-system')
-	#	StroikaFoundationSupportLibs	+=	  -lrt
-	#endif
-	#StroikaFoundationSupportLibs	+=	  -lm
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
