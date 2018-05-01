@@ -36,9 +36,9 @@ $(TARGETEXE):	$(Objs)
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@echo "      Linking $(subst $(StroikaRoot),\$$StroikaRoot/, $(TARGETEXE))..."
 	@if [ $(ECHO_BUILD_LINES) -eq 1 ]; then\
-	    echo "         $(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)";\
+	    echo "         $(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs) $(LinkerSuffixArgs)";\
 	fi
-	@$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
+	@$(Linker) $(LinkerPrefixArgs) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs) $(LinkerSuffixArgs)
 else
 	@$(StroikaRoot)ScriptsLib/PrintProgressLine.sh $$(( $(MAKE_INDENT_LEVEL)+1)) -n "Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler..."
 	@perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:NoSummary ../../../../../Projects/$(ProjectPlatformSubdir)/StroikaTools-Frameworks-WebServer-HTMLViewCompiler.vcxproj /p:`$(StroikaRoot)ScriptsLib/GetVisualStudioConfigLine.pl $(CONFIGURATION)` /target:Build"
