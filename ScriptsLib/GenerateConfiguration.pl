@@ -108,7 +108,7 @@ my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
 my $INCLUDES_PATH = undef;		# space separated list
-my @$INCLUDES_PATH_ADD  = qw();
+my @INCLUDES_PATH_ADD  = qw();
 my $LIBS_PATH = undef;			# space separated list
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
