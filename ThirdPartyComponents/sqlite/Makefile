@@ -58,7 +58,7 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libsqlite.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
@@ -109,7 +109,7 @@ $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h:	CU
 	cp CURRENT/sqlite3.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/sqlite/sqlite3.h
 	
 ifeq (Unix,$(ProjectPlatformSubdir))
-$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/sqlite.a:
+$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libsqlite.a:
 	$(MAKE) --no-print-directory $(SILENT_BUILD_FLAG) CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)	$(OBJS)
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib
 	$(AR) cr $@ $(OBJS)

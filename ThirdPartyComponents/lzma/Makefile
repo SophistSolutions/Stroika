@@ -61,7 +61,7 @@ PRODUCED_OUTPUT_ARTIFACTS=	\
 
 ifeq (Unix,$(ProjectPlatformSubdir))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/lzma.a
+	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/liblzma.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
@@ -133,7 +133,7 @@ endif
 doBuildInternal_:
 ifeq (Unix,$(ProjectPlatformSubdir))
 	$(MAKE) --directory CURRENT ProjectPlatformSubdir=$(ProjectPlatformSubdir) CC="$(CC)" LIBS="$(LIBS)"
-	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/lzma.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
+	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/lzma.a  $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/liblzma.a
 	mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma && cp CURRENT/C/7z.h CURRENT/C/7zCrc.h CURRENT/C/7zTypes.h $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/lzma/
 	cp CURRENT/lzma CURRENT/7zDec $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/
 else
