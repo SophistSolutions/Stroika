@@ -365,7 +365,7 @@ sub     FillDefaultLibDependencies_
 		}
 		$LIB_DEPENDENCIES .= "-lm";
 		$LIB_DEPENDENCIES .= " ";
-		$LIB_DEPENDENCIES .= "-lpthread"
+		$LIB_DEPENDENCIES .= "-lpthread";
 		if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
 			$LIB_DEPENDENCIES .= " ";
 			$LIB_DEPENDENCIES .= "-lrt";
