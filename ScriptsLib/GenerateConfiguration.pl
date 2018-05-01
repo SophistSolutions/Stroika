@@ -299,7 +299,7 @@ sub     FillDefaultIncludesPathIfNeeded_
 		$INCLUDES_PATH .= trim (`realpath --canonicalize-missing Library/Sources/`) . "/";
 
 		$INCLUDES_PATH .= " ";
-		$INCLUDES_PATH .= trim (`realpath --canonicalize-missing Builds/$configurationName`) . "/";
+		$INCLUDES_PATH .= trim (`realpath --canonicalize-missing IntermediateFiles/$configurationName`) . "/";
 	}
 }
 sub     FillDefaultLibsPathIfNeeded_
