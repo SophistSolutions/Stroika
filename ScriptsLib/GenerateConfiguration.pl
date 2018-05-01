@@ -341,18 +341,14 @@ sub     FillDefaultLibDependencies_
 			}
 			$LIB_DEPENDENCIES .= "-lxerces-c"
 		}
-		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
-			if (not ($LIB_DEPENDENCIES eq "")) {
-				$LIB_DEPENDENCIES .= " ";
-			}
-			$LIB_DEPENDENCIES .= "-lz"
-		}
+
 		if ($FEATUREFLAG_LZMA ne $LIBFEATUREFLAG_No) {
 			if (not ($LIB_DEPENDENCIES eq "")) {
 				$LIB_DEPENDENCIES .= " ";
 			}
 			$LIB_DEPENDENCIES .= "lzma.a"
 		}
+
 		if ($FEATUREFLAG_sqlite ne $LIBFEATUREFLAG_No) {
 			if (not ($LIB_DEPENDENCIES eq "")) {
 				$LIB_DEPENDENCIES .= " ";
@@ -360,14 +356,27 @@ sub     FillDefaultLibDependencies_
 			$LIB_DEPENDENCIES .= "sqlite.a"
 		}
 
+		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
+			if (not ($LIB_DEPENDENCIES eq "")) {
+				$LIB_DEPENDENCIES .= " ";
+			}
+			$LIB_DEPENDENCIES .= "-lz"
+		}
+
+		if (not ($LIB_DEPENDENCIES eq "")) {
+			$LIB_DEPENDENCIES .= " ";
+		}
+		$LIB_DEPENDENCIES .= "-lpthread";
+
 		if (not ($LIB_DEPENDENCIES eq "")) {
 			$LIB_DEPENDENCIES .= " ";
 		}
 		$LIB_DEPENDENCIES .= "-lm";
-		$LIB_DEPENDENCIES .= " ";
-		$LIB_DEPENDENCIES .= "-lpthread";
+
 		if ($FEATUREFLAG_librt eq $LIBFEATUREFLAG_UseSystem) {
-			$LIB_DEPENDENCIES .= " ";
+			if (not ($LIB_DEPENDENCIES eq "")) {
+				$LIB_DEPENDENCIES .= " ";
+			}
 			$LIB_DEPENDENCIES .= "-lrt";
 		}
 	}
