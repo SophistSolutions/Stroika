@@ -109,7 +109,8 @@ my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
 my $INCLUDES_PATH = undef;		# space separated list
 my $LIBS_PATH = undef;			# space separated list
-my $LIB_DEPENDENCIES  = "";		# space separated list
+my $LIB_DEPENDENCIES  = undef;	# space separated list
+my @LIB_DEPENDENCIES_ADD  = qw();
 
 
 
@@ -292,6 +293,45 @@ sub     FillDefaultLibsPathIfNeeded_
 		) {
 			$LIBS_PATH = trim (`realpath --canonicalize-missing Builds/$configurationName/ThirdPartyComponents/lib/`) . "/";
 		}
+	}
+}
+sub     FillDefaultLibDependencies_
+{
+	#IF we set lib dependencies explicitly, then suppress adding libs automatically (based on features etc) - just explicitly added ones from the commandline
+	my $includeAutomaticLibDependencies = !defined ($LIB_DEPENDENCIES);
+	if (!defined ($LIB_DEPENDENCIES)) {
+		$LIB_DEPENDENCIES = "";
+	}
+	my $var;
+	foreach $var (@LIB_DEPENDENCIES_ADD) {
+		if (not ($LIB_DEPENDENCIES eq "")) {
+			$LIB_DEPENDENCIES .= " ";
+		}
+		$LIB_DEPENDENCIES .= $var;
+	}
+
+	if ($includeAutomaticLibDependencies) {
+		if ($FEATUREFLAG_Xerces ne $LIBFEATUREFLAG_No) {
+			if (not ($LIB_DEPENDENCIES eq "")) {
+				$LIB_DEPENDENCIES .= " ";
+			}
+			$LIB_DEPENDENCIES .= "-lxerces-c"
+		}
+		if ($FEATUREFLAG_ZLib ne $LIBFEATUREFLAG_No) {
+			if (not ($LIB_DEPENDENCIES eq "")) {
+				$LIB_DEPENDENCIES .= " ";
+			}
+			$LIB_DEPENDENCIES .= "-lz"
+		}
+
+
+		if (not ($LIB_DEPENDENCIES eq "")) {
+			$LIB_DEPENDENCIES .= " ";
+		}
+		$LIB_DEPENDENCIES .= "-lm"
+		$LIB_DEPENDENCIES .= " ";
+		$LIB_DEPENDENCIES .= "-lpthread"
+
 	}
 }
 
@@ -865,10 +905,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-2-lib-dependencies") or (lc ($var) eq "--append-2-lib-dependencies")) {
 			$i++;
 			$var = $ARGV[$i];
-			if (not ($LIB_DEPENDENCIES eq "")) {
-				$LIB_DEPENDENCIES .= " ";
-			}
-			$LIB_DEPENDENCIES .= $var;
+			push @LIB_DEPENDENCIES_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-run-prefix") or (lc ($var) eq "--run-prefix")) {
 			$i++;
@@ -1325,6 +1362,7 @@ sub	WriteConfigFile_
 
 	FillDefaultIncludesPathIfNeeded_();
 	FillDefaultLibsPathIfNeeded_();
+	FillDefaultLibDependencies_();
 	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");

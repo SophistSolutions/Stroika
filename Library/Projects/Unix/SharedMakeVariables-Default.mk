@@ -137,9 +137,9 @@ ifndef StroikaFoundationSupportLibs
 	#
 	#StroikaFoundationSupportLibs	+= -L $(StroikaPlatformTargetBuildDir)/ThirdPartyComponents/lib/
 
-	ifneq ($(qFeatureFlag_Xerces), 'no')
-		StroikaFoundationSupportLibs	+=  -lxerces-c
-	endif
+	#ifneq ($(qFeatureFlag_Xerces), 'no')
+	#	StroikaFoundationSupportLibs	+=  -lxerces-c
+	#endif
 
 	ifeq ($(qFeatureFlag_LibCurl), 'use')
 		StroikaFoundationSupportLibs += $(shell PKG_CONFIG_PATH=$(TPP_PKG_CONFIG_PATH) pkg-config --static --libs libcurl)
@@ -152,9 +152,9 @@ ifndef StroikaFoundationSupportLibs
 		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/lzma.a
 	endif
 
-	ifeq ($(qFeatureFlag_ZLib), 'use')
-		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libz.a
-	endif
+	#ifeq ($(qFeatureFlag_ZLib), 'use')
+	#	StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/libz.a
+	#endif
 
 	ifeq ($(qFeatureFlag_sqlite), 'use')
 		StroikaFoundationSupportLibs	+=  $(StroikaPlatformTargetBuildDir)ThirdPartyComponents/lib/sqlite.a
@@ -169,11 +169,11 @@ ifndef StroikaFoundationSupportLibs
 
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
 
-	StroikaFoundationSupportLibs	+=	  -lpthread
+	#StroikaFoundationSupportLibs	+=	  -lpthread
 	ifeq ($(qFeatureFlag_librt), 'use-system')
 		StroikaFoundationSupportLibs	+=	  -lrt
 	endif
-	StroikaFoundationSupportLibs	+=	  -lm
+	#StroikaFoundationSupportLibs	+=	  -lm
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
