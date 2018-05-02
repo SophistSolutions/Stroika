@@ -496,7 +496,7 @@ sub WriteStroikaConfigMakeHeader
 	}
 	print (OUT "\n");
 	print (OUT "LIBS_PATH_DIRECTIVES=");
-	for my $l (split / /, $INCLUDES_PATH) {
+	for my $l (split / /, $LIBS_PATH) {
 		print (OUT "-L$l ");
 	}
 	print (OUT "\n");
