@@ -51,19 +51,11 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
 };
 
 struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
-#if qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
     function<void(Message*, const exception_ptr&)> fHandleFault_;
     Rep_Explicit_ (const function<void(Message*, const exception_ptr&)>& handleFault)
         : fHandleFault_ (handleFault)
     {
     }
-#else
-    function<void(Message*, const exception_ptr&) noexcept> fHandleFault_;
-    Rep_Explicit_ (const function<void(Message*, const exception_ptr&) noexcept>& handleFault)
-        : fHandleFault_ (handleFault)
-    {
-    }
-#endif
     virtual void HandleFault (Message* m, const exception_ptr& e) noexcept override
     {
         RequireNotNull (m);
@@ -83,11 +75,7 @@ DefaultFaultInterceptor::DefaultFaultInterceptor ()
     : inherited (make_shared<Rep_> ())
 {
 }
-#if qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
 DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&)>& handleFault)
-#else
-DefaultFaultInterceptor::DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&) noexcept>& handleFault)
-#endif
     : inherited (make_shared<Rep_Explicit_> (handleFault))
 {
 }

@@ -39,7 +39,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \nb: avoid noexcept in funciton<> declaration due to qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
+                 *  \nb: avoid noexcept in funciton<> declaration due to https://stackoverflow.com/questions/41293025/stdfunction-with-noexcept-in-c17
                  */
                 Interceptor ()                   = delete;
                 Interceptor (const Interceptor&) = default;

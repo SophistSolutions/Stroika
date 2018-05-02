@@ -623,41 +623,6 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #endif
 
 /**
- *
- *  In file included from /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/TimingTrace.h:10:0,
-                 from Test.cpp:10:
-        /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Debug/../Execution/WhenTimeExceeded.h:34:68: error: field ‘fRunIfTakesTooLong’ has incomplete type ‘std::function<void(double) noexcept>’
-                 function<void(Time::DurationSecondsType) noexcept> fRunIfTakesTooLong;
-                                                                    ^~~~~~~~~~~~~~~~~~
-    In file included from /home/lewis/gcc-7.1.0/include/c++/7.1.0/functional:58:0,
-                 from /home/lewis/Sandbox/Stroika-Dev/Library/Sources/Stroika/Foundation/Cache/../Characters/../Containers/../Common/Compare.h:9,
- 
- https://stackoverflow.com/questions/38760784/how-will-c17-exception-specifier-type-system-work
-
- *  This appears to be less of a compiler bug, and more of a language bug introduced in C++17. Wait til I better understand how
- *  it is, or will be resolved.
- *
- *  Right now - as of C++17 - it appears that std::function<void() noexcept> may not be well-defined.
- *
- */
-#ifndef qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
-
-#if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 7)
-#elif defined(_MSC_VER)
-// first broken in _MS_VS_2k17_15Pt5Pt0_
-// Assume broken in _MS_VS_2k17_15Pt5Pt2_
-// Assume broken in _MS_VS_2k17_15Pt5Pt3_
-// Assume broken in _MS_VS_2k17_15Pt5Pt5_
-// still broken in _MS_VS_2k17_15Pt6Pt0_
-#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
-#else
-#define qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy 0
-#endif
-
-#endif
-
-/**
  * Issue doesn't affect Ubuntu 16.04, but appears to affect any system using libc 2.26 or later with g++5
  */
 #ifndef qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy

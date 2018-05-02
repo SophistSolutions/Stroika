@@ -19,26 +19,17 @@ namespace Stroika {
              ************************ Execution::WhenTimeExceeded ***************************
              ********************************************************************************
              */
-#if qCompilerAndStdLib_noexcept_declarator_in_std_function_Buggy
             inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType)>& f)
                 : fStartedAt_ (Time::GetTickCount ())
                 , fCallIfTakesLongerThan_ (callIfTakesLongerThan)
                 , fRunIfTakesTooLong (f)
             {
             }
-#else
-            inline WhenTimeExceeded::WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType) noexcept>& f)
-                : fStartedAt_ (Time::GetTickCount ())
-                , fCallIfTakesLongerThan_ (callIfTakesLongerThan)
-                , fRunIfTakesTooLong (f)
-            {
-            }
-#endif
             inline WhenTimeExceeded::~WhenTimeExceeded ()
             {
                 Time::DurationSecondsType timeTaken = Time::GetTickCount () - fStartedAt_;
                 if (timeTaken >= fCallIfTakesLongerThan_) {
-                    fRunIfTakesTooLong (timeTaken);
+                    IgnoreExceptionsForCall (fRunIfTakesTooLong (timeTaken));
                 }
             }
         }
