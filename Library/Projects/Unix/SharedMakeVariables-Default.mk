@@ -23,7 +23,11 @@ ifndef StroikaPlatformTargetBuildDir
 endif
 
 
-###@todo probably deprecate this
+#
+#	StroikaLibDir
+#
+#		Directory where the library (.lib, or .a) Stroika libraries are found (Buidlds/$(CONFIGURATION)/)
+#
 ifndef StroikaLibDir
 	StroikaLibDir		=	$(StroikaPlatformTargetBuildDir)
 endif
@@ -45,21 +49,30 @@ ifndef StroikaFrameworksLib
 endif
 
 
+#
 # Intentionally use '=' instead of ':=' so variables included in CFLAGS can get re-evaluated
+#
+#CPPSTD_VERSION_FLAG, COPTIMIZE_FLAGS, INCLUDES_PATH_COMPILER_DIRECTIVES, and CWARNING_FLAGS come from the included Configuration.mk file
+#
 ifndef CFLAGS
 	CFLAGS		=
 endif
 
-#CPPSTD_VERSION_FLAG, COPTIMIZE_FLAGS, INCLUDES_PATH_COMPILER_DIRECTIVES, and CWARNING_FLAGS come from the included Configuration.mk file
 CFLAGS		+=	$(CPPSTD_VERSION_FLAG)  $(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
+
+
+ifeq ($(IncludeDebugSymbolsInLibraries), 1)
+	CFLAGS += -g
+endif
+ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
+	CFLAGS +=  -D_GLIBCXX_DEBUG 
+endif
+CFLAGS	+=			$(EXTRA_COMPILER_ARGS) $(INCLUDES_PATH)
+
 
 
 
 ECHO_BUILD_LINES	?=	0
-
-
-
-
 
 ENABLE_GLIBCXX_DEBUG?=0
 
@@ -85,15 +98,6 @@ endif
 
 
 
-
-
-ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-	CFLAGS += -g
-endif
-ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-	CFLAGS +=  -D_GLIBCXX_DEBUG 
-endif
-CFLAGS	+=			$(EXTRA_COMPILER_ARGS) $(INCLUDES_PATH)
 
 
 
@@ -177,19 +181,20 @@ ifndef StroikaLinkerSuffixArgs
 endif
 
 
-StroikaLinkerSuffixArgs	+=	$(StroikaLibs)
 
 
 
 ifeq ($(IncludeDebugSymbolsInExecutables), 1)
 	StroikaLinkerPrefixArgs += -g
 endif
-
 StroikaLinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
+
+
+
+StroikaLinkerSuffixArgs	+=	$(StroikaLibs)
 
 # Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
 StroikaLinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
-
 
 #### much of this can be removed/cleanedup done another way... @todo -LGP 2018-05-01
 StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
