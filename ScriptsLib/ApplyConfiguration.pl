@@ -430,11 +430,6 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
 	}
 
-
-	IncludeDebugSymbolsInExecutables	=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInExecutables)
-IncludeDebugSymbolsInLibraries		=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
-
-
 	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
 	print (OUT "qFeatureFlag_OpenSSL='$FEATUREFLAG_OpenSSL'\n");
 	print (OUT "qFeatureFlag_WinHTTP='$FEATUREFLAG_WinHTTP'\n");
