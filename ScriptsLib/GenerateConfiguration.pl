@@ -468,7 +468,10 @@ sub	SetDefaultForCompilerDriver_
 	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 4.9) {
+			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 6.0) {
+				$CPPSTD_VERSION_FLAG="--std=c++17"
+			}
+			else if (GetGCCVersion_ ($COMPILER_DRIVER) >= 4.9) {
 				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 			else {
@@ -476,8 +479,8 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER) >= '99.0') {	### not 4.0 not working with clang - could be my bug but dont default to not working
-				$CPPSTD_VERSION_FLAG="--std=c++1z"
+			if (GetClangVersion_ ($COMPILER_DRIVER) >= '5.0') {	### not 4.0 not working with clang - could be my bug but dont default to not working
+				$CPPSTD_VERSION_FLAG="--std=c++17"
 			}
 			else {
 				$CPPSTD_VERSION_FLAG="--std=c++14"
