@@ -1294,20 +1294,20 @@ sub PostProcessOptions_ ()
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
 				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=libstdc++.a 2>/dev/null`);
 				if (defined $lib) {
-					$EXTRA_SUFFIX_LINKER_ARGS .= " $lib";
+					push @LIB_DEPENDENCIES_ADD, " $lib";
 				}
 			}
 			else {
-				$EXTRA_SUFFIX_LINKER_ARGS .= " -lstdc++";
+				push @LIB_DEPENDENCIES_ADD, " -lstdc++";
 			}
 		}
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
-				$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libstdc++";
+			$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libstdc++";
 		}
 
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8') {
-				$EXTRA_SUFFIX_LINKER_ARGS .= " -lstdc++fs";
+				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
@@ -1315,17 +1315,19 @@ sub PostProcessOptions_ ()
 				#xcode not supporting filesystem API (so use boost)
 				#$EXTRA_SUFFIX_LINKER_ARGS .= " -lc++experimental";
 				if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
-					$EXTRA_SUFFIX_LINKER_ARGS .= " -lboost_system";
-					$EXTRA_SUFFIX_LINKER_ARGS .= " -lboost_filesystem";
+					push @LIB_DEPENDENCIES_ADD, "-lboost_system";
+					push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";
 				}
 			}
 			else {
 				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
-					if (index ($EXTRA_SUFFIX_LINKER_ARGS, "-stdlib=libc++") != -1) {
-						$EXTRA_SUFFIX_LINKER_ARGS .= " -lc++experimental";
+					if (/-stdlib=libc++/i ~~ @LIB_DEPENDENCIES_ADD) {
+					#if (index ($EXTRA_SUFFIX_LINKER_ARGS, "-stdlib=libc++") != -1) {
+						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+						push @LIB_DEPENDENCIES_ADD, "-lc++experimental";
 					}
 					else {
-						$EXTRA_SUFFIX_LINKER_ARGS .= " -lstdc++fs";
+						push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 					}
 				}
 			}
