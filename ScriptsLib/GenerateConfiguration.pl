@@ -471,7 +471,7 @@ sub	SetDefaultForCompilerDriver_
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 6.0) {
 				$CPPSTD_VERSION_FLAG="--std=c++17"
 			}
-			else if (GetGCCVersion_ ($COMPILER_DRIVER) >= 4.9) {
+			elsif (GetGCCVersion_ ($COMPILER_DRIVER) >= 4.9) {
 				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 			else {
