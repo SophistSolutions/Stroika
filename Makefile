@@ -374,7 +374,6 @@ regression-test-configurations:
 		./configure gcc-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.4.0-debug-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-6.4.0-release-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
-		./configure my-gcc-7.2.0-debug-c++14 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++14;\
 		./configure my-gcc-7.2.0-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
 		./configure my-gcc-7.2.0-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
 		#\
@@ -414,4 +413,4 @@ regression-test-configurations:
 
 
 install-realpath:
-	g++ --std=c++14 -O -o /usr/local/bin/realpath BuildToolsSrc/realpath.cpp
+	g++ --std=c++17 -O -o /usr/local/bin/realpath BuildToolsSrc/realpath.cpp
