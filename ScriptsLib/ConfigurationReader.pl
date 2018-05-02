@@ -214,9 +214,13 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'CrossCompiling'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<EXTRA_LINKER_ARGS>");
+		my $pps = ReadValue_($line, "<EXTRA_PREFIX_LINKER_ARGS>");
 		if (defined $pps) {
-			$configuration {'EXTRA_LINKER_ARGS'} = $pps;
+			$configuration {'EXTRA_PREFIX_LINKER_ARGS'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<EXTRA_SUFFIX_LINKER_ARGS>");
+		if (defined $pps) {
+			$configuration {'EXTRA_SUFFIX_LINKER_ARGS'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<RUN_PREFIX>");
 		if (defined $pps) {
