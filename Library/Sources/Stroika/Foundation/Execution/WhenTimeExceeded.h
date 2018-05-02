@@ -29,8 +29,8 @@ namespace Stroika {
                 ~WhenTimeExceeded ();
 
             private:
-                Time::DurationSecondsType fStartedAt_;
-                Time::DurationSecondsType fCallIfTakesLongerThan_;
+                Time::DurationSecondsType                 fStartedAt_;
+                Time::DurationSecondsType                 fCallIfTakesLongerThan_;
                 function<void(Time::DurationSecondsType)> fRunIfTakesTooLong;
             };
         }
