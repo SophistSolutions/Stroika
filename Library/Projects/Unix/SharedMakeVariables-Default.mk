@@ -162,7 +162,7 @@ endif
 ####
 ####
 ####	Expected Link Line
-####		g++ $(StroikaLinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(LinkerSuffixArgs)
+####		g++ $(StroikaLinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(StroikaLinkerSuffixArgs)
 ####	
 ####	Stuff in StroikaLinkerPrefixArgs includes stuff like -L - directories to search, and -g, etc.
 ####	
@@ -172,12 +172,12 @@ endif
 ifndef StroikaLinkerPrefixArgs
 	StroikaLinkerPrefixArgs	=	
 endif
-ifndef LinkerSuffixArgs
-	LinkerSuffixArgs	=	
+ifndef StroikaLinkerSuffixArgs
+	StroikaLinkerSuffixArgs	=	
 endif
 
 
-LinkerSuffixArgs	+=	$(StroikaLibs)
+StroikaLinkerSuffixArgs	+=	$(StroikaLibs)
 
 
 
@@ -188,11 +188,11 @@ endif
 StroikaLinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
 
 # Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
-LinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
+StroikaLinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 
 
 #### much of this can be removed/cleanedup done another way... @todo -LGP 2018-05-01
-LinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
+StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
 
 
 
