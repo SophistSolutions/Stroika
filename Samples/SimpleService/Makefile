@@ -20,8 +20,8 @@ ECHO?=$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 ECHO_BUILD_LINES?=0
 
 
-Includes				+=	-I.
-Includes				+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleService/
+CFLAGS					+=	-I.
+CFLAGS					+=	-I$(StroikaRoot)IntermediateFiles/$(CONFIGURATION)/Samples-SimpleService/
 
 TARGETDIR				=	$(StroikaRoot)Builds/$(CONFIGURATION)/Samples-SimpleService/
 ifeq (VisualStudio,$(findstring VisualStudio,$(ProjectPlatformSubdir)))
