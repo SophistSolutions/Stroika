@@ -174,7 +174,7 @@ ifeq ($(IncludeDebugSymbolsInExecutables), 1)
 	LinkerPrefixArgs += -g
 endif
 
-LinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH)
+LinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
 
 # Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
 LinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
