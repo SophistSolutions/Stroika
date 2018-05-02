@@ -38,10 +38,6 @@ namespace {
     {
         (sFatalErrorHandler_) (SDKSTR ("std::terminate () called"));
     }
-    void UnexpectedHandler_ ()
-    {
-        (sFatalErrorHandler_) (SDKSTR ("std::unexpected () called"));
-    }
 #if qPlatform_Windows
     void PurecallHandler_ ()
     {
@@ -54,7 +50,6 @@ void Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const 
 {
     sFatalErrorHandler_ = (fatalErrorHandler == nullptr) ? _DefaultFatalErrorHandler_ : fatalErrorHandler;
     set_terminate (TerminateHandler_);
-    set_unexpected (UnexpectedHandler_);
 #if qPlatform_Windows
     // Not C++ standard - just msvc error call
     (void)_set_purecall_handler (PurecallHandler_);
