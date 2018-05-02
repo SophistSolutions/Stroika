@@ -103,7 +103,8 @@ my $AR = undef;
 my $RANLIB = undef;
 my $STRIP = undef;
 my $EXTRA_COMPILER_ARGS = "";
-my $EXTRA_LINKER_ARGS = "";
+my $EXTRA_PREFIX_LINKER_ARGS = "";
+my $EXTRA_SUFFIX_LINKER_ARGS = "";
 my $RUN_PREFIX = "";			# for now just used as prefix for stuff like LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3, esp for running tests
 my $CrossCompiling = "false";
 my $onlyGenerateIfCompilerExists = false;
@@ -494,7 +495,7 @@ sub	SetDefaultForCompilerDriver_
 			$CWARNING_FLAGS = $CWARNING_FLAGS . $DEFAULT_CWARNING_FLAGS_GCC;
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 5.2 && GetGCCVersion_ ($COMPILER_DRIVER) < 6) {
 				#This is broken in gcc 5.2 - #https://gcc.gnu.org/ml/gcc-bugs/2015-08/msg01811.html
-				$EXTRA_LINKER_ARGS = $EXTRA_LINKER_ARGS . " -Wno-odr"
+				$EXTRA_PREFIX_LINKER_ARGS = $EXTRA_PREFIX_LINKER_ARGS . " -Wno-odr"
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
@@ -574,7 +575,7 @@ sub	SetDefaultForCompilerDriver_
 		}
 
 		#helpful to print stack traces in log (not critical, and has performance overhead)
-		$EXTRA_LINKER_ARGS .= " -rdynamic";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -rdynamic";
 	}
 	elsif ($ApplyReleaseFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
@@ -916,15 +917,28 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-extra-linker-args") or (lc ($var) eq "--extra-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
-			$EXTRA_LINKER_ARGS = $var;
+			$EXTRA_PREFIX_LINKER_ARGS = $var;
 		}
 		elsif ((lc ($var) eq "-append-extra-linker-args") or (lc ($var) eq "--append-extra-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
-			if (not ($EXTRA_LINKER_ARGS eq "")) {
-				$EXTRA_LINKER_ARGS .= " ";
+			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
+				$EXTRA_PREFIX_LINKER_ARGS .= " ";
 			}
-			$EXTRA_LINKER_ARGS .= $var;
+			$EXTRA_PREFIX_LINKER_ARGS .= $var;
+		}
+		elsif ((lc ($var) eq "-extra-linker-args") or (lc ($var) eq "--extra-linker-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			$EXTRA_SUFFIX_LINKER_ARGS = $var;
+		}
+		elsif ((lc ($var) eq "-append-extra-linker-args") or (lc ($var) eq "--append-extra-linker-args")) {
+			$i++;
+			$var = $ARGV[$i];
+			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
+				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+			}
+			$EXTRA_SUFFIX_LINKER_ARGS .= $var;
 		}
 		elsif ((lc ($var) eq "-includes-path") or (lc ($var) eq "--includes-path")) {
 			$i++;
@@ -976,10 +990,14 @@ sub	ParseCommandLine_Remaining_
 				$EXTRA_COMPILER_ARGS .= " ";
 			}
 			$EXTRA_COMPILER_ARGS .= $var;
-			if (not ($EXTRA_LINKER_ARGS eq "")) {
-				$EXTRA_LINKER_ARGS .= " ";
+			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
+				$EXTRA_PREFIX_LINKER_ARGS .= " ";
 			}
-			$EXTRA_LINKER_ARGS .= $var;
+			$EXTRA_PREFIX_LINKER_ARGS .= $var;
+			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
+				$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+			}
+			$EXTRA_SUFFIX_LINKER_ARGS .= $var;
 		}
 		elsif ((lc ($var) eq "-lto") or (lc ($var) eq "--lto")) {
 			$i++;
@@ -1085,7 +1103,7 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-pg") or (lc ($var) eq "--pg")) {
 			$EXTRA_COMPILER_ARGS .= " -pg";
-			$EXTRA_LINKER_ARGS .= " -pg";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -pg";
 		}
 		elsif ((lc ($var) eq "-apply-default-debug-flags") or (lc ($var) eq "--apply-default-debug-flags")) {
 			#HANDLED EARLIER
@@ -1186,7 +1204,7 @@ sub PostProcessOptions_ ()
 	if ($ENABLE_LTO == true) {
 		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus) || IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			$EXTRA_COMPILER_ARGS .= " -flto";
-			$EXTRA_LINKER_ARGS .= " -flto";
+			$EXTRA_PREFIX_LINKER_ARGS .= " -flto";
 		}
 		if (IsMSVCCompiler_($COMPILER_DRIVER_CPlusPlus)) {
 			$COPTIMIZE_FLAGS .= " /GL";
@@ -1194,19 +1212,19 @@ sub PostProcessOptions_ ()
 	}
 	if ($sanitizerFlagsIsDefined and ($#sanitizerFlags != -1)) {
 		$EXTRA_COMPILER_ARGS .= " -fsanitize=";
-		$EXTRA_LINKER_ARGS .= " -fsanitize=";
+		$EXTRA_PREFIX_LINKER_ARGS .= " -fsanitize=";
 		foreach my $i (0 .. $#sanitizerFlags) {
 			$EXTRA_COMPILER_ARGS .= $sanitizerFlags[$i];
-			$EXTRA_LINKER_ARGS .= $sanitizerFlags[$i];
+			$EXTRA_PREFIX_LINKER_ARGS .= $sanitizerFlags[$i];
 			if ($i < $#sanitizerFlags) {
 				$EXTRA_COMPILER_ARGS .= ",";
-				$EXTRA_LINKER_ARGS .= ",";
+				$EXTRA_PREFIX_LINKER_ARGS .= ",";
 			}
 		}
 	}
 	if (not ($noSanitizerFlags eq "")) {
 		$EXTRA_COMPILER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
-		$EXTRA_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
+		$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
 		if ($CrossCompiling eq "false") {
@@ -1273,38 +1291,38 @@ sub PostProcessOptions_ ()
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
 				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=libstdc++.a 2>/dev/null`);
 				if (defined $lib) {
-					$EXTRA_LINKER_ARGS .= " $lib";
+					$EXTRA_SUFFIX_LINKER_ARGS .= " $lib";
 				}
 			}
 			else {
-				$EXTRA_LINKER_ARGS .= " -lstdc++";
+				$EXTRA_SUFFIX_LINKER_ARGS .= " -lstdc++";
 			}
 		}
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
-				$EXTRA_LINKER_ARGS .= " -static-libstdc++";
+				$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libstdc++";
 		}
 
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8') {
-				$EXTRA_LINKER_ARGS .= " -lstdc++fs";
+				$EXTRA_SUFFIX_LINKER_ARGS .= " -lstdc++fs";
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
 			if ("$^O" eq "darwin") {
 				#xcode not supporting filesystem API (so use boost)
-				#$EXTRA_LINKER_ARGS .= " -lc++experimental";
+				#$EXTRA_SUFFIX_LINKER_ARGS .= " -lc++experimental";
 				if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
-					$EXTRA_LINKER_ARGS .= " -lboost_system";
-					$EXTRA_LINKER_ARGS .= " -lboost_filesystem";
+					$EXTRA_SUFFIX_LINKER_ARGS .= " -lboost_system";
+					$EXTRA_SUFFIX_LINKER_ARGS .= " -lboost_filesystem";
 				}
 			}
 			else {
 				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
-					if (index ($EXTRA_LINKER_ARGS, "-stdlib=libc++") != -1) {
-						$EXTRA_LINKER_ARGS .= " -lc++experimental";
+					if (index ($EXTRA_SUFFIX_LINKER_ARGS, "-stdlib=libc++") != -1) {
+						$EXTRA_SUFFIX_LINKER_ARGS .= " -lc++experimental";
 					}
 					else {
-						$EXTRA_LINKER_ARGS .= " -lstdc++fs";
+						$EXTRA_SUFFIX_LINKER_ARGS .= " -lstdc++fs";
 					}
 				}
 			}
@@ -1391,7 +1409,8 @@ sub	WriteConfigFile_
 		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
 	}
 	print (OUT "    <EXTRA_COMPILER_ARGS>$EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
-	print (OUT "    <EXTRA_LINKER_ARGS>$EXTRA_LINKER_ARGS</EXTRA_LINKER_ARGS>\n");
+	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
+	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
 
 	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
 

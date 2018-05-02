@@ -60,7 +60,8 @@ my $COMPILER_DRIVER_CPlusPlus = "";
 my $AR = undef;
 my $RANLIB = undef;
 my $EXTRA_COMPILER_ARGS = "";
-my $EXTRA_LINKER_ARGS = "";
+my $EXTRA_PREFIX_LINKER_ARGS = "";
+my $EXTRA_SUFFIX_LINKER_ARGS = "";
 
 
 #quite unclear why this is needed - or even if it is - but it appears to be that
@@ -120,7 +121,8 @@ sub	ReadConfiguration_
 	$AR = GetConfigurationParameter($activeConfiguration, "AR");
 	$RANLIB = GetConfigurationParameter($activeConfiguration, "RANLIB");
 	$EXTRA_COMPILER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_COMPILER_ARGS");
-	$EXTRA_LINKER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_LINKER_ARGS");
+	$EXTRA_PREFIX_LINKER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_PREFIX_LINKER_ARGS");
+	$EXTRA_SUFFIX_LINKER_ARGS = GetConfigurationParameter($activeConfiguration, "EXTRA_SUFFIX_LINKER_ARGS");
 
 	$FEATUREFLAG_LIBCURL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LibCurl");
 	$FEATUREFLAG_OpenSSL = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_OpenSSL");
@@ -545,8 +547,10 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "EXTRA_COMPILER_ARGS=	$EXTRA_COMPILER_ARGS\n");
 
 	print (OUT "#\n");
-	print (OUT "#EXTRA_LINKER_ARGS TOOL\n");
-	print (OUT "EXTRA_LINKER_ARGS=	$EXTRA_LINKER_ARGS\n");
+	print (OUT "#EXTRA_PREFIX_LINKER_ARGS TOOL\n");
+	print (OUT "EXTRA_PREFIX_LINKER_ARGS=	$EXTRA_PREFIX_LINKER_ARGS\n");
+	print (OUT "#EXTRA_SUFFIX_LINKER_ARGS TOOL\n");
+	print (OUT "EXTRA_SUFFIX_LINKER_ARGS=	$EXTRA_SUFFIX_LINKER_ARGS\n");
 
 	print (OUT "IncludeDebugSymbolsInExecutables=	$IncludeDebugSymbolsInExecutables\n");
 	print (OUT "IncludeDebugSymbolsInLibraries=	$IncludeDebugSymbolsInLibraries\n");

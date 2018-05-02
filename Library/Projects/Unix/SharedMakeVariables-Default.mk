@@ -144,7 +144,7 @@ ifndef StroikaLibsWithSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 
 	#tmphack - added $(EXTRA_LINKER_ARGS) here as so stdlib etc come AFTER stroika libs so they get pulled in - need double listing of libs sometimes
-	StroikaLibsWithSupportLibs	=	$(LIBS_PATH_DIRECTIVES) $(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_LINKER_ARGS)
+	StroikaLibsWithSupportLibs	=	$(LIBS_PATH_DIRECTIVES) $(StroikaLibs) $(StroikaSupportLibs) $(EXTRA_PREFIX_LINKER_ARGS) $(EXTRA_SUFFIX_LINKER_ARGS)
 endif
 
 
@@ -174,10 +174,10 @@ ifeq ($(IncludeDebugSymbolsInExecutables), 1)
 	LinkerPrefixArgs += -g
 endif
 
-LinkerPrefixArgs+=	$(EXTRA_LINKER_ARGS) $(LIBS_PATH)
+LinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH)
 
 # Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
-LinkerSuffixArgs+=	$(LIB_DEPENDENCIES)
+LinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 
 
 
