@@ -140,6 +140,11 @@ sub	ReadConfiguration_
 	$LIB_DEPENDENCIES = GetConfigurationParameter($activeConfiguration, "LIB_DEPENDENCIES");
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_TRACE2FILE"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter($activeConfiguration, "OptimizerFlag");
+
+	$IncludeDebugSymbolsInExecutables = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInExecutables");
+	$IncludeDebugSymbolsInLibraries = GetConfigurationParameter($activeConfiguration, "IncludeDebugSymbolsInLibraries");
+
+
 	if (not (defined $COPTIMIZE_FLAGS)) {
 		$COPTIMIZE_FLAGS = "";
 	}
@@ -426,6 +431,10 @@ sub WriteStroikaConfigMakeHeader
 	}
 
 
+	IncludeDebugSymbolsInExecutables	=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInExecutables)
+IncludeDebugSymbolsInLibraries		=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
+
+
 	print (OUT "qFeatureFlag_LibCurl='$FEATUREFLAG_LIBCURL'\n");
 	print (OUT "qFeatureFlag_OpenSSL='$FEATUREFLAG_OpenSSL'\n");
 	print (OUT "qFeatureFlag_WinHTTP='$FEATUREFLAG_WinHTTP'\n");
@@ -543,6 +552,9 @@ sub WriteStroikaConfigMakeHeader
 	print (OUT "#\n");
 	print (OUT "#EXTRA_LINKER_ARGS TOOL\n");
 	print (OUT "EXTRA_LINKER_ARGS=	$EXTRA_LINKER_ARGS\n");
+
+	print (OUT "IncludeDebugSymbolsInExecutables=	$IncludeDebugSymbolsInExecutables\n");
+	print (OUT "IncludeDebugSymbolsInLibraries=	$IncludeDebugSymbolsInLibraries\n");
 
 	print (OUT "\n");
 

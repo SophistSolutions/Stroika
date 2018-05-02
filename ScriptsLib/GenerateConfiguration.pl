@@ -110,6 +110,7 @@ my $onlyGenerateIfCompilerExists = false;
 my $INCLUDES_PATH = undef;		# space separated list
 my @INCLUDES_PATH_ADD  = qw();
 my $LIBS_PATH = undef;			# space separated list
+my @LIBS_PATH_ADD  = qw();
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
 
@@ -276,7 +277,6 @@ sub     FillDefaultIncludesPathIfNeeded_
 		}
 		$INCLUDES_PATH .= $var;
 	}
-
 	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -304,8 +304,18 @@ sub     FillDefaultIncludesPathIfNeeded_
 }
 sub     FillDefaultLibsPathIfNeeded_
 {
+	my $includeAutomaticDependencies = !defined ($LIBS_PATH);
 	if (!defined ($LIBS_PATH)) {
 		$LIBS_PATH = "";
+	}
+	my $var;
+	foreach $var (@LIBS_PATH_ADD) {
+		if (not ($LIBS_PATH eq "")) {
+			$LIBS_PATH .= " ";
+		}
+		$LIBS_PATH .= $var;
+	}
+	if ($includeAutomaticDependencies) {
 		if (
 			$FEATUREFLAG_Xerces eq $LIBFEATUREFLAG_UseStaticTPP ||
 			$FEATUREFLAG_LIBCURL eq $LIBFEATUREFLAG_UseStaticTPP ||
@@ -934,11 +944,7 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-append-2-libs-path") or (lc ($var) eq "--append-2-libs-path")) {
 			$i++;
 			$var = $ARGV[$i];
-			FillDefaultLibsPathIfNeeded_();
-			if (not ($LIBS_PATH eq "")) {
-				$LIBS_PATH .= " ";
-			}
-			$LIBS_PATH .= $var;
+			push @LIBS_PATH_ADD, $var;
 		}
 		elsif ((lc ($var) eq "-lib-dependencies") or (lc ($var) eq "--lib-dependencies")) {
 			$i++;

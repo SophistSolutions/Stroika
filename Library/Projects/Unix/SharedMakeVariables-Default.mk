@@ -34,15 +34,6 @@ endif
 ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 
-ifndef Includes
-	Includes	=	
-endif
-
-Includes	+=	$(INCLUDES_PATH_COMPILER_DIRECTIVES)
-
-IncludeDebugSymbolsInExecutables	=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInExecutables)
-IncludeDebugSymbolsInLibraries		=	$(shell perl $(StroikaRoot)/ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
-
 
 ifndef StroikaFoundationLib
 	StroikaFoundationLib		=	$(StroikaLibDir)Stroika-Foundation.a
@@ -52,38 +43,13 @@ ifndef StroikaFrameworksLib
 endif
 
 
-# Intentionally use '=' instead of ':=' so $Includes can get re-evaluated
+# Intentionally use '=' instead of ':=' so variables included in CFLAGS can get re-evaluated
 ifndef CFLAGS
 	CFLAGS		=
 endif
 
-
-ifndef CWARNING_FLAGS
-	# These mostly don't matter, since the configure script should set this
-	CWARNING_FLAGS		=	\
-				-Wall \
-				-Wno-switch	\
-				-Wno-sign-compare \
-				-Wno-unused-variable \
-				-Wno-unused-but-set-variable \
-				-Wno-unused-value \
-				-Wno-strict-aliasing \
-				-Wno-unused-local-typedefs \
-				-Wno-comment
-endif
-
-
-#default to latest released version (except latest gcc is 4.9 and it only supports up to c++11)
-# as of stroika 2.0a211 - we require at least c++14 (at least testing if this is OK)
-ifndef CPPSTD_VERSION_FLAG
-	#CPPSTD_VERSION_FLAG	=	--std=c++17
-	CPPSTD_VERSION_FLAG		=	--std=c++14
-endif
-
-
-CFLAGS		+=	$(CPPSTD_VERSION_FLAG)  $(COPTIMIZE_FLAGS) $(Includes) $(CWARNING_FLAGS)
-
-
+#CPPSTD_VERSION_FLAG, COPTIMIZE_FLAGS, INCLUDES_PATH_COMPILER_DIRECTIVES, and CWARNING_FLAGS come from the included Configuration.mk file
+CFLAGS		+=	$(CPPSTD_VERSION_FLAG)  $(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
 
 
 
@@ -117,8 +83,24 @@ endif
 
 
 
+
+
+ifeq ($(IncludeDebugSymbolsInLibraries), 1)
+	CFLAGS += -g
+endif
+ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
+	CFLAGS +=  -D_GLIBCXX_DEBUG 
+endif
+CFLAGS	+=			$(EXTRA_COMPILER_ARGS) $(INCLUDES_PATH)
+
+
+
+
 TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
 
+
+
+#### @todo SOON MAKE THIS OBSOLETE
 ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	StroikaFoundationSupportLibs	=
@@ -140,11 +122,6 @@ ifndef StroikaFoundationSupportLibs
 	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
 
 endif
-ifndef StroikaFrameworksSupportLibs
-	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaFrameworksSupportLibs	=	
-endif
-
 
 
 
@@ -155,10 +132,14 @@ ifndef StroikaLibs
 	StroikaLibs					=	$(StroikaFrameworksLib) $(StroikaFoundationLib)
 endif
 
+
+
+####DEPRECATD####
 ifndef StroikaSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaSupportLibs			=	$(StroikaFoundationSupportLibs) $(StroikaFrameworksSupportLibs)
+	StroikaSupportLibs			=	$(StroikaFoundationSupportLibs)
 endif
+####DEPRECATD####
 ifndef StroikaLibsWithSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 
@@ -167,37 +148,38 @@ ifndef StroikaLibsWithSupportLibs
 endif
 
 
+####
+####
+####	Expected Link Line
+####		g++ $(LinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(LinkerSuffixArgs)
+####	
+####	Stuff in LinkerPrefixArgs includes stuff like -L - directories to search, and -g, etc.
+####	
+####
 
-
+# Intentionally use '=' instead of ':=' so variables included in LinkerPrefixArgs can get re-evaluated
 ifndef LinkerPrefixArgs
 	LinkerPrefixArgs	=	
 endif
-
-
-
-ifeq ($(ENABLE_GLIBCXX_DEBUG), 1)
-	CFLAGS +=  -D_GLIBCXX_DEBUG 
+ifndef LinkerSuffixArgs
+	LinkerSuffixArgs	=	
 endif
 
 
+LinkerSuffixArgs	+=	$(StroikaLibs)
 
-ifeq ($(IncludeDebugSymbolsInLibraries), 1)
-	CFLAGS += -g
-endif
 
 
 ifeq ($(IncludeDebugSymbolsInExecutables), 1)
 	LinkerPrefixArgs += -g
 endif
 
-
-
-CFLAGS	+=			$(EXTRA_COMPILER_ARGS) $(INCLUDES_PATH)
-LinkerPrefixArgs+=	$(EXTRA_LINKER_ARGS) $(LIBS_PATH) $(LIB_DEPENDENCIES)
-
+LinkerPrefixArgs+=	$(EXTRA_LINKER_ARGS) $(LIBS_PATH)
 
 # Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
 LinkerSuffixArgs+=	$(LIB_DEPENDENCIES)
+
+
 
 ifndef AR
 	AR	= ar
