@@ -180,6 +180,10 @@ LinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
 LinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 
 
+#### much of this can be removed/cleanedup done another way... @todo -LGP 2018-05-01
+LinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
+
+
 
 ifndef AR
 	AR	= ar
