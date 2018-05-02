@@ -22,14 +22,16 @@ ifndef StroikaPlatformTargetBuildDir
 	StroikaPlatformTargetBuildDir		=	$(StroikaRoot)Builds/$(CONFIGURATION)/
 endif
 
+
+###@todo probably deprecate this
 ifndef StroikaLibDir
 	StroikaLibDir		=	$(StroikaPlatformTargetBuildDir)
 endif
 
 
-ifndef StroikaLinkerArgs
-	StroikaLinkerArgs	= 
-endif
+#ifndef StroikaLinkerArgs
+#	StroikaLinkerArgs	= 
+#endif
 
 ECHO?=	$(shell $(StroikaRoot)ScriptsLib/GetDefaultShellVariable.sh ECHO)
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -99,6 +101,11 @@ CFLAGS	+=			$(EXTRA_COMPILER_ARGS) $(INCLUDES_PATH)
 TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
 
 
+### to make this osboetel, 2 new config arrays:
+	### PKG_CONFIG_STATIC_COMPONENTS=libcurl openssl			(this we invoke pkg-config with --static...)
+	### PKG_CONFIG_DYNLIB_COMPONENTS=libcurl openssl
+
+	###AND TPP_PKG_CONFIG_PATH goes into config (as above)
 
 #### @todo SOON MAKE THIS OBSOLETE
 ifndef StroikaFoundationSupportLibs
@@ -124,7 +131,11 @@ ifndef StroikaFoundationSupportLibs
 endif
 
 
-
+#
+#	StroikaLibs
+#
+#		This is a space separated list of full-pathnames to the stroika library file(s)
+#
 ifndef StroikaLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
 	# NOTE - for UNIX linker - we must put libraries that depend on other libraries first
@@ -151,15 +162,15 @@ endif
 ####
 ####
 ####	Expected Link Line
-####		g++ $(LinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(LinkerSuffixArgs)
+####		g++ $(StroikaLinkerPrefixArgs) $(OJS-and-App-Libs) -o OUTPUTFILE $(LinkerSuffixArgs)
 ####	
-####	Stuff in LinkerPrefixArgs includes stuff like -L - directories to search, and -g, etc.
+####	Stuff in StroikaLinkerPrefixArgs includes stuff like -L - directories to search, and -g, etc.
 ####	
 ####
 
-# Intentionally use '=' instead of ':=' so variables included in LinkerPrefixArgs can get re-evaluated
-ifndef LinkerPrefixArgs
-	LinkerPrefixArgs	=	
+# Intentionally use '=' instead of ':=' so variables included in StroikaLinkerPrefixArgs can get re-evaluated
+ifndef StroikaLinkerPrefixArgs
+	StroikaLinkerPrefixArgs	=	
 endif
 ifndef LinkerSuffixArgs
 	LinkerSuffixArgs	=	
@@ -171,10 +182,10 @@ LinkerSuffixArgs	+=	$(StroikaLibs)
 
 
 ifeq ($(IncludeDebugSymbolsInExecutables), 1)
-	LinkerPrefixArgs += -g
+	StroikaLinkerPrefixArgs += -g
 endif
 
-LinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
+StroikaLinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
 
 # Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
 LinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)

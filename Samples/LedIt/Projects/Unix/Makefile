@@ -210,7 +210,7 @@ clobber:	clean
 
 
 $(LedItTarget):	 $(ObjDir) $(ObjDir)Led.a	$(OBJS)
-	$(LD) $(LinkerPrefixArgs) -o $(LedItTarget) $(OBJS) $(ObjDir)Led.a $(LDFLAGS)
+	$(LD) $(StroikaLinkerPrefixArgs) -o $(LedItTarget) $(OBJS) $(ObjDir)Led.a $(LDFLAGS)
 
 
 
