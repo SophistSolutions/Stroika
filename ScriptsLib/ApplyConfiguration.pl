@@ -507,9 +507,6 @@ sub WriteStroikaConfigMakeHeader
 
 	
 	print (OUT "\n");
-	print (OUT "STATIC_LINK_GCCRUNTIME=	$STATIC_LINK_GCCRUNTIME\n");
-	print (OUT "IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD=	$IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD\n");
-	print (OUT "\n");
 	print (OUT "\n");
 	print (OUT "# Can be blank, or -O2, etc..\n");
 	print (OUT "COPTIMIZE_FLAGS=	$COPTIMIZE_FLAGS\n");

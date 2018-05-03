@@ -1481,9 +1481,6 @@ sub	WriteConfigFile_
 	if (not ($COPTIMIZE_FLAGS eq "")) {
 		print (OUT "    <OptimizerFlag>$COPTIMIZE_FLAGS</OptimizerFlag>\n");
 	}
-	if ($STATIC_LINK_GCCRUNTIME != DEFAULT_BOOL_OPTIONS) {
-		print (OUT "    <STATIC_LINK_GCCRUNTIME>$STATIC_LINK_GCCRUNTIME</STATIC_LINK_GCCRUNTIME>\n");
-	}
 
 	FillDefaultLibsPathIfNeeded_();
 	FillDefaultLibDependencies_();

@@ -154,10 +154,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'IncludeDebugSymbolsInExecutables'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<STATIC_LINK_GCCRUNTIME>");
-		if (defined $pps) {
-			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<ENABLE_TRACE2FILE>");
 		if (defined $pps) {
 			$configuration {'ENABLE_TRACE2FILE'} = $pps;
@@ -173,10 +169,6 @@ sub	ReadConfigFile_ {
 		my $pps = ReadValue_($line, "<CWARNING_FLAGS>");
 		if (defined $pps) {
 			$configuration {'CWARNING_FLAGS'} = $pps;
-		}
-		my $pps = ReadValue_($line, "<STATIC_LINK_GCCRUNTIME>");
-		if (defined $pps) {
-			$configuration {'STATIC_LINK_GCCRUNTIME'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<AR>");
 		if (defined $pps) {

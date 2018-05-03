@@ -75,27 +75,6 @@ ENABLE_GLIBCXX_DEBUG?=0
 
 
 
-#ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
-#  ifeq ($(IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD), 1)
-#    STDCPPLIBArgs		:=      $(shell $(Linker) -print-file-name=libstdc++.a)
-#	ifeq ("$(wildcard $(STDCPPLIBArgs))","")
-#		$(error Failed to find libstdc++.a using -print-file-name - maybe turn IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD or apt-get install glibc-static)
-#	endif
-#  else
-#    STDCPPLIBArgs		:=		-lstdc++
-#  endif
-#else
-#  STDCPPLIBArgs			:=		-lstdc++
-#endif
-#ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
-#	STDCPPLIBArgs	+=  -static-libstdc++
-#endif
-
-
-
-
-
-
 
 
 TPP_PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing $(StroikaPlatformTargetBuildDir))/ThirdPartyComponents/lib/pkgconfig
