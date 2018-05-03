@@ -3,6 +3,7 @@
 #TRY THESE AGAIN, but for now generate too many problems...
 use strict;
 use warnings;
+no warnings 'experimental::smartmatch';
 
 BEGIN{ @INC = ( "./", @INC ); }
 
