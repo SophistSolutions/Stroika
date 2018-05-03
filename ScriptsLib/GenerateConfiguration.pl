@@ -1361,10 +1361,18 @@ sub	WriteConfigFile_
 	print (OUT "<Configuration>\n");
 	print (OUT "    <ProjectPlatformSubdir>$PROJECTPLATFORMSUBDIR</ProjectPlatformSubdir>\n");
 	print (OUT "    <ARCH>$ARCH</ARCH>\n");
-	#print (OUT "    <Platform>$platform</Platform>\n");
 
 	print (OUT "    <CompilerDriver-C>$COMPILER_DRIVER_C</CompilerDriver-C>\n");
 	print (OUT "    <CompilerDriver-C++>$COMPILER_DRIVER_CPlusPlus</CompilerDriver-C++>\n");
+
+	print (OUT "    <ExtraMakeDefines>\n");
+		foreach my $var (@useExtraMakeDefines)
+		{
+			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
+		}
+	print (OUT "    </ExtraMakeDefines>\n");
+
+
 	if ($ENABLE_ASSERTIONS != DEFAULT_BOOL_OPTIONS) {
 		print (OUT "    <ENABLE_ASSERTIONS>$ENABLE_ASSERTIONS</ENABLE_ASSERTIONS>\n");
 	}
@@ -1372,13 +1380,6 @@ sub	WriteConfigFile_
 		print (OUT "    <ENABLE_GLIBCXX_DEBUG>$ENABLE_GLIBCXX_DEBUG</ENABLE_GLIBCXX_DEBUG>\n");
 	}
 
-	if (not ($CPPSTD_VERSION_FLAG eq "")) {
-		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
-	}
-	if (not ($CWARNING_FLAGS eq "")) {
-		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");
-	}
-	
 	
 	print (OUT "    <qFeatureFlag_ActivePerl>$FEATUREFLAG_ActivePerl</qFeatureFlag_ActivePerl>\n");
 	print (OUT "    <qFeatureFlag_boost>$FEATUREFLAG_boost</qFeatureFlag_boost>\n");
@@ -1401,24 +1402,27 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 	print (OUT "    <qFeatureFlag_librt>$FEATUREFLAG_librt</qFeatureFlag_librt>\n");
 
-	if (defined $AR) {
-		print (OUT "    <AR>$AR</AR>\n");
+	if (not ($CPPSTD_VERSION_FLAG eq "")) {
+		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
 	}
-	if (defined $RANLIB) {
-		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	if (not ($CWARNING_FLAGS eq "")) {
+		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");
 	}
-	if (defined $STRIP) {
-		print (OUT "    <STRIP>$STRIP</STRIP>\n");
-	}
+
+	print (OUT "    <ExtraCDefines>\n");
+		foreach my $var (@useExtraCDefines)
+		{
+			print (OUT "       <CDefine>$var</CDefine>\n");
+		}
+	print (OUT "    </ExtraCDefines>\n");
 
 	if ($runtimeStackProtectorFlag == true) {
 		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
 	}
 	print (OUT "    <EXTRA_COMPILER_ARGS>$EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
-	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
-	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
 
-	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
+	FillDefaultIncludesPathIfNeeded_();
+	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 
 	print (OUT "    <CrossCompiling>$CrossCompiling</CrossCompiling>\n");
 
@@ -1434,26 +1438,26 @@ sub	WriteConfigFile_
 		print (OUT "    <STATIC_LINK_GCCRUNTIME>$STATIC_LINK_GCCRUNTIME</STATIC_LINK_GCCRUNTIME>\n");
 	}
 
-	FillDefaultIncludesPathIfNeeded_();
 	FillDefaultLibsPathIfNeeded_();
 	FillDefaultLibDependencies_();
-	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
+	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
+	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
 
-	print (OUT "    <ExtraCDefines>\n");
-		foreach my $var (@useExtraCDefines)
-		{
-			print (OUT "       <CDefine>$var</CDefine>\n");
-		}
-	print (OUT "    </ExtraCDefines>\n");
+	if (defined $AR) {
+		print (OUT "    <AR>$AR</AR>\n");
+	}
+	if (defined $RANLIB) {
+		print (OUT "    <RANLIB>$RANLIB</RANLIB>\n");
+	}
+	if (defined $STRIP) {
+		print (OUT "    <STRIP>$STRIP</STRIP>\n");
+	}
+
+	print (OUT "    <RUN_PREFIX>$RUN_PREFIX</RUN_PREFIX>\n");
+
 	
-	print (OUT "    <ExtraMakeDefines>\n");
-		foreach my $var (@useExtraMakeDefines)
-		{
-			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
-		}
-	print (OUT "    </ExtraMakeDefines>\n");
 	
 	print (OUT "</Configuration>\n");
 	close(OUT);
