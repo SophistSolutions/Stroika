@@ -367,6 +367,7 @@ regression-test-configurations:
 	else\
 		./configure DEFAULT_CONFIG;\
 		./configure no-third-party-components --LibCurl no --lzma no --zlib no --OpenSSL no --sqlite no --Xerces no;\
+		./configure zlib-system-third-party-components --LibCurl no --lzma no --zlib system --OpenSSL no --sqlite no --Xerces no;\
 		##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621\
 		##./configure malloc-guard --malloc-guard true;\
 		#\
@@ -385,7 +386,8 @@ regression-test-configurations:
 		#./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-3.9.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --stdlib libc++ --sanitize none;\
 		./configure my-clang-4.0.1-libc++-debug --compiler-driver ~/clang-4.0.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-4.0.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --stdlib libc++ --sanitize none;\
 		./configure my-clang-5.0.0-libc++-debug --compiler-driver ~/clang-5.0.0/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-5.0.0/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --stdlib libc++ --sanitize none;\
-		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable;\
+		./configure clang++-debug-libc++ --compiler-driver clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
+		./configure clang++-release-libstdc++ --compiler-driver clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
