@@ -483,7 +483,9 @@ sub	SetDefaultForCompilerDriver_
 				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 			else {
-				if (GetClangVersion_ ($COMPILER_DRIVER) >= '5.0') {	### not 4.0 not working with clang - could be my bug but dont default to not working
+				### not 4.0 not working with clang - could be my bug but dont default to not working
+				### 5.0 fails due to constexpr link bug - looks like compiler bug not generating symbol in cpp file when I define object.
+				if (GetClangVersion_ ($COMPILER_DRIVER) >= '6.0') {
 					$CPPSTD_VERSION_FLAG="--std=c++17"
 				}
 				else {
