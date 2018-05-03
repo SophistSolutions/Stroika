@@ -115,7 +115,7 @@ my $LIBS_PATH = undef;			# space separated list
 my @LIBS_PATH_ADD  = qw();
 my $LIB_DEPENDENCIES  = undef;	# space separated list
 my @LIB_DEPENDENCIES_ADD  = qw();
-
+my $STDLIB = undef;
 
 
 
@@ -132,6 +132,7 @@ sub	DoHelp_
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}                    /* DEPRECATED - use -cppstd-version (without --std part */\n");
         print("	    --cppstd-version {FLAG}                         /* Sets can be c++14 or c++17, or c++2a\n");
+        print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang)\n");
         print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
         print("	    --private-cmake-override {use|no}               /* Enables/disables use of private cmake replacement (Windows/cygwin Only) - JUST USED TO BUILD Xerces for Windows*/\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
@@ -530,7 +531,14 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 	}
-
+	if (! defined $STDLIB) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+			$STDLIB = "libstdc++";
+		}
+		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+			$STDLIB = "libc++";
+		}
+	}
 	if ($ApplyDebugFlags == true) {
 		if ($ENABLE_ASSERTIONS == DEFAULT_BOOL_OPTIONS) {
 			$ENABLE_ASSERTIONS = 1;
@@ -784,6 +792,11 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$CPPSTD_VERSION_FLAG = $var;
 			print "--cppstd-version-flag deprecated - use --cppstd-version\n";
+		}
+		elsif ((lc ($var) eq "-stdlib") or (lc ($var) eq "--stdlib")) {
+			$i++;
+			$var = $ARGV[$i];
+			$STDLIB = $var;
 		}
 		elsif ((lc ($var) eq "-cppstd-version") or (lc ($var) eq "--cppstd-version")) {
 			$i++;
@@ -1297,12 +1310,16 @@ sub PostProcessOptions_ ()
 		}
 	}
 
+	if (defined $STDLIB) {
+		$EXTRA_COMPILER_ARGS .= " -stdlib=" . $STDLIB;
+		$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDLIB;
+	}
 
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
 			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
-				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=libstdc++.a 2>/dev/null`);
+				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$STDLIB 2>/dev/null`);
 				if (defined $lib) {
 					push @LIB_DEPENDENCIES_ADD, " $lib";
 				}
@@ -1311,11 +1328,14 @@ sub PostProcessOptions_ ()
 				push @LIB_DEPENDENCIES_ADD, " -lstdc++";
 			}
 		}
-		if ($STATIC_LINK_GCCRUNTIME == 1) {
+		if ($STATIC_LINK_GCCRUNTIME == 1 && $STDLIB eq "libstdc++") {
 			$EXTRA_SUFFIX_LINKER_ARGS .= " -static-libstdc++";
 		}
 
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			if (!$STATIC_LINK_GCCRUNTIME ) {
+				push @LIB_DEPENDENCIES_ADD, "-lstdc++";
+			}
 			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8') {
 				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 			}
@@ -1331,9 +1351,9 @@ sub PostProcessOptions_ ()
 			}
 			else {
 				if (GetClangVersion_ ($COMPILER_DRIVER_CPlusPlus) < '7.0') {
-					if (/-stdlib=libc++/i ~~ @LIB_DEPENDENCIES_ADD) {
-					#if (index ($EXTRA_SUFFIX_LINKER_ARGS, "-stdlib=libc++") != -1) {
+					if ($STDLIB eq "libc++") {
 						$EXTRA_SUFFIX_LINKER_ARGS .= " ";
+						push @LIB_DEPENDENCIES_ADD, "-lc++";
 						push @LIB_DEPENDENCIES_ADD, "-lc++experimental";
 					}
 					else {
@@ -1342,7 +1362,6 @@ sub PostProcessOptions_ ()
 				}
 			}
 		}
-
 
 	}
 }
