@@ -6,7 +6,7 @@
 #if qPlatform_Linux
 #include <execinfo.h>
 #include <unistd.h>
-#if defined(__GNUC__)
+#if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
 #endif
 #elif qPlatform_Windows
@@ -51,7 +51,7 @@ wstring Debug::BackTrace (unsigned int maxFrames)
     wstring out;
     for (int j = 0; j < nptrs; j++) {
         wstring symStr = narrow2Wide (syms[j]);
-#if defined(__GNUC__)
+#if defined(__GNUC__) && defined(__GLIBCXX__)
         //
         // Example output from backtrace_symbols:
         //      /media/Sandbox/lewis-Sandbox/Stroika-DevRoot/Builds/Debug/Samples_SimpleService(_ZN7Stroika10Foundation9Execution8Private_8GetBT_wsEv+0x21) [0x7fc677]
