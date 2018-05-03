@@ -159,14 +159,15 @@ sub	DoHelp_
         print("	    --extra-compiler-args {ARG}                     /* Sets variable with extra args for compiler */\n");
         print("	    --append-extra-compiler-args {ARG}              /* Appends ARG to 'extra compiler */\n");
         print("	    --extra-linker-args {ARG}                       /* Sets variable with extra args for linker */\n");
-        print("	    --append-extra-linker-args {ARG}                /* Appends ARG to 'extra linker */\n");
+        print("	    --append-extra-prefix-linker-args {ARG}         /* Appends ARG to 'extra prefix linker args */\n");
+        print("	    --append-extra-suffix-linker-args {ARG}         /* Appends ARG to 'extra suffix linker args */\n");
         print("	    --append-extra-compiler-and-linker-args {ARG}   /* Appends ARG to 'extra compiler' and 'extra linker' args */\n");
         print("	    --includes-path {ARG}                           /* Sets INCLUDES_PATH variable (space separated) */\n");
-        print("	    --append-2-includes-path {ARG}                  /* Appends ARG to 'INCLUDES_PATH */\n");
+        print("	    --append-includes-path {ARG}                    /* Appends ARG to 'INCLUDES_PATH */\n");
         print("	    --libs-path {ARG}                               /* Sets LIBS_PATH variable (space separated) */\n");
-        print("	    --append-2-libs-path {ARG}                      /* Appends ARG to 'LIBS_PATH */\n");
+        print("	    --append-libs-path {ARG}                        /* Appends ARG to 'LIBS_PATH */\n");
         print("	    --lib-dependencies {ARG}                        /* Sets LIB_DEPENDENCIES variable (space separated) */\n");
-        print("	    --append-2-lib-dependencies {ARG}               /* Appends ARG to 'LIB_DEPENDENCIES */\n");
+        print("	    --append-lib-dependencies {ARG}                 /* Appends ARG to 'LIB_DEPENDENCIES */\n");
         print("	    --run-prefix {ARG}                              /* Sets variable RUN_PREFIX with stuff injected before run for built executables,\n");
         print("	                                                       such as LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.3 */\n");
         print("	    --append-run-prefix {ARG}                       /* Appends ARG to 'extra linker */\n");
@@ -918,12 +919,12 @@ sub	ParseCommandLine_Remaining_
 			}
 			$EXTRA_COMPILER_ARGS .= $var;
 		}
-		elsif ((lc ($var) eq "-extra-linker-args") or (lc ($var) eq "--extra-linker-args")) {
+		elsif ((lc ($var) eq "-extra-prefix-linker-args") or (lc ($var) eq "--extra-prefix-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
 			$EXTRA_PREFIX_LINKER_ARGS = $var;
 		}
-		elsif ((lc ($var) eq "-append-extra-linker-args") or (lc ($var) eq "--append-extra-linker-args")) {
+		elsif ((lc ($var) eq "-append-extra-prefix-linker-args") or (lc ($var) eq "--append-extra-prefix-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
 			if (not ($EXTRA_PREFIX_LINKER_ARGS eq "")) {
@@ -931,12 +932,12 @@ sub	ParseCommandLine_Remaining_
 			}
 			$EXTRA_PREFIX_LINKER_ARGS .= $var;
 		}
-		elsif ((lc ($var) eq "-extra-linker-args") or (lc ($var) eq "--extra-linker-args")) {
+		elsif ((lc ($var) eq "-extra-suffix-linker-args") or (lc ($var) eq "--extra-suffix-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
 			$EXTRA_SUFFIX_LINKER_ARGS = $var;
 		}
-		elsif ((lc ($var) eq "-append-extra-linker-args") or (lc ($var) eq "--append-extra-linker-args")) {
+		elsif ((lc ($var) eq "-append-extra-suffix-linker-args") or (lc ($var) eq "--append-extra-suffix-linker-args")) {
 			$i++;
 			$var = $ARGV[$i];
 			if (not ($EXTRA_SUFFIX_LINKER_ARGS eq "")) {
@@ -949,7 +950,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$INCLUDES_PATH = $var;
 		}
-		elsif ((lc ($var) eq "-append-2-includes-path") or (lc ($var) eq "--append-2-includes-path")) {
+		elsif ((lc ($var) eq "-append-includes-path") or (lc ($var) eq "--append-includes-path")) {
 			$i++;
 			$var = $ARGV[$i];
 			push @INCLUDES_PATH_ADD, $var;
@@ -959,7 +960,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$LIBS_PATH = $var;
 		}
-		elsif ((lc ($var) eq "-append-2-libs-path") or (lc ($var) eq "--append-2-libs-path")) {
+		elsif ((lc ($var) eq "-append-libs-path") or (lc ($var) eq "--append-libs-path")) {
 			$i++;
 			$var = $ARGV[$i];
 			push @LIBS_PATH_ADD, $var;
@@ -969,7 +970,7 @@ sub	ParseCommandLine_Remaining_
 			$var = $ARGV[$i];
 			$LIB_DEPENDENCIES = $var;
 		}
-		elsif ((lc ($var) eq "-append-2-lib-dependencies") or (lc ($var) eq "--append-2-lib-dependencies")) {
+		elsif ((lc ($var) eq "-append-lib-dependencies") or (lc ($var) eq "--append-lib-dependencies")) {
 			$i++;
 			$var = $ARGV[$i];
 			push @LIB_DEPENDENCIES_ADD, $var;
