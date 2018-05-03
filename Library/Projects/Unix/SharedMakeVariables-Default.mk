@@ -48,13 +48,13 @@ endif
 #
 # Intentionally use '=' instead of ':=' so variables included in CFLAGS can get re-evaluated
 #
-#CPPSTD_VERSION_FLAG, COPTIMIZE_FLAGS, INCLUDES_PATH_COMPILER_DIRECTIVES, and CWARNING_FLAGS come from the included Configuration.mk file
+#COPTIMIZE_FLAGS, INCLUDES_PATH_COMPILER_DIRECTIVES, and CWARNING_FLAGS come from the included Configuration.mk file
 #
 ifndef CFLAGS
 	CFLAGS		=
 endif
 
-CFLAGS		+=	$(CPPSTD_VERSION_FLAG)  $(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
+CFLAGS		+=	$(COPTIMIZE_FLAGS) $(INCLUDES_PATH_COMPILER_DIRECTIVES) $(CWARNING_FLAGS)
 
 
 ifeq ($(IncludeDebugSymbolsInLibraries), 1)

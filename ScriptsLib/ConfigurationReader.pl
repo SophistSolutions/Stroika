@@ -170,10 +170,6 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'ENABLE_GLIBCXX_DEBUG'} = $pps;
 		}
-		my $pps = ReadValue_($line, "<CPPSTD_VERSION_FLAG>");
-		if (defined $pps) {
-			$configuration {'CPPSTD_VERSION_FLAG'} = $pps;
-		}
 		my $pps = ReadValue_($line, "<CWARNING_FLAGS>");
 		if (defined $pps) {
 			$configuration {'CWARNING_FLAGS'} = $pps;

@@ -443,7 +443,6 @@ sub	SetInitialDefaults_
 		$STATIC_LINK_GCCRUNTIME = 0;
 		$COMPILER_DRIVER_C = "clang";
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
-		$CPPSTD_VERSION_FLAG="--std=c++14";
 		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_CLANG;
 		$AR = "ar";
 		$RANLIB = "ranlib";
@@ -473,11 +472,8 @@ sub	SetDefaultForCompilerDriver_
 			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 6.0) {
 				$CPPSTD_VERSION_FLAG="--std=c++17"
 			}
-			elsif (GetGCCVersion_ ($COMPILER_DRIVER) >= 4.9) {
-				$CPPSTD_VERSION_FLAG="--std=c++14"
-			}
 			else {
-				#$CPPSTD_VERSION_FLAG="--std=c++11"  ### soon losing c++11 support
+				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
@@ -1402,9 +1398,6 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
 
-	if (not ($CPPSTD_VERSION_FLAG eq "")) {
-		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");
-	}
 	if (not ($CWARNING_FLAGS eq "")) {
 		print (OUT "    <CWARNING_FLAGS>$CWARNING_FLAGS</CWARNING_FLAGS>\n");
 	}
@@ -1419,7 +1412,8 @@ sub	WriteConfigFile_
 	if ($runtimeStackProtectorFlag == true) {
 		$EXTRA_COMPILER_ARGS = "-fstack-protector-all " . $EXTRA_COMPILER_ARGS;	# preprend so $EXTRA_COMPILER_ARGS can override
 	}
-	print (OUT "    <EXTRA_COMPILER_ARGS>$EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
+
+	print (OUT "    <EXTRA_COMPILER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_COMPILER_ARGS</EXTRA_COMPILER_ARGS>\n");
 
 	FillDefaultIncludesPathIfNeeded_();
 	print (OUT "    <INCLUDES_PATH>$INCLUDES_PATH</INCLUDES_PATH>\n");
@@ -1442,7 +1436,7 @@ sub	WriteConfigFile_
 	FillDefaultLibDependencies_();
 	print (OUT "    <LIBS_PATH>$LIBS_PATH</LIBS_PATH>\n");
 	print (OUT "    <LIB_DEPENDENCIES>$LIB_DEPENDENCIES</LIB_DEPENDENCIES>\n");
-	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
+	print (OUT "    <EXTRA_PREFIX_LINKER_ARGS>$CPPSTD_VERSION_FLAG $EXTRA_PREFIX_LINKER_ARGS</EXTRA_PREFIX_LINKER_ARGS>\n");
 	print (OUT "    <EXTRA_SUFFIX_LINKER_ARGS>$EXTRA_SUFFIX_LINKER_ARGS</EXTRA_SUFFIX_LINKER_ARGS>\n");
 
 	if (defined $AR) {

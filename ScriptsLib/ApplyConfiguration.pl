@@ -135,7 +135,6 @@ sub	ReadConfiguration_
 	$FEATUREFLAG_LZMA = GetConfigurationParameter($activeConfiguration, "qFeatureFlag_LZMA");
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_ASSERTIONS"));
 	$ENABLE_GLIBCXX_DEBUG = ConfigParam2BoolInt (GetConfigurationParameter($activeConfiguration, "ENABLE_GLIBCXX_DEBUG"));
-	$CPPSTD_VERSION_FLAG = GetConfigurationParameter($activeConfiguration, "CPPSTD_VERSION_FLAG");
 	$CWARNING_FLAGS = GetConfigurationParameter($activeConfiguration, "CWARNING_FLAGS");
 	$INCLUDES_PATH = GetConfigurationParameter($activeConfiguration, "INCLUDES_PATH");
 	$LIBS_PATH = GetConfigurationParameter($activeConfiguration, "LIBS_PATH");
@@ -425,9 +424,6 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "ENABLE_GLIBCXX_DEBUG=1\n");
 	}
 
-	if (not ($CPPSTD_VERSION_FLAG eq '')) {
-		print (OUT "CPPSTD_VERSION_FLAG= \"$CPPSTD_VERSION_FLAG\"\n");
-	}
 	if (not ($CWARNING_FLAGS eq '')) {
 		print (OUT "CWARNING_FLAGS= $CWARNING_FLAGS\n");
 	}
