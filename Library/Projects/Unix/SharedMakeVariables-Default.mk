@@ -166,17 +166,14 @@ endif
 ####	
 ####	Stuff in StroikaLinkerPrefixArgs includes stuff like -L - directories to search, and -g, etc.
 ####	
+####	Intentionally use '=' instead of ':=' so variables included in StroikaLinkerPrefixArgs can get re-evaluated
 ####
-
-# Intentionally use '=' instead of ':=' so variables included in StroikaLinkerPrefixArgs can get re-evaluated
 ifndef StroikaLinkerPrefixArgs
 	StroikaLinkerPrefixArgs	=	
 endif
 ifndef StroikaLinkerSuffixArgs
 	StroikaLinkerSuffixArgs	=	
 endif
-
-
 
 
 
@@ -189,10 +186,10 @@ StroikaLinkerPrefixArgs+=	$(EXTRA_PREFIX_LINKER_ARGS)  $(LIBS_PATH_DIRECTIVES)
 
 StroikaLinkerSuffixArgs	+=	$(StroikaLibs)
 
-# Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
+# (NOTE DONE FOR NOW BECAUSE SO FAR NOT NEEDED BUT HERE IS THE PLACE TO DUP LIB_DEPENDENCIES IF NEEDED): Because the linker requires libraries to go in-order, and they can have mutual dependencies, list the libraries twice
 StroikaLinkerSuffixArgs+=	$(LIB_DEPENDENCIES) $(EXTRA_SUFFIX_LINKER_ARGS)
 
-#### much of this can be removed/cleanedup done another way... @todo -LGP 2018-05-01
+#### clean dup / do another way...StroikaFoundationSupportLibs deprecated - so just add compute of pkg-config libs) @todo -LGP 2018-05-01, -LGP 2018-05-03
 StroikaLinkerSuffixArgs+=	$(StroikaFoundationSupportLibs)
 
 
