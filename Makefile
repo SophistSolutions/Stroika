@@ -381,13 +381,12 @@ regression-test-configurations:
 		#LTO not working for my private builds of clang- no matter\
 		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version c++14;\
 		./configure my-clang-4.0.1-release --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version c++14;\
-		./configure my-clang-5.0.0-release --compiler-driver ~/clang-5.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable;\
 		#sudo append-run-prefix need to run executables and find libraries (otherwise use apt-get install libc++abi1 for clang libc++ based apps to run)\
 		#./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-3.9.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --stdlib libc++ --sanitize none;\
 		./configure my-clang-4.0.1-libc++-debug --compiler-driver ~/clang-4.0.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-4.0.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --stdlib libc++ --sanitize none;\
-		./configure my-clang-5.0.0-libc++-debug --compiler-driver ~/clang-5.0.0/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-5.0.0/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --stdlib libc++ --sanitize none;\
-		./configure clang++-debug-libc++ --compiler-driver clang++ --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
-		./configure clang++-release-libstdc++ --compiler-driver clang++ --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
+		./configure clang++-5-libc++-debug --compiler-driver clang++-5 --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --stdlib libc++ --sanitize none;\
+		./configure clang++-6-debug-libc++ --compiler-driver clang++-6 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
+		./configure clang++-6-release-libstdc++ --compiler-driver clang++-6 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
