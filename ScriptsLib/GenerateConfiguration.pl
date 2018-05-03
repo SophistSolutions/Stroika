@@ -130,8 +130,8 @@ sub	DoHelp_
         print("	    --block-allocation { enable|disable|default }   /* Enables/disable block-allocation (a feature that improves performance, but messes up valgrind) */\n");
         print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
-        print("	    --cppstd-version-flag {FLAG}                    /* Sets \$CPPSTD_VERSION_FLAG (empty str means default, but can be --std=c++14, --std=c++17,\n");
-        print("	                                                       or --std=c++1z, etc) - UNIX ONLY */\n");
+        print("	    --cppstd-version-flag {FLAG}                    /* DEPRECATED - use -cppstd-version (without --std part */\n");
+        print("	    --cppstd-version {FLAG}                         /* Sets can be c++14 or c++17, or c++2a\n");
         print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
         print("	    --private-cmake-override {use|no}               /* Enables/disables use of private cmake replacement (Windows/cygwin Only) - JUST USED TO BUILD Xerces for Windows*/\n");
         print("	    --LibCurl {build-only|use|use-system|no}        /* Enables/disables use of LibCurl for this configuration [default TBD]*/\n");
@@ -477,11 +477,17 @@ sub	SetDefaultForCompilerDriver_
 			}
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetClangVersion_ ($COMPILER_DRIVER) >= '5.0') {	### not 4.0 not working with clang - could be my bug but dont default to not working
-				$CPPSTD_VERSION_FLAG="--std=c++17"
+			if ("$^O" eq "darwin") {
+				### As of clang 9.2, we seem to get myterious link errors (constexpr statics)... SO until I debug that, just use c++14
+				$CPPSTD_VERSION_FLAG="--std=c++14"
 			}
 			else {
-				$CPPSTD_VERSION_FLAG="--std=c++14"
+				if (GetClangVersion_ ($COMPILER_DRIVER) >= '5.0') {	### not 4.0 not working with clang - could be my bug but dont default to not working
+					$CPPSTD_VERSION_FLAG="--std=c++17"
+				}
+				else {
+					$CPPSTD_VERSION_FLAG="--std=c++14"
+				}
 			}
 		}
 	}
@@ -777,6 +783,15 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $ARGV[$i];
 			$CPPSTD_VERSION_FLAG = $var;
+			print "--cppstd-version-flag deprecated - use --cppstd-version\n";
+		}
+		elsif ((lc ($var) eq "-cppstd-version") or (lc ($var) eq "--cppstd-version")) {
+			$i++;
+			$var = $ARGV[$i];
+			if ($var ne "c++14" && $var ne "c++17" && $var ne "c++2a") {
+				print "Warning: unrecognized arg to --cppstd-version\n";
+			}
+			$CPPSTD_VERSION_FLAG = "--std=" . $var;
 		}
         elsif ((lc ($var) eq "-activeperl") or (lc ($var) eq "--activeperl")) {
             $i++;
@@ -1284,9 +1299,6 @@ sub PostProcessOptions_ ()
 
 
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
-		#if ($STATIC_LINK_GCCRUNTIME == DEFAULT_BOOL_OPTIONS) {
-		#	$STATIC_LINK_GCCRUNTIME = 1;
-		#}
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
 			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
