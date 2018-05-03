@@ -1311,8 +1311,10 @@ sub PostProcessOptions_ ()
 	}
 
 	if (defined $STDLIB) {
-		$EXTRA_COMPILER_ARGS .= " -stdlib=" . $STDLIB;
-		$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDLIB;
+		if (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER_CPlusPlus)) {
+			$EXTRA_COMPILER_ARGS .= " -stdlib=" . $STDLIB;
+			$EXTRA_PREFIX_LINKER_ARGS .= " -stdlib=" . $STDLIB;
+		}
 	}
 
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
