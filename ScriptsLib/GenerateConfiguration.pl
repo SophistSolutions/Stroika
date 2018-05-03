@@ -532,10 +532,10 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 	if (! defined $STDLIB) {
-		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			$STDLIB = "libstdc++";
 		}
-		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER)) {
+		if (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
 			$STDLIB = "libc++";
 		}
 	}
