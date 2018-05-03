@@ -1401,7 +1401,6 @@ sub	WriteConfigFile_
 	print (OUT "    <qFeatureFlag_ZLib>$FEATUREFLAG_ZLib</qFeatureFlag_ZLib>\n");
 	print (OUT "    <qFeatureFlag_sqlite>$FEATUREFLAG_sqlite</qFeatureFlag_sqlite>\n");
 	print (OUT "    <qFeatureFlag_LZMA>$FEATUREFLAG_LZMA</qFeatureFlag_LZMA>\n");
-	print (OUT "    <qFeatureFlag_librt>$FEATUREFLAG_librt</qFeatureFlag_librt>\n");
 
 	if (not ($CPPSTD_VERSION_FLAG eq "")) {
 		print (OUT "    <CPPSTD_VERSION_FLAG>$CPPSTD_VERSION_FLAG</CPPSTD_VERSION_FLAG>\n");

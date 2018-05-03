@@ -533,23 +533,18 @@ sub WriteStroikaConfigMakeHeader
 
 	if (defined $AR) {
 		print (OUT "#\n");
-		print (OUT "#ARCHIVE TOOL\n");
 		print (OUT "AR=	$AR\n");
 	}
 	if (defined $RANLIB) {
 		print (OUT "#\n");
-		print (OUT "#RANLIB TOOL\n");
 		print (OUT "RANLIB=	$RANLIB\n");
 	}
 
 	print (OUT "#\n");
-	print (OUT "#EXTRA_COMPILER_ARGS\n");
 	print (OUT "EXTRA_COMPILER_ARGS=	$EXTRA_COMPILER_ARGS\n");
 
 	print (OUT "#\n");
-	print (OUT "#EXTRA_PREFIX_LINKER_ARGS TOOL\n");
 	print (OUT "EXTRA_PREFIX_LINKER_ARGS=	$EXTRA_PREFIX_LINKER_ARGS\n");
-	print (OUT "#EXTRA_SUFFIX_LINKER_ARGS TOOL\n");
 	print (OUT "EXTRA_SUFFIX_LINKER_ARGS=	$EXTRA_SUFFIX_LINKER_ARGS\n");
 
 	print (OUT "IncludeDebugSymbolsInExecutables=	$IncludeDebugSymbolsInExecutables\n");
