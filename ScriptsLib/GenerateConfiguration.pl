@@ -619,26 +619,40 @@ sub	SetDefaultForCompilerDriver_
 		}
 	}
 
-	if (!(defined $AR) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-		my $ccLessArgs = $COMPILER_DRIVER_C;
-		$ccLessArgs  =~ s/\ .*//;
-		$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
+	if (!(defined $AR)) {
+		if ( IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$AR = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ar');
+		}
+		elsif ( IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$AR = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ar');
+		}
 	}
 	if (!(defined $AR) and (!("$^O" eq "cygwin"))) {
 		$AR = "ar";
 	}
-	if (!(defined $RANLIB) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
-		my $ccLessArgs = $COMPILER_DRIVER_C;
-		$ccLessArgs  =~ s/\ .*//;
-		$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
+	if (!(defined $RANLIB)) {
+		if (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$RANLIB = ReplaceLast_ ($ccLessArgs, 'gcc', 'gcc-ranlib');
+		}
+		elsif (IsClangOrClangPlusPlus_($COMPILER_DRIVER_CPlusPlus)) {
+			my $ccLessArgs = $COMPILER_DRIVER_C;
+			$ccLessArgs  =~ s/\ .*//;
+			$RANLIB = ReplaceLast_ ($ccLessArgs, 'clang', 'llvm-ranlib');
+		}
+		elsif (!("$^O" eq "cygwin")) {
+			$RANLIB = "ranlib";
+		}
 	}
 	if (!(defined $STRIP) and (IsGCCOrGPlusPlus_($COMPILER_DRIVER_CPlusPlus))) {
 		my $ccLessArgs = $COMPILER_DRIVER_C;
 		$ccLessArgs  =~ s/\ .*//;
 		$STRIP = trim (`$ccLessArgs -print-multiarch`) . "-strip";
-	}
-	if (!(defined $RANLIB) and (!("$^O" eq "cygwin"))) {
-		$RANLIB = "ranlib";
 	}
 	if (!(defined $FEATUREFLAG_librt) and (!("$^O" eq "cygwin"))) {
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_UseSystem;
