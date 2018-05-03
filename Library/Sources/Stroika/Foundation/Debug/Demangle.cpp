@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <cstdlib>	// to force __GLIBCXX__ define reference
+
 #if defined(__GNUC__) && defined(__GLIBCXX__)
 #include <cxxabi.h>
 #elif qPlatform_Windows

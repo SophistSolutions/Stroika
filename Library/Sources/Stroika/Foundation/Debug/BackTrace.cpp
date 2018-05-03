@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include <cstdlib>	// to force __GLIBCXX__ define reference
+
 #if qPlatform_Linux
 #include <execinfo.h>
 #include <unistd.h>
