@@ -371,19 +371,19 @@ regression-test-configurations:
 		##./configure malloc-guard --malloc-guard true;\
 		#\
 		./configure gcc-5-release --compiler-driver g++-5 --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
-		./configure gcc-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		./configure my-gcc-6.4.0-debug-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		./configure my-gcc-6.4.0-release-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
-		./configure my-gcc-7.2.0-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		./configure my-gcc-7.2.0-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version-flag --std=c++17;\
+		./configure gcc-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
+		./configure my-gcc-6.4.0-debug-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
+		./configure my-gcc-6.4.0-release-c++17 --compiler-driver ~/gcc-6.4.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
+		./configure my-gcc-7.2.0-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
+		./configure my-gcc-7.2.0-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		#\
 		#LTO not working for my private builds of clang- no matter\
-		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
-		./configure my-clang-4.0.1-release --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag --std=c++14;\
-		./configure my-clang-5.0.0-release --compiler-driver ~/clang-5.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version-flag;\
+		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version c++14;\
+		./configure my-clang-4.0.1-release --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version c++14;\
+		./configure my-clang-5.0.0-release --compiler-driver ~/clang-5.0.0/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable;\
 		#sudo append-run-prefix need to run executables and find libraries (otherwise use apt-get install libc++abi1 for clang libc++ based apps to run)\
-		#./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-3.9.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --append-lib-dependencies -lc++experimental --sanitize none;\
-		./configure my-clang-4.0.1-libc++-debug --compiler-driver ~/clang-4.0.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-4.0.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version-flag --std=c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --append-lib-dependencies -lc++experimental --sanitize none;\
+		#./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-3.9.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --append-lib-dependencies -lc++experimental --sanitize none;\
+		./configure my-clang-4.0.1-libc++-debug --compiler-driver ~/clang-4.0.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-4.0.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --append-extra-compiler-and-linker-args -stdlib=libc++ --append-lib-dependencies -lc++experimental --sanitize none;\
 		./configure my-clang-5.0.0-libc++-debug --compiler-driver ~/clang-5.0.0/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-5.0.0/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --append-extra-compiler-and-linker-args -stdlib=libc++ --append-lib-dependencies -lc++experimental --sanitize none;\
 		./configure clang++-debug --compiler-driver clang++ --apply-default-debug-flags --only-if-has-compiler --trace2file enable;\
 		#\
@@ -391,16 +391,16 @@ regression-test-configurations:
 		#./configure gcc-release-32 --compiler-driver "gcc -m32" --trace2file enable --assertions enable --only-if-has-compiler --LibCurl no --OpenSSL no --Xerces no --zlib no --lzma no --extra-compiler-args -m32 --extra-linker-args -m32 --static-link-gccruntime disable;\
 		#\
 		# (@todo - see if --lto disable still needed on release asan/tsan (was needed for gcc 7.2)\
-		./configure gcc-debug-address-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17;\
-		./configure gcc-debug-thread-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version-flag --std=c++17 --sanitize none,thread,undefined;\
-		./configure gcc-release-address-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize none,address,undefined;\
-		./configure gcc-release-thread-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version-flag --std=c++17 --sanitize none,thread,undefined;\
+		./configure gcc-debug-address-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable;\
+		./configure gcc-debug-thread-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17 --sanitize none,thread,undefined;\
+		./configure gcc-release-address-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version c++17 --sanitize none,address,undefined;\
+		./configure gcc-release-thread-sanitize --apply-default-release-flags --only-if-has-compiler --trace2file enable --lto disable --cppstd-version c++17 --sanitize none,thread,undefined;\
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
-		./configure VALGRIND_LatestGCC_Dbg_SSLPurify --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
-		./configure VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
-		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --cppstd-version-flag --std=c++17 --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
+		./configure VALGRIND_LatestGCC_Dbg_SSLPurify -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
+		./configure VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
+		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
 		./configure raspberrypi-gcc-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
