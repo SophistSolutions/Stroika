@@ -27,7 +27,7 @@ mkdir -p Tests/HistoricalRegressionTestResults
 
 
 if [ "$(uname -s)" == "Darwin" ] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode9.2"; fi
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode9.3"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
     DO_ONLY_DEFAULT_CONFIGURATIONS=1
 fi
