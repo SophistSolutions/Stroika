@@ -1337,10 +1337,10 @@ sub PostProcessOptions_ ()
 		if ($STATIC_LINK_GCCRUNTIME == 1) {
 			my $IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD = 1;
 			if ($IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD == 1) {
-				if (defined $STDLIB) {
-					my $lib2FindStatic = $STDLIB . ".a";
-					my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$lib2FindStatic 2>/dev/null`);
-					if (defined $lib && $lib ne $lib2FindStatic) {
+				my $lib2FindStatic = $STDLIB . ".a";
+				my $lib = trim (`$COMPILER_DRIVER_CPlusPlus -print-file-name=$lib2FindStatic 2>/dev/null`);
+				if (defined $lib) {
+					if ($lib ne $lib2FindStatic) {
 						push @LIB_DEPENDENCIES_ADD, " $lib";
 					}
 					else {
