@@ -385,7 +385,8 @@ regression-test-configurations:
 		#./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-3.9.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --stdlib libc++ --sanitize none;\
 		./configure my-clang-4.0.1-libc++-debug --compiler-driver ~/clang-4.0.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-4.0.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --stdlib libc++ --sanitize none;\
 		./configure clang++-5-libc++-debug --compiler-driver clang++-5.0 --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --stdlib libc++ --sanitize none;\
-		./configure clang++-6-debug-libc++ --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable;\
+		#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK \
+		./configure clang++-6-debug-libc++ --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
 		./configure clang++-6-release-libstdc++ --compiler-driver clang++-6.0 --apply-default-release-flags --stdlib libstdc++  --only-if-has-compiler --trace2file enable;\
 		#\
 		#32-bit not working now - asm bug - must debug...\
