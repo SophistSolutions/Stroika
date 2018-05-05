@@ -20,7 +20,7 @@ History
 
   
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a233">v2.0a233xxxx</a><br/>2018-05-04</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a233">v2.0a233</a><br/>2018-05-04</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a232...v2.0a233</li>
@@ -88,6 +88,7 @@ History
 				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
 				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
 				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>NOTE - sporadic bug 'pthread_cond_{signal,broadcast}: associated lock is not held by calling thread' - in this release - still to fix</li>
 			</ul>
 		</li>
 	</ul>
