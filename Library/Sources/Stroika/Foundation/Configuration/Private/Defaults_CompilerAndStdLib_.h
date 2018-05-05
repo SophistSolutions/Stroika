@@ -78,7 +78,7 @@
 #if __GNUC__ < 5
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to GCC 5.0"
 #endif
-#if __GNUC__ > 7 || (__GNUC__ == 7 && (__GNUC_MINOR__ > 3))
+#if __GNUC__ > 8 || (__GNUC__ == 8 && (__GNUC_MINOR__ > 1))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
@@ -421,12 +421,14 @@ ABORTING...
  Right alloca redzone:    cb
 
 
- but dsiabling asan also workaroudn for now and seems like likely asan bug since only on gcc and arm and when I investigate code looks fine.
+ but disabling asan also workaround for now and seems like likely asan bug since only on gcc and arm and when I investigate code looks fine.
  */
 #ifndef qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
 
-#if defined(__GNUC__) && !defined(__clang__) && defined(__arm__)
-#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7))
+#if defined(__GNUC__) && !defined(__clang__)
+#if  defined(__arm__)
+#define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7))
+#endif
 #else
 #define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy 0
 #endif
@@ -463,7 +465,8 @@ that doesn't work (duplicate definitions - works in a single file but not across
 // APPEARS still broken with gcc 6.3
 // APPEARS still broken with gcc 7.1
 // APPEARS still broken with gcc 7.2
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7))
+// APPEARS still broken with gcc 8.1
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #elif defined(_MSC_VER)
 // STILL WARNINGS in _MS_VS_2k17_15Pt1_
 // now link error in _MS_VS_2k17_15Pt3Pt2_
@@ -514,7 +517,8 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #if !defined(__clang__) && defined(__GNUC__)
 // still broken with gcc 6.2
 // still broken with gcc 7.1
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7))
+// still broken with gcc 8
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #elif defined(__clang__) && defined(__APPLE__)
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__clang__) && !defined(__APPLE__)
@@ -544,7 +548,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 7 || (__GNUC__ == 7))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ < 8 || (__GNUC__ == 8))
 #else
 #define qCompiler_noSanitizeAttribute_Buggy 1
 #endif
@@ -758,6 +762,8 @@ CLANG 5.0:
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#elif !defined(__clang__) && defined(__GNUC__)
+#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy (__GNUC__ == 8)
 #else
 #define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy 0
 #endif
@@ -962,7 +968,7 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7)
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #else
 #define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy 0
 #endif
