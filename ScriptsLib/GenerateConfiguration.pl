@@ -1360,7 +1360,7 @@ sub PostProcessOptions_ ()
 			if (!$STATIC_LINK_GCCRUNTIME ) {
 				push @LIB_DEPENDENCIES_ADD, "-lstdc++";
 			}
-			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) < '8') {
+			if (GetGCCVersion_ ($COMPILER_DRIVER_CPlusPlus) <= '8') {
 				push @LIB_DEPENDENCIES_ADD, "-lstdc++fs";
 			}
 		}
