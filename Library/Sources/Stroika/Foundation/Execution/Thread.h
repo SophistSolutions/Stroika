@@ -272,6 +272,9 @@ namespace Stroika {
                 class Ptr;
 
             public:
+                class CleanupPtr;
+
+            public:
                 /**
                  *  No arg- constructor is available for use in applications like thread pools. Also, a variety
                  *  of cases, its handy to declare a Thread data member (and init in CTOR), but not
@@ -485,6 +488,8 @@ namespace Stroika {
             /**
              *  \note Since this is a smart pointer, the constness of the methods depends on whether they modify the smart pointer itself, not
              *        the underlying thread object.
+             *
+             *  \see    Thread::CleanupPtr
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
              */
@@ -819,6 +824,37 @@ namespace Stroika {
 
             private:
                 friend class Thread;
+            };
+
+            /**
+             *  Handy wrapper around a Thread::Ptr, when you want to assure the thread is terminated before the CleanupPtr goes out of scope.
+             */
+            class Thread::CleanupPtr : public Ptr {
+            public:
+                enum AbortBeforeWaiting { eAbortBeforeWaiting };
+
+            public:
+                /**
+                 *  \brief  in destructor, wait for the thread to terminate (optionally aborting it first - depending on CleahupPtr arg/flag)
+                 *
+                 *  \note it is OK to pass  a nullptr, or to otherwise stop/abort the thread. This class wraps safe checking around the thread ptr to make sure
+                 *        it gets cleaned up.
+                 */
+                CleanupPtr ()                  = default;
+                CleanupPtr (const CleanupPtr&) = delete;
+                CleanupPtr (Ptr threadPtr);
+                CleanupPtr (Ptr threadPtr, AbortBeforeWaiting);
+                CleanupPtr (AbortBeforeWaiting);
+
+            public:
+                ~CleanupPtr ();
+
+            public:
+                nonvirtual CleanupPtr& operator= (const Ptr&);
+                nonvirtual CleanupPtr& operator= (const CleanupPtr&) = delete;
+
+            private:
+                bool fAbort_{false};
             };
 
             /**
