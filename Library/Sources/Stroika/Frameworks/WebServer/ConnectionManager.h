@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 
+#include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/ThreadPool.h"
 #include "../../Foundation/IO/Network/Listener.h"
@@ -33,6 +34,7 @@ namespace Stroika {
 
             using namespace Stroika::Foundation;
             using Characters::String;
+            using Containers::Collection;
             using IO::Network::ConnectionOrientedSocket;
             using IO::Network::Socket;
             using IO::Network::SocketAddress;
@@ -230,7 +232,7 @@ namespace Stroika {
 #endif
 
             public:
-                nonvirtual void AddConnection (const shared_ptr<Connection>& conn);
+                //nonvirtual void AddConnection (const shared_ptr<Connection>& conn);
                 nonvirtual void AbortConnection (const shared_ptr<Connection>& conn);
 
             public:
@@ -239,7 +241,7 @@ namespace Stroika {
                  *  But this will return just those which are not 'done'. Of course - due to asyncrhony,
                  *  by the time one looks at the list, some may already be done.
                  */
-                nonvirtual Sequence<shared_ptr<Connection>> GetConnections () const;
+                nonvirtual Collection<shared_ptr<Connection>> GetConnections () const;
 
 #if 0
             private:
@@ -278,8 +280,8 @@ namespace Stroika {
 
                 // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
                 // new tasks into an already destroyed threadpool.
-                IO::Network::Listener                                 fListener_;
-                Execution::Synchronized<list<shared_ptr<Connection>>> fActiveConnections_;
+                IO::Network::Listener                                       fListener_;
+                Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
             };
 
             struct ConnectionManager::Options {

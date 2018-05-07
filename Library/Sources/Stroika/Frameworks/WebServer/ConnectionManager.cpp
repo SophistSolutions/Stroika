@@ -33,7 +33,7 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks::WebServer;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_   1
 
 namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
@@ -157,20 +157,30 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
 
 void ConnectionManager::onConnect_ (const ConnectionOrientedSocket::Ptr& s)
 {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::onConnect_", L"s=%s", Characters::ToString (s).c_str ()));
+#endif
+    s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
+    s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
+    shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
+    fActiveConnections_.rwget ()->Add (conn);
+
     // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
     // and that way wehn we call 'remove connection- ' we can abort the task (if needed)
     fThreads_.AddTask (
-        [this, s]() mutable {
+        [this, conn]() mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
-            s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
-            s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
-            Connection conn (s, fInterceptorChain_);
-            auto&&     cleanup = Execution::Finally ([&conn]() { if (conn.GetResponse ().GetState () != Response::State::eCompleted) {conn.GetResponse ().End (); } });
+            auto&& cleanup = Execution::Finally ([this, &conn]() {
+                fActiveConnections_.rwget ()->Remove (conn);
+                if (conn->GetResponse ().GetState () != Response::State::eCompleted) {
+                    IgnoreExceptionsForCall (conn->GetResponse ().End ());
+                }
+            });
             // Now read and process each method - currently wasteful - throwing a thread at context
             // Also - if keep-alive - keep reading
-            while (conn.ReadAndProcessMessage ())
+            while (conn->ReadAndProcessMessage ())
                 ;
         });
 }
@@ -245,14 +255,21 @@ void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
 }
 #endif
 
+#if 0
 void ConnectionManager::AddConnection (const shared_ptr<Connection>& conn)
 {
-    fActiveConnections_.rwget ()->push_back (conn);
+    fActiveConnections_.rwget ()->Add (conn);
 }
+#endif
 
 void ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 {
     AssertNotImplemented ();
+}
+
+Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
+{
+    return fActiveConnections_.cget ().cref ();
 }
 
 void ConnectionManager::SetServerHeader (Optional<String> server)
