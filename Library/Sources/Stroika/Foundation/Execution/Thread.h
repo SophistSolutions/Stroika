@@ -49,7 +49,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-/**
+            /**
              *  This is only meant for debugging. If true, track the running threads (and provide API to access)
              *  and DbgTrace() automatically in construction/destruction.
              */
@@ -912,7 +912,7 @@ namespace Stroika {
             template <unsigned int kEveryNTimes>
             void CheckForThreadInterruption ();
 
-/*
+            /*
              *  Avoid interference with Windows SDK headers. I hate macros
              */
 #ifdef Yield
