@@ -34,7 +34,7 @@ namespace Stroika {
             using Characters::SDKChar;
             using Characters::SDKString;
 
-/**
+            /**
              *  If qTraceToFile is set true, then DbgTrace () and other Trace calls all go both to the usual debugger output
              *  screen, and to an auto-generated logfile.
              *
@@ -47,7 +47,7 @@ namespace Stroika {
 #endif
             CompileTimeFlagChecker_HEADER (qTraceToFile, qTraceToFile);
 
-/**
+            /**
             @CONFIGVAR:     qDefaultTracingOn
             @DESCRIPTION:   <p>Led contains a limited amount of pre-built tracing code. This could be expanded someday,
                         depending on how useful people find it. This defaults to being on only for Windows and if @'qDebug' is
@@ -229,7 +229,7 @@ namespace Stroika {
 #endif
             };
 
-/**
+           /**
             * \def Stroika_Foundation_Debug_OptionalizeTraceArgs
             *
             *   This is meant to be used with the 2+ argument Debug::TraceContextBumper constructor, to optionally suppress side-effects
@@ -241,7 +241,7 @@ namespace Stroika {
 #define Stroika_Foundation_Debug_OptionalizeTraceArgs(...)
 #endif
 
-/**
+           /**
             * \def DbgTrace
             *
             *   This function either does NOTHING (trying to not even evaluate its arguments)
