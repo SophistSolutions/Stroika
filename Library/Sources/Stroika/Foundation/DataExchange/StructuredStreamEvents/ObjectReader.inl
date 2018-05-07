@@ -98,15 +98,6 @@ namespace Stroika {
                     void Registry::SimpleReader_<Time::DateTime>::Deactivating ();
                     template <>
                     void Registry::SimpleReader_<Time::Duration>::Deactivating ();
-                    template <typename T>
-                    void Registry::SimpleReader_<T>::Deactivating ()
-                    {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                        RequireNotReached ();
-#else
-                        static_assert (false, "Only specifically specialized variants are supported");
-#endif
-                    }
 
                     /**
                      *  [private]

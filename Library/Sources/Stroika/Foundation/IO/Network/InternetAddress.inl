@@ -157,15 +157,6 @@ namespace Stroika {
                 }
                 template <>
                 String InternetAddress::As<String> () const;
-                template <typename T>
-                T InternetAddress::As () const
-                {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                    RequireNotReached ();
-#else
-                    static_assert (false, "Only specifically specialized variants are supported");
-#endif
-                }
 #if qPlatform_POSIX
                 template <>
                 inline in_addr_t InternetAddress::As<in_addr_t> () const
@@ -234,15 +225,6 @@ namespace Stroika {
                         tmp.s_addr  = ntohl (tmp.s_addr);
                         return tmp;
                     }
-                }
-                template <typename T>
-                T InternetAddress::As (ByteOrder byteOrder) const
-                {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                    RequireNotReached ();
-#else
-                    static_assert (false, "Only specifically specialized variants are supported");
-#endif
                 }
 
                 /*

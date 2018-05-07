@@ -217,7 +217,7 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  As<T> supported variants include:
+                     *  Only specifically specialized variants are supported. As<T> supported variants include:
                      *      As<String> ();
                      *      As<in_addr_t> ();                               // qPlatform_POSIX ONLY
                      *      As<in_addr> ();                                 // GetAddressFamily () == V4 only

@@ -314,16 +314,6 @@ namespace Stroika {
                 : inherited (from)
             {
             }
-            template <typename ELEMENT_TYPE>
-            template <typename T>
-            T SharedMemoryStream<ELEMENT_TYPE>::Ptr::As () const
-            {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                RequireNotReached ();
-#else
-                static_assert (false, "Only specifically specialized variants are supported");
-#endif
-            }
             template <>
             template <>
             inline vector<Memory::Byte> SharedMemoryStream<Memory::Byte>::Ptr::As () const

@@ -242,24 +242,6 @@ namespace Stroika {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 return String (fData_.begin (), fData_.begin () + fLength_);
             }
-            template <typename T>
-            T StringBuilder::As () const
-            {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                RequireNotReached ();
-#else
-                static_assert (false, "Only specifically specialized variants are supported");
-#endif
-            }
-            template <typename T>
-            void StringBuilder::As (T* into) const
-            {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                RequireNotReached ();
-#else
-                static_assert (false, "Only specifically specialized variants are supported");
-#endif
-            }
             template <>
             inline void StringBuilder::As (String* into) const
             {

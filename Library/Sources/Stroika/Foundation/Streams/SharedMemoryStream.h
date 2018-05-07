@@ -123,7 +123,8 @@ namespace Stroika {
             public:
                 /**
                  *  Convert the current contents of this SharedMemoryStream into one of the "T" representations.
-                 *  T can be one of:
+                 *
+                 *  Only specifically specialized variants are supported. T can be one of:
                  *      o   vector<ElementType>
                  *
                  *  And if ElementType is Memory::Byte, then T can also be one of:

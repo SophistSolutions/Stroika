@@ -954,7 +954,7 @@ namespace Stroika {
                 /**
                  * Convert String losslessly into a standard C++ type.
                  *
-                 *  Supported type 'T' values include:
+                 *  Only specifically specialized variants are supported. Supported type 'T' values include:
                  *      o   wstring
                  *      o   const wchar_t*
                  *      o   const Character*
@@ -986,7 +986,8 @@ namespace Stroika {
 
             public:
                 /**
-                 * Convert String losslessly into a standard C++ type (right now just <string> supported).
+                 * Convert String losslessly into a standard C++ type.
+                 * Only specifically specialized variants are supported (right now just <string> supported).
                  * Note - template param is optional.
                  */
                 template <typename T>
@@ -1024,7 +1025,8 @@ namespace Stroika {
 
             public:
                 /**
-                 * Convert String losslessly into a standard C++ type (right now just <string> supported).
+                 * Convert String losslessly into a standard C++ type.
+                 * Only specifically specialized variants are supported (right now just <string> supported).
                  * The source string MUST be valid ascii characters (asserted)
                  */
                 template <typename T>

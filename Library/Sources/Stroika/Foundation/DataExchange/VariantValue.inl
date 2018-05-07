@@ -147,15 +147,6 @@ namespace Stroika {
             {
                 return AsString_ ();
             }
-            template <typename RETURNTYPE>
-            RETURNTYPE VariantValue::As () const
-            {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                RequireNotReached ();
-#else
-                static_assert (false, "Only specifically specialized variants are supported");
-#endif
-            }
 
             /*
              ********************************************************************************

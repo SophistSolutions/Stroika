@@ -243,7 +243,7 @@ namespace Stroika {
                  *  If the caller attempts a conversion that isn't supported, or doesn't make sense
                  *  then DataExchange::BadFormatException will be thrown.
                  *
-                 *      Supported (RETURNTYPE) types include:
+                 *      Only specifically specialized variants are supported. Supported (RETURNTYPE) types include:
                  *          o   bool
                  *          o   Memory::BLOB
                  *          o   signed char, signed short, int, long int, long long int (any of the 5 signed int types)

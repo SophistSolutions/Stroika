@@ -145,15 +145,6 @@ namespace Stroika {
                         }
                     }
                 }
-                template <typename T>
-                T SocketAddress::As () const
-                {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                    RequireNotReached ();
-#else
-                    static_assert (false, "Only specifically specialized variants are supported");
-#endif
-                }
                 template <>
                 inline sockaddr SocketAddress::As<sockaddr> () const
                 {

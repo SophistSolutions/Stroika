@@ -25,15 +25,6 @@ namespace Stroika {
                 : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (chrono::duration<InternalNumericFormatType_> (d).count ())))
             {
             }
-            template <typename T>
-            T Duration::As () const
-            {
-#if qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-                RequireNotReached ();
-#else
-                static_assert (false, "Only specifically specialized variants are supported");
-#endif
-            }
             inline string Duration::AsUTF8 () const
             {
                 return As<Characters::String> ().AsUTF8 ();

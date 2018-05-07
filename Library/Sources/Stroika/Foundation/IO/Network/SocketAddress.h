@@ -99,7 +99,7 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  As<T> supported variants include:
+                     *  Only specifically specialized variants are supported. As<T> supported variants include:
                      *      As<sockaddr> ();
                      *      As<sockaddr_storage> ()
                      *      As<sockaddr_in> ();        // requires GetAddressFamily() == AF_INET

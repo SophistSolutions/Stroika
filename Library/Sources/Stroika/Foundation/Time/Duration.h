@@ -168,7 +168,7 @@ namespace Stroika {
 
             public:
                 /**
-                 * Defined for
+                 * Only specifically specialized variants are supported. Defined for
                  *      time_t
                  *      int
                  *      long int

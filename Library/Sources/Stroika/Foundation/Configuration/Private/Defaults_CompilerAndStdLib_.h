@@ -426,7 +426,7 @@ ABORTING...
 #ifndef qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy
 
 #if defined(__GNUC__) && !defined(__clang__)
-#if  defined(__arm__)
+#if defined(__arm__)
 #define qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7))
 #endif
 #else
@@ -942,35 +942,6 @@ In file included from ../../../Tests/29/Test.cpp:9:0:
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2))
 #else
 #define qCompilerAndStdLib_complex_templated_use_of_nested_enum_Buggy 0
-#endif
-
-#endif
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-@DESCRIPTION:   <p>Defined true if the compiler generates errors for static assertions in functions
-            which should never be expanded. Such functions/static_assertions CAN be handy to make it
-            more obvious of type mismatches with As<> etc templates.
-
-
-    *** NOTE - this is so widely broken in clang/gcc - this maybe my misunderstanding. Review...
-
-        "static assertion failed: Only specifically specialized variants are supported"
-
-
-        @todo - REVIEW - THIS SEEMS MORE AND MORE LIKE MY BUG -- LGP 2017-05-04
-</p>
-*/
-#ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
-#elif defined(__GNUC__)
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
-#else
-#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy 0
 #endif
 
 #endif

@@ -123,7 +123,7 @@ namespace Stroika {
 
             public:
                 /**
-                 * Convert String losslessly into a
+                 * Only specifically specialized variants are supported. Convert String losslessly into a
                  *      o   String or
                  *      o   wstring
                  */
