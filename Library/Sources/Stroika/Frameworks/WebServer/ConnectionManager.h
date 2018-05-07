@@ -9,9 +9,11 @@
 #include <list>
 #include <memory>
 
+#include "../../Foundation/Containers/Bijection.h"
 #include "../../Foundation/Containers/Collection.h"
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/ThreadPool.h"
+#include "../../Foundation/Execution/WaitForIOReady.h"
 #include "../../Foundation/IO/Network/Listener.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 
@@ -34,6 +36,7 @@ namespace Stroika {
 
             using namespace Stroika::Foundation;
             using Characters::String;
+            using Containers::Bijection;
             using Containers::Collection;
             using IO::Network::ConnectionOrientedSocket;
             using IO::Network::Socket;
@@ -280,8 +283,8 @@ namespace Stroika {
 
                 // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
                 // new tasks into an already destroyed threadpool.
-                IO::Network::Listener                                       fListener_;
-                Execution::Synchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
+                IO::Network::Listener                                                                                     fListener_;
+                Execution::Synchronized<Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType>> fActiveConnections_;
             };
 
             struct ConnectionManager::Options {

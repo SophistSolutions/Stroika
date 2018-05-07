@@ -163,7 +163,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedSocket::Ptr& s)
     s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
-    fActiveConnections_.rwget ()->Add (conn);
+    fActiveConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
 
     // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
     // and that way wehn we call 'remove connection- ' we can abort the task (if needed)
@@ -173,7 +173,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedSocket::Ptr& s)
             Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
 #endif
             auto&& cleanup = Execution::Finally ([this, &conn]() {
-                fActiveConnections_.rwget ()->Remove (conn);
+                fActiveConnections_.rwget ()->RemoveDomainElement (conn);
                 if (conn->GetResponse ().GetState () != Response::State::eCompleted) {
                     IgnoreExceptionsForCall (conn->GetResponse ().End ());
                 }
@@ -269,7 +269,7 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
 {
-    return fActiveConnections_.cget ().cref ();
+    return fActiveConnections_.cget ().cref ().Preimage ();
 }
 
 void ConnectionManager::SetServerHeader (Optional<String> server)
