@@ -319,6 +319,21 @@ namespace Stroika {
                 nonvirtual Iterable<DomainType> InverseMap (const Iterable<RangeType>& values) const;
 
             public:
+                nonvirtual Bijection Where (const function<bool(pair<DomainType, RangeType>)>& includeIfTrue) const;
+
+            public:
+                /**
+                 *  essentially 'intersect but just comparing domain'
+                 */
+                nonvirtual Bijection WhereDomainIntersects (const Iterable<DomainType>& domainValues) const;
+
+            public:
+                /**
+                 *  essentially 'intersect but just comparing range'
+                 */
+                nonvirtual Bijection WhereRangeIntersects (const Iterable<RangeType>& rangeValues) const;
+
+            public:
                 /**
                  *  Synonym for (Lookup (v).IsPresent ()) or Preimage ().Contains (v)
                  */

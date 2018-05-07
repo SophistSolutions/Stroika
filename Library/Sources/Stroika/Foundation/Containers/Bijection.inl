@@ -243,6 +243,45 @@ namespace Stroika {
                 return Iterable<DOMAIN_TYPE> (tmp);
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Where (const function<bool(pair<DomainType, RangeType>)>& includeIfTrue) const -> Bijection
+            {
+                // @todo - fix very primitive implementation
+                _SafeReadRepAccessor<_IRep> lhs{this};
+                Bijection                   result = lhs.CloneEmpty (this);
+                for (auto&& i : *this) {
+                    if (includeIfTrue (i)) {
+                        result += i;
+                    }
+                }
+                return result;
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::WhereDomainIntersects (const Iterable<DomainType>& domainValues) const -> Bijection
+            {
+                // @todo - fix very primitive implementation
+                _SafeReadRepAccessor<_IRep> lhs{this};
+                Bijection                   result = lhs.CloneEmpty (this);
+                for (auto&& i : *this) {
+                    if (domainValues.Contains (i.first, this->GetDomainEqualsComparer ())) {
+                        result += i;
+                    }
+                }
+                return result;
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
+            auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::WhereRangeIntersects (const Iterable<RangeType>& rangeValues) const -> Bijection
+            {
+                // @todo - fix very primitive implementation
+                _SafeReadRepAccessor<_IRep> lhs{this};
+                Bijection                   result = lhs.CloneEmpty (this);
+                for (auto&& i : *this) {
+                    if (rangeValues.Contains (i.second, this->GetRangeEqualsComparer ())) {
+                        result += i;
+                    }
+                }
+                return result;
+            }
+            template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::ContainsDomainElement (ArgByValueType<DomainType> key) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
