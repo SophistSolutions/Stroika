@@ -37,7 +37,6 @@ using namespace Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 SearchResponder::SearchResponder ()
-    : fListenThread_ ()
 {
 }
 

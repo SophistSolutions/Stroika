@@ -831,7 +831,8 @@ namespace Stroika {
              */
             class Thread::CleanupPtr : public Ptr {
             public:
-                enum AbortBeforeWaiting { eAbortBeforeWaiting };
+                enum AbortFlag { eAbortBeforeWaiting,
+                                 eDirectlyWait };
 
             public:
                 /**
@@ -840,11 +841,8 @@ namespace Stroika {
                  *  \note it is OK to pass  a nullptr, or to otherwise stop/abort the thread. This class wraps safe checking around the thread ptr to make sure
                  *        it gets cleaned up.
                  */
-                CleanupPtr ()                  = default;
                 CleanupPtr (const CleanupPtr&) = delete;
-                CleanupPtr (Ptr threadPtr);
-                CleanupPtr (Ptr threadPtr, AbortBeforeWaiting);
-                CleanupPtr (AbortBeforeWaiting);
+                CleanupPtr (AbortFlag abortFlag, Ptr threadPtr = nullptr);
 
             public:
                 ~CleanupPtr ();

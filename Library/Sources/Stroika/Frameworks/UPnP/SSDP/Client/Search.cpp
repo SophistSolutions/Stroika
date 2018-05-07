@@ -38,9 +38,6 @@ using Execution::make_unique_lock;
 class Search::Rep_ {
 public:
     Rep_ (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion)
-        : fCritSection_ ()
-        , fFoundCallbacks_ ()
-        , fThread_ ()
     {
         if (InternetProtocol::IP::SupportIPV4 (ipVersion)) {
             ConnectionlessSocket::Ptr s = ConnectionlessSocket::New (SocketAddress::INET, Socket::DGRAM);

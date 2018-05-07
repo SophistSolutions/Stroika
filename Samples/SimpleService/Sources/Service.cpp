@@ -48,7 +48,8 @@ namespace {
     struct SomeModuleALikeWebServer_ {
         // initialize that service//module here, including starting any threads
         SomeModuleALikeWebServer_ ()
-            : fSomeOtherTaskDoingRealWork_ (Thread::New (
+            : fSomeOtherTaskDoingRealWork_ (Thread::CleanupPtr::eAbortBeforeWaiting, 
+				Thread::New (
                   []() {
                       Execution::Sleep (1 * 24 * 60 * 60); // wait 1 day ... simple test....
                   },
@@ -56,7 +57,7 @@ namespace {
         {
         }
         ~SomeModuleALikeWebServer_ () = default;
-        Thread::CleanupPtr fSomeOtherTaskDoingRealWork_ { Thread::CleanupPtr::eAbortBeforeWaiting }
+        Thread::CleanupPtr fSomeOtherTaskDoingRealWork_;
     };
 }
 

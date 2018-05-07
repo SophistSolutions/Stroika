@@ -233,18 +233,9 @@ namespace Stroika {
              ******************************** Thread::CleanupPtr ****************************
              ********************************************************************************
              */
-            inline Thread::CleanupPtr::CleanupPtr (Ptr threadPtr)
+            inline Thread::CleanupPtr::CleanupPtr (AbortFlag abortFlag, Ptr threadPtr)
                 : Ptr (threadPtr)
-                , fAbort_{false}
-            {
-            }
-            inline Thread::CleanupPtr::CleanupPtr (Ptr threadPtr, AbortBeforeWaiting)
-                : Ptr (threadPtr)
-                , fAbort_{true}
-            {
-            }
-            inline Thread::CleanupPtr::CleanupPtr (AbortBeforeWaiting)
-                : fAbort_{true}
+                , fAbort_{abortFlag == AbortFlag::eAbortBeforeWaiting}
             {
             }
             inline Thread::CleanupPtr& Thread::CleanupPtr::operator= (const Ptr& rhs)
