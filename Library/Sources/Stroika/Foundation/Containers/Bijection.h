@@ -65,11 +65,11 @@ namespace Stroika {
             };
 
             /**
-             * \brief   Bijection which allows for the bijective (1-1) association of two elements.
+             * \brief   Bijection allows for the bijective (1-1) association of two elements.
              *
-             *  Bijection which allows for the bijective (1-1) association of two elements. This means that one element
+             *  Bijection allows for the bijective (1-1) association of two elements. This means that one element
              *  of the domain maps to exactly one element of the range, and that one element of the range maps uniquely to
-             *  one element of the range, and these mappings happen in a way that the mapping is fully invertable.
+             *  one element of the domain, and these mappings happen in a way that the mapping is fully invertable.
              *
              *  @see    http://en.wikipedia.org/wiki/Bijection
              *
