@@ -54,14 +54,7 @@ public:
             cs.SetMulticastLoopMode (true); // possible should make this configurable
         }
     }
-    ~Rep_ ()
-    {
-        if (fThread_ != nullptr) {
-            // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-            Execution::Thread::SuppressInterruptionInContext suppressInterruption;
-            IgnoreExceptionsForCall (fThread_.AbortAndWaitForDone ());
-        }
-    }
+    ~Rep_ () = default;
     void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
     {
         auto critSec{make_unique_lock (fCritSection_)};
@@ -190,7 +183,7 @@ private:
     recursive_mutex                                      fCritSection_;
     vector<function<void(const SSDP::Advertisement& d)>> fFoundCallbacks_;
     Collection<ConnectionlessSocket::Ptr>                fSockets_;
-    Execution::Thread::Ptr                               fThread_;
+    Execution::Thread::CleanupPtr                        fThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*

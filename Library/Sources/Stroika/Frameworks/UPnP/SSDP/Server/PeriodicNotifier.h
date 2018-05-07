@@ -45,7 +45,7 @@ namespace Stroika {
                         PeriodicNotifier ()                        = default;
                         PeriodicNotifier (const PeriodicNotifier&) = delete;
                         const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
-                        ~PeriodicNotifier ();
+                        ~PeriodicNotifier ()                                       = default;
 
                     public:
                         // Very primitive definition - should refine - read details on spec on this...
@@ -64,7 +64,7 @@ namespace Stroika {
                         // thread as needed, does responses etc.
 #endif
                     private:
-                        Execution::Thread::Ptr fListenThread_;
+                        Execution::Thread::CleanupPtr fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
                     };
                 }
             }

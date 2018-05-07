@@ -279,20 +279,6 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
 
 /*
  ********************************************************************************
- ********** Execution::ProcessRunner::BackgroundProcess::Rep_ *******************
- ********************************************************************************
- */
-ProcessRunner::BackgroundProcess::Rep_::~Rep_ ()
-{
-    if (fProcessRunner != nullptr) {
-        Thread::SuppressInterruptionInContext suppressInterruption; // critical to prohibit this thread from interruption until its killed owned threads
-                                                                    // because it has internal pointers to the Rep
-        fProcessRunner.AbortAndWaitForDone ();
-    }
-}
-
-/*
- ********************************************************************************
  ************** Execution::ProcessRunner::BackgroundProcess *********************
  ********************************************************************************
  */

@@ -41,16 +41,6 @@ SearchResponder::SearchResponder ()
 {
 }
 
-SearchResponder::~SearchResponder ()
-{
-    // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
-    // after main exists...
-    Execution::Thread::SuppressInterruptionInContext suppressInterruption;
-    if (fListenThread_ != nullptr) {
-        fListenThread_.AbortAndWaitForDone ();
-    }
-}
-
 namespace {
     void ParsePacketAndRespond_ (Streams::InputStream<Character>::Ptr in, const Iterable<Advertisement>& advertisements, ConnectionlessSocket::Ptr useSocket, SocketAddress sendTo)
     {

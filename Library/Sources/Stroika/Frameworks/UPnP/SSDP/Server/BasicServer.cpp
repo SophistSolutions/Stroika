@@ -89,13 +89,6 @@ public:
     ~Rep_ ()
     {
         fLinkMonitor_.clear ();
-        Thread::SuppressInterruptionInContext suppressInterruption; // critical to wait til done cuz captures this
-        if (fNotifierThread_ != nullptr) {
-            fNotifierThread_.AbortAndWaitForDone ();
-        }
-        if (fSearchResponderThread_ != nullptr) {
-            fSearchResponderThread_.AbortAndWaitForDone ();
-        }
     }
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
@@ -146,8 +139,8 @@ public:
         StartNotifier_ ();
         StartResponder_ ();
     }
-    Execution::Thread::Ptr             fNotifierThread_;
-    Execution::Thread::Ptr             fSearchResponderThread_;
+    Execution::Thread::CleanupPtr      fNotifierThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    Execution::Thread::CleanupPtr      fSearchResponderThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
     Optional<IO::Network::LinkMonitor> fLinkMonitor_; // optional so we can delete it first on shutdown (so no restart while stopping stuff)
 };
 

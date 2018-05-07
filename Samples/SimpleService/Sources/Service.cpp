@@ -55,13 +55,8 @@ namespace {
                   Thread::eAutoStart))
         {
         }
-        ~SomeModuleALikeWebServer_ ()
-        {
-            // shutdown your threads here.
-            Execution::Thread::SuppressInterruptionInContext suppressInterruption; // critical to probibit this thread from interuption until its killed owned threads
-            fSomeOtherTaskDoingRealWork_.AbortAndWaitForDone ();
-        }
-        Thread::Ptr fSomeOtherTaskDoingRealWork_;
+        ~SomeModuleALikeWebServer_ () = default;
+        Thread::CleanupPtr fSomeOtherTaskDoingRealWork_ { Thread::CleanupPtr::eAbortBeforeWaiting }
     };
 }
 

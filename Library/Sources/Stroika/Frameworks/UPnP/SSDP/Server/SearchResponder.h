@@ -40,7 +40,7 @@ namespace Stroika {
                         SearchResponder ();
                         SearchResponder (const SearchResponder&) = delete;
                         const SearchResponder operator= (const SearchResponder&) = delete;
-                        ~SearchResponder ();
+                        ~SearchResponder ()                                      = default;
 
                     public:
                         nonvirtual void Run (const Iterable<Advertisement>& advertisements);
@@ -55,7 +55,7 @@ namespace Stroika {
                         // thread as needed, does responses etc.
 #endif
                     private:
-                        Execution::Thread::Ptr fListenThread_;
+                        Execution::Thread::CleanupPtr fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
                     };
                 }
             }
