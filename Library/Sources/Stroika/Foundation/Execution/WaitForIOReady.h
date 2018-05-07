@@ -43,6 +43,32 @@ namespace Stroika {
              *  \note   This class is Internally-Synchronized-Thread-Safety. It would not be helpful to use this class with an
              *          extenral 'Synchronized', because then adds would block for the entire time a Wait was going on.
              *
+             *
+             *  \par Example Usage
+             *      \code
+             *          Execution::WaitForIOReady waiter{fd};
+             *          bool                      eof = false;
+             *          while (not eof) {
+             *              waiter.WaitQuietly (1);
+             *              readALittleFromProcess (fd, stream, write2StdErrCache, &eof);
+             *          }
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
+             *          while (true) {
+             *              try {
+             *                  for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
+             *                      ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
+             *                      ConnectionOrientedSocket::Ptr       s                     = localSocketToAcceptOn.Accept ();
+             *                      fNewConnectionAcceptor (s);
+             *                  }
+             *              }
+             *              ...
+             *          }
+             *      \endcode
+             *
              *  \note   WaitForIOReady only works for type SOCKET on Windows
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
