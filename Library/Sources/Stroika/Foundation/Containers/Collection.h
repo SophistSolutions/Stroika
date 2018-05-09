@@ -307,6 +307,16 @@ namespace Stroika {
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif
             };
+
+            /**
+             *  Basic operator overload with the obivous meaning (Collection<T> copy and Collection<T>::AddAll)
+             */
+            template <typename T>
+            Collection<T> operator+ (const Iterable<T>& lhs, const Collection<T>& rhs);
+            template <typename T>
+            Collection<T> operator+ (const Collection<T>& lhs, const Iterable<T>& rhs);
+            template <typename T>
+            Collection<T> operator+ (const Collection<T>& lhs, const Collection<T>& rhs);
         }
     }
 }

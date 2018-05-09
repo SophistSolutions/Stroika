@@ -205,6 +205,33 @@ namespace Stroika {
                 _SafeReadRepAccessor<_IRep>{this};
 #endif
             }
+
+            /*
+             ********************************************************************************
+             ********************************* operator+ ************************************
+             ********************************************************************************
+             */
+            template <typename T>
+            Collection<T> operator+ (const Iterable<T>& lhs, const Collection<T>& rhs)
+            {
+                Collection<T> result{lhs};
+                result += rhs;
+                return result;
+            }
+            template <typename T>
+            Collection<T> operator+ (const Collection<T>& lhs, const Iterable<T>& rhs)
+            {
+                Collection<T> result{lhs};
+                result += rhs;
+                return result;
+            }
+            template <typename T>
+            Collection<T> operator+ (const Collection<T>& lhs, const Collection<T>& rhs)
+            {
+                Collection<T> result{lhs};
+                result += rhs;
+                return result;
+            }
         }
     }
 }
