@@ -23,11 +23,7 @@
 #include "Router.h"
 
 /*
- *
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
- * TODO:
- *      o   REVIEW thread safety (very tricky - watch adding connection handlers!)
  */
 
 namespace Stroika {
@@ -221,21 +217,7 @@ namespace Stroika {
                  */
                 nonvirtual void RemoveInterceptor (const Interceptor& i);
 
-#if 0
             public:
-                nonvirtual  void    Start ();
-                nonvirtual  void    Abort ();
-                nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
-                nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
-#endif
-#if 0
-            public:
-                nonvirtual  void    AddHandler (const shared_ptr<RequestHandler>& h);
-                nonvirtual  void    RemoveHandler (const shared_ptr<RequestHandler>& h);
-#endif
-
-            public:
-                //nonvirtual void AddConnection (const shared_ptr<Connection>& conn);
                 nonvirtual void AbortConnection (const shared_ptr<Connection>& conn);
 
             public:
@@ -246,13 +228,6 @@ namespace Stroika {
                  */
                 nonvirtual Collection<shared_ptr<Connection>> GetConnections () const;
 
-#if 0
-            private:
-                //VERY VERY SUPER PRIMITIVE FIFRST DRAFT OF CONNECTION HANDLING
-                nonvirtual  void    DoMainConnectionLoop_ ();
-                nonvirtual  void    DoOneConnection_ (shared_ptr<Connection> c);
-#endif
-
             private:
                 nonvirtual void onConnect_ (const ConnectionOrientedSocket::Ptr& s);
 
@@ -262,6 +237,7 @@ namespace Stroika {
             private:
                 nonvirtual void FixupInterceptorChain_ ();
 
+            private:
                 nonvirtual void ReplaceInEarlyInterceptor_ (const Optional<Interceptor>& oldValue, const Optional<Interceptor>& newValue);
 
             private:

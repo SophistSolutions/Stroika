@@ -50,20 +50,21 @@ namespace {
             }
             virtual void HandleMessage (Message* m) override
             {
+                Response& response = *m->PeekResponse ();
                 if (fServerHeader_) {
-                    m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
+                    response.AddHeader (IO::Network::HTTP::HeaderName::kServer, *fServerHeader_);
                 }
                 if (fCORSModeSupport == ConnectionManager::CORSModeSupport::eSuppress) {
                     /*
                      *  From what I gather from https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS - the Allow-Origin is needed
                      *  on all responses, but these others just when you do a preflight - using OPTIONS.
                      */
-                    m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant{L"*"});
+                    response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowOrigin, String_Constant{L"*"});
                     if (m->PeekRequest ()->GetHTTPMethod () == IO::Network::HTTP::Methods::kOptions) {
-                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowCredentials, String_Constant{L"true"});
-                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant{L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"});
-                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowMethods, String_Constant{L"DELETE, GET, OPTIONS, POST, PUT, TRACE, UPDATE"});
-                        m->PeekResponse ()->AddHeader (IO::Network::HTTP::HeaderName::kAccessControlMaxAge, String_Constant{L"86400"});
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowCredentials, String_Constant{L"true"});
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowHeaders, String_Constant{L"Accept, Access-Control-Allow-Origin, Authorization, Cache-Control, Content-Type, Connection, Pragma, X-Requested-With"});
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlAllowMethods, String_Constant{L"DELETE, GET, OPTIONS, POST, PUT, TRACE, UPDATE"});
+                        response.AddHeader (IO::Network::HTTP::HeaderName::kAccessControlMaxAge, String_Constant{L"86400"});
                     }
                 }
             }
@@ -260,54 +261,6 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const Optional<Interceptor>&
     FixupInterceptorChain_ ();
 }
 
-#if 0
-void    ConnectionManager::Start ()
-{
-    fThreads_.AddTask (bind (&ConnectionManager::DoMainConnectionLoop_, this));
-}
-
-void    ConnectionManager::Abort ()
-{
-    fThreads_.Abort ();
-}
-
-void    ConnectionManager::WaitForDone (Time::DurationSecondsType timeout)
-{
-    fThreads_.WaitForDone (timeout);
-}
-
-void    ConnectionManager::AbortAndWaitForDone (Time::DurationSecondsType timeout)
-{
-    fThreads_.AbortAndWaitForDone ();
-}
-#endif
-
-#if 0
-void    ConnectionManager::AddHandler (const shared_ptr<RequestHandler>& h)
-{
-    fHandlers_->push_back (h);
-}
-
-void    ConnectionManager::RemoveHandler (const shared_ptr<RequestHandler>& h)
-{
-    auto    readWriteObj = fHandlers_.GetReference ();
-    for (auto i = readWriteObj->begin (); i != readWriteObj->end (); ++i) {
-        if (*i == h) {
-            readWriteObj->erase (i);
-            return;
-        }
-    }
-    RequireNotReached ();   // you must specify a valid handler to remove
-}
-#endif
-
-#if 0
-void ConnectionManager::AddConnection (const shared_ptr<Connection>& conn)
-{
-    fActiveConnections_.rwget ()->Add (conn);
-}
-#endif
-
 void ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 {
     AssertNotImplemented ();
@@ -403,68 +356,3 @@ void ConnectionManager::RemoveInterceptor (const Interceptor& i)
     Require (found);
     FixupInterceptorChain_ ();
 }
-
-#if 0
-void    ConnectionManager::DoMainConnectionLoop_ ()
-{
-    // MUST DO MAJOR CRITICAL SECTION WORK HERE
-    while (true) {
-        Execution::Sleep (0.1); // hack - need smarter wait on available data
-        shared_ptr<Connection>   conn;
-        {
-            auto    readWriteObj = fActiveConnections_.GetReference ();
-            if (readWriteObj->empty ()) {
-                conn = readWriteObj->front ();
-            }
-        }
-
-        if (conn.get () != nullptr) {
-
-// REALLY should create NEW TASK we subbit to the threadpool...
-            DoOneConnection_ (conn);
-
-            auto    readWriteObj = fActiveConnections_.GetReference ();
-            for (auto i = readWriteObj->begin (); i != readWriteObj->end (); ++i) {
-                if (*i == conn) {
-                    readWriteObj->erase (i);
-                    break;
-                }
-            }
-        }
-
-        // now go again...
-    }
-}
-
-void    ConnectionManager::DoOneConnection_ (shared_ptr<Connection> c)
-{
-    // prevent exceptions for now cuz outer code not handling them...
-    try {
-        c->ReadHeaders ();
-
-        AssertNotImplemented ();
-#if 0
-        shared_ptr<RequestHandler>   h;
-        {
-            auto    readWriteObj = fHandlers_.GetReference ();
-            for (auto i = readWriteObj->begin (); i != readWriteObj->end (); ++i) {
-                if ((*i)->CanHandleRequest (*c)) {
-                    h = *i;
-                }
-            }
-        }
-        if (h.get () != nullptr) {
-            h->HandleRequest (*c);
-            c->GetResponse ().End ();
-            c->Close ();//tmphack
-            return;
-        }
-#endif
-        Execution::Throw (Network::HTTP::Exception (StatusCodes::kNotFound));
-    }
-    catch (...) {
-        c->GetResponse ().End ();
-        c->Close ();//tmphack
-    }
-}
-#endif
