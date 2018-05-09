@@ -111,6 +111,12 @@ namespace Stroika {
                  *        the underlying thread object.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
+                 *          Note that we make Read, ReadNonBlocking, Connect, and Write () all const, so that they can be each called at the same time from different threads as other methods
+                 *          like GetPeerAddress ().
+                 *
+                 *          It is \em NOT however, legal to call Read (or ReadNonBlocking) at the same time from two different threads, nor Write at the same time from two
+                 *          different threads, nor Connect while already connected, nor Read/ReadNonBlocking/Write while not Connected (and so therefore not legal to call
+                 *          Connect while calling Read/Write).
                  */
                 class ConnectionOrientedSocket::Ptr : public Socket::Ptr {
                 private:
@@ -263,10 +269,10 @@ namespace Stroika {
                 class ConnectionOrientedSocket::_IRep : public Socket::_IRep {
                 public:
                     virtual ~_IRep ()                                                                                                                  = default;
-                    virtual void                                 Connect (const SocketAddress& sockAddr)                                               = 0;
-                    virtual size_t                               Read (Byte* intoStart, Byte* intoEnd)                                                 = 0;
-                    virtual Memory::Optional<size_t>             ReadNonBlocking (Byte* intoStart, Byte* intoEnd)                                      = 0;
-                    virtual void                                 Write (const Byte* start, const Byte* end)                                            = 0;
+                    virtual void                                 Connect (const SocketAddress& sockAddr) const                                         = 0;
+                    virtual size_t                               Read (Byte* intoStart, Byte* intoEnd) const                                           = 0;
+                    virtual Memory::Optional<size_t>             ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const                                = 0;
+                    virtual void                                 Write (const Byte* start, const Byte* end) const                                      = 0;
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const                                                               = 0;
                     virtual Optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                             = 0;
                     virtual void                                 SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;

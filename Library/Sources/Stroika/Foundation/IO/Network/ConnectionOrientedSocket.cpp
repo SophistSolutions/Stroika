@@ -61,10 +61,10 @@ namespace {
                 }
                 inherited::Close ();
             }
-            virtual void Connect (const SocketAddress& sockAddr) override
+            virtual void Connect (const SocketAddress& sockAddr) const override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                sockaddr_storage                                   useSockAddr = sockAddr.As<sockaddr_storage> ();
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                sockaddr_storage                                    useSockAddr = sockAddr.As<sockaddr_storage> ();
 #if qPlatform_POSIX
                 ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::connect (fSD_, (sockaddr*)&useSockAddr, sizeof (useSockAddr)); }));
 #elif qPlatform_Windows
@@ -73,9 +73,9 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
+            virtual size_t Read (Byte* intoStart, Byte* intoEnd) const override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #if qPlatform_POSIX
                 return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif qPlatform_Windows
@@ -88,9 +88,9 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) override
+            virtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #if qPlatform_POSIX || qPlatform_Windows
                 {
                     fd_set input;
@@ -123,14 +123,13 @@ namespace {
                 return {};
 #endif
             }
-            virtual void Write (const Byte* start, const Byte* end) override
+            virtual void Write (const Byte* start, const Byte* end) const override
             {
-                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"IO::Network::Socket...rep...::Write", L"end-start=%lld", static_cast<long long> (end - start))};
 #endif
 #if qPlatform_POSIX
-#if 1
                 /*
                  *  https://linux.die.net/man/2/write says "writes up to count bytes". So handle case where we get partial writes.
                  *  Actually, for most of the cases called out, we cannot really continue anyhow, so this maybe pointless, but the
@@ -148,11 +147,6 @@ namespace {
                         Assert (0 <= n and n <= (end - start));
                         return static_cast<size_t> (n);
                     });
-#else
-                // @todo - maybe check n bytes written and write more - see API docs! But this is VERY BAD -- LGP 2015-10-18
-                int n = Handle_ErrNoResultInterruption ([this, &start, &end]() -> int { return ::write (fSD_, start, end - start); });
-                ThrowErrNoIfNegative (n);
-#endif
 #elif qPlatform_Windows
                 /*
                  *  Note sure what the best way is here, but with WinSock, you cannot use write() directly. Sockets are not
