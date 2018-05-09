@@ -247,10 +247,11 @@ namespace Stroika {
             {
                 // @todo - fix very primitive implementation
                 _SafeReadRepAccessor<_IRep> lhs{this};
-                Bijection                   result = lhs.CloneEmpty (this);
+                //Bijection                   result = dynamic_pointer_cast<_BijectionRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+                Bijection result;
                 for (auto&& i : *this) {
                     if (includeIfTrue (i)) {
-                        result += i;
+                        result.Add (i);
                     }
                 }
                 return result;
@@ -260,10 +261,11 @@ namespace Stroika {
             {
                 // @todo - fix very primitive implementation
                 _SafeReadRepAccessor<_IRep> lhs{this};
-                Bijection                   result = lhs.CloneEmpty (this);
+                //Bijection                   result = dynamic_pointer_cast<_BijectionRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+                Bijection result;
                 for (auto&& i : *this) {
                     if (domainValues.Contains (i.first, this->GetDomainEqualsComparer ())) {
-                        result += i;
+                        result.Add (i);
                     }
                 }
                 return result;
@@ -273,10 +275,11 @@ namespace Stroika {
             {
                 // @todo - fix very primitive implementation
                 _SafeReadRepAccessor<_IRep> lhs{this};
-                Bijection                   result = lhs.CloneEmpty (this);
+                //Bijection                   result = dynamic_pointer_cast<_BijectionRepSharedPtr> (lhs._ConstGetRep ().CloneEmpty (this));
+                Bijection result;
                 for (auto&& i : *this) {
                     if (rangeValues.Contains (i.second, this->GetRangeEqualsComparer ())) {
-                        result += i;
+                        result.Add (i);
                     }
                 }
                 return result;
