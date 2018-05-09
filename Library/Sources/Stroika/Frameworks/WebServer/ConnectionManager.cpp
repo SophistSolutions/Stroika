@@ -32,8 +32,10 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Frameworks::WebServer;
 
+using Execution::Thread;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
-//#define USE_NOISY_TRACE_IN_THIS_MODULE_   1
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
 namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
@@ -124,8 +126,8 @@ namespace {
     inline unsigned int ComputeThreadPoolSize_ (const ConnectionManager::Options& options)
     {
         using Options = ConnectionManager::Options;
-        constexpr unsigned int kMinThreadCnt_{3u};
-        return Math::AtLeast (kMinThreadCnt_, options.fMaxConnections.Value (Options::kDefault_MaxConnections));
+        constexpr unsigned int kMinThreadCnt_{1u}; // one enough now that we support separate thread doing epoll/select and one read when data avail
+        return Math::AtLeast (kMinThreadCnt_, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 10);
     }
     inline unsigned int ComputeConnectionBacklog_ (const ConnectionManager::Options& options)
     {
@@ -147,11 +149,12 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
-    , fThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
+    , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
     , fListener_{bindAddresses,
                  options.fBindFlags.Value (Options::kDefault_BindFlags),
                  [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); },
                  ComputeConnectionBacklog_ (options)}
+    , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=]() { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}
 {
 }
 
@@ -163,26 +166,69 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedSocket::Ptr& s)
     s.SetAutomaticTCPDisconnectOnClose (GetAutomaticTCPDisconnectOnClose ());
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
-    fActiveConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
-
-    // @todo - MAKE Connection OWN the threadtask (or have all the logic below) - and then AddConnection adds the task,
-    // and that way wehn we call 'remove connection- ' we can abort the task (if needed)
-    fThreads_.AddTask (
-        [this, conn]() mutable {
+    fInactiveOpenConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx (L"ConnectionManager::onConnect_::...runConnectionOnAnotherThread");
+    DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
 #endif
-            auto&& cleanup = Execution::Finally ([this, &conn]() {
-                fActiveConnections_.rwget ()->RemoveDomainElement (conn);
-                if (conn->GetResponse ().GetState () != Response::State::eCompleted) {
-                    IgnoreExceptionsForCall (conn->GetResponse ().End ());
-                }
-            });
-            // Now read and process each method - currently wasteful - throwing a thread at context
-            // Also - if keep-alive - keep reading
-            while (conn->ReadAndProcessMessage ())
-                ;
-        });
+}
+
+void ConnectionManager::WaitForReadyConnectionLoop_ ()
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_"));
+#endif
+    // run til thread aboorted
+    while (true) {
+        Execution::CheckForThreadInterruption ();
+
+        Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
+
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+#endif
+
+        // tricky - need this PLUS one more for magic wakeup - when somehting outside changes, like new connection
+        // tmphac
+        if (seeIfReady.Image ().empty ()) {
+            Execution::Sleep (1);
+            continue;
+        }
+        Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
+        //tmphack - waitquietly (1) - to deal with fact we need to interuppt wait when set of sockets changes...
+        for (auto readyFD : sockSetPoller.WaitQuietly (1).Value ()) {
+            shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
+
+            // @todo these three steps SB atomic/and transactional
+            fInactiveOpenConnections_.rwget ().rwref ().RemoveDomainElement (conn);
+            fActiveConnections_.rwget ().rwref ().Add (conn);
+
+            fActiveConnectionThreads_.AddTask (
+                [this, conn]() mutable {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
+#endif
+                    bool keepAlive = false;
+                    IgnoreExceptionsForCall (keepAlive = conn->ReadAndProcessMessage ());
+
+                    // no matter what, remove from active connecitons
+                    fActiveConnections_.rwget ().rwref ().Remove (conn);
+
+                    if (keepAlive) {
+                        fInactiveOpenConnections_.rwget ().rwref ().Add (conn, conn->GetSocket ().GetNativeSocket ());
+                    }
+                    else {
+                        if (conn->GetResponse ().GetState () != Response::State::eCompleted) {
+                            IgnoreExceptionsForCall (conn->GetResponse ().End ());
+                        }
+                    }
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                    DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+#endif
+                });
+        }
+
+        // for now - tmphack - just wait up to 1 second, and then retry
+    }
 }
 
 void ConnectionManager::FixupInterceptorChain_ ()
@@ -269,7 +315,7 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
 {
-    return fActiveConnections_.cget ().cref ().Preimage ();
+    return Collection<shared_ptr<Connection>>{fInactiveOpenConnections_.cget ().cref ().Preimage ()} + fActiveConnections_.load ();
 }
 
 void ConnectionManager::SetServerHeader (Optional<String> server)

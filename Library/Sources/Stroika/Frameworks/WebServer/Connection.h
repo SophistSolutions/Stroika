@@ -143,6 +143,12 @@ namespace Stroika {
                 nonvirtual void WriteLogConnectionMsg_ (const String& msg) const;
 #endif
 
+            public:
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual String ToString () const;
+
             private:
                 InterceptorChain                              fInterceptorChain_;
                 ConnectionOrientedSocket::Ptr                 fSocket_;

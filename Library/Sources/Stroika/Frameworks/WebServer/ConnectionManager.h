@@ -257,7 +257,11 @@ namespace Stroika {
                 nonvirtual void onConnect_ (const ConnectionOrientedSocket::Ptr& s);
 
             private:
+                nonvirtual void WaitForReadyConnectionLoop_ ();
+
+            private:
                 nonvirtual void FixupInterceptorChain_ ();
+
                 nonvirtual void ReplaceInEarlyInterceptor_ (const Optional<Interceptor>& oldValue, const Optional<Interceptor>& newValue);
 
             private:
@@ -279,12 +283,16 @@ namespace Stroika {
                 // But for now - KISS
                 //
                 // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
-                Execution::ThreadPool fThreads_;
+                Execution::ThreadPool fActiveConnectionThreads_;
 
                 // Note: this must be declared after the threadpool so its shutdown on destruction before the thread pool, and doesn't try to launch
                 // new tasks into an already destroyed threadpool.
-                IO::Network::Listener                                                                                     fListener_;
-                Execution::Synchronized<Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType>> fActiveConnections_;
+                IO::Network::Listener fListener_;
+                // Inactive connections are those we are waiting (select/epoll) for incoming data
+                Execution::RWSynchronized<Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType>> fInactiveOpenConnections_;
+                // Active connections are those actively in the readheaders/readbody, dispatch/handle code
+                Execution::RWSynchronized<Collection<shared_ptr<Connection>>> fActiveConnections_;
+                Execution::Thread::CleanupPtr                                 fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
             };
 
             struct ConnectionManager::Options {
@@ -335,7 +343,7 @@ namespace Stroika {
                 }
 #endif
 
-                static constexpr unsigned int              kDefault_MaxConnections{10}; // temporarily - until we can fix https://stroika.atlassian.net/browse/STK-638
+                static constexpr unsigned int              kDefault_MaxConnections{25}; // temporarily - until we can fix https://stroika.atlassian.net/browse/STK-638
                 static constexpr Socket::BindFlags         kDefault_BindFlags{};
                 static const Optional<String>              kDefault_ServerHeader;
                 static constexpr CORSModeSupport           kDefault_CORSModeSupport{CORSModeSupport::eDEFAULT};

@@ -187,12 +187,10 @@ bool Connection::ReadAndProcessMessage ()
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
-    {
-        fMessage_ = make_shared<Message> (
-            move (Request (fSocketStream_)),
-            move (Response (fSocket_, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
-            fSocket_.GetPeerAddress ());
-    }
+    fMessage_ = make_shared<Message> (
+        move (Request (fSocketStream_)),
+        move (Response (fSocket_, fSocketStream_, DataExchange::PredefinedInternetMediaType::kOctetStream)),
+        fSocket_.GetPeerAddress ());
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
     DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
@@ -337,3 +335,13 @@ void Connection::WriteLogConnectionMsg_ (const String& msg) const
     fLogConnectionState_.WriteLn (useMsg);
 }
 #endif
+
+String Connection::ToString () const
+{
+    StringBuilder sb;
+    sb += L"{";
+    // @todo - could add more fields...
+    sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
+    sb += L"}";
+    return sb.str ();
+}
