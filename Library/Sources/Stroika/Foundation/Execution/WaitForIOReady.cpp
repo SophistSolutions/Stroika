@@ -88,67 +88,66 @@ void WaitForIOReady::SetDescriptors (const Traversal::Iterable<pair<FileDescript
 
 auto WaitForIOReady::WaitUntil (Time::DurationSecondsType timeoutAt) -> Set<FileDescriptorType>
 {
-    if (auto o = WaitQuietlyUntil (timeoutAt)) {
-        return *o;
+    Set<FileDescriptorType> result = WaitQuietlyUntil (timeoutAt);
+    if (result.empty ()) {
+        Execution::Throw (Execution::TimeOutException ());
     }
-    Execution::Throw (Execution::TimeOutException ());
+    return result;
 }
 
-auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Memory::Optional<Containers::Set<FileDescriptorType>>
+auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> Containers::Set<FileDescriptorType>
 {
-    DurationSecondsType time2Wait = timeoutAt - Time::GetTickCount ();
+    DurationSecondsType time2Wait = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
     CheckForThreadInterruption ();
-    if (time2Wait > 0) {
-        SmallStackBuffer<pollfd> pollData;
-        {
-            auto   lockedPollData = fPollData_.cget ();
-            size_t sz             = lockedPollData->size ();
-            pollData.GrowToSize (sz);
-            size_t idx = 0;
-            for (auto i : lockedPollData.cref ()) {
-                short events = 0;
-                for (TypeOfMonitor ii : i.second) {
-                    switch (ii) {
-                        case TypeOfMonitor::eRead:
-                            events |= POLLIN;
-                            break;
-                        case TypeOfMonitor::eWrite:
-                            events |= POLLOUT;
-                            break;
-                        case TypeOfMonitor::eError:
-                            events |= POLLERR;
-                            break;
-                        case TypeOfMonitor::eHUP:
-                            events |= POLLHUP;
-                            break;
-                    }
-                }
-                pollData[idx] = pollfd{i.first, events, 0};
-                Assert (pollData[idx].revents == 0);
-                idx++;
-            }
-        }
-        // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
-        // I have this wrong but I suspect docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
-        // which sounds backward...
-        int timeout_msecs = Math::Round<int> (timeoutAt * 1000);
-        int pollResult;
-#if qPlatform_Windows
-        if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeout_msecs)) == SOCKET_ERROR) {
-            Platform::Windows::Exception::Throw (::WSAGetLastError ());
-        }
-#else
-        pollResult = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
-#endif
-        if (pollResult != 0) {
-            Set<FileDescriptorType> result;
-            for (size_t i = 0; i < pollData.GetSize (); ++i) {
-                if (pollData[i].revents != 0) {
-                    result.Add (pollData[i].fd);
+    SmallStackBuffer<pollfd> pollData;
+    {
+        auto   lockedPollData = fPollData_.cget ();
+        size_t sz             = lockedPollData->size ();
+        pollData.GrowToSize (sz);
+        size_t idx = 0;
+        for (auto i : lockedPollData.cref ()) {
+            short events = 0;
+            for (TypeOfMonitor ii : i.second) {
+                switch (ii) {
+                    case TypeOfMonitor::eRead:
+                        events |= POLLIN;
+                        break;
+                    case TypeOfMonitor::eWrite:
+                        events |= POLLOUT;
+                        break;
+                    case TypeOfMonitor::eError:
+                        events |= POLLERR;
+                        break;
+                    case TypeOfMonitor::eHUP:
+                        events |= POLLHUP;
+                        break;
                 }
             }
-            return result;
+            pollData[idx] = pollfd{i.first, events, 0};
+            Assert (pollData[idx].revents == 0);
+            idx++;
         }
     }
-    return Memory::Optional<Containers::Set<FileDescriptorType>>{};
+    // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
+    // I have this wrong but I suspect docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
+    // which sounds backward...
+    int timeout_msecs = Math::Round<int> (time2Wait * 1000);
+    Assert (timeout_msecs >= 0);
+    int pollResult;
+#if qPlatform_Windows
+    if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeout_msecs)) == SOCKET_ERROR) {
+        Platform::Windows::Exception::Throw (::WSAGetLastError ());
+    }
+#else
+    pollResult = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
+#endif
+    Set<FileDescriptorType> result;
+    if (pollResult != 0) {
+        for (size_t i = 0; i < pollData.GetSize (); ++i) {
+            if (pollData[i].revents != 0) {
+                result.Add (pollData[i].fd);
+            }
+        }
+    }
+    return result;
 }

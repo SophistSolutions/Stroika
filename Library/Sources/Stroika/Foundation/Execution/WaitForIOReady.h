@@ -227,7 +227,9 @@ namespace Stroika {
                 /*
                  *  Waits unil the given timeoutAt, and returns as soon as any one (or more) requires service (see TypeOfMonitor).
                  *
-                 *  Returns set of file descriptors which are ready, or 'Missing' if timeout.
+                 *  Returns set of file descriptors which are ready, or an empty set if time expired before any became ready.
+                 *
+                 *  if timeout is <= 0, this will not wait (but may still find some file desciptors ready).
                  *
                  *  \note   ***Cancelation Point***
                  *
@@ -235,7 +237,7 @@ namespace Stroika {
                  *  @see WaitQuietly
                  *  @see WaitUntil
                  */
-                nonvirtual Memory::Optional<Containers::Set<FileDescriptorType>> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
+                nonvirtual Containers::Set<FileDescriptorType> WaitQuietlyUntil (Time::DurationSecondsType timeoutAt = Time::kInfinite);
 
             private:
                 Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitorSet>>> fPollData_;
