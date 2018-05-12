@@ -28,6 +28,15 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 class MultiSet_Array<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
+                private:
+                    using inherited = typename MultiSet<T, TRAITS>::_IRep;
+
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+                protected:
+                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+#endif
+
                 public:
                     virtual size_t GetCapacity () const              = 0;
                     virtual void   SetCapacity (size_t slotsAlloced) = 0;

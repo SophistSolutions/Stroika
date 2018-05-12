@@ -31,6 +31,12 @@ namespace Stroika {
                 class Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
                     using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
+
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+                protected:
+                    using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                    using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+#endif
                 };
 
                 /*

@@ -23,7 +23,7 @@ namespace Stroika {
 
                 /*
                 ********************************************************************************
-                *********** Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_***************
+                *********** Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_***********
                 ********************************************************************************
                 */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

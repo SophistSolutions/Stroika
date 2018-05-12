@@ -522,6 +522,16 @@ namespace Stroika {
                   public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>
 #endif
             {
+            private:
+                using inherited = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::_IRep;
+
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+            protected:
+                using _IterableRepSharedPtr = typename inherited::_IterableRepSharedPtr;
+                using _APPLY_ARGTYPE        = typename inherited::_APPLY_ARGTYPE;
+                using _APPLYUNTIL_ARGTYPE   = typename inherited::_APPLYUNTIL_ARGTYPE;
+#endif
+
             protected:
                 _IRep () = default;
 

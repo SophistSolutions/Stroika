@@ -497,6 +497,15 @@ namespace Stroika {
                   public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep>
 #endif
             {
+            private:
+                using inherited = _IRep;
+
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+            protected:
+                using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+#endif
+
             protected:
                 _IRep () = default;
 
@@ -505,6 +514,11 @@ namespace Stroika {
 
             protected:
                 using _AssociationRepSharedPtr = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_AssociationRepSharedPtr;
+
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+            protected:
+                using _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+#endif
 
             public:
                 virtual _AssociationRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;

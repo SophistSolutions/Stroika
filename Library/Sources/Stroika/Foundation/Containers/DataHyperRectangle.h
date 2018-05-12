@@ -156,6 +156,15 @@ namespace Stroika {
              */
             template <typename T, typename... INDEXES>
             class DataHyperRectangle<T, INDEXES...>::_IRep : public Iterable<tuple<T, INDEXES...>>::_IRep {
+            private:
+                using inherited = _IRep;
+
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+            protected:
+                using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+#endif
+
             protected:
                 _IRep () = default;
 

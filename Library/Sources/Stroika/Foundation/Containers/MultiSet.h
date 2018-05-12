@@ -367,6 +367,12 @@ namespace Stroika {
             private:
                 using inherited = typename Iterable<CountedValue<T>>::_IRep;
 
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+            protected:
+                using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+                using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+#endif
+
             protected:
                 using _MultiSetRepSharedPtr = typename MultiSet<T, TRAITS>::_MultiSetRepSharedPtr;
 

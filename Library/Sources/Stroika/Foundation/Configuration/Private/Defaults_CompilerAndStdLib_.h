@@ -93,6 +93,7 @@
 #define _MS_VS_2k17_15Pt5Pt3_ 191225834
 #define _MS_VS_2k17_15Pt5Pt5_ 191225835
 #define _MS_VS_2k17_15Pt6Pt0_ 191326198
+#define _MS_VS_2k17_15Pt7Pt1_ 191426428
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -988,6 +989,17 @@ Compiling regtests for Median/OrderBy...
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt6Pt0_)
 #else
 #define qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy 0
+#endif
+
+#endif
+
+#ifndef qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MS_VS_2k17_15Pt7Pt1_ (probably broken in .0 but I never tested that)
+#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt1_)
+#else
+#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
 #endif
 
 #endif
