@@ -29,7 +29,7 @@ namespace Stroika {
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 class Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
                 private:
-                    using inherited = typename _IRep;
+                    using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
 #if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
                 protected:
