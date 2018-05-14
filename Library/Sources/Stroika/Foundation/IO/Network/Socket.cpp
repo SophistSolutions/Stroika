@@ -24,16 +24,16 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 /*
-* Notes:
-*      http://stackoverflow.com/questions/2693709/what-was-the-motivation-for-adding-the-ipv6-v6only-flag
-*  Windows:
-*      https://msdn.microsoft.com/en-us/library/windows/desktop/bb513665(v=vs.85).aspx
-*      Windows Vista and later only
-*
-*  not sure how to handle this best cuz not every OS will support dual-stack (or will it?)
-*
-*  So assume no duel sockets. That seems best --LGP 2017-04-24
-*/
+ * Notes:
+ *      http://stackoverflow.com/questions/2693709/what-was-the-motivation-for-adding-the-ipv6-v6only-flag
+ *  Windows:
+ *      https://msdn.microsoft.com/en-us/library/windows/desktop/bb513665(v=vs.85).aspx
+ *      Windows Vista and later only
+ *
+ *  not sure how to handle this best cuz not every OS will support dual-stack (or will it?) 
+ *
+ *  So assume no dual-stack sockets. That seems best --LGP 2017-04-24
+ */
 namespace {
     constexpr bool kUseDualStackSockets_ = false; // opposite of IPV6_V6ONLY
 }
