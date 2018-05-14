@@ -12,5 +12,6 @@ StroikaDevRoot.*
 *.suo
 *.VC.db
 *.vs
+*.user
 .DS_Store
 xcuserdata/
