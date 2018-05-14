@@ -76,6 +76,12 @@ namespace {
             virtual size_t Read (Byte* intoStart, Byte* intoEnd) const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+
+                Assert (fCurrentPendingReadsCount++ == 0);
+#if qDebug
+                auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+#endif
+
 #if qPlatform_POSIX
                 return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif qPlatform_Windows
@@ -91,6 +97,10 @@ namespace {
             virtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+                Assert (fCurrentPendingReadsCount++ == 0);
+#if qDebug
+                auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+#endif
 #if qPlatform_POSIX || qPlatform_Windows
                 {
                     fd_set input;
@@ -102,7 +112,7 @@ namespace {
                         if (intoStart == nullptr) {
                             // dont know how much, but doesn't matter, since read allows returning just one byte if thats all thats available
                             // But MUST check if is EOF or real data available
-                            char buf[1000];
+                            char buf[1024];
 #if qPlatform_POSIX
                             int tmp = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
 #elif qPlatform_Windows
@@ -112,6 +122,10 @@ namespace {
 #endif
                             return tmp;
                         }
+#if qDebug
+                        --fCurrentPendingReadsCount; // reverse for inherited Read ()
+                        auto&& cleanup2 = Finally ([=]() noexcept { ++fCurrentPendingReadsCount; });
+#endif
                         return Read (intoStart, intoEnd);
                     }
                     else {
@@ -240,6 +254,9 @@ namespace {
 #endif
             }
             Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
+#if qDebug
+            mutable atomic<int> fCurrentPendingReadsCount = 0;
+#endif
         };
     };
 }

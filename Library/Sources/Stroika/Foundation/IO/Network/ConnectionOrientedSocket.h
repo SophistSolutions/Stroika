@@ -164,6 +164,10 @@ namespace Stroika {
                     /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
+                     *  \note Though Read () is a const method, can be done concurrently with most other const ConnectionOrientedSocket methods,
+                     *        It is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
+                     *        done simultaneously, from different threads.
+                     *
                      *  \note ***Cancelation Point***
                      */
                     nonvirtual size_t Read (Byte* intoStart, Byte* intoEnd) const;
@@ -171,6 +175,10 @@ namespace Stroika {
                 public:
                     /**
                      *  \brief Non-blocking read: return {} if no data available, 0 on EOF.
+                     *
+                     *  \note Though Read () is a const method, can be done concurrently with most other const ConnectionOrientedSocket methods,
+                     *        It is illegal (because useless and confusing) to do two reads (or ReadNonBlocking) at the same time. Read and Write maybe
+                     *        done simultaneously, from different threads.
                      *
                      *  \note if intoStart == nullptr, then dont actually read, but return the number of bytes available.
                      */
