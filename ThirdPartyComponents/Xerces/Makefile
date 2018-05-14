@@ -33,11 +33,6 @@ OptimizerFlag					=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl 
 endif
 
 
-ifeq (3.1,$(findstring 3.1,$(VERSION)))
-BUILD_WITH_CMAKE=0
-else
-BUILD_WITH_CMAKE=1
-endif
 
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
@@ -83,7 +78,6 @@ PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/libxerces-c.a
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq (1,$(BUILD_WITH_CMAKE))
 ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_3D.lib
@@ -92,19 +86,8 @@ ifeq (Release,$(findstring Release, $(CONFIGURATION)))
 PRODUCED_OUTPUT_ARTIFACTS+=	\
 	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_3.lib
 endif
-else
-ifeq (Debug,$(findstring Debug, $(CONFIGURATION)))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_static_3D.lib
-endif
-ifeq (Release,$(findstring Release, $(CONFIGURATION)))
-PRODUCED_OUTPUT_ARTIFACTS+=	\
-	$(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/xerces-c_static_3.lib
-endif
-endif
 endif
 
-ifeq (1,$(BUILD_WITH_CMAKE))
 CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
 CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces
 CMAKE_CURRENT_SOURCE_DIR:=CURRENT
@@ -116,7 +99,6 @@ else
 CMAKE_PER_TARGET_BUILD_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_TARGET_BUILD_DIR) )
 CMAKE_CURRENT_SOURCE_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_CURRENT_SOURCE_DIR) )
 CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR))
-endif
 endif
 
 
@@ -150,20 +132,12 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@#with cmake we dont change CURRENT, but other makes do write files there...
-ifeq (1,$(BUILD_WITH_CMAKE))
 	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CURRENT
-else
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate_
-endif
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds_
 
 
 clean:
-ifeq (1,$(BUILD_WITH_CMAKE))
 	@rm -rf $(EXTRACTED_DIRNAME) $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
-else
-	@rm -rf $(EXTRACTED_DIRNAME) CURRENT
-endif
 
 
 clobber:	clean
@@ -177,10 +151,8 @@ endif
 
 check-prerequisite-tools:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Checking Prerequisite tools for Xerces ... "
-ifeq (1,$(BUILD_WITH_CMAKE))
 ifeq ($(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_PrivateOverrideOfCMake), no)
 	@{ type cmake > /dev/null 2>&1; } || { ../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) && ../../ScriptsLib/GetMessageForMissingTool.sh cmake && exit 1; }
-endif
 endif
 	@$(ECHO) "done";
 
@@ -226,33 +198,13 @@ endif
 
 doPatching_:
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-ifeq (0,$(BUILD_WITH_CMAKE))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching Xerces ... ";
-	@(cd CURRENT; tar xf ../Patches/VC15Projects.tar.gz --no-same-owner);
-	@$(ECHO) "done"
-endif
-endif
-
-
-ifeq (0,$(BUILD_WITH_CMAKE))
-ifeq (Unix,$(ProjectPlatformSubdir))
-CONFIGURE_ARGS=
-CONFIGURE_ARGS+=--enable-static --disable-shared --without-icu --without-curl
-#on RedHat6, I had trouble with icu, so lose the dependency - not sure why helpful; I think issue
-#also exists with gnuiconv - and has todo with fact that service script (init.d stuff) sets LANG=""
-CONFIGURE_ARGS+=--enable-transcoder-iconv
-CONFIGURE_ARGS+=--disable-transcoder-gnuiconv
-CONFIGURE_ARGS+=--disable-transcoder-icu
-ifeq ($(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling),true)
-CONFIGURE_ARGS+= --host $(shell $(CXX) -dumpmachine)
-endif
-endif
 endif
 
 
 
 
-ifeq (1,$(BUILD_WITH_CMAKE))
+
+
 
 CMAKE_ARGS=
 CMAKE_ARGS+= -Dnetwork:BOOL=OFF
@@ -297,7 +249,6 @@ CMAKE_USE_GENERATOR=Visual Studio 15 2017 Win64
 endif
 endif
 
-endif
 
 
 ALTERNATE_CMAKE_BINDIR=
@@ -308,7 +259,6 @@ endif
 
 
 doBuilds_:
-ifeq (1,$(BUILD_WITH_CMAKE))
 	@mkdir -p $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
 	@touch $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)"` "... "
@@ -326,75 +276,12 @@ endif
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Compiling (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT)"` "... "
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ECHO) "$(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)" > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
-else ifeq (Unix,$(ProjectPlatformSubdir))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (REDIRECT to CURRENT/BUILD.OUT) ... "
-	@echo "export CC=\"$(CC)\"; export CXX=\"$(CXX)\"; ./configure $(CONFIGURE_ARGS)" > CURRENT/BUILD.OUT
-	@cd CURRENT; export CC="$(CC)"; export CXX="$(CXX)"; ./configure $(CONFIGURE_ARGS) 2>&1 >> BUILD.OUT
-	$(MAKE) --directory CURRENT --no-print-directory -s CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) all 2>&1 >> CURRENT/BUILD.OUT
-else
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Compiling (Log to CURRENT/BUILD.OUT) ... "
-ifeq ($(CONFIGURATION),Debug-U-32)
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
-endif
-ifeq ($(CONFIGURATION),Release-U-32)
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
-endif
-ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-32)
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:Build" > CURRENT/BUILD.OUT 2>&1
-endif
-ifeq ($(CONFIGURATION),Debug-U-64)
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=x64 /target:Build" > CURRENT/BUILD.OUT 2>&1
-endif
-ifeq ($(CONFIGURATION),Release-U-64)
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:Build" > CURRENT/BUILD.OUT 2>&1
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-64)
-	@perl ../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) "MSBuild.exe /nologo /v:quiet /clp:Summary CURRENT/Projects/Win32/VC15/xerces-all/XercesLib/XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:Build" > CURRENT/BUILD.OUT 2>&1
-endif
-endif
 	@$(ECHO) "done"
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copying builds to $(BUILDS_ROOT) (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT)"` "... "
-ifeq (1,$(BUILD_WITH_CMAKE))
 	@#NB: Set MAKEFLAGS= to silence warnings about -j jobserver when run with -j N (probaly bug with Xerces 3.2 cmake makefile but didnt dig cuz not important)
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ECHO) "$(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) --target install" > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 	@MAKEFLAGS= && cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@cd $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && ln -s libxerces-c-3.2.a libxerces-c.a
-endif
-else ifeq (Unix,$(ProjectPlatformSubdir))
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib && cp CURRENT/src/.libs/libxerces-c.a $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/
-else
-ifeq ($(CONFIGURATION),Debug-U-32)
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib && cp "CURRENT/Build/Win32/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Debug-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-DbgMemLeaks-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-DbgMemLeaks-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-32)
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib && cp "CURRENT/Build/Win32/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-Logging-U-32/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Debug-U-64)
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib && cp "CURRENT/Build/Win64/VC12/Static Debug"/xerces-c_static_3* $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Debug-U-64/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib && cp "CURRENT/Build/Win64/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-U-64/ThirdPartyComponents/include/
-endif
-ifeq ($(CONFIGURATION),Release-Logging-U-64)
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib && cp "CURRENT/Build/Win64/VC12/Static Release"/xerces-c_static_3* $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/lib/
-	@mkdir -p $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include && cp -r CURRENT/src/xercesc $(BUILDS_ROOT)Release-Logging-U-64/ThirdPartyComponents/include/
-endif
 endif
 	@$(ECHO) "done"
