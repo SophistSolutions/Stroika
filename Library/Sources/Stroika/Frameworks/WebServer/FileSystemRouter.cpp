@@ -46,13 +46,14 @@ namespace {
             RequireNotNull (m);
             String fn{ExtractFileName_ (m)};
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', fn='%s'", m->PeekRequest ()->GetURL ().GetHostRelativePath ().c_str (), fn.c_str ())};
+            Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}...FileSystemRouter...HandleMessage", L"relURL='%s', serving fn='%s'", m->PeekRequest ()->GetURL ().GetHostRelativePath ().c_str (), fn.c_str ())};
 #endif
             try {
+                Response&              response = *m->PeekResponse ();
                 InputStream<Byte>::Ptr in{FileInputStream::New (fn)};
-                m->PeekResponse ()->write (in.ReadAll ());
+                response.write (in.ReadAll ());
                 if (Optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
-                    m->PeekResponse ()->SetContentType (*oMediaType);
+                    response.SetContentType (*oMediaType);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
 #endif
@@ -64,10 +65,14 @@ namespace {
         }
         String ExtractFileName_ (const Message* m) const
         {
-            String urlRelPath = m->PeekRequest ()->GetURL ().GetHostRelativePath ();
+            const Request& request    = *m->PeekRequest ();
+            String         urlRelPath = request.GetURL ().GetHostRelativePath ();
             if (fURLPrefix2Strip) {
                 if (urlRelPath.StartsWith (*fURLPrefix2Strip)) {
                     urlRelPath = urlRelPath.SubString (fURLPrefix2Strip->length ());
+                    if (urlRelPath.StartsWith (L"/")) {
+                        urlRelPath = urlRelPath.SubString (1);
+                    }
                 }
                 else {
                     Execution::Throw (IO::Network::HTTP::Exception{StatusCodes::kNotFound});
