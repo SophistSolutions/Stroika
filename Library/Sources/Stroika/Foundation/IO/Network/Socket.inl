@@ -97,7 +97,6 @@ namespace Stroika {
                     // not important to null-out, but may as well...
                     if (fRep_ != nullptr) {
                         fRep_->Close ();
-                        //fRep_.reset ();  changed in v2.0a209
                     }
                 }
                 template <typename RESULT_TYPE>

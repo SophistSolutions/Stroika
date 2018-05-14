@@ -108,6 +108,13 @@ namespace Stroika {
                                     Close ();
                                 }
                             }
+                            virtual Socket::PlatformNativeHandle Detach () override
+                            {
+                                lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+                                Socket::PlatformNativeHandle                       h = fSD_;
+                                fSD_                                                 = kINVALID_NATIVE_HANDLE_;
+                                return h;
+                            }
                             virtual void Shutdown (Socket::ShutdownTarget shutdownTarget) override
                             {
                                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

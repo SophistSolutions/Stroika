@@ -80,8 +80,8 @@ namespace Stroika {
                 class Socket {
                 public:
                     /**
-                    *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
-                    */
+                     *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
+                     */
 #if qPlatform_Windows
                     using PlatformNativeHandle = SOCKET;
 #else
@@ -224,8 +224,11 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  Marks this Ptr (and and sockets copied from it, before or after). This can be used
-                     *  to prevent the underlying native socket from being closed.
+                     *  Disassociate the underlying native socket and this smart ptr. 
+                     *  If the socket is shared among various smart_ptr reps, this dissociates those as well.
+                     *
+                     *  This is legal to call if *this == nullptr.
+                     *  \ensure (*this == nullptr)
                      *
                      *   @see Close ()
                      */
@@ -295,11 +298,11 @@ namespace Stroika {
 
                 public:
                     /**
-                     *  Note that Socket is an envelope class, and there could be multiple references to
+                     *  Note that Socket::Ptr is an envelope class, and there could be multiple references to
                      *  the same underlying platform socket. But this closes ALL of them. It does not
                      *  remove the reference to the underlying shared socket rep however.
                      *
-                     *  \note - this is a chance in v2.0a209
+                     *  \note this is safe and does nothing if *this == nullptr
                      *
                      *  @see Detach
                      *  @see reset ()
@@ -435,6 +438,7 @@ namespace Stroika {
                     virtual ~_IRep ()                                                                                                          = default;
                     virtual void                                 Shutdown (ShutdownTarget shutdownTarget)                                      = 0;
                     virtual void                                 Close ()                                                                      = 0;
+                    virtual PlatformNativeHandle                 Detach ()                                                                     = 0;
                     virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const                                                      = 0;
                     virtual SocketAddress::FamilyType            GetAddressFamily () const                                                     = 0;
                     virtual PlatformNativeHandle                 GetNativeSocket () const                                                      = 0;

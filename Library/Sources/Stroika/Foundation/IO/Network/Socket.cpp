@@ -85,13 +85,12 @@ Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyTyp
  ***************************** Network::Socket::Ptr *****************************
  ********************************************************************************
  */
-
 Socket::PlatformNativeHandle Socket::Ptr::Detach ()
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     PlatformNativeHandle                               h = kINVALID_NATIVE_HANDLE_;
     if (fRep_ != nullptr) {
-        h = fRep_->GetNativeSocket ();
+        h = fRep_->Detach ();
     }
     fRep_.reset ();
     return h;
@@ -152,7 +151,8 @@ bool Socket::Ptr::IsOpen () const
 
 String Socket::Ptr::ToString () const
 {
-    StringBuilder sb;
+    shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+    StringBuilder                                       sb;
     if (fRep_ == nullptr) {
         sb += L"nullptr";
     }
