@@ -111,20 +111,14 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 	
 
-#$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	CURRENT
-#	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copying CURRENT to $@"` "... "
-#	@mkdir -p $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
-#	@cp -r CURRENT/* $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)/
-#	@$(ECHO) done
-
-
 ORIGs CURRENT $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Extracting $(ZIPPEDFILE) to $@"` "... "
 	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
 	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
 else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
-	@#extra realpath to relative path since fails on cygwin otherwise
+	@#extra sleep and realpath to relative path since fails on cygwin otherwise
+	@sleep 30 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $(shell realpath --relative-to=`pwd` $@) --strip-components=1
 else
 	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
