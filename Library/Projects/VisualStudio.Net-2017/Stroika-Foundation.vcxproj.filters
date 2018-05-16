@@ -819,9 +819,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.cpp">
-      <Filter>Sources\IO\Network</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileStream.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
@@ -830,6 +827,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.cpp">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.cpp">
+      <Filter>Sources\IO\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -2012,6 +2012,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\LoggingInputOutputStream.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.h">
+      <Filter>Sources\IO\Network</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3216,9 +3219,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.inl">
-      <Filter>Sources\IO\Network</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InternallySyncrhonizedInputStream.inl">
       <Filter>Sources\Streams</Filter>
     </None>
@@ -3260,6 +3260,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\LoggingInputOutputStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.inl">
+      <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

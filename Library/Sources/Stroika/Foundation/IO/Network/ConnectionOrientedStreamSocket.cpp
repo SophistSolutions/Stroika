@@ -9,7 +9,7 @@
 
 #include "Socket-Private_.h"
 
-#include "ConnectionOrientedSocket.h"
+#include "ConnectionOrientedStreamSocket.h"
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -17,9 +17,9 @@
 using namespace Stroika::Foundation::IO::Network::PRIVATE_;
 
 namespace {
-    struct ConnectionOrientedSocket_IMPL_ : ConnectionOrientedSocket {
-        struct Rep_ : BackSocketImpl_<ConnectionOrientedSocket>::Rep_ {
-            using inherited = BackSocketImpl_<ConnectionOrientedSocket>::Rep_;
+    struct ConnectionOrientedStreamSocket_IMPL_ : ConnectionOrientedStreamSocket {
+        struct Rep_ : BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_ {
+            using inherited = BackSocketImpl_<ConnectionOrientedStreamSocket>::Rep_;
             Rep_ (Socket::PlatformNativeHandle sd)
                 : inherited (sd)
             {
@@ -263,10 +263,10 @@ namespace {
 
 /*
  ********************************************************************************
- ************** Network::ConnectionOrientedSocket::KeepAliveOptions *************
+ ********** Network::ConnectionOrientedStreamSocket::KeepAliveOptions ***********
  ********************************************************************************
  */
-Characters::String Network::ConnectionOrientedSocket::KeepAliveOptions::ToString () const
+Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::ToString () const
 {
     Characters::StringBuilder sb;
     sb += L"{";
@@ -288,31 +288,31 @@ Characters::String Network::ConnectionOrientedSocket::KeepAliveOptions::ToString
 
 /*
  ********************************************************************************
- ************************ ConnectionOrientedSocket ******************************
+ ******************** ConnectionOrientedStreamSocket ****************************
  ********************************************************************************
  */
-ConnectionOrientedSocket::Ptr ConnectionOrientedSocket::New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
+ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
 {
-    return Ptr{make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol))};
+    return Ptr{make_shared<ConnectionOrientedStreamSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol))};
 }
 
-ConnectionOrientedSocket::Ptr ConnectionOrientedSocket::Attach (PlatformNativeHandle sd)
+ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::Attach (PlatformNativeHandle sd)
 {
-    return Ptr{make_shared<ConnectionOrientedSocket_IMPL_::Rep_> (sd)};
+    return Ptr{make_shared<ConnectionOrientedStreamSocket_IMPL_::Rep_> (sd)};
 }
 
 /*
  ********************************************************************************
- ******************** ConnectionOrientedSocket::Ptr *****************************
+ ******************** ConnectionOrientedStreamSocket::Ptr ***********************
  ********************************************************************************
  */
-Optional<int> ConnectionOrientedSocket::Ptr::GetLinger () const
+Optional<int> ConnectionOrientedStreamSocket::Ptr::GetLinger () const
 {
     linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
     return lr.l_onoff ? lr.l_linger : Optional<int>{};
 }
 
-void ConnectionOrientedSocket::Ptr::SetLinger (const Optional<int>& linger) const
+void ConnectionOrientedStreamSocket::Ptr::SetLinger (const Optional<int>& linger) const
 {
     ::linger so_linger{};
     if (linger) {

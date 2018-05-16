@@ -965,7 +965,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Execution-Network-HTTP-Exception.obj</ObjectFileName>
@@ -1528,6 +1528,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.h" />
@@ -1941,7 +1942,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\CIDR.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionlessSocket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedMasterSocket.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedSocket.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\DNS.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />

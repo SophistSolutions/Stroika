@@ -22,7 +22,7 @@ Objs	=	\
 	$(ObjDir)CIDR.o\
 	$(ObjDir)ConnectionlessSocket.o\
 	$(ObjDir)ConnectionOrientedMasterSocket.o\
-	$(ObjDir)ConnectionOrientedSocket.o\
+	$(ObjDir)ConnectionOrientedStreamSocket.o\
 	$(ObjDir)DNS.o\
 	$(ObjDir)Interface.o\
 	$(ObjDir)InternetAddress.o\
