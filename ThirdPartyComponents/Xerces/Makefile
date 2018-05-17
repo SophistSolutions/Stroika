@@ -4,7 +4,7 @@ endif
 
 
 .DEFAULT_GOAL := all
-.PHONY:	all clean clobber check doBuilds_ doCreate_ doPatching_
+.PHONY:	all clean clobber check doBuilds_
 
 SHELL=/bin/bash
 
@@ -16,7 +16,6 @@ export StroikaRoot=$(shell realpath ../..)/
 
 VERSION=3.2.1
 #VERSION=3.2.0
-#VERSION=3.1.4
 BASENAME=xerces-c-$(VERSION)
 ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -37,6 +36,10 @@ endif
 
 MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
+
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
+PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces)
+
 
 #
 # CHECK FOR UPDATED VERSIONS http://xerces.apache.org/xerces-c/
@@ -90,7 +93,7 @@ endif
 
 CMAKE_PER_TARGET_BUILD_DIR:=../../Builds/$(CONFIGURATION)/ThirdPartyComponents/
 CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR:=../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/Xerces
-CMAKE_CURRENT_SOURCE_DIR:=CURRENT
+CMAKE_CURRENT_SOURCE_DIR:=$(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 ifeq ($(UNAME),Cygwin)
 CMAKE_PER_TARGET_BUILD_DIR:=$(shell cygpath -a -w $(CMAKE_PER_TARGET_BUILD_DIR) | sed s/\\\\/\\\\\\\\/g)
 CMAKE_CURRENT_SOURCE_DIR:=$(shell cygpath -a -w $(CMAKE_CURRENT_SOURCE_DIR) | sed s/\\\\/\\\\\\\\/g)
@@ -131,8 +134,7 @@ $(PRODUCED_OUTPUT_ARTIFACTS):
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
-	@#with cmake we dont change CURRENT, but other makes do write files there...
-	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CURRENT
+	@$(MAKE) --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) CURRENT $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doBuilds_
 
 
@@ -143,10 +145,11 @@ clean:
 clobber:	clean
 ifeq ($(CONFIGURATION),)
 	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/*xerces* $(BUILDS_ROOT)*/ThirdPartyComponents/include/*xerces*
+	@rm -rf CURRENT
 else
 	@rm -f $(PRODUCED_OUTPUT_ARTIFACTS)
+
 endif
-	@rm -rf CURRENT
 
 
 check-prerequisite-tools:
@@ -179,26 +182,19 @@ $(ZIPPEDFILE):
 
 
 
-CURRENT:	$(ZIPPEDFILE)
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doCreate_
-
-
-doCreate_:	$(ZIPPEDFILE)
-	@#### @todo FIX this code so this is not deleted/re-created each time we build!!!! -- not needed once we switch to cmake build -- LGP 2017-10-30
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Creating CURRENT ... ";
-	@mkdir -p CURRENT && rm -rf CURRENT/*
+ORIGs CURRENT $(PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Extracting $(ZIPPEDFILE) to $@"` "... "
+	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
+	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
+else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+	@#extra sleep and realpath to relative path since fails on cygwin otherwise
+	@sleep 5 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
+	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $(shell realpath --relative-to=`pwd` $@) --strip-components=1 || tar xf $(ZIPPEDFILE) --no-same-owner --directory $(shell realpath --relative-to=`pwd` $@) --strip-components=1
 else
-	@tar xf $(ZIPPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
-	@$(ECHO) "done"
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL)  doPatching_
-
-
-doPatching_:
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-endif
+	@echo done
 
 
 
