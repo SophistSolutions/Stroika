@@ -552,7 +552,7 @@ sub	SetDefaultForCompilerDriver_
 			if ($runtimeStackProtectorFlag == DEFAULT_BOOL_OPTIONS) {
 				$runtimeStackProtectorFlag = true;
 			}
-			if (trim (`uname -r`) eq "4.4.0-43-Microsoft") {
+			if (trim (`uname -r`) eq "4.4.0-43-Microsoft" || trim (`uname -r`) eq "4.4.0-17134-Microsoft") {
 				#LEAVE empty default, cuz for this version of WSL, asan doesn't work - insufficient procfs support
 			}
 			elsif (!$sanitizerFlagsNoneSet) {
