@@ -29,6 +29,7 @@ endif
 #VERSION=1.1.0e
 #VERSION=1.1.0f
 VERSION=1.1.0g
+VERSION=1.1.1-pre6
 
 
 BASENAME=openssl-$(VERSION)
