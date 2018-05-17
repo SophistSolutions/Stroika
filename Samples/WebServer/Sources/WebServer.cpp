@@ -48,10 +48,10 @@ namespace {
      *  and accesss them from the Route handler functions.
      */
     struct MyWebServer_ {
-        const Router      fRouter_;
+        const Router      kRouter_;
         ConnectionManager fConnectionMgr_;
         MyWebServer_ (uint16_t portNumber)
-            : fRouter_{
+            : kRouter_{
                   Sequence<Route>{
                       Route{RegularExpression (L""), DefaultPage_},
                       Route{RegularExpression (L"POST"), RegularExpression (L"SetAppState"), SetAppState_},
@@ -60,7 +60,7 @@ namespace {
                           FileSystemRouter{Execution::GetEXEDir () + L"html", String (L"Files"), Sequence<String>{L"index.html"}},
                       },
                   }}
-            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), fRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/1.0"}}}
+            , fConnectionMgr_{SocketAddresses (InternetAddresses_Any (), portNumber), kRouter_, ConnectionManager::Options{{}, Socket::BindFlags{}, String{L"Stroika-Sample-WebServer/1.0"}}}
         {
         }
         // Can declare arguments as Request*,Response*
@@ -85,7 +85,6 @@ int main (int argc, const char* argv[])
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
-
     uint16_t                  portNumber = 8080;
     Time::DurationSecondsType quitAfter  = numeric_limits<Time::DurationSecondsType>::max ();
 
