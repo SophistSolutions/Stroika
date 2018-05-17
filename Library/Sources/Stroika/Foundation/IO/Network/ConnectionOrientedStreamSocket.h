@@ -55,7 +55,7 @@ namespace Stroika {
                      *  TODO:
                      *      @todo - maybe - ConnectionOrientedStreamSocket should take OVERLOAD with CTOR having socket-address-to-connect-to
                      */
-                    ConnectionOrientedStreamSocket ()                            = delete;
+                    ConnectionOrientedStreamSocket ()                                        = delete;
                     ConnectionOrientedStreamSocket (const ConnectionOrientedStreamSocket& s) = delete;
                     ConnectionOrientedStreamSocket (ConnectionOrientedStreamSocket&& s)      = delete;
 
