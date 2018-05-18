@@ -81,7 +81,7 @@ namespace Stroika {
              *  is still running will keep the reference count non-zero.
              *
              *  Thread Aborting/Interruption:
-             *      The Stroika Thread class supports the idea of 'aborting' a thread.
+             *      The Stroika Thread class supports the idea of 'interrupting' or 'aborting' a thread.
              *
              *  \em Nomenclature Note:
              *       In some libraries, the term interruption, cancelation is used for thread aborting.
