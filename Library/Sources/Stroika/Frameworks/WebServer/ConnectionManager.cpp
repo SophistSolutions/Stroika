@@ -178,6 +178,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_"));
 #endif
+
     // run til thread aboorted
     while (true) {
         Execution::CheckForThreadInterruption ();
@@ -195,6 +196,8 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
             continue;
         }
         Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
+
+        // for now - tmphack - just wait up to 1 second, and then retry
         //tmphack - waitquietly (1) - to deal with fact we need to interuppt wait when set of sockets changes...
         for (auto readyFD : sockSetPoller.WaitQuietly (1).Value ()) {
             shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
@@ -227,8 +230,6 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #endif
                 });
         }
-
-        // for now - tmphack - just wait up to 1 second, and then retry
     }
 }
 
