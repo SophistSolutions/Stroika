@@ -85,11 +85,9 @@ namespace {
 #if qPlatform_POSIX
                 return ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([this, &intoStart, &intoEnd]() -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); }));
 #elif qPlatform_Windows
-                ///tmpahcl - a good start
-                //return ::_read (fSD_, intoStart, intoEnd - intoStart);
                 int flags = 0;
                 int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
-                return static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags))); // rough attempt...
+                return static_cast<size_t> (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags)));
 #else
                 AssertNotImplemented ();
 #endif
