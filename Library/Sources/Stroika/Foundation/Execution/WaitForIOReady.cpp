@@ -135,9 +135,24 @@ auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> C
     Assert (timeout_msecs >= 0);
     int pollResult;
 #if qPlatform_Windows
+#if qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks > 0
+    while (true) {
+        Execution::CheckForThreadInterruption ();
+        DurationSecondsType timeLeft2Wait                 = Math::AtLeast<Time::DurationSecondsType> (timeoutAt - Time::GetTickCount (), 0);
+        DurationSecondsType time2WaitThisLoop             = Math::AtLeast<Time::DurationSecondsType> (Math::AtMost<Time::DurationSecondsType> (timeLeft2Wait, qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks / 1000.0), 0);
+        int                 time2WaitMillisecondsThisLoop = static_cast<int> (time2WaitThisLoop * 1000);
+        if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), time2WaitMillisecondsThisLoop)) == SOCKET_ERROR) {
+            Platform::Windows::Exception::Throw (::WSAGetLastError ());
+        }
+        if (pollResult != 0 or Time::GetTickCount () >= timeoutAt) {
+            break;
+        }
+    }
+#else
     if ((pollResult = ::WSAPoll (pollData.begin (), static_cast<ULONG> (pollData.GetSize ()), timeout_msecs)) == SOCKET_ERROR) {
         Platform::Windows::Exception::Throw (::WSAGetLastError ());
     }
+#endif
 #else
     pollResult = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() { return ::poll (pollData.begin (), pollData.GetSize (), timeout_msecs); }));
 #endif

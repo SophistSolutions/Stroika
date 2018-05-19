@@ -36,6 +36,19 @@ namespace Stroika {
         namespace Execution {
 
             /**
+             *  WSAPoll is not (fully/mostly) alertable, in the Windows API. So for Windows, this trick is needed to make
+             *  WaitForIOReady::Wait* a ***Cancelation Point***.
+             *
+             *  Set qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks to a number of milliseconds between WSAPoll
+             *  forced wakeups. A smaller value means more responsive, but more wasted CPU time.
+             */
+#ifndef qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks
+#if qPlatform_Windows
+#define qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks 1000
+#endif
+#endif
+
+            /**
              *  Simple portable wrapper on OS select/2, pselect/2, poll/2, epoll (), and/or WaitForMultipleEvents(), etc
              *
              *  \note   Calls to Add/Remove/clear/SetDescriptors () doesn't affect already running calls to Wait()
