@@ -168,6 +168,7 @@ void ConnectionManager::onConnect_ (const ConnectionOrientedSocket::Ptr& s)
     s.SetLinger (GetLinger ()); // 'missing' has meaning (feature disabled) for socket, so allow setting that too - doesn't mean dont pass on/use-default
     shared_ptr<Connection> conn = make_shared<Connection> (s, fInterceptorChain_);
     fInactiveOpenConnections_.rwget ()->Add (conn, s.GetNativeSocket ());
+    fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"In onConnect_ (after adding connection): fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
 #endif
@@ -179,56 +180,77 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
     Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_"));
 #endif
 
+    // kTime2WaitBetweenRecheckes_ could be hours, but for small chance race - after we make change send interrupt.
+    // The reason we do this instead of using a condition variable, is we want to wait BOTH oh the condition variable and if data is available from a set of sockets...
+    constexpr Time::DurationSecondsType kTime2WaitBetweenRecheckes_{120.0};
+
     // run til thread aboorted
     while (true) {
-        Execution::CheckForThreadInterruption ();
+        try {
+            Execution::CheckForThreadInterruption ();
 
-        Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
+            Bijection<shared_ptr<Connection>, Execution::WaitForIOReady::FileDescriptorType> seeIfReady = fInactiveOpenConnections_.cget ().cref ();
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+            DbgTrace (L"At top of WaitForReadyConnectionLoop_: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
 #endif
 
-        // tricky - need this PLUS one more for magic wakeup - when somehting outside changes, like new connection
-        // tmphac
-        if (seeIfReady.Image ().empty ()) {
-            Execution::Sleep (1);
-            continue;
-        }
-        Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
+            // This will wake up early if another thread adds an inactive connection (thread gets interruppted)
+            if (seeIfReady.Image ().empty ()) {
+                Execution::Sleep (kTime2WaitBetweenRecheckes_);
+                continue;
+            }
+            Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
 
-        // for now - tmphack - just wait up to 1 second, and then retry
-        //tmphack - waitquietly (1) - to deal with fact we need to interuppt wait when set of sockets changes...
-        for (auto readyFD : sockSetPoller.WaitQuietly (1).Value ()) {
-            shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
+            // for now - tmphack - just wait up to 1 second, and then retry
+            //tmphack - waitquietly (1) - to deal with fact we need to interuppt wait when set of sockets changes...
+            for (auto readyFD : sockSetPoller.WaitQuietly (kTime2WaitBetweenRecheckes_).Value ()) {
 
-            // @todo these three steps SB atomic/and transactional
-            fInactiveOpenConnections_.rwget ().rwref ().RemoveDomainElement (conn);
-            fActiveConnections_.rwget ().rwref ().Add (conn);
+                Execution::Thread::SuppressInterruptionInContext suppressInterruption;
 
-            fActiveConnectionThreads_.AddTask (
-                [this, conn]() mutable {
+                shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
+
+                // @todo these three steps SB atomic/and transactional
+                fInactiveOpenConnections_.rwget ().rwref ().RemoveDomainElement (conn);
+                fActiveConnections_.rwget ().rwref ().Add (conn);
+
+                fActiveConnectionThreads_.AddTask (
+                    [this, conn]() mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
+                        Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
 #endif
-                    bool keepAlive = false;
-                    IgnoreExceptionsForCall (keepAlive = conn->ReadAndProcessMessage ());
+                        bool keepAlive = false;
+                        IgnoreExceptionsForCall (keepAlive = conn->ReadAndProcessMessage ());
 
-                    // no matter what, remove from active connecitons
-                    fActiveConnections_.rwget ().rwref ().Remove (conn);
+                        // no matter what, remove from active connecitons
+                        fActiveConnections_.rwget ().rwref ().Remove (conn);
 
-                    if (keepAlive) {
-                        fInactiveOpenConnections_.rwget ().rwref ().Add (conn, conn->GetSocket ().GetNativeSocket ());
-                    }
-                    else {
-                        if (conn->GetResponse ().GetState () != Response::State::eCompleted) {
-                            IgnoreExceptionsForCall (conn->GetResponse ().End ());
+                        if (keepAlive) {
+                            fInactiveOpenConnections_.rwget ().rwref ().Add (conn, conn->GetSocket ().GetNativeSocket ());
+                            fWaitForReadyConnectionThread_.Interrupt (); // wakeup so checks this one too
                         }
-                    }
+                        else {
+                            if (conn->GetResponse ().GetState () != Response::State::eCompleted) {
+                                IgnoreExceptionsForCall (conn->GetResponse ().End ());
+                            }
+                        }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                    DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
+                        DbgTrace (L"at end of read&process task (keepAlive=%s) for connection %s: fActiveConnections_=%s, fInactiveOpenConnections_=%s", Characters::ToString (keepAlive).c_str (), Characters::ToString (conn).c_str (), Characters::ToString (fActiveConnections_.cget ().cref ()).c_str (), Characters::ToString (fInactiveOpenConnections_.cget ().cref ()).c_str ());
 #endif
-                });
+                    });
+            }
+        }
+        catch (Thread::AbortException&) {
+            Execution::ReThrow ();
+        }
+        catch (Thread::InterruptException&) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"Normal receipt of interruption because connection added to open but inactive connections.");
+#endif
+            // OK - completely ignore - this just means the list of sockets to watch has changed
+        }
+        catch (...) {
+            DbgTrace (L"Internal exception in WaitForReadyConnectionLoop_ loop suppressed: %s", Characters::ToString (current_exception ()).c_str ());
         }
     }
 }
