@@ -720,24 +720,13 @@ void CALLBACK Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
     TraceContextBumper ctx{"Thread::Rep_::CalledInRepThreadAbortProc_"};
     Thread::Rep_* rep = reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (GetCurrentThreadID () == rep->GetID ());
+
     /*
-     *  Note why this is safe here:
-     *      o   This callback is called by the APC mechanism only if in an 'alertable state' call, like SleepEx().
-     *      o   This also respects the TLS variable (current thread) copy of the suppress throw flags
-     *          inside CheckForThreadInterruption()
-     *
-     *  See docs on 'alertable state' and 'APC' in Thread class declaration.
+     *  This code USED TO (until Stroika 2.0a234) - call CheckForThreadInterupption () in most cases. But that appeared to cause some trouble
+     *  problably because of Windows library code calling an altertable function without being prepared for it to throw. So we adopted 
+     *  a safer apporach, and just follow all these alertable calls with CheckForThreadInterruption().
+     *  -- LGP 2018-05-19
      */
-    Assert (rep->fTLSInterruptFlag_ == &t_Interrupting_);
-    switch (rep->fStatus_) {
-        case Status::eAborting:
-        case Status::eRunning: {
-            CheckForThreadInterruption ();
-        } break;
-    }
-    // normally we don't reach this - but we could if we've already been marked completed somehow
-    // before the abortProc got called/finsihed...
-    Require (rep->fStatus_ == Status::eCompleted);
 }
 #endif
 

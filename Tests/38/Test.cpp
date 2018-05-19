@@ -473,8 +473,8 @@ namespace {
         {
             Thread::Ptr thread = Thread::New ([]() {
                 while (true) {
-                    // test alertable 'throw'
-                    ::SleepEx (0, true);
+                    // test alertable sleep
+                    Execution::Sleep (10000);
                 }
             });
             thread.Start ();

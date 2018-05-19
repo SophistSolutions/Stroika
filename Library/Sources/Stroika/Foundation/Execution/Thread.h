@@ -126,15 +126,14 @@ namespace Stroika {
              *  \note - its important that this 'interruption' can only happen at well defined times, because that allows
              *        for safe and reliable cleanup of whatever activitites were being done (e.g. cannot interupt in a destructor)
              *
-             *  Thread interruption/aborting is tricky todo safely and portably. We take a number of approaches:
+             *  Thread interruption/aborting is tricky todo safely and portably. We take a safe, cooperative approach.
              *      (1) We maintain a thread-local-storage variable - saying if this thread has been aborted.
-             *          Sprinkling CheckForThreadInterruption throughout your code - will trigger a AbortException ()
+             *          Sprinkling CheckForThreadInterruption throughout your code - will trigger an InterupptedException () or AbortException ()
              *          in that thread context. Note a pointer to that TLS interruption variable is also stored
              *          in the thread 'rep' object, so it can be set (by Thread::Interrupt).
              *
-             *      (2) WINDOWS ONLY: Async-injection (QueueUserAPC/Windows) - Alertable state -  APC functions get 'suddenly launched' in the context
-             *          of a given threads when its in an 'alertable state'. This APC function can then throw -
-             *          essentially ending the sleep/wait/or whatever.
+             *      (2) WINDOWS ONLY: Async-injection (QueueUserAPC/Windows) - Alertable state -  certain (alertable) functions get interrupted and return 
+             *          WAIT_IO_COMPLETION (like POSIX EINTR).
              *
              *          @see https://msdn.microsoft.com/en-us/library/windows/desktop/aa363772(v=vs.85).aspx
              *              o   SleepEx
@@ -146,10 +145,14 @@ namespace Stroika {
              *              o   WSAPoll ... Winsock performs an alertable, similarly for recvfrom, accept, etc. Not clear how to get full list of
              *                  windows alertable functions...
              *
+             *          This allows interrupting windows waiting / blocking functions (most of them).
+             *
              *      (3) POSIX ONLY: Signal injection - we send a special (defaults to SIG_USR2) signal to a particular thread.
              *          This triggers an EINTR on most UNIX system calls, which are automatically restarted in most cases
              *          (@see Execution::Handle_ErrNoResultInterruption), but in case of interruption, we call
              *          CheckForThreadInterruption ()
+             *
+             *          This allows interrupting UNIX waiting / blocking functions (all of them?).
              *
              *  \note @see defails on cancelation points, because many common std C++ blocking operations, like std::mutex are not
              *        std::condition_variable are not cancelation points and so can break this mechanism if not used carefully
