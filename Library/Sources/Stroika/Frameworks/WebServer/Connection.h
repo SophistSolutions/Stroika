@@ -8,6 +8,7 @@
 
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
+#include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
 #include "../../Foundation/IO/Network/SocketStream.h"
 #include "../../Foundation/Streams/TextWriter.h"
 
@@ -75,17 +76,6 @@ namespace Stroika {
 
             public:
                 nonvirtual Connection& operator= (const Connection&) = delete;
-
-            private:
-                // Must rethink this organization -but for now - call this once at start of connection to fill in details in
-                // the  Request object
-                //
-                // Return false if 'silent exception' - like empty connection
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                nonvirtual bool ReadHeaders_ (Message* msg);
-#else
-                static bool ReadHeaders_ (Message* msg);
-#endif
 
             public:
                 // Cannot do here becuase request maybe already sent...
@@ -156,10 +146,25 @@ namespace Stroika {
                 nonvirtual String ToString (bool abbreviatedOutput = true) const;
 
             private:
+                struct MyMessage_ : Message {
+                    MyMessage_ (const ConnectionOrientedSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream);
+
+                    // Only valid until the end of a successful ReadHeaders
+                    MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
+
+                    // Return false if 'silent exception' - like empty connection
+                    nonvirtual bool ReadHeaders (
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+                        function<void(const String&)>& logMsg
+#endif
+                    );
+                };
+
+            private:
                 InterceptorChain                              fInterceptorChain_;
                 ConnectionOrientedSocket::Ptr                 fSocket_;
                 Streams::InputOutputStream<Memory::Byte>::Ptr fSocketStream_;
-                shared_ptr<Message>                           fMessage_; // always there, but ptr so it can be replaced
+                shared_ptr<MyMessage_>                        fMessage_; // always there, but ptr so it can be replaced
                 Memory::Optional<Remaining>                   fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
                 Streams::TextWriter::Ptr fLogConnectionState_;
