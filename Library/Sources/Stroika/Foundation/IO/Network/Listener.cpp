@@ -42,45 +42,41 @@ struct Listener::Rep_ {
             ms.Listen (backlog);
             fMasterSockets += ms;
         }
-        fListenThread = Execution::Thread::New ([this]() {
-            Containers::Bijection<ConnectionOrientedMasterSocket::Ptr, WaitForIOReady::FileDescriptorType> socket2FDBijection;
-            for (auto&& s : fMasterSockets) {
-                socket2FDBijection.Add (s, s.GetNativeSocket ());
-            }
-            //Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
-            Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
-            while (true) {
-                try {
-                    for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
-                        ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-                        ConnectionOrientedSocket::Ptr       s                     = localSocketToAcceptOn.Accept ();
-                        fNewConnectionAcceptor (s);
-                    }
-                }
-                catch (const Execution::Thread::AbortException&) {
-                    Execution::ReThrow ();
-                }
-                catch (...) {
-                    // unclear what todo with expcetions here
-                    // probnably ignore all but for theradabort.
-                    // may need virtual fucntions to handle? Or std::function passed in?
-                    DbgTrace (L"Exception accepting new connection: %s - ignored", Characters::ToString (current_exception ()).c_str ());
-                }
-            }
-        });
-        fListenThread.SetThreadName (L"Socket Listener"); // @todo include sockaddr 'pretty print' in name?
-        fListenThread.Start ();
-    }
-    ~Rep_ ()
-    {
-        // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-        Thread::SuppressInterruptionInContext suppressInterruption;
-        IgnoreExceptionsForCall (fListenThread.AbortAndWaitForDone ());
+        fListenThread = Execution::Thread::New (
+				[this]() {
+				Containers::Bijection<ConnectionOrientedMasterSocket::Ptr, WaitForIOReady::FileDescriptorType> socket2FDBijection;
+				for (auto&& s : fMasterSockets) {
+					socket2FDBijection.Add (s, s.GetNativeSocket ());
+				}
+				//Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
+				Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
+				while (true) {
+					try {
+						for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
+							ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
+							ConnectionOrientedSocket::Ptr       s                     = localSocketToAcceptOn.Accept ();
+							fNewConnectionAcceptor (s);
+						}
+					}
+					catch (const Execution::Thread::AbortException&) {
+						Execution::ReThrow ();
+					}
+					catch (...) {
+						// unclear what todo with expcetions here
+						// probnably ignore all but for theradabort.
+						// may need virtual fucntions to handle? Or std::function passed in?
+						DbgTrace (L"Exception accepting new connection: %s - ignored", Characters::ToString (current_exception ()).c_str ());
+					}
+				}
+			},
+			Thread::eAutoStart, 
+			L"Socket Listener: " + Characters::ToString (addrs)
+		);
     }
 
     function<void(const ConnectionOrientedSocket::Ptr& newConnection)> fNewConnectionAcceptor;
     Sequence<ConnectionOrientedMasterSocket::Ptr>                      fMasterSockets;
-    Execution::Thread::Ptr                                             fListenThread;
+    Execution::Thread::CleanupPtr                                      fListenThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*
