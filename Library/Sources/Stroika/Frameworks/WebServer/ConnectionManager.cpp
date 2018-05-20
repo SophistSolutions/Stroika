@@ -180,10 +180,6 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
     Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::WaitForReadyConnectionLoop_"));
 #endif
 
-    // kTime2WaitBetweenRecheckes_ could be hours, but for small chance race - after we make change send interrupt.
-    // The reason we do this instead of using a condition variable, is we want to wait BOTH oh the condition variable and if data is available from a set of sockets...
-    constexpr Time::DurationSecondsType kTime2WaitBetweenRecheckes_{120.0};
-
     // run til thread aboorted
     while (true) {
         try {
@@ -197,23 +193,18 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 
             // This will wake up early if another thread adds an inactive connection (thread gets interruppted)
             if (seeIfReady.Image ().empty ()) {
-                Execution::Sleep (kTime2WaitBetweenRecheckes_);
+                Execution::Sleep (Time::DurationSecondsType{2 * 60 * 60}); // can be any amount of time, since we will be interuppted
                 continue;
             }
             Execution::WaitForIOReady sockSetPoller{seeIfReady.Image ()};
-
-            // for now - tmphack - just wait up to 1 second, and then retry
-            //tmphack - waitquietly (1) - to deal with fact we need to interuppt wait when set of sockets changes...
-            for (auto readyFD : sockSetPoller.WaitQuietly (kTime2WaitBetweenRecheckes_).Value ()) {
+            for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
+                shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
 
                 Execution::Thread::SuppressInterruptionInContext suppressInterruption;
-
-                shared_ptr<Connection> conn = *seeIfReady.InverseLookup (readyFD);
 
                 // @todo these three steps SB atomic/and transactional
                 fInactiveOpenConnections_.rwget ().rwref ().RemoveDomainElement (conn);
                 fActiveConnections_.rwget ().rwref ().Add (conn);
-
                 fActiveConnectionThreads_.AddTask (
                     [this, conn]() mutable {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
