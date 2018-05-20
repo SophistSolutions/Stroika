@@ -40,8 +40,6 @@ using namespace Stroika::Frameworks::WebServer;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-
-
 /*
  ********************************************************************************
  ******************** WebServer::Connection::Remaining **************************
@@ -49,18 +47,17 @@ using namespace Stroika::Frameworks::WebServer;
  */
 String Connection::Remaining::ToString () const
 {
-	StringBuilder sb;
-	sb += L"{";
-	if (fMessages) {
-		sb += L"Messages: " + Characters::ToString (*fMessages) + L", ";
-	}
-	if (fTimeoutAt) {
-		sb += L"TimeoutAt: " + Characters::ToString (*fTimeoutAt) + L", ";
-	}
-	sb += L"}";
-	return sb.str ();
+    StringBuilder sb;
+    sb += L"{";
+    if (fMessages) {
+        sb += L"Messages: " + Characters::ToString (*fMessages) + L", ";
+    }
+    if (fTimeoutAt) {
+        sb += L"TimeoutAt: " + Characters::ToString (*fTimeoutAt) + L", ";
+    }
+    sb += L"}";
+    return sb.str ();
 }
-
 
 /*
  ********************************************************************************
@@ -353,7 +350,7 @@ String Connection::ToString (bool abbreviatedOutput) const
     if (not abbreviatedOutput) {
         sb += L"Message: " + Characters::ToString (fMessage_) + L", ";
         sb += L"Remaining: " + Characters::ToString (fRemaining_) + L", ";
-	}
+    }
     sb += L"}";
     return sb.str ();
 }
