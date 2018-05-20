@@ -120,6 +120,12 @@ namespace Stroika {
                 struct Remaining {
                     Memory::Optional<unsigned int>              fMessages;
                     Memory::Optional<Time::DurationSecondsType> fTimeoutAt;
+
+                public:
+                    /**
+                     *  @see Characters::ToString ();
+                     */
+                    nonvirtual String ToString () const;
                 };
 
             public:
@@ -147,7 +153,7 @@ namespace Stroika {
                 /**
                  *  @see Characters::ToString ();
                  */
-                nonvirtual String ToString () const;
+                nonvirtual String ToString (bool abbreviatedOutput = true) const;
 
             private:
                 InterceptorChain                              fInterceptorChain_;

@@ -40,6 +40,28 @@ using namespace Stroika::Frameworks::WebServer;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
+
+
+/*
+ ********************************************************************************
+ ******************** WebServer::Connection::Remaining **************************
+ ********************************************************************************
+ */
+String Connection::Remaining::ToString () const
+{
+	StringBuilder sb;
+	sb += L"{";
+	if (fMessages) {
+		sb += L"Messages: " + Characters::ToString (*fMessages) + L", ";
+	}
+	if (fTimeoutAt) {
+		sb += L"TimeoutAt: " + Characters::ToString (*fTimeoutAt) + L", ";
+	}
+	sb += L"}";
+	return sb.str ();
+}
+
+
 /*
  ********************************************************************************
  ***************************** WebServer::Connection ****************************
@@ -301,19 +323,6 @@ bool Connection::ReadAndProcessMessage ()
             // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
             (void)fMessage_->GetRequestBody ();
         }
-#if 0
-        else if (GetRequest ().GetHTTPMethod ().Equals (IO::Network::HTTP::Methods::kGet, Characters::CompareOptions::eCaseInsensitive)) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"This request should be closed but thats much less efficient, and chrome seems todo this - sure???; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
-#endif
-        }
-        else {
-            thisMessageKeepAlive = false;
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"forced close connection because the request header lacked a Content-Length: REQ=%s", Characters::ToString (GetRequest ()).c_str ());
-#endif
-        }
-#endif
     }
 
     // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
@@ -336,12 +345,15 @@ void Connection::WriteLogConnectionMsg_ (const String& msg) const
 }
 #endif
 
-String Connection::ToString () const
+String Connection::ToString (bool abbreviatedOutput) const
 {
     StringBuilder sb;
     sb += L"{";
-    // @todo - could add more fields...
     sb += L"Socket: " + Characters::ToString (fSocket_) + L", ";
+    if (not abbreviatedOutput) {
+        sb += L"Message: " + Characters::ToString (fMessage_) + L", ";
+        sb += L"Remaining: " + Characters::ToString (fRemaining_) + L", ";
+	}
     sb += L"}";
     return sb.str ();
 }
