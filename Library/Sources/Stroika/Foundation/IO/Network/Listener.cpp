@@ -48,7 +48,6 @@ struct Listener::Rep_ {
                 for (auto&& s : fMasterSockets) {
                     socket2FDBijection.Add (s, s.GetNativeSocket ());
                 }
-                //Execution::WaitForIOReady sockSetPoller { fMasterSockets.Select<Execution::WaitForIOReady::FileDescriptorType> ([] (Socket i) { return i.GetNativeSocket (); }) };
                 Execution::WaitForIOReady sockSetPoller{socket2FDBijection.Image ()};
                 while (true) {
                     try {
