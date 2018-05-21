@@ -79,6 +79,17 @@ namespace Stroika {
                         Ptr (const shared_ptr<InputStream<Characters::Character>::_IRep>& from);
 
                     public:
+                        /*
+                         *  Do low level non-blocking reads to assure all the bytes (but not a single byte more) is read in and available to be read in a blocking
+                         *  fasion.
+                         *
+                         *  Return false if not available, and return true if all read in. This automatically resets the Read seek pointer to 0.
+                         *
+                         *  \note - this returns true EVEN if the header is incomplete on EOF - so the caller can use this as a test to see if its time to try to read the header).
+                         */
+                        nonvirtual bool AssureHeaderSectionAvailable ();
+
+                    public:
                         /**
                          *  @see Characters::ToString ()
                          */

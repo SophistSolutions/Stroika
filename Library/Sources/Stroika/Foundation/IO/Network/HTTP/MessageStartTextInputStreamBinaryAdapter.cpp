@@ -19,6 +19,12 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::HTTP;
 using namespace Stroika::Foundation::Streams;
 
+
+
+// Comment this in to turn on aggressive noisy DbgTrace in this module
+//#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
+
+
 namespace {
     constexpr size_t kDefaultBufSize_ = 2 * 1024; // guess enough for http headers (typically around .8K but little cost in reserving a bit more)
 }
@@ -36,6 +42,65 @@ public:
         , fBufferFilledUpValidBytes_ (0)
     {
     }
+
+public:
+    bool AssureHeaderSectionAvailable ()
+    {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable"));
+#endif
+        this->SeekRead (Whence::eFromStart, 0);
+        bool      gotBareCRLFCRLF = false;
+		Character c;
+		enum state {
+            gotCR,
+            gotCRLF,
+            gotCRLFCR,
+            gotNOTHING,
+        };
+        state s = gotNOTHING;
+        while (Memory::Optional<size_t> o = ReadNonBlocking (&c, &c + 1)) {
+            if (*o == 0) {
+                return true;	// tricky corner case - EOF in header - treat as available so we process whole header
+			}
+            Assert (*o == 1);
+            switch (c.GetCharacterCode ()) {
+                case '\r': {
+                    switch (s) {
+                        case gotNOTHING: {
+                            s = gotCR;
+                        } break;
+                        case gotCRLF: {
+                            s = gotCRLFCR;
+                        } break;
+                        default: {
+                            DbgTrace (L"Looks like bad HTTP header");
+                            s = gotNOTHING;
+                        } break;
+                    }
+                } break;
+                case '\n': {
+                    switch (s) {
+                        case gotCR: {
+                            s = gotCRLF;
+                        } break;
+                        case gotCRLFCR: {
+                            gotBareCRLFCRLF = true;
+                        } break;
+                        default: {
+                            DbgTrace (L"Looks like bad HTTP header");
+                            s = gotNOTHING;
+                        } break;
+                    }
+                } break;
+                default: {
+                    s = gotNOTHING;
+                } break;
+            }
+		}
+        this->SeekRead (Whence::eFromStart, 0);
+        return gotBareCRLFCRLF;
+	}
 
 public:
     nonvirtual Characters::String ToString (ToStringFormat format) const
@@ -231,6 +296,12 @@ MessageStartTextInputStreamBinaryAdapter::Ptr MessageStartTextInputStreamBinaryA
 MessageStartTextInputStreamBinaryAdapter::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
     : inherited (from)
 {
+}
+
+bool MessageStartTextInputStreamBinaryAdapter::Ptr::AssureHeaderSectionAvailable ()
+{
+    AssertMember (&_GetRepRWRef (), Rep_);
+    return reinterpret_cast< Rep_*> (&_GetRepRWRef ())->AssureHeaderSectionAvailable ();
 }
 
 String MessageStartTextInputStreamBinaryAdapter::Ptr::ToString (ToStringFormat format) const
