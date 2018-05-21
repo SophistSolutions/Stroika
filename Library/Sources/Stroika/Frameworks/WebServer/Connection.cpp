@@ -53,7 +53,7 @@ String Connection::Remaining::ToString () const
         sb += L"Messages: " + Characters::ToString (*fMessages) + L", ";
     }
     if (fTimeoutAt) {
-        sb += L"TimeoutAt: " + Characters::ToString (*fTimeoutAt) + L", ";
+        sb += L"Timeout-At: " + Characters::ToString (*fTimeoutAt) + L", ";
     }
     sb += L"}";
     return sb.str ();
@@ -82,53 +82,55 @@ bool Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     logMsg (L"Starting ReadHeaders_");
 #endif
+
     /*
-     * DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true 
-     * (and probably isn't here anymore)
-     * Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
+     *  Preflight the request and make sure all the bytes of the header are available. Dont read more than needed.
+     */
+    if (not fMsgHeaderInTextStream.AssureHeaderSectionAvailable ()) {
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+        logMsg (L"got fMsgHeaderInTextStream.AssureHeaderSectionAvailable INCOMPLETE");
+#endif
+        return false;
+    }
+
+    /*
+     * At this stage, blocking calls are fully safe - because we've assured above we've seeked to the start of a CRLFCRLF terminated region (or premature EOF)
      */
     Request* request = PeekRequest ();
     {
-        // Read METHOD line
+        // Read METHOD URL line
         String line = fMsgHeaderInTextStream.ReadLine ();
         if (line.length () == 0) {
-            // fMsgHeaderInTextStream.IsAtEOF () would be blocking, and that's not desired here
-            if (fMsgHeaderInTextStream.ReadNonBlocking () == 0) {
-                /*
-                 * This is relatively common. There is an outstanding connection (so client did tcp_connect) - but never got around
-                 * to sending data cuz the need for the data evaporated.
-                 *
-                 * I've seen this not so uncommonly with chrome (hit refresh button fast and wait a while) -- LGP 2018-03-04
-                 */
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                logMsg (L"got EOF from src stream reading headers(incomplete)");
+            logMsg (L"got EOF from src stream reading headers(incomplete)");
 #endif
-                return false;
-            }
+            return false;
         }
-        Sequence<String> tokens{line.Tokenize (Set<Character>{' '})};
+        static Set<Character> kTokenSeparatorSet_{' '};
+        Sequence<String>      tokens{line.Tokenize (kTokenSeparatorSet_)};
         if (tokens.size () < 3) {
             DbgTrace (L"tokens=%s, line='%s', fMsgHeaderInTextStream=%s", Characters::ToString (tokens).c_str (), line.c_str (), fMsgHeaderInTextStream.ToString ().c_str ());
-            Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD REQUEST HTTP line (%s)", line.c_str ())));
+            Execution::Throw (ClientErrorException (Characters::Format (L"Bad METHOD Request HTTP line (%s)", line.c_str ())));
         }
         request->SetHTTPMethod (tokens[0]);
         request->SetHTTPVersion (tokens[2]);
         if (tokens[1].empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
-            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP REQUEST line - missing host-relative URL")));
+            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP Request line - missing host-relative URL")));
         }
         using IO::Network::URL;
         request->SetURL (URL::Parse (tokens[1], URL::eAsRelativeURL));
         if (request->GetHTTPMethod ().empty ()) {
             // should check if GET/PUT/DELETE etc...
             DbgTrace (L"tokens=%s, line='%s'", Characters::ToString (tokens).c_str (), line.c_str ());
-            Execution::Throw (ClientErrorException (String_Constant (L"Bad METHOD in REQUEST HTTP line")));
+            Execution::Throw (ClientErrorException (String_Constant (L"Bad METHOD in Request HTTP line")));
         }
     }
     while (true) {
-        String line = fMsgHeaderInTextStream.ReadLine ();
-        if (line == String_Constant (L"\r\n") or line.empty ()) {
+        static String_Constant kCRLF_{L"\r\n"};
+        String                 line = fMsgHeaderInTextStream.ReadLine ();
+        if (line == kCRLF_ or line.empty ()) {
             break; // done
         }
 
@@ -136,7 +138,7 @@ bool Connection::MyMessage_::ReadHeaders (
         size_t i = line.find (':');
         if (i == string::npos) {
             DbgTrace (L"line=%s", Characters::ToString (line).c_str ());
-            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP REQUEST missing colon in headers")));
+            Execution::Throw (ClientErrorException (String_Constant (L"Bad HTTP Request missing colon in headers")));
         }
         else {
             String hdr   = line.SubString (0, i).Trim ();
@@ -233,7 +235,7 @@ bool Connection::ReadAndProcessMessage ()
 #endif
             )) {
         DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web browser hitting refresh button fast).");
-        return false;
+        return false; // dont keep-alive - so this closes connection
     }
 
     {

@@ -55,6 +55,9 @@ namespace Stroika {
                 nonvirtual Request* PeekRequest ();
 
             public:
+                /**
+                 *  The reason for this naming is to emphasize that this returns a reference to an internal object (internal pointer) of the message
+                 */
                 nonvirtual const Request& GetRequestReference () const;
                 nonvirtual Request& GetRequestReference ();
 
