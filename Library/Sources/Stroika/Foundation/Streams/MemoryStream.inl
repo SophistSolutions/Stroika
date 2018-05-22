@@ -146,7 +146,7 @@ namespace Stroika {
                             }
                             SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
                             if (uOffset > fData_.size ()) {
-                                Execution::Throw (std::range_error ("seek"));
+                                Execution::Throw (EOFException::kThe);
                             }
                             fReadCursor_ = fData_.begin () + static_cast<size_t> (uOffset);
                         } break;
@@ -158,7 +158,7 @@ namespace Stroika {
                             }
                             SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                             if (uNewOffset > fData_.size ()) {
-                                Execution::Throw (std::range_error ("seek"));
+                                Execution::Throw (EOFException::kThe);
                             }
                             fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                         } break;
@@ -170,7 +170,7 @@ namespace Stroika {
                             }
                             SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                             if (uNewOffset > fData_.size ()) {
-                                Execution::Throw (std::range_error ("seek"));
+                                Execution::Throw (EOFException::kThe);
                             }
                             fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                         } break;
@@ -194,7 +194,7 @@ namespace Stroika {
                                 Execution::Throw (std::range_error ("seek"));
                             }
                             if (static_cast<SeekOffsetType> (offset) > fData_.size ()) {
-                                Execution::Throw (std::range_error ("seek"));
+                                Execution::Throw (EOFException::kThe);
                             }
                             fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
                         } break;
@@ -205,7 +205,7 @@ namespace Stroika {
                                 Execution::Throw (std::range_error ("seek"));
                             }
                             if (static_cast<size_t> (newOffset) > fData_.size ()) {
-                                Execution::Throw (std::range_error ("seek"));
+                                Execution::Throw (EOFException::kThe);
                             }
                             fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                         } break;
@@ -216,7 +216,7 @@ namespace Stroika {
                                 Execution::Throw (std::range_error ("seek"));
                             }
                             if (static_cast<size_t> (newOffset) > fData_.size ()) {
-                                Execution::Throw (std::range_error ("seek"));
+                                Execution::Throw (EOFException::kThe);
                             }
                             fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                         } break;
