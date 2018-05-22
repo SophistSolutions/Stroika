@@ -73,7 +73,7 @@ Connection::MyMessage_::MyMessage_ (const ConnectionOrientedSocket::Ptr& socket,
 {
 }
 
-bool Connection::MyMessage_::ReadHeaders (
+Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     function<void(const String&)>& logMsg
 #endif
@@ -90,7 +90,7 @@ bool Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
         logMsg (L"got fMsgHeaderInTextStream.AssureHeaderSectionAvailable INCOMPLETE");
 #endif
-        return false;
+        return ReadHeadersResult::eIncompleteButMoreMayBeAvailable;
     }
 
     /*
@@ -104,7 +104,7 @@ bool Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
             logMsg (L"got EOF from src stream reading headers(incomplete)");
 #endif
-            return false;
+            return ReadHeadersResult::eIncompleteDeadEnd; // could throw here, but this is common enough we dont want the noise in the logs.
         }
         static Set<Character> kTokenSeparatorSet_{' '};
         Sequence<String>      tokens{line.Tokenize (kTokenSeparatorSet_)};
@@ -149,7 +149,7 @@ bool Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
     logMsg (L"ReadHeaders completed normally");
 #endif
-    return true;
+    return ReadHeadersResult::eCompleteGood;
 }
 
 /*
@@ -216,141 +216,162 @@ void Connection::Close ()
     fSocket_.Close ();
 }
 
-bool Connection::ReadAndProcessMessage ()
+Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 {
+    try {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
+        Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
 #endif
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-    DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
+        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
-    fMessage_ = make_shared<MyMessage_> (fSocket_, fSocketStream_);
+        fMessage_ = make_shared<MyMessage_> (fSocket_, fSocketStream_);
 #if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-    DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
+        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
 #endif
 
-    if (not fMessage_->ReadHeaders (
+        // First read the HTTP request line, and the headers (and abort this attempt if not ready)
+        switch (fMessage_->ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
             [this](const String& i) { return WriteLogConnectionMsg_ (i); }
 #endif
             )) {
-        DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web browser hitting refresh button fast).");
-        return false; // dont keep-alive - so this closes connection
-    }
+            case MyMessage_::eIncompleteDeadEnd: {
+                DbgTrace (L"ReadHeaders failed - typically because the client closed the connection before we could handle it (e.g. in web browser hitting refresh button fast).");
+                return eClose; // dont keep-alive - so this closes connection
+            } break;
+            case MyMessage_::eIncompleteButMoreMayBeAvailable: {
+                DbgTrace (L"ReadHeaders failed - incomplete header (most likely a DOS attack).");
+                return ReadAndProcessResult::eTryAgainLater;
+            } break;
+            case MyMessage_::eCompleteGood: {
+                // fall through and actaully process the request
+            } break;
+        }
 
-    {
-        // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
-        if (auto aliveHeaderValue = fMessage_->PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
-            for (String token : aliveHeaderValue->Tokenize (Set<Character>{' ', ','})) {
-                Containers::Sequence<String> kvp = token.Tokenize (Set<Character>{'='});
-                if (kvp.length () == 2) {
-                    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
-                    if (kvp[0] == L"timeout") {
-                        Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
-                        Remaining                 r    = GetRemainingConnectionLimits ().Value ();
-                        r.fTimeoutAt                   = Time::GetTickCount () + toAt;
-                        this->SetRemainingConnectionMessages (r);
-                    }
-                    else if (kvp[0] == L"max") {
-                        unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
-                        Remaining    r      = GetRemainingConnectionLimits ().Value ();
-                        r.fMessages         = maxMsg;
-                        this->SetRemainingConnectionMessages (r);
+        // Check for keepalive headers, and handle them appropriately
+        {
+            // @see https://tools.ietf.org/html/rfc2068#page-43 19.7.1.1 The Keep-Alive Header
+            if (auto aliveHeaderValue = fMessage_->PeekRequest ()->GetHeaders ().Lookup (IO::Network::HTTP::HeaderName::kKeepAlive)) {
+                for (String token : aliveHeaderValue->Tokenize (Set<Character>{' ', ','})) {
+                    Containers::Sequence<String> kvp = token.Tokenize (Set<Character>{'='});
+                    if (kvp.length () == 2) {
+                        // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
+                        if (kvp[0] == L"timeout") {
+                            Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
+                            Remaining                 r    = GetRemainingConnectionLimits ().Value ();
+                            r.fTimeoutAt                   = Time::GetTickCount () + toAt;
+                            this->SetRemainingConnectionMessages (r);
+                        }
+                        else if (kvp[0] == L"max") {
+                            unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
+                            Remaining    r      = GetRemainingConnectionLimits ().Value ();
+                            r.fMessages         = maxMsg;
+                            this->SetRemainingConnectionMessages (r);
+                        }
+                        else {
+                            DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+                            WriteLogConnectionMsg_ (L"Keep-Alive header bad1");
+#endif
+                        }
                     }
                     else {
                         DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                        WriteLogConnectionMsg_ (L"Keep-Alive header bad1");
+                        WriteLogConnectionMsg_ (L"Keep-Alive header bad2");
 #endif
                     }
                 }
-                else {
-                    DbgTrace (L"Keep-Alive header bad: %s", aliveHeaderValue->c_str ());
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                    WriteLogConnectionMsg_ (L"Keep-Alive header bad2");
+            }
+        }
+
+        // Handle using interceptor chain - this is the guts of the high level handling
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+        DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ());
 #endif
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+        WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ()));
+#endif
+        try {
+            fInterceptorChain_.HandleMessage (fMessage_.get ());
+        }
+        catch (...) {
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+            DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
+#endif
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+            WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ()));
+#endif
+        }
+
+        /*
+         *  Now bookkeeping and handling of keepalive headers
+         */
+        bool thisMessageKeepAlive = fMessage_->PeekRequest ()->GetKeepAliveRequested ();
+        if (thisMessageKeepAlive) {
+            if (not GetResponse ().IsContentLengthKnown ()) {
+                thisMessageKeepAlive = false;
+            }
+        }
+        if (thisMessageKeepAlive) {
+            // if missing, no limits
+            if (auto oRemaining = GetRemainingConnectionLimits ()) {
+                if (oRemaining->fMessages) {
+                    if (oRemaining->fMessages == 0) {
+                        thisMessageKeepAlive = false;
+                    }
+                    else {
+                        oRemaining->fMessages = *oRemaining->fMessages - 1;
+                    }
+                }
+                if (oRemaining->fTimeoutAt) {
+                    if (*oRemaining->fTimeoutAt < Time::GetTickCount ()) {
+                        thisMessageKeepAlive = false;
+                    }
                 }
             }
         }
-    }
 
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-    DbgTrace (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ());
-#endif
+        if (thisMessageKeepAlive) {
+            // be sure we advance the read pointer over the message body, lest we start reading part of the previous message as the next message
+
+            // @todo must fix this for support of Transfer-Encoding, but from:
+            //
+            /*
+             *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
+             *      The rules for when a message-body is allowed in a message differ for requests and responses.
+             *
+             *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
+             *      or Transfer-Encoding header field in the request's message-headers/
+             */
+            if (GetRequest ().GetContentLength ()) {
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-    WriteLogConnectionMsg_ (Characters::Format (L"Handing request %s to interceptor chain", Characters::ToString (GetRequest ()).c_str ()));
+                WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
 #endif
-    try {
-        fInterceptorChain_.HandleMessage (fMessage_.get ());
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+                DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
+#endif
+                // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
+                (void)fMessage_->GetRequestBody ();
+            }
+        }
+
+        // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
+        GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection,
+                                  thisMessageKeepAlive ? String_Constant{L"Keep-Alive"} : String_Constant{L"close"});
+
+        GetResponse ().End ();
+#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
+        WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
+#endif
+        return thisMessageKeepAlive ? eTryAgainLater : eClose;
     }
     catch (...) {
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-        DbgTrace (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ());
-#endif
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-        WriteLogConnectionMsg_ (Characters::Format (L"Interceptor-Chain caught exception handling message: %s", Characters::ToString (current_exception ()).c_str ()));
-#endif
+        DbgTrace (L"ReadAndProcessMessage Exception caught (%s), so returning ReadAndProcessResult::eClose", Characters::ToString (current_exception ()).c_str ());
+        return Connection::ReadAndProcessResult::eClose;
     }
-
-    bool thisMessageKeepAlive = fMessage_->PeekRequest ()->GetKeepAliveRequested ();
-    if (thisMessageKeepAlive) {
-        if (not GetResponse ().IsContentLengthKnown ()) {
-            thisMessageKeepAlive = false;
-        }
-    }
-    if (thisMessageKeepAlive) {
-        // if missing, no limits
-        if (auto oRemaining = GetRemainingConnectionLimits ()) {
-            if (oRemaining->fMessages) {
-                if (oRemaining->fMessages == 0) {
-                    thisMessageKeepAlive = false;
-                }
-                else {
-                    oRemaining->fMessages = *oRemaining->fMessages - 1;
-                }
-            }
-            if (oRemaining->fTimeoutAt) {
-                if (*oRemaining->fTimeoutAt < Time::GetTickCount ()) {
-                    thisMessageKeepAlive = false;
-                }
-            }
-        }
-    }
-
-    if (thisMessageKeepAlive) {
-        // be sure we advance the read pointer over the message body, lest we start reading part of the previous message as the next message
-
-        // @todo must fix this for support of Transfer-Encoding, but from:
-        //
-        /*
-         *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
-         *      The rules for when a message-body is allowed in a message differ for requests and responses.
-         *
-         *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
-         *      or Transfer-Encoding header field in the request's message-headers/
-         */
-        if (GetRequest ().GetContentLength ()) {
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            WriteLogConnectionMsg_ (L"msg is keepalive, and have content length, so making sure we read all of request body");
-#endif
-#if USE_NOISY_TRACE_IN_THIS_MODULE_
-            DbgTrace (L"Assuring all data read; REQ=%s", Characters::ToString (GetRequest ()).c_str ());
-#endif
-            // @todo - this can be more efficient in the rare case we ignore the body - but thats rare enough to not matter mcuh
-            (void)fMessage_->GetRequestBody ();
-        }
-    }
-
-    // From https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-    //      HTTP/1.1 applications that do not support persistent connections MUST include the "close" connection option in every message.
-    GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kConnection,
-                              thisMessageKeepAlive ? String_Constant{L"Keep-Alive"} : String_Constant{L"close"});
-
-    GetResponse ().End ();
-#if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-    WriteLogConnectionMsg_ (L"Did GetResponse ().End ()");
-#endif
-    return thisMessageKeepAlive;
 }
 
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog

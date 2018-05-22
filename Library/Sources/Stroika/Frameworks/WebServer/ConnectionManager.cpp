@@ -210,8 +210,7 @@ void ConnectionManager::WaitForReadyConnectionLoop_ ()
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                         Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::...processConnectionLoop"));
 #endif
-                        bool keepAlive = false;
-                        IgnoreExceptionsForCall (keepAlive = conn->ReadAndProcessMessage ());
+                        bool keepAlive = (conn->ReadAndProcessMessage () == Connection::eTryAgainLater);
 
                         // no matter what, remove from active connecitons
                         fActiveConnections_.rwget ().rwref ().Remove (conn);

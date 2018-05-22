@@ -100,9 +100,17 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Return true if 'keep alive'
                  */
-                nonvirtual bool ReadAndProcessMessage ();
+                enum ReadAndProcessResult {
+                    eTryAgainLater, // Could mean success or sonme kinds of failure (like incomplete header/data), but try again later (so keep-alive results in this)
+                    eClose,
+                };
+
+            public:
+                /**
+                 *  Return eTryAgainLater if 'keep alive' (or otherwise should try again - like incomplete input).
+                 */
+                nonvirtual ReadAndProcessResult ReadAndProcessMessage () noexcept;
 
             public:
                 /**
@@ -152,8 +160,11 @@ namespace Stroika {
                     // Only valid until the end of a successful ReadHeaders
                     MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
 
-                    // Return false if 'silent exception' - like empty connection
-                    nonvirtual bool ReadHeaders (
+                    // If result bad, throw exception
+                    enum ReadHeadersResult { eIncompleteButMoreMayBeAvailable,
+                                             eIncompleteDeadEnd,
+                                             eCompleteGood };
+                    nonvirtual ReadHeadersResult ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
                         function<void(const String&)>& logMsg
 #endif
