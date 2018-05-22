@@ -47,7 +47,6 @@ public:
         Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable"));
 #endif
         this->SeekRead (Whence::eFromStart, 0);
-        bool      gotBareCRLFCRLF = false;
         Character c;
         enum state {
             gotCR,
@@ -82,7 +81,8 @@ public:
                             s = gotCRLF;
                         } break;
                         case gotCRLFCR: {
-                            gotBareCRLFCRLF = true;
+                            this->SeekRead (Whence::eFromStart, 0);
+                            return true;
                         } break;
                         default: {
                             DbgTrace (L"Looks like bad HTTP header");
@@ -95,8 +95,7 @@ public:
                 } break;
             }
         }
-        this->SeekRead (Whence::eFromStart, 0);
-        return gotBareCRLFCRLF;
+        return false;
     }
 
 public:
