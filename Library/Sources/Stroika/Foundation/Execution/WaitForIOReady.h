@@ -36,6 +36,8 @@ namespace Stroika {
         namespace Execution {
 
             /**
+             *  \note see https://stroika.atlassian.net/browse/STK-653
+             *
              *  WSAPoll is not (fully/mostly) alertable, in the Windows API. So for Windows, this trick is needed to make
              *  WaitForIOReady::Wait* a ***Cancelation Point***.
              *
