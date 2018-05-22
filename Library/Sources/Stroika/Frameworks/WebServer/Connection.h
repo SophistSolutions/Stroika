@@ -36,6 +36,7 @@ namespace Stroika {
              *  Write out files to %TEMP% dir, with logs of the details of the HTTP conversation, for debugging
              *  HTTP conversations.
              */
+//#define qStroika_Framework_WebServer_Connection_DetailedMessagingLog 1
 #ifndef qStroika_Framework_WebServer_Connection_DetailedMessagingLog
 #define qStroika_Framework_WebServer_Connection_DetailedMessagingLog 0
 #endif
@@ -166,7 +167,7 @@ namespace Stroika {
                                              eCompleteGood };
                     nonvirtual ReadHeadersResult ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-                        function<void(const String&)>& logMsg
+                        const function<void(const String&)>& logMsg
 #endif
                     );
                 };

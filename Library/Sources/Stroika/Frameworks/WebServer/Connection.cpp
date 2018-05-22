@@ -75,7 +75,7 @@ Connection::MyMessage_::MyMessage_ (const ConnectionOrientedSocket::Ptr& socket,
 
 Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-    function<void(const String&)>& logMsg
+    const function<void(const String&)>& logMsg
 #endif
 )
 {
@@ -233,7 +233,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
         // First read the HTTP request line, and the headers (and abort this attempt if not ready)
         switch (fMessage_->ReadHeaders (
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
-            [this](const String& i) { return WriteLogConnectionMsg_ (i); }
+            [this](const String& i) -> void { WriteLogConnectionMsg_ (i); }
 #endif
             )) {
             case MyMessage_::eIncompleteDeadEnd: {
