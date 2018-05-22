@@ -129,6 +129,16 @@ namespace Stroika {
 
             public:
                 /**
+                 *  This returns a (generally unseekable) stream of bytes. 
+                 *  In most cases, this stream will be artificially narrowed to just the body part of the request.
+                 *  When a Content-Length is known, that is used to limit the stream. When a Transfer-Coding is used, that will return the apparent (decoded) bytes (NYI).
+                 *
+                 *  This may ONLY be called after the headers have been set.
+                 */
+                nonvirtual Streams::InputStream<Memory::Byte>::Ptr GetBodyStream ();
+
+            public:
+                /**
                 *  @see Characters::ToString ()
                 */
                 nonvirtual String ToString () const;
@@ -143,7 +153,8 @@ namespace Stroika {
                 Mapping<String, String> fHeaders_;
 
             private:
-                Memory::Optional<Memory::BLOB> fBody_;
+                Streams::InputStream<Memory::Byte>::Ptr fBodyInputStream_;
+                Memory::Optional<Memory::BLOB>          fBody_;
             };
         }
     }

@@ -18,6 +18,8 @@
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Versions.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
+#include "../../Foundation/Streams/InputSubStream.h"
+#include "../../Foundation/Streams/MemoryStream.h"
 
 #include "Request.h"
 
@@ -25,6 +27,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Containers;
 using namespace Stroika::Foundation::Memory;
+using namespace Stroika::Foundation::Streams;
 
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
@@ -80,37 +83,7 @@ Memory::BLOB Request::GetBody ()
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fBody_.IsMissing ()) {
-        // if we have a content-length, read that many bytes. otherwise, read til EOF
-        if (Optional<uint64_t> contentLength = GetContentLength ()) {
-            // assumes content can fit in RAM
-            Memory::SmallStackBuffer<Memory::Byte> buf (static_cast<size_t> (*contentLength));
-            if (*contentLength != 0) {
-                size_t n = fInputStream_.ReadAll (begin (buf), end (buf));
-                Assert (n <= *contentLength);
-                if (n != *contentLength) {
-                    Execution::Throw (Execution::StringException (Characters::Format (L"Unexpected wrong number of bytes returned in HTTP body (found %d, but content-length %d)", n, *contentLength)));
-                }
-            }
-            fBody_ = Memory::BLOB (begin (buf), end (buf));
-        }
-        else {
-            /*
-             *  @todo FIX - WRONG!!!! - MUST TO TRANSFER ENCODING IN THIS CASE OR NOTHING
-             *
-             *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
-             *      The rules for when a message-body is allowed in a message differ for requests and responses.
-             *
-             *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
-             *      or Transfer-Encoding header field in the request's message-headers/
-             *
-             *  For now - EMPTY is a better failure mode than reading eveythign and hanging...
-             */
-#if 1
-            fBody_ = Memory::BLOB{};
-#else
-            fBody_ = fInputStream_.ReadAll ();
-#endif
-        }
+        fBody_ = GetBodyStream ().ReadAll ();
     }
     return *fBody_;
 }
@@ -135,6 +108,35 @@ Memory::Optional<InternetMediaType> Request::GetContentType () const
     else {
         return Optional<InternetMediaType>{};
     }
+}
+
+Streams::InputStream<Memory::Byte>::Ptr Request::GetBodyStream ()
+{
+#if USE_NOISY_TRACE_IN_THIS_MODULE_
+    Debug::TraceContextBumper ctx (L"Request::GetBodyStream");
+#endif
+    lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
+    if (fBodyInputStream_ == nullptr) {
+        // if we have a content-length, read that many bytes. otherwise, read til EOF
+        if (Optional<uint64_t> contentLength = GetContentLength ()) {
+            fBodyInputStream_ = InputSubStream<Byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*contentLength));
+        }
+        else {
+            /*
+             *  @todo FIX - WRONG!!!! - MUST TO TRANSFER ENCODING IN THIS CASE OR NOTHING
+             *
+             *  https://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html
+             *      The rules for when a message-body is allowed in a message differ for requests and responses.
+             *
+             *      The presence of a message-body in a request is signaled by the inclusion of a Content-Length 
+             *      or Transfer-Encoding header field in the request's message-headers/
+             *
+             *  For now - EMPTY is a better failure mode than reading eveythign and hanging...
+             */
+            fBodyInputStream_ = MemoryStream<Byte>::New ();
+        }
+    }
+    return fBodyInputStream_;
 }
 
 String Request::ToString () const
