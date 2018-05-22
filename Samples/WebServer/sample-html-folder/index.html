@@ -8,5 +8,14 @@
 <body>
     <img src="SophistSolutionsBanner.gif" />
     <h1>You can easily serve up static content from the Stroika-based webserver directly from the filesystem.</h1>
+
+    <h1>Test from curl with</h1>
+    <ul>
+        <li>Run the service (under the debugger if you wish)</li>
+        <li>curl  http://localhost:8080/ OR</li>
+        <li>curl  http://localhost:8080/FRED OR      (to see error handling)</li>
+        <li>curl -H "Content-Type: application/json" -X POST -d '{"AppState":"Start"}' http://localhost:8080/SetAppState</li>
+        <li>curl  http://localhost:8080/Files/foo.html -v</li>
+    </ul>
 </body>
 </html>

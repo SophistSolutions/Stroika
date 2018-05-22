@@ -66,7 +66,17 @@ namespace {
         // Can declare arguments as Request*,Response*
         static void DefaultPage_ (Request*, Response* response)
         {
-            response->writeln (L"<html><body><p>Hi Mom</p></body></html>");
+            response->writeln (L"<html><body>");
+            response->writeln (L"<p>Hi Mom</p>");
+            response->writeln (L"<ul>");
+            response->writeln (L"Run the service (under the debugger if you wish)");
+            response->writeln (L"<li>curl http://localhost:8080/ OR</li>");
+            response->writeln (L"<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>");
+            response->writeln (L"<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>");
+            response->writeln (L"<li>curl http://localhost:8080/Files/foo.html -v</li>");
+            response->writeln (L"</ul>");
+            response->writeln (L"</body></html>");
+
             response->SetContentType (DataExchange::PredefinedInternetMediaType::kText_HTML);
         }
         // Can declare arguments as Message* message
