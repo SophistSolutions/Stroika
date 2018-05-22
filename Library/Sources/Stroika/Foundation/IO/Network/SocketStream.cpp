@@ -27,8 +27,9 @@ using namespace Stroika::Foundation::IO::Network;
  */
 class SocketStream::Rep_ : public InputOutputStream<Byte>::_IRep {
 public:
-    bool fOpenForRead_{true};
-    bool fOpenForWrite_{true};
+    bool           fOpenForRead_{true};
+    bool           fOpenForWrite_{true};
+    SeekOffsetType fReadSeekOffset_{};
     Rep_ (const ConnectionOrientedSocket::Ptr& sd)
         : InputOutputStream<Byte>::_IRep ()
         , fSD_ (sd)
@@ -67,9 +68,8 @@ public:
     }
     virtual SeekOffsetType GetReadOffset () const override
     {
-        RequireNotReached (); // not seekable
         Require (IsOpenRead ());
-        return 0;
+        return fReadSeekOffset_;
     }
     virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
     {
@@ -80,13 +80,19 @@ public:
     virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
     {
         Require (IsOpenRead ());
-        return fSD_.Read (intoStart, intoEnd);
+        size_t n = fSD_.Read (intoStart, intoEnd);
+        fReadSeekOffset_ += n;
+        return n;
     }
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require (IsOpenRead ());
         Require (IsOpenWrite ());
-        return fSD_.ReadNonBlocking (intoStart, intoEnd);
+        Memory::Optional<size_t> result = fSD_.ReadNonBlocking (intoStart, intoEnd);
+        if (result and intoStart != nullptr) {
+            fReadSeekOffset_ += *result;
+        }
+        return result;
     }
     virtual SeekOffsetType GetWriteOffset () const override
     {

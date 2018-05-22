@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "../Configuration/Common.h"
+#include "../Memory/Optional.h"
 
 #include "InputStream.h"
 #include "InternallySyncrhonizedInputStream.h"
@@ -57,7 +58,7 @@ namespace Stroika {
                  *          CallExpectingBinaryInputStreamPtr (InputSubStream<Byte>::New (fromStream, 0, contentLength))
                  *      \endcode
                  */
-                static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const Optional<SeekOffsetType>& start, const Optional<SeekOffsetType>& end);
+                static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const Memory::Optional<SeekOffsetType>& start, const Memory::Optional<SeekOffsetType>& end);
 
             private:
                 class Rep_;
