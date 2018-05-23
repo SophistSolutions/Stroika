@@ -899,25 +899,6 @@ See <file:///usr/share/doc/gcc-4.8/README.Bugs> for instructions.
 #endif
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-
-Compiling  $StroikaRoot/Tests/43/../TestHarness/TestHarness.cpp...
-/home/lewis/Sandbox/StroikaDev/Tests/43/Test.cpp:66:41: warning: moving a temporary object prevents copy elision [-Wpessimizing-move]
-Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
-*/
-#ifndef qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
-#else
-#define qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy 0
-#endif
-
-#endif
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
     String  replaced        =   stringWithCRLFs.ReplaceAll (RegularExpression (L"[\r\n]*", RegularExpression::eECMAScript), L"");

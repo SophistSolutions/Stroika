@@ -66,8 +66,8 @@ String Connection::Remaining::ToString () const
  */
 Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream)
     : Message (
-          move (Request (socketStream)),
-          move (Response (socket, socketStream, DataExchange::PredefinedInternetMediaType::kOctetStream)),
+          Request (socketStream),
+          Response (socket, socketStream, DataExchange::PredefinedInternetMediaType::kOctetStream),
           socket.GetPeerAddress ())
     , fMsgHeaderInTextStream (MessageStartTextInputStreamBinaryAdapter::New (PeekRequest ()->GetInputStream ()))
 {
@@ -222,13 +222,7 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Connection::ReadAndProcessMessage", L"this->socket=%s", Characters::ToString (fSocket_).c_str ())};
 #endif
-#if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wpessimizing-move\"");
-#endif
         fMessage_ = make_shared<MyMessage_> (fSocket_, fSocketStream_);
-#if qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy
-        DISABLE_COMPILER_CLANG_WARNING_END ("clang diagnostic ignored \"-Wpessimizing-move\"");
-#endif
 
         // First read the HTTP request line, and the headers (and abort this attempt if not ready)
         switch (fMessage_->ReadHeaders (
