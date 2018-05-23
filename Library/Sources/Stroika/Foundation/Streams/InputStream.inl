@@ -116,7 +116,7 @@ namespace Stroika {
                 Require (offset < static_cast<SeekOffsetType> (numeric_limits<SignedSeekOffsetType>::max ()));
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Require (IsOpen ());
-                Require (IsSeekable ());
+                Require (this->IsSeekable ());
                 return _GetRepRWRef ().SeekRead (Whence::eFromStart, static_cast<SignedSeekOffsetType> (offset));
             }
             template <typename ELEMENT_TYPE>
@@ -124,7 +124,7 @@ namespace Stroika {
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Require (IsOpen ());
-                Require (IsSeekable ());
+                Require (this->IsSeekable ());
                 return _GetRepRWRef ().SeekRead (whence, offset);
             }
             template <typename ELEMENT_TYPE>

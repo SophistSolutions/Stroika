@@ -211,7 +211,7 @@ namespace Stroika {
                  *        sounds hard its not: it naturally falls out of normal usage.
                  *
                  *        The rationale is just that I can think of no useful case where a caller might want to allow writing after close, and
-                 *        have that transalted into an exception, and this choice is more performant (and could be reversed more easily
+                 *        have that translated into an exception, and this choice is more performant (and could be reversed more easily
                  *        than the opposite policy if I change my mind).
                  *
                  *  \note Close () - and IsOpen () are intentionally duplicated in InputStream () and OutputStream () classes. This is so
