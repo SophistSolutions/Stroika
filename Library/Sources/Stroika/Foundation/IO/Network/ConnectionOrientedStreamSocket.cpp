@@ -24,6 +24,8 @@ namespace {
                 : inherited (sd)
             {
             }
+            Rep_ ()            = delete;
+            Rep_ (const Rep_&) = delete;
             ~Rep_ ()
             {
                 // need DTOR cuz one in base class wont call this override of Close
@@ -253,7 +255,7 @@ namespace {
             }
             Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
 #if qDebug
-            mutable atomic<int> fCurrentPendingReadsCount = 0;
+            mutable atomic<int> fCurrentPendingReadsCount{};
 #endif
         };
     };
