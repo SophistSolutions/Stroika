@@ -176,12 +176,7 @@ namespace Stroika {
                      *  Check if unspecified internet address.
                      *  @see clear()
                      */
-                    nonvirtual
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
-                        constexpr
-#endif
-                        bool
-                        empty () const;
+                    nonvirtual constexpr bool empty () const;
 
                 public:
                     /**
@@ -194,12 +189,7 @@ namespace Stroika {
                     /**
                      *  This can be V4, V6, or UNKNOWN, and iff UNKNOWN, then empty () will return true.
                      */
-                    nonvirtual
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
-                        constexpr
-#endif
-                        AddressFamily
-                        GetAddressFamily () const;
+                    nonvirtual constexpr AddressFamily GetAddressFamily () const;
 
                 public:
                     /**
