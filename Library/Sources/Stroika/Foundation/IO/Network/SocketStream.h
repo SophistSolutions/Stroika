@@ -10,7 +10,7 @@
 #include "../../Streams/InputOutputStream.h"
 #include "../../Streams/InternallySyncrhonizedInputOutputStream.h"
 
-#include "ConnectionOrientedSocket.h"
+#include "ConnectionOrientedStreamSocket.h"
 
 /**
  *  \file
@@ -30,7 +30,7 @@ namespace Stroika {
                  *  The only real conneciton is that they share a common socket, and if it is closed,
                  *  then the whole SocketStream will stop working.
                  *
-                 *      \note   SocketStream aggregates its owned ConnectionOrientedSocket, so that a Close () on SocketStream
+                 *      \note   SocketStream aggregates its owned ConnectionOrientedStreamSocket, so that a Close () on SocketStream
                  *              will Close that socket as well.
                  *
                  *              But SocketStream is an InputOutputStream - so you can close the input and output sides separately.
@@ -51,14 +51,14 @@ namespace Stroika {
                      *
                      *  \par Example Usage
                      *      \code
-                     *           ConnectionOrientedSocket::Ptr connectionSocket = from_somewhere;
-                     *           SocketStream::Ptr             socketStream = SocketStream::New (connectionSocket);
-                     *           InputStream<Byte>::Ptr        in  = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
-                     *           OutputStream<Byte>::Ptr       out = BufferedOutputStream<Byte>::New (socketStream); // more important so we dont write multiple packets
+                     *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
+                     *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
+                     *           InputStream<Byte>::Ptr              in  = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
+                     *           OutputStream<Byte>::Ptr             out = BufferedOutputStream<Byte>::New (socketStream); // more important so we dont write multiple packets
                      *      \endcode
                      */
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedSocket::Ptr& sd);
-                    static Ptr New (const ConnectionOrientedSocket::Ptr& sd);
+                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedStreamSocket::Ptr& sd);
+                    static Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
 
                 private:
                     class Rep_;
@@ -80,8 +80,8 @@ namespace Stroika {
                     /**
                      *  \par Example Usage
                      *      \code
-                     *            ConnectionOrientedSocket::Ptr connectionSocket = from_somewhere;
-                     *            SocketStream::Ptr             inOut = SocketStream::New (connectionSocket);
+                     *            ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
+                     *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
                      *      \endcode
                      */
                     Ptr ()                = default;

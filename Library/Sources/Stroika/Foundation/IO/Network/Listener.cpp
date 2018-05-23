@@ -30,7 +30,7 @@ using namespace Stroika::Foundation::Traversal;
  ********************************************************************************
  */
 struct Listener::Rep_ {
-    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor)
+    Rep_ (const Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, unsigned int backlog, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor)
         : fNewConnectionAcceptor (newConnectionAcceptor)
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -53,7 +53,7 @@ struct Listener::Rep_ {
                     try {
                         for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
                             ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-                            ConnectionOrientedSocket::Ptr       s                     = localSocketToAcceptOn.Accept ();
+                            ConnectionOrientedStreamSocket::Ptr s                     = localSocketToAcceptOn.Accept ();
                             fNewConnectionAcceptor (s);
                         }
                     }
@@ -72,9 +72,9 @@ struct Listener::Rep_ {
             L"Socket Listener: " + Characters::ToString (addrs));
     }
 
-    function<void(const ConnectionOrientedSocket::Ptr& newConnection)> fNewConnectionAcceptor;
-    Sequence<ConnectionOrientedMasterSocket::Ptr>                      fMasterSockets;
-    Execution::Thread::CleanupPtr                                      fListenThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)> fNewConnectionAcceptor;
+    Sequence<ConnectionOrientedMasterSocket::Ptr>                            fMasterSockets;
+    Execution::Thread::CleanupPtr                                            fListenThread{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
 };
 
 /*
@@ -82,22 +82,22 @@ struct Listener::Rep_ {
 **************************** IO::Network::Listener *****************************
 ********************************************************************************
 */
-Listener::Listener (const SocketAddress& addr, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const SocketAddress& addr, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (Sequence<SocketAddress>{addr}, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const SocketAddress& addr, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (Sequence<SocketAddress>{addr}, bindFlags, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : Listener (addrs, Socket::BindFlags{}, newConnectionAcceptor, backlog)
 {
 }
 
-Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
+Listener::Listener (const Traversal::Iterable<SocketAddress>& addrs, const Socket::BindFlags& bindFlags, const function<void(const ConnectionOrientedStreamSocket::Ptr& newConnection)>& newConnectionAcceptor, unsigned int backlog)
     : fRep_ (make_shared<Rep_> (addrs, bindFlags, backlog, newConnectionAcceptor))
 {
 }

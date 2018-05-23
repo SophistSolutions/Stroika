@@ -27,7 +27,7 @@ namespace Stroika {
             using namespace Stroika::Foundation::IO;
             using Characters::String;
 
-            using Stroika::Foundation::IO::Network::ConnectionOrientedSocket;
+            using Stroika::Foundation::IO::Network::ConnectionOrientedStreamSocket;
             using Stroika::Foundation::IO::Network::SocketStream;
 
             class ConnectionManager;
@@ -70,7 +70,7 @@ namespace Stroika {
                  */
                 Connection ()                  = delete;
                 Connection (const Connection&) = delete;
-                explicit Connection (const ConnectionOrientedSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{});
+                explicit Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain = InterceptorChain{});
 
             public:
                 ~Connection ();
@@ -85,7 +85,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual ConnectionOrientedSocket::Ptr GetSocket () const;
+                nonvirtual ConnectionOrientedStreamSocket::Ptr GetSocket () const;
 
             public:
                 /**
@@ -156,7 +156,7 @@ namespace Stroika {
 
             private:
                 struct MyMessage_ : Message {
-                    MyMessage_ (const ConnectionOrientedSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream);
+                    MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream);
 
                     // Only valid until the end of a successful ReadHeaders
                     MessageStartTextInputStreamBinaryAdapter::Ptr fMsgHeaderInTextStream;
@@ -174,7 +174,7 @@ namespace Stroika {
 
             private:
                 InterceptorChain                              fInterceptorChain_;
-                ConnectionOrientedSocket::Ptr                 fSocket_;
+                ConnectionOrientedStreamSocket::Ptr           fSocket_;
                 Streams::InputOutputStream<Memory::Byte>::Ptr fSocketStream_;
                 shared_ptr<MyMessage_>                        fMessage_; // always there, but ptr so it can be replaced
                 Memory::Optional<Remaining>                   fRemaining_;

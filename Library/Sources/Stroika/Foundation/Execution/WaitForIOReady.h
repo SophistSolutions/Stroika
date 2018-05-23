@@ -76,7 +76,7 @@ namespace Stroika {
              *              try {
              *                  for (auto readyFD : sockSetPoller.WaitQuietly ().Value ()) {
              *                      ConnectionOrientedMasterSocket::Ptr localSocketToAcceptOn = *socket2FDBijection.InverseLookup (readyFD);
-             *                      ConnectionOrientedSocket::Ptr       s                     = localSocketToAcceptOn.Accept ();
+             *                      ConnectionOrientedStreamSocket::Ptr s                     = localSocketToAcceptOn.Accept ();
              *                      fNewConnectionAcceptor (s);
              *                  }
              *              }

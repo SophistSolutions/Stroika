@@ -17,7 +17,7 @@
 
 #include "../HTTP/Status.h"
 
-#include "../ConnectionOrientedSocket.h"
+#include "../ConnectionOrientedStreamSocket.h"
 #include "../URL.h"
 
 #include "Exception.h"
@@ -274,7 +274,7 @@ namespace Stroika {
                          * This is NOT to be confused with HTTP keep alives, but refers to the TCP transport layer variety. This only
                          * matters for long connections
                          */
-                        Memory::Optional<IO::Network::ConnectionOrientedSocket::KeepAliveOptions> fTCPKeepAlives;
+                        Memory::Optional<IO::Network::ConnectionOrientedStreamSocket::KeepAliveOptions> fTCPKeepAlives;
                     };
 
 #if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy

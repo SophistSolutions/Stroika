@@ -36,7 +36,7 @@ namespace Stroika {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().Listen (backlog);
                 }
-                inline ConnectionOrientedSocket::Ptr ConnectionOrientedMasterSocket::Ptr::Accept () const
+                inline ConnectionOrientedStreamSocket::Ptr ConnectionOrientedMasterSocket::Ptr::Accept () const
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Accept ();

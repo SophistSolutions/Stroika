@@ -30,7 +30,7 @@ public:
     bool           fOpenForRead_{true};
     bool           fOpenForWrite_{true};
     SeekOffsetType fReadSeekOffset_{};
-    Rep_ (const ConnectionOrientedSocket::Ptr& sd)
+    Rep_ (const ConnectionOrientedStreamSocket::Ptr& sd)
         : InputOutputStream<Byte>::_IRep ()
         , fSD_ (sd)
     {
@@ -118,7 +118,7 @@ public:
     }
 
 private:
-    ConnectionOrientedSocket::Ptr fSD_;
+    ConnectionOrientedStreamSocket::Ptr fSD_;
 };
 
 /*
@@ -126,12 +126,12 @@ private:
  **************************** IO::Network::SocketStream *************************
  ********************************************************************************
  */
-auto SocketStream::New (const ConnectionOrientedSocket::Ptr& sd) -> Ptr
+auto SocketStream::New (const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
 {
     return make_shared<Rep_> (sd);
 }
 
-auto SocketStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedSocket::Ptr& sd) -> Ptr
+auto SocketStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedStreamSocket::Ptr& sd) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:

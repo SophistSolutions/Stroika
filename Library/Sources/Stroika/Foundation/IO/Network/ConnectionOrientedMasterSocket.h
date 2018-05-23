@@ -6,7 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
-#include "ConnectionOrientedSocket.h"
+#include "ConnectionOrientedStreamSocket.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -14,8 +14,8 @@ namespace Stroika {
             namespace Network {
 
                 /**
-                 *  This class is to be used with ConnectionOrientedSocket. You create a ConnectionOrientedMasterSocket, and
-                 *  Bind () it, and Listen () on it, and the resulting sockets (from Accept()) are of type ConnectionOrientedSocket.
+                 *  This class is to be used with ConnectionOrientedStreamSocket. You create a ConnectionOrientedMasterSocket, and
+                 *  Bind () it, and Listen () on it, and the resulting sockets (from Accept()) are of type ConnectionOrientedStreamSocket.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-May-Need-To-Externally-Synchronize-Letter</a>
                  */
@@ -127,7 +127,7 @@ namespace Stroika {
                      *
                      *  \note ***Cancelation Point***
                      */
-                    nonvirtual ConnectionOrientedSocket::Ptr Accept () const;
+                    nonvirtual ConnectionOrientedStreamSocket::Ptr Accept () const;
 
                 protected:
                     /**
@@ -154,9 +154,9 @@ namespace Stroika {
                  */
                 class ConnectionOrientedMasterSocket::_IRep : public Socket::_IRep {
                 public:
-                    virtual ~_IRep ()                                                   = default;
-                    virtual void                          Listen (unsigned int backlog) = 0;
-                    virtual ConnectionOrientedSocket::Ptr Accept ()                     = 0;
+                    virtual ~_IRep ()                                                         = default;
+                    virtual void                                Listen (unsigned int backlog) = 0;
+                    virtual ConnectionOrientedStreamSocket::Ptr Accept ()                     = 0;
                 };
             }
         }

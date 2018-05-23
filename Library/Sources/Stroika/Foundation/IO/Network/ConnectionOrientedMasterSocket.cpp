@@ -41,15 +41,15 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual ConnectionOrientedSocket::Ptr Accept () override
+            virtual ConnectionOrientedStreamSocket::Ptr Accept () override
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 sockaddr_storage                                   peer{};
                 socklen_t                                          sz = sizeof (peer);
 #if qPlatform_POSIX
-                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); })));
+                return ConnectionOrientedStreamSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (Handle_ErrNoResultInterruption ([&]() -> int { return ::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz); })));
 #elif qPlatform_Windows
-                return ConnectionOrientedSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
+                return ConnectionOrientedStreamSocket::Attach (ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::accept (fSD_, reinterpret_cast<sockaddr*> (&peer), &sz)));
 #else
                 AssertNotImplemented ();
 #endif

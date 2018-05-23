@@ -64,7 +64,7 @@ String Connection::Remaining::ToString () const
  ******************** WebServer::Connection::MyMessage_ *************************
  ********************************************************************************
  */
-Connection::MyMessage_::MyMessage_ (const ConnectionOrientedSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream)
+Connection::MyMessage_::MyMessage_ (const ConnectionOrientedStreamSocket::Ptr& socket, const Streams::InputOutputStream<Memory::Byte>::Ptr& socketStream)
     : Message (
           move (Request (socketStream)),
           move (Response (socket, socketStream, DataExchange::PredefinedInternetMediaType::kOctetStream)),
@@ -157,7 +157,7 @@ Connection::MyMessage_::ReadHeadersResult Connection::MyMessage_::ReadHeaders (
  ***************************** WebServer::Connection ****************************
  ********************************************************************************
  */
-Connection::Connection (const ConnectionOrientedSocket::Ptr& s, const InterceptorChain& interceptorChain)
+Connection::Connection (const ConnectionOrientedStreamSocket::Ptr& s, const InterceptorChain& interceptorChain)
     : fInterceptorChain_{interceptorChain}
     , fSocket_ (s)
 {

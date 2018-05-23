@@ -188,7 +188,7 @@ namespace Stroika {
                     /**
                      *  Socket::Ptr maybe initialized with
                      *      o   ConnectionlessSocket::New ()
-                     *      o   ConnectionOrientedSocket::New ()
+                     *      o   ConnectionOrientedStreamSocket::New ()
                      *      o   ConnectionOrientedMasterSocket::New ()
                      *
                      * \note unless you call @Detatch() - socket is CLOSED in DTOR of rep, so when final reference goes away

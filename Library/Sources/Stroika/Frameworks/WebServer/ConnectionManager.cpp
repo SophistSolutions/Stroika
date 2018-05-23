@@ -153,13 +153,13 @@ ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& 
     , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
     , fListener_{bindAddresses,
                  options.fBindFlags.Value (Options::kDefault_BindFlags),
-                 [this](const ConnectionOrientedSocket::Ptr& s) { onConnect_ (s); },
+                 [this](const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  ComputeConnectionBacklog_ (options)}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=]() { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}
 {
 }
 
-void ConnectionManager::onConnect_ (const ConnectionOrientedSocket::Ptr& s)
+void ConnectionManager::onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ConnectionManager::onConnect_", L"s=%s", Characters::ToString (s).c_str ()));

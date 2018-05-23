@@ -146,7 +146,7 @@ namespace Stroika {
 }
 
 namespace {
-    void ConnectionHandler_ (const ConnectionOrientedSocket::Ptr& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
+    void ConnectionHandler_ (const ConnectionOrientedStreamSocket::Ptr& connectionSocket, shared_ptr<IModbusService> serviceHandler, const ServerOptions& options)
     {
         TraceContextBumper ctx ("Modbus-Connection");
 #if qDefaultTracingOn
@@ -407,7 +407,7 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
     }
 
     // Note - we return thread not started, so caller must explicitly start, but internal threads start immediately
-    auto onModbusConnection = [serviceHandler, options, usingThreadPool](const ConnectionOrientedSocket::Ptr& s) {
+    auto onModbusConnection = [serviceHandler, options, usingThreadPool](const ConnectionOrientedStreamSocket::Ptr& s) {
         usingThreadPool->AddTask ([serviceHandler, options, s]() { ConnectionHandler_ (s, serviceHandler, options); });
     };
     return Thread::New (

@@ -34,7 +34,7 @@ namespace Stroika {
             using Characters::String;
             using Containers::Bijection;
             using Containers::Collection;
-            using IO::Network::ConnectionOrientedSocket;
+            using IO::Network::ConnectionOrientedStreamSocket;
             using IO::Network::Socket;
             using IO::Network::SocketAddress;
 
@@ -229,7 +229,7 @@ namespace Stroika {
                 nonvirtual Collection<shared_ptr<Connection>> GetConnections () const;
 
             private:
-                nonvirtual void onConnect_ (const ConnectionOrientedSocket::Ptr& s);
+                nonvirtual void onConnect_ (const ConnectionOrientedStreamSocket::Ptr& s);
 
             private:
                 nonvirtual void WaitForReadyConnectionLoop_ ();
