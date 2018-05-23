@@ -121,10 +121,7 @@ namespace Stroika {
                     using IPv4AddressOctets = tuple<uint8_t, uint8_t, uint8_t, uint8_t>;
 
                 public:
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                        InternetAddress ();
+                    constexpr InternetAddress ();
                     /**
                      *  Construct an InternetAddress object from a string (with optionally specified address family).
                      *  If the address is unparsable according to the rules specified, an exception will be thrown.
@@ -138,38 +135,29 @@ namespace Stroika {
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
                      *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
                      */
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                    constexpr
-#endif
-                        InternetAddress (const in_addr_t& i);
+                    constexpr InternetAddress (const in_addr_t& i);
                     InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
                     /**
                      *  Construct an InternetAddress from in_addr - V4 address.
                      *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
                      */
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                        InternetAddress (const in_addr& i);
+                    constexpr InternetAddress (const in_addr& i);
                     InternetAddress (const in_addr& i, ByteOrder byteOrder);
                     /**
                      *  Construct an InternetAddress V4 address in A.B.C.D octet form.
                      */
-#if __cpp_designators && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if __cpp_designators
                     constexpr
 #endif
                         InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4);
-#if __cpp_designators && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if __cpp_designators
                     constexpr
 #endif
                         InternetAddress (IPv4AddressOctets octets);
                     /**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                        InternetAddress (const in6_addr& i);
+                    constexpr InternetAddress (const in6_addr& i);
 
                 public:
                     /**

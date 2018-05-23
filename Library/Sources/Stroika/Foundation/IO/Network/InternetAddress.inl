@@ -22,20 +22,12 @@ namespace Stroika {
                  *********************** IO::Network::InternetAddress ***************************
                  ********************************************************************************
                  */
-                inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                    InternetAddress::InternetAddress ()
+                inline constexpr InternetAddress::InternetAddress ()
                     : fAddressFamily_ (AddressFamily::UNKNOWN)
                     , fV4_{}
                 {
                 }
-                inline
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                    constexpr
-#endif
-                    InternetAddress::InternetAddress (const in_addr_t& i)
+                inline constexpr InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
                     , fV4_
                 {
@@ -64,11 +56,7 @@ namespace Stroika {
                         fV4_.s_addr = htonl (fV4_.s_addr); //NB no ':' cuz some systems use macro
                     }
                 }
-                inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                    InternetAddress::InternetAddress (const in_addr& i)
+                inline constexpr InternetAddress::InternetAddress (const in_addr& i)
                     : fAddressFamily_ (AddressFamily::V4)
                     , fV4_ (i)
                 {
@@ -82,7 +70,7 @@ namespace Stroika {
                     }
                 }
                 inline
-#if __cpp_designators && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if __cpp_designators
                     constexpr
 #endif
                     InternetAddress::InternetAddress (uint8_t octet1, uint8_t octet2, uint8_t octet3, uint8_t octet4)
@@ -106,28 +94,19 @@ namespace Stroika {
 #endif
                 }
                 inline
-#if __cpp_designators && !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if __cpp_designators
                     constexpr
 #endif
                     InternetAddress::InternetAddress (IPv4AddressOctets octets)
                     : InternetAddress (get<0> (octets), get<1> (octets), get<2> (octets), get<3> (octets))
                 {
                 }
-                inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                    InternetAddress::InternetAddress (const in6_addr& i)
+                inline constexpr InternetAddress::InternetAddress (const in6_addr& i)
                     : fAddressFamily_ (AddressFamily::V6)
                     , fV6_ (i)
                 {
                 }
-                inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
-                    constexpr
-#endif
-                    bool
-                    InternetAddress::empty () const
+                inline constexpr bool InternetAddress::empty () const
                 {
                     return fAddressFamily_ == AddressFamily::UNKNOWN;
                 }
@@ -135,12 +114,7 @@ namespace Stroika {
                 {
                     fAddressFamily_ = AddressFamily::UNKNOWN;
                 }
-                inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
-                    constexpr
-#endif
-                    InternetAddress::AddressFamily
-                    InternetAddress::GetAddressFamily () const
+                inline constexpr InternetAddress::AddressFamily InternetAddress::GetAddressFamily () const
                 {
                     return fAddressFamily_;
                 }
@@ -166,12 +140,7 @@ namespace Stroika {
                 }
 #endif
                 template <>
-                inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                    in_addr
-                    InternetAddress::As<in_addr> () const
+                inline constexpr in_addr InternetAddress::As<in_addr> () const
                 {
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     Require (fAddressFamily_ == AddressFamily::V4);
@@ -201,12 +170,7 @@ namespace Stroika {
                     }
                 }
                 template <>
-                inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
-                    constexpr
-#endif
-                    in6_addr
-                    InternetAddress::As<in6_addr> () const
+                inline constexpr in6_addr InternetAddress::As<in6_addr> () const
                 {
 #if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     Require (fAddressFamily_ == AddressFamily::V6);
