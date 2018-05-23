@@ -47,6 +47,8 @@ namespace Stroika {
                         }
                     }
                 }
+                Rep_ (const Rep_&) = delete;
+                Rep_ ()            = delete;
                 virtual bool IsSeekable () const override
                 {
                     return fRealIn_.IsSeekable ();
@@ -91,6 +93,9 @@ namespace Stroika {
                                     effectiveRealTarget = fRealIn_.GetOffset () + fRealIn_.GetOffsetToEndOfStream () + offset;
                                 }
                                 break;
+                            default:
+                                effectiveRealTarget = 0; // silence warning
+                                RequireNotReached ();
                         }
                         ValidateRealOffset_ (effectiveRealTarget);
                         SignedSeekOffsetType result = fRealIn_.Seek (Whence::eFromStart, effectiveRealTarget);
