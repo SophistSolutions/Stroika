@@ -123,7 +123,7 @@ namespace Stroika {
                 {
                 }
                 inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
                     constexpr
 #endif
                     bool
@@ -136,7 +136,7 @@ namespace Stroika {
                     fAddressFamily_ = AddressFamily::UNKNOWN;
                 }
                 inline
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
                     constexpr
 #endif
                     InternetAddress::AddressFamily

@@ -58,7 +58,7 @@ namespace Stroika {
 
                 using Characters::String;
 
-/**
+                /**
                  *  v4 ip addr as a long.
                  */
 #if qPlatform_POSIX
@@ -134,7 +134,7 @@ namespace Stroika {
                      */
                     InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
                     InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
-/**
+                    /**
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
                      *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
                      */
@@ -143,7 +143,7 @@ namespace Stroika {
 #endif
                         InternetAddress (const in_addr_t& i);
                     InternetAddress (const in_addr_t& i, ByteOrder byteOrder);
-/**
+                    /**
                      *  Construct an InternetAddress from in_addr - V4 address.
                      *  Note that provided in_addr must already be in network order (unless explicit byte order provided as argument)
                      */
@@ -152,7 +152,7 @@ namespace Stroika {
 #endif
                         InternetAddress (const in_addr& i);
                     InternetAddress (const in_addr& i, ByteOrder byteOrder);
-/**
+                    /**
                      *  Construct an InternetAddress V4 address in A.B.C.D octet form.
                      */
 #if __cpp_designators && !qCompilerAndStdLib_constexpr_union_variants_Buggy
@@ -163,7 +163,7 @@ namespace Stroika {
                     constexpr
 #endif
                         InternetAddress (IPv4AddressOctets octets);
-/**
+                    /**
                      *  Construct an InternetAddress from in6_addr - V6 address.
                      */
 #if !qCompilerAndStdLib_constexpr_union_variants_Buggy
@@ -177,7 +177,7 @@ namespace Stroika {
                      *  @see clear()
                      */
                     nonvirtual
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
                         constexpr
 #endif
                         bool
@@ -195,7 +195,7 @@ namespace Stroika {
                      *  This can be V4, V6, or UNKNOWN, and iff UNKNOWN, then empty () will return true.
                      */
                     nonvirtual
-#if !qCompilerAndStdLib_constexpr_union_variants_Buggy
+#if !qCompilerAndStdLib_constexpr_union_variants_Buggy || 1
                         constexpr
 #endif
                         AddressFamily

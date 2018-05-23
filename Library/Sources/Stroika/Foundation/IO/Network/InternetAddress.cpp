@@ -246,17 +246,17 @@ bool InternetAddress::IsPrivateAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
             /*
-                 * http://www.faqs.org/rfcs/rfc1918.html
-                 *
-                 *  3. Private Address Space
-                 *
-                 *      The Internet Assigned Numbers Authority (IANA) has reserved the
-                 *      following three blocks of the IP address space for private internets:
-                 *
-                 *      10.0.0.0        -   10.255.255.255  (10/8 prefix)
-                 *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
-                 *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
-                 */
+             * http://www.faqs.org/rfcs/rfc1918.html
+             *
+             *  3. Private Address Space
+             *
+             *      The Internet Assigned Numbers Authority (IANA) has reserved the
+             *      following three blocks of the IP address space for private internets:
+             *
+             *      10.0.0.0        -   10.255.255.255  (10/8 prefix)
+             *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
+             *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
+             */
             IPv4AddressOctets octets = As<IPv4AddressOctets> ();
             if (get<0> (octets) == 10) {
                 return true;
@@ -271,14 +271,14 @@ bool InternetAddress::IsPrivateAddress () const
         } break;
         case AddressFamily::V6: {
             /*
-                 *  From http://en.wikipedia.org/wiki/Private_network
-                 *
-                 *      The concept of private networks and special address reservation for such networks
-                 *      has been carried over to the next generation of the Internet Protocol, IPv6.
-                 *      The address block fc00:: / 7 has been reserved by IANA as described in RFC 4193.
-                 *      These addresses are called Unique Local Addresses (ULA).They are defined as being
-                 *      unicast in character and contain a 40 - bit random number in the routing prefix.
-                 */
+             *  From http://en.wikipedia.org/wiki/Private_network
+             *
+             *      The concept of private networks and special address reservation for such networks
+             *      has been carried over to the next generation of the Internet Protocol, IPv6.
+             *      The address block fc00:: / 7 has been reserved by IANA as described in RFC 4193.
+             *      These addresses are called Unique Local Addresses (ULA).They are defined as being
+             *      unicast in character and contain a 40 - bit random number in the routing prefix.
+             */
             bool result = (fV6_.s6_addr[0] == 0xfc or fV6_.s6_addr[0] == 0xfd) and fV6_.s6_addr[1] == 0x0;
             return result;
         } break;
