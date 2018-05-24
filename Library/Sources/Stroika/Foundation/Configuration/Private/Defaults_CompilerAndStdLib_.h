@@ -560,7 +560,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8))
 #else
 #define qCompiler_noSanitizeAttribute_Buggy 1
 #endif
