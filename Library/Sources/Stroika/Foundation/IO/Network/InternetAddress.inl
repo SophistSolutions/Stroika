@@ -33,11 +33,21 @@ namespace Stroika {
                 {
 #if qPlatform_POSIX
                     i
+#elif qPlatform_Windows
+                    in_addr
+                    {
+                        {
+                            static_cast<uint8_t> (Memory::BitSubstring (i, 0, 8)),
+                                static_cast<uint8_t> (Memory::BitSubstring (i, 8, 16)),
+                                static_cast<uint8_t> (Memory::BitSubstring (i, 16, 24)),
+                                static_cast<uint8_t> (Memory::BitSubstring (i, 24, 32))
+                        }
+                    }
 #endif
                 }
                 {
-#if qPlatform_Windows
-                    fV4_.s_addr = i;
+#if qPlatform_Windows && !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+                    Assert (fV4_.s_addr == i);
 #endif
                 }
                 inline InternetAddress::InternetAddress (const in_addr_t& i, ByteOrder byteOrder)
