@@ -572,7 +572,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #elif defined(__clang__) && !defined(__APPLE__)
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 5))
 #elif defined(__GNUC__)
-#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 8))
+#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 8)
 #else
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy 0
 #endif
