@@ -94,7 +94,7 @@ string XML::QuoteForXMLAttribute (const String& s)
 
 string XML::QuoteForXMLAttribute (const Memory::Optional<String>& s)
 {
-    if (s.IsMissing ()) {
+    if (not s.has_value ()) {
         return string ();
     }
     return QuoteForXMLAttribute (*s);
@@ -206,7 +206,7 @@ string XML::QuoteForXML (const String& s)
 
 string XML::QuoteForXML (const Memory::Optional<String>& s)
 {
-    if (s.IsMissing ()) {
+    if (not s.has_value ()) {
         return string ();
     }
     return QuoteForXML (*s);

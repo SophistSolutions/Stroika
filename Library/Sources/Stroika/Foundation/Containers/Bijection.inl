@@ -169,7 +169,7 @@ namespace Stroika {
             {
                 Memory::Optional<RANGE_TYPE> r;
                 bool                         result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
-                Ensure (result == r.IsPresent ());
+                Ensure (result == r.has_value ());
                 return r;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -181,7 +181,7 @@ namespace Stroika {
             inline RANGE_TYPE Bijection<DOMAIN_TYPE, RANGE_TYPE>::LookupValue (ArgByValueType<DomainType> key, ArgByValueType<RangeType> defaultValue) const
             {
                 Memory::Optional<RANGE_TYPE> r = Lookup (key);
-                return r.IsPresent () ? *r : defaultValue;
+                return r.has_value () ? *r : defaultValue;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookup (ArgByValueType<RangeType> key, DomainType* item) const
@@ -208,7 +208,7 @@ namespace Stroika {
             {
                 Memory::Optional<DOMAIN_TYPE> r;
                 bool                          result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &r);
-                Ensure (result == r.IsPresent ());
+                Ensure (result == r.has_value ());
                 return r;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -220,7 +220,7 @@ namespace Stroika {
             inline DOMAIN_TYPE Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookupValue (ArgByValueType<RangeType> key, ArgByValueType<DomainType> defaultValue) const
             {
                 Memory::Optional<DOMAIN_TYPE> r = InverseLookup (key);
-                return r.IsPresent () ? *r : defaultValue;
+                return r.has_value () ? *r : defaultValue;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             auto Bijection<DOMAIN_TYPE, RANGE_TYPE>::Map (const Iterable<DomainType>& values) const -> Iterable<RangeType>

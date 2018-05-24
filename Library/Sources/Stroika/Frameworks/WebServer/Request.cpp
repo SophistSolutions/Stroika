@@ -82,7 +82,7 @@ Memory::BLOB Request::GetBody ()
     Debug::TraceContextBumper ctx (L"Request::GetBody");
 #endif
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-    if (fBody_.IsMissing ()) {
+    if (not fBody_.has_value ()) {
         fBody_ = GetBodyStream ().ReadAll ();
     }
     return *fBody_;

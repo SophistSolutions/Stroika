@@ -33,7 +33,7 @@ using namespace Stroika::Foundation::IO;
     }                                                                                     \
     catch (const FileAccessException& e)                                                  \
     {                                                                                     \
-        if (e.GetFileName ().IsMissing ()) {                                              \
+        if (not e.GetFileName ().has_value ()) {                                          \
             Execution::Throw (FileAccessException (USEFILENAME, e.GetFileAccessMode ())); \
         }                                                                                 \
         Execution::ReThrow ();                                                            \

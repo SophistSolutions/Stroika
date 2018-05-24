@@ -268,7 +268,7 @@ namespace Stroika {
                  *
                  *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-                 *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
+                 *      \req    Ensure (item == nullptr or returnValue == item->has_value());
                  *
                  *  \note   Alias - Lookup (key, mapped_type* value) - is equivilent to .Net TryGetValue ()
                  */
@@ -286,7 +286,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Always safe to call. If result of Lookup () 'IsMissing', returns argument 'default' or 'sentinal' value.
+                 *  Always safe to call. If result of Lookup () !has_value, returns argument 'default' or 'sentinal' value.
                  *
                  *  \note Alias LookupOrDefault
                  */
@@ -300,7 +300,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Synonym for Lookup (key).IsPresent ()
+                 *  Synonym for Lookup (key).has_value ()
                  */
                 nonvirtual bool ContainsKey (ArgByValueType<key_type> key) const;
 

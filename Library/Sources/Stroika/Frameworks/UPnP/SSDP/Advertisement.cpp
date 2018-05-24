@@ -66,7 +66,7 @@ Memory::BLOB SSDP::Serialize (const String& headLine, SearchOrNotify searchOrNot
     if (not ad.fLocation.empty ()) {
         textOut.Write (Characters::Format (L"Location: %s\r\n", ad.fLocation.GetFullURL ().c_str ()));
     }
-    if (ad.fAlive.IsPresent ()) {
+    if (ad.fAlive.has_value ()) {
         if (*ad.fAlive) {
             textOut.Write (Characters::Format (L"NTS: ssdp:alive\r\n"));
         }

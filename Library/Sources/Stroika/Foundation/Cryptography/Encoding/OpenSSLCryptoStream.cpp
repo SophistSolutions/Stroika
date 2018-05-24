@@ -196,7 +196,7 @@ public:
             Byte toDecryptBuf[kInBufSize_];
         Again:
             Optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
-            if (n2Decrypt.IsMissing ()) {
+            if (not n2Decrypt.has_value ()) {
                 // if no known data upstream, we cannot say if this is EOF
                 return {};
             }

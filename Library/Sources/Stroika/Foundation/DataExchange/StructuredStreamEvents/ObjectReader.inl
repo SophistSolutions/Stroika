@@ -341,7 +341,7 @@ namespace Stroika {
                                 else {
                                     Memory::Optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.fTypeInfo);
 #if qDebug
-                                    if (o.IsMissing ()) {
+                                    if (not o.has_value ()) {
                                         DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (i.fFieldMetaInfo).c_str ());
                                         AssertNotReached ();
                                     }
@@ -382,7 +382,7 @@ namespace Stroika {
                     shared_ptr<IElementConsumer> ListOfObjectsReader<CONTAINER_OF_T>::HandleChildStart (const StructuredStreamEvents::Name& name)
                     {
                         RequireNotNull (fActiveContext_);
-                        if (fMemberElementName_.IsMissing () or name == *fMemberElementName_) {
+                        if (not fMemberElementName_.has_value () or name == *fMemberElementName_) {
                             return make_shared<RepeatedElementReader<CONTAINER_OF_T>> (fValuePtr_);
                         }
                         else if (fThrowOnUnrecongizedelts_) {
@@ -717,7 +717,7 @@ namespace Stroika {
                     {
 #if qDebug
                         for (auto kv : fieldDescriptions) {
-                            if (kv.fOverrideTypeMapper.IsMissing () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
+                            if (not kv.fOverrideTypeMapper.has_value () and not fFactories_.ContainsKey (kv.fFieldMetaInfo.fTypeInfo)) {
                                 Debug::TraceContextBumper ctx (L"Registry::AddClass", L"CLASS=%s field-TypeInfo-not-found = %s, for field named '%s' - UnRegistered Type!", Characters::ToString (typeid (CLASS)).c_str (), Characters::ToString (kv.fFieldMetaInfo.fTypeInfo).c_str (), Characters::ToString (kv.fSerializedFieldName).c_str ());
                                 RequireNotReached ();
                             }

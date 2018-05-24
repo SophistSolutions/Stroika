@@ -124,7 +124,7 @@ protected:
         }
         size_t n = resultCharP - intoStart;
         fOffset_ += n;
-        Ensure (n != 0 or fSource_.Read ().IsMissing ()); // if we read no characters, upstream binary source must be at EOF
+        Ensure (n != 0 or not fSource_.Read ().has_value ()); // if we read no characters, upstream binary source must be at EOF
         return n;
     }
 
@@ -471,7 +471,7 @@ namespace {
 namespace {
     const MyWCharTConverterType_& LookupCharsetConverter_ (const Optional<Characters::String>& charset)
     {
-        if (charset.IsMissing ()) {
+        if (not charset.has_value ()) {
             return kUTF8Converter_; // not sure this is best? HTTP 1.1 spec says to default to ISO-8859-1
         }
         return Characters::LookupCodeConverter<wchar_t> (*charset);

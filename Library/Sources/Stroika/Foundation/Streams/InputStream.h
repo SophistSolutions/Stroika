@@ -284,7 +284,7 @@ namespace Stroika {
             public:
                 /**
                  *  Read/0
-                 *      return IsMissing() on EOF, and otherwise return a single element. Read/0 will block if no data available.
+                 *      return nullopt on EOF, and otherwise return a single element. Read/0 will block if no data available.
                  *
                  *  Read/2
                  *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
@@ -312,7 +312,7 @@ namespace Stroika {
                  *  \brief  Same as Read, but \req IsSeekable, and seeks back to original position
                  *
                  *  Peek/0
-                 *      return IsMissing() on EOF, and otherwise return a single element.
+                 *      return nullopt on EOF, and otherwise return a single element.
                  *
                  *  Peek/2
                  *      Pointer must refer to valid memory at least bufSize long, and cannot be nullptr.
@@ -372,8 +372,8 @@ namespace Stroika {
                  *          If you really need a gaurantee, use a separate thread to do the reading and a BlockingQueue to pass the data
                  *          from that thread to the caller.
                  *
-                 *  \note   Returns Memory::nullopt (IsMissing) means no data immediately and definitely available. But sometimes its not possible
-                 *          to be sure, so this could return nullopt/IsMissing () - even when a blocking read could have read something.
+                 *  \note   Returns Memory::nullopt means no data immediately and definitely available. But sometimes its not possible
+                 *          to be sure, so this could return nullopt - even when a blocking read could have read something.
                  *
                  *  \note   We may need to abandon this experimental API because:
                  *              1>  It makes building Reps more complicated

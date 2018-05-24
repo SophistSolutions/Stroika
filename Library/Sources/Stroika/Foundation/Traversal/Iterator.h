@@ -641,7 +641,7 @@ namespace Stroika {
              *
              *          it++ -> More (&ignoredvalue, true)
              *          *it -> More (&v, false); return *v;
-             *          Done -> More (&v, false); return v.IsPresent();
+             *          Done -> More (&v, false); return v.has_value();
              *
              *          (note that for performance and thread safety reasons the iterator envelope
              *           actually passes fCurrent_ into More when implenenting ++it

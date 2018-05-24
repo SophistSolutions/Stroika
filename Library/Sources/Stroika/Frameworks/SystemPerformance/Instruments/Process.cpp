@@ -515,7 +515,7 @@ namespace {
                             processDetails.fEXEPath = processDetails.fEXEPath->SubString (0, -10);
                         }
 
-                        if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processDetails.fEXEPath.IsMissing ())) {
+                        if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processDetails.fEXEPath.has_value ())) {
                             processDetails.fProcessName = OptionallyReadIfFileExists_<String> (processDirPath + L"comm", [](const Streams::InputStream<Byte>::Ptr& in) { return TextReader::New (in).ReadAll ().Trim (); });
                         }
 
@@ -527,7 +527,7 @@ namespace {
                          *
                          *  Improve this logic below - checking for exact error code from readlink..as they say in that article.
                          */
-                        processDetails.fKernelProcess = processDetails.fEXEPath.IsMissing ();
+                        processDetails.fKernelProcess = not processDetails.fEXEPath.has_value ();
                         // Note - many kernel processes have commandline, so dont filter here based on that
                         if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
                             processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
@@ -629,7 +629,7 @@ namespace {
                     try {
                         // @todo maybe able to optimize and not check this if processDetails.fKernelProcess == true
                         Optional<proc_io_data_> stats = Readproc_io_data_ (processDirPath + kIOFilename_);
-                        if (stats.IsPresent ()) {
+                        if (stats.has_value ()) {
                             processDetails.fCombinedIOReadBytes  = (*stats).read_bytes;
                             processDetails.fCombinedIOWriteBytes = (*stats).write_bytes;
                             if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
@@ -670,7 +670,7 @@ namespace {
             Sequence<String>                results;
             Streams::InputStream<Byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
             StringBuilder                   sb;
-            for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
+            for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).has_value ();) {
                 if (*b == '\0') {
                     results.Append (sb.As<String> ());
                     sb.clear ();
@@ -702,7 +702,7 @@ namespace {
 #endif
                 StringBuilder sb;
                 bool          lastCharNullRemappedToSpace = false;
-                for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).IsPresent ();) {
+                for (Memory::Optional<Memory::Byte> b; (b = in.Read ()).has_value ();) {
                     if (*b == '\0') {
                         sb.Append (' '); // frequently - especially for kernel processes - we see nul bytes that really SB spaces
                         lastCharNullRemappedToSpace = true;
@@ -1426,7 +1426,7 @@ namespace {
                 }
                 Mapping<pid_t, unsigned int> GetThreadCountMap () const
                 {
-                    if (fThreadCntMap_.IsMissing ()) {
+                    if (not fThreadCntMap_.has_value ()) {
                         const SYSTEM_PROCESS_INFORMATION* start = GetProcessInfo ();
                         const SYSTEM_PROCESS_INFORMATION* end   = start + fActualNumElts_;
                         Mapping<pid_t, unsigned int>      tmp;
@@ -1485,7 +1485,7 @@ namespace {
                             Optional<String> cmdLine;
                             Optional<String> userName;
                             LookupProcessPath_ (pid, hProcess, &processName, &processEXEPath, &parentProcessID, fOptions_.fCaptureCommandLine ? &cmdLine : nullptr, &userName);
-                            if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and processEXEPath.IsMissing ())) {
+                            if (fOptions_.fProcessNameReadPolicy == Options::eAlways or (fOptions_.fProcessNameReadPolicy == Options::eOnlyIfEXENotRead and not processEXEPath.has_value ())) {
                                 processName.CopyToIf (&processInfo.fProcessName);
                             }
                             processEXEPath.CopyToIf (&processInfo.fEXEPath);
@@ -1576,7 +1576,7 @@ namespace {
                     }
                 }
 #endif
-                if (processInfo.fCombinedIOReadRate.IsMissing () or processInfo.fCombinedIOWriteRate.IsMissing () or processInfo.fAverageCPUTimeUsed.IsMissing ()) {
+                if (not processInfo.fCombinedIOReadRate.has_value () or not processInfo.fCombinedIOWriteRate.has_value () or not processInfo.fAverageCPUTimeUsed.has_value ()) {
                     if (Optional<PerfStats_> p = fContextStats_.Lookup (pid)) {
                         if (p->fCombinedIOReadBytes and processInfo.fCombinedIOReadBytes) {
                             processInfo.fCombinedIOReadRate = (*processInfo.fCombinedIOReadBytes - *p->fCombinedIOReadBytes) / (now - p->fCapturedAt);
@@ -1591,7 +1591,7 @@ namespace {
                     else {
                         /*
                          *  Considered something like:
-                         *      if (processInfo.fCombinedIOReadRate.IsMissing () and processInfo.fCombinedIOReadBytes.IsPresent ()) {
+                         *      if (not processInfo.fCombinedIOReadRate.has_value () and processInfo.fCombinedIOReadBytes.has_value ()) {
                          *          processInfo.fCombinedIOReadRate =  *processInfo.fCombinedIOReadBytes / (now - GetLastCaptureAt ());
                          *      }
                          *

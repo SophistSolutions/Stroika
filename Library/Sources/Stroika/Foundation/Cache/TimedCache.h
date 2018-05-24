@@ -128,7 +128,7 @@ namespace Stroika {
              *      DiskSpaceUsageType LookupDiskStats (String diskName)
              *      {
              *          Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
-             *          if (o.IsMissing ()) {
+             *          if (not o.has_value ()) {
              *              o = LookupDiskStats_ ();
              *              sDiskUsageCache_.Add (diskName, *o);
              *          }

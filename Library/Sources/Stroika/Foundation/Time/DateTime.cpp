@@ -367,7 +367,7 @@ DateTime DateTime::AsUTC () const
         return *this;
     }
     else {
-        DateTime tmp = fTimezone_.IsMissing () ? *this : AddSeconds (-fTimezone_->GetOffset (fDate_, fTimeOfDay_));
+        DateTime tmp = fTimezone_.has_value () ? AddSeconds (-fTimezone_->GetOffset (fDate_, fTimeOfDay_)) : *this;
         return DateTime (tmp.GetDate (), tmp.GetTimeOfDay (), Timezone::UTC ());
     }
 }

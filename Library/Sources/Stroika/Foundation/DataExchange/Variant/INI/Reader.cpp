@@ -55,7 +55,7 @@ public:
         for (String line : in.ReadLines ()) {
             line = line.Trim ();
             if (line.StartsWith (L"[") and line.EndsWith (L"]")) {
-                if (readingSection.IsPresent ()) {
+                if (readingSection.has_value ()) {
                     p.fNamedSections.Add (*readingSection, currentSection);
                     currentSection.fProperties.clear ();
                 }
@@ -71,7 +71,7 @@ public:
                 if (value.StartsWith (L"\"") and value.EndsWith (L"\"")) {
                     value = value.SubString (1, -1);
                 }
-                if (readingSection.IsPresent ()) {
+                if (readingSection.has_value ()) {
                     currentSection.fProperties.Add (key, value);
                 }
                 else {
@@ -82,7 +82,7 @@ public:
                 // @todo not sure what todo with other sorts of lines??
             }
         }
-        if (readingSection.IsPresent ()) {
+        if (readingSection.has_value ()) {
             p.fNamedSections.Add (*readingSection, currentSection);
         }
         return Convert (p);

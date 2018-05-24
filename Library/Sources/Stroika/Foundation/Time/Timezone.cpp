@@ -129,7 +129,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     // One maybe close way is to see if /etc/localtime is a slink or exact copy of file in /usr/share/zoneinfo - that subdir/name
     // is typically/often an Olson DB name.
     //
-    if (result.fID.IsMissing ()) {
+    if (not result.fID.has_value ()) {
         // WEAK but maybe effective way
         // http://www.linuxforums.org/forum/red-hat-fedora-linux/162483-changing-timezone-rhel-5-4-centos.html
         try {
@@ -144,7 +144,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
     }
 #endif
 #if 0
-    if (result.fID.IsMissing ()) {
+    if (not result.fID.has_value ()) {
         try {
             // Not a good approach because this returns a zone abbreviation, which doesn't uniquely define a zone.
             // For example, CDT could be Cocos Islands Time, or Central Daylight Time (North America) etc (see http://en.wikipedia.org/wiki/List_of_time_zone_abbreviations)
@@ -170,7 +170,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
         }
     }
 #endif
-    if (result.fID.IsMissing ()) {
+    if (not result.fID.has_value ()) {
         // We could look to see if /etc/localtime is a symlink or a copy of any named file from /usr/share/zoneinfo, but
         // hope thats not needed!
     }

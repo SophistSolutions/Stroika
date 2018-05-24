@@ -205,7 +205,7 @@ Optional<VariantValue> OptionsFile::Read ()
     Debug::TraceContextBumper ctx ("OptionsFile::Read");
     try {
         Optional<VariantValue> r = fReader_.Read (MemoryStream<Byte>::New (ReadRaw ()));
-        if (r.IsPresent ()) {
+        if (r.has_value ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"present: upgrading module %s", fModuleName_.c_str ());
 #endif

@@ -82,13 +82,13 @@ namespace Stroika {
             inline T Iterator<T, ITERATOR_TRAITS>::Current () const
             {
                 RequireNotNull (fIterator_);
-                Require (fCurrent_.IsPresent ());
+                Require (fCurrent_.has_value ());
                 return *fCurrent_;
             }
             template <typename T, typename ITERATOR_TRAITS>
             inline bool Iterator<T, ITERATOR_TRAITS>::Done () const
             {
-                return fCurrent_.IsMissing ();
+                return not fCurrent_.has_value ();
             }
             template <typename T, typename ITERATOR_TRAITS>
             inline void Iterator<T, ITERATOR_TRAITS>::reset ()

@@ -343,7 +343,7 @@ namespace Stroika {
             {
                 lock_guard<AssertExternallySynchronizedLock> critSec{*this};
                 for (auto i = fRealCache_.begin (); i != fRealCache_.end (); ++i) {
-                    if (i->IsPresent () and clearPredicate ((*i)->fKey)) {
+                    if (i->has_value () and clearPredicate ((*i)->fKey)) {
                         i->clear ();
                     }
                 }
@@ -401,13 +401,13 @@ namespace Stroika {
             VALUE LRUCache<KEY, VALUE, TRAITS>::LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher)
             {
                 auto v = Lookup (key);
-                if (v.IsMissing ()) {
+                if (v.has_value ()) {
+                    return *v;
+                }
+                else {
                     VALUE newV = valueFetcher (key);
                     Add (key, newV);
                     return newV;
-                }
-                else {
-                    return *v;
                 }
             }
         }

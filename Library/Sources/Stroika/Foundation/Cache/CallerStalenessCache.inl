@@ -67,7 +67,7 @@ namespace Stroika {
             Memory::Optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan)
             {
                 Memory::Optional<myVal_> o = fMap_.Lookup (k);
-                if (o.IsMissing () or o->fDataCapturedAt < staleIfOlderThan) {
+                if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
                     return Memory::Optional<VALUE> ();
                 }
                 return o->fValue;
@@ -76,7 +76,7 @@ namespace Stroika {
             VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE ()>& cacheFiller)
             {
                 Memory::Optional<myVal_> o = fMap_.Lookup (k);
-                if (o.IsMissing () or o->fDataCapturedAt < staleIfOlderThan) {
+                if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {
                     myVal_ mv (cacheFiller (), GetCurrentTimestamp ());
                     fMap_.Add (k, mv);
                     return std::move (mv.fValue);

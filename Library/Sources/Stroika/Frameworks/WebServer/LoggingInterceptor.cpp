@@ -50,7 +50,7 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
     virtual void HandleMessage (Message* m) override
     {
         shared_ptr<ILogHandler::MessageInstance> logID = fLogger_->Started (m);
-        Assert (fOngoingMessages_->Lookup (m).IsMissing ());
+        Assert (not fOngoingMessages_->Lookup (m).has_value ());
         fOngoingMessages_.rwget ().rwref ().Add (m, logID);
     }
     virtual void CompleteNormally (Message* m) override

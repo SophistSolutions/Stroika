@@ -252,7 +252,7 @@ namespace Stroika {
                  *
                  *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-                 *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
+                 *      \req    Ensure (item == nullptr or returnValue == item->has_value());
                  *
                  *  \note   Alias - Lookup (key, RangeType* value) - is equivilent to .Net TryGetValue ()
                  *
@@ -283,7 +283,7 @@ namespace Stroika {
                  *
                  *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
-                 *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
+                 *      \req    Ensure (item == nullptr or returnValue == item->has_value());
                  *
                  *  @see   Lookup ()
                  *  @see   LookupValue ()
@@ -335,13 +335,13 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Synonym for (Lookup (v).IsPresent ()) or Preimage ().Contains (v)
+                 *  Synonym for (Lookup (v).has_value ()) or Preimage ().Contains (v)
                  */
                 nonvirtual bool ContainsDomainElement (ArgByValueType<DomainType> key) const;
 
             public:
                 /**
-                 *  Synonym for (InverseLookup (v).IsPresent ()) or Image ().Contains (v)
+                 *  Synonym for (InverseLookup (v).has_value ()) or Image ().Contains (v)
                  */
                 nonvirtual bool ContainsRangeElement (ArgByValueType<RangeType> v) const;
 

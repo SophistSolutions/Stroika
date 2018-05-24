@@ -157,7 +157,7 @@ namespace Stroika {
             {
 #if qDebug
                 for (auto f : fieldDescriptions) {
-                    if (f.fOverrideTypeMapper.IsMissing ()) {
+                    if (not f.fOverrideTypeMapper.has_value ()) {
                         (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
                     }
                 }
@@ -169,7 +169,7 @@ namespace Stroika {
             {
 #if qDebug
                 for (auto f : fieldDescriptions) {
-                    if (f.fOverrideTypeMapper.IsMissing ()) {
+                    if (not f.fOverrideTypeMapper.has_value ()) {
                         (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
                     }
                 }
@@ -321,7 +321,7 @@ namespace Stroika {
                 using Memory::Optional;
                 FromObjectMapperType<Optional<T, TRAITS>> fromObjectMapper = [](const ObjectVariantMapper& mapper, const Optional<T, TRAITS>* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
-                    if (fromObjOfTypeT->IsPresent ()) {
+                    if (fromObjOfTypeT->has_value ()) {
                         return mapper.FromObject<T> (**fromObjOfTypeT);
                     }
                     else {
@@ -493,7 +493,7 @@ namespace Stroika {
                 ToObjectMapperType<ENUM_TYPE> toObjectMapper = [nameMap](const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     auto optVal = nameMap.InverseLookup (d.As<String> ());
-                    if (optVal.IsMissing ()) {
+                    if (not optVal.has_value ()) {
                         DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), d.As<String> ().c_str ());
                         Execution::Throw (BadFormatException (String_Constant (L"Enumeration value out of range")));
                     }
@@ -637,7 +637,7 @@ namespace Stroika {
                     // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
                     for (auto i : fields) {
                         // dont need to register the type mapper if its specified as a field
-                        if (i.fOverrideTypeMapper.IsMissing ()) {
+                        if (not i.fOverrideTypeMapper.has_value ()) {
                             (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
                         }
                     }
@@ -699,7 +699,7 @@ namespace Stroika {
                     for (auto i : fields) {
                         Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
+                        DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.has_value ());
 #endif
                         if (o) {
                             ToGenericObjectMapperType fromGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fToObjectMapper;
@@ -734,7 +734,7 @@ namespace Stroika {
                     // you can just define a bogus mapper temporarily, and then reset it to the real one before use.
                     for (auto i : fields) {
                         // dont need to register the type mapper if its specified as a field
-                        if (i.fOverrideTypeMapper.IsMissing ()) {
+                        if (not i.fOverrideTypeMapper.has_value ()) {
                             (void)Lookup_ (i.fFieldMetaInfo.fTypeInfo);
                         }
                     }
@@ -780,7 +780,7 @@ namespace Stroika {
                     for (auto i : fields) {
                         Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.IsPresent ());
+                        DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.has_value ());
 #endif
                         if (o) {
                             ToGenericObjectMapperType toGenericObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fToObjectMapper;

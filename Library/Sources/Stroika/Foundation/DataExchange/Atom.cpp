@@ -60,7 +60,7 @@ AtomManager_Default::AtomInternalType AtomManager_Default::Intern (const String&
         auto critSec{Execution::make_unique_lock (sCritSec_)};
 #endif
         auto i = sMap_->Lookup (s);
-        if (i.IsPresent ()) {
+        if (i.has_value ()) {
             return *i;
         }
         v = sSeq_->GetLength ();

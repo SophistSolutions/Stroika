@@ -264,7 +264,7 @@ ReadDownToReader::ReadDownToReader (const shared_ptr<IElementConsumer>& theUseRe
 
 shared_ptr<IElementConsumer> ReadDownToReader::HandleChildStart (const Name& name)
 {
-    if (fTagToHandOff_.IsMissing () or *fTagToHandOff_ == name) {
+    if (not fTagToHandOff_.has_value () or *fTagToHandOff_ == name) {
         return fReader2Delegate2_;
     }
     else {

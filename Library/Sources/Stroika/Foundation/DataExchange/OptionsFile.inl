@@ -25,8 +25,8 @@ namespace Stroika {
             Optional<T> OptionsFile::Read ()
             {
                 Optional<VariantValue> tmp = Read<VariantValue> ();
-                if (tmp.IsMissing ()) {
-                    return Optional<T> ();
+                if (not tmp.has_value ()) {
+                    return {};
                 }
                 try {
                     return fMapper_.ToObject<T> (*tmp);
@@ -49,7 +49,7 @@ namespace Stroika {
                 Optional<T> elt2Write; // only if needed
 
                 LoggerMessage::Msg msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
-                if (eltRead.IsMissing ()) {
+                if (not eltRead.has_value ()) {
                     if (readFlags == ReadFlags::eWriteIfChanged) {
                         elt2Write  = defaultObj;
                         msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
@@ -57,14 +57,14 @@ namespace Stroika {
                 }
                 else {
                     if (readFlags == ReadFlags::eWriteIfChanged) {
-                        if (elt2Write.IsMissing ()) {
+                        if (not elt2Write.has_value ()) {
                             // if filename differs - upgrading
                             if (GetReadFilePath_ () != GetWriteFilePath_ ()) {
                                 elt2Write  = eltRead;
                                 msgAugment = LoggerMessage::Msg::eWritingConfigFile_BecauseUpgraded;
                             }
                         }
-                        if (elt2Write.IsMissing ()) {
+                        if (not elt2Write.has_value ()) {
                             try {
                                 // See if re-persisting the item would change it.
                                 // This is useful if your data model adds or removes fields. It updates the file contents written to the

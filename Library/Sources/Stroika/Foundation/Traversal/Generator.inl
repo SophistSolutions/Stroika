@@ -13,7 +13,7 @@ namespace Stroika {
 
             namespace Private_ {
 
-                // @todo - I think we can lose fAtEnd and use the fCur.IsMissing/IsPresent()
+                // @todo - I think we can lose fAtEnd and use the fCur.has_value ()
                 template <typename T>
                 struct GenItWrapper_ : Iterator<T>::IRep {
                     function<Memory::Optional<T> ()> fFun_;
@@ -25,7 +25,7 @@ namespace Stroika {
                         , fAtEnd_ (false)
                     {
                         fCur_ = fFun_ ();
-                        if (fCur_.IsMissing ()) {
+                        if (not fCur_.has_value ()) {
                             fAtEnd_ = true;
                         }
                     }
@@ -36,7 +36,7 @@ namespace Stroika {
                         if (advance) {
                             Require (not fAtEnd_);
                             Memory::Optional<T> n = fFun_ ();
-                            if (n.IsMissing ()) {
+                            if (not n.has_value ()) {
                                 fAtEnd_ = true;
                             }
                             else {
@@ -44,7 +44,7 @@ namespace Stroika {
                             }
                         }
                         if (not fAtEnd_) {
-                            Assert (fCur_.IsPresent ());
+                            Assert (fCur_.has_value ());
                             *result = fCur_;
                         }
                     }

@@ -149,7 +149,7 @@ namespace Stroika {
                              * the set not technically a partition.
                              */
                             Optional<Range<XType>> result;
-                            while (result.IsMissing () and *myContext < bucketCount) {
+                            while (not result.has_value () and *myContext < bucketCount) {
                                 Range<XType> tmp{d.GetBucketRange (*myContext)};
                                 if (not tmp.empty ()) {
                                     result = tmp;

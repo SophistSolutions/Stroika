@@ -197,7 +197,7 @@ void Main::Run (const CommandArgs& args, const Streams::OutputStream<Characters:
     for (String i : args.fUnusedArguments) {
         fServiceRep_->HandleCommandLineArgument (i);
     }
-    if (args.fMajorOperation.IsMissing ()) {
+    if (not args.fMajorOperation.has_value ()) {
         Execution::Throw (Execution::InvalidCommandLineArgument (String_Constant{L"No recognized operation"}));
     }
     switch (*args.fMajorOperation) {

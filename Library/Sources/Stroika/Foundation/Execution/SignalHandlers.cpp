@@ -248,7 +248,7 @@ private:
     void PopulateSafeSignalHandlersCache_ (SignalID signal)
     {
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (fHanlderAvailable_)));
-        fHanlderAvailable_[signal] = fHandlers_.rwget ()->Lookup (signal).IsPresent ();
+        fHanlderAvailable_[signal] = fHandlers_.rwget ()->Lookup (signal).has_value ();
     }
 
 private:

@@ -326,7 +326,7 @@ namespace {
             Mapping<MountedFilesystemNameType, MountedFilesystemInfoType> result;
             for (IO::FileSystem::MountedFilesystemType mi : IO::FileSystem::GetMountedFilesystems ()) {
                 MountedFilesystemInfoType vi;
-                String                    deviceName = (mi.fDevicePaths.IsMissing () or mi.fDevicePaths->empty ()) ? String{} : mi.fDevicePaths->Nth (0);
+                String                    deviceName = (not mi.fDevicePaths.has_value () or mi.fDevicePaths->empty ()) ? String{} : mi.fDevicePaths->Nth (0);
                 if (not deviceName.empty ()) {
                     vi.fDeviceOrVolumeName = deviceName;
                 }
@@ -364,7 +364,7 @@ namespace {
                 DurationSecondsType        timeSinceLastMeasure = Time::GetTickCount () - GetLastCaptureAt ();
                 for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : *volumes) {
                     MountedFilesystemInfoType vi = i.fValue;
-                    if (vi.fDeviceOrVolumeName.IsPresent ()) {
+                    if (vi.fDeviceOrVolumeName.has_value ()) {
                         if (fContextStats_) {
                             String devNameLessSlashes = *vi.fDeviceOrVolumeName;
                             size_t i                  = devNameLessSlashes.rfind ('/');
@@ -384,7 +384,7 @@ namespace {
                             }
                             Optional<PerfStats_> oOld = fContextStats_->Lookup (useDevT);
                             Optional<PerfStats_> oNew = diskStats.Lookup (useDevT);
-                            if (oOld.IsPresent () and oNew.IsPresent ()) {
+                            if (oOld.has_value () and oNew.has_value ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
                                 IOStatsType  readStats;
                                 readStats.fBytesTransfered = (oNew->fSectorsRead - oOld->fSectorsRead) * sectorSizeTmpHack;
@@ -444,7 +444,7 @@ namespace {
         uint32_t GetSectorSize_ (const String& deviceName)
         {
             auto o = fDeviceName2SectorSizeMap_.Lookup (deviceName);
-            if (o.IsMissing ()) {
+            if (not o.has_value ()) {
                 Optional<String> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName);
                 if (blockDeviceInfoPath) {
                     String fn = *blockDeviceInfoPath + L"queue/hw_sector_size";
@@ -458,7 +458,7 @@ namespace {
                     }
                 }
             }
-            if (o.IsMissing ()) {
+            if (not o.has_value ()) {
                 o = 512; // seems the typical answer on UNIX
             }
             return *o;
@@ -937,9 +937,9 @@ namespace {
                     WeightingStat2UseType weightForFS = i.fValue.fCombinedIOStats.Value ().fBytesTransfered.Value ();
                     weightForFS /= disksForFS.size ();
                     IOStatsType cumStats          = mfi.fCombinedIOStats.Value ();
-                    bool        computeInuse      = cumStats.fInUsePercent.IsMissing ();
-                    bool        computeQLen       = cumStats.fQLength.IsMissing ();
-                    bool        computeTotalXFers = cumStats.fTotalTransfers.IsMissing ();
+                    bool        computeInuse      = not cumStats.fInUsePercent.has_value ();
+                    bool        computeQLen       = not cumStats.fQLength.has_value ();
+                    bool        computeTotalXFers = not cumStats.fTotalTransfers.has_value ();
 
                     for (DynamicDiskIDType di : disksForFS) {
                         IOStatsType diskIOStats = disks.LookupValue (di).fCombinedIOStats.Value ();

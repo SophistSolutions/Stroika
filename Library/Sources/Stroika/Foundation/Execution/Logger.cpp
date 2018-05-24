@@ -114,7 +114,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         if (tmp != nullptr) {
             while (true) {
                 Optional<pair<Logger::Priority, String>> p = fOutMsgQ_.RemoveHeadIfPossible ();
-                if (p.IsPresent ()) {
+                if (p.has_value ()) {
                     tmp->Log (p->first, p->second);
                 }
                 else {
@@ -246,7 +246,7 @@ void Logger::Log_ (Priority logLevel, const String& msg)
     shared_ptr<IAppenderRep> tmp = fRep_->fAppender_; // avoid races/deadlocks and critical sections (between check and invoke)
     if (tmp != nullptr) {
         auto p = pair<Priority, String> (logLevel, msg);
-        if (fRep_->fSuppressDuplicatesThreshold_.cget ()->IsPresent ()) {
+        if (fRep_->fSuppressDuplicatesThreshold_.cget ()->has_value ()) {
             auto lastMsgLocked = fRep_->fLastMsg_.rwget ();
             if (p == lastMsgLocked->fLastMsgSent_) {
                 lastMsgLocked->fRepeatCount_++;
@@ -307,7 +307,7 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () con
 void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.Value (-1))};
-    Require (suppressDuplicatesThreshold.IsMissing () or *suppressDuplicatesThreshold > 0.0);
+    Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0);
     RequireNotNull (fRep_); // not destroyed
     auto critSec{Execution::make_unique_lock (fRep_->fSuppressDuplicatesThreshold_)};
     if (fRep_->fSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {

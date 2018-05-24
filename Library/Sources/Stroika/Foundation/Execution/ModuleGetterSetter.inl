@@ -23,7 +23,7 @@ namespace Stroika {
             inline T ModuleGetterSetter<T, IMPL>::Get ()
             {
                 typename Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
-                if (l->IsMissing ()) {
+                if (not l->has_value ()) {
                     DoInitOutOfLine_ (&l);
                 }
                 return l.cref ()->Get (); // IMPL::Get () must be const method
@@ -32,7 +32,7 @@ namespace Stroika {
             inline void ModuleGetterSetter<T, IMPL>::Set (const T& v)
             {
                 typename Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
-                if (l->IsMissing ()) {
+                if (not l->has_value ()) {
                     DoInitOutOfLine_ (&l);
                 }
                 l.rwref ()->Set (v);
@@ -41,7 +41,7 @@ namespace Stroika {
             Memory::Optional<T> ModuleGetterSetter<T, IMPL>::Update (const function<Memory::Optional<T> (const T&)>& updaterFunction)
             {
                 typename Synchronized<Memory::Optional<IMPL>>::WritableReference l = fIndirect_.rwget ();
-                if (l->IsMissing ()) {
+                if (not l->has_value ()) {
                     DoInitOutOfLine_ (&l);
                 }
                 if (auto o = updaterFunction (l.cref ()->Get ())) {
@@ -54,9 +54,9 @@ namespace Stroika {
             dont_inline void ModuleGetterSetter<T, IMPL>::DoInitOutOfLine_ (typename Synchronized<Memory::Optional<IMPL>>::WritableReference* ref)
             {
                 RequireNotNull (ref);
-                Require (ref->load ().IsMissing ());
+                Require (not ref->load ().has_value ());
                 *ref = IMPL{};
-                Ensure (ref->load ().IsPresent ());
+                Ensure (ref->load ().has_value ());
             }
         }
     }

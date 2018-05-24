@@ -220,7 +220,7 @@ namespace Stroika {
                             RequireNotNull (result);
                             Memory::Optional<pair<tuple<INDEXES...>, T>> tmp;
                             fIterator.More (&tmp, advance);
-                            if (tmp.IsPresent ()) {
+                            if (tmp.has_value ()) {
                                 *result = tuple_cat (tuple<T>{tmp->second}, tmp->first);
                             }
                             else {

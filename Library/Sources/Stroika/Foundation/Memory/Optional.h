@@ -469,8 +469,8 @@ namespace Stroika {
                  *      \code
                  *      float*  d1  =   nullptr;
                  *      double* d2  =   nullptr;
-                 *      Assert (Optional<double>::OptionalFromNullable (d1).IsMissing ());
-                 *      Assert (Optional<double>::OptionalFromNullable (d2).IsMissing ());
+                 *      Assert (not Optional<double>::OptionalFromNullable (d1).has_value ());
+                 *      Assert (not Optional<double>::OptionalFromNullable (d2).has_value ());
                  *      \endcode
                  *
                  *  \note   I tried making this an Optional<T> constructor overload, but it lead to dangerous confusion with things like
@@ -484,7 +484,7 @@ namespace Stroika {
             public:
                 /**
                  *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
-                 *  the IsMissing () will return true.
+                 *  the has_value () will return false.
                  *
                  *  @see reset ();
                  */
@@ -493,7 +493,7 @@ namespace Stroika {
             public:
                 /**
                  *  Erases (destroys) any present value for this Optional<T> instance. After calling reset (),
-                 *  the IsMissing () will return true.
+                 *  the has_value () will return false.
                  *
                  *  \note   This named method mimics the shared_ptr<>::reset () API, which has analagous functionality
                  *          and is the reason for this named method.
@@ -525,7 +525,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Return true iff IsPresent ().
+                 *  Return true iff has_value ().
                  *
                  *  \note   Design Note:
                  *          I've long disliked type punning, and consider it a frequenty source of confusion. However,
@@ -539,7 +539,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
+                 *  Always safe to call. If !has_value, returns argument 'default' or 'sentinal' value.
                  *
                  *  @see CopyToIf
                  *  @see CheckedValue
@@ -563,7 +563,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Always safe to call. If IsMissing, throws argument exception2ThrowIfMissing.
+                 *  Always safe to call. If !has_value, throws argument exception2ThrowIfMissing.
                  *
                  *  @see CopyToIf
                  *  @see Value
@@ -581,7 +581,7 @@ namespace Stroika {
                  *
                  *  The point of this to to faciltate a common idiom, where you want to maintain an existing value unless you
                  *  get an update. This function is ANALAGOUS to
-                 *      if (o.IsPresent()) {
+                 *      if (o.has_value()) {
                  *          destArgVal = *o;
                  *      }
                  *
@@ -677,7 +677,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \pre (IsPresent ())
+                 *  \pre (has_value ())
                  *
                  *  \warning
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
@@ -695,7 +695,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \pre (IsPresent ())
+                 *  \pre (has_value ())
                  *
                  *  \note   We chose to return T, instead of const T&, because for smaller objects this works as
                  *          well or better, and because it allows us to control the lifetime of the underlying memory,
@@ -724,7 +724,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Return true if *this logically equals rhs. Note if either side 'IsMissing'
+                 *  Return true if *this logically equals rhs. Note if either side 'has_value()'
                  *  is different, then they compare as not Equals()
                  */
                 template <typename EQUALS_COMPARER = std::equal_to<T>>
@@ -735,7 +735,7 @@ namespace Stroika {
             public:
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                 *  Somewhat arbitrarily, treat NOT-PROVIDED (IsMissing) as < any value of T
+                 *  Somewhat arbitrarily, treat NOT-PROVIDED (!has_value) as < any value of T
                  */
                 template <typename THREEWAY_COMPARER = Common::ThreeWayCompare<T>>
                 nonvirtual int Compare (const Optional& rhs, const THREEWAY_COMPARER& comparer = {}) const;

@@ -184,7 +184,7 @@ namespace {
         Optional<String> curName;
         while (true) {
             Optional<Character> oNextChar = in.Read ();
-            if (oNextChar.IsMissing ()) {
+            if (not oNextChar.has_value ()) {
                 in.Seek (Streams::Whence::eFromCurrent, -1);
                 Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for '}')"}));
             }
@@ -229,7 +229,7 @@ namespace {
                     lf      = eColon;
                 }
                 else if (lf == eValue) {
-                    Assert (curName.IsPresent ());
+                    Assert (curName.has_value ());
                     result.Add (*curName, Reader_value_ (in));
                     curName.clear ();
                     lf = eComma;

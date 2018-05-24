@@ -135,13 +135,13 @@ Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
     tmp << "            <deviceType>" << QuoteForXML (dd.fDeviceType) << "</deviceType>" << endl;
     tmp << "            <friendlyName>" << QuoteForXML (dd.fFriendlyName) << "</friendlyName>" << endl;
     tmp << "            <manufacturer>" << QuoteForXML (dd.fManufactureName) << "</manufacturer>" << endl;
-    if (dd.fManufacturingURL.IsPresent ()) {
+    if (dd.fManufacturingURL.has_value ()) {
         tmp << "                <manufacturerURL>" << QuoteForXML (dd.fManufacturingURL->GetFullURL ()) << "</manufacturerURL>" << endl;
     }
     tmp << "            <modelDescription>" << QuoteForXML (dd.fModelDescription) << "</modelDescription>" << endl;
     tmp << "            <modelName>" << QuoteForXML (dd.fModelName) << "</modelName>" << endl;
     tmp << "            <modelNumber>" << QuoteForXML (dd.fModelNumber) << "</modelNumber>" << endl;
-    if (dd.fModelURL.IsPresent ()) {
+    if (dd.fModelURL.has_value ()) {
         tmp << "                <modelURL>" << QuoteForXML (dd.fModelURL->GetFullURL ()) << "</modelURL>" << endl;
     }
     tmp << "            <serialNumber>" << QuoteForXML (dd.fSerialNumber) << "</serialNumber>" << endl;
@@ -184,7 +184,7 @@ Memory::BLOB UPnP::Serialize (const Device& d, const DeviceDescription& dd)
     tmp << "    </deviceList>" << endl;
 #endif
 
-    if (dd.fPresentationURL.IsPresent ()) {
+    if (dd.fPresentationURL.has_value ()) {
         tmp << "                <presentationURL>" << QuoteForXML (dd.fPresentationURL->GetFullURL ()) << "</presentationURL>" << endl;
     }
     tmp << "    </device>" << endl;

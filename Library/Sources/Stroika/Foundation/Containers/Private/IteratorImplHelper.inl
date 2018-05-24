@@ -57,7 +57,7 @@ namespace Stroika {
                     RequireNotNull (result);
                     Memory::Optional<DataStructureImplValueType_> tmp;
                     fIterator.More (&tmp, advance);
-                    if (tmp.IsPresent ()) {
+                    if (tmp.has_value ()) {
                         *result = *tmp;
                     }
                     else {

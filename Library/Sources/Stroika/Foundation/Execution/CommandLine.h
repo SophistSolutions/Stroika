@@ -53,7 +53,7 @@ namespace Stroika {
              *  \par Example Usage
              *      \code
              *          Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
-             *          if (arg.IsPresent ()) {
+             *          if (arg.has_value ()) {
              *              sTimeMultiplier_ = String2Float<double> (*arg);
              *          }
              *      \endcode

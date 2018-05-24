@@ -152,7 +152,7 @@ namespace Stroika {
             {
                 Memory::Optional<VALUE_TYPE>   r;
                 bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &r);
-                Ensure (result == r.IsPresent ());
+                Ensure (result == r.has_value ());
                 return r;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -164,7 +164,7 @@ namespace Stroika {
             inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
             {
                 Memory::Optional<VALUE_TYPE>   r    { Lookup (key) };
-                return r.IsPresent () ? *r : defaultValue;
+                return r.has_value () ? *r : defaultValue;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator[] (KeyType key) const
@@ -319,7 +319,7 @@ namespace Stroika {
                     else {
                         // check if li maps to right value in rhs
                         auto o = rhs.Lookup (li->fKey);
-                        if (o.IsMissing () or not VALUE_EQUALS_COMPARER::Equals (*o, li->fValue)) {
+                        if (not o.has_value () or not VALUE_EQUALS_COMPARER::Equals (*o, li->fValue)) {
                             return false;
                         }
                         // if the keys were differnt, we must check the reverse direction too

@@ -433,7 +433,7 @@ String URL::GetFullURL () const
 
     if (not fHost_.empty ()) {
         result += String_Constant (L"//") + fHost_;
-        if (fPort_.IsPresent () and fPort_ != GetDefaultPortForScheme (scheme)) {
+        if (fPort_.has_value () and fPort_ != GetDefaultPortForScheme (scheme)) {
             result += Format (L":%d", *fPort_);
         }
         result += String_Constant (L"/");
@@ -478,7 +478,7 @@ void URL::clear ()
 
 bool URL::empty () const
 {
-    return fScheme_.IsMissing () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_.IsMissing ();
+    return not fScheme_.has_value () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and not fPort_.has_value ();
 }
 
 bool URL::Equals (const URL& rhs) const

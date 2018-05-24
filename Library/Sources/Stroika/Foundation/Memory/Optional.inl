@@ -595,19 +595,19 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline Optional<T, TRAITS>::operator bool () const noexcept
             {
-                return IsPresent ();
+                return has_value ();
             }
             template <typename T, typename TRAITS>
             inline T Optional<T, TRAITS>::Value (T defaultValue) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
-                return IsPresent () ? *this->fStorage_.peek () : defaultValue;
+                return has_value () ? *this->fStorage_.peek () : defaultValue;
             }
             template <typename T, typename TRAITS>
             inline Optional<T, TRAITS> Optional<T, TRAITS>::OptionalValue (const Optional<T, TRAITS>& defaultValue) const
             {
                 shared_lock<const MutexBase_> critSec{*this};
-                return IsPresent () ? *this->fStorage_.peek () : defaultValue;
+                return has_value () ? *this->fStorage_.peek () : defaultValue;
             }
             template <typename T, typename TRAITS>
             template <typename THROW_IF_MISSING_TYPE>
@@ -627,7 +627,7 @@ namespace Stroika {
             {
                 RequireNotNull (to);
                 shared_lock<const MutexBase_> critSec{*this};
-                if (IsPresent ()) {
+                if (has_value ()) {
                     // Static cast in case conversion was explicit - because call to CopyToIf() was explicit
                     DISABLE_COMPILER_MSC_WARNING_START (4244) // MSVC WARNING ABOUT conversions (see comment about Optional explicit constructors)
                     *to = CONVERTABLE_TO_TYPE (*this->fStorage_.peek ());
@@ -651,7 +651,7 @@ namespace Stroika {
             inline auto Optional<T, TRAITS>::operator-> () const -> ConstHolder_
             {
                 // No lock on fDebugMutex_ cuz done in ConstHolder_
-                Require (IsPresent ());
+                Require (has_value ());
                 AssertNotNull (this->fStorage_.peek ());
                 return move (ConstHolder_{this});
             }
@@ -659,7 +659,7 @@ namespace Stroika {
             inline auto Optional<T, TRAITS>::operator-> () -> MutableHolder_
             {
                 // No lock on fDebugMutex_ cuz done in MutableHolder_
-                Require (IsPresent ());
+                Require (has_value ());
                 AssertNotNull (this->fStorage_.peek ());
                 return move (MutableHolder_{this});
             }
@@ -667,10 +667,10 @@ namespace Stroika {
             inline auto Optional<T, TRAITS>::operator* () const -> T
             {
                 shared_lock<const MutexBase_> critSec{*this};
-                Require (IsPresent ());
+                Require (has_value ());
                 AssertNotNull (this->fStorage_.peek ());
                 //return ConstHolder_ { this };  when we embed mutex into holder
-                Require (IsPresent ());
+                Require (has_value ());
                 AssertNotNull (this->fStorage_.peek ());
                 return *this->fStorage_.peek ();
             }
@@ -678,7 +678,7 @@ namespace Stroika {
             template <typename STRING_TYPE>
             STRING_TYPE Optional<T, TRAITS>::ToString () const
             {
-                return IsPresent () ? Characters::ToString (**this) : L"[missing]";
+                return has_value () ? Characters::ToString (**this) : L"[missing]";
             }
             template <typename T, typename TRAITS>
             inline Optional<T, TRAITS>& Optional<T, TRAITS>::operator+= (const Optional& rhs)

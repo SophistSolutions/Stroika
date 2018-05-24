@@ -171,7 +171,7 @@ namespace Stroika {
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Require (IsOpen ());
-                return Peek ().IsMissing ();
+                return not Peek ().has_value ();
             }
             template <typename ELEMENT_TYPE>
             inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking () const

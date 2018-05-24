@@ -130,7 +130,7 @@ namespace Stroika {
                          */
                         Invariant ();
                         Memory::Optional<T> current;
-                        for (ForwardIterator it (Traversal::kUnknownIteratorOwnerID, this); it.More (&current, true), current.IsPresent ();) {
+                        for (ForwardIterator it (Traversal::kUnknownIteratorOwnerID, this); it.More (&current, true), current.has_value ();) {
                             if (equalsComparer (*current, item)) {
                                 this->RemoveAt (it);
                                 break;

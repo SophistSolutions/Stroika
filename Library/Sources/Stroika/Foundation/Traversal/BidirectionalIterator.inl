@@ -92,13 +92,13 @@ namespace Stroika {
             inline T   Iterator<T>::Current () const
             {
                 RequireNotNull (fIterator_);
-                Require (fCurrent_.IsPresent ());
+                Require (fCurrent_.has_value ());
                 return *fCurrent_;
             }
             template    <typename T>
             inline bool    Iterator<T>::Done () const
             {
-                return fCurrent_.IsMissing ();
+                return not fCurrent_.has_value ();
             }
             template    <typename T>
             inline IteratorOwnerID    Iterator<T>::GetOwner () const

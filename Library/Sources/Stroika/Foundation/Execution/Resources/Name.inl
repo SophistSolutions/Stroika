@@ -41,7 +41,7 @@ namespace Stroika {
                 inline String Name::GetPrintName () const
                 {
 #if qPlatform_Windows
-                    if (fIntName_.IsPresent ()) {
+                    if (fIntName_.has_value ()) {
                         return Characters::Format (L"#%d", *fIntName_);
                     }
 #endif
@@ -50,7 +50,7 @@ namespace Stroika {
                 inline const SDKChar* Name::GetSDKString () const
                 {
 #if qPlatform_Windows
-                    if (fIntName_.IsPresent ()) {
+                    if (fIntName_.has_value ()) {
                         return MAKEINTRESOURCE (*fIntName_);
                     }
 #endif

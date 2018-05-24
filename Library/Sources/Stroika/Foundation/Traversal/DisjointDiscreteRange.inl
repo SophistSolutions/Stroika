@@ -62,7 +62,7 @@ namespace Stroika {
                 value_type                        startAt{};
                 Optional<value_type>              endAt;
                 for (value_type i : ss) {
-                    if (endAt.IsMissing ()) {
+                    if (not endAt.has_value ()) {
                         startAt = i;
                         endAt   = i;
                     }

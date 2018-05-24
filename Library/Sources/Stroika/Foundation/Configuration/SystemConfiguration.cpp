@@ -894,7 +894,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         using Characters::CompareOptions;
 
         // No good way I can find to tell...
-        if (tmp.fPreferedInstallerTechnology.IsMissing ()) {
+        if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             if (tmp.fShortPrettyName.Equals (L"Centos", CompareOptions::eCaseInsensitive) or
                 tmp.fShortPrettyName.Equals (L"RedHat", CompareOptions::eCaseInsensitive)) {
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;
@@ -904,7 +904,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             }
         }
         // not a great way to test since some systems have both, like ubuntu
-        if (tmp.fPreferedInstallerTechnology.IsMissing ()) {
+        if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
                 Execution::ProcessRunner (L"dpkg --help").Run (String ());
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eDPKG;
@@ -912,7 +912,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
             catch (...) {
             }
         }
-        if (tmp.fPreferedInstallerTechnology.IsMissing ()) {
+        if (not tmp.fPreferedInstallerTechnology.has_value ()) {
             try {
                 Execution::ProcessRunner (L"rpm --help").Run (String ());
                 tmp.fPreferedInstallerTechnology = SystemConfiguration::OperatingSystem::InstallerTechnology::eRPM;

@@ -139,7 +139,7 @@ namespace Stroika {
             template <typename CONTROL_VAR_TYPE>
             Thread::Ptr PIDLoop<CONTROL_VAR_TYPE>::RunInThread ()
             {
-                Require (fThread_.IsMissing ());
+                Require (not fThread_.has_value ());
                 fThread_ = Thread::New ([this]() { RunDirectly (); }, Thread::eAutoStart);
                 return *fThread_;
             }

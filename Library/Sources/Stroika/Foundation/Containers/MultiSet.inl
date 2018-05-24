@@ -52,7 +52,7 @@ namespace Stroika {
                     {
                         if (not fContext.fMultiSetIterator.Done ()) {
                             fContext.fSaved2Return = fContext.fMultiSetIterator->fValue;
-                            if (fContext.fSaved2Return.IsPresent ()) {
+                            if (fContext.fSaved2Return.has_value ()) {
                                 fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fMultiSetIterator->fCount - 1;
                             }
                         }
@@ -80,7 +80,7 @@ namespace Stroika {
                             }
                             if (advance) {
                                 fContext.fSaved2Return = *result;
-                                if (fContext.fSaved2Return.IsPresent ()) {
+                                if (fContext.fSaved2Return.has_value ()) {
                                     fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fMultiSetIterator->fCount - 1;
                                 }
                             }
