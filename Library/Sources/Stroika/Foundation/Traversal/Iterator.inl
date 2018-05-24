@@ -55,12 +55,12 @@ namespace Stroika {
                 const_cast<IRep*> (rep.get ())->More (&fCurrent_, false);
             }
             template <typename T, typename ITERATOR_TRAITS>
-            inline Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t)
+            constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t)
                 : Iterator (ConstructionFlagForceAtEnd_::ForceAtEnd)
             {
             }
             template <typename T, typename ITERATOR_TRAITS>
-            inline Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_)
+            constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (ConstructionFlagForceAtEnd_)
                 : fIterator_ (nullptr)
                 , fCurrent_ ()
             {
@@ -188,7 +188,7 @@ namespace Stroika {
                 return rep.Clone ();
             }
             template <typename T, typename ITERATOR_TRAITS>
-            inline Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator ()
+            constexpr Iterator<T, ITERATOR_TRAITS> Iterator<T, ITERATOR_TRAITS>::GetEmptyIterator ()
             {
                 return Iterator<T, ITERATOR_TRAITS> (ConstructionFlagForceAtEnd_::ForceAtEnd);
             }

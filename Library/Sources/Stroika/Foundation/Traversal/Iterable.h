@@ -440,7 +440,7 @@ namespace Stroika {
                 /**
                  * \brief Support for ranged for, and STL syntax in general
                  */
-                static Iterator<T> end ();
+                static constexpr Iterator<T> end ();
 
             public:
                 /**

@@ -748,7 +748,7 @@ namespace Stroika {
                 return MakeIterator ();
             }
             template <typename T>
-            inline Iterator<T> Iterable<T>::end ()
+            constexpr Iterator<T> Iterable<T>::end ()
             {
                 return Iterator<T>::GetEmptyIterator ();
             }

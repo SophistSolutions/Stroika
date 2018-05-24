@@ -347,11 +347,11 @@ namespace Stroika {
                  */
                 explicit Iterator (const IteratorRepSharedPtr& rep);
                 Iterator (const Iterator& src) = default;
-                Iterator (nullptr_t);
+                constexpr Iterator (nullptr_t);
                 Iterator () = delete;
 
             private:
-                Iterator (ConstructionFlagForceAtEnd_);
+                constexpr Iterator (ConstructionFlagForceAtEnd_);
 
             public:
                 /**
@@ -599,7 +599,7 @@ namespace Stroika {
                  *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
                  *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
                  */
-                static Iterator GetEmptyIterator ();
+                static constexpr Iterator GetEmptyIterator ();
 
             public:
                 /**
