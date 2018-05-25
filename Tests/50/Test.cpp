@@ -1380,7 +1380,7 @@ namespace {
             Test_SequenceVectorAdditionsAndCopies_<vector<int>>, L"vector<int>",
             Test_SequenceVectorAdditionsAndCopies_<Containers::Concrete::Sequence_DoublyLinkedList<int>>, L"Sequence_DoublyLinkedList<int>",
             120000,
-            7.7,
+            9.0,
             &failedTests);
         Tester (
             L"Sequence_DoublyLinkedList<string> basics",
