@@ -233,7 +233,7 @@ sub     GetGCCVersion_
 {
 	no warnings;	#@todo sometimes gives warning about use of  uninitialized variable - not sure why - debug later
     my $x = shift(@_);
-	return trim (`($x --version 2>/dev/null) | head -1 | sed 's/(.*)/x/' | awk '{print \$3;}'`) * 1;
+	return trim (`($x --version 2>/dev/null) | head -1 | sed 's/([^/]*)/x/' | awk '{print \$3;}'`) * 1;
 }
 
 
