@@ -21,15 +21,14 @@ OptimizerFlag					=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl 
 endif
 
 #
-# CHECK FOR UPDATED VERSIONS https://curl.haxx.se/download.html
+# CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
-#VERSION=1.1.0
-#VERSION=1.1.0d
-#VERSION=1.1.0e
-#VERSION=1.1.0f
+#VERSION=1.1.1-pre6 (fails to build on Windows with Configuration Debug-U-64 or Release-U-64, and even in the case of Release-U-32 (where it works) - we get errors in teh config process)
 VERSION=1.1.0g
-VERSION=1.1.1-pre6
+#VERSION=1.1.0f
+#VERSION=1.1.0e
+#VERSION=1.1.0
 
 
 BASENAME=openssl-$(VERSION)
