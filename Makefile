@@ -374,8 +374,10 @@ regression-test-configurations:
 		./configure g++-5-release --compiler-driver g++-5 --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
 		./configure g++-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 		./configure g++-6-release-c++17 --compiler-driver g++-6 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
-		./configure g++-7-debug-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
-		./configure g++-7-release-c++17 --compiler-driver ~/gcc-7.2.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
+		./configure g++-7-debug-c++17 --compiler-driver g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
+		./configure g++-7-release-c++17 --compiler-driver g++-7 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
+		./configure g++-8-debug-c++17 --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
+		./configure g++-8-release-c++17 --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		###--no-sanitize address due to https://stroika.atlassian.net/browse/STK-654\
 		./configure my-g++-8.1-debug-c++17 --compiler-driver ~/gcc-8.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/gcc-8.1.0/lib64' --only-if-has-compiler --cppstd-version c++17;\
 		./configure my-g++-8.1-release-c++17 --compiler-driver ~/gcc-8.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
@@ -412,6 +414,14 @@ regression-test-configurations:
 		#./configure raspberrypi-gcc-7-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4' --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi-gcc-7-address-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 		./configure raspberrypi_valgrind_gcc-7_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-7' --valgrind enable --block-allocation disable --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
+		#\
+		#EXPERIMENTAL TESTING GCC8 ARM\
+		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
+		./configure raspberrypi-gcc-8 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
+		#qCompiler_Sanitizer_stack_use_after_scope_on_arm_Buggy - SEE https://stroika.atlassian.net/browse/STK-500 - RETEST WHEN WE HAVE GCC8\
+		#./configure raspberrypi-gcc-8-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize address,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-run-prefix 'LD_PRELOAD=/usr/lib/arm-linux-gnueabihf/libasan.so.4' --append-compiler-warning-args -Wno-psabi;\
+		./configure raspberrypi-gcc-8-address-sanitize --apply-default-debug-flags --only-if-has-compiler --trace2file enable --sanitize none,undefined --compiler-driver 'arm-linux-gnueabihf-g++-8' --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
+		./configure raspberrypi_valgrind_gcc-8_NoBlockAlloc --apply-default-release-flags --only-if-has-compiler --trace2file disable --compiler-driver 'arm-linux-gnueabihf-g++-8' --valgrind enable --block-allocation disable --cross-compiling true --append-compiler-warning-args -Wno-psabi;\
 	fi
 
 
