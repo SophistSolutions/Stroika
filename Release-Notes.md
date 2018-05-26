@@ -18,6 +18,128 @@ History
 
 
 
+
+
+
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a234">v2.0a234</a><br/>2018-05-26xxxx</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a233...v2.0a234</li>
+		<li>Compiler versions supported
+			<ul>
+				<li>support _MS_VS_2k17_15Pt7Pt2_</li>
+				<li>gcc8 (x86 and arm)</li>
+			</ul>
+		</li>
+		<li>WebServer ConnectionManager
+			<ul>
+				<li>https://stroika.atlassian.net/browse/STK-638 - use fewer threads in pool - and only use thread when executing body of request (use epoll instead of lots of read)
+					<ul>
+						<li>maintain  list of exsitng connections (for single epoll thread)</li>
+						<li>WebServer ConnectionManager use thread interruption to wakeup waitiothread when new connection added to list of those that could get more data</li>
+						<li>Changed default max connections from 10 to 25</li>
+						<li>Dramtically decreased default number of threads used by default</li>
+						<li>Added fixed thread for WaitForReadyConnectionLoop_()</li>
+						<li>Keep list of active connections on two lists - one for in process and one for waiting for data</li>
+						<li>MessageStartTextInputStreamBinaryAdapter::AssureHeaderSectionAvailable () implemented (to help avoid issue of reads blocking threads while header not fully present)</li>
+						<li>keep special connectionreader stream around associaed with connection til we finish reading the headers - incomplete but progress towards supporting defence against incomplete headers in request</li>
+					</ul>
+				</li>
+				<li>Cleanups to WebServer Connection ToString methods</li>
+				<li>Minor cleanups to Frameworks/WebServer, and fixed bug with FileSystemRouter - stripping filename prefixes</li>
+				<li>WebServer Request GetBodyStream() now uses InputSubStream<Byte>::New () - so other code can now get body as a stream instead of a BLOB (and still only placeholder for transfer-codings); still not well done but better</li>
+				<li>Add calls to curl to sample output for WebServer sample</li>
+			</ul>
+		</li>
+		<li>Threads
+			<ul>
+				<li>new Thread::CleanupPtr utility, and use in a bunch of places instead of explicit DTORs with if thread != null { suppress; and aboortandwiat"}</li>
+				<li>**MAJOR change** to Windows Thread Interruption - no longer does throw from APC proc, but better documented that all the windows alertable functions return WAIT_IO_COMPLETION when proc queued, and so just check and throw afterwards. APPEARS to (perhaps) workaround some bug with WSAPoll - but not sure -didnt dig too far into it - this seemed safter (but NOT fully backward compatible - so be CAREFUL)</li>
+			</ul>
+		</li>
+		<li>Streams
+			<ul>
+				<li>InputStream now allows call to GetReadOffset/GetOffset () for non-seekable streams. added Require() docs/code for Seek() calls for InputStream so more clear requiremnt. Doc no such requiremnt got GetOffset(). Support GetReadOffset() for SocketStream, and BufferedInputStream</li>
+				<li>new Streams::InputSubStream template</li>
+				<li>Clarify docs on InputStream::Seek () - no real change - except for seek past end now EOFException instead of range_error</li>
+			</ul>
+		</li>
+		<li>Socket IO Code
+			<ul>
+				<li>qStroika_Foundation_Exececution_WaitForIOReady_BreakWSAPollIntoTimedMillisecondChunks - workaround for WSAPoll() issue being interuppted. Especially since change to having interupption not throw (but maybe true anyhow) - it appears to be needed to repeat/re-poll at quick intervals to make this work right on windows</li>
+				<li>renamed ConnectionOrientedSocket -> ConnectionOrientedStreamSocket</li>
+				<li>assertion checking to assure Socket::REad (and REadNonBlocking) done so no 2 threads at once do it</li>
+				<li>Fixed Socket::Ptr::Detach () to match my docs - and affect the udnerlying REP object; and updated much of the docs</li>
+				<li>ConnectionOrientedStream: Read/Write/REadNonBlocking/Connect - virtual rep methods now const, so can be called at the same time as GetPeerAddress (which is key cuz that gets called in ToString - want to be able to ToString() while a Read going on in another thread</li>
+				<li>Fixed serious bug (misinterpration of timeout) on WaitForIOReady. And changed API for  WaitForIOReady::WaitQuietlyUntil () to return set, not optional<set> (zero returned means timeout so no need use optional to distinguish timeout case.</li>
+			</ul>
+		</li>
+		<li>Configure
+			<ul>
+				<li>more variants of MSFT uname -r which dont support sanitizers by default</li>
+			</ul>
+		</li>
+		<li>ThirdPartyComponents builds
+			<ul>
+				<li>Cleanup to boost makefile - always extract from tarfile instead of copying from CURRENT</li>
+				<li>Xerces - restructure makefile so files extracted to IntermediateFiles (no build from CURRENT)</li>
+				<li>Xerces - use gnuiconv for xerces even on unix, to avoid issue with xerces pkg-config --libs not including the right libs</li>
+				<li>Xerces - Lose CMAKE flag in building Xerces - just always use CMAKE to build it</li>
+			</ul>
+		</li>
+		<li>Compile bug define changes
+			<ul>
+				<li>Lose qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy  bug workaround define: just dont define those detault templates (appears to not be legal C++ despite the fact that they should never be expanded)</li>
+				<li>get rid of qCompilerAndStdLib_copy_elision_Warning_too_aggressive_when_not_copyable_Buggy bug define and workaround - temporary binds to R&amp;&amp; and so no need for move() call</li>
+				<li>added qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy workaround- for VS2k16.7.1</li>
+			</ul>
+		</li>
+		<li>Containers
+			<ul>
+				<li>Collection<> operator+ overload</li>
+				<li>Draft Bijection:: WhereRangeIntersects, WhereDomainIntersects, Where</li>
+			</ul>
+		</li>
+		<li>minor improvements to InternetAddress constexpr use - for qCompilerAndStdLib_constexpr_union_variants_Buggy workaround mitigation</li>
+		<li>due to https://stroika.atlassian.net/browse/STK-654 disable asan for gcc8.1 (my) configuration in regression tests</li>
+		<li>made a few Iterator/Iterable<> methods constexpr (getemptyiterator etc)</li>
+		<li>Optional - switch to using has_value instead of IsMissing/IsPresent() - still support others (not yet deprecated) - but leaning towards transitioning to std::optional once we require C++17</li>
+		<li>changed max time value on Sequence_DoublyLinkedList versus vector - appears vs2k17 vector code got faster</li>
+		<li>no address sanitizer on gcc8 - even builtin one (til I can understand/resolve the stack-refernece-sanitizer errror)</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0a234.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0a234-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.3 (apple clang 9.2)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release; probably losing support for this soon)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2/7.3</li>
+				<li>gcc 8</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++}; probably losing support for this soon</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}; probably losing support for this soon</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a233">v2.0a233</a><br/>2018-05-04</td>
