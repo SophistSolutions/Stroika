@@ -371,7 +371,6 @@ regression-test-configurations:
 		##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621\
 		##./configure malloc-guard --malloc-guard true;\
 		#\
-		./configure g++-5-release --compiler-driver g++-5 --apply-default-release-flags --only-if-has-compiler --trace2file enable;\
 		./configure g++-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 		./configure g++-6-release-c++17 --compiler-driver g++-6 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		./configure g++-7-debug-c++17 --compiler-driver g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
@@ -384,7 +383,6 @@ regression-test-configurations:
 		./configure my-g++-8.1-release-c++17 --compiler-driver ~/gcc-8.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		#\
 		#LTO not working for my private builds of clang- no matter\
-		./configure my-clang-3.9.1-release --compiler-driver ~/clang-3.9.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version c++14;\
 		./configure my-clang-4.0.1-release --compiler-driver ~/clang-4.0.1/bin/clang++ --apply-default-release-flags --only-if-has-compiler --lto disable --cppstd-version c++14;\
 		#sudo append-run-prefix need to run executables and find libraries (otherwise use apt-get install libc++abi1 for clang libc++ based apps to run)\
 		#./configure my-clang-3.9.1-libc++-debug --compiler-driver ~/clang-3.9.1/bin/clang++ --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/clang-3.9.1/lib' --apply-default-debug-flags --only-if-has-compiler --static-link-gccruntime disable --cppstd-version c++14 --stdlib libc++ --sanitize none;\
