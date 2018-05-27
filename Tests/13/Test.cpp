@@ -1,22 +1,24 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-//  TEST    Foundation::Containers::DataHyperRectangle
-//      STATUS  PRELIMINARY
+//  TEST    Foundation::Containers::Mapping
+//      STATUS  Alpha-Late
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Concrete/DenseDataHyperRectangle_Vector.h"
-#include "Stroika/Foundation/Containers/Concrete/SparseDataHyperRectangle_stdmap.h"
-#include "Stroika/Foundation/Containers/DataHyperRectangle.h"
-#include "Stroika/Foundation/Containers/DenseDataHyperRectangle.h"
-#include "Stroika/Foundation/Containers/SparseDataHyperRectangle.h"
+#include "Stroika/Foundation/Containers/Collection.h"
+
+#include "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
+#include "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
+#include "../TestCommon/CommonTests_Mapping.h"
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
@@ -24,80 +26,129 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
+using Concrete::Mapping_Array;
+using Concrete::Mapping_LinkedList;
+using Concrete::Mapping_stdmap;
+
 namespace {
-    namespace Test1_BasicSparseHyperCubeTest_ {
-        void RunTests ()
+    template <typename CONCRETE_CONTAINER>
+    void DoTestForConcreteContainer_ ()
+    {
+        using namespace CommonTests::MappingTests;
+        SimpleMappingTest_All_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+        SimpleMappingTest_WithDefaultEqCompaerer_ (DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER>{});
+    }
+    template <typename CONCRETE_CONTAINER, typename FACTORY, typename VALUE_EQUALS_COMPARER_TYPE>
+    void DoTestForConcreteContainer_ (FACTORY factory, VALUE_EQUALS_COMPARER_TYPE valueEqualsComparer)
+    {
+        using namespace CommonTests::MappingTests;
+        auto testschema = DEFAULT_TESTING_SCHEMA<CONCRETE_CONTAINER, FACTORY, VALUE_EQUALS_COMPARER_TYPE>{factory, valueEqualsComparer};
+        SimpleMappingTest_All_ (testschema);
+    }
+}
+
+namespace {
+    void Test2_SimpleBaseClassConversionTraitsConfusion_ ()
+    {
+        Debug::TraceContextBumper ctx{L"{}::Test2_SimpleBaseClassConversionTraitsConfusion_"};
+        SortedMapping<int, float> xxxyy  = Concrete::SortedMapping_stdmap<int, float> ();
+        Mapping<int, float>       xxxyy1 = Concrete::Mapping_stdmap<int, float> ();
+    }
+}
+
+namespace {
+    namespace Test4_MappingCTOROverloads_ {
+        namespace xPrivate_ {
+            struct A;
+            struct B;
+            struct A {
+                A () {}
+                A (const A&) {}
+                A (const B&) {}
+            };
+            struct B {
+                B () {}
+                B (const A&) {}
+                B (const B&) {}
+            };
+
+            using Common::KeyValuePair;
+            using KEY_TYPE                = int;
+            using VALUE_TYPE              = B;
+            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
+            using T                       = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
+        }
+        void DoIt ()
         {
-            {
-                SparseDataHyperRectangle2<int> x;
-                VerifyTestResult (x.empty ());
-                VerifyTestResult (x.GetAt (2, 2) == 0);
-                x.SetAt (2, 2, 4);
-                VerifyTestResult (x.GetAt (2, 2) == 4);
+            Debug::TraceContextBumper ctx{L"{}::Test4_MappingCTOROverloads_"};
+            using namespace xPrivate_;
+            Mapping<int, A> from;
+
+            using Common::KeyValuePair;
+            using KEY_TYPE                = int;
+            using VALUE_TYPE              = B;
+            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
+            bool n1                       = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
+
+            using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
+            using ttt =
+                std::conditional<
+                    Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and
+                        std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, T>::value,
+                    Configuration::substitution_succeeded<T>,
+                    Configuration::substitution_failure>::type;
+            const bool n3 = is_same<ttt, Configuration::substitution_failure>::value;
+
+            using aaaa3   = Configuration::Private_::IsIterableOfT_Impl2_<CONTAINER_OF_PAIR_KEY_T, T>::type;
+            const bool n4 = is_same<aaaa3, Configuration::substitution_failure>::value;
+
+            Mapping<int, B> to1;
+            for (auto i : from) {
+                to1.Add (i);
             }
-            {
-                DataHyperRectangle2<int> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
-                Verify (x.GetAt (2, 2) == 0);
-                for (auto t : x) {
-                    int breakhere = 1;
-                    int b2        = 3;
-                }
-                x.SetAt (2, 2, 4);
-                for (auto t : x) {
-                    int breakhere = 1;
-                    int b2        = 3;
-                }
-            }
+            Mapping<int, B> to2 = from;
         }
     }
 }
 
 namespace {
-    namespace Test2_BasicDenseHyperCubeTest_ {
-        void RunTests ()
+    namespace ExampleCTORS_Test_5_ {
+        void DoTest ()
         {
-            {
-                DataHyperRectangle2<int> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
-                Verify (x.GetAt (2, 2) == 0);
-                for (auto t : x) {
-                    int breakhere = 1;
-                    int b2        = 3;
-                }
-            }
+            Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_5_"};
+            // From Mapping<> CTOR docs
+            Collection<pair<int, int>> c;
+            std::map<int, int>         m;
+
+            Mapping<int, int> m1 = {pair<int, int>{1, 1}, pair<int, int>{2, 2}, pair<int, int>{3, 2}};
+            Mapping<int, int> m2 = m1;
+            Mapping<int, int> m3{m1};
+            Mapping<int, int> m4{m1.begin (), m1.end ()};
+            Mapping<int, int> m5{c};
+            Mapping<int, int> m6{m};
+            Mapping<int, int> m7{m.begin (), m.end ()};
+            Mapping<int, int> m8{move (m1)};
         }
     }
 }
 
 namespace {
-    namespace Test3_BasicSparseHCTest_ {
-        template <typename CONCRETE_CONTAINER2>
-        void RunTests ()
+    namespace Where_Test_6_ {
+        void DoAll ()
         {
-            CONCRETE_CONTAINER2 tmp{};
-            VerifyTestResult (tmp.empty ());
-            VerifyTestResult (tmp.GetAt (2, 2) == 0);
-            tmp.SetAt (2, 2, 4);
-            VerifyTestResult (tmp.GetAt (2, 2) == 4);
-            Verify (tmp.GetLength () == 1);
-            for (auto t : tmp) {
-                int breakhere = 1;
-                int b2        = 3;
-            }
+            Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            VerifyTestResult ((m.Where ([](const KeyValuePair<int, int>& value) { return Math::IsPrime (value.fKey); }) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
+            VerifyTestResult ((m.Where ([](int key) { return Math::IsPrime (key); }) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{5, 7}}));
         }
     }
 }
 
 namespace {
-    namespace Test4_BasicDenseHCTest_ {
-        template <typename CONCRETE_CONTAINER2>
-        void RunTests ()
+    namespace WithKeys_Test_7_ {
+        void DoAll ()
         {
-            DataHyperRectangle2<int> x = CONCRETE_CONTAINER2{3, 4};
-            Verify (x.GetAt (2, 2) == 0);
-            for (auto t : x) {
-                int breakhere = 1;
-                int b2        = 3;
-            }
+            Mapping<int, int> m{KeyValuePair<int, int>{1, 3}, KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{3, 5}, KeyValuePair<int, int>{4, 5}, KeyValuePair<int, int>{5, 7}};
+            VerifyTestResult ((m.WithKeys (initializer_list<int>{2, 5}) == Mapping<int, int>{KeyValuePair<int, int>{2, 4}, KeyValuePair<int, int>{5, 7}}));
         }
     }
 }
@@ -105,11 +156,59 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        Test1_BasicSparseHyperCubeTest_::RunTests ();
-        Test2_BasicDenseHyperCubeTest_::RunTests ();
-        Test3_BasicSparseHCTest_::RunTests<SparseDataHyperRectangle2<int>> ();
-        Test3_BasicSparseHCTest_::RunTests<Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>> ();
-        Test4_BasicDenseHCTest_::RunTests<Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>> ();
+        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+            using value_type = SimpleClassWithoutComparisonOperators;
+            bool operator() (const value_type& v1, const value_type& v2) const
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
+
+        DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            []() { return Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+
+        DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_Array<SimpleClass, SimpleClass>> ();
+        DoTestForConcreteContainer_<Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            []() { return Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+
+        DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
+        // DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+            []() { return Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{}); },
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+
+        DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
+        {
+            struct MySimpleClassWithoutComparisonOperators_ComparerWithLess_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+                using value_type = SimpleClassWithoutComparisonOperators;
+                bool operator() (const value_type& v1, const value_type& v2) const
+                {
+                    return v1.GetValue () < v2.GetValue ();
+                }
+            };
+            DoTestForConcreteContainer_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators>> (
+                []() { return Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{}); },
+                //Common::mkEqualsComparerAdapter (MySimpleClassWithoutComparisonOperators_ComparerWithLess_{})
+                MySimpleClassWithoutComparisonOperators_ComparerWithEquals_{});
+        }
+
+        Test2_SimpleBaseClassConversionTraitsConfusion_ ();
+
+        //Test3_SimpleMappingTest_WhichRequiresExplcitValueComparer ();
+
+        Test4_MappingCTOROverloads_::DoIt ();
+
+        ExampleCTORS_Test_5_::DoTest ();
+
+        Where_Test_6_::DoAll ();
+        WithKeys_Test_7_::DoAll ();
     }
 }
 

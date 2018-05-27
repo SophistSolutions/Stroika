@@ -1,20 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-//  TEST    Foundation::Containers::Set
+//  TEST    Foundation::Containers::SortedSet
 //      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
-#include <sstream>
 
-#include "Stroika/Foundation/Characters/ToString.h"
-#include "Stroika/Foundation/Containers/Collection.h"
-#include "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
-#include "Stroika/Foundation/Containers/Set.h"
+#include "Stroika/Foundation/Common/Compare.h"
+#include "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
+#include "Stroika/Foundation/Containers/SortedSet.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "../TestCommon/CommonTests_Set.h"
 #include "../TestHarness/SimpleClass.h"
@@ -23,69 +21,63 @@
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
+using namespace Stroika::Foundation::Common;
 
-using Concrete::Set_LinkedList;
-using Concrete::Set_stdset;
+using Concrete::SortedSet_stdset;
 
 namespace {
-    template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
-    void DoTestForConcreteContainer_ (CONCRETE_CONTAINER_FACTORY factory)
+    template <typename CONCRETE_CONTAINER, typename INORDER_COMPARER, typename CONCRETE_CONTAINER_FACTORY>
+    void RunTests_ (const INORDER_COMPARER& inorderComparer, CONCRETE_CONTAINER_FACTORY factory)
     {
-        using T                  = typename CONCRETE_CONTAINER::value_type;
-        auto extraChecksFunction = [](const Set<T>& s) {
-            // only work todo on sorted sets
+        typedef typename CONCRETE_CONTAINER::value_type T;
+        auto                                            testFunc = [&](const SortedSet<T>& s) {
+            // verify in sorted order
+            Memory::Optional<T> last;
+            for (T i : s) {
+                if (last.IsPresent ()) {
+                    VerifyTestResult (inorderComparer (*last, i));
+                }
+                last = i;
+            }
         };
-        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<T>> (factory, extraChecksFunction);
+        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, SortedSet<T>> (factory, testFunc);
     }
     template <typename CONCRETE_CONTAINER>
-    void DoTestForConcreteContainer_ ()
+    void RunTests_ ()
     {
-        using T = typename CONCRETE_CONTAINER::value_type;
-        DoTestForConcreteContainer_<CONCRETE_CONTAINER> ([]() { return CONCRETE_CONTAINER{}; });
+        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, []() { return CONCRETE_CONTAINER (); });
     }
 }
 
 namespace {
-    namespace ExampleCTORS_Test_2_ {
-        void DoTest_examples_from_docs_ ()
+    namespace Test2_InitalizeCTORs_ {
+        void DoRun ()
         {
-            // From Set<> CTOR docs
-            Collection<int>  c;
-            std::vector<int> v;
-
-            Set<int> s1 = {1, 2, 3};
-            Set<int> s2 = s1;
-            Set<int> s3{s1};
-            Set<int> s4{s1.begin (), s1.end ()};
-            Set<int> s5{c};
-            Set<int> s6{v};
-            Set<int> s7{v.begin (), v.end ()};
-            Set<int> s8{move (s1)};
-            Set<int> s9{1, 2, 3};
-            VerifyTestResult (s9.size () == 3);
-            Set<int> s10{Common::DeclareEqualsComparer ([](int l, int r) { return l == r; }), c};
-        }
-        void TEstCTORFromOtherContainer_ ()
-        {
-            using Characters::Character;
-            using Characters::String;
-            Set<String> tmp1 = Set<String> (Sequence<String>{});
-            Set<String> tmp2 = Set<String> (String ().Trim ().Tokenize (Set<Character>{';', ' '}));
-        }
-        void DoTest ()
-        {
-            DoTest_examples_from_docs_ ();
-            TEstCTORFromOtherContainer_ ();
-        }
-    }
-}
-
-namespace {
-    namespace Where_Test_3_ {
-        void DoAll ()
-        {
-            Set<int> s{1, 2, 3, 4, 5};
-            VerifyTestResult ((s.Where ([](int i) { return Math::IsPrime (i); }) == Set<int>{2, 3, 5}));
+            {
+                SortedSet<int> tmp{1, 3};
+                VerifyTestResult (tmp.size () == 2);
+                VerifyTestResult (tmp.Contains (1));
+                VerifyTestResult (not tmp.Contains (2));
+                VerifyTestResult (tmp.Contains (3));
+            }
+            {
+                SortedSet<int> tmp{1, 3, 4, 5, 7};
+                VerifyTestResult (tmp.size () == 5);
+                VerifyTestResult (tmp.Contains (1));
+                VerifyTestResult (not tmp.Contains (2));
+                VerifyTestResult (tmp.Contains (3));
+                VerifyTestResult (tmp.Contains (7));
+            }
+            {
+                Set<int>       t1{1, 3, 4, 5, 7};
+                SortedSet<int> tmp = SortedSet<int> (t1.begin (), t1.end ());
+                //SortedSet<int> tmp  {t1.begin (), t1.end () };
+                VerifyTestResult (tmp.size () == 5);
+                VerifyTestResult (tmp.Contains (1));
+                VerifyTestResult (not tmp.Contains (2));
+                VerifyTestResult (tmp.Contains (3));
+                VerifyTestResult (tmp.Contains (7));
+            }
         }
     }
 }
@@ -95,34 +87,21 @@ namespace {
     {
         using namespace CommonTests::SetTests;
 
-        struct MySimpleClassWithoutComparisonOperators_EQUAL_TO_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-            bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
-            {
-                return lhs.GetValue () == rhs.GetValue ();
-            }
-        };
-        struct MySimpleClassWithoutComparisonOperators_LESS_ : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+        struct MySimpleClassWithoutComparisonOperators_LESS_ : ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder> {
             bool operator() (const SimpleClassWithoutComparisonOperators& lhs, const SimpleClassWithoutComparisonOperators& rhs) const
             {
                 return lhs.GetValue () < rhs.GetValue ();
             }
         };
+        RunTests_<SortedSet<size_t>> ();
+        RunTests_<SortedSet<SimpleClass>> ();
+        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedSet<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
-        DoTestForConcreteContainer_<Set<size_t>> ();
-        DoTestForConcreteContainer_<Set<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set<SimpleClassWithoutComparisonOperators>> ([]() { return Set<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
+        RunTests_<SortedSet_stdset<size_t>> ();
+        RunTests_<SortedSet_stdset<SimpleClass>> ();
+        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators>> (MySimpleClassWithoutComparisonOperators_LESS_{}, []() { return SortedSet_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_{}); });
 
-        DoTestForConcreteContainer_<Set_LinkedList<size_t>> ();
-        DoTestForConcreteContainer_<Set_LinkedList<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set_LinkedList<SimpleClassWithoutComparisonOperators>> ([]() { return Set_LinkedList<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_EQUAL_TO_ ()); });
-
-        DoTestForConcreteContainer_<Set_stdset<size_t>> ();
-        DoTestForConcreteContainer_<Set_stdset<SimpleClass>> ();
-        DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators>> ([]() { return Set_stdset<SimpleClassWithoutComparisonOperators> (MySimpleClassWithoutComparisonOperators_LESS_ ()); });
-
-        ExampleCTORS_Test_2_::DoTest ();
-
-        Where_Test_3_::DoAll ();
+        Test2_InitalizeCTORs_::DoRun ();
     }
 }
 

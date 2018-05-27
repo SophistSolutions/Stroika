@@ -1,410 +1,473 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
  */
-//  TEST    Foundation::IO::Network
+//  TEST    Foundation::Memory
 #include "Stroika/Foundation/StroikaPreComp.h"
 
-#if qPlatform_Windows
-#if qHasFeature_ATLMFC
-#include <atlbase.h>
-#endif
-
-#include <Windows.h>
-
-#include <URLMon.h>
-#endif
-
-#include "Stroika/Foundation/Characters/String_Constant.h"
+#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Characters/ToString.h"
+#include "Stroika/Foundation/Containers/Mapping.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
-#if qPlatform_Windows
-#include "Stroika/Foundation/Execution/Platform/Windows/HRESULTErrorException.h"
-#endif
-#include "Stroika/Foundation/IO/Network/DNS.h"
-#include "Stroika/Foundation/IO/Network/Interface.h"
-#include "Stroika/Foundation/IO/Network/URL.h"
-#include "Stroika/Foundation/Memory/Optional.h"
 
+#include "Stroika/Foundation/Memory/AnyVariantValue.h"
+#include "Stroika/Foundation/Memory/BLOB.h"
+#include "Stroika/Foundation/Memory/Bits.h"
+#include "Stroika/Foundation/Memory/Optional.h"
+#include "Stroika/Foundation/Memory/SharedByValue.h"
+#include "Stroika/Foundation/Memory/SharedPtr.h"
+
+#include "../TestHarness/NotCopyable.h"
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
-using namespace Stroika::Foundation::IO;
-using namespace Stroika::Foundation::IO::Network;
+using namespace Stroika::Foundation::Memory;
 
-using Characters::String_Constant;
+using namespace TestHarness;
 
-#if qPlatform_Windows && qHasFeature_ATLMFC
+//TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
+
 namespace {
-    DISABLE_COMPILER_MSC_WARNING_START (6262)
-    void OLD_Cracker_ (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
+    void Test1_Optional ()
     {
-        using Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
-        RequireNotNull (protocol);
-        RequireNotNull (host);
-        RequireNotNull (relPath);
-        RequireNotNull (query);
-
-        DWORD   ingored = 0;
-        wchar_t outBuf[10 * 1024];
-
-        String canonical;
-        ThrowIfErrorHRESULT (::CoInternetParseUrl (CComBSTR (w.c_str ()), PARSE_CANONICALIZE, 0, outBuf, static_cast<DWORD> (NEltsOf (outBuf)), &ingored, 0));
-        canonical = outBuf;
-
         {
-            size_t e = canonical.find (':');
-            if (e != String::npos) {
-                *protocol = canonical.SubString (0, e);
+            using Characters::String;
+            Optional<String> x;
+            x = String{L"x"};
+        }
+        {
+            Optional<int> x;
+            VerifyTestResult (x.IsMissing ());
+            x = 1;
+            VerifyTestResult (not x.IsMissing ());
+            VerifyTestResult (x.IsPresent ());
+            VerifyTestResult (*x == 1);
+        }
+        {
+            // Careful about self-assignment
+            Optional<int> x;
+            x = 3;
+            x = max (*x, 1);
+            VerifyTestResult (x == 3);
+        }
+        auto testOptionalOfThingNotCopyable = []() {
+            {
+                Optional<NotCopyable> n1;
+                VerifyTestResult (n1.IsMissing ());
+                Optional<NotCopyable> n2{NotCopyable ()}; // use r-value reference to move
+                VerifyTestResult (n2.IsPresent ());
+            }
+            {
+                Optional<NotCopyable> a;
+                Optional<NotCopyable> a1{NotCopyable ()};
+                a1 = NotCopyable ();
+            }
+        };
+        testOptionalOfThingNotCopyable ();
+        {
+            Optional<int> x;
+            if (x) {
+                VerifyTestResult (false);
             }
         }
-
-        if (SUCCEEDED (::CoInternetParseUrl (CComBSTR (canonical.c_str ()), PARSE_DOMAIN, 0, outBuf, static_cast<DWORD> (NEltsOf (outBuf)), &ingored, 0))) {
-            *host = outBuf;
-        }
-
-        // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
-            String matchStr    = *protocol + String_Constant (L"://") + *host;
-            size_t startOfPath = canonical.Find (matchStr).Value (String::npos);
-            if (startOfPath == String::npos) {
-                matchStr    = *protocol + String_Constant (L":");
-                startOfPath = canonical.Find (matchStr).Value (String::npos);
+            Optional<int> x;
+            if (Optional<int> y = x) {
+                VerifyTestResult (false);
             }
-            if (startOfPath == String::npos) {
-                startOfPath = canonical.length ();
+        }
+        {
+            Optional<int> x = 3;
+            if (Optional<int> y = x) {
+                VerifyTestResult (y == 3);
             }
             else {
-                startOfPath += matchStr.length ();
+                VerifyTestResult (false);
             }
-            *relPath = canonical.SubString (startOfPath);
-
-            size_t startOfQuery = relPath->find ('?');
-            if (startOfQuery != String::npos) {
-                *query = relPath->SubString (startOfQuery + 1);
-                relPath->erase (startOfQuery);
-            }
-        }
-    }
-    DISABLE_COMPILER_MSC_WARNING_END (6262)
-}
-#endif
-
-namespace {
-    namespace Test1_URL_Parsing_ {
-        namespace Private_ {
-            void TestOldWinCracker_ (const String& w, const URL& url)
-            {
-#if qPlatform_Windows && qHasFeature_ATLMFC
-                {
-                    String testProtocol;
-                    String testHost;
-                    String testPort;
-                    String testRelPath;
-                    String testQuery;
-                    OLD_Cracker_ (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
-                    VerifyTestResult (testProtocol == url.GetScheme ());
-                    if (testProtocol == L"http") {
-                        VerifyTestResult (testHost == url.GetHost ().ToLowerCase ());
-                        {
-                            //Assert (testPort == fPort);
-                            if (url.GetPortValue () == 80) {
-                                VerifyTestResult (testPort == L"" or testPort == L"80");
-                            }
-                            else {
-                                // apparently never really implemented in old cracker...
-                                //Assert (fPort == ::_wtoi (testPort.c_str ()));
-                            }
-                        }
-                        VerifyTestResult (testRelPath == url.GetHostRelativePath () or testRelPath.find (':') != String::npos or ((String_Constant (L"/") + url.GetHostRelativePath ()) == testRelPath)); //old code didnt handle port#   --LGP 2007-09-20
-                        VerifyTestResult (testQuery == url.GetQueryString () or not url.GetFragment ().empty ());                                                                                         // old code didn't check fragment
-                    }
-                }
-#endif
-            }
-            void TestOldWinCracker_ (const String& w)
-            {
-                TestOldWinCracker_ (w, URL (w, URL::eStroikaPre20a50BackCompatMode));
-            }
-            void TestBackCompatURL_ ()
-            {
-                TestOldWinCracker_ (L"dyn:/Reminders/Home.htm");
-                TestOldWinCracker_ (L"dyn:/Startup.htm");
-                TestOldWinCracker_ (L"home:Home.htm");
-                {
-                    URL url = URL (L"dyn:/StyleSheet.css?ThemeName=Cupertino", URL::eStroikaPre20a50BackCompatMode);
-                    VerifyTestResult (url.GetScheme () == L"dyn");
-                    VerifyTestResult (url.GetHost ().empty ());
-                    VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
-                    VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
-                }
-            }
-        }
-        void DoTests_ ()
-        {
-            Private_::TestBackCompatURL_ ();
-
-            {
-                URL url = URL::Parse (L"http:/StyleSheet.css?ThemeName=Cupertino", URL::eFlexiblyAsUI);
-                VerifyTestResult (url.GetPortValue () == 80);
-                VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
-                VerifyTestResult (url.GetHost ().empty ());
-                VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
-                VerifyTestResult (url.GetFragment ().empty ());
-                VerifyTestResult (url.GetScheme () == L"http");
-            }
-            {
-                URL url = URL::Parse (L"http://www.recordsforliving.com/");
-                VerifyTestResult (url.GetPortValue () == 80);
-                VerifyTestResult (url.GetQueryString ().empty ());
-                VerifyTestResult (url.GetFragment ().empty ());
-                VerifyTestResult (url.GetHostRelativePath ().empty ());
-                VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
-                VerifyTestResult (url.GetScheme () == L"http");
-                VerifyTestResult (not url.IsSecure ());
-            }
-            {
-                URL url = URL::Parse (L"https://xxx.recordsforliving.com/");
-                VerifyTestResult (url.GetPortValue () == 443);
-                VerifyTestResult (url.GetQueryString ().empty ());
-                VerifyTestResult (url.GetFragment ().empty ());
-                VerifyTestResult (url.GetHostRelativePath ().empty ());
-                VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
-                VerifyTestResult (url.GetScheme () == L"https");
-                VerifyTestResult (url.IsSecure ());
-            }
-            for (auto po : {URL::eAsFullURL, URL::eFlexiblyAsUI}) {
-                const wchar_t kTestURL_[] = L"http://www.x.com/foo?bar=3";
-                VerifyTestResult (URL::Parse (kTestURL_, po).GetFullURL () == kTestURL_);
-                VerifyTestResult (URL::Parse (kTestURL_, po).GetHost () == L"www.x.com");
-                VerifyTestResult (URL::Parse (kTestURL_, po).GetHostRelativePath () == L"foo");
-                VerifyTestResult (URL::Parse (kTestURL_, po).GetQueryString () == L"bar=3");
-                VerifyTestResult (URL::Parse (kTestURL_, po) == URL (L"http", L"www.x.com", L"foo", L"bar=3"));
-            }
-            {
-                URL url{URL::Parse (L"localhost", URL::eFlexiblyAsUI)};
-                VerifyTestResult (url.GetScheme ().IsMissing ());
-                VerifyTestResult (url.GetSchemeValue () == L"http");
-                VerifyTestResult (url.GetHost () == L"localhost");
-                VerifyTestResult (url.GetPortValue () == 80);
-                VerifyTestResult (url.GetHostRelativePath () == L"");
-                VerifyTestResult (url.GetQueryString () == L"");
-                VerifyTestResult (url.GetFragment () == L"");
-                VerifyTestResult (url.GetFullURL () == L"http://localhost/");
-            }
-            {
-                // Test case/examples from:
-                //      https://docs.python.org/2/library/urlparse.html
-                //
-                //  Though the names of our attributes differ, and our results, somewhat differ...
-                {
-                    URL url{URL::Parse (L"http://www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-            VerifyTestResult (url.GetScheme () == L"http");
-            VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-            VerifyTestResult (url.GetPortValue () == 80);
-            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we dont
-            VerifyTestResult (url.GetQueryString () == L"");
-            VerifyTestResult (url.GetFragment () == L"");
-            VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
         }
         {
-            URL url{URL::Parse (L"//www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-            VerifyTestResult (url.GetScheme ().IsMissing ());
-            VerifyTestResult (url.GetSchemeValue () == L"http");
-            VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-            VerifyTestResult (url.GetPortValue () == 80);
-            VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html"); // python includes leading / - we dont
-            VerifyTestResult (url.GetQueryString () == L"");
-            VerifyTestResult (url.GetFragment () == L"");
-            VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl/%7Eguido/Python.html");
-        }
-    }
-    {
-        URL url{URL::Parse (L"//www.cwi.nl:8080/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-        VerifyTestResult (url.GetScheme ().IsMissing ());
-        VerifyTestResult (url.GetSchemeValue () == L"http");
-        VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-        VerifyTestResult (url.GetPortValue () == 8080);
-        VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
-        VerifyTestResult (url.GetQueryString () == L"");
-        VerifyTestResult (url.GetFragment () == L"");
-        VerifyTestResult (url.GetFullURL () == L"http://www.cwi.nl:8080/%7Eguido/Python.html");
-    }
-    {
-        URL url{URL::Parse (L"https://www.cwi.nl/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-        VerifyTestResult (url.GetScheme () == L"https");
-        VerifyTestResult (url.GetHost () == L"www.cwi.nl");
-        VerifyTestResult (url.GetPortValue () == 443);
-        VerifyTestResult (url.GetHostRelativePath () == L"%7Eguido/Python.html");
-        VerifyTestResult (url.GetQueryString () == L"");
-        VerifyTestResult (url.GetFragment () == L"");
-        VerifyTestResult (url.GetFullURL () == L"https://www.cwi.nl/%7Eguido/Python.html");
-    }
-    {
-        URL url = URL::Parse (L"Start.htm", URL::eAsRelativeURL);
-        VerifyTestResult (url.GetHost ().empty ());
-        VerifyTestResult (url.GetHostRelativePath () == L"Start.htm");
-        VerifyTestResult (url.GetFragment ().empty ());
-    }
-    {
-        URL url = URL::Parse (L"fred/Start.htm", URL::eAsRelativeURL);
-        VerifyTestResult (url.GetHost ().empty ());
-        VerifyTestResult (url.GetHostRelativePath () == L"fred/Start.htm");
-        VerifyTestResult (url.GetFragment ().empty ());
-    }
-    if (false) {
-        // https://stroika.atlassian.net/browse/STK-502
-        URL url = URL::Parse (L"123.1.2.3:8080", URL::eFlexiblyAsUI);
-        VerifyTestResult (url.GetHost () == L"123.1.2.3");
-        VerifyTestResult (url.GetPortValue () == 8080);
-        VerifyTestResult (url.GetHostRelativePath ().empty ());
-        VerifyTestResult (url.GetFragment ().empty ());
-    }
-}
-}
-}
-
-namespace {
-    void Test2_InternetAddress_ ()
-    {
-        Debug::TraceContextBumper trcCtx ("Test2_InternetAddress_");
-        {
-            VerifyTestResult ((InternetAddress{169, 254, 0, 1}).As<String> () == L"169.254.0.1");
-            VerifyTestResult ((InternetAddress{1, 2, 3, 4}).As<String> () == L"1.2.3.4");
-            VerifyTestResult ((InternetAddress{L"1.2.3.4"}).As<String> () == L"1.2.3.4");
-            VerifyTestResult ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
+            float*  d1 = nullptr;
+            double* d2 = nullptr;
+            VerifyTestResult (Optional<double>::OptionalFromNullable (d1).IsMissing ());
+            VerifyTestResult (Optional<double>::OptionalFromNullable (d2).IsMissing ());
         }
         {
-            VerifyTestResult (std::get<0> (InternetAddress{1, 2, 3, 4}.As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> ()) == 1);
-            VerifyTestResult (std::get<2> (InternetAddress{1, 2, 3, 4}.As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> ()) == 3);
+            constexpr Optional<int> x{1};
+            VerifyTestResult (x == 1);
         }
         {
-            auto testRoundtrip = [](const String& s) {
-                InternetAddress iaddr1{s};
-                InternetAddress iaddr2{s.As<wstring> ()};
-                InternetAddress iaddr3{s.AsASCII ()};
-                VerifyTestResult (iaddr1 == iaddr2);
-                VerifyTestResult (iaddr2 == iaddr3);
-                VerifyTestResult (iaddr1.As<String> () == s);
-                VerifyTestResult (iaddr2.As<String> () == s);
-                VerifyTestResult (iaddr3.As<String> () == s);
+            Optional<int>    d;
+            Optional<double> t1 = d;                    // no warnings - this direction OK
+            Optional<double> t2 = Optional<double> (d); // ""
+        }
+        {
+            Optional<double> d;
+            //Optional<uint64_t> t1 = d;                      // should generate warning or error
+            Optional<uint64_t> t2 = Optional<uint64_t> (d); // should not
+        }
+        {
+            struct objWithoutOpAssign_ {
+                const int a{};
             };
-            testRoundtrip (L"192.168.131.3");
-            testRoundtrip (L"::");
-            testRoundtrip (L"fec0:0:0:ffff::1");
-            testRoundtrip (L"fe80::44de:4247:5b76:ddc9");
+            Optional<objWithoutOpAssign_> x{objWithoutOpAssign_{}};
+            x = objWithoutOpAssign_{};
         }
         {
-            struct Tester {
-                InternetAddress addr;
-                bool            isLocalHost;
-                bool            isLinkLocal;
-                bool            isMulticast;
-                bool            isPrivate;
+            Optional<int> x = 1;
+            VerifyTestResult (Characters::ToString (x) == L"1");
+        }
+        {
+            // empty optional < any other value
+            VerifyTestResult (Optional<int>{} < -9999);
+            VerifyTestResult (Optional<int>{-9999} > Optional<int>{});
+        }
+    }
+    void Test2_SharedByValue ()
+    {
+    }
+    void Test_4_Optional_Of_Mapping_Copy_Problem_ ()
+    {
+        using namespace Stroika::Foundation::Memory;
+        using namespace Stroika::Foundation::Containers;
+        Mapping<int, float> ml1, ml2;
+        ml1 = ml2;
+
+        Optional<Mapping<int, float>> ol1, ol2;
+        if (ol2.IsPresent ()) {
+            ml1 = *ol2;
+        }
+        ol1 = ml1;
+        Optional<Mapping<int, float>> xxxx2 (ml1);
+
+        // fails to compile prior to 2013-09-09
+        Optional<Mapping<int, float>> xxxx1 (ol1);
+        // fails to compile prior to 2013-09-09
+        ol1 = ol2;
+    }
+    void Test_5_AnyVariantValue_ ()
+    {
+        {
+            VerifyTestResult (AnyVariantValue ().empty ());
+            VerifyTestResult (not AnyVariantValue (1).empty ());
+            VerifyTestResult (not AnyVariantValue ("1").empty ());
+            //VerifyTestResult (AnyVariantValue ("1").GetType () == typeid ("1"));  // not sure why this fails but not worthy worrying about yet
+            VerifyTestResult (AnyVariantValue (1).As<int> () == 1);
+        }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (1);
+            VerifyTestResult (not v.empty ());
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+            v = AnyVariantValue (L"a");
+            //VerifyTestResult (v.GetType () == typeid (L"a")); // not sure why this fails but not worthy worrying about yet
+            VerifyTestResult (not v.empty ());
+            v.clear ();
+            VerifyTestResult (v.empty ());
+            VerifyTestResult (v.GetType () == typeid (void));
+        }
+        {
+            struct JIM {
+                int a;
             };
-            const InternetAddress kSamplePrivateAddr_{"192.168.244.121"};
-            const InternetAddress kSSDPAddr_{239, 255, 255, 250};
-            const InternetAddress kSomeIPV4LinkLocalAddr_{"169.254.0.1"};
-            const InternetAddress kSomeIPV6LinkLocalAddr_{"fe80::44de:4247:5b76:ddc9"};
-            const Tester          kTests_[] = {
-                //  ADDR                                    localhost   linklocal   multicast   privateaddr
-                {V4::kAddrAny, false, false, false, false},
-                {V6::kAddrAny, false, false, false, false},
-                {V4::kLocalhost, true, false, false, false},
-                {V6::kLocalhost, true, false, false, false},
-                {kSSDPAddr_, false, false, true, false},
-                {kSomeIPV4LinkLocalAddr_, false, true, false, false},
-                {kSomeIPV6LinkLocalAddr_, false, true, false, false},
-                {kSamplePrivateAddr_, false, false, false, true},
-                {InternetAddress{10, 0, 0, 0}, false, false, false, true},
-                {InternetAddress{10, 255, 255, 255}, false, false, false, true},
-                {InternetAddress{172, 16, 0, 1}, false, false, false, true},
-                {InternetAddress{172, 16, 0, 3}, false, false, false, true},
-                {InternetAddress{172, 31, 255, 255}, false, false, false, true},
-                {InternetAddress{192, 168, 0, 0}, false, false, false, true},
-                {InternetAddress{192, 168, 255, 255}, false, false, false, true},
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (JIM ());
+            VerifyTestResult (v.GetType () == typeid (JIM));
+        }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (1);
+            v = v;
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+            v = AnyVariantValue (v);
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+        }
+        {
+            static int nCopies = 0;
+            struct Copyable {
+                Copyable ()
+                {
+                    ++nCopies;
+                }
+                Copyable (const Copyable&)
+                {
+                    ++nCopies;
+                }
+                ~Copyable ()
+                {
+                    --nCopies;
+                }
+                const Copyable& operator= (const Copyable&) = delete;
             };
-            for (auto i : kTests_) {
-                DbgTrace (L"i.addr=%s", i.addr.As<String> ().c_str ());
-                VerifyTestResult (i.addr.IsLocalhostAddress () == i.isLocalHost);
-                VerifyTestResult (i.addr.IsLinkLocalAddress () == i.isLinkLocal);
-                VerifyTestResult (i.addr.IsMulticastAddress () == i.isMulticast);
-                VerifyTestResult (i.addr.IsPrivateAddress () == i.isPrivate);
+            {
+                AnyVariantValue v;
+                VerifyTestResult (v.empty ());
+                v = AnyVariantValue (Copyable ());
+                v = v;
+                v = AnyVariantValue (AnyVariantValue (v));
+                v = AnyVariantValue (AnyVariantValue (Copyable ()));
+                VerifyTestResult (v.GetType () == typeid (Copyable));
             }
+            VerifyTestResult (0 == nCopies);
+        }
+    }
+
+    // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
+    // SB nested inside function where used...
+    //  --LGP 2014-02-26
+    namespace {
+        struct X_ {
+            int a = 0;
+        };
+        struct jimStdSP_ : std::enable_shared_from_this<jimStdSP_> {
+            int                   field = 1;
+            shared_ptr<jimStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimMIXStdSP_ : X_, std::enable_shared_from_this<jimMIXStdSP_> {
+            int                      field = 1;
+            shared_ptr<jimMIXStdSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimStkSP_ : Memory::enable_shared_from_this<jimStkSP_> {
+            int                  field = 1;
+            SharedPtr<jimStkSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+        struct jimMIStkSP_ : X_, Memory::enable_shared_from_this<jimMIStkSP_> {
+            int                    field = 1;
+            SharedPtr<jimMIStkSP_> doIt ()
+            {
+                return shared_from_this ();
+            }
+        };
+    }
+
+    void Test_6_SharedPtr ()
+    {
+        {
+            SharedPtr<int> p (new int(3));
+            VerifyTestResult (p.use_count () == 1);
+            VerifyTestResult (p.unique ());
+            VerifyTestResult (*p == 3);
         }
         {
-            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> ()) == V4::kLocalhost);
-            VerifyTestResult (InternetAddress (V4::kLocalhost.As<in_addr> (InternetAddress::ByteOrder::Host)) != V4::kLocalhost or ntohl (0x01020304) == 0x01020304); // if big-endian machine, net byte order equals host byte order
+            static int nCreates  = 0;
+            static int nDestroys = 0;
+            struct COUNTED_OBJ {
+                COUNTED_OBJ ()
+                {
+                    ++nCreates;
+                }
+                COUNTED_OBJ (const COUNTED_OBJ&)
+                {
+                    ++nCreates;
+                }
+                ~COUNTED_OBJ ()
+                {
+                    ++nDestroys;
+                }
+                const COUNTED_OBJ& operator= (const COUNTED_OBJ&) = delete;
+            };
+            struct CNT2 : COUNTED_OBJ {
+            };
+            {
+                SharedPtr<COUNTED_OBJ> p (new COUNTED_OBJ ());
+            }
+            VerifyTestResult (nCreates == nDestroys);
+            {
+                SharedPtr<COUNTED_OBJ> p (SharedPtr<CNT2> (new CNT2 ()));
+                VerifyTestResult (nCreates == nDestroys + 1);
+            }
+            VerifyTestResult (nCreates == nDestroys);
         }
         {
-            VerifyTestResult (InternetAddress{L"192.168.99.1"}.AsAddressFamily (InternetAddress::AddressFamily::V6) == InternetAddress{L"2002:C0A8:6301::"});
-            VerifyTestResult (InternetAddress{L"2002:C0A8:6301::"}.AsAddressFamily (InternetAddress::AddressFamily::V4) == InternetAddress{L"192.168.99.1"});
+            shared_ptr<jimStdSP_> x (new jimStdSP_ ());
+            shared_ptr<jimStdSP_> y = x->doIt ();
+            VerifyTestResult (x == y);
+        }
+        {
+            shared_ptr<jimMIXStdSP_> x (new jimMIXStdSP_ ());
+            shared_ptr<jimMIXStdSP_> y  = x->doIt ();
+            shared_ptr<X_>           xx = x;
+            VerifyTestResult (x == y);
+        }
+        {
+            SharedPtr<jimStkSP_> x (new jimStkSP_ ());
+            SharedPtr<jimStkSP_> y = x->doIt ();
+            VerifyTestResult (x == y);
+        }
+        {
+            SharedPtr<jimMIStkSP_> x (new jimMIStkSP_ ());
+            SharedPtr<jimMIStkSP_> y  = x->doIt ();
+            SharedPtr<X_>          xx = x;
+            VerifyTestResult (x == y);
         }
     }
 }
 
 namespace {
-    void Test3_NetworkInterfaceList_ ()
+    void Test_7_Bits_ ()
     {
-        Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
-        for (Interface iFace : Network::GetInterfaces ()) {
-            Debug::TraceContextBumper trcCtx ("iface");
-            DbgTrace (L"fInternalInterfaceID: %s", iFace.fInternalInterfaceID.c_str ());
-#if qPlatform_POSIX
-            DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ().c_str ());
-#endif
-            DbgTrace (L"Friendly-name: %s", iFace.fFriendlyName.c_str ());
-            if (iFace.fDescription.IsPresent ()) {
-                DbgTrace (L"description: %s", iFace.fDescription->c_str ());
+        {
+            VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
+            VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
+            VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
+            VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
+            VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
+            VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
+        }
+        {
+            VerifyTestResult (Bit (0) == 0x1);
+            VerifyTestResult (Bit (1) == 0x2);
+            VerifyTestResult (Bit (3) == 0x8);
+            VerifyTestResult (Bit (15) == 0x8000);
+            VerifyTestResult (Bit<int> (1, 2) == 0x6);
+            VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
+        }
+    }
+}
+
+namespace {
+    void Test_8_BLOB_ ()
+    {
+        {
+            vector<Byte> b  = {1, 2, 3, 4, 5};
+            Memory::BLOB bl = b;
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == b);
+        }
+        {
+            Memory::BLOB bl{1, 2, 3, 4, 5};
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == (vector<Byte>{1, 2, 3, 4, 5}));
+        }
+        {
+            const char kSrc1_[] = "This is a very good test of a very good test";
+            const char kSrc2_[] = "";
+            const char kSrc3_[] = "We eat wiggly worms. That was a very good time to eat the worms. They are awesome!";
+            const char kSrc4_[] = "0123456789";
+
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc1_, (const Byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + strlen (kSrc1_)));
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc2_, (const Byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + strlen (kSrc2_)));
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc3_, (const Byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + strlen (kSrc3_)));
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + strlen (kSrc4_)));
+
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc1_, (const Byte*)kSrc1_ + ::strlen (kSrc1_)) == Memory::BLOB::Raw (kSrc1_, kSrc1_ + NEltsOf (kSrc1_) - 1));
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc2_, (const Byte*)kSrc2_ + ::strlen (kSrc2_)) == Memory::BLOB::Raw (kSrc2_, kSrc2_ + NEltsOf (kSrc2_) - 1));
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc3_, (const Byte*)kSrc3_ + ::strlen (kSrc3_)) == Memory::BLOB::Raw (kSrc3_, kSrc3_ + NEltsOf (kSrc3_) - 1));
+            VerifyTestResult (Memory::BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen (kSrc4_)) == Memory::BLOB::Raw (kSrc4_, kSrc4_ + NEltsOf (kSrc4_) - 1));
+        }
+        {
+            using Memory::BLOB;
+            VerifyTestResult ((BLOB::Hex ("61 70 70 6c 65 73 20 61 6e 64 20 70 65 61 72 73 0d 0a") == BLOB{0x61, 0x70, 0x70, 0x6c, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x70, 0x65, 0x61, 0x72, 0x73, 0x0d, 0x0a}));
+            VerifyTestResult ((BLOB::Hex ("4a 94 99 ac 55 f7 a2 8b 1b ca 75 62 f6 9a cf de 41 9d") == BLOB{0x4a, 0x94, 0x99, 0xac, 0x55, 0xf7, 0xa2, 0x8b, 0x1b, 0xca, 0x75, 0x62, 0xf6, 0x9a, 0xcf, 0xde, 0x41, 0x9d}));
+            VerifyTestResult ((BLOB::Hex ("68 69 20 6d 6f 6d 0d 0a") == BLOB{0x68, 0x69, 0x20, 0x6d, 0x6f, 0x6d, 0x0d, 0x0a}));
+            VerifyTestResult ((BLOB::Hex ("29 14 4a db 4e ce 20 45 09 56 e8 13 65 2f e8 d6") == BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+            VerifyTestResult ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6") == BLOB{0x29, 0x14, 0x4a, 0xdb, 0x4e, 0xce, 0x20, 0x45, 0x09, 0x56, 0xe8, 0x13, 0x65, 0x2f, 0xe8, 0xd6}));
+            VerifyTestResult ((BLOB::Hex ("29144adb4ece20450956e813652fe8d6").AsHex () == L"29144adb4ece20450956e813652fe8d6"));
+        }
+    }
+}
+
+namespace {
+    namespace Test9PRIVATE_ {
+        template <typename T>
+        using InPlace_Traits = Optional_Traits_Inplace_Storage<T>;
+        template <typename T>
+        using Indirect_Traits = Optional_Traits_Blockallocated_Indirect_Storage<T>;
+        template <typename OPTIONALOFT>
+        void BasicOTest_ ()
+        {
+            {
+                OPTIONALOFT o1;
+                OPTIONALOFT o2{typename OPTIONALOFT::value_type ()};
+                OPTIONALOFT o3 = o1;
+                o3             = o2;
+                VerifyTestResult (o3 == o2);
             }
-            if (iFace.fType.IsPresent ()) {
-                DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>::k.GetName (*iFace.fType));
+            {
+                OPTIONALOFT o1{typename OPTIONALOFT::value_type ()};
+                VerifyTestResult (o1.IsPresent ());
+                OPTIONALOFT o2 = move (o1);
+                VerifyTestResult (o2 == typename OPTIONALOFT::value_type ());
             }
-            for (InternetAddress ipAddr : iFace.fBindings) {
-                DbgTrace (L"addr: %s", ipAddr.As<String> ().c_str ());
-            }
-            if (iFace.fStatus.IsPresent ()) {
-                for (Interface::Status s : *iFace.fStatus) {
-                    DbgTrace (L"status: %s", Configuration::DefaultNames<Interface::Status>::k.GetName (s));
+        }
+    }
+    void Test9_OptionalStorageTraits_ ()
+    {
+        using namespace Test9PRIVATE_;
+        BasicOTest_<Optional<int, InPlace_Traits<int>>> ();
+        BasicOTest_<Optional<int, Indirect_Traits<int>>> ();
+        BasicOTest_<Optional<wstring, InPlace_Traits<wstring>>> ();
+        BasicOTest_<Optional<wstring, Indirect_Traits<wstring>>> ();
+    }
+}
+
+namespace {
+    namespace Test10_SmallStackBuffer_ {
+        void DoTest ()
+        {
+            SmallStackBuffer<int> x0{0};
+            SmallStackBuffer<int> x1{x0};
+            x0 = x1;
+        }
+    }
+}
+
+namespace {
+    namespace Test11_OptionalSelfAssign_ {
+        void DoTest ()
+        {
+            {
+                // ASSIGN
+                {
+                    Optional<int> x;
+                    x = x;
+                }
+                {
+                    Optional<Characters::String> x;
+                    x = x;
+                }
+                {
+                    Optional<int> x{1};
+                    x = x;
+                }
+                {
+                    Optional<Characters::String> x{L"x"};
+                    x = x;
                 }
             }
+            // note - see https://stroika.atlassian.net/browse/STK-556 - we DONT support Optional self-move
         }
     }
 }
 
 namespace {
-    namespace Test4_DNS_ {
-        void DoTests_ ()
-        {
-            {
-                DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.sophists.com");
-                VerifyTestResult (e.fCanonicalName == L"outer5.sophists.com");
-                VerifyTestResult (e.fAddressList.size () >= 1);
-            }
-            {
-                DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.google.com");
-                VerifyTestResult (e.fAddressList.size () >= 1);
-            }
-            {
-                DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.cnn.com");
-                VerifyTestResult (e.fAddressList.size () >= 1);
-            }
-            {
-                Memory::Optional<String> aaa = DNS::Default ().ReverseLookup (InternetAddress (23, 56, 90, 167));
-                DbgTrace (L"reverselookup %s", aaa.Value ().c_str ());
-            }
-        }
-    }
-}
 
-namespace {
     void DoRegressionTests_ ()
     {
-        Test1_URL_Parsing_::DoTests_ ();
-        Test2_InternetAddress_ ();
-        Test3_NetworkInterfaceList_ ();
-        Test4_DNS_::DoTests_ ();
+        Test1_Optional ();
+        Test2_SharedByValue ();
+        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
+        Test_5_AnyVariantValue_ ();
+        Test_6_SharedPtr ();
+        Test_7_Bits_ ();
+        Test_8_BLOB_ ();
+        Test9_OptionalStorageTraits_ ();
+        Test10_SmallStackBuffer_::DoTest ();
+        Test11_OptionalSelfAssign_::DoTest ();
     }
 }
 

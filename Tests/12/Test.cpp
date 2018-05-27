@@ -1,92 +1,75 @@
 /*
-* Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
-*/
-//  TEST    Foundation::Containers::Collection
+ * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
+ */
+//  TEST    Foundation::Containers::Deque
+//      STATUS  PRELIMINARY
 #include "Stroika/Foundation/StroikaPreComp.h"
 
 #include <iostream>
 #include <sstream>
 
-#include "Stroika/Foundation/Containers/Collection.h"
+#include "Stroika/Foundation/Containers/Deque.h"
+
+#include "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
-#include "../TestCommon/CommonTests_Collection.h"
+#include "../TestCommon/CommonTests_Queue.h"
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
-
-#include "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
-#include "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
-#include "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Containers;
 
-using Concrete::Collection_Array;
-using Concrete::Collection_LinkedList;
-using Concrete::Collection_stdforward_list;
+using Concrete::Deque_DoublyLinkedList;
 
 namespace {
-    template <typename CONCRETE_CONTAINER>
-    void RunTests_ ()
-    {
-        Debug::TraceContextBumper ctx{L"{}::RunTests_"};
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
-            []() { return CONCRETE_CONTAINER (); },
-            [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
-    }
-}
-
-namespace {
-    namespace ExampleCTORS_Test_2_ {
-        void DoTest ()
+    namespace Test1_BasicDequeTest_ {
+        template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+        void DoAllTests_ ()
         {
-            Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_2_"};
-            // From Collection<> CTOR docs
-            Sequence<int>    s;
-            std::vector<int> v;
-
-            Collection<int> c1 = {1, 2, 3};
-            Collection<int> c2 = c1;
-            Collection<int> c3{c1};
-            Collection<int> c4{c1.begin (), c1.end ()};
-            Collection<int> c5{s};
-            Collection<int> c6{v};
-            Collection<int> c7{v.begin (), v.end ()};
-            Collection<int> c8{move (c1)};
+            // test DQUEUE METHODS - NYI
         }
     }
 }
 
 namespace {
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void SimpleQueueTest_All_NotRequiringEquals_For_Type ()
+    {
+        CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+    }
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void SimpleQueueTest_All_For_Type ()
+    {
+        CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+        Test1_BasicDequeTest_::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+    }
+}
 
+namespace {
     void DoRegressionTests_ ()
     {
-        struct MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+        using COMPARE_SIZET       = std::equal_to<size_t>;
+        using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
+        struct COMPARE_SimpleClassWithoutComparisonOperators {
             using value_type = SimpleClassWithoutComparisonOperators;
-            static bool Equals (value_type v1, value_type v2)
+            bool operator() (value_type v1, value_type v2) const
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        RunTests_<Collection<size_t>> ();
-        RunTests_<Collection<SimpleClass>> ();
-        RunTests_<Collection<SimpleClassWithoutComparisonOperators>> ();
 
-        RunTests_<Collection_LinkedList<size_t>> ();
-        RunTests_<Collection_LinkedList<SimpleClass>> ();
-        RunTests_<Collection_LinkedList<SimpleClassWithoutComparisonOperators>> ();
+        SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Deque<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Deque<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
-        RunTests_<Collection_Array<size_t>> ();
-        RunTests_<Collection_Array<SimpleClass>> ();
-        RunTests_<Collection_Array<SimpleClassWithoutComparisonOperators>> ();
-
-        RunTests_<Collection_stdforward_list<size_t>> ();
-        RunTests_<Collection_stdforward_list<SimpleClass>> ();
-        RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
-
-        ExampleCTORS_Test_2_::DoTest ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
     }
 }
 
