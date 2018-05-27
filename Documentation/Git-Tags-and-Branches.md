@@ -3,7 +3,6 @@
 <h3>Major Releases</h3>
 <ul>
 	<li>v2.0 - requires C++14 or later</li>
-	<li>v2.1 - requires C++17 or later</li>
 </ul>
 
 
