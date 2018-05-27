@@ -196,9 +196,6 @@
     <Filter Include="Sources\Containers\DataStructures">
       <UniqueIdentifier>{ceb5e1b0-e0b0-408a-9945-cb94c9fa8bfa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Containers\LockFreeDataStructures">
-      <UniqueIdentifier>{0b243a16-bcf0-463e-869b-aadbdcad38a6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Math\LinearAlgebra">
       <UniqueIdentifier>{7e5c9591-3a2f-4819-afde-9750641c4f76}</UniqueIdentifier>
     </Filter>
@@ -1146,9 +1143,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Deque.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
@@ -1464,17 +1458,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.h">
       <Filter>Sources\Traversal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Association.h">
-      <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.h">
       <Filter>Sources\Characters</Filter>
@@ -1617,15 +1602,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1698,9 +1674,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.h">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </ClInclude>
@@ -1736,9 +1709,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.h">
       <Filter>Sources\IO\Network\SOAP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.h">
-      <Filter>Sources\Containers\Factory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
@@ -1865,9 +1835,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\STLContainerWrapper.h">
       <Filter>Sources\Containers\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.h">
-      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.h">
       <Filter>Sources\Execution</Filter>
@@ -2003,9 +1970,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.h">
       <Filter>Sources\Containers\Factory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_stdmultimap.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.h">
       <Filter>Sources\Streams</Filter>
@@ -2214,9 +2178,6 @@
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl">
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Deque.inl">
@@ -2607,15 +2568,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Atom.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Association.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedAssociation.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\RandomAccessIterator.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
@@ -2751,15 +2703,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Partition.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Association_stdmultimap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\WaitForIOReady.inl">
       <Filter>Sources\Execution</Filter>
     </None>
@@ -2820,9 +2763,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\FloatConversion.inl">
       <Filter>Sources\Characters</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\KeyedCollection.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\StructuredStreamEvents\IConsumer.inl">
       <Filter>Sources\DataExchange\StructuredStreamEvents</Filter>
     </None>
@@ -2846,9 +2786,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SOAP\Fault.inl">
       <Filter>Sources\IO\Network\SOAP</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Association_Factory.inl">
-      <Filter>Sources\Containers\Factory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Bijection_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
@@ -2963,9 +2900,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\DataStructures\TODO.md">
       <Filter>Sources\Containers\DataStructures</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\LockFreeDataStructures\LinkedList.inl">
-      <Filter>Sources\Containers\LockFreeDataStructures</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl">
       <Filter>Sources\Execution</Filter>
@@ -3254,9 +3188,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.inl">
       <Filter>Sources\Containers\Factory</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedAssociation_stdmultimap.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.inl">
       <Filter>Sources\Streams</Filter>
