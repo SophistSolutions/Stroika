@@ -6,7 +6,7 @@
 : ${LOGIN:=lewis}
 : ${SSH_TARGET:=$LOGIN@$MACHINE}
 : ${BUILD_DIR:=Sandbox/Stroika-Remote-Build-Dir}
-: ${BRANCH:=V2-Dev}
+: ${BRANCH:=V2.1-Dev}
 : ${DO_ONLY_DEFAULT_CONFIGURATIONS:=1}
 
 echo ssh $SSH_TARGET rm -rf $BUILD_DIR
