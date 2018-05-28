@@ -1194,7 +1194,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.h" />

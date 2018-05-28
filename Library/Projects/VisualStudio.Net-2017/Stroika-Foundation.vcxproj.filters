@@ -1128,9 +1128,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.h">
-      <Filter>Sources\Cache</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.h">
       <Filter>Sources\Cache</Filter>
     </ClInclude>
