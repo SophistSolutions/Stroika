@@ -156,44 +156,6 @@ namespace Stroika {
                 alignas (alignof (MODULE_DATA)) static Byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
                 static uint16_t sInitCnt_;
             };
-
-            /**
-             *  Help to construct an object - and NEVER call its DTOR. Assure its
-             *  constructed before use. Can be helpful for objects that don't need to be destroyed, but need to
-             *  assure they are constructed before use.
-             *  Only thought out using this at file scope to wrap construciton of an object.
-             *
-             *      @todo   add alignas (or whatever the new C++11 support for alignment is) - to assure
-             *              fTBuf properly aligned).
-             */
-            template <typename T>
-            struct [[deprecated ("This class is useless and deprectead as of Stroika 2.0a228")]] StaticSingletonObjectConstructionHelper {
-                bool                       fConstructed;
-                alignas (alignof (T)) Byte fTBuf[sizeof (T)];
-
-                operator T& ()
-                {
-                    // for now - OK - I think - to avoid critical section - cuz these get used
-                    // before we've had a chance to make threads...
-                    if (not fConstructed) {
-                        new (&fTBuf) T ();
-                        fConstructed = true;
-                    }
-                    return *(reinterpret_cast<T*> (&fTBuf));
-                };
-            };
-
-            template <typename BASETYPE, const BASETYPE& (*ValueGetter) ()>
-            struct [[deprecated ("Use VirtualConstant since Stroika v2.0a228")]] ConstantViaGetter {
-                inline operator const BASETYPE () const
-                {
-                    return (ValueGetter) ();
-                }
-                inline const BASETYPE* operator-> () const
-                {
-                    return &(ValueGetter) ();
-                }
-            };
         }
     }
 }

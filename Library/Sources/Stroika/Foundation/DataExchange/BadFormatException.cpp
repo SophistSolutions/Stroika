@@ -31,13 +31,13 @@ namespace {
     String mkMessage_OffsetInfo_ (const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
     {
         String result;
-        if ( lineNumber.has_value ()) {
+        if (lineNumber.has_value ()) {
             result += Format (L"Line %d", *lineNumber);
-            if ( columnNumber.has_value ()) {
+            if (columnNumber.has_value ()) {
                 result += Format (L"; Column %d", *columnNumber);
             }
         }
-        if ( fileOffset.has_value ()) {
+        if (fileOffset.has_value ()) {
             if (not result.empty ()) {
                 result += String_Constant (L"; ");
             }
