@@ -61,19 +61,6 @@ using Memory::Optional;
 
 /*
  ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<SystemConfiguration::OperatingSystem::InstallerTechnology>::k;
-        }
-    }
-}
-
-/*
- ********************************************************************************
  ***************** SystemConfiguration::BootInformation *************************
  ********************************************************************************
  */

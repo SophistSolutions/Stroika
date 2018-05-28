@@ -144,35 +144,6 @@ namespace Stroika {
                     const InternetMediaType& Application_RTF_CT ();
                     const InternetMediaType& Application_Zip_CT ();
                 }
-                [[deprecated ("use kOctetStream instead - since Stroika v2.0a228")]] const InternetMediaType& OctetStream_CT ();
-
-                [[deprecated ("use kImage instead - since Stroika v2.0a228")]] const InternetMediaType&      Image_CT ();
-                [[deprecated ("use kImage_PNG instead - since Stroika v2.0a228")]] const InternetMediaType&  Image_PNG_CT ();
-                [[deprecated ("use kImage_GIF instead - since Stroika v2.0a228")]] const InternetMediaType&  Image_GIF_CT ();
-                [[deprecated ("use kImage_JPEG instead - since Stroika v2.0a228")]] const InternetMediaType& Image_JPEG_CT ();
-
-                [[deprecated ("use kText_CT instead - since Stroika v2.0a228")]] const InternetMediaType&    Text_CT ();
-                [[deprecated ("use kText_HTML instead - since Stroika v2.0a228")]] const InternetMediaType&  Text_HTML_CT ();
-                [[deprecated ("use kText_XHTML instead - since Stroika v2.0a228")]] const InternetMediaType& Text_XHTML_CT ();
-                [[deprecated ("use kText_XML instead - since Stroika v2.0a228")]] const InternetMediaType&   Text_XML_CT ();
-                [[deprecated ("use kText_PLAIN instead - since Stroika v2.0a228")]] const InternetMediaType& Text_PLAIN_CT ();
-                [[deprecated ("use kText_CSV instead - since Stroika v2.0a228")]] const InternetMediaType&   Text_CSV_CT ();
-
-                [[deprecated ("use kJSON instead - since Stroika v2.0a228")]] const InternetMediaType& JSON_CT ();
-
-                [[deprecated ("use kPDF instead - since Stroika v2.0a228")]] const InternetMediaType& PDF_CT ();
-
-                [[deprecated ("use kURL instead - since Stroika v2.0a228")]] const InternetMediaType& URL_CT ();
-
-                [[deprecated ("use kText_XML instead - since Stroika v2.0a228")]] const InternetMediaType& XML_CT ();
-
-                [[deprecated ("use kApplication_XSLT instead - since Stroika v2.0a228")]] const InternetMediaType& XSLT_CT ();
-
-                [[deprecated ("use kJavaArchive instead - since Stroika v2.0a228")]] const InternetMediaType& JavaArchive_CT ();
-
-                [[deprecated ("use kApplication_RTF instead - since Stroika v2.0a228")]] const InternetMediaType& Application_RTF_CT (); // Microsoft RTF - Rich Text Format
-
-                [[deprecated ("use kApplication_Zip instead - since Stroika v2.0a228")]] const InternetMediaType& Application_Zip_CT (); // application/zip
 
                 /**
                  */

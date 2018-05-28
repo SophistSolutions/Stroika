@@ -289,8 +289,6 @@ namespace Stroika {
              *          };
              *      }
              *      \endcode
-             *
-             *  \note   namespace Stroika::Foundation::Configuration must be written out long way before C++17
              */
             template <typename ENUM_TYPE>
             struct DefaultNames : EnumNames<ENUM_TYPE> {

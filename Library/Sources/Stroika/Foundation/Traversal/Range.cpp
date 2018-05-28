@@ -7,16 +7,3 @@
 
 using namespace Stroika;
 using namespace Stroika::Foundation;
-
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k;
-        }
-    }
-}

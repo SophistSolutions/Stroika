@@ -504,9 +504,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
@@ -1370,9 +1367,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h">
       <Filter>Sources\Configuration</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h">
       <Filter>Sources\DataExchange</Filter>
@@ -2513,9 +2507,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl">
       <Filter>Sources\Configuration</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl">
       <Filter>Sources\DataExchange</Filter>

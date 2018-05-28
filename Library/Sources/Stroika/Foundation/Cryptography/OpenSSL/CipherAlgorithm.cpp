@@ -37,21 +37,6 @@ using namespace Stroika::Foundation::Memory;
 #if qHasFeature_OpenSSL
 /*
  ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<Cryptography::OpenSSL::CipherAlgorithm> DefaultNames<Cryptography::OpenSSL::CipherAlgorithm>::k;
-        }
-    }
-}
-#endif
-
-#if qHasFeature_OpenSSL
-/*
- ********************************************************************************
  ************** Cryptography::OpenSSL::Convert2OpenSSL **************************
  ********************************************************************************
  */

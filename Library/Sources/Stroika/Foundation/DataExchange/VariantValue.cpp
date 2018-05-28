@@ -96,19 +96,6 @@ struct VariantValue::TIRep_ : VariantValue::IRep_ {
 
 /*
  ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<DataExchange::VariantValue::Type> DefaultNames<DataExchange::VariantValue::Type>::k;
-        }
-    }
-}
-
-/*
- ********************************************************************************
  ******************************** VariantValue **********************************
  ********************************************************************************
  */

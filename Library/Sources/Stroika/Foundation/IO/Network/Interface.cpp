@@ -68,19 +68,6 @@ namespace std {
     using ::snprintf;
 }
 #endif
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k;
-            constexpr EnumNames<IO::Network::Interface::Type>   DefaultNames<IO::Network::Interface::Type>::k;
-        }
-    }
-}
 
 #if qPlatform_Linux
 // Hack for centos5 support:

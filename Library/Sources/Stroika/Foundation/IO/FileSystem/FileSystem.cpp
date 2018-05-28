@@ -57,19 +57,6 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 
 /*
  ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<IO::FileSystem::RemoveDirectoryPolicy> DefaultNames<IO::FileSystem::RemoveDirectoryPolicy>::k;
-        }
-    }
-}
-
-/*
- ********************************************************************************
  ********************************** FileSystem::Ptr *****************************
  ********************************************************************************
  */

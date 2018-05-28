@@ -405,10 +405,6 @@ namespace Stroika {
                 static String FromASCII (const string& from);
 
             public:
-                [[deprecated ("use FromASCII in version 2.0a228")]] static String FromAscii (const char* from) { return FromASCII (from); }
-                [[deprecated ("use FromASCII in version 2.0a228")]] static String FromAscii (const string& from) { return FromASCII (from); }
-
-            public:
                 /**
                  *  Create a String object from ISO-Latin-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
                  *

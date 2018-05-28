@@ -73,6 +73,9 @@ namespace Stroika {
              *          @ModuleInit code.
              */
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             template <typename T>
             class [[deprecated ("as of Stroika v2.0a230 - use static member function -inline - returning static object reference - like AssertExternallySynchronizedLock::GetSharedLockMutex_")]] SharedStaticData {
             public:

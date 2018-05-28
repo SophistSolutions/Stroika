@@ -79,10 +79,6 @@ namespace Stroika {
                 nonvirtual Connection& operator= (const Connection&) = delete;
 
             public:
-                // Cannot do here becuase request maybe already sent...
-                [[deprecated ("use - Response.MarkConnectionClose in Stroika v2.0a230")]] nonvirtual void Close ();
-
-            public:
                 /**
                  */
                 nonvirtual ConnectionOrientedStreamSocket::Ptr GetSocket () const;

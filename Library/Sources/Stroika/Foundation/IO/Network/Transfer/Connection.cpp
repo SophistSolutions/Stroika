@@ -24,19 +24,6 @@ using namespace Stroika::Foundation::Memory;
 
 /*
  ********************************************************************************
- ***************************** Foundation::Configuration ************************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::k;
-        }
-    }
-}
-
-/*
- ********************************************************************************
  *********************** Connection::Options::Authentication ********************
  ********************************************************************************
  */

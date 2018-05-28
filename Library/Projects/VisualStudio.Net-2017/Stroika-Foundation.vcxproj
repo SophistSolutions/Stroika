@@ -890,7 +890,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
@@ -1486,7 +1485,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h" />
@@ -1903,7 +1901,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />

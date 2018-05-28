@@ -11,16 +11,3 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::IO;
-
-/*
- ********************************************************************************
- **************************** Configuration::DefaultNames ***********************
- ********************************************************************************
- */
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            constexpr EnumNames<IO::FileAccessMode> DefaultNames<IO::FileAccessMode>::k;
-        }
-    }
-}
