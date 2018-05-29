@@ -154,7 +154,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_4_Equals_ ()
     {
@@ -179,7 +178,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_5_RemoveAll_ ()
     {
@@ -202,7 +200,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_6_GetSetAt_ ()
     {
@@ -229,7 +226,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_7_IndexOf_ ()
     {
@@ -282,7 +278,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_8_InsertAppendPrepend_ ()
     {
@@ -333,7 +328,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_9_Update_ ()
     {
@@ -367,7 +361,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_10_Remove_ ()
     {
@@ -435,7 +428,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_11_STLCompatWrappers_ ()
     {
@@ -499,7 +491,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_12_ToFromSTLVector_ ()
     {
@@ -515,7 +506,7 @@ namespace {
             n.push_back (9);
             s            = CONCRETE_SEQUENCE_T (n);
             vector<T> nn = s.template As<vector<T>> ();
-            VerifyTestResult (STL::Equals<EQUALS_COMPARER> (nn, n));
+            VerifyTestResult (STL::equal (nn, n, EQUALS_COMPARER{}));
         }
 
         s.RemoveAll ();
@@ -524,7 +515,6 @@ namespace {
 }
 
 namespace {
-
     template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
     void SimpleSequenceTest_13_Initializers_ ()
     {
