@@ -25,6 +25,12 @@ namespace Stroika {
         namespace Containers {
             namespace STL {
 
+                /**
+                 *  \note   similar to std::equal () - but takes iterables as arguments, not iterators
+                 */
+                template <typename ITERABLE_OF_T, typename T = ITERABLE_OF_T::value_type, typename EQUALS_COMPARER = std::equal_to<T>, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>>
+                bool equal (const ITERABLE_OF_T& lhs, const ITERABLE_OF_T& rhs, EQUALS_COMPARER&& equalsComparer = {});
+
                 /*
                  *  STL container constructors take a begin/end combo, but no CONTAINER ctor (except for same as starting).
                  *  So to convert from set<T> to vector<T> is a pain (if you have a function returning set<>). To do pretty

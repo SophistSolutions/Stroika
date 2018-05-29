@@ -16,6 +16,12 @@ namespace Stroika {
         namespace Containers {
             namespace STL {
 
+                template <typename ITERABLE_OF_T, typename T, typename EQUALS_COMPARER, typename ENABLE_IF>
+                bool equal (const ITERABLE_OF_T& lhs, const ITERABLE_OF_T& rhs, EQUALS_COMPARER&& equalsComparer)
+                {
+                    return lhs.size () == rhs.size () and std::equal (lhs.begin (), lhs.end (), rhs.begin (), equalsComparer);
+                }
+
                 /*
                  ********************************************************************************
                  ***************************** Containers::STL::Make ****************************
