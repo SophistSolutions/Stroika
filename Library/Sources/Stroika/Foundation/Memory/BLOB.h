@@ -65,7 +65,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Memory {
 
-/**
+            /**
              *  \def qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr
              *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
              *      internal implementaiton detail, and may go away as an option.
@@ -149,7 +149,7 @@ namespace Stroika {
                 struct _IRep;
 
             protected:
-/**
+                /**
                  */
 #if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
                 template <typename T>
