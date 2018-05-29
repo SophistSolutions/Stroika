@@ -21,6 +21,56 @@ History
 
 
 
+
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0b1">v2.0b1</a><br/>2018-05-29</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0a234...v2.0b1</li>
+		<li>Mark STL::Compare::Equals () functions as deprecated (use std::equals())</li>
+		<li>lose lots of deprecated classes/files, incliding SharedStaticData<T>, CompareNormalizer etc</li>
+		<li>Deletes archives and incomplete code/modules (from v2.0 branch - still in v2.1 branch)
+			<ul>
+				<li>Archives</li>
+				<li>Containers: Association, Bag, KeyedCollection,LockFreeDataStrucytres</li>
+				<li>Cache BloomFilter</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0b1.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0b1-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.3 (apple clang 9.2)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release; probably losing support for this soon)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2/7.3</li>
+				<li>gcc 8</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++}; probably losing support for this soon</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}; probably losing support for this soon</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+				<li>IGNORE innocuous failure due to network connect error</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+
+
+
   
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a234">v2.0a234</a><br/>2018-05-26</td>
