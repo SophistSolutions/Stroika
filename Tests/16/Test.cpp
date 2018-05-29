@@ -483,13 +483,13 @@ namespace {
             vector<T>   vs  = s.template As<vector<T>> ();
             Sequence<T> tmp = Sequence<T> (vs);
             VerifyTestResult (tmp.size () == vs.size ());
-            VerifyTestResult (STL::equal (tmp.template As<vector<T>> (), vs, EQUALS_COMPARER {}));
+            VerifyTestResult (STL::equal (tmp.template As<vector<T>> (), vs, EQUALS_COMPARER{}));
         }
         {
             list<T>     ls  = s.template As<list<T>> ();
             Sequence<T> tmp = Sequence<T> (ls);
             VerifyTestResult (tmp.size () == ls.size ());
-            VerifyTestResult (STL::equal (tmp.template As<list<T>> (), ls, EQUALS_COMPARER {}));
+            VerifyTestResult (STL::equal (tmp.template As<list<T>> (), ls, EQUALS_COMPARER{}));
         }
 
         s.RemoveAll ();
@@ -514,7 +514,7 @@ namespace {
             n.push_back (9);
             s            = CONCRETE_SEQUENCE_T (n);
             vector<T> nn = s.template As<vector<T>> ();
-            VerifyTestResult (STL::Equals<EQUALS_COMPARER> (nn, n));
+            VerifyTestResult (STL::equal (nn, n, EQUALS_COMPARER{}));
         }
 
         s.RemoveAll ();
