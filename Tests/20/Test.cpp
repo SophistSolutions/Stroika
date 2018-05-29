@@ -17,6 +17,7 @@
 #include "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
 #include "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
 #include "Stroika/Foundation/Containers/STL/Compare.h"
+#include "Stroika/Foundation/Containers/STL/Utilities.h"
 #include "Stroika/Foundation/Containers/Sequence.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
@@ -483,13 +484,13 @@ namespace {
             vector<T>   vs  = s.template As<vector<T>> ();
             Sequence<T> tmp = Sequence<T> (vs);
             VerifyTestResult (tmp.size () == vs.size ());
-            VerifyTestResult (STL::Equals<EQUALS_COMPARER> (tmp.template As<vector<T>> (), vs));
+            VerifyTestResult (STL::equal (tmp.template As<vector<T>> (), vs, EQUALS_COMPARER{}));
         }
         {
             list<T>     ls  = s.template As<list<T>> ();
             Sequence<T> tmp = Sequence<T> (ls);
             VerifyTestResult (tmp.size () == ls.size ());
-            VerifyTestResult (STL::Equals<EQUALS_COMPARER> (tmp.template As<list<T>> (), ls));
+            VerifyTestResult (STL::equal (tmp.template As<list<T>> (), ls, EQUALS_COMPARER{}));
         }
 
         s.RemoveAll ();
