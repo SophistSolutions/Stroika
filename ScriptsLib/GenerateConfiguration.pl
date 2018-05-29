@@ -131,7 +131,7 @@ sub	DoHelp_
         print("	    --valgrind { enable|disable|default }           /* Enables/disable valgrind-specific runtime code (so far only needed for clean helgrind use) */\n");
         print("	    --GLIBCXX_DEBUG { enable|disable|default }      /* Enables/Disables GLIBCXX_DEBUG (G++-specific) */\n");
         print("	    --cppstd-version-flag {FLAG}                    /* DEPRECATED - use -cppstd-version (without --std part */\n");
-        print("	    --cppstd-version {FLAG}                         /* Sets can be c++14 or c++17, or c++2a\n");
+        print("	    --cppstd-version {FLAG}                         /* Sets can be c++17, or c++2a\n");
         print("	    --stdlib {LIB}                                  /* libc++ (clang lib), libstdc++ (gcc and often clang)\n");
         print("	    --ActivePerl {use|no}                           /* Enables/disables use of ActivePerl (Windows Only) - JUST USED TO BUILD OPENSSL for Windows*/\n");
         print("	    --private-cmake-override {use|no}               /* Enables/disables use of private cmake replacement (Windows/cygwin Only) - JUST USED TO BUILD Xerces for Windows*/\n");
@@ -470,27 +470,16 @@ sub	SetDefaultForCompilerDriver_
 	no warnings;	#@todo fix - not sure why we get warning on use of $CPPSTD_VERSION_FLAG
 	if ($CPPSTD_VERSION_FLAG eq '') {
 		if (IsGCCOrGPlusPlus_ ($COMPILER_DRIVER)) {
-			if (GetGCCVersion_ ($COMPILER_DRIVER) >= 6.0) {
-				$CPPSTD_VERSION_FLAG="--std=c++17"
-			}
-			else {
-				$CPPSTD_VERSION_FLAG="--std=c++14"
-			}
+			$CPPSTD_VERSION_FLAG="--std=c++17"
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
 			if ("$^O" eq "darwin") {
 				### As of clang 9.2, we seem to get myterious link errors (constexpr statics)... SO until I debug that, just use c++14
-				$CPPSTD_VERSION_FLAG="--std=c++14"
+				### @todo - DEBUG
+				$CPPSTD_VERSION_FLAG="--std=c++17"
 			}
 			else {
-				### not 4.0 not working with clang - could be my bug but dont default to not working
-				### 5.0 fails due to constexpr link bug - looks like compiler bug not generating symbol in cpp file when I define object.
-				if (GetClangVersion_ ($COMPILER_DRIVER) >= '6.0') {
-					$CPPSTD_VERSION_FLAG="--std=c++17"
-				}
-				else {
-					$CPPSTD_VERSION_FLAG="--std=c++14"
-				}
+				$CPPSTD_VERSION_FLAG="--std=c++17"
 			}
 		}
 	}
@@ -817,7 +806,10 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-cppstd-version") or (lc ($var) eq "--cppstd-version")) {
 			$i++;
 			$var = $ARGV[$i];
-			if ($var ne "c++14" && $var ne "c++17" && $var ne "c++2a") {
+			if ($var eq "c++14" ) {
+				print "Warning: c++14 not supported by Stroika v2.1 or later\n";
+			}
+			if ($var ne "c++17" && $var ne "c++2a") {
 				print "Warning: unrecognized arg to --cppstd-version\n";
 			}
 			$CPPSTD_VERSION_FLAG = "--std=" . $var;
