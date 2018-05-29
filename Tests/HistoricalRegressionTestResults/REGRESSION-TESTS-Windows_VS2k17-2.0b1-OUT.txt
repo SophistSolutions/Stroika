@@ -1,0 +1,2122 @@
+)))- Resetting all configurations to standard regression test set (output to Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-Windows_VS2k17-2.0b1-OUT.txt) - started at Mon, May 28, 2018  9:34:39 PM
+Making default configurations:
+   Writing "ConfigurationFiles/Debug-U-32.xml" ... done
+   Writing "ConfigurationFiles/Debug-U-64.xml" ... done
+   Writing "ConfigurationFiles/Release-DbgMemLeaks-U-32.xml" ... done
+   Writing "ConfigurationFiles/Release-Logging-U-32.xml" ... done
+   Writing "ConfigurationFiles/Release-Logging-U-64.xml" ... done
+   Writing "ConfigurationFiles/Release-U-32.xml" ... done
+   Writing "ConfigurationFiles/Release-U-64.xml" ... done
+)))- Building configurations (7):
+   Debug-U-32
+   Debug-U-64
+   Release-DbgMemLeaks-U-32
+   Release-Logging-U-32
+   Release-Logging-U-64
+   Release-U-32
+   Release-U-64
+Make clobber
+Stroika Clobber:
+   Clobbering Stroika ThirdPartyComponents ... done
+)))- Make all (-j1)...
+Checking for installed tools:
+   sed is /usr/bin/sed
+   wget is /usr/bin/wget
+   perl is /usr/bin/perl
+   tar is /usr/bin/tar
+   patch is /usr/bin/patch
+   tr is /usr/bin/tr
+   pkg-config is /usr/bin/pkg-config
+   realpath is /usr/bin/realpath
+   dos2unix is /usr/bin/dos2unix
+   unix2dos is /usr/bin/unix2dos
+Checking Prerequisites for Stroika:
+   Applying configuration {Debug-U-32}:
+      Writing "IntermediateFiles/Debug-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Debug-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Debug-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Debug-U-64}:
+      Writing "IntermediateFiles/Debug-U-64/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Debug-U-64/Configuration.mk" ... done
+      Writing "IntermediateFiles/Debug-U-64/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-DbgMemLeaks-U-32}:
+      Writing "IntermediateFiles/Release-DbgMemLeaks-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-DbgMemLeaks-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-DbgMemLeaks-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-Logging-U-32}:
+      Writing "IntermediateFiles/Release-Logging-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-Logging-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-Logging-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-Logging-U-64}:
+      Writing "IntermediateFiles/Release-Logging-U-64/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-Logging-U-64/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-Logging-U-64/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-U-32}:
+      Writing "IntermediateFiles/Release-U-32/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-U-32/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-U-32/Stroika-Current-Version.h" ... done
+   Applying configuration {Release-U-64}:
+      Writing "IntermediateFiles/Release-U-64/Stroika-Current-Configuration.h" ... done
+      Writing "IntermediateFiles/Release-U-64/Configuration.mk" ... done
+      Writing "IntermediateFiles/Release-U-64/Stroika-Current-Version.h" ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Debug-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Debug-U-64}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-DbgMemLeaks-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-Logging-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-Logging-U-64}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-U-32}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+   Checking-Prerequisite Tools Stroika ThirdPartyComponents {Release-U-64}:
+      Checking Prerequisite tools for lzma ... done
+      Checking Prerequisite tools for sqlite ... done
+      Checking Prerequisite tools for Xerces ... done
+Building Stroika all {Debug-U-32}:
+   Building Stroika ThirdPartyComponents {Debug-U-32}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-32}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-32}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-32}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_67_0 {Debug-U-32}:
+      Extracting ../Origs-Cache/boost_1_67_0.tar.gz to CURRENT ... done
+         Extracting ../Origs-Cache/boost_1_67_0.tar.gz to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build log2={StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-32}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Debug-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-32}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Debug-U-32}:
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to CURRENT ... done
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/Xerces ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Debug-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3230000 {Debug-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Debug-U-32}:
+      Building Stroika-Foundation:
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\codepage.cpp(1309): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.cpp(444): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Debug-U-32}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Debug-U-32}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Bijection:
+      Test 10: Foundation::Containers::Collection:
+      Test 11: Foundation::Containers::DataHyperRectangle:
+      Test 12: Foundation::Containers::Deque:
+      Test 13: Foundation::Containers::Mapping:
+      Test 14: Foundation::Containers::MultiSet:
+      Test 15: Foundation::Containers::Queue:
+      Test 16: Foundation::Containers::Sequence:
+      Test 17: Foundation::Containers::Set:
+      Test 18: Foundation::Containers::SortedCollection:
+      Test 19: Foundation::Containers::SortedMapping:
+      Test 20: Foundation::Containers::SortedMultiSet:
+      Test 21: Foundation::Containers::SortedSet:
+      Test 22: Foundation::Containers::Stack:
+      Test 23: Foundation::Containers::STL:
+      Test 24: Foundation::Cryptography:
+      Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 26: Foundation::DataExchange::ObjectVariantMapper:
+      Test 27: Foundation::DataExchange::XML::SaxParser:
+      Test 28: Foundation::DataExchange::Other:
+      Test 29: Foundation::Database:
+      Test 30: Foundation::Execution::Exceptions:
+      Test 31: Foundation::Execution::ProcessRunner:
+      Test 32: Foundation::Execution::Signals:
+      Test 33: Foundation::Execution::Threads:
+      Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 35: Foundation::Execution::Other:
+      Test 36: Foundation::IO::Network:
+      Test 37: Foundation::IO::Network::HTTP:
+      Test 38: Foundation::IO::Network::Transfer:
+      Test 39: Foundation::IO::Other:
+      Test 40: Foundation::Math:
+      Test 41: Foundation::Memory:
+      Test 42: Foundation::Streams:
+      Test 43: Foundation::Time:
+      Test 44: Foundation::Traversal:
+      Test 45: Foundation::PERFORMANCE:
+   Building Stroika Samples {Debug-U-32}:
+      Building Samples/ActiveLedIt:
+      Building Samples/ArchiveUtility:
+      Building Samples/LedIt:
+      Building Samples/LedLineIt:
+      Building Samples/SimpleLedTest:
+      Building Samples/SimpleService:
+      Building Samples/SSDPClient:
+      Building Samples/SSDPServer:
+      Building Samples/SystemPerformanceClient:
+      Building Samples/Traceroute:
+      Building Samples/WebServer:
+which: no doxygen in (/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/WINDOWS/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Program Files/nodejs:/cygdrive/c/WINDOWS/System32/OpenSSH:/cygdrive/c/bin:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE):/cygdrive/c/Users/lewis/AppData/Roaming/npm:/cygdrive/c/Program Files (x86)/WinMerge)
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Debug-U-32}:
+      Checking Stroika ThirdPartyComponents {Debug-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Debug-U-32}:      [SUCCEEDED]
+      Checking Stroika Tools {Debug-U-32}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Debug-U-32}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 11: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 13: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 14: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 15: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 17: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 18: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 19: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 20: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 21: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 22: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 23: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 24: Foundation::Cryptography :  [SUCCEEDED]
+         Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 26: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 27: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 28: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 29: Foundation::Database :  [SUCCEEDED]
+         Test 30: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 31: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 32: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 33: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 34: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 36: Foundation::IO::Network :  [SUCCEEDED]
+         Test 37: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 38: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 39: Foundation::IO::Other :  [SUCCEEDED]
+         Test 40: Foundation::Math :  [SUCCEEDED]
+         Test 41: Foundation::Memory :  [SUCCEEDED]
+         Test 42: Foundation::Streams :  [SUCCEEDED]
+         Test 43: Foundation::Time :  [SUCCEEDED]
+         Test 44: Foundation::Traversal :  [SUCCEEDED]
+         Test 45: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Debug-U-32}:
+         Checking Samples/ActiveLedIt...              [SUCCEEDED]
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/LedIt...                    [SUCCEEDED]
+         Checking Samples/LedLineIt...                [SUCCEEDED]
+         Checking Samples/SimpleLedTest...            [SUCCEEDED]
+         Checking Samples/SimpleService...            [SUCCEEDED]
+         Checking Samples/SSDPClient...               [SUCCEEDED]
+         Checking Samples/SSDPServer...               [SUCCEEDED]
+         Checking Samples/SystemPerformanceClient...  [SUCCEEDED]
+         Checking Samples/Traceroute...               [SUCCEEDED]
+         Checking Samples/WebServer...                [SUCCEEDED]
+Building Stroika all {Debug-U-64}:
+   Building Stroika ThirdPartyComponents {Debug-U-64}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-64}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-64}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-64}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_67_0 {Debug-U-64}:
+         Extracting ../Origs-Cache/boost_1_67_0.tar.gz to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build log2={StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-64}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Debug-U-64/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-64}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Debug-U-64}:
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/Xerces ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Debug-U-64/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3230000 {Debug-U-64}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Debug-U-64}:
+      Building Stroika-Foundation:
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\codepage.cpp(1309): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.cpp(444): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\connectionorientedstreamsocket.cpp(119): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\connectionorientedstreamsocket.cpp(119): warning C4244: 'initializing': conversion from 'Stroika::Foundation::IO::Network::Socket::PlatformNativeHandle' to 'int', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Debug-U-64}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Debug-U-64}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Bijection:
+      Test 10: Foundation::Containers::Collection:
+      Test 11: Foundation::Containers::DataHyperRectangle:
+      Test 12: Foundation::Containers::Deque:
+      Test 13: Foundation::Containers::Mapping:
+      Test 14: Foundation::Containers::MultiSet:
+      Test 15: Foundation::Containers::Queue:
+      Test 16: Foundation::Containers::Sequence:
+      Test 17: Foundation::Containers::Set:
+      Test 18: Foundation::Containers::SortedCollection:
+      Test 19: Foundation::Containers::SortedMapping:
+      Test 20: Foundation::Containers::SortedMultiSet:
+      Test 21: Foundation::Containers::SortedSet:
+      Test 22: Foundation::Containers::Stack:
+      Test 23: Foundation::Containers::STL:
+      Test 24: Foundation::Cryptography:
+      Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 26: Foundation::DataExchange::ObjectVariantMapper:
+      Test 27: Foundation::DataExchange::XML::SaxParser:
+      Test 28: Foundation::DataExchange::Other:
+      Test 29: Foundation::Database:
+      Test 30: Foundation::Execution::Exceptions:
+      Test 31: Foundation::Execution::ProcessRunner:
+      Test 32: Foundation::Execution::Signals:
+      Test 33: Foundation::Execution::Threads:
+      Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 35: Foundation::Execution::Other:
+      Test 36: Foundation::IO::Network:
+      Test 37: Foundation::IO::Network::HTTP:
+      Test 38: Foundation::IO::Network::Transfer:
+      Test 39: Foundation::IO::Other:
+      Test 40: Foundation::Math:
+      Test 41: Foundation::Memory:
+      Test 42: Foundation::Streams:
+      Test 43: Foundation::Time:
+      Test 44: Foundation::Traversal:
+      Test 45: Foundation::PERFORMANCE:
+   Building Stroika Samples {Debug-U-64}:
+      Building Samples/ActiveLedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/ArchiveUtility:
+      Building Samples/LedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/LedLineIt:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleLedTest:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleService:
+      Building Samples/SSDPClient:
+      Building Samples/SSDPServer:
+      Building Samples/SystemPerformanceClient:
+      Building Samples/Traceroute:
+      Building Samples/WebServer:
+which: no doxygen in (/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/WINDOWS/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Program Files/nodejs:/cygdrive/c/WINDOWS/System32/OpenSSH:/cygdrive/c/bin:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE):/cygdrive/c/Users/lewis/AppData/Roaming/npm:/cygdrive/c/Program Files (x86)/WinMerge)
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Debug-U-64}:
+      Checking Stroika ThirdPartyComponents {Debug-U-64}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Debug-U-64}:      [SUCCEEDED]
+      Checking Stroika Tools {Debug-U-64}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Debug-U-64}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 11: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 13: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 14: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 15: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 17: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 18: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 19: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 20: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 21: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 22: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 23: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 24: Foundation::Cryptography :  [SUCCEEDED]
+         Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 26: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 27: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 28: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 29: Foundation::Database :  [SUCCEEDED]
+         Test 30: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 31: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 32: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 33: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 34: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 36: Foundation::IO::Network :  [SUCCEEDED]
+         Test 37: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 38: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 39: Foundation::IO::Other :  [SUCCEEDED]
+         Test 40: Foundation::Math :  [SUCCEEDED]
+         Test 41: Foundation::Memory :  [SUCCEEDED]
+         Test 42: Foundation::Streams :  [SUCCEEDED]
+         Test 43: Foundation::Time :  [SUCCEEDED]
+         Test 44: Foundation::Traversal :  [SUCCEEDED]
+         Test 45: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Debug-U-64}:
+         Checking Samples/ActiveLedIt...              [SKIPPED]
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/LedIt...                    [SKIPPED]
+         Checking Samples/LedLineIt...                [SKIPPED]
+         Checking Samples/SimpleLedTest...            [SKIPPED]
+         Checking Samples/SimpleService...            [SUCCEEDED]
+         Checking Samples/SSDPClient...               [SUCCEEDED]
+         Checking Samples/SSDPServer...               [SUCCEEDED]
+         Checking Samples/SystemPerformanceClient...  [SUCCEEDED]
+         Checking Samples/Traceroute...               [SUCCEEDED]
+         Checking Samples/WebServer...                [SUCCEEDED]
+Building Stroika all {Release-DbgMemLeaks-U-32}:
+   Building Stroika ThirdPartyComponents {Release-DbgMemLeaks-U-32}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-DbgMemLeaks-U-32}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-DbgMemLeaks-U-32}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-DbgMemLeaks-U-32}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-DbgMemLeaks-U-32}:
+         Extracting ../Origs-Cache/boost_1_67_0.tar.gz to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build log2={StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-DbgMemLeaks-U-32}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Release-DbgMemLeaks-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Release-DbgMemLeaks-U-32}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-DbgMemLeaks-U-32}:
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/Xerces ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-DbgMemLeaks-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-DbgMemLeaks-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Release-DbgMemLeaks-U-32}:
+      Building Stroika-Foundation:
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\codepage.cpp(1309): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.cpp(444): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Release-DbgMemLeaks-U-32}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Release-DbgMemLeaks-U-32}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Bijection:
+      Test 10: Foundation::Containers::Collection:
+      Test 11: Foundation::Containers::DataHyperRectangle:
+      Test 12: Foundation::Containers::Deque:
+      Test 13: Foundation::Containers::Mapping:
+      Test 14: Foundation::Containers::MultiSet:
+      Test 15: Foundation::Containers::Queue:
+      Test 16: Foundation::Containers::Sequence:
+      Test 17: Foundation::Containers::Set:
+      Test 18: Foundation::Containers::SortedCollection:
+      Test 19: Foundation::Containers::SortedMapping:
+      Test 20: Foundation::Containers::SortedMultiSet:
+      Test 21: Foundation::Containers::SortedSet:
+      Test 22: Foundation::Containers::Stack:
+      Test 23: Foundation::Containers::STL:
+      Test 24: Foundation::Cryptography:
+      Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 26: Foundation::DataExchange::ObjectVariantMapper:
+      Test 27: Foundation::DataExchange::XML::SaxParser:
+      Test 28: Foundation::DataExchange::Other:
+      Test 29: Foundation::Database:
+      Test 30: Foundation::Execution::Exceptions:
+      Test 31: Foundation::Execution::ProcessRunner:
+      Test 32: Foundation::Execution::Signals:
+      Test 33: Foundation::Execution::Threads:
+      Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 35: Foundation::Execution::Other:
+      Test 36: Foundation::IO::Network:
+      Test 37: Foundation::IO::Network::HTTP:
+      Test 38: Foundation::IO::Network::Transfer:
+      Test 39: Foundation::IO::Other:
+      Test 40: Foundation::Math:
+      Test 41: Foundation::Memory:
+      Test 42: Foundation::Streams:
+      Test 43: Foundation::Time:
+      Test 44: Foundation::Traversal:
+      Test 45: Foundation::PERFORMANCE:
+   Building Stroika Samples {Release-DbgMemLeaks-U-32}:
+      Building Samples/ActiveLedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/ArchiveUtility:
+      Building Samples/LedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/LedLineIt:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleLedTest:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleService:
+         SKIPPED for unsupported configuration
+      Building Samples/SSDPClient:
+         SKIPPED for unsupported configuration
+      Building Samples/SSDPServer:
+         SKIPPED for unsupported configuration
+      Building Samples/SystemPerformanceClient:
+         SKIPPED for unsupported configuration
+      Building Samples/Traceroute:
+         SKIPPED for unsupported configuration
+      Building Samples/WebServer:
+         SKIPPED for unsupported configuration
+which: no doxygen in (/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/WINDOWS/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Program Files/nodejs:/cygdrive/c/WINDOWS/System32/OpenSSH:/cygdrive/c/bin:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE):/cygdrive/c/Users/lewis/AppData/Roaming/npm:/cygdrive/c/Program Files (x86)/WinMerge)
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Release-DbgMemLeaks-U-32}:
+      Checking Stroika ThirdPartyComponents {Release-DbgMemLeaks-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Release-DbgMemLeaks-U-32}:      [SUCCEEDED]
+      Checking Stroika Tools {Release-DbgMemLeaks-U-32}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Release-DbgMemLeaks-U-32}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 11: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 13: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 14: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 15: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 17: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 18: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 19: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 20: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 21: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 22: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 23: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 24: Foundation::Cryptography :  [SUCCEEDED]
+         Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 26: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 27: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 28: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 29: Foundation::Database :  [SUCCEEDED]
+         Test 30: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 31: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 32: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 33: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 34: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 36: Foundation::IO::Network :  [SUCCEEDED]
+         Test 37: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 38: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 39: Foundation::IO::Other :  [SUCCEEDED]
+         Test 40: Foundation::Math :  [SUCCEEDED]
+         Test 41: Foundation::Memory :  [SUCCEEDED]
+         Test 42: Foundation::Streams :  [SUCCEEDED]
+         Test 43: Foundation::Time :  [SUCCEEDED]
+         Test 44: Foundation::Traversal :  [SUCCEEDED]
+         Test 45: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Release-DbgMemLeaks-U-32}:
+         Checking Samples/ActiveLedIt...              [SKIPPED]
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/LedIt...                    [SKIPPED]
+         Checking Samples/LedLineIt...                [SKIPPED]
+         Checking Samples/SimpleLedTest...            [SKIPPED]
+         Checking Samples/SimpleService...            [SKIPPED]
+         Checking Samples/SSDPClient...               [SKIPPED]
+         Checking Samples/SSDPServer...               [SKIPPED]
+         Checking Samples/SystemPerformanceClient...  [SKIPPED]
+         Checking Samples/Traceroute...               [SKIPPED]
+         Checking Samples/WebServer...                [SKIPPED]
+Building Stroika all {Release-Logging-U-32}:
+   Building Stroika ThirdPartyComponents {Release-Logging-U-32}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-Logging-U-32}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-Logging-U-32}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-Logging-U-32}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-Logging-U-32}:
+         Extracting ../Origs-Cache/boost_1_67_0.tar.gz to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build log2={StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-Logging-U-32}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Release-Logging-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Release-Logging-U-32}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-Logging-U-32}:
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/Xerces ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-Logging-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Release-Logging-U-32}:
+      Building Stroika-Foundation:
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\codepage.cpp(1309): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.cpp(444): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Release-Logging-U-32}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Release-Logging-U-32}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Bijection:
+      Test 10: Foundation::Containers::Collection:
+      Test 11: Foundation::Containers::DataHyperRectangle:
+      Test 12: Foundation::Containers::Deque:
+      Test 13: Foundation::Containers::Mapping:
+      Test 14: Foundation::Containers::MultiSet:
+      Test 15: Foundation::Containers::Queue:
+      Test 16: Foundation::Containers::Sequence:
+      Test 17: Foundation::Containers::Set:
+      Test 18: Foundation::Containers::SortedCollection:
+      Test 19: Foundation::Containers::SortedMapping:
+      Test 20: Foundation::Containers::SortedMultiSet:
+      Test 21: Foundation::Containers::SortedSet:
+      Test 22: Foundation::Containers::Stack:
+      Test 23: Foundation::Containers::STL:
+      Test 24: Foundation::Cryptography:
+      Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 26: Foundation::DataExchange::ObjectVariantMapper:
+      Test 27: Foundation::DataExchange::XML::SaxParser:
+      Test 28: Foundation::DataExchange::Other:
+      Test 29: Foundation::Database:
+      Test 30: Foundation::Execution::Exceptions:
+      Test 31: Foundation::Execution::ProcessRunner:
+      Test 32: Foundation::Execution::Signals:
+      Test 33: Foundation::Execution::Threads:
+      Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 35: Foundation::Execution::Other:
+      Test 36: Foundation::IO::Network:
+      Test 37: Foundation::IO::Network::HTTP:
+      Test 38: Foundation::IO::Network::Transfer:
+      Test 39: Foundation::IO::Other:
+      Test 40: Foundation::Math:
+      Test 41: Foundation::Memory:
+      Test 42: Foundation::Streams:
+      Test 43: Foundation::Time:
+      Test 44: Foundation::Traversal:
+      Test 45: Foundation::PERFORMANCE:
+   Building Stroika Samples {Release-Logging-U-32}:
+      Building Samples/ActiveLedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/ArchiveUtility:
+      Building Samples/LedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/LedLineIt:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleLedTest:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleService:
+         SKIPPED for unsupported configuration
+      Building Samples/SSDPClient:
+         SKIPPED for unsupported configuration
+      Building Samples/SSDPServer:
+         SKIPPED for unsupported configuration
+      Building Samples/SystemPerformanceClient:
+         SKIPPED for unsupported configuration
+      Building Samples/Traceroute:
+         SKIPPED for unsupported configuration
+      Building Samples/WebServer:
+         SKIPPED for unsupported configuration
+which: no doxygen in (/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/WINDOWS/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Program Files/nodejs:/cygdrive/c/WINDOWS/System32/OpenSSH:/cygdrive/c/bin:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE):/cygdrive/c/Users/lewis/AppData/Roaming/npm:/cygdrive/c/Program Files (x86)/WinMerge)
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Release-Logging-U-32}:
+      Checking Stroika ThirdPartyComponents {Release-Logging-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Release-Logging-U-32}:      [SUCCEEDED]
+      Checking Stroika Tools {Release-Logging-U-32}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Release-Logging-U-32}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 11: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 13: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 14: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 15: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 17: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 18: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 19: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 20: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 21: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 22: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 23: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 24: Foundation::Cryptography :  [SUCCEEDED]
+         Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 26: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 27: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 28: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 29: Foundation::Database :  [SUCCEEDED]
+         Test 30: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 31: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 32: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 33: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 34: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 36: Foundation::IO::Network :  [SUCCEEDED]
+         Test 37: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 38: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 39: Foundation::IO::Other :  [SUCCEEDED]
+         Test 40: Foundation::Math :  [SUCCEEDED]
+         Test 41: Foundation::Memory :  [SUCCEEDED]
+         Test 42: Foundation::Streams :  [SUCCEEDED]
+         Test 43: Foundation::Time :  [SUCCEEDED]
+         Test 44: Foundation::Traversal :  [SUCCEEDED]
+         Test 45: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Release-Logging-U-32}:
+         Checking Samples/ActiveLedIt...              [SKIPPED]
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/LedIt...                    [SKIPPED]
+         Checking Samples/LedLineIt...                [SKIPPED]
+         Checking Samples/SimpleLedTest...            [SKIPPED]
+         Checking Samples/SimpleService...            [SKIPPED]
+         Checking Samples/SSDPClient...               [SKIPPED]
+         Checking Samples/SSDPServer...               [SKIPPED]
+         Checking Samples/SystemPerformanceClient...  [SKIPPED]
+         Checking Samples/Traceroute...               [SKIPPED]
+         Checking Samples/WebServer...                [SKIPPED]
+Building Stroika all {Release-Logging-U-64}:
+   Building Stroika ThirdPartyComponents {Release-Logging-U-64}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-Logging-U-64}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-Logging-U-64}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-Logging-U-64}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-Logging-U-64}:
+         Extracting ../Origs-Cache/boost_1_67_0.tar.gz to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build log2={StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-Logging-U-64}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Release-Logging-U-64/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Release-Logging-U-64}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-Logging-U-64}:
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/Xerces ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-Logging-U-64/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-Logging-U-64}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Release-Logging-U-64}:
+      Building Stroika-Foundation:
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\codepage.cpp(1309): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.cpp(444): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\connectionorientedstreamsocket.cpp(119): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\connectionorientedstreamsocket.cpp(119): warning C4244: 'initializing': conversion from 'Stroika::Foundation::IO::Network::Socket::PlatformNativeHandle' to 'int', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Release-Logging-U-64}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Release-Logging-U-64}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Bijection:
+      Test 10: Foundation::Containers::Collection:
+      Test 11: Foundation::Containers::DataHyperRectangle:
+      Test 12: Foundation::Containers::Deque:
+      Test 13: Foundation::Containers::Mapping:
+      Test 14: Foundation::Containers::MultiSet:
+      Test 15: Foundation::Containers::Queue:
+      Test 16: Foundation::Containers::Sequence:
+      Test 17: Foundation::Containers::Set:
+      Test 18: Foundation::Containers::SortedCollection:
+      Test 19: Foundation::Containers::SortedMapping:
+      Test 20: Foundation::Containers::SortedMultiSet:
+      Test 21: Foundation::Containers::SortedSet:
+      Test 22: Foundation::Containers::Stack:
+      Test 23: Foundation::Containers::STL:
+      Test 24: Foundation::Cryptography:
+      Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 26: Foundation::DataExchange::ObjectVariantMapper:
+      Test 27: Foundation::DataExchange::XML::SaxParser:
+      Test 28: Foundation::DataExchange::Other:
+      Test 29: Foundation::Database:
+      Test 30: Foundation::Execution::Exceptions:
+      Test 31: Foundation::Execution::ProcessRunner:
+      Test 32: Foundation::Execution::Signals:
+      Test 33: Foundation::Execution::Threads:
+      Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 35: Foundation::Execution::Other:
+      Test 36: Foundation::IO::Network:
+      Test 37: Foundation::IO::Network::HTTP:
+      Test 38: Foundation::IO::Network::Transfer:
+      Test 39: Foundation::IO::Other:
+      Test 40: Foundation::Math:
+      Test 41: Foundation::Memory:
+      Test 42: Foundation::Streams:
+      Test 43: Foundation::Time:
+      Test 44: Foundation::Traversal:
+      Test 45: Foundation::PERFORMANCE:
+   Building Stroika Samples {Release-Logging-U-64}:
+      Building Samples/ActiveLedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/ArchiveUtility:
+      Building Samples/LedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/LedLineIt:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleLedTest:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleService:
+         SKIPPED for unsupported configuration
+      Building Samples/SSDPClient:
+         SKIPPED for unsupported configuration
+      Building Samples/SSDPServer:
+         SKIPPED for unsupported configuration
+      Building Samples/SystemPerformanceClient:
+         SKIPPED for unsupported configuration
+      Building Samples/Traceroute:
+         SKIPPED for unsupported configuration
+      Building Samples/WebServer:
+         SKIPPED for unsupported configuration
+which: no doxygen in (/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/WINDOWS/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Program Files/nodejs:/cygdrive/c/WINDOWS/System32/OpenSSH:/cygdrive/c/bin:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE):/cygdrive/c/Users/lewis/AppData/Roaming/npm:/cygdrive/c/Program Files (x86)/WinMerge)
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Release-Logging-U-64}:
+      Checking Stroika ThirdPartyComponents {Release-Logging-U-64}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Release-Logging-U-64}:      [SUCCEEDED]
+      Checking Stroika Tools {Release-Logging-U-64}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Release-Logging-U-64}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 11: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 13: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 14: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 15: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 17: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 18: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 19: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 20: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 21: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 22: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 23: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 24: Foundation::Cryptography :  [SUCCEEDED]
+         Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 26: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 27: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 28: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 29: Foundation::Database :  [SUCCEEDED]
+         Test 30: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 31: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 32: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 33: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 34: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 36: Foundation::IO::Network :  [SUCCEEDED]
+         Test 37: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 38: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 39: Foundation::IO::Other :  [SUCCEEDED]
+         Test 40: Foundation::Math :  [SUCCEEDED]
+         Test 41: Foundation::Memory :  [SUCCEEDED]
+         Test 42: Foundation::Streams :  [SUCCEEDED]
+         Test 43: Foundation::Time :  [SUCCEEDED]
+         Test 44: Foundation::Traversal :  [SUCCEEDED]
+         Test 45: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Release-Logging-U-64}:
+         Checking Samples/ActiveLedIt...              [SKIPPED]
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/LedIt...                    [SKIPPED]
+         Checking Samples/LedLineIt...                [SKIPPED]
+         Checking Samples/SimpleLedTest...            [SKIPPED]
+         Checking Samples/SimpleService...            [SKIPPED]
+         Checking Samples/SSDPClient...               [SKIPPED]
+         Checking Samples/SSDPServer...               [SKIPPED]
+         Checking Samples/SystemPerformanceClient...  [SKIPPED]
+         Checking Samples/Traceroute...               [SKIPPED]
+         Checking Samples/WebServer...                [SKIPPED]
+Building Stroika all {Release-U-32}:
+   Building Stroika ThirdPartyComponents {Release-U-32}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-U-32}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-U-32}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-U-32}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-U-32}:
+         Extracting ../Origs-Cache/boost_1_67_0.tar.gz to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build log2={StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-U-32}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Release-U-32/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Release-U-32}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-U-32}:
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/Xerces ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-U-32/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Release-U-32}:
+      Building Stroika-Foundation:
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\codepage.cpp(1309): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.cpp(444): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Release-U-32}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Release-U-32}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Bijection:
+      Test 10: Foundation::Containers::Collection:
+      Test 11: Foundation::Containers::DataHyperRectangle:
+      Test 12: Foundation::Containers::Deque:
+      Test 13: Foundation::Containers::Mapping:
+      Test 14: Foundation::Containers::MultiSet:
+      Test 15: Foundation::Containers::Queue:
+      Test 16: Foundation::Containers::Sequence:
+      Test 17: Foundation::Containers::Set:
+      Test 18: Foundation::Containers::SortedCollection:
+      Test 19: Foundation::Containers::SortedMapping:
+      Test 20: Foundation::Containers::SortedMultiSet:
+      Test 21: Foundation::Containers::SortedSet:
+      Test 22: Foundation::Containers::Stack:
+      Test 23: Foundation::Containers::STL:
+      Test 24: Foundation::Cryptography:
+      Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 26: Foundation::DataExchange::ObjectVariantMapper:
+      Test 27: Foundation::DataExchange::XML::SaxParser:
+      Test 28: Foundation::DataExchange::Other:
+      Test 29: Foundation::Database:
+      Test 30: Foundation::Execution::Exceptions:
+      Test 31: Foundation::Execution::ProcessRunner:
+      Test 32: Foundation::Execution::Signals:
+      Test 33: Foundation::Execution::Threads:
+      Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 35: Foundation::Execution::Other:
+      Test 36: Foundation::IO::Network:
+      Test 37: Foundation::IO::Network::HTTP:
+      Test 38: Foundation::IO::Network::Transfer:
+      Test 39: Foundation::IO::Other:
+      Test 40: Foundation::Math:
+      Test 41: Foundation::Memory:
+      Test 42: Foundation::Streams:
+      Test 43: Foundation::Time:
+      Test 44: Foundation::Traversal:
+      Test 45: Foundation::PERFORMANCE:
+   Building Stroika Samples {Release-U-32}:
+      Building Samples/ActiveLedIt:
+      Building Samples/ArchiveUtility:
+      Building Samples/LedIt:
+      Building Samples/LedLineIt:
+      Building Samples/SimpleLedTest:
+      Building Samples/SimpleService:
+      Building Samples/SSDPClient:
+      Building Samples/SSDPServer:
+      Building Samples/SystemPerformanceClient:
+      Building Samples/Traceroute:
+      Building Samples/WebServer:
+which: no doxygen in (/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/WINDOWS/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Program Files/nodejs:/cygdrive/c/WINDOWS/System32/OpenSSH:/cygdrive/c/bin:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE):/cygdrive/c/Users/lewis/AppData/Roaming/npm:/cygdrive/c/Program Files (x86)/WinMerge)
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Release-U-32}:
+      Checking Stroika ThirdPartyComponents {Release-U-32}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Release-U-32}:      [SUCCEEDED]
+      Checking Stroika Tools {Release-U-32}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Release-U-32}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 11: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 13: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 14: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 15: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 17: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 18: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 19: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 20: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 21: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 22: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 23: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 24: Foundation::Cryptography :  [SUCCEEDED]
+         Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 26: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 27: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 28: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 29: Foundation::Database :  [SUCCEEDED]
+         Test 30: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 31: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 32: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 33: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 34: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 36: Foundation::IO::Network :  [SUCCEEDED]
+         Test 37: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 38: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 39: Foundation::IO::Other :  [SUCCEEDED]
+         Test 40: Foundation::Math :  [SUCCEEDED]
+         Test 41: Foundation::Memory :  [SUCCEEDED]
+         Test 42: Foundation::Streams :  [SUCCEEDED]
+         Test 43: Foundation::Time :  [SUCCEEDED]
+         Test 44: Foundation::Traversal :  [SUCCEEDED]
+         Test 45: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Release-U-32}:
+         Checking Samples/ActiveLedIt...              [SUCCEEDED]
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/LedIt...                    [SUCCEEDED]
+         Checking Samples/LedLineIt...                [SUCCEEDED]
+         Checking Samples/SimpleLedTest...            [SUCCEEDED]
+         Checking Samples/SimpleService...            [SUCCEEDED]
+         Checking Samples/SSDPClient...               [SUCCEEDED]
+         Checking Samples/SSDPServer...               [SUCCEEDED]
+         Checking Samples/SystemPerformanceClient...  [SUCCEEDED]
+         Checking Samples/Traceroute...               [SUCCEEDED]
+         Checking Samples/WebServer...                [SUCCEEDED]
+Building Stroika all {Release-U-64}:
+   Building Stroika ThirdPartyComponents {Release-U-64}:
+      Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-U-64}:
+      Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-U-64}:
+      Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-U-64}:
+         Extract ../Origs-Cache/zlib-1.2.8.tar.gz to CURRENT ... done
+         Patching ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ ...done
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-U-64}:
+         Extracting ../Origs-Cache/boost_1_67_0.tar.gz to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/boost ... done
+         Building Bootstap (b2) in {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/boost; log2=BOOTSTRAP.OUT ... done
+         Config+Build log2={StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/boost/ConfigureAndBuild.OUT ... done
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+      Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-U-64}:
+         Extracting ../Origs-Cache/openssl-1.1.0g.tar.gz to CURRENT ... done
+         Patching OpenSSL ... .done
+         Configuring (output to CURRENT/CONFIG.OUT) ... done
+         Buidling (redirecting messages to CURRENT/BUILD.OUT) ... done
+         Installing to {StroikaRoot}Builds/Release-U-64/ThirdPartyComponents/, and redirecting messages to CURRENT/INSTALL.OUT ... done
+         Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... done
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+      Building Stroika/ThirdPartyComponents/lzma 1604 {Release-U-64}:
+         Extract ../Origs-Cache/lzma1604.7z to CURRENT ... done
+         Buidling, and redirecting messages to CURRENT/BUILD.OUT ...done
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+      Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-U-64}:
+      Extracting ../Origs-Cache/xerces-c-3.2.1.tar.gz to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/Xerces ... done
+         Configuring (Log to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/Xerces/CONFIGURE.OUT) ... done
+         Compiling (Log to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/Xerces/BUILD.OUT) ... done
+         Copying builds to ../../Builds/ (Log to {StroikaRoot}IntermediateFiles/Release-U-64/ThirdPartyComponents/Xerces/INSTALL.OUT) ... done
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+      Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-U-64}:
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+   Building Stroika Library {Release-U-64}:
+      Building Stroika-Foundation:
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\codepage.cpp(1309): warning C4244: '=': conversion from 'const char32_t' to 'char16_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\characters\string.cpp(444): warning C4244: '=': conversion from 'const char32_t' to 'wchar_t', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\connectionorientedstreamsocket.cpp(119): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+c:\sandbox\stroika\devroot\library\sources\stroika\foundation\io\network\connectionorientedstreamsocket.cpp(119): warning C4244: 'initializing': conversion from 'Stroika::Foundation::IO::Network::Socket::PlatformNativeHandle' to 'int', possible loss of data [C:\Sandbox\Stroika\DevRoot\Library\Projects\VisualStudio.Net-2017\Stroika-Foundation.vcxproj]
+      Building Stroika-Frameworks:
+   Building Stroika Tools {Release-U-64}:
+               Building Stroika Tools-Frameworks-WebServer-HTMLViewCompiler...done
+   Building Stroika Tests {Release-U-64}:
+      Test 01: Foundation::Caching:
+      Test 02: Foundation::Characters::Strings:
+      Test 03: Foundation::Configuration:
+      Test 04: Foundation::Containers::DataStructures::Array:
+      Test 05: Foundation::Containers::DataStructures::LinkedList:
+      Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+      Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+      Test 08: Foundation::Containers::DataStructures::SkipList:
+      Test 09: Foundation::Containers::Bijection:
+      Test 10: Foundation::Containers::Collection:
+      Test 11: Foundation::Containers::DataHyperRectangle:
+      Test 12: Foundation::Containers::Deque:
+      Test 13: Foundation::Containers::Mapping:
+      Test 14: Foundation::Containers::MultiSet:
+      Test 15: Foundation::Containers::Queue:
+      Test 16: Foundation::Containers::Sequence:
+      Test 17: Foundation::Containers::Set:
+      Test 18: Foundation::Containers::SortedCollection:
+      Test 19: Foundation::Containers::SortedMapping:
+      Test 20: Foundation::Containers::SortedMultiSet:
+      Test 21: Foundation::Containers::SortedSet:
+      Test 22: Foundation::Containers::Stack:
+      Test 23: Foundation::Containers::STL:
+      Test 24: Foundation::Cryptography:
+      Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+      Test 26: Foundation::DataExchange::ObjectVariantMapper:
+      Test 27: Foundation::DataExchange::XML::SaxParser:
+      Test 28: Foundation::DataExchange::Other:
+      Test 29: Foundation::Database:
+      Test 30: Foundation::Execution::Exceptions:
+      Test 31: Foundation::Execution::ProcessRunner:
+      Test 32: Foundation::Execution::Signals:
+      Test 33: Foundation::Execution::Threads:
+      Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+      Test 35: Foundation::Execution::Other:
+      Test 36: Foundation::IO::Network:
+      Test 37: Foundation::IO::Network::HTTP:
+      Test 38: Foundation::IO::Network::Transfer:
+      Test 39: Foundation::IO::Other:
+      Test 40: Foundation::Math:
+      Test 41: Foundation::Memory:
+      Test 42: Foundation::Streams:
+      Test 43: Foundation::Time:
+      Test 44: Foundation::Traversal:
+      Test 45: Foundation::PERFORMANCE:
+   Building Stroika Samples {Release-U-64}:
+      Building Samples/ActiveLedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/ArchiveUtility:
+      Building Samples/LedIt:
+         SKIPPED for unsupported configuration
+      Building Samples/LedLineIt:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleLedTest:
+         SKIPPED for unsupported configuration
+      Building Samples/SimpleService:
+      Building Samples/SSDPClient:
+      Building Samples/SSDPServer:
+      Building Samples/SystemPerformanceClient:
+      Building Samples/Traceroute:
+      Building Samples/WebServer:
+which: no doxygen in (/usr/local/bin:/usr/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/WINDOWS/System32/WindowsPowerShell/v1.0:/cygdrive/c/Program Files/dotnet:/cygdrive/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/cygdrive/c/Program Files/nodejs:/cygdrive/c/WINDOWS/System32/OpenSSH:/cygdrive/c/bin:/cygdrive/c/Users/lewis/AppData/Local/Microsoft/WindowsApps:/usr/bin:/cygdrive/c/Program Files (x86)/Sophist Solutions, Inc/LedLineIt 3.1 (PRE-RELEASE):/cygdrive/c/Users/lewis/AppData/Roaming/npm:/cygdrive/c/Program Files (x86)/WinMerge)
+   Skipping build of documentation since Doxygen not installed
+   Checking Stroika {Release-U-64}:
+      Checking Stroika ThirdPartyComponents {Release-U-64}:
+         Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+         Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+      Checking Stroika Library {Release-U-64}:      [SUCCEEDED]
+      Checking Stroika Tools {Release-U-64}:
+                  Checking Tools/WebServer/HTMLViewCompiler...               [SUCCEEDED]
+      Checking Stroika Tests {Release-U-64}:
+         Test 01: Foundation::Caching :  [SUCCEEDED]
+         Test 02: Foundation::Characters::Strings :  [SUCCEEDED]
+         Test 03: Foundation::Configuration :  [SUCCEEDED]
+         Test 04: Foundation::Containers::DataStructures::Array :  [SUCCEEDED]
+         Test 05: Foundation::Containers::DataStructures::LinkedList :  [SUCCEEDED]
+         Test 06: Foundation::Containers::DataStructures::DoublyLinkedList :  [SUCCEEDED]
+         Test 07: Foundation::Containers::DataStructures::STLContainerWrapper :  [SUCCEEDED]
+         Test 08: Foundation::Containers::DataStructures::SkipList :  [SUCCEEDED]
+         Test 09: Foundation::Containers::Bijection :  [SUCCEEDED]
+         Test 10: Foundation::Containers::Collection :  [SUCCEEDED]
+         Test 11: Foundation::Containers::DataHyperRectangle :  [SUCCEEDED]
+         Test 12: Foundation::Containers::Deque :  [SUCCEEDED]
+         Test 13: Foundation::Containers::Mapping :  [SUCCEEDED]
+         Test 14: Foundation::Containers::MultiSet :  [SUCCEEDED]
+         Test 15: Foundation::Containers::Queue :  [SUCCEEDED]
+         Test 16: Foundation::Containers::Sequence :  [SUCCEEDED]
+         Test 17: Foundation::Containers::Set :  [SUCCEEDED]
+         Test 18: Foundation::Containers::SortedCollection :  [SUCCEEDED]
+         Test 19: Foundation::Containers::SortedMapping :  [SUCCEEDED]
+         Test 20: Foundation::Containers::SortedMultiSet :  [SUCCEEDED]
+         Test 21: Foundation::Containers::SortedSet :  [SUCCEEDED]
+         Test 22: Foundation::Containers::Stack :  [SUCCEEDED]
+         Test 23: Foundation::Containers::STL :  [SUCCEEDED]
+         Test 24: Foundation::Cryptography :  [SUCCEEDED]
+         Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip) :  [SUCCEEDED]
+         Test 26: Foundation::DataExchange::ObjectVariantMapper :  [SUCCEEDED]
+         Test 27: Foundation::DataExchange::XML::SaxParser :  [SUCCEEDED]
+         Test 28: Foundation::DataExchange::Other :  [SUCCEEDED]
+         Test 29: Foundation::Database :  [SUCCEEDED]
+         Test 30: Foundation::Execution::Exceptions :  [SUCCEEDED]
+         Test 31: Foundation::Execution::ProcessRunner :  [SUCCEEDED]
+         Test 32: Foundation::Execution::Signals :  [SUCCEEDED]
+         Test 33: Foundation::Execution::Threads :  [SUCCEEDED]
+         Test 34: Foundation::Execution::ThreadSafetyBuiltinObject :  [SUCCEEDED]
+         Test 35: Foundation::Execution::Other :  [SUCCEEDED]
+         Test 36: Foundation::IO::Network :  [SUCCEEDED]
+         Test 37: Foundation::IO::Network::HTTP :  [SUCCEEDED]
+         Test 38: Foundation::IO::Network::Transfer :  [SUCCEEDED]
+         Test 39: Foundation::IO::Other :  [SUCCEEDED]
+         Test 40: Foundation::Math :  [SUCCEEDED]
+         Test 41: Foundation::Memory :  [SUCCEEDED]
+         Test 42: Foundation::Streams :  [SUCCEEDED]
+         Test 43: Foundation::Time :  [SUCCEEDED]
+         Test 44: Foundation::Traversal :  [SUCCEEDED]
+         Test 45: Foundation::PERFORMANCE :  [SUCCEEDED]
+      Checking Stroika Samples {Release-U-64}:
+         Checking Samples/ActiveLedIt...              [SKIPPED]
+         Checking Samples/ArchiveUtility...           [SUCCEEDED]
+         Checking Samples/LedIt...                    [SKIPPED]
+         Checking Samples/LedLineIt...                [SKIPPED]
+         Checking Samples/SimpleLedTest...            [SKIPPED]
+         Checking Samples/SimpleService...            [SUCCEEDED]
+         Checking Samples/SSDPClient...               [SUCCEEDED]
+         Checking Samples/SSDPServer...               [SUCCEEDED]
+         Checking Samples/SystemPerformanceClient...  [SUCCEEDED]
+         Checking Samples/Traceroute...               [SUCCEEDED]
+         Checking Samples/WebServer...                [SUCCEEDED]
+done (in 388 minutes)
+)))- Run-Tests ALL...
+Stroika/Run-All-Tests {Debug-U-32}:
+Building Stroika ThirdPartyComponents {Debug-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_67_0 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3230000 {Debug-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Debug-U-32}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Debug-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Bijection:
+   Test 10: Foundation::Containers::Collection:
+   Test 11: Foundation::Containers::DataHyperRectangle:
+   Test 12: Foundation::Containers::Deque:
+   Test 13: Foundation::Containers::Mapping:
+   Test 14: Foundation::Containers::MultiSet:
+   Test 15: Foundation::Containers::Queue:
+   Test 16: Foundation::Containers::Sequence:
+   Test 17: Foundation::Containers::Set:
+   Test 18: Foundation::Containers::SortedCollection:
+   Test 19: Foundation::Containers::SortedMapping:
+   Test 20: Foundation::Containers::SortedMultiSet:
+   Test 21: Foundation::Containers::SortedSet:
+   Test 22: Foundation::Containers::Stack:
+   Test 23: Foundation::Containers::STL:
+   Test 24: Foundation::Cryptography:
+   Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 26: Foundation::DataExchange::ObjectVariantMapper:
+   Test 27: Foundation::DataExchange::XML::SaxParser:
+   Test 28: Foundation::DataExchange::Other:
+   Test 29: Foundation::Database:
+   Test 30: Foundation::Execution::Exceptions:
+   Test 31: Foundation::Execution::ProcessRunner:
+   Test 32: Foundation::Execution::Signals:
+   Test 33: Foundation::Execution::Threads:
+   Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 35: Foundation::Execution::Other:
+   Test 36: Foundation::IO::Network:
+   Test 37: Foundation::IO::Network::HTTP:
+   Test 38: Foundation::IO::Network::Transfer:
+   Test 39: Foundation::IO::Other:
+   Test 40: Foundation::Math:
+   Test 41: Foundation::Memory:
+   Test 42: Foundation::Streams:
+   Test 43: Foundation::Time:
+   Test 44: Foundation::Traversal:
+   Test 45: Foundation::PERFORMANCE:
+Running Stroka Tests {Debug-U-32}:
+   [Succeeded]  (2  seconds)  [01]  Foundation::Caching  (../Builds/Debug-U-32/Test01/Test01.exe)
+   [Succeeded]  (5  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Debug-U-32/Test02/Test02.exe)
+   [Succeeded]  (2  seconds)  [03]  Foundation::Configuration  (../Builds/Debug-U-32/Test03/Test03.exe)
+   [Succeeded]  (3  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Debug-U-32/Test04/Test04.exe)
+   [Succeeded]  (3  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Debug-U-32/Test05/Test05.exe)
+   [Succeeded]  (2  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Debug-U-32/Test06/Test06.exe)
+   [Succeeded]  (2  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Debug-U-32/Test07/Test07.exe)
+   [Succeeded]  (2  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Debug-U-32/Test08/Test08.exe)
+   [Succeeded]  (5  seconds)  [09]  Foundation::Containers::Bijection  (../Builds/Debug-U-32/Test09/Test09.exe)
+   [Succeeded]  (21 seconds)  [10]  Foundation::Containers::Collection  (../Builds/Debug-U-32/Test10/Test10.exe)
+   [Succeeded]  (2  seconds)  [11]  Foundation::Containers::DataHyperRectangle  (../Builds/Debug-U-32/Test11/Test11.exe)
+   [Succeeded]  (2  seconds)  [12]  Foundation::Containers::Deque  (../Builds/Debug-U-32/Test12/Test12.exe)
+   [Succeeded]  (6  seconds)  [13]  Foundation::Containers::Mapping  (../Builds/Debug-U-32/Test13/Test13.exe)
+   [Succeeded]  (32 seconds)  [14]  Foundation::Containers::MultiSet  (../Builds/Debug-U-32/Test14/Test14.exe)
+   [Succeeded]  (2  seconds)  [15]  Foundation::Containers::Queue  (../Builds/Debug-U-32/Test15/Test15.exe)
+   [Succeeded]  (27 seconds)  [16]  Foundation::Containers::Sequence  (../Builds/Debug-U-32/Test16/Test16.exe)
+   [Succeeded]  (4  seconds)  [17]  Foundation::Containers::Set  (../Builds/Debug-U-32/Test17/Test17.exe)
+   [Succeeded]  (11 seconds)  [18]  Foundation::Containers::SortedCollection  (../Builds/Debug-U-32/Test18/Test18.exe)
+   [Succeeded]  (6  seconds)  [19]  Foundation::Containers::SortedMapping  (../Builds/Debug-U-32/Test19/Test19.exe)
+   [Succeeded]  (15 seconds)  [20]  Foundation::Containers::SortedMultiSet  (../Builds/Debug-U-32/Test20/Test20.exe)
+   [Succeeded]  (4  seconds)  [21]  Foundation::Containers::SortedSet  (../Builds/Debug-U-32/Test21/Test21.exe)
+   [Succeeded]  (2  seconds)  [22]  Foundation::Containers::Stack  (../Builds/Debug-U-32/Test22/Test22.exe)
+   [Succeeded]  (1  seconds)  [23]  Foundation::Containers::STL  (../Builds/Debug-U-32/Test23/Test23.exe)
+   [Succeeded]  (2  seconds)  [24]  Foundation::Cryptography  (../Builds/Debug-U-32/Test24/Test24.exe)
+   [Succeeded]  (5  seconds)  [25]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Debug-U-32/Test25/Test25.exe)
+   [Succeeded]  (7  seconds)  [26]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Debug-U-32/Test26/Test26.exe)
+   [Succeeded]  (6  seconds)  [27]  Foundation::DataExchange::XML::SaxParser  (../Builds/Debug-U-32/Test27/Test27.exe)
+   [Succeeded]  (7  seconds)  [28]  Foundation::DataExchange::Other  (../Builds/Debug-U-32/Test28/Test28.exe)
+   [Succeeded]  (24 seconds)  [29]  Foundation::Database  (../Builds/Debug-U-32/Test29/Test29.exe)
+   [Succeeded]  (2  seconds)  [30]  Foundation::Execution::Exceptions  (../Builds/Debug-U-32/Test30/Test30.exe)
+   [Succeeded]  (33 seconds)  [31]  Foundation::Execution::ProcessRunner  (../Builds/Debug-U-32/Test31/Test31.exe)
+   [Succeeded]  (3  seconds)  [32]  Foundation::Execution::Signals  (../Builds/Debug-U-32/Test32/Test32.exe)
+   [Succeeded]  (156 seconds)  [33]  Foundation::Execution::Threads  (../Builds/Debug-U-32/Test33/Test33.exe)
+   [Succeeded]  (34 seconds)  [34]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Debug-U-32/Test34/Test34.exe)
+   [Succeeded]  (7  seconds)  [35]  Foundation::Execution::Other  (../Builds/Debug-U-32/Test35/Test35.exe)
+   [Succeeded]  (0  seconds)  [36]  Foundation::IO::Network  (../Builds/Debug-U-32/Test36/Test36.exe)
+   [Succeeded]  (2  seconds)  [37]  Foundation::IO::Network::HTTP  (../Builds/Debug-U-32/Test37/Test37.exe)
+   [Succeeded]  (10 seconds)  [38]  Foundation::IO::Network::Transfer  (../Builds/Debug-U-32/Test38/Test38.exe)
+   [Succeeded]  (7  seconds)  [39]  Foundation::IO::Other  (../Builds/Debug-U-32/Test39/Test39.exe)
+   [Succeeded]  (6  seconds)  [40]  Foundation::Math  (../Builds/Debug-U-32/Test40/Test40.exe)
+   [Succeeded]  (2  seconds)  [41]  Foundation::Memory  (../Builds/Debug-U-32/Test41/Test41.exe)
+   [Succeeded]  (2  seconds)  [42]  Foundation::Streams  (../Builds/Debug-U-32/Test42/Test42.exe)
+   [Succeeded]  (32 seconds)  [43]  Foundation::Time  (../Builds/Debug-U-32/Test43/Test43.exe)
+   [Succeeded]  (13 seconds)  [44]  Foundation::Traversal  (../Builds/Debug-U-32/Test44/Test44.exe)
+   [Succeeded]  (93 seconds)  [45]  Foundation::PERFORMANCE  (../Builds/Debug-U-32/Test45/Test45.exe)
+Stroika/Run-All-Tests {Debug-U-64}:
+Building Stroika ThirdPartyComponents {Debug-U-64}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Debug-U-64}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Debug-U-64}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_67_0 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3230000 {Debug-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Debug-U-64}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Debug-U-64}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Bijection:
+   Test 10: Foundation::Containers::Collection:
+   Test 11: Foundation::Containers::DataHyperRectangle:
+   Test 12: Foundation::Containers::Deque:
+   Test 13: Foundation::Containers::Mapping:
+   Test 14: Foundation::Containers::MultiSet:
+   Test 15: Foundation::Containers::Queue:
+   Test 16: Foundation::Containers::Sequence:
+   Test 17: Foundation::Containers::Set:
+   Test 18: Foundation::Containers::SortedCollection:
+   Test 19: Foundation::Containers::SortedMapping:
+   Test 20: Foundation::Containers::SortedMultiSet:
+   Test 21: Foundation::Containers::SortedSet:
+   Test 22: Foundation::Containers::Stack:
+   Test 23: Foundation::Containers::STL:
+   Test 24: Foundation::Cryptography:
+   Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 26: Foundation::DataExchange::ObjectVariantMapper:
+   Test 27: Foundation::DataExchange::XML::SaxParser:
+   Test 28: Foundation::DataExchange::Other:
+   Test 29: Foundation::Database:
+   Test 30: Foundation::Execution::Exceptions:
+   Test 31: Foundation::Execution::ProcessRunner:
+   Test 32: Foundation::Execution::Signals:
+   Test 33: Foundation::Execution::Threads:
+   Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 35: Foundation::Execution::Other:
+   Test 36: Foundation::IO::Network:
+   Test 37: Foundation::IO::Network::HTTP:
+   Test 38: Foundation::IO::Network::Transfer:
+   Test 39: Foundation::IO::Other:
+   Test 40: Foundation::Math:
+   Test 41: Foundation::Memory:
+   Test 42: Foundation::Streams:
+   Test 43: Foundation::Time:
+   Test 44: Foundation::Traversal:
+   Test 45: Foundation::PERFORMANCE:
+Running Stroka Tests {Debug-U-64}:
+   [Succeeded]  (1  seconds)  [01]  Foundation::Caching  (../Builds/Debug-U-64/Test01/Test01.exe)
+   [Succeeded]  (1  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Debug-U-64/Test02/Test02.exe)
+   [Succeeded]  (1  seconds)  [03]  Foundation::Configuration  (../Builds/Debug-U-64/Test03/Test03.exe)
+   [Succeeded]  (1  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Debug-U-64/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Debug-U-64/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Debug-U-64/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Debug-U-64/Test07/Test07.exe)
+   [Succeeded]  (1  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Debug-U-64/Test08/Test08.exe)
+   [Succeeded]  (1  seconds)  [09]  Foundation::Containers::Bijection  (../Builds/Debug-U-64/Test09/Test09.exe)
+   [Succeeded]  (7  seconds)  [10]  Foundation::Containers::Collection  (../Builds/Debug-U-64/Test10/Test10.exe)
+   [Succeeded]  (1  seconds)  [11]  Foundation::Containers::DataHyperRectangle  (../Builds/Debug-U-64/Test11/Test11.exe)
+   [Succeeded]  (1  seconds)  [12]  Foundation::Containers::Deque  (../Builds/Debug-U-64/Test12/Test12.exe)
+   [Succeeded]  (1  seconds)  [13]  Foundation::Containers::Mapping  (../Builds/Debug-U-64/Test13/Test13.exe)
+   [Succeeded]  (16 seconds)  [14]  Foundation::Containers::MultiSet  (../Builds/Debug-U-64/Test14/Test14.exe)
+   [Succeeded]  (0  seconds)  [15]  Foundation::Containers::Queue  (../Builds/Debug-U-64/Test15/Test15.exe)
+   [Succeeded]  (14 seconds)  [16]  Foundation::Containers::Sequence  (../Builds/Debug-U-64/Test16/Test16.exe)
+   [Succeeded]  (1  seconds)  [17]  Foundation::Containers::Set  (../Builds/Debug-U-64/Test17/Test17.exe)
+   [Succeeded]  (3  seconds)  [18]  Foundation::Containers::SortedCollection  (../Builds/Debug-U-64/Test18/Test18.exe)
+   [Succeeded]  (1  seconds)  [19]  Foundation::Containers::SortedMapping  (../Builds/Debug-U-64/Test19/Test19.exe)
+   [Succeeded]  (7  seconds)  [20]  Foundation::Containers::SortedMultiSet  (../Builds/Debug-U-64/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::SortedSet  (../Builds/Debug-U-64/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::Stack  (../Builds/Debug-U-64/Test22/Test22.exe)
+   [Succeeded]  (1  seconds)  [23]  Foundation::Containers::STL  (../Builds/Debug-U-64/Test23/Test23.exe)
+   [Succeeded]  (1  seconds)  [24]  Foundation::Cryptography  (../Builds/Debug-U-64/Test24/Test24.exe)
+   [Succeeded]  (2  seconds)  [25]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Debug-U-64/Test25/Test25.exe)
+   [Succeeded]  (2  seconds)  [26]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Debug-U-64/Test26/Test26.exe)
+   [Succeeded]  (1  seconds)  [27]  Foundation::DataExchange::XML::SaxParser  (../Builds/Debug-U-64/Test27/Test27.exe)
+   [Succeeded]  (1  seconds)  [28]  Foundation::DataExchange::Other  (../Builds/Debug-U-64/Test28/Test28.exe)
+   [Succeeded]  (19 seconds)  [29]  Foundation::Database  (../Builds/Debug-U-64/Test29/Test29.exe)
+   [Succeeded]  (1  seconds)  [30]  Foundation::Execution::Exceptions  (../Builds/Debug-U-64/Test30/Test30.exe)
+   [Succeeded]  (24 seconds)  [31]  Foundation::Execution::ProcessRunner  (../Builds/Debug-U-64/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::Execution::Signals  (../Builds/Debug-U-64/Test32/Test32.exe)
+   [Succeeded]  (153 seconds)  [33]  Foundation::Execution::Threads  (../Builds/Debug-U-64/Test33/Test33.exe)
+   [Succeeded]  (17 seconds)  [34]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Debug-U-64/Test34/Test34.exe)
+   [Succeeded]  (1  seconds)  [35]  Foundation::Execution::Other  (../Builds/Debug-U-64/Test35/Test35.exe)
+   [Succeeded]  (0  seconds)  [36]  Foundation::IO::Network  (../Builds/Debug-U-64/Test36/Test36.exe)
+   [Succeeded]  (0  seconds)  [37]  Foundation::IO::Network::HTTP  (../Builds/Debug-U-64/Test37/Test37.exe)
+   [Succeeded]  (6  seconds)  [38]  Foundation::IO::Network::Transfer  (../Builds/Debug-U-64/Test38/Test38.exe)
+   [Succeeded]  (2  seconds)  [39]  Foundation::IO::Other  (../Builds/Debug-U-64/Test39/Test39.exe)
+   [Succeeded]  (1  seconds)  [40]  Foundation::Math  (../Builds/Debug-U-64/Test40/Test40.exe)
+   [Succeeded]  (1  seconds)  [41]  Foundation::Memory  (../Builds/Debug-U-64/Test41/Test41.exe)
+   [Succeeded]  (1  seconds)  [42]  Foundation::Streams  (../Builds/Debug-U-64/Test42/Test42.exe)
+   [Succeeded]  (22 seconds)  [43]  Foundation::Time  (../Builds/Debug-U-64/Test43/Test43.exe)
+   [Succeeded]  (6  seconds)  [44]  Foundation::Traversal  (../Builds/Debug-U-64/Test44/Test44.exe)
+   [Succeeded]  (52 seconds)  [45]  Foundation::PERFORMANCE  (../Builds/Debug-U-64/Test45/Test45.exe)
+Stroika/Run-All-Tests {Release-DbgMemLeaks-U-32}:
+Building Stroika ThirdPartyComponents {Release-DbgMemLeaks-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-DbgMemLeaks-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-DbgMemLeaks-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-DbgMemLeaks-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-DbgMemLeaks-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-DbgMemLeaks-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-DbgMemLeaks-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-DbgMemLeaks-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-DbgMemLeaks-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-DbgMemLeaks-U-32}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-DbgMemLeaks-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Bijection:
+   Test 10: Foundation::Containers::Collection:
+   Test 11: Foundation::Containers::DataHyperRectangle:
+   Test 12: Foundation::Containers::Deque:
+   Test 13: Foundation::Containers::Mapping:
+   Test 14: Foundation::Containers::MultiSet:
+   Test 15: Foundation::Containers::Queue:
+   Test 16: Foundation::Containers::Sequence:
+   Test 17: Foundation::Containers::Set:
+   Test 18: Foundation::Containers::SortedCollection:
+   Test 19: Foundation::Containers::SortedMapping:
+   Test 20: Foundation::Containers::SortedMultiSet:
+   Test 21: Foundation::Containers::SortedSet:
+   Test 22: Foundation::Containers::Stack:
+   Test 23: Foundation::Containers::STL:
+   Test 24: Foundation::Cryptography:
+   Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 26: Foundation::DataExchange::ObjectVariantMapper:
+   Test 27: Foundation::DataExchange::XML::SaxParser:
+   Test 28: Foundation::DataExchange::Other:
+   Test 29: Foundation::Database:
+   Test 30: Foundation::Execution::Exceptions:
+   Test 31: Foundation::Execution::ProcessRunner:
+   Test 32: Foundation::Execution::Signals:
+   Test 33: Foundation::Execution::Threads:
+   Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 35: Foundation::Execution::Other:
+   Test 36: Foundation::IO::Network:
+   Test 37: Foundation::IO::Network::HTTP:
+   Test 38: Foundation::IO::Network::Transfer:
+   Test 39: Foundation::IO::Other:
+   Test 40: Foundation::Math:
+   Test 41: Foundation::Memory:
+   Test 42: Foundation::Streams:
+   Test 43: Foundation::Time:
+   Test 44: Foundation::Traversal:
+   Test 45: Foundation::PERFORMANCE:
+Running Stroka Tests {Release-DbgMemLeaks-U-32}:
+   [Succeeded]  (0  seconds)  [01]  Foundation::Caching  (../Builds/Release-DbgMemLeaks-U-32/Test01/Test01.exe)
+   [Succeeded]  (5  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-DbgMemLeaks-U-32/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-DbgMemLeaks-U-32/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-DbgMemLeaks-U-32/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-DbgMemLeaks-U-32/Test05/Test05.exe)
+   [Succeeded]  (1  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-DbgMemLeaks-U-32/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-DbgMemLeaks-U-32/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-DbgMemLeaks-U-32/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Bijection  (../Builds/Release-DbgMemLeaks-U-32/Test09/Test09.exe)
+   [Succeeded]  (2  seconds)  [10]  Foundation::Containers::Collection  (../Builds/Release-DbgMemLeaks-U-32/Test10/Test10.exe)
+   [Succeeded]  (1  seconds)  [11]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-DbgMemLeaks-U-32/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Deque  (../Builds/Release-DbgMemLeaks-U-32/Test12/Test12.exe)
+   [Succeeded]  (1  seconds)  [13]  Foundation::Containers::Mapping  (../Builds/Release-DbgMemLeaks-U-32/Test13/Test13.exe)
+   [Succeeded]  (1  seconds)  [14]  Foundation::Containers::MultiSet  (../Builds/Release-DbgMemLeaks-U-32/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::Queue  (../Builds/Release-DbgMemLeaks-U-32/Test15/Test15.exe)
+   [Succeeded]  (1  seconds)  [16]  Foundation::Containers::Sequence  (../Builds/Release-DbgMemLeaks-U-32/Test16/Test16.exe)
+   [Succeeded]  (1  seconds)  [17]  Foundation::Containers::Set  (../Builds/Release-DbgMemLeaks-U-32/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::SortedCollection  (../Builds/Release-DbgMemLeaks-U-32/Test18/Test18.exe)
+   [Succeeded]  (0  seconds)  [19]  Foundation::Containers::SortedMapping  (../Builds/Release-DbgMemLeaks-U-32/Test19/Test19.exe)
+   [Succeeded]  (3  seconds)  [20]  Foundation::Containers::SortedMultiSet  (../Builds/Release-DbgMemLeaks-U-32/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::SortedSet  (../Builds/Release-DbgMemLeaks-U-32/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::Stack  (../Builds/Release-DbgMemLeaks-U-32/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::STL  (../Builds/Release-DbgMemLeaks-U-32/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Cryptography  (../Builds/Release-DbgMemLeaks-U-32/Test24/Test24.exe)
+   [Succeeded]  (1  seconds)  [25]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-DbgMemLeaks-U-32/Test25/Test25.exe)
+   [Succeeded]  (1  seconds)  [26]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-DbgMemLeaks-U-32/Test26/Test26.exe)
+   [Succeeded]  (6  seconds)  [27]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-DbgMemLeaks-U-32/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::DataExchange::Other  (../Builds/Release-DbgMemLeaks-U-32/Test28/Test28.exe)
+   [Succeeded]  (15 seconds)  [29]  Foundation::Database  (../Builds/Release-DbgMemLeaks-U-32/Test29/Test29.exe)
+   [Succeeded]  (0  seconds)  [30]  Foundation::Execution::Exceptions  (../Builds/Release-DbgMemLeaks-U-32/Test30/Test30.exe)
+   [Succeeded]  (10 seconds)  [31]  Foundation::Execution::ProcessRunner  (../Builds/Release-DbgMemLeaks-U-32/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::Execution::Signals  (../Builds/Release-DbgMemLeaks-U-32/Test32/Test32.exe)
+   [Succeeded]  (146 seconds)  [33]  Foundation::Execution::Threads  (../Builds/Release-DbgMemLeaks-U-32/Test33/Test33.exe)
+   [Succeeded]  (75 seconds)  [34]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-DbgMemLeaks-U-32/Test34/Test34.exe)
+   [Succeeded]  (1  seconds)  [35]  Foundation::Execution::Other  (../Builds/Release-DbgMemLeaks-U-32/Test35/Test35.exe)
+   [Succeeded]  (0  seconds)  [36]  Foundation::IO::Network  (../Builds/Release-DbgMemLeaks-U-32/Test36/Test36.exe)
+   [Succeeded]  (1  seconds)  [37]  Foundation::IO::Network::HTTP  (../Builds/Release-DbgMemLeaks-U-32/Test37/Test37.exe)
+   [Succeeded]  (2  seconds)  [38]  Foundation::IO::Network::Transfer  (../Builds/Release-DbgMemLeaks-U-32/Test38/Test38.exe)
+   [Succeeded]  (1  seconds)  [39]  Foundation::IO::Other  (../Builds/Release-DbgMemLeaks-U-32/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Math  (../Builds/Release-DbgMemLeaks-U-32/Test40/Test40.exe)
+   [Succeeded]  (1  seconds)  [41]  Foundation::Memory  (../Builds/Release-DbgMemLeaks-U-32/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::Streams  (../Builds/Release-DbgMemLeaks-U-32/Test42/Test42.exe)
+   [Succeeded]  (2  seconds)  [43]  Foundation::Time  (../Builds/Release-DbgMemLeaks-U-32/Test43/Test43.exe)
+   [Succeeded]  (1  seconds)  [44]  Foundation::Traversal  (../Builds/Release-DbgMemLeaks-U-32/Test44/Test44.exe)
+   [Succeeded]  (317 seconds)  [45]  Foundation::PERFORMANCE  (../Builds/Release-DbgMemLeaks-U-32/Test45/Test45.exe)
+Stroika/Run-All-Tests {Release-Logging-U-32}:
+Building Stroika ThirdPartyComponents {Release-Logging-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-Logging-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-Logging-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-Logging-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-Logging-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-Logging-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-Logging-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-Logging-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-Logging-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-Logging-U-32}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-Logging-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Bijection:
+   Test 10: Foundation::Containers::Collection:
+   Test 11: Foundation::Containers::DataHyperRectangle:
+   Test 12: Foundation::Containers::Deque:
+   Test 13: Foundation::Containers::Mapping:
+   Test 14: Foundation::Containers::MultiSet:
+   Test 15: Foundation::Containers::Queue:
+   Test 16: Foundation::Containers::Sequence:
+   Test 17: Foundation::Containers::Set:
+   Test 18: Foundation::Containers::SortedCollection:
+   Test 19: Foundation::Containers::SortedMapping:
+   Test 20: Foundation::Containers::SortedMultiSet:
+   Test 21: Foundation::Containers::SortedSet:
+   Test 22: Foundation::Containers::Stack:
+   Test 23: Foundation::Containers::STL:
+   Test 24: Foundation::Cryptography:
+   Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 26: Foundation::DataExchange::ObjectVariantMapper:
+   Test 27: Foundation::DataExchange::XML::SaxParser:
+   Test 28: Foundation::DataExchange::Other:
+   Test 29: Foundation::Database:
+   Test 30: Foundation::Execution::Exceptions:
+   Test 31: Foundation::Execution::ProcessRunner:
+   Test 32: Foundation::Execution::Signals:
+   Test 33: Foundation::Execution::Threads:
+   Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 35: Foundation::Execution::Other:
+   Test 36: Foundation::IO::Network:
+   Test 37: Foundation::IO::Network::HTTP:
+   Test 38: Foundation::IO::Network::Transfer:
+   Test 39: Foundation::IO::Other:
+   Test 40: Foundation::Math:
+   Test 41: Foundation::Memory:
+   Test 42: Foundation::Streams:
+   Test 43: Foundation::Time:
+   Test 44: Foundation::Traversal:
+   Test 45: Foundation::PERFORMANCE:
+Running Stroka Tests {Release-Logging-U-32}:
+   [Succeeded]  (1  seconds)  [01]  Foundation::Caching  (../Builds/Release-Logging-U-32/Test01/Test01.exe)
+   [Succeeded]  (1  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-Logging-U-32/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-Logging-U-32/Test03/Test03.exe)
+   [Succeeded]  (1  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-Logging-U-32/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-Logging-U-32/Test05/Test05.exe)
+   [Succeeded]  (1  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-Logging-U-32/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-Logging-U-32/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-Logging-U-32/Test08/Test08.exe)
+   [Succeeded]  (1  seconds)  [09]  Foundation::Containers::Bijection  (../Builds/Release-Logging-U-32/Test09/Test09.exe)
+   [Succeeded]  (1  seconds)  [10]  Foundation::Containers::Collection  (../Builds/Release-Logging-U-32/Test10/Test10.exe)
+   [Succeeded]  (1  seconds)  [11]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-Logging-U-32/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Deque  (../Builds/Release-Logging-U-32/Test12/Test12.exe)
+   [Succeeded]  (1  seconds)  [13]  Foundation::Containers::Mapping  (../Builds/Release-Logging-U-32/Test13/Test13.exe)
+   [Succeeded]  (2  seconds)  [14]  Foundation::Containers::MultiSet  (../Builds/Release-Logging-U-32/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::Queue  (../Builds/Release-Logging-U-32/Test15/Test15.exe)
+   [Succeeded]  (1  seconds)  [16]  Foundation::Containers::Sequence  (../Builds/Release-Logging-U-32/Test16/Test16.exe)
+   [Succeeded]  (0  seconds)  [17]  Foundation::Containers::Set  (../Builds/Release-Logging-U-32/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::SortedCollection  (../Builds/Release-Logging-U-32/Test18/Test18.exe)
+   [Succeeded]  (1  seconds)  [19]  Foundation::Containers::SortedMapping  (../Builds/Release-Logging-U-32/Test19/Test19.exe)
+   [Succeeded]  (2  seconds)  [20]  Foundation::Containers::SortedMultiSet  (../Builds/Release-Logging-U-32/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::SortedSet  (../Builds/Release-Logging-U-32/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::Stack  (../Builds/Release-Logging-U-32/Test22/Test22.exe)
+   [Succeeded]  (1  seconds)  [23]  Foundation::Containers::STL  (../Builds/Release-Logging-U-32/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Cryptography  (../Builds/Release-Logging-U-32/Test24/Test24.exe)
+   [Succeeded]  (1  seconds)  [25]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-Logging-U-32/Test25/Test25.exe)
+   [Succeeded]  (1  seconds)  [26]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-Logging-U-32/Test26/Test26.exe)
+   [Succeeded]  (2  seconds)  [27]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-Logging-U-32/Test27/Test27.exe)
+   [Succeeded]  (1  seconds)  [28]  Foundation::DataExchange::Other  (../Builds/Release-Logging-U-32/Test28/Test28.exe)
+   [Succeeded]  (15 seconds)  [29]  Foundation::Database  (../Builds/Release-Logging-U-32/Test29/Test29.exe)
+   [Succeeded]  (1  seconds)  [30]  Foundation::Execution::Exceptions  (../Builds/Release-Logging-U-32/Test30/Test30.exe)
+   [Succeeded]  (13 seconds)  [31]  Foundation::Execution::ProcessRunner  (../Builds/Release-Logging-U-32/Test31/Test31.exe)
+   [Succeeded]  (2  seconds)  [32]  Foundation::Execution::Signals  (../Builds/Release-Logging-U-32/Test32/Test32.exe)
+   [Succeeded]  (149 seconds)  [33]  Foundation::Execution::Threads  (../Builds/Release-Logging-U-32/Test33/Test33.exe)
+   [Succeeded]  (3  seconds)  [34]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-Logging-U-32/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Other  (../Builds/Release-Logging-U-32/Test35/Test35.exe)
+   [Succeeded]  (0  seconds)  [36]  Foundation::IO::Network  (../Builds/Release-Logging-U-32/Test36/Test36.exe)
+   [Succeeded]  (1  seconds)  [37]  Foundation::IO::Network::HTTP  (../Builds/Release-Logging-U-32/Test37/Test37.exe)
+   [Succeeded]  (2  seconds)  [38]  Foundation::IO::Network::Transfer  (../Builds/Release-Logging-U-32/Test38/Test38.exe)
+   [Succeeded]  (2  seconds)  [39]  Foundation::IO::Other  (../Builds/Release-Logging-U-32/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Math  (../Builds/Release-Logging-U-32/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::Memory  (../Builds/Release-Logging-U-32/Test41/Test41.exe)
+   [Succeeded]  (1  seconds)  [42]  Foundation::Streams  (../Builds/Release-Logging-U-32/Test42/Test42.exe)
+   [Succeeded]  (2  seconds)  [43]  Foundation::Time  (../Builds/Release-Logging-U-32/Test43/Test43.exe)
+   [Succeeded]  (0  seconds)  [44]  Foundation::Traversal  (../Builds/Release-Logging-U-32/Test44/Test44.exe)
+   [Succeeded]  (275 seconds)  [45]  Foundation::PERFORMANCE  (../Builds/Release-Logging-U-32/Test45/Test45.exe)
+Stroika/Run-All-Tests {Release-Logging-U-64}:
+Building Stroika ThirdPartyComponents {Release-Logging-U-64}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-Logging-U-64}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-Logging-U-64}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-Logging-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-Logging-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-Logging-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-Logging-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-Logging-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-Logging-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-Logging-U-64}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-Logging-U-64}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Bijection:
+   Test 10: Foundation::Containers::Collection:
+   Test 11: Foundation::Containers::DataHyperRectangle:
+   Test 12: Foundation::Containers::Deque:
+   Test 13: Foundation::Containers::Mapping:
+   Test 14: Foundation::Containers::MultiSet:
+   Test 15: Foundation::Containers::Queue:
+   Test 16: Foundation::Containers::Sequence:
+   Test 17: Foundation::Containers::Set:
+   Test 18: Foundation::Containers::SortedCollection:
+   Test 19: Foundation::Containers::SortedMapping:
+   Test 20: Foundation::Containers::SortedMultiSet:
+   Test 21: Foundation::Containers::SortedSet:
+   Test 22: Foundation::Containers::Stack:
+   Test 23: Foundation::Containers::STL:
+   Test 24: Foundation::Cryptography:
+   Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 26: Foundation::DataExchange::ObjectVariantMapper:
+   Test 27: Foundation::DataExchange::XML::SaxParser:
+   Test 28: Foundation::DataExchange::Other:
+   Test 29: Foundation::Database:
+   Test 30: Foundation::Execution::Exceptions:
+   Test 31: Foundation::Execution::ProcessRunner:
+   Test 32: Foundation::Execution::Signals:
+   Test 33: Foundation::Execution::Threads:
+   Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 35: Foundation::Execution::Other:
+   Test 36: Foundation::IO::Network:
+   Test 37: Foundation::IO::Network::HTTP:
+   Test 38: Foundation::IO::Network::Transfer:
+   Test 39: Foundation::IO::Other:
+   Test 40: Foundation::Math:
+   Test 41: Foundation::Memory:
+   Test 42: Foundation::Streams:
+   Test 43: Foundation::Time:
+   Test 44: Foundation::Traversal:
+   Test 45: Foundation::PERFORMANCE:
+Running Stroka Tests {Release-Logging-U-64}:
+   [Succeeded]  (0  seconds)  [01]  Foundation::Caching  (../Builds/Release-Logging-U-64/Test01/Test01.exe)
+   [Succeeded]  (1  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-Logging-U-64/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-Logging-U-64/Test03/Test03.exe)
+   [Succeeded]  (1  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-Logging-U-64/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-Logging-U-64/Test05/Test05.exe)
+   [Succeeded]  (1  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-Logging-U-64/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-Logging-U-64/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-Logging-U-64/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Bijection  (../Builds/Release-Logging-U-64/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Collection  (../Builds/Release-Logging-U-64/Test10/Test10.exe)
+   [Succeeded]  (0  seconds)  [11]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-Logging-U-64/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Deque  (../Builds/Release-Logging-U-64/Test12/Test12.exe)
+   [Succeeded]  (1  seconds)  [13]  Foundation::Containers::Mapping  (../Builds/Release-Logging-U-64/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::MultiSet  (../Builds/Release-Logging-U-64/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::Queue  (../Builds/Release-Logging-U-64/Test15/Test15.exe)
+   [Succeeded]  (0  seconds)  [16]  Foundation::Containers::Sequence  (../Builds/Release-Logging-U-64/Test16/Test16.exe)
+   [Succeeded]  (1  seconds)  [17]  Foundation::Containers::Set  (../Builds/Release-Logging-U-64/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::SortedCollection  (../Builds/Release-Logging-U-64/Test18/Test18.exe)
+   [Succeeded]  (1  seconds)  [19]  Foundation::Containers::SortedMapping  (../Builds/Release-Logging-U-64/Test19/Test19.exe)
+   [Succeeded]  (0  seconds)  [20]  Foundation::Containers::SortedMultiSet  (../Builds/Release-Logging-U-64/Test20/Test20.exe)
+   [Succeeded]  (1  seconds)  [21]  Foundation::Containers::SortedSet  (../Builds/Release-Logging-U-64/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::Stack  (../Builds/Release-Logging-U-64/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::STL  (../Builds/Release-Logging-U-64/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Cryptography  (../Builds/Release-Logging-U-64/Test24/Test24.exe)
+   [Succeeded]  (0  seconds)  [25]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-Logging-U-64/Test25/Test25.exe)
+   [Succeeded]  (0  seconds)  [26]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-Logging-U-64/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-Logging-U-64/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::DataExchange::Other  (../Builds/Release-Logging-U-64/Test28/Test28.exe)
+   [Succeeded]  (16 seconds)  [29]  Foundation::Database  (../Builds/Release-Logging-U-64/Test29/Test29.exe)
+   [Succeeded]  (0  seconds)  [30]  Foundation::Execution::Exceptions  (../Builds/Release-Logging-U-64/Test30/Test30.exe)
+   [Succeeded]  (9  seconds)  [31]  Foundation::Execution::ProcessRunner  (../Builds/Release-Logging-U-64/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::Execution::Signals  (../Builds/Release-Logging-U-64/Test32/Test32.exe)
+   [Succeeded]  (150 seconds)  [33]  Foundation::Execution::Threads  (../Builds/Release-Logging-U-64/Test33/Test33.exe)
+   [Succeeded]  (8  seconds)  [34]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-Logging-U-64/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Other  (../Builds/Release-Logging-U-64/Test35/Test35.exe)
+   [Succeeded]  (0  seconds)  [36]  Foundation::IO::Network  (../Builds/Release-Logging-U-64/Test36/Test36.exe)
+   [Succeeded]  (0  seconds)  [37]  Foundation::IO::Network::HTTP  (../Builds/Release-Logging-U-64/Test37/Test37.exe)
+   [Succeeded]  (2  seconds)  [38]  Foundation::IO::Network::Transfer  (../Builds/Release-Logging-U-64/Test38/Test38.exe)
+   [Succeeded]  (0  seconds)  [39]  Foundation::IO::Other  (../Builds/Release-Logging-U-64/Test39/Test39.exe)
+   [Succeeded]  (1  seconds)  [40]  Foundation::Math  (../Builds/Release-Logging-U-64/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::Memory  (../Builds/Release-Logging-U-64/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::Streams  (../Builds/Release-Logging-U-64/Test42/Test42.exe)
+   [Succeeded]  (1  seconds)  [43]  Foundation::Time  (../Builds/Release-Logging-U-64/Test43/Test43.exe)
+   [Succeeded]  (0  seconds)  [44]  Foundation::Traversal  (../Builds/Release-Logging-U-64/Test44/Test44.exe)
+   [Succeeded]  (45 seconds)  [45]  Foundation::PERFORMANCE  (../Builds/Release-Logging-U-64/Test45/Test45.exe)
+Stroika/Run-All-Tests {Release-U-32}:
+Building Stroika ThirdPartyComponents {Release-U-32}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-U-32}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-U-32}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-U-32}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-U-32}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-U-32}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Bijection:
+   Test 10: Foundation::Containers::Collection:
+   Test 11: Foundation::Containers::DataHyperRectangle:
+   Test 12: Foundation::Containers::Deque:
+   Test 13: Foundation::Containers::Mapping:
+   Test 14: Foundation::Containers::MultiSet:
+   Test 15: Foundation::Containers::Queue:
+   Test 16: Foundation::Containers::Sequence:
+   Test 17: Foundation::Containers::Set:
+   Test 18: Foundation::Containers::SortedCollection:
+   Test 19: Foundation::Containers::SortedMapping:
+   Test 20: Foundation::Containers::SortedMultiSet:
+   Test 21: Foundation::Containers::SortedSet:
+   Test 22: Foundation::Containers::Stack:
+   Test 23: Foundation::Containers::STL:
+   Test 24: Foundation::Cryptography:
+   Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 26: Foundation::DataExchange::ObjectVariantMapper:
+   Test 27: Foundation::DataExchange::XML::SaxParser:
+   Test 28: Foundation::DataExchange::Other:
+   Test 29: Foundation::Database:
+   Test 30: Foundation::Execution::Exceptions:
+   Test 31: Foundation::Execution::ProcessRunner:
+   Test 32: Foundation::Execution::Signals:
+   Test 33: Foundation::Execution::Threads:
+   Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 35: Foundation::Execution::Other:
+   Test 36: Foundation::IO::Network:
+   Test 37: Foundation::IO::Network::HTTP:
+   Test 38: Foundation::IO::Network::Transfer:
+   Test 39: Foundation::IO::Other:
+   Test 40: Foundation::Math:
+   Test 41: Foundation::Memory:
+   Test 42: Foundation::Streams:
+   Test 43: Foundation::Time:
+   Test 44: Foundation::Traversal:
+   Test 45: Foundation::PERFORMANCE:
+Running Stroka Tests {Release-U-32}:
+   [Succeeded]  (1  seconds)  [01]  Foundation::Caching  (../Builds/Release-U-32/Test01/Test01.exe)
+   [Succeeded]  (4  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-U-32/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-U-32/Test03/Test03.exe)
+   [Succeeded]  (1  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-U-32/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-U-32/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-U-32/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-U-32/Test07/Test07.exe)
+   [Succeeded]  (0  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-U-32/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Bijection  (../Builds/Release-U-32/Test09/Test09.exe)
+   [Succeeded]  (1  seconds)  [10]  Foundation::Containers::Collection  (../Builds/Release-U-32/Test10/Test10.exe)
+   [Succeeded]  (0  seconds)  [11]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-U-32/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Deque  (../Builds/Release-U-32/Test12/Test12.exe)
+   [Succeeded]  (0  seconds)  [13]  Foundation::Containers::Mapping  (../Builds/Release-U-32/Test13/Test13.exe)
+   [Succeeded]  (1  seconds)  [14]  Foundation::Containers::MultiSet  (../Builds/Release-U-32/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::Queue  (../Builds/Release-U-32/Test15/Test15.exe)
+   [Succeeded]  (1  seconds)  [16]  Foundation::Containers::Sequence  (../Builds/Release-U-32/Test16/Test16.exe)
+   [Succeeded]  (0  seconds)  [17]  Foundation::Containers::Set  (../Builds/Release-U-32/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::SortedCollection  (../Builds/Release-U-32/Test18/Test18.exe)
+   [Succeeded]  (1  seconds)  [19]  Foundation::Containers::SortedMapping  (../Builds/Release-U-32/Test19/Test19.exe)
+   [Succeeded]  (3  seconds)  [20]  Foundation::Containers::SortedMultiSet  (../Builds/Release-U-32/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::SortedSet  (../Builds/Release-U-32/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::Stack  (../Builds/Release-U-32/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::STL  (../Builds/Release-U-32/Test23/Test23.exe)
+   [Succeeded]  (0  seconds)  [24]  Foundation::Cryptography  (../Builds/Release-U-32/Test24/Test24.exe)
+   [Succeeded]  (1  seconds)  [25]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-U-32/Test25/Test25.exe)
+   [Succeeded]  (1  seconds)  [26]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-U-32/Test26/Test26.exe)
+   [Succeeded]  (2  seconds)  [27]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-U-32/Test27/Test27.exe)
+   [Succeeded]  (1  seconds)  [28]  Foundation::DataExchange::Other  (../Builds/Release-U-32/Test28/Test28.exe)
+   [Succeeded]  (16 seconds)  [29]  Foundation::Database  (../Builds/Release-U-32/Test29/Test29.exe)
+   [Succeeded]  (1  seconds)  [30]  Foundation::Execution::Exceptions  (../Builds/Release-U-32/Test30/Test30.exe)
+   [Succeeded]  (10 seconds)  [31]  Foundation::Execution::ProcessRunner  (../Builds/Release-U-32/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::Execution::Signals  (../Builds/Release-U-32/Test32/Test32.exe)
+   [Succeeded]  (148 seconds)  [33]  Foundation::Execution::Threads  (../Builds/Release-U-32/Test33/Test33.exe)
+   [Succeeded]  (13 seconds)  [34]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-U-32/Test34/Test34.exe)
+   [Succeeded]  (1  seconds)  [35]  Foundation::Execution::Other  (../Builds/Release-U-32/Test35/Test35.exe)
+   [Succeeded]  (0  seconds)  [36]  Foundation::IO::Network  (../Builds/Release-U-32/Test36/Test36.exe)
+   [Succeeded]  (1  seconds)  [37]  Foundation::IO::Network::HTTP  (../Builds/Release-U-32/Test37/Test37.exe)
+   [Succeeded]  (2  seconds)  [38]  Foundation::IO::Network::Transfer  (../Builds/Release-U-32/Test38/Test38.exe)
+   [Succeeded]  (1  seconds)  [39]  Foundation::IO::Other  (../Builds/Release-U-32/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Math  (../Builds/Release-U-32/Test40/Test40.exe)
+   [Succeeded]  (1  seconds)  [41]  Foundation::Memory  (../Builds/Release-U-32/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::Streams  (../Builds/Release-U-32/Test42/Test42.exe)
+   [Succeeded]  (2  seconds)  [43]  Foundation::Time  (../Builds/Release-U-32/Test43/Test43.exe)
+   [Succeeded]  (1  seconds)  [44]  Foundation::Traversal  (../Builds/Release-U-32/Test44/Test44.exe)
+   [Succeeded]  (275 seconds)  [45]  Foundation::PERFORMANCE  (../Builds/Release-U-32/Test45/Test45.exe)
+Stroika/Run-All-Tests {Release-U-64}:
+Building Stroika ThirdPartyComponents {Release-U-64}:
+   Building Stroika/ThirdPartyComponents/ActivePerl 5.26.0 {Release-U-64}:
+   Building Stroika/ThirdPartyComponents/cmake (windows/cygwin) 3.9.4 {Release-U-64}:
+   Building Stroika/ThirdPartyComponents/zlib 1.2.8 {Release-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/zlib -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/boost 1_67_0 {Release-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/boost -   [Succeeded]
+   Building Stroika/ThirdPartyComponents/OpenSSL 1.1.0g {Release-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]
+   Building Stroika/ThirdPartyComponents/lzma 1604 {Release-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/lzma -    [Succeeded]
+   Building Stroika/ThirdPartyComponents/xerces 3.2.1 {Release-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/Xerces -  [Succeeded]
+   Building Stroika/ThirdPartyComponents/sqlite 3230000 {Release-U-64}:
+      Checking ...  Stroika/ThirdPartyComponents/sqlite -  [Succeeded]
+Building Stroika Library {Release-U-64}:
+   Building Stroika-Foundation:
+   Building Stroika-Frameworks:
+Building Stroika Tests {Release-U-64}:
+   Test 01: Foundation::Caching:
+   Test 02: Foundation::Characters::Strings:
+   Test 03: Foundation::Configuration:
+   Test 04: Foundation::Containers::DataStructures::Array:
+   Test 05: Foundation::Containers::DataStructures::LinkedList:
+   Test 06: Foundation::Containers::DataStructures::DoublyLinkedList:
+   Test 07: Foundation::Containers::DataStructures::STLContainerWrapper:
+   Test 08: Foundation::Containers::DataStructures::SkipList:
+   Test 09: Foundation::Containers::Bijection:
+   Test 10: Foundation::Containers::Collection:
+   Test 11: Foundation::Containers::DataHyperRectangle:
+   Test 12: Foundation::Containers::Deque:
+   Test 13: Foundation::Containers::Mapping:
+   Test 14: Foundation::Containers::MultiSet:
+   Test 15: Foundation::Containers::Queue:
+   Test 16: Foundation::Containers::Sequence:
+   Test 17: Foundation::Containers::Set:
+   Test 18: Foundation::Containers::SortedCollection:
+   Test 19: Foundation::Containers::SortedMapping:
+   Test 20: Foundation::Containers::SortedMultiSet:
+   Test 21: Foundation::Containers::SortedSet:
+   Test 22: Foundation::Containers::Stack:
+   Test 23: Foundation::Containers::STL:
+   Test 24: Foundation::Cryptography:
+   Test 25: Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip):
+   Test 26: Foundation::DataExchange::ObjectVariantMapper:
+   Test 27: Foundation::DataExchange::XML::SaxParser:
+   Test 28: Foundation::DataExchange::Other:
+   Test 29: Foundation::Database:
+   Test 30: Foundation::Execution::Exceptions:
+   Test 31: Foundation::Execution::ProcessRunner:
+   Test 32: Foundation::Execution::Signals:
+   Test 33: Foundation::Execution::Threads:
+   Test 34: Foundation::Execution::ThreadSafetyBuiltinObject:
+   Test 35: Foundation::Execution::Other:
+   Test 36: Foundation::IO::Network:
+   Test 37: Foundation::IO::Network::HTTP:
+   Test 38: Foundation::IO::Network::Transfer:
+   Test 39: Foundation::IO::Other:
+   Test 40: Foundation::Math:
+   Test 41: Foundation::Memory:
+   Test 42: Foundation::Streams:
+   Test 43: Foundation::Time:
+   Test 44: Foundation::Traversal:
+   Test 45: Foundation::PERFORMANCE:
+Running Stroka Tests {Release-U-64}:
+   [Succeeded]  (1  seconds)  [01]  Foundation::Caching  (../Builds/Release-U-64/Test01/Test01.exe)
+   [Succeeded]  (0  seconds)  [02]  Foundation::Characters::Strings  (../Builds/Release-U-64/Test02/Test02.exe)
+   [Succeeded]  (0  seconds)  [03]  Foundation::Configuration  (../Builds/Release-U-64/Test03/Test03.exe)
+   [Succeeded]  (0  seconds)  [04]  Foundation::Containers::DataStructures::Array  (../Builds/Release-U-64/Test04/Test04.exe)
+   [Succeeded]  (0  seconds)  [05]  Foundation::Containers::DataStructures::LinkedList  (../Builds/Release-U-64/Test05/Test05.exe)
+   [Succeeded]  (0  seconds)  [06]  Foundation::Containers::DataStructures::DoublyLinkedList  (../Builds/Release-U-64/Test06/Test06.exe)
+   [Succeeded]  (0  seconds)  [07]  Foundation::Containers::DataStructures::STLContainerWrapper  (../Builds/Release-U-64/Test07/Test07.exe)
+   [Succeeded]  (1  seconds)  [08]  Foundation::Containers::DataStructures::SkipList  (../Builds/Release-U-64/Test08/Test08.exe)
+   [Succeeded]  (0  seconds)  [09]  Foundation::Containers::Bijection  (../Builds/Release-U-64/Test09/Test09.exe)
+   [Succeeded]  (0  seconds)  [10]  Foundation::Containers::Collection  (../Builds/Release-U-64/Test10/Test10.exe)
+   [Succeeded]  (0  seconds)  [11]  Foundation::Containers::DataHyperRectangle  (../Builds/Release-U-64/Test11/Test11.exe)
+   [Succeeded]  (0  seconds)  [12]  Foundation::Containers::Deque  (../Builds/Release-U-64/Test12/Test12.exe)
+   [Succeeded]  (1  seconds)  [13]  Foundation::Containers::Mapping  (../Builds/Release-U-64/Test13/Test13.exe)
+   [Succeeded]  (0  seconds)  [14]  Foundation::Containers::MultiSet  (../Builds/Release-U-64/Test14/Test14.exe)
+   [Succeeded]  (1  seconds)  [15]  Foundation::Containers::Queue  (../Builds/Release-U-64/Test15/Test15.exe)
+   [Succeeded]  (0  seconds)  [16]  Foundation::Containers::Sequence  (../Builds/Release-U-64/Test16/Test16.exe)
+   [Succeeded]  (1  seconds)  [17]  Foundation::Containers::Set  (../Builds/Release-U-64/Test17/Test17.exe)
+   [Succeeded]  (0  seconds)  [18]  Foundation::Containers::SortedCollection  (../Builds/Release-U-64/Test18/Test18.exe)
+   [Succeeded]  (0  seconds)  [19]  Foundation::Containers::SortedMapping  (../Builds/Release-U-64/Test19/Test19.exe)
+   [Succeeded]  (0  seconds)  [20]  Foundation::Containers::SortedMultiSet  (../Builds/Release-U-64/Test20/Test20.exe)
+   [Succeeded]  (0  seconds)  [21]  Foundation::Containers::SortedSet  (../Builds/Release-U-64/Test21/Test21.exe)
+   [Succeeded]  (0  seconds)  [22]  Foundation::Containers::Stack  (../Builds/Release-U-64/Test22/Test22.exe)
+   [Succeeded]  (0  seconds)  [23]  Foundation::Containers::STL  (../Builds/Release-U-64/Test23/Test23.exe)
+   [Succeeded]  (1  seconds)  [24]  Foundation::Cryptography  (../Builds/Release-U-64/Test24/Test24.exe)
+   [Succeeded]  (0  seconds)  [25]  Foundation::DataExchange::Reader/Writers(7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (../Builds/Release-U-64/Test25/Test25.exe)
+   [Succeeded]  (0  seconds)  [26]  Foundation::DataExchange::ObjectVariantMapper  (../Builds/Release-U-64/Test26/Test26.exe)
+   [Succeeded]  (0  seconds)  [27]  Foundation::DataExchange::XML::SaxParser  (../Builds/Release-U-64/Test27/Test27.exe)
+   [Succeeded]  (0  seconds)  [28]  Foundation::DataExchange::Other  (../Builds/Release-U-64/Test28/Test28.exe)
+   [Succeeded]  (16 seconds)  [29]  Foundation::Database  (../Builds/Release-U-64/Test29/Test29.exe)
+   [Succeeded]  (0  seconds)  [30]  Foundation::Execution::Exceptions  (../Builds/Release-U-64/Test30/Test30.exe)
+   [Succeeded]  (9  seconds)  [31]  Foundation::Execution::ProcessRunner  (../Builds/Release-U-64/Test31/Test31.exe)
+   [Succeeded]  (1  seconds)  [32]  Foundation::Execution::Signals  (../Builds/Release-U-64/Test32/Test32.exe)
+   [Succeeded]  (150 seconds)  [33]  Foundation::Execution::Threads  (../Builds/Release-U-64/Test33/Test33.exe)
+   [Succeeded]  (4  seconds)  [34]  Foundation::Execution::ThreadSafetyBuiltinObject  (../Builds/Release-U-64/Test34/Test34.exe)
+   [Succeeded]  (0  seconds)  [35]  Foundation::Execution::Other  (../Builds/Release-U-64/Test35/Test35.exe)
+   [Succeeded]  (1  seconds)  [36]  Foundation::IO::Network  (../Builds/Release-U-64/Test36/Test36.exe)
+   [Succeeded]  (0  seconds)  [37]  Foundation::IO::Network::HTTP  (../Builds/Release-U-64/Test37/Test37.exe)
+   [Succeeded]  (2  seconds)  [38]  Foundation::IO::Network::Transfer  (../Builds/Release-U-64/Test38/Test38.exe)
+   [Succeeded]  (1  seconds)  [39]  Foundation::IO::Other  (../Builds/Release-U-64/Test39/Test39.exe)
+   [Succeeded]  (0  seconds)  [40]  Foundation::Math  (../Builds/Release-U-64/Test40/Test40.exe)
+   [Succeeded]  (0  seconds)  [41]  Foundation::Memory  (../Builds/Release-U-64/Test41/Test41.exe)
+   [Succeeded]  (0  seconds)  [42]  Foundation::Streams  (../Builds/Release-U-64/Test42/Test42.exe)
+   [Succeeded]  (1  seconds)  [43]  Foundation::Time  (../Builds/Release-U-64/Test43/Test43.exe)
+   [Succeeded]  (1  seconds)  [44]  Foundation::Traversal  (../Builds/Release-U-64/Test44/Test44.exe)
+   [Succeeded]  (44 seconds)  [45]  Foundation::PERFORMANCE  (../Builds/Release-U-64/Test45/Test45.exe)
+done (in 81 minutes)
+)))- Skipping valgrind memcheck test because INCLUDE_VALGRIND_MEMCHECK_TESTS=0
+)))- Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=0
+)))- Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_VALGRIND_HELGRIND_TESTS=0
+)))- Regression Tests Summary:
+   315 items succeeded (AS expected 7 * 45)
+   0 items failed (expected 0)
+   0 items error (expected 0)
+   0 items warned (expected 0)
+   0 core dumps (expected 0)
+)))- Finished at Tue, May 29, 2018  5:29:08 AM  (474 minutes)
