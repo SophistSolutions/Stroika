@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 
 /**
