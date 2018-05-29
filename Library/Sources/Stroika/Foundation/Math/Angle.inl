@@ -123,6 +123,10 @@ namespace Stroika {
             {
                 return Angle (lhs * rhs.AsRadians ());
             }
+            inline Angle operator* (const Angle& lhs, const Angle& rhs)
+            {
+                return Angle (lhs.AsRadians () * rhs.AsRadians ());
+            }
 
             /*
              ********************************************************************************

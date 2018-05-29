@@ -27,6 +27,11 @@ namespace Stroika {
                 };
 
             public:
+                static constexpr AngleFormat eRadians  = AngleFormat::eRadians;
+                static constexpr AngleFormat eDegrees  = AngleFormat::eDegrees;
+                static constexpr AngleFormat eGradians = AngleFormat::eGradians;
+
+            public:
                 /**
                  */
                 constexpr Angle ();
