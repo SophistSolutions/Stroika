@@ -828,6 +828,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\ConnectionOrientedStreamSocket.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -2012,6 +2015,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\InputSubStream.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.h">
+      <Filter>Sources\Execution</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -3260,6 +3266,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\InputSubStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

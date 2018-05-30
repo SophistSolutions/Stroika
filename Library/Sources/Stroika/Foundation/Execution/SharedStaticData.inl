@@ -16,7 +16,6 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
             namespace Private_ {
                 // hack to avoid #include of Thread.h for Thread::SuppressInterruptionInContext
                 bool SharedStaticData_DTORHelper_ (
@@ -29,10 +28,10 @@ namespace Stroika {
             }
 
             /*
-            ********************************************************************************
-            ******************************** SharedStaticData<T> ***************************
-            ********************************************************************************
-            */
+             ********************************************************************************
+             ******************************** SharedStaticData<T> ***************************
+             ********************************************************************************
+             */
             template <typename T>
             T* SharedStaticData<T>::sOnceObj_;
 
@@ -88,7 +87,6 @@ namespace Stroika {
                 EnsureNotNull (sOnceObj_);
                 return *sOnceObj_;
             }
-            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"");
         }
     }
 }
