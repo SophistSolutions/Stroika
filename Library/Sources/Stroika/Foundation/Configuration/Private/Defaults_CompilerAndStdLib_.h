@@ -53,8 +53,8 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if (__clang_major__ < 8) || (__clang_major__ == 8 && (__clang_minor__ < 0))
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 8.0 (APPLE)"
+#if (__clang_major__ < 9) || (__clang_major__ == 9 && (__clang_minor__ < 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 (older supported by v2.0) does not support versions prior to clang++ 9.0 (APPLE)"
 #endif
 #if (__clang_major__ > 9) || (__clang_major__ == 9 && (__clang_minor__ > 1))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ (APPLE) - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -64,8 +64,8 @@
 // Must check CLANG first, since CLANG also defines GCC
 // see
 //      clang++-3.8 -dM -E - < /dev/null
-#if (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 9))
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to clang++ 3.9 (non-apple)"
+#if (__clang_major__ < 6) || (__clang_major__ == 6 && (__clang_minor__ < 0))
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to clang++ 6 (non-apple); note that Stroika v2.0 supports clang3.9, clang4, and clang5"
 #endif
 #if (__clang_major__ > 6) || (__clang_major__ == 6 && (__clang_minor__ > 0))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of clang++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
@@ -75,8 +75,8 @@
 
 #elif defined(__GNUC__)
 
-#if __GNUC__ < 5
-#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to GCC 5.0"
+#if __GNUC__ < 6
+#define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika v2.1 does not support versions prior to GCC 6.0 (v2.0 supports g++5)"
 #endif
 #if __GNUC__ > 8 || (__GNUC__ == 8 && (__GNUC_MINOR__ > 1))
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: Stroika untested with this version of GCC - USING PREVIOUS COMPILER VERSION BUG DEFINES"
