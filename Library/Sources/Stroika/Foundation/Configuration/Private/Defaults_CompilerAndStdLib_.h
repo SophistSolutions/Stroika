@@ -569,6 +569,15 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 /**
  *  \note this also happens to clang++ 5 or lower (fixed in 6) on Linux (LLVM). But we aren't going to bother supporting
  *        those versions for Stroika 2.1. (ONLY HAS EFFECT with -std=c++17)
+ *
+ *  SAMPLE ERROR OUTPUT:
+ *       Undefined symbols for architecture x86_64:
+ *        "Stroika::Foundation::Configuration::DefaultNames<Stroika::Foundation::Execution::SignalHandler::Type>::k", referenced from:
+ *            Stroika::Foundation::Characters::String Stroika::Foundation::Characters::Private_::ToString_<Stroika::Foundation::Execution::SignalHandler::Type>(Stroika::Foundation::Execution::SignalHandler::Type const&, std::__1::enable_if<is_enum<Stroika::Foundation::Execution::SignalHandler::Type>::value, void>::type*) in Stroika-Foundation.a(SignalHandlers.o)
+ *        "Stroika::Foundation::Configuration::DefaultNames<Stroika::Foundation::Execution::Thread::Status>::k", referenced from:
+ *            Stroika::Foundation::Characters::String Stroika::Foundation::Characters::Private_::ToString_<Stroika::Foundation::Execution::Thread::Status>(Stroika::Foundation::Execution::Thread::Status const&, std::__1::enable_if<is_enum<Stroika::Foundation::Execution::Thread::Status>::value, void>::type*) in Stroika-Foundation.a(Thread.o)
+ *      ld: symbol(s) not found for architecture x86_64
+ *      clang: error: linker command failed with exit code 1 (use -v to see invocation)
  */
 #ifndef qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 #if defined(__clang__) && defined(__APPLE__)
@@ -1359,12 +1368,16 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 
 // When MSFT fixes qCompilerAndStdLib_cplusplus_macro_value_Buggy move back to the top of the file
 #if qCompilerAndStdLib_cplusplus_macro_value_Buggy
-#if _MSVC_LANG < kStrokia_Foundation_Configuration_cplusplus_14
-#pragma message("Stroika requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14)")
+#if _MSVC_LANG < kStrokia_Foundation_Configuration_cplusplus_17
+#pragma message("Stroika requires at least C++ ISO/IEC 14882:2017(E) supported by the compiler (informally known as C++ 14)")
+#endif
+#elif qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
+#pragma message("Stroika requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14) - and really uses C++17 features if/when possible")
 #endif
 #else
-#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
-#pragma message("Stroika requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14)")
+#if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
+#pragma message("Stroika requires at least C++ ISO/IEC 14882:2017(E) supported by the compiler (informally known as C++ 14)")
 #endif
 #endif
 
