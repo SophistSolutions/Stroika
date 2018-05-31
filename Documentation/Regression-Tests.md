@@ -7,16 +7,6 @@
      *  REGRESSION-TESTS-$TEST_TARGET-$VER-OUT.txt
 
    * Tests run for each release:
-     * $TEST_TARGET=Ubuntu1604_x86_64 
-
-       PerformanceDump-Ubuntu1604_x86_64-$VER.txt REGRESSION-TESTS-Ubuntu1604_x86_64-$VER-OUT.txt
-
-
-~~~
-MACHINE=StroikaTestVM-Ubuntu1604-1 USE_TEST_BASENAME=Ubuntu1604_x86_64 \
-    ./ScriptsLib/RunRemoteRegressionTests.sh
-~~~
-     * $TEST_TARGET=Ubuntu1804_x86_64 
      
 ~~~
 MACHINE=StroikaTestVM-Ubuntu1804-1 USE_TEST_BASENAME=Ubuntu1804_x86_64 DO_ONLY_DEFAULT_CONFIGURATIONS=0 \
