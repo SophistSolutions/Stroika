@@ -51,8 +51,8 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
 
 using Characters::SDKChar;
-using Characters::StringBuilder;
 using Characters::String_Constant;
+using Characters::StringBuilder;
 using Memory::Byte;
 using Memory::Optional;
 

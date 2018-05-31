@@ -1393,7 +1393,7 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 // Stroika v2.1 requires C++17, but due to this bug, to enable that with clang, you must say c++14, and then a special warning define
 // so you dont get warnings for using C++17 features. Not perfect, but will have to do
 #if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
-#pragma clang diagnostic ignored \"Wc++17-extensions\""
+#pragma clang diagnostic ignored "Wc++17-extensions"
 #endif
 
 #if qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)

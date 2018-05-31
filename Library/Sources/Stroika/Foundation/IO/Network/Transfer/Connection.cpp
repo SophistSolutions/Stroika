@@ -22,8 +22,6 @@ using namespace Stroika::Foundation::IO::Network;
 using namespace Stroika::Foundation::IO::Network::Transfer;
 using namespace Stroika::Foundation::Memory;
 
-
-
 #if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 /*
  ********************************************************************************

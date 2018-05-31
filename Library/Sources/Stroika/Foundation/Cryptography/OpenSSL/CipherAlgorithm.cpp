@@ -47,7 +47,6 @@ namespace Stroika::Foundation::Configuration {
 }
 #endif
 
-
 /*
  ********************************************************************************
  ************** Cryptography::OpenSSL::Convert2OpenSSL **************************
