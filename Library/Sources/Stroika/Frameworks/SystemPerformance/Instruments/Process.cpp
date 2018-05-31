@@ -266,8 +266,6 @@ namespace {
 }
 #endif
 
-
-
 #if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 /*
  ********************************************************************************
