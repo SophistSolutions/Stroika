@@ -14,26 +14,6 @@
 
 #include "../Debug/Assertions.h"
 
-#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-namespace std {
-    template <typename T>
-    bool isnan (T t)
-    {
-        return ::isnan (t); /*__builtin_isnan*/
-    }
-    template <typename T>
-    bool isinf (T t)
-    {
-        return ::isinf (t);
-    }
-    template <typename T>
-    T llabs (T t)
-    {
-        return ::llabs (t);
-    }
-}
-#endif
-
 namespace Stroika {
     namespace Foundation {
         namespace Math {
@@ -200,13 +180,9 @@ namespace Stroika {
                 Require (epsilon >= 0);
                 TC diff = (l - r);
                 if (std::isnan (diff)) {
-// nan-nan, or inf-inf
-// maybe other cases shouldnt be considered nearly equals?
-#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-                    return fpclassify (l) == fpclassify (static_cast<TC> (r));
-#else
+                    // nan-nan, or inf-inf
+                    // maybe other cases shouldnt be considered nearly equals?
                     return std::fpclassify (l) == std::fpclassify (r);
-#endif
                 }
                 if (std::isinf (diff)) {
                     static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());

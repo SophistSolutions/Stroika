@@ -126,12 +126,6 @@ int main (void)
 }
 #endif
 
-#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-namespace std {
-    using ::snprintf;
-}
-#endif
-
 #if qPlatform_Windows
 // /SEE THIS CODE FOR WINDOWS
 //http ://support.microsoft.com/default.aspx?scid=http://support.microsoft.com:80/support/kb/articles/Q129/3/15.asp&NoWebContent=1

@@ -666,20 +666,6 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 
 #endif
 
-/**
- * Issue doesn't affect Ubuntu 16.04, but appears to affect any system using libc 2.26 or later with g++5
- */
-#ifndef qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-
-#if !defined(__clang__) && defined(__GNUC__)
-// broken with __GLIBC_MINOR__==24, and fixed with __GLIBC_MINOR__==27, not sure in between
-#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy (__GNUC__ == 5 && (24 <= __GLIBC_MINOR__ && __GLIBC_MINOR__ <= 24))
-#else
-#define qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy 0
-#endif
-
-#endif
-
 /*
   Range.cpp
   ****NOTE - WARNING NOT ERRR - BUT USELESS AND ANNOYING ****

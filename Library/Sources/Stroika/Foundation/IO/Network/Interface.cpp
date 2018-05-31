@@ -63,12 +63,6 @@ using namespace Stroika::Foundation::IO::Network;
 #pragma comment(lib, "Iphlpapi.lib")
 #endif
 
-#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-namespace std {
-    using ::snprintf;
-}
-#endif
-
 #if qPlatform_Linux
 // Hack for centos5 support:
 //      Overload with linux version so other one wins, but this gets called if other doesn't exist

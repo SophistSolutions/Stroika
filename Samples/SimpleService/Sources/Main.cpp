@@ -49,12 +49,6 @@ using Execution::SignalHandler;
 using Execution::SignalHandlerRegistry;
 using Execution::Thread;
 
-#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-namespace std {
-    using ::_Exit;
-}
-#endif
-
 #if qUseLogger
 #include "Stroika/Foundation/Debug/BackTrace.h"
 #include "Stroika/Foundation/Execution/Logger.h"

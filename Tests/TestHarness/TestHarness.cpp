@@ -17,12 +17,6 @@
 
 #include "TestHarness.h"
 
-#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-namespace std {
-    using ::_Exit;
-}
-#endif
-
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::TestHarness;

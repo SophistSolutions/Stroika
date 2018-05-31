@@ -23,12 +23,6 @@ using Debug::TraceContextBumper;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-#if qCompilerAndStdLib_glibc_stdfunctionmapping_Buggy
-namespace std {
-    using ::snprintf;
-}
-#endif
-
 /*
  ********************************************************************************
  ***************************** errno_ErrorException *****************************
