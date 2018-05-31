@@ -34,10 +34,8 @@ namespace Stroika {
             template <typename ENUM>
             inline constexpr typename underlying_type<ENUM>::type ToInt (ENUM e)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-// https://stroika.atlassian.net/browse/STK-549
-//static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
-#endif
+				// https://stroika.atlassian.net/browse/STK-549
+				//static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
                 return static_cast<typename underlying_type<ENUM>::type> (e);
             }
 
@@ -60,10 +58,8 @@ namespace Stroika {
             template <typename ENUM>
             inline constexpr ENUM ToEnum (typename underlying_type<ENUM>::type e)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-// https://stroika.atlassian.net/browse/STK-549
-//static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
-#endif
+				// https://stroika.atlassian.net/browse/STK-549
+				//static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
                 return static_cast<ENUM> (e);
             }
 
@@ -75,10 +71,8 @@ namespace Stroika {
             template <typename ENUM>
             inline constexpr make_unsigned_t<typename underlying_type<ENUM>::type> OffsetFromStart (ENUM e)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-// https://stroika.atlassian.net/browse/STK-549
-//static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
-#endif
+				// https://stroika.atlassian.net/browse/STK-549
+				//static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
                 return static_cast<make_unsigned_t<typename underlying_type<ENUM>::type>> (ToInt (e) - ToInt (ENUM::eSTART));
             }
             template <typename ENUM>
@@ -104,26 +98,20 @@ namespace Stroika {
                     *oi = i;
                     ++oi;
                 }
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 RequireItemsOrderedByEnumValue_ ();
-#endif
             }
             template <typename ENUM_TYPE>
             inline constexpr EnumNames<ENUM_TYPE>::EnumNames (const typename EnumNames<ENUM_TYPE>::BasicArrayInitializer& init)
                 : fEnumNames_ (init)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 RequireItemsOrderedByEnumValue_ ();
-#endif
             }
             template <typename ENUM_TYPE>
             template <size_t N>
             inline constexpr EnumNames<ENUM_TYPE>::EnumNames (const EnumName<ENUM_TYPE> origEnumNames[N])
                 : fEnumNames_ (origEnumNames)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 RequireItemsOrderedByEnumValue_ ();
-#endif
             }
             template <typename ENUM_TYPE>
             inline EnumNames<ENUM_TYPE>::operator initializer_list<EnumName<ENUM_TYPE>> () const
@@ -148,9 +136,6 @@ namespace Stroika {
             template <typename ENUM_TYPE>
             inline constexpr const wchar_t* EnumNames<ENUM_TYPE>::PeekName (ENUM_TYPE e) const
             {
-#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                return e == ENUM_TYPE::eEND ? nullptr : fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second;
-#else
                 if (e == ENUM_TYPE::eEND) {
                     return nullptr;
                 }
@@ -167,7 +152,6 @@ namespace Stroika {
                 Ensure (refImpl (e) == fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second);
 #endif
                 return fEnumNames_[OffsetFromStart<ENUM_TYPE> (e)].second;
-#endif
             }
             template <typename ENUM_TYPE>
             inline const wchar_t* EnumNames<ENUM_TYPE>::GetName (ENUM_TYPE e) const
@@ -210,7 +194,6 @@ namespace Stroika {
                 }
                 return *tmp;
             }
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
             template <typename ENUM_TYPE>
             inline constexpr void EnumNames<ENUM_TYPE>::RequireItemsOrderedByEnumValue_ () const
             {
@@ -220,7 +203,6 @@ namespace Stroika {
                     Require (OffsetFromStart<ENUM_TYPE> (fEnumNames_[i].first) == i);
                 }
             }
-#endif
 
             /*
              ********************************************************************************

@@ -44,9 +44,6 @@ namespace Stroika {
                 template <typename TYPE>
                 constexpr int ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, ...)
                 {
-#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                    return (lhs < rhs) ? -1 : ((lhs == rhs) ? 0 : 1);
-#else
                     if (lhs < rhs) {
                         return -1;
                     }
@@ -56,7 +53,6 @@ namespace Stroika {
                     else {
                         return 1;
                     }
-#endif
                 }
             }
             template <typename TYPE>

@@ -85,9 +85,7 @@ namespace Stroika {
             constexpr inline Range<T, TRAITS>::Range ()
                 : Range (TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Ensure (empty ());
-#endif
             }
             template <typename T, typename TRAITS>
             template <typename T2, typename TRAITS2>
@@ -112,9 +110,7 @@ namespace Stroika {
                 , fBeginOpenness_ (lhsOpen)
                 , fEndOpenness_ (rhsOpen)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Ensure (empty ());
-#endif
             }
             template <typename T, typename TRAITS>
             constexpr inline Range<T, TRAITS>::Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen)
@@ -123,12 +119,10 @@ namespace Stroika {
                 , fBeginOpenness_ (lhsOpen)
                 , fEndOpenness_ (rhsOpen)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (TRAITS::kLowerBound <= TRAITS::kUpperBound); // always required for class
                 Require (TRAITS::kLowerBound <= begin);
                 Require (begin <= end);
                 Require (end <= TRAITS::kUpperBound);
-#endif
             }
             template <typename T, typename TRAITS>
             inline Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen)
@@ -156,9 +150,6 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline constexpr bool Range<T, TRAITS>::empty () const
             {
-#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                return fBegin_ > fEnd_ ? true : ((fBegin_ == fEnd_) ? (fBeginOpenness_ == Openness::eOpen and fEndOpenness_ == Openness::eOpen) : false);
-#else
                 if (fBegin_ > fEnd_) {
                     // internal hack done in Range<T, TRAITS>::Range() - empty range - otherwise not possible to create this situation
                     return true;
@@ -167,26 +158,19 @@ namespace Stroika {
                     return fBeginOpenness_ == Openness::eOpen and fEndOpenness_ == Openness::eOpen;
                 }
                 return false;
-#endif
             }
             template <typename T, typename TRAITS>
             inline constexpr typename Range<T, TRAITS>::UnsignedDifferenceType Range<T, TRAITS>::GetDistanceSpanned () const
             {
-#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                return empty () ? static_cast<UnsignedDifferenceType> (0) : static_cast<UnsignedDifferenceType> (TraitsType::Difference (fBegin_, fEnd_));
-#else
                 if (empty ()) {
                     return static_cast<UnsignedDifferenceType> (0);
                 }
                 return static_cast<UnsignedDifferenceType> (TraitsType::Difference (fBegin_, fEnd_));
-#endif
             }
             template <typename T, typename TRAITS>
             inline constexpr T Range<T, TRAITS>::GetMidpoint () const
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
-#endif
                 return GetLowerBound () + GetDistanceSpanned () / 2;
             }
             template <typename T, typename TRAITS>
@@ -207,9 +191,6 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline constexpr bool Range<T, TRAITS>::Contains (Configuration::ArgByValueType<T> r) const
             {
-#if qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                return empty () ? false : ((fBegin_ < r and r < fEnd_) or (fBeginOpenness_ == Openness::eClosed and r == fBegin_) or (fEndOpenness_ == Openness::eClosed and r == fEnd_));
-#else
                 if (empty ()) {
                     return false;
                 }
@@ -223,7 +204,6 @@ namespace Stroika {
                     return true;
                 }
                 return false;
-#endif
             }
             template <typename T, typename TRAITS>
             inline bool Range<T, TRAITS>::Contains (const Range<T, TRAITS>& containee) const
@@ -247,9 +227,7 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline constexpr Range<T, TRAITS> Range<T, TRAITS>::Closure () const
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
-#endif
                 return Range<T, TRAITS> (GetLowerBound (), GetUpperBound (), Openness::eClosed, Openness::eClosed);
             }
             template <typename T, typename TRAITS>
@@ -350,9 +328,7 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline constexpr T Range<T, TRAITS>::GetLowerBound () const
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
-#endif
                 return fBegin_;
             }
             template <typename T, typename TRAITS>
@@ -363,9 +339,7 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline constexpr T Range<T, TRAITS>::GetUpperBound () const
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require (not empty ());
-#endif
                 return fEnd_;
             }
             template <typename T, typename TRAITS>

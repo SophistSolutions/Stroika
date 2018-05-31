@@ -23,24 +23,18 @@ namespace Stroika {
             inline constexpr TimeOfDay::TimeOfDay ()
                 : fTime_ (-1)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Assert (empty () or fTime_ < kMaxSecondsPerDay);
-#endif
             }
             inline constexpr TimeOfDay::TimeOfDay (uint32_t t)
                 : fTime_ (t < kMaxSecondsPerDay ? t : (kMaxSecondsPerDay - 1))
             {
                 Require (t < kMaxSecondsPerDay); // required added v2.0a227 - so still leave in check for a short while
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Assert (empty () or fTime_ < kMaxSecondsPerDay);
-#endif
             }
             inline constexpr TimeOfDay::TimeOfDay (unsigned int hour, unsigned int minute, unsigned int seconds)
                 : TimeOfDay (static_cast<uint32_t> (((hour * 60) + minute) * 60 + seconds))
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Assert (empty () or fTime_ < kMaxSecondsPerDay);
-#endif
             }
             inline constexpr TimeOfDay TimeOfDay::min ()
             {
@@ -56,9 +50,7 @@ namespace Stroika {
             }
             inline constexpr unsigned int TimeOfDay::GetAsSecondsCount () const
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Ensure ((empty () ? 0 : fTime_) < kMaxSecondsPerDay);
-#endif
                 return empty () ? 0 : fTime_;
             }
             inline uint8_t TimeOfDay::GetHours () const

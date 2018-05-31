@@ -247,10 +247,7 @@ namespace Stroika {
                 constexpr Date (const Date& src) = default;
                 constexpr Date (Date&& src)      = default;
                 explicit constexpr Date (JulianRepType julianRep);
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                constexpr
-#endif
-                    explicit Date (Year year, MonthOfYear month, DayOfMonth day);
+                constexpr explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
             public:
                 /**
@@ -467,18 +464,10 @@ namespace Stroika {
                 nonvirtual int Compare (const Date& rhs) const;
 
             private:
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                constexpr
-#endif
-                    static JulianRepType
-                    jday_ (MonthOfYear month, DayOfMonth day, Year year);
+                constexpr static JulianRepType jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
             private:
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-                constexpr
-#endif
-                    static JulianRepType
-                    Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
+                constexpr static JulianRepType Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year);
 
             private:
                 static Date AsDate_ (const tm& when);

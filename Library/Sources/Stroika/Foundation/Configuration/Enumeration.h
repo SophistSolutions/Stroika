@@ -227,10 +227,8 @@ namespace Stroika {
                 template <typename NOT_FOUND_EXCEPTION>
                 nonvirtual ENUM_TYPE GetValue (const wchar_t* name, const NOT_FOUND_EXCEPTION& notFoundException) const;
 
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
             private:
                 nonvirtual constexpr void RequireItemsOrderedByEnumValue_ () const;
-#endif
 
             private:
                 // SHOULD BE ABLE TO USE CONST HERE qCANNOT_FIGURE_OUT_HOW_TO_INIT_STD_ARRAY_FROM_STD_INITIALIZER_

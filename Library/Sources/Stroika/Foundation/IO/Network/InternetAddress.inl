@@ -46,7 +46,7 @@ namespace Stroika {
 #endif
                 }
                 {
-#if qPlatform_Windows && !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
+#if qPlatform_Windows
                     Assert (fV4_.s_addr == i);
 #endif
                 }
@@ -152,9 +152,7 @@ namespace Stroika {
                 template <>
                 inline constexpr in_addr InternetAddress::As<in_addr> () const
                 {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     Require (fAddressFamily_ == AddressFamily::V4);
-#endif
                     return fV4_;
                 }
                 template <>
@@ -182,9 +180,7 @@ namespace Stroika {
                 template <>
                 inline constexpr in6_addr InternetAddress::As<in6_addr> () const
                 {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                     Require (fAddressFamily_ == AddressFamily::V6);
-#endif
                     return fV6_;
                 }
                 template <>

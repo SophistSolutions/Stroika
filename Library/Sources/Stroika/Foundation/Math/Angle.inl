@@ -36,10 +36,8 @@ namespace Stroika {
                                     : (
                                           angle * (2 * kPi) / 400.0))}
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 using namespace Configuration;
                 Require (ToInt (AngleFormat::eSTART) <= ToInt (angleFormat) and ToInt (angleFormat) < ToInt (AngleFormat::eEND));
-#endif
             }
             inline constexpr double Angle::AsRadians () const
             {

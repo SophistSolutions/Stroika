@@ -21,11 +21,7 @@ namespace Stroika {
              *************************************** Date ***********************************
              ********************************************************************************
              */
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-            constexpr
-#endif
-                inline Date::JulianRepType
-                Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
+            constexpr inline Date::JulianRepType  Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
             {
                 /*
                  * Convert Gregorian calendar date to the corresponding Julian day number
@@ -52,11 +48,7 @@ namespace Stroika {
                 Date::JulianRepType ya = static_cast<int> (year) - 100 * c;
                 return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119);
             }
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-            constexpr
-#endif
-                inline Date::JulianRepType
-                Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
+            constexpr  inline Date::JulianRepType  Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
             {
                 // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
 
@@ -77,21 +69,14 @@ namespace Stroika {
             inline constexpr Date::Date (JulianRepType julianRep)
                 : fJulianDateRep_ (julianRep)
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 Require ((kMinJulianRep <= julianRep and julianRep <= kMaxJulianRep) or julianRep == kEmptyJulianRep);
-#endif
             }
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
-            constexpr
-#endif
-                inline Date::Date (Year year, MonthOfYear month, DayOfMonth day)
+            constexpr inline Date::Date (Year year, MonthOfYear month, DayOfMonth day)
                 : fJulianDateRep_ (jday_ (month, day, year))
             {
-#if !qCompilerAndStdLib_constexpr_functions_cpp14Constaints_Buggy
                 // Gregorian calendar started on Sep. 14, 1752
                 Require (year >= Year::eFirstYear);
                 Require (year > Year (1752) or (month > MonthOfYear::eSeptember) or (month == MonthOfYear::eSeptember and day >= DayOfMonth (14)));
-#endif
             }
             inline constexpr Date::JulianRepType Date::GetJulianRep () const
             {
