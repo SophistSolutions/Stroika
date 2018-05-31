@@ -36,6 +36,17 @@ using Time::DurationSecondsType;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Configuration {
+    constexpr EnumNames<Logger::Priority> DefaultNames<Logger::Priority>::k;
+}
+#endif
+
 /*
  ********************************************************************************
  ******************************** Execution::Logger *****************************

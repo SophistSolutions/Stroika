@@ -97,6 +97,18 @@ namespace {
     };
 }
 
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Configuration {
+    constexpr EnumNames<IO::Network::Interface::Status> DefaultNames<IO::Network::Interface::Status>::k;
+    constexpr EnumNames<IO::Network::Interface::Type>   DefaultNames<IO::Network::Interface::Type>::k;
+}
+#endif
+
 /*
  ********************************************************************************
  *********************************** Interface **********************************

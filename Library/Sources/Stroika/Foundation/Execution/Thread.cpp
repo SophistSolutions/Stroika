@@ -185,6 +185,17 @@ namespace {
 SignalHandler kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 #endif
 
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Configuration {
+    constexpr EnumNames<Execution::Thread::Status> DefaultNames<Execution::Thread::Status>::k;
+}
+#endif
+
 /*
  ********************************************************************************
  ************** Thread::SuppressInterruptionInContext ***************************

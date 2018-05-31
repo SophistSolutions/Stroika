@@ -51,13 +51,24 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
 
 using Characters::SDKChar;
-using Characters::String_Constant;
 using Characters::StringBuilder;
+using Characters::String_Constant;
 using Memory::Byte;
 using Memory::Optional;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
+
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Configuration {
+    constexpr EnumNames<SystemConfiguration::OperatingSystem::InstallerTechnology> DefaultNames<SystemConfiguration::OperatingSystem::InstallerTechnology>::k;
+}
+#endif
 
 /*
  ********************************************************************************

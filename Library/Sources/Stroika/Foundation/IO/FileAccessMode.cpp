@@ -11,3 +11,14 @@
 
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::IO;
+
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Configuration {
+    constexpr EnumNames<IO::FileAccessMode> DefaultNames<IO::FileAccessMode>::k;
+}
+#endif

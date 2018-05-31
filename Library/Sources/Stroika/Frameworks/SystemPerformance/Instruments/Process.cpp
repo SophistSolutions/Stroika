@@ -266,6 +266,19 @@ namespace {
 }
 #endif
 
+
+
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+/*
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
+namespace Stroika::Foundation::Configuration {
+    constexpr EnumNames<ProcessType::RunStatus> DefaultNames<ProcessType::RunStatus>::k;
+}
+#endif
+
 /*
  ********************************************************************************
  ****************** Instruments::Process::ProcessType ***************************
