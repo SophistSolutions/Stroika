@@ -18,7 +18,7 @@
  * TODO:
  *      @todo   See about static buffer style from ModuleInit - so no NEW operation!
  *
- *		@todo	use static inline members, but right now that causes VS2k17 compiler to crash
+ *      @todo   use static inline members, but right now that causes VS2k17 compiler to crash
  */
 
 namespace Stroika {
@@ -107,12 +107,12 @@ namespace Stroika {
             private:
 // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time (block subsequent callers while constructing)
 #if qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
-                static  SpinLock sMutex_;
+                static SpinLock sMutex_;
 #else
-                static  mutex sMutex_;
+                static mutex sMutex_;
 #endif
-                static  unsigned int sCountUses_;
-                static  T*           sOnceObj_;
+                static unsigned int sCountUses_;
+                static T*           sOnceObj_;
                 //                alignas (alignof (T)) Memory::Byte fOnceObj_Storage_[sizeof (T)]; // avoid actual memory allocation call - since only one of these
             };
         }
