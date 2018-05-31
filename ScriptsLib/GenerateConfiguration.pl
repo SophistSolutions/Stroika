@@ -442,6 +442,7 @@ sub	SetInitialDefaults_
 		#$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
 		$STATIC_LINK_GCCRUNTIME = 0;
+		$COMPILER_DRIVER = "clang";
 		$COMPILER_DRIVER_C = "clang";
 		$COMPILER_DRIVER_CPlusPlus = "clang++";
 		$CWARNING_FLAGS = $DEFAULT_CWARNING_FLAGS_CLANG;
@@ -656,7 +657,7 @@ sub	SetDefaultForCompilerDriver_
 
 sub	SetDefaultForPlatform_
 {
-	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
+	if ($PROJECTPLATFORMSUBDIR eq 'Unix' && $COMPILER_DRIVER eq '') {
 		$COMPILER_DRIVER = "gcc";
 		#$COMPILER_DRIVER = "clang++";
 		#$COMPILER_DRIVER = "gcc";
