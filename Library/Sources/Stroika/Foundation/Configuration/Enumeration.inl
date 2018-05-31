@@ -34,8 +34,8 @@ namespace Stroika {
             template <typename ENUM>
             inline constexpr typename underlying_type<ENUM>::type ToInt (ENUM e)
             {
-				// https://stroika.atlassian.net/browse/STK-549
-				//static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
+                // https://stroika.atlassian.net/browse/STK-549
+                //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
                 return static_cast<typename underlying_type<ENUM>::type> (e);
             }
 
@@ -58,8 +58,8 @@ namespace Stroika {
             template <typename ENUM>
             inline constexpr ENUM ToEnum (typename underlying_type<ENUM>::type e)
             {
-				// https://stroika.atlassian.net/browse/STK-549
-				//static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
+                // https://stroika.atlassian.net/browse/STK-549
+                //static_assert (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
                 return static_cast<ENUM> (e);
             }
 
@@ -71,8 +71,8 @@ namespace Stroika {
             template <typename ENUM>
             inline constexpr make_unsigned_t<typename underlying_type<ENUM>::type> OffsetFromStart (ENUM e)
             {
-				// https://stroika.atlassian.net/browse/STK-549
-				//static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
+                // https://stroika.atlassian.net/browse/STK-549
+                //static_assert (ENUM::eSTART <= e and e <= ENUM::eEND);
                 return static_cast<make_unsigned_t<typename underlying_type<ENUM>::type>> (ToInt (e) - ToInt (ENUM::eSTART));
             }
             template <typename ENUM>

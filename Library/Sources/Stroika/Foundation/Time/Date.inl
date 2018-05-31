@@ -16,12 +16,12 @@ namespace Stroika {
     namespace Foundation {
         namespace Time {
 
-/*
+            /*
              ********************************************************************************
              *************************************** Date ***********************************
              ********************************************************************************
              */
-            constexpr inline Date::JulianRepType  Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
+            constexpr inline Date::JulianRepType Date::jday_ (MonthOfYear month, DayOfMonth day, Year year)
             {
                 /*
                  * Convert Gregorian calendar date to the corresponding Julian day number
@@ -48,7 +48,7 @@ namespace Stroika {
                 Date::JulianRepType ya = static_cast<int> (year) - 100 * c;
                 return (((146097 * c) >> 2) + ((1461 * ya) >> 2) + (153 * static_cast<int> (month) + 2) / 5 + static_cast<int> (day) + 1721119);
             }
-            constexpr  inline Date::JulianRepType  Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
+            constexpr inline Date::JulianRepType Date::Safe_jday_ (MonthOfYear month, DayOfMonth day, Year year)
             {
                 // 'Safe' version just avoids require that date values are legit for julian date range. If date would be invalid - return kEmptyJulianRep.
 
