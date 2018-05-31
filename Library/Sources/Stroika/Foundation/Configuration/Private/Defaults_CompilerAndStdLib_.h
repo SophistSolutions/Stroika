@@ -1155,35 +1155,9 @@ eq_result
 #endif
 
 /**
-*
-*   ENTER CODE:
-#if __has_include (<optional>)
-#endif
-
-1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\configuration\private\defaults_compilerandstdlib_.h (1137) : warning C4067 : unexpected tokens following preprocessor directive - expected a newline
-
-// STILL broken in _MS_VS_2k17_15Pt1_
-// FIXED in _MS_VS_2k17_15Pt3Pt1_ (at least above iftest compiles) -- LGP 2017-08-20
-*/
-#if !defined(qCompilerAndStdLib_has_include_Buggy)
-#if defined(_MSC_VER)
-#define qCompilerAndStdLib_has_include_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (MSC_FULL_VER <= _MS_VS_2k17_15Pt1_)
-#else
-#define qCompilerAndStdLib_has_include_Buggy 0
-#endif
-#endif
-
-/**
 */
 #if !defined(qCompilerAndStdLib_Supports_stdoptional)
-#if qCompilerAndStdLib_has_include_Buggy && defined(_MSC_VER)
-#define qCompilerAndStdLib_Supports_stdoptional CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_HAS_CXX17)
-//#elif defined(__GNUC__) && __GNUC__ == 7
-//#define qCompilerAndStdLib_Supports_stdoptional (__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17)
-#else
-// has_include works - because we have the include, but alas it somehow gets suppressed unless you compile with -std=c++1z, so test this macro and has_include
 #define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17) && __has_include (<optional>))
-#endif
 #endif
 
 /**
@@ -1191,19 +1165,13 @@ eq_result
 #if !defined(qCompilerAndStdLib_Supports_stdexperimentaloptional)
 #if qCompilerAndStdLib_Supports_stdoptional
 #define qCompilerAndStdLib_Supports_stdexperimentaloptional 0
-#elif qCompilerAndStdLib_has_include_Buggy
-#define qCompilerAndStdLib_Supports_stdexperimentaloptional 0
 #else
 #define qCompilerAndStdLib_Supports_stdexperimentaloptional (__has_include (<experimental / optional>))
 #endif
 #endif
 
 #if !defined(qCompilerAndStdLib_insert_or_assign_Buggy)
-#if qCompilerAndStdLib_has_include_Buggy && defined(_MSC_VER)
-#define qCompilerAndStdLib_insert_or_assign_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (!_HAS_CXX17)
-#else
 #define qCompilerAndStdLib_insert_or_assign_Buggy (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_17)
-#endif
 #endif
 
 /*
