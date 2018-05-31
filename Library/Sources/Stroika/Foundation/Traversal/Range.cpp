@@ -15,6 +15,6 @@ using namespace Stroika::Foundation;
  ********************************************************************************
  */
 namespace Stroika::Foundation::Configuration {
-    constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options>::k;
+    constexpr EnumNames<Traversal::Openness> DefaultNames<Traversal::Openness>::k;
 }
 #endif
