@@ -1323,16 +1323,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #endif
 
 /*
-@CONFIGVAR:     qDecoratedNameLengthExceeded_Buggy
-@DESCRIPTION:
-        C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\xrefwrap(173): warning C4503: 'Stroik...
-        ...: decorated name length exceeded, name was truncated []
-*/
-#ifndef qDecoratedNameLengthExceeded_Buggy
-#define qDecoratedNameLengthExceeded_Buggy 0
-#endif
-
-/*
  *******************************************************************
  *******************************************************************
  ********************* REACT TO SOME DEFINES ***********************
@@ -1471,10 +1461,6 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __pragma (pack (push, 1)) __VA_ARGS__ __pragma (pack (pop))
 #elif defined(__GNUC__) || defined(__clang__)
 #define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
-#endif
-
-#if qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER) && qDecoratedNameLengthExceeded_Buggy
-__pragma (warning (disable : 4503))
 #endif
 
 #endif /*defined(__cplusplus)*/
