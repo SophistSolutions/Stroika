@@ -566,6 +566,18 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #endif
 #endif
 
+/**
+ *  \note this also happens to clang++ 5 or lower (fixed in 6) on Linux (LLVM). But we aren't going to bother supporting
+ *        those versions for Stroika 2.1. (ONLY HAS EFFECT with -std=c++17)
+ */
+#ifndef qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
+#else
+#define qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy 0
+#endif
+#endif
+
 #ifndef qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
@@ -1354,6 +1366,12 @@ In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/St
 #if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
 #pragma message("Stroika requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14)")
 #endif
+#endif
+
+// Stroika v2.1 requires C++17, but due to this bug, to enable that with clang, you must say c++14, and then a special warning define
+// so you dont get warnings for using C++17 features. Not perfect, but will have to do
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy && __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
+#pragma clang diagnostic ignored \"Wc++17-extensions\""
 #endif
 
 #if qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
