@@ -601,10 +601,11 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 /home/lewis/Sandbox/Stroika-Remote-Build-Dir/Library/Sources/Stroika/Foundation/Execution/../Characters/ToString.inl:112: undefined reference to `Stroika::Foundation::Configuration::DefaultNames<Stroika::Foundation::Execution::SignalHandler::Type>::k'
  */
 #ifndef qCompiler_InlineStaticMemberAutoDefined_Buggy
-#elif defined(__GNUC__)
+#if defined(__GNUC__)
 #define qCompiler_InlineStaticMemberAutoDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 6)
 #else
 #define qCompiler_InlineStaticMemberAutoDefined_Buggy 0
+#endif
 #endif
 
 /**
