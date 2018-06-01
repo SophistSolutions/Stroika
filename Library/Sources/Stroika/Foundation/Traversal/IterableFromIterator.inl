@@ -111,63 +111,19 @@ namespace Stroika {
              **************************** MakeIterableFromIterator **************************
              ********************************************************************************
              */
-#if qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
-            namespace {
-                template <typename T>
+            template <typename T>
+            Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator)
+            {
                 struct MyIterable_ : public Iterable<T> {
                     struct Rep : public IterableFromIterator<T>::_Rep {
                         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
                         DECLARE_USE_BLOCK_ALLOCATION (Rep);
                         Iterator<T> fOriginalIterator;
 #if qDebug
-                        mutable Private_::IteratorTracker<T> fIteratorTracker_;
+                        mutable Private_::IteratorTracker<T> fIteratorTracker_{};
 #endif
                         Rep (const Iterator<T>& originalIterator)
                             : fOriginalIterator (originalIterator)
-#if qDebug
-                            , fIteratorTracker_ ()
-#endif
-                        {
-                        }
-                        virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
-                        {
-#if qDebug
-                            return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);
-#else
-                            return fOriginalIterator;
-#endif
-                        }
-                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
-                        {
-                            return Iterable<T>::template MakeSharedPtr<Rep> (*this);
-                        }
-                    };
-                    MyIterable_ (const Iterator<T>& originalIterator)
-                        : Iterable<T> (Iterable<T>::template MakeSharedPtr<Rep> (originalIterator))
-                    {
-                    }
-                };
-            }
-#endif
-            template <typename T>
-            Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator)
-            {
-#if qCompilerAndStdLib_SFINAE_SharedPtr_Buggy
-                return MyIterable_<T> (iterator);
-#else
-                struct MyIterable_ : public Iterable<T> {
-                    struct Rep : public IterableFromIterator<T>::_Rep {
-                        using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-                        DECLARE_USE_BLOCK_ALLOCATION (Rep);
-                        Iterator<T>                          fOriginalIterator;
-#if qDebug
-                        mutable Private_::IteratorTracker<T> fIteratorTracker_;
-#endif
-                        Rep (const Iterator<T>& originalIterator)
-                            : fOriginalIterator (originalIterator)
-#if qDebug
-                            , fIteratorTracker_ ()
-#endif
                         {
                         }
                         virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
@@ -189,7 +145,6 @@ namespace Stroika {
                     }
                 };
                 return MyIterable_ (iterator);
-#endif
             }
         }
     }
