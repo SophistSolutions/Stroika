@@ -857,27 +857,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #endif
 
 /*
-Compiling regtests for Median/OrderBy...
->; _Compare = std::function<bool(const int&, const int&)>]’
-../../..//Library/Sources/Stroika/Foundation/Characters/../Containers/../Traversal/Iterable.inl:538:22:   required from ‘RESULT_TYPE Stroika::Foundation::Traversal::Iterable<T>::Median(const std::function<bool(T, T)>&) const [with RESULT_TYPE = int; T = int]’
-../../../Tests/46/Test.cpp:781:13:   required from here
-/usr/include/c++/5/bits/predefined_ops.h:123:31: error: invalid type argument of unary ‘*’ (have ‘int’)
-*/
-#ifndef qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Bugg
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 8))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ == 3))
-#elif defined(__GNUC__)
-#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy ((__GNUC__ == 5 && (__GNUC_MINOR__ == 1)) and __cplusplus == kStrokia_Foundation_Configuration_cplusplus_14)
-#else
-#define qCompilerAndStdLib_TemplateCompareIndirectionLevelCPP14_Buggy 0
-#endif
-
-#endif
-
-/*
 1>c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): error C2244: 'Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone': unable to match function definition to an existing declaration
 1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(29): note: see declaration of 'Stroika::Foundation::Traversal::DelegatedIterator<T,EXTRA_DATA>::Rep::Clone'
 1>  c:\sandbox\stroikadev\library\sources\stroika\foundation\traversal\delegatediterator.inl(32): note: definition
