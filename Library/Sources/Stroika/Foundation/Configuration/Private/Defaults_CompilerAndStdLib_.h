@@ -781,18 +781,6 @@ CLANG 5.0:
 
 #endif
 
-/**
- */
-#ifndef qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy
-
-#if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy (__GNUC__ <= 5)
-#else
-#define qCompilerAndStdLib_deprecated_attribute_itselfProducesWarning_Buggy 0
-#endif
-
-#endif
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
@@ -845,6 +833,7 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 
 #endif
 
+/*
 /*
 @CONFIGVAR:     qCompilerAndStdLib_regexp_Compile_bracket_set_Star_Buggy
 
