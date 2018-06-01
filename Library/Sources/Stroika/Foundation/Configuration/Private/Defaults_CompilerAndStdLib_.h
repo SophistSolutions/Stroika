@@ -606,7 +606,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #else
 #define qCompiler_InlineStaticMemberAutoDefined_Buggy 0
 #endif
-#endif
+
 /**
  */
 #ifndef qCompiler_cpp17HasVersionValue201500_Buggy
