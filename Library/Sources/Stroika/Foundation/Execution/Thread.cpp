@@ -185,7 +185,7 @@ namespace {
 SignalHandler kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 #endif
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy || qCompiler_InlineStaticMemberAutoDefined_Buggy
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************

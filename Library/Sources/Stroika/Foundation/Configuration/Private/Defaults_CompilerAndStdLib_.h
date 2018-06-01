@@ -593,6 +593,21 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #endif
 
 /**
+ *  SAMPLE ERROR OUTPUT:
+      Linking  $StroikaRoot/Builds/g++-6-debug-c++17/HTMLViewCompiler...
+/home/lewis/Sandbox/Stroika-Remote-Build-Dir/Builds/g++-6-debug-c++17/Stroika-Foundation.a(Thread.o): In function `Stroika::Foundation::Characters::String Stroika::Foundation::Characters::Private_::ToString_<Stroika::Foundation::Execution::Thread::Status>(Stroika::Foundation::Execution::Thread::Status const&, std::enable_if<std::is_enum<Stroika::Foundation::Execution::Thread::Status>::value, void>::type*)':
+/home/lewis/Sandbox/Stroika-Remote-Build-Dir/Library/Sources/Stroika/Foundation/Execution/../Characters/ToString.inl:112: undefined reference to `Stroika::Foundation::Configuration::DefaultNames<Stroika::Foundation::Execution::Thread::Status>::k'
+/home/lewis/Sandbox/Stroika-Remote-Build-Dir/Builds/g++-6-debug-c++17/Stroika-Foundation.a(SignalHandlers.o): In function `Stroika::Foundation::Characters::String Stroika::Foundation::Characters::Private_::ToString_<Stroika::Foundation::Execution::SignalHandler::Type>(Stroika::Foundation::Execution::SignalHandler::Type const&, std::enable_if<std::is_enum<Stroika::Foundation::Execution::SignalHandler::Type>::value, void>::type*)':
+/home/lewis/Sandbox/Stroika-Remote-Build-Dir/Library/Sources/Stroika/Foundation/Execution/../Characters/ToString.inl:112: undefined reference to `Stroika::Foundation::Configuration::DefaultNames<Stroika::Foundation::Execution::SignalHandler::Type>::k'
+ */
+#ifndef qCompiler_InlineStaticMemberAutoDefined_Buggy
+#elif defined(__GNUC__)
+#define qCompiler_InlineStaticMemberAutoDefined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 6)
+#else
+#define qCompiler_InlineStaticMemberAutoDefined_Buggy 0
+#endif
+#endif
+/**
  */
 #ifndef qCompiler_cpp17HasVersionValue201500_Buggy
 #if defined(__GNUC__) && !defined(__clang__)

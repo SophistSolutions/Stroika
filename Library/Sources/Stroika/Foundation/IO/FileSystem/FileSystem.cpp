@@ -55,7 +55,7 @@ using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy || qCompiler_InlineStaticMemberAutoDefined_Buggy
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
