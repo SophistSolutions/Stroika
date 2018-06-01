@@ -535,27 +535,10 @@ namespace {
 }
 
 namespace {
-
-#if qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
-    struct StructureFieldInfo_ {
-        size_t             fOffset;
-        type_index         fTypeInfo;
-        Characters::String fSerializedFieldName;
-
-        StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid (void), const Characters::String& serializedFieldName = Characters::String ())
-            : fOffset (fieldOffset)
-            , fTypeInfo (typeInfo)
-            , fSerializedFieldName (serializedFieldName)
-        {
-        }
-    };
-#endif
-
     void SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()
     {
         Debug::TraceContextBumper traceCtx ("{}::SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()");
         using Characters::String;
-#if !qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
         struct StructureFieldInfo_ {
             size_t     fOffset;
             type_index fTypeInfo;
@@ -568,7 +551,6 @@ namespace {
             {
             }
         };
-#endif
         Sequence<StructureFieldInfo_> t  = {StructureFieldInfo_ (0, typeid (int), L"fred")};
         Sequence<StructureFieldInfo_> tt = t;
     }

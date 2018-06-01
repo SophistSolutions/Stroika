@@ -966,24 +966,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #endif
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
-In file included from ../../..//Library/Sources/Stroika/Foundation/Characters/String.h:12:0,
-                 from ../../../Tests/18/Test.cpp:13:
-../../..//Library/Sources/Stroika/Foundation/Characters/../Containers/Sequence.h:548:45: error: 'void Stroika::Foundation::Containers::Sequence<T>::_IRep::Insert(size_t, const T*, const T*) [with T = {anonymous}::SimpleSequenceTest_14_Sequence_stdinitializer_complexType_()::StructureFieldInfo_; size_t = long unsigned int]', declared using local type 'const {anonymous}::SimpleSequenceTest_14_Sequence_stdinitializer_complexType_()::StructureFieldInfo_', is used but never defined [-fpermissive]
-                 virtual void                Insert (size_t at, const T* from, const T* to)                          =   0;
-                                             ^
-*/
-#if !defined(qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
-
-#if !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug ((__GNUC__ < 5) || (__GNUC__ == 5 && (__GNUC_MINOR__ <= 2)))
-#else
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug 0
-#endif
-
-#endif
-
-/*
 @CONFIGVAR:     qCompiler_SanitizerFunctionPtrConversionSuppressionBug
 /*
  *  Running regression tests (built with clang (4 and 5) and sanitizer debug options)
