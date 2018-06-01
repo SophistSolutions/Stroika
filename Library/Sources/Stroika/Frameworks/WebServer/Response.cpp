@@ -40,7 +40,7 @@ namespace {
                                                                IO::Network::HTTP::HeaderName::kContentType});
 }
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy || qCompiler_InlineStaticMemberAutoDefined_Buggy
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
