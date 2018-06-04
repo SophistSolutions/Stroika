@@ -94,7 +94,7 @@ namespace Stroika {
              *              This MAYBE related to why "std::condition_variable works only with std::unique_lock<std::mutex>".
              *              BUT - then i dont understand how " std::condition_variable_any provides a condition variable that works with any BasicLockable"
              */
-            template <typename MUTEX = mutex, typename CONDITION_VARIABLE = typename std::conditional<is_same<mutex, MUTEX>::value, condition_variable, condition_variable_any>::type>
+            template <typename MUTEX = mutex, typename CONDITION_VARIABLE = std::conditional_t<is_same<mutex, MUTEX>::value, condition_variable, condition_variable_any>>
             struct ConditionVariable {
 
                 /**

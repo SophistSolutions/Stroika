@@ -348,12 +348,12 @@ namespace Stroika {
              *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
              */
             template <typename T, typename TRAITS = Optional_Traits_Default<T>>
-            class Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
+            class Optional : private conditional_t<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex> {
             private:
-                using inherited = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
+                using inherited = conditional_t<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>;
 
             private:
-                using MutexBase_ = typename conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type;
+                using MutexBase_ = conditional_t<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>;
 
             public:
                 using TraitsType = TRAITS;

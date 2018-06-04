@@ -80,10 +80,10 @@ namespace Stroika {
                 /**
                  */
                 template <typename T>
-                struct DefaultDiscreteRangeTraits : conditional<
+                struct DefaultDiscreteRangeTraits : conditional_t<
                                                         is_enum<T>::value,
                                                         DefaultDiscreteRangeTraits_Enum<T>,
-                                                        DefaultDiscreteRangeTraits_Integral<T>>::type {
+                                                        DefaultDiscreteRangeTraits_Integral<T>> {
                 };
             }
 
