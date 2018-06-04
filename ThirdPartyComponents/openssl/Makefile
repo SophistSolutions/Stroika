@@ -231,7 +231,7 @@ doBuilds_:
 	@
 	@#Run openssl configure scripts
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Configuring (output to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT) ... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (output to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT) ..."` " "
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && eval (./config -t | tail -1) $(CONFIG_ARGS)" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
 	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config -t | tail -1) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
@@ -246,7 +246,7 @@ endif
 	@
 	@#Do actual OpenSSL build
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Buidling (redirecting messages to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT) ... ";
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Buidling (redirecting messages to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT) ..."` " ";
 ifeq (Unix,$(ProjectPlatformSubdir))
 	@$(MAKE) --directory $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) --no-print-directory all > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1;
 endif
