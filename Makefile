@@ -372,7 +372,6 @@ regression-test-configurations:
 		##./configure malloc-guard --malloc-guard true;\
 		#\
 		./configure g++-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
-		./configure g++-6-release-c++17 --compiler-driver g++-6 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		./configure g++-7-debug-c++17 --compiler-driver g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 		./configure g++-7-release-c++17 --compiler-driver g++-7 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		###--no-sanitize address due to https://stroika.atlassian.net/browse/STK-654\
@@ -380,7 +379,6 @@ regression-test-configurations:
 		./configure g++-8-release-c++17 --compiler-driver g++-8 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		./configure g++-8-debug-c++2a --compiler-driver g++-8 --apply-default-debug-flags --only-if-has-compiler --no-sanitize address --trace2file enable --cppstd-version c++2a;\
 		./configure my-g++-8.1-debug-c++17 --compiler-driver ~/gcc-8.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-debug-flags --no-sanitize address --append-run-prefix 'LD_LIBRARY_PATH=$$LD_LIBRARY_PATH:~/gcc-8.1.0/lib64' --only-if-has-compiler --cppstd-version c++17;\
-		./configure my-g++-8.1-release-c++17 --compiler-driver ~/gcc-8.1.0/bin/x86_64-pc-linux-gnu-gcc --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		#\
 		#no-sanitize undefined - due to issue with ObjectVariantMapper I cannot find better way to resolve - https://stroika.atlassian.net/browse/STK-601 - I THINK \
 		./configure clang++-6-debug-libc++ --compiler-driver clang++-6.0 --apply-default-debug-flags --stdlib libc++ --only-if-has-compiler --trace2file enable --no-sanitize undefined;\
@@ -398,9 +396,9 @@ regression-test-configurations:
 		#\
 		###Builds with a few specail flags to make valgrind work better\
 		#nb: using default installed C++ compiler cuz of mathcing installed liraries on host computer\
-		./configure VALGRIND_LatestGCC_Dbg_SSLPurify -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
-		./configure VALGRIND_LatestGCC_Debug_SSLPurify_NoBlockAlloc -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
-		./configure VALGRIND_LatestGCC_Release_SSLPurify_NoBlockAlloc --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
+		./configure g++-VALGRIND-debug-SSLPurify -valgrind enable --openssl use --openssl-extraargs purify --apply-default-debug-flags --trace2file enable --sanitize none;\
+		./configure g++-VALGRIND-debug-SSLPurify-NoBlockAlloc -valgrind enable --openssl use --openssl-extraargs purify  --apply-default-debug-flags --trace2file enable --block-allocation disable --sanitize none;\
+		./configure g++-VALGRIND-release-SSLPurify-NoBlockAlloc --valgrind enable --openssl use --openssl-extraargs purify  --apply-default-release-flags --lto disable --trace2file disable --block-allocation disable;\
 		#\
 		# --append-compiler-warning-args -Wno-psabi JUST FOR ARM GCC6 and GCC7 - https://stroika.atlassian.net/browse/STK-627\
 		./configure raspberrypi-g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --compiler-driver 'arm-linux-gnueabihf-g++-7' --cross-compiling true --sanitize none --append-compiler-warning-args -Wno-psabi;\
