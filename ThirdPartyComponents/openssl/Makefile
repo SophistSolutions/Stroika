@@ -189,6 +189,7 @@ endif
 check-prerequisite-tools:
 	@#nothing
 
+
 check:
 ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
@@ -210,28 +211,6 @@ $(ZIPPEDFILE):
 	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
-doPatch:
-ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching OpenSSL ... "
-	@$(ECHO) -n .
-	@patch --quiet -p0 CURRENT/Configurations/windows-makefile.tmpl < Patches/FixQuotesInWindowsMakefileTemplate.PATCH
-	@$(ECHO) "done"
-endif
-
-
-doCreate:	$(ZIPPEDFILE)
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extracting $(ZIPPEDFILE) to CURRENT ... "
-	@mkdir -p CURRENT && rm -rf CURRENT
-ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
-else
-	@tar xf $(ZIPPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
-endif
-	@$(ECHO) "done"
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
-
-
-
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 ifeq (0,$(ENABLE_ASSERTIONS))
@@ -246,6 +225,7 @@ USE_CONFIGURE_TARGET_NAME_=debug-VC-WIN32
 CONFIG_ARGS +=	-MTd
 endif
 endif
+
 
 doBuilds_:
 	@
