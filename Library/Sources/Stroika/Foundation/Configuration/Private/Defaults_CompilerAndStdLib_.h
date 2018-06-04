@@ -591,15 +591,6 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #endif
 #endif
 
-/**
- */
-#ifndef qCompiler_cpp17HasVersionValue201500_Buggy
-#if defined(__GNUC__) && !defined(__clang__)
-#define qCompiler_cpp17HasVersionValue201500_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 6)
-#else
-#define qCompiler_cpp17HasVersionValue201500_Buggy 0
-#endif
-#endif
 
 #ifndef qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy
 #if defined(__clang__) && defined(__APPLE__)
@@ -1076,10 +1067,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #elif qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 #if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_14
 #pragma message("Stroika requires at least C++ ISO/IEC 14882:2014(E) supported by the compiler (informally known as C++ 14) - and really uses C++17 features if/when possible")
-#endif
-#elif qCompiler_cpp17HasVersionValue201500_Buggy
-#if __cplusplus < 201500
-#pragma message("Stroika requires at least C++ ISO/IEC 14882:2017(E) supported by the compiler (informally known as C++ 17) - (gcc6 OK - 2015...) and really uses C++17 features if/when possible")
 #endif
 #else
 #if __cplusplus < kStrokia_Foundation_Configuration_cplusplus_17
