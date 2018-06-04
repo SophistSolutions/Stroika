@@ -10,7 +10,6 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/Trace.h"
 
-#include "Stroika/Foundation/Memory/AnyVariantValue.h"
 #include "Stroika/Foundation/Memory/BLOB.h"
 #include "Stroika/Foundation/Memory/Bits.h"
 #include "Stroika/Foundation/Memory/Optional.h"
@@ -146,78 +145,6 @@ namespace {
         // fails to compile prior to 2013-09-09
         ol1 = ol2;
     }
-    void Test_5_AnyVariantValue_ ()
-    {
-        {
-            VerifyTestResult (AnyVariantValue ().empty ());
-            VerifyTestResult (not AnyVariantValue (1).empty ());
-            VerifyTestResult (not AnyVariantValue ("1").empty ());
-            //VerifyTestResult (AnyVariantValue ("1").GetType () == typeid ("1"));  // not sure why this fails but not worthy worrying about yet
-            VerifyTestResult (AnyVariantValue (1).As<int> () == 1);
-        }
-        {
-            AnyVariantValue v;
-            VerifyTestResult (v.empty ());
-            v = AnyVariantValue (1);
-            VerifyTestResult (not v.empty ());
-            VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (v.As<int> () == 1);
-            v = AnyVariantValue (L"a");
-            //VerifyTestResult (v.GetType () == typeid (L"a")); // not sure why this fails but not worthy worrying about yet
-            VerifyTestResult (not v.empty ());
-            v.clear ();
-            VerifyTestResult (v.empty ());
-            VerifyTestResult (v.GetType () == typeid (void));
-        }
-        {
-            struct JIM {
-                int a;
-            };
-            AnyVariantValue v;
-            VerifyTestResult (v.empty ());
-            v = AnyVariantValue (JIM ());
-            VerifyTestResult (v.GetType () == typeid (JIM));
-        }
-        {
-            AnyVariantValue v;
-            VerifyTestResult (v.empty ());
-            v = AnyVariantValue (1);
-            v = v;
-            VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (v.As<int> () == 1);
-            v = AnyVariantValue (v);
-            VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (v.As<int> () == 1);
-        }
-        {
-            static int nCopies = 0;
-            struct Copyable {
-                Copyable ()
-                {
-                    ++nCopies;
-                }
-                Copyable (const Copyable&)
-                {
-                    ++nCopies;
-                }
-                ~Copyable ()
-                {
-                    --nCopies;
-                }
-                const Copyable& operator= (const Copyable&) = delete;
-            };
-            {
-                AnyVariantValue v;
-                VerifyTestResult (v.empty ());
-                v = AnyVariantValue (Copyable ());
-                v = v;
-                v = AnyVariantValue (AnyVariantValue (v));
-                v = AnyVariantValue (AnyVariantValue (Copyable ()));
-                VerifyTestResult (v.GetType () == typeid (Copyable));
-            }
-            VerifyTestResult (0 == nCopies);
-        }
-    }
 
     // temporarily put this out here to avoid MSVC compiler bug -- LGP 2014-02-26
     // SB nested inside function where used...
@@ -256,7 +183,7 @@ namespace {
         };
     }
 
-    void Test_6_SharedPtr ()
+    void Test_5_SharedPtr ()
     {
         {
             SharedPtr<int> p (new int(3));
@@ -320,7 +247,7 @@ namespace {
 }
 
 namespace {
-    void Test_7_Bits_ ()
+    void Test_6_Bits_ ()
     {
         {
             VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
@@ -342,7 +269,7 @@ namespace {
 }
 
 namespace {
-    void Test_8_BLOB_ ()
+    void Test_7_BLOB_ ()
     {
         {
             vector<Byte> b  = {1, 2, 3, 4, 5};
@@ -382,7 +309,7 @@ namespace {
 }
 
 namespace {
-    namespace Test9PRIVATE_ {
+    namespace Test8PRIVATE_ {
         template <typename T>
         using InPlace_Traits = Optional_Traits_Inplace_Storage<T>;
         template <typename T>
@@ -405,9 +332,9 @@ namespace {
             }
         }
     }
-    void Test9_OptionalStorageTraits_ ()
+    void Test8_OptionalStorageTraits_ ()
     {
-        using namespace Test9PRIVATE_;
+        using namespace Test8PRIVATE_;
         BasicOTest_<Optional<int, InPlace_Traits<int>>> ();
         BasicOTest_<Optional<int, Indirect_Traits<int>>> ();
         BasicOTest_<Optional<wstring, InPlace_Traits<wstring>>> ();
@@ -416,7 +343,7 @@ namespace {
 }
 
 namespace {
-    namespace Test10_SmallStackBuffer_ {
+    namespace Test9_SmallStackBuffer_ {
         void DoTest ()
         {
             SmallStackBuffer<int> x0{0};
@@ -427,7 +354,7 @@ namespace {
 }
 
 namespace {
-    namespace Test11_OptionalSelfAssign_ {
+    namespace Test10_OptionalSelfAssign_ {
         void DoTest ()
         {
             {
@@ -461,13 +388,12 @@ namespace {
         Test1_Optional ();
         Test2_SharedByValue ();
         Test_4_Optional_Of_Mapping_Copy_Problem_ ();
-        Test_5_AnyVariantValue_ ();
-        Test_6_SharedPtr ();
-        Test_7_Bits_ ();
-        Test_8_BLOB_ ();
-        Test9_OptionalStorageTraits_ ();
-        Test10_SmallStackBuffer_::DoTest ();
-        Test11_OptionalSelfAssign_::DoTest ();
+        Test_5_SharedPtr ();
+        Test_6_Bits_ ();
+        Test_7_BLOB_ ();
+        Test8_OptionalStorageTraits_ ();
+        Test9_SmallStackBuffer_::DoTest ();
+        Test10_OptionalSelfAssign_::DoTest ();
     }
 }
 

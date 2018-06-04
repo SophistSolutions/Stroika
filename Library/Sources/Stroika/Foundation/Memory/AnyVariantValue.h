@@ -88,7 +88,7 @@ namespace Stroika::Foundation {
          *
          *  @see VariantValue
          */
-        class AnyVariantValue {
+        class [[deprecated ("This class is essentially the same as std::any; there are a few things it does better (e.g. IfAs) - but not worth the extra class - deprecate as of Stroika v2.1d1")]] AnyVariantValue {
         public:
             /**
              *  Note that its is important that the AnyVariantValue (T) CTOR is explicit, because otherwise its too easy to
@@ -96,7 +96,7 @@ namespace Stroika::Foundation {
              */
             AnyVariantValue ()                            = default;
             AnyVariantValue (const AnyVariantValue& from) = default;
-            AnyVariantValue (AnyVariantValue&& from);
+            AnyVariantValue (AnyVariantValue && from);
             AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
             template <typename T>
             explicit AnyVariantValue (T val);
