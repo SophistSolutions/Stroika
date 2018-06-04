@@ -137,12 +137,12 @@ if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
 	ARMTESTMACHINEAVAIL=`(ping raspberrypi -c 4 2>/dev/null 1>/dev/null); echo $?`
 	if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 		STAGE_STARTAT_INT=$(date +%s)
-		make run-tests CONFIGURATION=raspberrypi-gcc-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		make run-tests CONFIGURATION=raspberrypi_valgrind_gcc-7_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		make run-tests CONFIGURATION=raspberrypi-gcc-7-address-sanitize REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
-		make run-tests CONFIGURATION=raspberrypi-gcc-8 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		make run-tests CONFIGURATION=raspberrypi_valgrind_gcc-8_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		make run-tests CONFIGURATION=raspberrypi-gcc-8-sanitize-undefined REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi-g++-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi_valgrind_g++-7_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi-g++-7-address-sanitize REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi-g++-8 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi_valgrind_g++-8_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
+		make run-tests CONFIGURATION=raspberrypi-g++-8-sanitize-undefined REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
