@@ -371,7 +371,6 @@ regression-test-configurations:
 		##DISABLE TESTING BECAUSE of https://stroika.atlassian.net/browse/STK-621\
 		##./configure malloc-guard --malloc-guard true;\
 		#\
-		./configure g++-6-debug-c++17 --compiler-driver g++-6  --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 		./configure g++-7-debug-c++17 --compiler-driver g++-7 --apply-default-debug-flags --only-if-has-compiler --trace2file enable --cppstd-version c++17;\
 		./configure g++-7-release-c++17 --compiler-driver g++-7 --apply-default-release-flags --only-if-has-compiler --cppstd-version c++17;\
 		###--no-sanitize address due to https://stroika.atlassian.net/browse/STK-654\

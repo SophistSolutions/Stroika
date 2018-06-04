@@ -94,7 +94,7 @@ struct VariantValue::TIRep_ : VariantValue::IRep_ {
     DECLARE_USE_BLOCK_ALLOCATION (TIRep_);
 };
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy || qCompiler_InlineStaticMemberAutoDefined_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************

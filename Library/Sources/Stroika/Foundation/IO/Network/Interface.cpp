@@ -91,7 +91,7 @@ namespace {
     };
 }
 
-#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy || qCompiler_InlineStaticMemberAutoDefined_Buggy
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
 /*
  ********************************************************************************
  **************************** Configuration::DefaultNames ***********************
