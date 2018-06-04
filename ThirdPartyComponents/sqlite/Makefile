@@ -80,6 +80,7 @@ ifeq ($(ECHO_BUILD_LINES),1)
 SILENT_BUILD_FLAG=
 endif
 
+
 all:
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/sqlite $(VERSION) {$(CONFIGURATION)}:"
 ifeq ($(CONFIGURATION),)
