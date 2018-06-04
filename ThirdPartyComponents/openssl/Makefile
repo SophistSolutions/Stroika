@@ -3,7 +3,7 @@
 #
 
 .DEFAULT_GOAL := all
-.PHONY:	all clean clobber check doBuild doCreate doPatch
+.PHONY:	all clean clobber check doBuild_
 .NOTPARALLEL:
 
 export StroikaRoot=$(shell realpath ../..)/
@@ -38,13 +38,18 @@ ProjectPlatformSubdir	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable
 CrossCompiling			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CrossCompiling)
 CONFIGURED_EXTRA_ARGS=		$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) qFeatureFlag_OpenSSL_ExtraArgs)
 
+
+PER_CONFIGURATION_BUILDS_DIR:=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/)
+PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-missing ../../IntermediateFiles/$(CONFIGURATION)/ThirdPartyComponents/openssl)
+
+
 ifeq (Unix,$(ProjectPlatformSubdir))
 CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) CompilerDriver-C)
 AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
 endif
 
 
-ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
+ZIPPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURLS=
 FETCHURLS+=http://www.openssl.org/source/$(BASENAME).tar.gz
@@ -53,7 +58,9 @@ FETCHURLS+=ftp://mirror.switch.ch/mirror/openssl/source/$(BASENAME).tar.gz
 FETCHURLS+=http://artfiles.org/openssl.org/source/$(BASENAME).tar.gz
 FETCHURLS+=https://ftp.heanet.ie/mirrors/ftp.openssl.org/source/$(BASENAME).tar.gz
 
-.PHONY:	doCreate doBuild
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+StroikaRoot_ASWINPATH=$(shell cygpath --windows $(StroikaRoot))
+endif
 
 	
 BUILDS_ROOT=../../Builds/
@@ -142,12 +149,13 @@ ifeq ($(CONFIGURATION),)
 else
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) "Building Stroika/ThirdPartyComponents/OpenSSL $(VERSION) {$(CONFIGURATION)}:"
 	@../../ScriptsLib/CheckValidConfiguration.sh $(CONFIGURATION)
+	@$(MAKE) --silent CURRENT
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error PRODUCED_OUTPUT_ARTIFACTS missing)
 endif
 	@#echo "***DBG-entering make rule all with PRODUCED_OUTPUT_ARTIFACTS=$(PRODUCED_OUTPUT_ARTIFACTS); and cur-target=$@"
 	@#need --silent in PRODUCED_OUTPUT_ARTIFACTS to avoid 'up to date' warning
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) --silent MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) check
 endif
 
@@ -157,21 +165,25 @@ ifeq ($(CONFIGURATION),)
 	$(error This makefile requires a CONFIGURATION= parameter, or environment variable set)
 endif
 	@#echo "***DBG-entering make rule with PRODUCED_OUTPUT_ARTIFACTS=$(PRODUCED_OUTPUT_ARTIFACTS); and cur-target=$@"
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doCreate
-	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) doBuilds
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)
+	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doBuilds_
 
 
 clean:
-	@rm -rf CURRENT ORIGS
+ifeq ($(CONFIGURATION),)
+	@rm -rf ../../IntermediateFiles/*/ThirdPartyComponents/openssl
+else
+	@rm -rf $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)
+endif
 
 
 clobber:	clean
 ifeq ($(CONFIGURATION),)
+	@rm -rf CURRENT ORIGS
 	@rm -rf $(BUILDS_ROOT)*/ThirdPartyComponents/lib/{libcrypto,libssl}* $(BUILDS_ROOT)*/ThirdPartyComponents/include/openssl $(BUILDS_ROOT)*/ThirdPartyComponents/bin/openssl
 else
 	@rm -rf $(PRODUCED_OUTPUT_ARTIFACTS) $(BUILDS_ROOT)$(CONFIGURATION)/ThirdPartyComponents/include/openssl
 endif
-
 
 
 check-prerequisite-tools:
@@ -194,8 +206,8 @@ endif
 	@$(ECHO) " Stroika/ThirdPartyComponents/OpenSSL - [Succeeded]";
 
 
-$(ZIPEDFILE):
-	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPEDFILE) $(FETCHURLS)
+$(ZIPPEDFILE):
+	@MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) ../../ScriptsLib/WebGet.sh $(ZIPPEDFILE) $(FETCHURLS)
 
 
 doPatch:
@@ -207,13 +219,13 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 endif
 
 
-doCreate:	$(ZIPEDFILE)
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extracting $(ZIPEDFILE) to CURRENT ... "
-	@mkdir -p CURRENT && rm -rf CURRENT/*
+doCreate:	$(ZIPPEDFILE)
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Extracting $(ZIPPEDFILE) to CURRENT ... "
+	@mkdir -p CURRENT && rm -rf CURRENT
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPEDFILE) -C CURRENT --strip-components 1
+	@tar xf $(ZIPPEDFILE) -C CURRENT --strip-components 1
 else
-	@tar xf $(ZIPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
+	@tar xf $(ZIPPEDFILE) --no-same-owner --directory CURRENT --strip-components=1
 endif
 	@$(ECHO) "done"
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) doPatch
@@ -235,45 +247,45 @@ CONFIG_ARGS +=	-MTd
 endif
 endif
 
-doBuilds:
+doBuilds_:
 	@
 	@#Run openssl configure scripts
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Configuring (output to CURRENT/CONFIG.OUT) ... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Configuring (output to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT) ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd CURRENT && eval (./config -t | tail -1) $(CONFIG_ARGS)" > CURRENT/CONFIG.OUT
-	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && ./config -t | tail -1) >> CURRENT/CONFIG.OUT 2>&1
-	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd CURRENT && eval `./config -t | tail -1` $(CONFIG_ARGS)) >> CURRENT/CONFIG.OUT 2>&1
+	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && eval (./config -t | tail -1) $(CONFIG_ARGS)" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config -t | tail -1) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && eval `./config -t | tail -1` $(CONFIG_ARGS)) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "MFLAGS= MAKEFLAGS= cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > CURRENT/CONFIG.OUT 2>&1
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"set PATH=..\..\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> CURRENT/CONFIG.OUT 2>&1
+	echo "MFLAGS= MAKEFLAGS= cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)\"" >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
 endif
 	@$(ECHO) "done"
 	@
 	@
 	@#Do actual OpenSSL build
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Buidling (redirecting messages to CURRENT/BUILD.OUT) ... ";
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Buidling (redirecting messages to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT) ... ";
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) --directory CURRENT --no-print-directory all > CURRENT/BUILD.OUT 2>&1;
+	@$(MAKE) --directory $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) --no-print-directory all > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"\"" > CURRENT/BUILD.OUT
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"">> CURRENT/BUILD.OUT
+	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"\"" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/BUILD.OUT
 endif
 	@$(ECHO) "done"
 	@
 	@
 	@# OpenSSL build to INSTALLDIR (inside Stroika Builds)
 	@
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Installing "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "to $(BUILDS_OUTPUT_DIR), and redirecting messages to CURRENT/INSTALL.OUT"`" ... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Installing "`$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "to $(BUILDS_OUTPUT_DIR), and redirecting messages to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT"`" ... "
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(MAKE) -j1 --directory CURRENT --no-print-directory install > CURRENT/INSTALL.OUT 2>&1;
+	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) --no-print-directory install > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT 2>&1;
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
-	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > CURRENT/INSTALL.OUT
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> CURRENT/INSTALL.OUT
+	@echo "env --unset=MFLAGS --unset=MAKEFLAGS sh -c \"cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"\"" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake install INSTALLTOP=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) OPENSSLDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) ENGINESDIR=$(BUILDS_OUTPUT_DIR_AS_WINDOWS_PATH) 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 endif
 	@$(ECHO) "done"
 	@
@@ -281,23 +293,40 @@ endif
 	@#Run Regression Tests (unless cross compiling)
 	@
 ifeq (false,$(CrossCompiling))
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Running openssl tests (OUTPUT TO CURRENT/TEST-OUT.txt) ... ";
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n "Running openssl tests (OUTPUT TO $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST-OUT.txt) ... ";
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@### @todo FIX FOR WINDOWS BUILDS - not sure why all tests fail -- which is why we dont bother with diff
-	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd CURRENT && perl ../../../ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake test 2>&1\"">> CURRENT/TEST-OUT.txt || true
+	@env --unset=MFLAGS --unset=MAKEFLAGS sh -c "cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) \"nmake test 2>&1\"">> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST-OUT.txt || true
 else
 	@#we get a single failure on BLOW, so ignore, minor, and should do diff of results
-	@$(MAKE) -j1 --directory CURRENT --no-print-directory -s test > CURRENT/TEST-OUT.txt 2>&1 || true
-	export NDIFSS=`diff -c --text -b REFERENCE_TEST_OUTPUT.txt CURRENT/TEST-OUT.txt | egrep -v "^---" | egrep -c "^[!+-]"` && $(ECHO) -n "($$NDIFSS lines differ between REFERENCE_TEST_OUTPUT.txt and CURRENT/TEST.OUT) ... "
+	@$(MAKE) -j1 --directory $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) --no-print-directory -s test > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST-OUT.txt 2>&1 || true
+	export NDIFSS=`diff -c --text -b REFERENCE_TEST_OUTPUT.txt $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST-OUT.txt | egrep -v "^---" | egrep -c "^[!+-]"` && $(ECHO) -n "($$NDIFSS lines differ between REFERENCE_TEST_OUTPUT.txt and $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/TEST.OUT) ... "
 endif
 	@$(ECHO) "done"
 endif
 
 
-ORIGS:	$(ZIPEDFILE)
-	@mkdir -p ORIGS && rm -rf ORIGS/*
+ORIGs CURRENT $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR):	$(ZIPPEDFILE)
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Extracting $(ZIPPEDFILE) to $@"` "... "
+	@mkdir -p $@
 ifeq ($(shell uname -s),Darwin)
-	@tar xf $(ZIPEDFILE) -C ORIGS --strip-components 1
+	@tar xf $(ZIPPEDFILE) -C $@ --strip-components 1
+else ifeq (CYGWIN,$(findstring CYGWIN,$(shell uname)))
+	@#extra sleep and realpath to relative path since fails on cygwin otherwise
+	@sleep 5 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
+	@hack=`realpath --relative-to=$$PWD $@`
+	@sleep 5 # I THINK this works around occasional bug with MSFT filesystem/cygwin - failing to find dir in realpath
+	@PWD=`pwd` tar xf $(ZIPPEDFILE) --no-same-owner --directory `realpath --relative-to=$$PWD $@` --strip-components=1
 else
-	@tar xf $(ZIPEDFILE) --no-same-owner --directory ORIGS --strip-components=1
+	@tar xf $(ZIPPEDFILE) --no-same-owner --directory $@ --strip-components=1
 endif
+ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq ($@, $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR))
+	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n "Patching OpenSSL ... "
+	@$(ECHO) -n .
+	@patch --quiet -p0 $@/Configurations/windows-makefile.tmpl < Patches/FixQuotesInWindowsMakefileTemplate.PATCH
+	@$(ECHO) "done"
+endif
+endif
+	@echo done
+
