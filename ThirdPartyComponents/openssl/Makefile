@@ -43,12 +43,6 @@ CC=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) 
 AR=$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) AR)
 endif
 
-#Gross hack so builds on AIX - https://stroika.atlassian.net/browse/STK-452
-ifeq ($(shell uname),AIX)
-CC=gcc
-AR=ar
-endif
-
 
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
@@ -112,13 +106,6 @@ ifeq (Unix,$(ProjectPlatformSubdir))
 CONFIG_ARGS+=	-no-engines
 endif
 
-
-
-#ifeq (Unix,$(ProjectPlatformSubdir))
-#https://stroika.atlassian.net/browse/STK-527
-#	This hack doesn't appear needed right now, and isnt right in general, because it depeds if target OS uses pthreads or some other thread library
-#CONFIG_ARGS+=	-lpthread
-#endif
 
 
 
