@@ -35,15 +35,15 @@ namespace Stroika::Foundation {
         using Time::DateTime;
 
         /**
-         *  \def qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
+         *  \def kVariantValueUsesStroikaSharedPtr_
          *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
          *      internal implementaiton detail, and may go away as an option.
          *
          *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
          */
-#ifndef qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
-#define qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_ qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
-#endif
+        constexpr bool kVariantValueUsesStroikaSharedPtr_ = qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr;
+
+        [[deprecated ("use kVariantValueUsesStroikaSharedPtr_ since Stroika v2.1d1")]] constexpr bool qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_ = kVariantValueUsesStroikaSharedPtr_;
 
         /**
          * \brief   Simple variant-value object, with (variant) basic types analagous to a value in any weakly typed language (like JavaScript, Lisp, etc)
@@ -322,13 +322,8 @@ namespace Stroika::Foundation {
             struct IRep_;
 
         private:
-#if qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_
             template <typename T>
-            using SharedRepImpl_ = Memory::SharedPtr<T>;
-#else
-            template <typename T>
-            using SharedRepImpl_ = shared_ptr<T>;
-#endif
+            using SharedRepImpl_ = conditional_t<kVariantValueUsesStroikaSharedPtr_, Memory::SharedPtr<T>, shared_ptr<T>>;
 
         private:
             /**
