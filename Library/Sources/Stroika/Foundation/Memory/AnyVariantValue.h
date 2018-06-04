@@ -44,112 +44,110 @@
  *      http://www.boost.org/doc/libs/1_54_0/doc/html/any.html
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Memory {
+namespace Stroika::Foundation {
+    namespace Memory {
 
+        /**
+         * \brief
+         *
+         *  Simple variant-value object, but unlike @VariantValue, this can contain ANY type. That both
+         *  limits its usefulness (cannot use it for stuff like streaming to XML because not enough is
+         *  known about the constituent types), but expands cases of usefulness - like for example - to
+         *  implement a @BlockingQueue<> of Command objects, where you have a bunch of differnt kinds of
+         *  commands (objects). The party enquing messages needs to know the types, and the party dequing them
+         *  does, but nobody else.
+         *
+         *  Example Rationale:
+         *      Often in more complex applications, one wants to have a producer - consumer system, with type safety
+         *      and some kind of generic message routing. For example - consider the idea of the SOAP Envelope / Body
+         *      distinction.
+         *
+         *      This also can easily be constructed with the Stroika BlockingQueue<>.
+         *
+         *      If you want to have type safety on construction of the shared objects to be safely know about on
+         *      two ends (the producer and the consumer) but want to have a layer of software in between that handles
+         *      the routing (as with SOAP) - having the ability to genericify an object, and then undo that (could also use
+         *      serializaiton) - can be handy.
+         *
+         *      Note - this CAN be accomplished using templates as the in-between routing layer. But that approach has a
+         *      number of defects including:
+         *          o   Very complex message routing libraries - all in tempaltes - are hard to use because of bad
+         *              compiler diagnostics when there is some mis-match.
+         *
+         *          o   Code bloat from complex/duplicative middle layers (routing layers).
+         *
+         *          o   Lack of modularity/hiding - all the template code needs to be in header files to be expanded.
+         *
+         *      Using AnyVariantValue can be a simple remedy to this. At the message routing (between producer/consumer) layer
+         *      you wrap your objects in AnyVariantValue, and then (type safely) unpack them on the other end.
+         *
+         *  \note   Design Note - Equals and less/greater not supported
+         *          Supporting this generically would require a virtual method, and as such, would
+         *          be tricky todo without requiring the underlying 'T' type to have an equals method. For now
+         *          we can just avoid that.
+         *
+         *  @see VariantValue
+         */
+        class AnyVariantValue {
+        public:
             /**
-             * \brief
-             *
-             *  Simple variant-value object, but unlike @VariantValue, this can contain ANY type. That both
-             *  limits its usefulness (cannot use it for stuff like streaming to XML because not enough is
-             *  known about the constituent types), but expands cases of usefulness - like for example - to
-             *  implement a @BlockingQueue<> of Command objects, where you have a bunch of differnt kinds of
-             *  commands (objects). The party enquing messages needs to know the types, and the party dequing them
-             *  does, but nobody else.
-             *
-             *  Example Rationale:
-             *      Often in more complex applications, one wants to have a producer - consumer system, with type safety
-             *      and some kind of generic message routing. For example - consider the idea of the SOAP Envelope / Body
-             *      distinction.
-             *
-             *      This also can easily be constructed with the Stroika BlockingQueue<>.
-             *
-             *      If you want to have type safety on construction of the shared objects to be safely know about on
-             *      two ends (the producer and the consumer) but want to have a layer of software in between that handles
-             *      the routing (as with SOAP) - having the ability to genericify an object, and then undo that (could also use
-             *      serializaiton) - can be handy.
-             *
-             *      Note - this CAN be accomplished using templates as the in-between routing layer. But that approach has a
-             *      number of defects including:
-             *          o   Very complex message routing libraries - all in tempaltes - are hard to use because of bad
-             *              compiler diagnostics when there is some mis-match.
-             *
-             *          o   Code bloat from complex/duplicative middle layers (routing layers).
-             *
-             *          o   Lack of modularity/hiding - all the template code needs to be in header files to be expanded.
-             *
-             *      Using AnyVariantValue can be a simple remedy to this. At the message routing (between producer/consumer) layer
-             *      you wrap your objects in AnyVariantValue, and then (type safely) unpack them on the other end.
-             *
-             *  \note   Design Note - Equals and less/greater not supported
-             *          Supporting this generically would require a virtual method, and as such, would
-             *          be tricky todo without requiring the underlying 'T' type to have an equals method. For now
-             *          we can just avoid that.
-             *
-             *  @see VariantValue
+             *  Note that its is important that the AnyVariantValue (T) CTOR is explicit, because otherwise its too easy to
+             *  accidentally assign the wrong type and get surprising results.
              */
-            class AnyVariantValue {
-            public:
-                /**
-                 *  Note that its is important that the AnyVariantValue (T) CTOR is explicit, because otherwise its too easy to
-                 *  accidentally assign the wrong type and get surprising results.
-                 */
-                AnyVariantValue ()                            = default;
-                AnyVariantValue (const AnyVariantValue& from) = default;
-                AnyVariantValue (AnyVariantValue&& from);
-                AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
-                template <typename T>
-                explicit AnyVariantValue (T val);
+            AnyVariantValue ()                            = default;
+            AnyVariantValue (const AnyVariantValue& from) = default;
+            AnyVariantValue (AnyVariantValue&& from);
+            AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
+            template <typename T>
+            explicit AnyVariantValue (T val);
 
-            public:
-                /**
-                 *  Note - its legal to call this even if empty: in that case it returns typeid(void).
-                 */
-                nonvirtual const type_info& GetType () const;
+        public:
+            /**
+             *  Note - its legal to call this even if empty: in that case it returns typeid(void).
+             */
+            nonvirtual const type_info& GetType () const;
 
-            public:
-                /**
-                 */
-                nonvirtual bool empty () const;
+        public:
+            /**
+             */
+            nonvirtual bool empty () const;
 
-            public:
-                /**
-                 */
-                nonvirtual void clear ();
+        public:
+            /**
+             */
+            nonvirtual void clear ();
 
-            public:
-                /**
-                 *  @see IfAs<>
-                 */
-                template <typename RETURNTYPE>
-                nonvirtual RETURNTYPE As () const;
+        public:
+            /**
+             *  @see IfAs<>
+             */
+            template <typename RETURNTYPE>
+            nonvirtual RETURNTYPE As () const;
 
-            public:
-                /**
-                 *  Return Optional<RETURNTYPE> - like @As - except that if empty returns 'missing' value.
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      if (auto o = anyVVal.IfAs<T>) {
-                 *          print (o->xxx);
-                 *      }
-                 *      \endcode
-                 */
-                template <typename RETURNTYPE>
-                nonvirtual Optional<RETURNTYPE> IfAs () const;
+        public:
+            /**
+             *  Return Optional<RETURNTYPE> - like @As - except that if empty returns 'missing' value.
+             *
+             *  \par Example Usage
+             *      \code
+             *      if (auto o = anyVVal.IfAs<T>) {
+             *          print (o->xxx);
+             *      }
+             *      \endcode
+             */
+            template <typename RETURNTYPE>
+            nonvirtual Optional<RETURNTYPE> IfAs () const;
 
-            private:
-                struct IRep_;
+        private:
+            struct IRep_;
 
-            private:
-                shared_ptr<IRep_> fVal_;
+        private:
+            shared_ptr<IRep_> fVal_;
 
-            private:
-                template <typename T>
-                struct TIRep_;
-            };
-        }
+        private:
+            template <typename T>
+            struct TIRep_;
+        };
     }
 }
 
