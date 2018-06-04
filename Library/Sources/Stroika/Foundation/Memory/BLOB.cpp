@@ -130,7 +130,7 @@ pair<const Byte*, const Byte*> BLOB::AdoptAppLifetimeRep_::GetBounds () const
  ********************************************************************************
  */
 namespace {
-    unsigned int HexChar2Num_ (char c)
+    Byte HexChar2Num_ (char c)
     {
         if ('0' <= c and c <= '9') {
             return c - '0';
