@@ -14,6 +14,7 @@ MAKE_INDENT_LEVEL?=$(MAKELEVEL)
 ECHO?=	$(shell ../../ScriptsLib/GetDefaultShellVariable.sh ECHO)
 
 ifneq ($(CONFIGURATION),)
+ARCH							=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ARCH)
 ProjectPlatformSubdir			=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ProjectPlatformSubdir)
 IncludeDebugSymbolsInLibraries	=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) IncludeDebugSymbolsInLibraries)
 ENABLE_ASSERTIONS				=	$(shell perl ../../ScriptsLib/PrintConfigurationVariable.pl $(CONFIGURATION) ENABLE_ASSERTIONS)
@@ -213,16 +214,28 @@ $(ZIPPEDFILE):
 
 
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
+ifeq ($(ARCH), x86)
 ifeq (0,$(ENABLE_ASSERTIONS))
 USE_CONFIGURE_TARGET_NAME_=VC-WIN32
-endif
-ifeq (1,$(ENABLE_ASSERTIONS))
+else
 USE_CONFIGURE_TARGET_NAME_=debug-VC-WIN32
 #
 #from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
 #and appears to default incorrectly to /MT
 #
 CONFIG_ARGS +=	-MTd
+endif
+else ifeq ($(ARCH), x86_64)
+ifeq (0,$(ENABLE_ASSERTIONS))
+USE_CONFIGURE_TARGET_NAME_=VC-WIN64A
+else
+USE_CONFIGURE_TARGET_NAME_=debug-VC-WIN64A
+#
+#from https://wiki.openssl.org/index.php/Compilation_and_Installation: -anythingelse, +anythingelse	Compiler options, will become part of CFLAGS.
+#and appears to default incorrectly to /MT
+#
+CONFIG_ARGS +=	-MTd
+endif
 endif
 endif
 
