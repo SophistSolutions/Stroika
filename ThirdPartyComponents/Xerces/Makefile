@@ -122,10 +122,11 @@ ifeq ($(CONFIGURATION),)
 		$(MAKE) --no-print-directory all CONFIGURATION=$$i;\
 	done
 else
+	@$(MAKE) --silent MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) CURRENT
 ifeq ($(PRODUCED_OUTPUT_ARTIFACTS),)
 	$(error This makefile requires a recognized ProjectPlatformSubdir)
 endif
-	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$(MAKE_INDENT_LEVEL) $(PRODUCED_OUTPUT_ARTIFACTS)
+	@$(MAKE) --no-print-directory --silent CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1)) $(PRODUCED_OUTPUT_ARTIFACTS)
 	@$(MAKE) --no-print-directory CONFIGURATION=$(CONFIGURATION) MAKE_INDENT_LEVEL=$$(($(MAKE_INDENT_LEVEL)+1))  check
 endif
 
@@ -257,7 +258,7 @@ endif
 doBuilds_:
 	@mkdir -p $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)
 	@touch $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)"` "... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT)"` "... "
 	@echo 'export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR)' > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
 	@export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake -G "$(CMAKE_USE_GENERATOR)" $(CMAKE_ARGS) $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
@@ -269,11 +270,11 @@ ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	@export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) ; $(ALTERNATE_CMAKE_BINDIR)cmake $(CMAKE_CURRENT_SOURCE_DIR) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT 2>&1
 endif	
 	@echo done
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Compiling (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT)"` "... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Compiling (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT)"` "... "
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ECHO) "$(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION)" > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/BUILD.OUT 2>&1
 	@$(ECHO) "done"
-	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copying builds to $(BUILDS_ROOT) (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT)"` "... "
+	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Copying builds to $(BUILDS_ROOT) (Log to $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT)"` "... "
 	@#NB: Set MAKEFLAGS= to silence warnings about -j jobserver when run with -j N (probaly bug with Xerces 3.2 cmake makefile but didnt dig cuz not important)
 	@cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ECHO) "$(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) --target install" > $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
 	@MAKEFLAGS= && cd $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR) && $(ALTERNATE_CMAKE_BINDIR)cmake --build . --config $(CMAKE_CONFIGURATION) --target install >> $(CMAKE_PER_TARGET_INTERMEDIATEFILES_DIR)/INSTALL.OUT
