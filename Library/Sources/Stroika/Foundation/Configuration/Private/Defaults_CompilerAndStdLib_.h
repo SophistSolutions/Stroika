@@ -269,7 +269,8 @@ ABORTING...
 // still broken in _MS_VS_2k17_15Pt6Pt0_
 // still broken in _MS_VS_2k17_15Pt7Pt1_
 // assume broken in _MS_VS_2k17_15Pt7Pt2_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt2_)
+// still broken in _MS_VS_2k17_15Pt7Pt3_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
