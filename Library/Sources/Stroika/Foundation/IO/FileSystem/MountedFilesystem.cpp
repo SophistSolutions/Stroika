@@ -228,7 +228,7 @@ namespace {
         Collection<MountedFilesystemType> results{};
         TCHAR                             volumeNameBuf[1024]; // intentionally uninitialized since OUT parameter and not used unless FindFirstVolume success
 
-        HANDLE hVol    = INVALID_HANDLE_VALUE;
+        HANDLE                  hVol    = INVALID_HANDLE_VALUE;
         [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept { if (hVol != INVALID_HANDLE_VALUE) { ::CloseHandle (hVol); } });
 
         for (hVol = ::FindFirstVolume (volumeNameBuf, static_cast<DWORD> (NEltsOf (volumeNameBuf))); hVol != INVALID_HANDLE_VALUE;) {
