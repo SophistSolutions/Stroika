@@ -91,7 +91,7 @@ namespace Stroika {
 #endif
                 rethrow_exception (e);
             }
-            [[noreturn]] inline void ReThrow (const char* traceMsg)
+            [[noreturn]] inline void ReThrow ([[maybe_unused]] const char* traceMsg)
             {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
@@ -102,7 +102,7 @@ namespace Stroika {
 #endif
                 throw;
             }
-            [[noreturn]] inline void ReThrow (const exception_ptr& e, const char* traceMsg)
+            [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const char* traceMsg)
             {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
                 DbgTrace ("ReThrow: %s from %s", traceMsg, Private_::GetBT_s ().c_str ());
@@ -111,7 +111,7 @@ namespace Stroika {
 #endif
                 rethrow_exception (e);
             }
-            [[noreturn]] inline void ReThrow (const wchar_t* traceMsg)
+            [[noreturn]] inline void ReThrow ([[maybe_unused]] const wchar_t* traceMsg)
             {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace
@@ -122,7 +122,7 @@ namespace Stroika {
 #endif
                 throw;
             }
-            [[noreturn]] inline void ReThrow (const exception_ptr& e, const wchar_t* traceMsg)
+            [[noreturn]] inline void ReThrow (const exception_ptr& e, [[maybe_unused]] const wchar_t* traceMsg)
             {
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpoint
 #if qStroika_Foundation_Exection_Exceptions_TraceThrowpointBacktrace

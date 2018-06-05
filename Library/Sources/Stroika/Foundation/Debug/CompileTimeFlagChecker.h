@@ -71,7 +71,7 @@ namespace Stroika {
             tester_##NAME##_ ()                                                             \
             {                                                                               \
                 using Stroika::Foundation::Debug::CompileTimeFlagChecker;                   \
-                CompileTimeFlagChecker::HiddenValueType a = NAME##VALUE;                    \
+                [[maybe_unused]] CompileTimeFlagChecker::HiddenValueType a = NAME##VALUE;   \
             };                                                                              \
         };                                                                                  \
         tester_##NAME##_ t_##NAME##_;                                                       \

@@ -69,7 +69,7 @@ namespace {
                 TNoCTOR_ (int) {}
                 TNoCTOR_ (){} /*= delete*/;
                 //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
-                bool operator== (const TNoCTOR_& rhs) const { return true; }
+                bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const { return true; }
             };
         }
         void DoIt ()
@@ -89,7 +89,7 @@ namespace {
                 TNoCTOR_ (int) {}
                 TNoCTOR_ (){} /*= delete*/;
                 //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
-                bool operator== (const TNoCTOR_& rhs) const { return true; }
+                bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const { return true; }
             };
         }
         void DoIt ()
@@ -119,7 +119,7 @@ namespace {
             struct DiskSpaceUsageType {
                 int size;
             };
-            auto LookupDiskStats_ (const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
+            auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
 
             Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
             Optional<DiskSpaceUsageType>                  LookupDiskStats (String diskName)
@@ -152,7 +152,19 @@ namespace {
     }
 }
 
-int main (int argc, const char* argv[])
+#pragma warning(default : 4263)
+#pragma warning(default : 4266)
+namespace {
+    struct b {
+        int f1 () { return 1; }
+        virtual int f2 () { return 1; }
+    };
+    struct der : b {
+        int         f1 ()  { return 1; }
+        virtual int f2 ()  { return 1; }
+    };
+}
+int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

@@ -41,7 +41,7 @@ namespace Stroika {
              *              see if this too can be replaced with something in C++11?
              */
             template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
-            inline constexpr size_t NEltsOf_REAL_ (const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
+            inline constexpr size_t NEltsOf_REAL_ ([[maybe_unused]] const ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
             {
                 return SIZE_OF_ARRAY;
             }

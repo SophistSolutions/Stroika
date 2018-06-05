@@ -25,7 +25,7 @@ namespace Stroika {
                     }
                     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     template <typename COMBINED_ITERATOR>
-                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, COMBINED_ITERATOR* fakePtrForOverload)
+                    PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>* rhs, IteratorOwnerID newOwnerID, [[maybe_unused]] COMBINED_ITERATOR* fakePtrForOverload)
                         : inherited ((RequireNotNull (rhs), *rhs))
                     {
                         Assert (not HasActiveIterators ());

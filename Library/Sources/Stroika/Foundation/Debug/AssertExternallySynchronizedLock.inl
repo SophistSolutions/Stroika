@@ -37,7 +37,7 @@ namespace Stroika {
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec1{src}; // to copy, the src can have shared_locks, but no (write) locks
             }
-            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock (AssertExternallySynchronizedLock&& src) noexcept
+            inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock ([[maybe_unused]]AssertExternallySynchronizedLock&& src) noexcept
                 : AssertExternallySynchronizedLock ()
             {
 #if qDebug
@@ -50,7 +50,7 @@ namespace Stroika {
                 }
 #endif
             }
-            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= (const AssertExternallySynchronizedLock& rhs) noexcept
+            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= ([[maybe_unused]] const AssertExternallySynchronizedLock& rhs) noexcept
             {
 #if qDebug
                 try {
@@ -64,7 +64,7 @@ namespace Stroika {
 #endif
                 return *this;
             }
-            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= (AssertExternallySynchronizedLock&& rhs) noexcept
+            inline AssertExternallySynchronizedLock& AssertExternallySynchronizedLock::operator= ([[maybe_unused]] AssertExternallySynchronizedLock&& rhs) noexcept
             {
 #if qDebug
                 try {

@@ -79,7 +79,6 @@ namespace Stroika {
             using namespace std;
 
             using namespace Configuration;
-            using namespace Memory;
 
             /**
              *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot

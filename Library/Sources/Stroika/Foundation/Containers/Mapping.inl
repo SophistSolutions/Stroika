@@ -470,7 +470,7 @@ namespace Stroika {
                             , fMapping_ (map)
                         {
                         }
-                        virtual Iterator<KEY_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
                             auto getNext   = [myContext]() -> Memory::Optional<KEY_TYPE> {
@@ -518,7 +518,7 @@ namespace Stroika {
                             , fMapping_ (map)
                         {
                         }
-                        virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fMapping_.MakeIterator ());
                             auto getNext   = [myContext]() -> Memory::Optional<MAPPED_VALUE_TYPE> {

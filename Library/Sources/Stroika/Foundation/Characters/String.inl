@@ -46,14 +46,14 @@ namespace Stroika {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 return pair<const Character*, const Character*> (reinterpret_cast<const Character*> (_fStart), reinterpret_cast<const Character*> (_fEnd));
             }
-            inline void String::_IRep::CopyTo (Character* bufFrom, Character* bufTo) const
+            inline void String::_IRep::CopyTo (Character* bufFrom, [[maybe_unused]] Character* bufTo) const
             {
                 RequireNotNull (bufFrom);
                 Require (bufFrom + _GetLength () >= bufTo);
                 size_t nChars = _GetLength ();
                 (void)::memcpy (bufFrom, _Peek (), nChars * sizeof (Character));
             }
-            inline void String::_IRep::CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const
+            inline void String::_IRep::CopyTo (wchar_t* bufFrom, [[maybe_unused]] wchar_t* bufTo) const
             {
                 RequireNotNull (bufFrom);
                 Require (bufFrom + _GetLength () >= bufTo);
@@ -204,15 +204,15 @@ namespace Stroika {
             {
                 return _SafeReadRepAccessor{this}._ConstGetRep ()._GetLength ();
             }
-            inline size_t String::SubString_adjust_ (unsigned int from, size_t myLength) const
+            inline size_t String::SubString_adjust_ (unsigned int from, [[maybe_unused]] size_t myLength) const
             {
                 return static_cast<size_t> (from);
             }
-            inline size_t String::SubString_adjust_ (unsigned long from, size_t myLength) const
+            inline size_t String::SubString_adjust_ (unsigned long from, [[maybe_unused]] size_t myLength) const
             {
                 return static_cast<size_t> (from);
             }
-            inline size_t String::SubString_adjust_ (unsigned long long from, size_t myLength) const
+            inline size_t String::SubString_adjust_ (unsigned long long from, [[maybe_unused]] size_t myLength) const
             {
                 return static_cast<size_t> (from);
             }
@@ -305,7 +305,7 @@ namespace Stroika {
             }
             inline String String::InsertAt (const String& s, size_t at) const
             {
-                _SafeReadRepAccessor                     copyAccessor{this};
+                _SafeReadRepAccessor                     copyAccessor{&s};
                 pair<const Character*, const Character*> d = copyAccessor._ConstGetRep ().GetData ();
                 return InsertAt (d.first, d.second, at);
             }

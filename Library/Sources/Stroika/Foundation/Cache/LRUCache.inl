@@ -60,7 +60,7 @@ namespace Stroika {
             }
             template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
             template <typename SFINAE>
-            inline size_t LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if<not(is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void>::type*)
+            inline size_t LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ ([[maybe_unused]] typename Configuration::ArgByValueType<KEY> e, typename enable_if<not(is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void>::type*)
             {
                 return 0;
             }
@@ -373,10 +373,10 @@ namespace Stroika {
                 return TRAITS::Hash (k);
             }
             template <typename KEY, typename VALUE, typename TRAITS>
-            inline size_t LRUCache<KEY, VALUE, TRAITS>::Hash_ (typename Configuration::ArgByValueType<KEY> e)
+            inline size_t LRUCache<KEY, VALUE, TRAITS>::Hash_ ([[maybe_unused]] typename Configuration::ArgByValueType<KEY> e)
             {
                 static_assert (TraitsType::kHashTableSize >= 1, "TraitsType::kHashTableSize >= 1");
-                if (TRAITS::kHashTableSize == 1) {
+                if constexpr (TRAITS::kHashTableSize == 1) {
                     return 0; // avoid referencing hash function
                 }
                 else {

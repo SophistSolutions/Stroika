@@ -1077,7 +1077,7 @@ namespace Stroika {
                  *
                  *  This is only used for 'STL-compatabiliity' apis, like substr (), find, rfind (), etc.
                  */
-                static constexpr size_t npos = -1;
+                static constexpr size_t npos = static_cast<size_t> (-1);
 
             public:
                 /**

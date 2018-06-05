@@ -37,13 +37,13 @@ namespace Stroika {
 #endif
             }
 #if !qDefaultTracingOn
-            inline TraceContextBumper::TraceContextBumper (const wchar_t* contextName) noexcept
+            inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept
             {
             }
-            inline TraceContextBumper::TraceContextBumper (const wchar_t* contextName, const wchar_t* extraFmt, ...) noexcept
+            inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept
             {
             }
-            inline TraceContextBumper::TraceContextBumper (const char* contextName) noexcept
+            inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const char* contextName) noexcept
             {
             }
             inline TraceContextBumper::~TraceContextBumper ()

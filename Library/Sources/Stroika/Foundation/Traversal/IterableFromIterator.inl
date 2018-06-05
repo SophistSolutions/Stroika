@@ -89,7 +89,7 @@ namespace Stroika {
             template <typename T>
             bool IterableFromIterator<T, void, void>::_Rep::IsEmpty () const
             {
-                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done ();) {
                     return false;
                 }
                 return true;

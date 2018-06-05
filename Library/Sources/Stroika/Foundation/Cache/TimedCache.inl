@@ -49,7 +49,7 @@ namespace Stroika {
             inline void TimedCacheSupport::Stats_Null::IncrementMisses ()
             {
             }
-            inline void TimedCacheSupport::Stats_Null::DbgTraceStats (const SDKChar* label) const
+            inline void TimedCacheSupport::Stats_Null::DbgTraceStats ([[maybe_unused]] const SDKChar* label) const
             {
             }
 

@@ -91,7 +91,7 @@ namespace Stroika {
             {
             }
             template <typename TRAITS>
-            inline SharedByValue<TRAITS>::SharedByValue (nullptr_t n) noexcept
+            inline SharedByValue<TRAITS>::SharedByValue ([[maybe_unused]] nullptr_t n) noexcept
                 : fCopier_ (element_copier_type ())
                 , fSharedImpl_ ()
             {
