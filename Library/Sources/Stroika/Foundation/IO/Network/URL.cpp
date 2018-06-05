@@ -42,19 +42,19 @@ namespace {
 }
 
 namespace {
-    inline int ConvertReadSingleHexDigit_ (char digit)
+    inline uint8_t ConvertReadSingleHexDigit_ (char digit)
     {
         if (isupper (digit)) {
-            digit = tolower (digit);
+            digit = static_cast<char> (tolower (digit));
         }
         if (isdigit (digit)) {
-            return digit - '0';
+            return static_cast<uint8_t> (digit - '0');
         }
         else if (islower (digit)) {
-            return 10 + (digit - 'a');
+            return static_cast<uint8_t> (10 + (digit - 'a'));
         }
         else {
-            return 0;
+            return 0u;
         }
     }
 }
@@ -671,16 +671,16 @@ namespace {
             size_t brk = elt.find ('=');
             if (brk != string::npos) {
                 string val = elt.substr (brk + 1);
-                for (auto i = val.begin (); i != val.end (); ++i) {
-                    switch (*i) {
+                for (auto p = val.begin (); p != val.end (); ++p) {
+                    switch (*p) {
                         case '+':
-                            *i = ' ';
+                            *p = ' ';
                             break;
                         case '%': {
-                            if (i + 2 < val.end ()) {
-                                unsigned char newC = (ConvertReadSingleHexDigit_ (*(i + 1)) << 4) + ConvertReadSingleHexDigit_ (*(i + 2));
-                                i                  = val.erase (i, i + 2);
-                                *i                 = static_cast<char> (newC);
+                            if (p + 2 < val.end ()) {
+                                unsigned char newC = (ConvertReadSingleHexDigit_ (*(p + 1)) << 4) + ConvertReadSingleHexDigit_ (*(p + 2));
+                                p                  = val.erase (p, p + 2);
+                                *p                 = static_cast<char> (newC);
                             }
                             break;
                         }

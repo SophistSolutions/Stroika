@@ -153,9 +153,9 @@ protected:
 #else
             mbstate_t mbState_ = fMBState_;
 #endif
-            wchar_t                       outChar;
-            wchar_t*                      outCursor = &outChar;
-            codecvt_utf8<wchar_t>::result r         = fCharConverter_.in (mbState_, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
+            wchar_t                                        outChar;
+            wchar_t*                                       outCursor = &outChar;
+            [[maybe_unused]] codecvt_utf8<wchar_t>::result r         = fCharConverter_.in (mbState_, firstB, endB, cursorB, &outChar, &outChar + 1, outCursor);
             // we could read one byte upstream, but not ENOUGH to get a full character output!
             if (outCursor != &outChar) {
                 return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, 1);
@@ -171,11 +171,11 @@ protected:
         return fOffset_;
     }
 
-    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpenRead ());
-        AssertNotReached ();
+        AssertNotReached (); // not seekable
         return fOffset_;
     }
 

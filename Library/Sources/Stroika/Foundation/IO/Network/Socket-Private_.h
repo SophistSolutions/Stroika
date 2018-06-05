@@ -80,15 +80,15 @@ namespace Stroika {
                         ptrdiff_t amountRemainingToSend = amountToSend;
                         const T*  remainingSendFrom     = start;
                         while (amountRemainingToSend > 0) {
-                            size_t amountToSend = min<size_t> (maxSendAtATime, amountRemainingToSend);
-                            size_t amountSent   = writeFunc (remainingSendFrom, remainingSendFrom + amountToSend);
-                            Assert (amountSent <= amountToSend);
+                            size_t amountToSendThisIteration = min<size_t> (maxSendAtATime, amountRemainingToSend);
+                            size_t amountSent                = writeFunc (remainingSendFrom, remainingSendFrom + amountToSendThisIteration);
+                            Assert (amountSent <= amountToSendThisIteration);
                             Assert (static_cast<size_t> (amountRemainingToSend) >= amountSent);
                             amountRemainingToSend -= amountSent;
                             remainingSendFrom += amountSent;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                            if (amountSent < amountToSend) {
-                                DbgTrace (L"write broken into parts - amountSent=%lld out of amountToSend=%lld, amountRemainingToSend=%lld", static_cast<long long> (amountSent), static_cast<long long> (amountToSend), static_cast<long long> (amountRemainingToSend));
+                            if (amountSent < amountToSendThisIteration) {
+                                DbgTrace (L"write broken into parts - amountSent=%lld out of amountToSendThisIteration=%lld, amountRemainingToSend=%lld", static_cast<long long> (amountSent), static_cast<long long> (amountToSendThisIteration), static_cast<long long> (amountRemainingToSend));
                             }
 #endif
                         }

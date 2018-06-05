@@ -45,7 +45,7 @@ String InputStream<Character>::Ptr::ReadLine () const
             return result.str ();
         }
         else if (c == '\r') {
-            Character c = ReadCharacter ();
+            c = ReadCharacter ();
             // if CR is follwed by LF, append that to result too before returning. Otherwise, put the character back
             if (c == '\n') {
                 result.push_back (c);

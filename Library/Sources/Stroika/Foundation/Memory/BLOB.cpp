@@ -264,7 +264,6 @@ namespace {
                         fCur = fStart + newOffset;
                     } break;
                     case Whence::eFromEnd: {
-                        Streams::SeekOffsetType       curOffset = fCur - fStart;
                         Streams::SignedSeekOffsetType newOffset = (fEnd - fStart) + offset;
                         if (newOffset < 0) {
                             Execution::Throw (std::range_error ("seek"));

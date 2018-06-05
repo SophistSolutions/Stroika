@@ -42,7 +42,7 @@ private:
         Require (size > 0);
         return new Byte[size];
     }
-    static void Free_ (void* p, void* address)
+    static void Free_ (void* /*p*/, void* address)
     {
         delete[] reinterpret_cast<Byte*> (address);
     }
@@ -122,7 +122,7 @@ public:
                     break;
                 }
                 Memory::SmallStackBuffer<char16_t> fileName (nameLen);
-                size_t                             z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
+                [[maybe_unused]] size_t            z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
                 result.Add (String (&fileName[0]));
             }
         }
@@ -142,7 +142,7 @@ public:
         size_t offset{};
         size_t outSizeProcessed{};
 
-        auto&& cleanup = Execution::Finally ([&outBuffer, this]() { IAlloc_Free (&fAllocImp_, outBuffer); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([&outBuffer, this]() { IAlloc_Free (&fAllocImp_, outBuffer); });
 
         SRes ret;
         if ((ret = ::SzArEx_Extract (&fDB_, &fLookStream_.s, idx, &blockIndex, &outBuffer, &outBufferSize, &offset, &outSizeProcessed, &fAllocImp_, &fAllocTempImp_)) != SZ_OK) {
@@ -160,7 +160,7 @@ public:
                     break;
                 }
                 Memory::SmallStackBuffer<char16_t> fileName (nameLen);
-                size_t                             z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
+                [[maybe_unused]] size_t            z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
                 if (String (&fileName[0]) == fn) {
                     return i;
                 }

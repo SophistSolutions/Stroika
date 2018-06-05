@@ -80,10 +80,10 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
 #if defined(AI_CANONIDN)
     hints.ai_flags |= AI_CANONIDN;
 #endif
-    string    tmp     = hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
-    addrinfo* res     = nullptr;
-    int       errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
-    auto&&    cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
+    string                  tmp     = hostNameOrAddress.AsUTF8<string> (); // BAD - SB tstring - or??? not sure what...
+    addrinfo*               res     = nullptr;
+    int                     errCode = ::getaddrinfo (tmp.c_str (), nullptr, &hints, &res);
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([res]() noexcept { ::freeaddrinfo (res); });
     if (errCode != 0) {
         Throw (StringException (Format (L"DNS-Error: %s (%d)", String::FromNarrowSDKString (::gai_strerror (errCode)).c_str (), errCode)));
     }

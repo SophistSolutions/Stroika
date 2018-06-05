@@ -71,7 +71,7 @@ public:
         Require (IsOpenRead ());
         return fReadSeekOffset_;
     }
-    virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
         RequireNotReached (); // not seekable
         Require (IsOpenRead ());
@@ -100,7 +100,7 @@ public:
         Require (IsOpenWrite ());
         return 0;
     }
-    virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekWrite (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
         RequireNotReached (); // not seekable
         Require (IsOpenWrite ());

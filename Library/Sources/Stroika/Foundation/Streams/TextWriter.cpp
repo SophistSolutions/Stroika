@@ -61,9 +61,9 @@ protected:
         Require (IsOpenWrite ());
         return 0;
     }
-    virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekWrite (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
-        AssertNotImplemented ();
+        AssertNotImplemented (); // not seekable
         Require (IsOpenWrite ());
         return 0;
     }
@@ -135,9 +135,9 @@ protected:
         Require (IsOpenWrite ());
         return 0;
     }
-    virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekWrite (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
-        AssertNotImplemented ();
+        AssertNotImplemented (); // not seekable
         Require (IsOpenWrite ());
         return 0;
     }
@@ -186,11 +186,11 @@ protected:
         return fOffset_;
     }
 
-    virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekWrite (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
-        AssertNotImplemented ();
+        AssertNotImplemented (); // @todo - FIX - BAD - this must be seekable, but we've not yet implemented that feature yet!!!
         Require (IsOpenWrite ());
-        return 0;
+        return fOffset_;
     }
 
 private:
@@ -225,7 +225,7 @@ protected:
         return fOffset_;
     }
 
-    virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+    virtual SeekOffsetType SeekWrite (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
     {
         AssertNotImplemented ();
         Require (IsOpenWrite ());

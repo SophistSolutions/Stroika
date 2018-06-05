@@ -250,7 +250,6 @@ protected:
                 fOffset_ = static_cast<size_t> (newOffset);
             } break;
             case Whence::eFromEnd: {
-                Streams::SeekOffsetType       curOffset = fOffset_;
                 Streams::SignedSeekOffsetType newOffset = fBufferFilledUpValidBytes_ + offset;
                 if (newOffset < 0) {
                     Execution::Throw (std::range_error ("seek"));

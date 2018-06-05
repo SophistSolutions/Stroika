@@ -54,16 +54,16 @@ namespace {
     VariantValue Reader_value_ (const Streams::InputStream<Character>::Ptr& in);
 
     // throw if bad hex digit
-    unsigned int HexChar2Num_ (char c)
+    uint8_t HexChar2Num_ (char c)
     {
         if ('0' <= c and c <= '9') {
-            return c - '0';
+            return static_cast<uint8_t> (c - '0');
         }
         if ('A' <= c and c <= 'F') {
-            return (c - 'A') + 10;
+            return static_cast<uint8_t> ((c - 'A') + 10);
         }
         if ('a' <= c and c <= 'f') {
-            return (c - 'a') + 10;
+            return static_cast<uint8_t> ((c - 'a') + 10);
         }
         Execution::Throw (BadFormatException (String_Constant{L"JSON: bad hex digit after \\u"}));
     }

@@ -81,7 +81,7 @@ namespace {
 
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
-                auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+                [[maybe_unused]] auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 
 #if qPlatform_POSIX
@@ -99,7 +99,7 @@ namespace {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Assert (fCurrentPendingReadsCount++ == 0);
 #if qDebug
-                auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
+                [[maybe_unused]] auto&& cleanup = Finally ([=]() noexcept { Assert (--fCurrentPendingReadsCount == 0); });
 #endif
 #if qPlatform_POSIX || qPlatform_Windows
                 {
@@ -124,7 +124,7 @@ namespace {
                         }
 #if qDebug
                         --fCurrentPendingReadsCount; // reverse for inherited Read ()
-                        auto&& cleanup2 = Finally ([=]() noexcept { ++fCurrentPendingReadsCount; });
+                        [[maybe_unused]] auto&& cleanup2 = Finally ([=]() noexcept { ++fCurrentPendingReadsCount; });
 #endif
                         return Read (intoStart, intoEnd);
                     }
@@ -317,7 +317,7 @@ void ConnectionOrientedStreamSocket::Ptr::SetLinger (const Optional<int>& linger
     ::linger so_linger{};
     if (linger) {
         so_linger.l_onoff  = true;
-        so_linger.l_linger = *linger;
+        so_linger.l_linger = static_cast<u_short> (*linger);
     }
     setsockopt<::linger> (SOL_SOCKET, SO_LINGER, so_linger);
 }

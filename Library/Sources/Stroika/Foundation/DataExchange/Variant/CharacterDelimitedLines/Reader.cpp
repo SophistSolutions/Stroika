@@ -50,7 +50,7 @@ public:
     {
         return Read (Streams::TextReader::New (in));
     }
-    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
+    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& /*in*/) override
     {
         AssertNotImplemented ();
         return VariantValue ();

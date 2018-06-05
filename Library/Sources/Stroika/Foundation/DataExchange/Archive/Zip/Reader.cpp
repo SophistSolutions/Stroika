@@ -2597,7 +2597,7 @@ private:
         MyISeekInStream (const Streams::InputStream<Memory::Byte>::Ptr& in)
             : fInStream_ (in)
         {
-            this->zopen64_file = [](voidpf opaque, const void* filename, int mode) -> voidpf {
+            this->zopen64_file = [](voidpf opaque, const void* /*filename*/, int /*mode*/) -> voidpf {
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
 #if qDebug
                 Assert (not myThis->fOpened_);
@@ -2613,11 +2613,11 @@ private:
                 Assert (sz <= size);
                 return static_cast<uLong> (sz);
             };
-            this->zwrite_file = [](voidpf opaque, voidpf stream, const void* buf, uLong size) -> uLong {
+            this->zwrite_file = [](voidpf /*opaque*/, voidpf /*stream*/, const void* /*buf*/, uLong /*size*/) -> uLong {
                 RequireNotReached (); // read only zip
-                return UNZ_PARAMERROR;
+                return static_cast<uLong> (UNZ_PARAMERROR);
             };
-            this->ztell64_file = [](voidpf opaque, voidpf stream) -> ZPOS64_T {
+            this->ztell64_file = [](voidpf opaque, [[maybe_unused]] voidpf stream) -> ZPOS64_T {
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
                 Assert (myThis->fOpened_);
@@ -2693,10 +2693,10 @@ public:
         for (size_t i = 0; i < gi.number_entry; i++) {
             char            filename_inzip[10 * 1024];
             unz_file_info64 file_info;
-            uLong           ratio = 0;
+            //uLong           ratio = 0;
             //const char* string_method;
-            char charCrypt = ' ';
-            err            = unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof (filename_inzip), NULL, 0, NULL, 0);
+            //char charCrypt = ' ';
+            err = unzGetCurrentFileInfo64 (fZipFile_, &file_info, filename_inzip, sizeof (filename_inzip), NULL, 0, NULL, 0);
             if (err != UNZ_OK) {
                 Execution::Throw (Execution::StringException (Characters::Format (L"error %d with zipfile in unzGetCurrentFileInfo64", err)));
                 break;
@@ -2800,7 +2800,7 @@ public:
         }
         const char*                      password = nullptr;
         int                              err      = unzOpenCurrentFilePassword (fZipFile_, password);
-        auto&&                           cleanup  = Execution::Finally ([this]() { unzCloseCurrentFile_ (fZipFile_); });
+        [[maybe_unused]] auto&&          cleanup  = Execution::Finally ([this]() { unzCloseCurrentFile_ (fZipFile_); });
         Streams::MemoryStream<Byte>::Ptr tmpBuf   = Streams::MemoryStream<Byte>::New ();
         do {
             Byte buf[10 * 1024];

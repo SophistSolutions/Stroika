@@ -348,7 +348,6 @@ RetryWithAuth:
 
     if (status == 401 and not got401 and fOptions_.fAuthentication and fOptions_.fAuthentication->GetOptions () == Connection::Options::Authentication::Options::eRespondToWWWAuthenticate) {
         got401 = true;
-        DWORD dwStatusCode{};
         DWORD dwSupportedSchemes{};
         DWORD dwFirstScheme{};
         DWORD dwTarget{};
@@ -389,7 +388,7 @@ RetryWithAuth:
         DWORD                    dwCertInfoSize = sizeof (certInfo);
         certInfo.dwKeySize                      = sizeof (certInfo);
         ThrowIfFalseGetLastError (::WinHttpQueryOption (hRequest, WINHTTP_OPTION_SECURITY_CERTIFICATE_STRUCT, &certInfo, &dwCertInfoSize));
-        auto&& cleanup = Execution::Finally (
+        [[maybe_unused]] auto&& cleanup = Execution::Finally (
             [certInfo]() noexcept {
                 if (certInfo.lpszSubjectInfo != nullptr) {
                     ::LocalFree (certInfo.lpszSubjectInfo);
