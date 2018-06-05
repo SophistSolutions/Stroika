@@ -49,8 +49,8 @@ wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
         }
         return symStr;
     };
-    auto&&  cleanup = Execution::Finally ([syms]() noexcept { if (syms != nullptr) ::free (syms); });
-    wstring out;
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([syms]() noexcept { if (syms != nullptr) ::free (syms); });
+    wstring                 out;
     for (int j = 0; j < nptrs; j++) {
         wstring symStr = narrow2Wide (syms[j]);
 #if defined(__GNUC__) && defined(__GLIBCXX__)

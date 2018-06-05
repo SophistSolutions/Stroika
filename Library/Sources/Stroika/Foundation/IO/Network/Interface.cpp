@@ -167,7 +167,7 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
 
     int sd = ::socket (PF_INET, SOCK_STREAM, 0);
     Assert (sd >= 0);
-    auto&& cleanup = Execution::Finally ([sd]() noexcept { ::close (sd); });
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([sd]() noexcept { ::close (sd); });
 
     int r = ::ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
     Assert (r == 0);

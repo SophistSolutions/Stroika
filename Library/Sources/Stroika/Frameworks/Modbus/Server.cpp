@@ -153,7 +153,7 @@ namespace {
         static atomic<uint32_t> sConnectionNumber_;
         uint32_t                thisModbusConnectionNumber = ++sConnectionNumber_;
         DbgTrace ("Starting modbus connection %d", thisModbusConnectionNumber);
-        auto&& cleanup = Execution::Finally ([thisModbusConnectionNumber]() {
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([thisModbusConnectionNumber]() {
             DbgTrace ("Finishing modbus connection %d", thisModbusConnectionNumber);
         });
 #endif

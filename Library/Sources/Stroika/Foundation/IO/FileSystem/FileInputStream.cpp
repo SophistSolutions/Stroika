@@ -154,7 +154,7 @@ public:
              *      int oldFileFlags = ::fcntl (fFD_, F_GETFL, 0);
              *      if (fcntl (fFD_, F_SETFL, oldFileFlags | O_NONBLOCK))
              *          ;
-             *      auto&& cleanup = Execution::Finally ([this]() noexcept {
+             *      [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() noexcept {
              *          fcntl (fFD_, F_SETFL, oldFileFlags);
              *      });
              *

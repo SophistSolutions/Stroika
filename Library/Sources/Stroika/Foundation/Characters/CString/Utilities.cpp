@@ -127,9 +127,9 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
     va_copy (argListCopy, argsList);
 
 #if qCompilerAndStdLib_vswprintf_errantDependencyOnLocale_Buggy
-    locale_t tmpLocale{};
-    locale_t prevLocale{};
-    auto&&   cleanup = Execution::Finally ([&tmpLocale, &prevLocale]() {
+    locale_t                tmpLocale{};
+    locale_t                prevLocale{};
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&tmpLocale, &prevLocale]() {
         if (prevLocale != nullptr) {
             ::uselocale (prevLocale);
         }

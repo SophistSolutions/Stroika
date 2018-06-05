@@ -353,7 +353,7 @@ namespace Stroika {
                     //Require (fLock_.owns_shared_lock ());
                     TRAITS::UNLOCK_SHARED (fLock_);
                     // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-                    auto&& cleanup = Execution::Finally ([this]() { TRAITS::LOCK_SHARED (fLock_); });
+                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() { TRAITS::LOCK_SHARED (fLock_); });
                     doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
                 }
 #if 0

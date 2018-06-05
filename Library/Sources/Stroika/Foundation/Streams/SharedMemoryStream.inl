@@ -189,7 +189,6 @@ namespace Stroika {
                             fReadCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                         } break;
                         case Whence::eFromEnd: {
-                            Streams::SeekOffsetType       curOffset = fReadCursor_ - fData_.begin ();
                             Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                             if (newOffset < 0) {
                                 Execution::Throw (std::range_error ("seek"));

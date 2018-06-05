@@ -239,7 +239,7 @@ namespace {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
-            auto&& cleanup = Execution::Finally ([hThreadSnap]() noexcept { ::CloseHandle (hThreadSnap); });
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([hThreadSnap]() noexcept { ::CloseHandle (hThreadSnap); });
 
             // Fill in the size of the structure before using it.
             THREADENTRY32 te32{};
@@ -1475,7 +1475,7 @@ namespace {
                 {
                     HANDLE hProcess = ::OpenProcess (PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
                     if (hProcess != nullptr) {
-                        auto&& cleanup = Execution::Finally ([hProcess]() noexcept { Verify (::CloseHandle (hProcess)); });
+                        [[maybe_unused]] auto&& cleanup = Execution::Finally ([hProcess]() noexcept { Verify (::CloseHandle (hProcess)); });
                         if (grabStaticData) {
                             Optional<String> processName;
                             Optional<String> processEXEPath;
@@ -1711,10 +1711,10 @@ namespace {
                  */
                 HANDLE processToken = 0;
                 if (::OpenProcessToken (hProcess, TOKEN_QUERY, &processToken) != 0) {
-                    auto&& cleanup = Execution::Finally ([processToken]() noexcept {
+                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([processToken]() noexcept {
                         Verify (::CloseHandle (processToken));
                     });
-                    DWORD  nlen{};
+                    DWORD                   nlen{};
                     // no idea why needed, but TOKEN_USER buffer not big enuf empirically - LGP 2015-04-30
                     //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa379626(v=vs.85).aspx
                     //          TokenUser

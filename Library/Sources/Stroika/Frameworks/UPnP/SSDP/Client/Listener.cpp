@@ -157,9 +157,6 @@ public:
                         d.fAlive = false;
                     }
                 }
-                else {
-                    int hreab = 1;
-                }
             }
 
             {

@@ -1398,7 +1398,7 @@ namespace Stroika {
 
                 // require input is valid decimal digit value
                 Require (digitValue <= 9);
-                return (digitValue + '0');
+                return static_cast<char> (digitValue + '0');
             }
 
 #if qMultiByteCharacters

@@ -88,7 +88,7 @@ namespace {
         Collection<MountedFilesystemType> results{};
         static mutex                      sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
         lock_guard<mutex>                 critSec (sMutex_);
-        auto&&                            cleanup = Execution::Finally ([&]() noexcept { ::endfsent (); });
+        [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&]() noexcept { ::endfsent (); });
         while (fstab* fs = ::getfsent ()) {
             results += MountedFilesystemType{String::FromNarrowSDKString (fs->fs_file), Containers::Set<String>{String::FromNarrowSDKString (fs->fs_spec)}, String::FromNarrowSDKString (fs->fs_vfstype)};
         }

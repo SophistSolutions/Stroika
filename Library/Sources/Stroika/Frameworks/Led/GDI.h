@@ -3614,7 +3614,7 @@ namespace Stroika {
                     return (unsigned short)::MulDiv (tms.tmHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
                 }
                 else {
-                    return ::MulDiv (-fFontInfo.lfHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ());
+                    return static_cast<unsigned short> (::MulDiv (-fFontInfo.lfHeight, 72, Led_GDIGlobals::Get ().GetMainScreenLogPixelsV ()));
                 }
 #elif qXWindows
                 return fFontSize;
@@ -4651,7 +4651,7 @@ namespace Stroika {
                 Verify (::IntersectClipRect (*tablet, clipFurtherTo.GetLeft (), clipFurtherTo.GetTop (), clipFurtherTo.GetRight (), clipFurtherTo.GetBottom ()) != ERROR);
 #endif
             }
-            inline Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet, const Led_Region& clipFurtherTo)
+            inline Led_Tablet_::ClipNarrowAndRestore::ClipNarrowAndRestore (Led_Tablet_* tablet, [[maybe_unused]] const Led_Region& clipFurtherTo)
                 : fTablet (tablet)
                 , fHasOldClip (false)
                 , fOldClip ()

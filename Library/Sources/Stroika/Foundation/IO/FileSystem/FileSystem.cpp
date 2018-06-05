@@ -250,7 +250,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
         if (tmp == nullptr) {
             errno_ErrorException::Throw (errno);
         }
-        auto&& cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
+        [[maybe_unused]] auto&& cleanup = Execution::Finally ([tmp]() noexcept { ::free (tmp); });
         return String::FromNarrowSDKString (tmp);
 #elif qPlatform_Windows
         // @todo MaYBE USE GetFinalPathNameByHandle
