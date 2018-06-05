@@ -27,7 +27,7 @@ void BufferedStringRep::_Rep::InsertAt (const Character* srcStart, const Charact
     size_t origLen     = _GetLength ();
     size_t amountToAdd = (srcEnd - srcStart);
     SetLength_ (origLen + amountToAdd);
-    size_t newLen = origLen + amountToAdd;
+    [[maybe_unused]] size_t newLen = origLen + amountToAdd;
     Assert (newLen == _GetLength ());
     wchar_t* gapStart = _PeekStart () + index;
     // make space for insertion
@@ -51,7 +51,7 @@ void BufferedStringRep::_Rep::SetLength_ (size_t newLength)
 
 const wchar_t* BufferedStringRep::_Rep::c_str_peek () const noexcept
 {
-    size_t len = _GetLength ();
+    [[maybe_unused]] size_t len = _GetLength ();
     Ensure (_fStart[len] == '\0');
     return _fStart;
 }

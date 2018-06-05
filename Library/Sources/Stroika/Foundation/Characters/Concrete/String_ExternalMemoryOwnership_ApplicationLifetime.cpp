@@ -33,7 +33,7 @@ namespace {
             : inherited (start, end)
         {
         }
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
@@ -55,7 +55,7 @@ public:
     {
         Require (start + ::wcslen (start) == end);
     }
-    virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+    virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
     {
         /*
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so

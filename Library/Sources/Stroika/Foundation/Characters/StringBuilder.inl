@@ -64,7 +64,7 @@ namespace Stroika {
             {
                 Require (s == e or (s != nullptr and e != nullptr));
                 Require (s <= e);
-                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
                     Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
                 }
                 else {
@@ -74,7 +74,7 @@ namespace Stroika {
             inline void StringBuilder::Append (const char16_t* s)
             {
                 RequireNotNull (s);
-                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
                     Append (reinterpret_cast<const wchar_t*> (s));
                 }
                 else {
@@ -85,7 +85,7 @@ namespace Stroika {
             {
                 Require (s == e or (s != nullptr and e != nullptr));
                 Require (s <= e);
-                if (sizeof (char32_t) == sizeof (wchar_t)) {
+                if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
                     Append (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
                 }
                 else {
@@ -95,7 +95,7 @@ namespace Stroika {
             inline void StringBuilder::Append (const char32_t* s)
             {
                 RequireNotNull (s);
-                if (sizeof (char32_t) == sizeof (wchar_t)) {
+                if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
                     Append (reinterpret_cast<const wchar_t*> (s));
                 }
                 else {
@@ -108,7 +108,7 @@ namespace Stroika {
             }
             inline void StringBuilder::Append (const u16string& s)
             {
-                if (sizeof (char16_t) == sizeof (wchar_t)) {
+                if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
                     Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
                 }
                 else {
@@ -117,7 +117,7 @@ namespace Stroika {
             }
             inline void StringBuilder::Append (const u32string& s)
             {
-                if (sizeof (char32_t) == sizeof (wchar_t)) {
+                if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
                     Append (reinterpret_cast<const wchar_t*> (s.c_str ()), reinterpret_cast<const wchar_t*> (s.c_str ()) + s.length ());
                 }
                 else {

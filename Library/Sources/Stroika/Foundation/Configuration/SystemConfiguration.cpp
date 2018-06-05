@@ -957,7 +957,7 @@ SystemConfiguration::OperatingSystem Configuration::GetSystemConfiguration_Opera
         tmp.fPrettyNameWithMajorVersion           = GetWinOSDisplayString_ (); // Cleanup - see above
         tmp.fMajorMinorVersionString              = Characters::Format (L"%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
         tmp.fRFC1945CompatProductTokenWithVersion = Characters::Format (L"Windows/%d.%d", osvi.dwMajorVersion, osvi.dwMinorVersion);
-        if (sizeof (void*) == 4) {
+        if constexpr (sizeof (void*) == 4) {
             tmp.fBits = 32;
             //IsWow64Process is not available on all supported versions of Windows.
             //Use GetModuleHandle to get a handle to the DLL that contains the function

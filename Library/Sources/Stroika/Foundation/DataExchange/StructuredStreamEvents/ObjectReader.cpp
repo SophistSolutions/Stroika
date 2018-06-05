@@ -36,19 +36,19 @@ using Time::TimeOfDay;
 
 /*
  ********************************************************************************
- ***************** ObjectReaderIElementConsumer ***********************
+ *********************** ObjectReaderIElementConsumer ***************************
  ********************************************************************************
  */
-shared_ptr<IElementConsumer> IElementConsumer::HandleChildStart (const Name& name)
+shared_ptr<IElementConsumer> IElementConsumer::HandleChildStart ([[maybe_unused]] const Name& name)
 {
     return nullptr;
 }
 
-void IElementConsumer::HandleTextInside (const String& text)
+void IElementConsumer::HandleTextInside ([[maybe_unused]] const String& text)
 {
 }
 
-void IElementConsumer::Activated (Context& r)
+void IElementConsumer::Activated ([[maybe_unused]] Context& r)
 {
 }
 
@@ -58,7 +58,7 @@ void IElementConsumer::Deactivating ()
 
 /*
  ********************************************************************************
- ******************* Registry::SimpleReader_<> ********************
+ **************************** Registry::SimpleReader_<> *************************
  ********************************************************************************
  */
 template <>
@@ -167,17 +167,17 @@ void Registry::SimpleReader_<Time::Duration>::Deactivating ()
 
 /*
  ********************************************************************************
- ******************** IgnoreNodeReader ********************
+ ****************************** IgnoreNodeReader ********************************
  ********************************************************************************
  */
-shared_ptr<IElementConsumer> IgnoreNodeReader::HandleChildStart (const StructuredStreamEvents::Name& name)
+shared_ptr<IElementConsumer> IgnoreNodeReader::HandleChildStart ([[maybe_unused]] const StructuredStreamEvents::Name& name)
 {
     return shared_from_this ();
 }
 
 /*
  ********************************************************************************
- ********************** Context ***************************
+ *********************************** Context ************************************
  ********************************************************************************
  */
 Context::Context (const Registry& registry, const shared_ptr<IElementConsumer>& initialTop)

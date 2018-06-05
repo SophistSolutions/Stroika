@@ -181,7 +181,7 @@ namespace Stroika {
                             if (newLen > curCap) {
                                 newLen *= 6;
                                 newLen /= 5;
-                                if (sizeof (T) < 100) {
+                                if constexpr (sizeof (T) < 100) {
                                     newLen = Stroika::Foundation::Math::RoundUpTo (newLen, static_cast<size_t> (64)); //?
                                 }
                                 fData_.SetCapacity (newLen);

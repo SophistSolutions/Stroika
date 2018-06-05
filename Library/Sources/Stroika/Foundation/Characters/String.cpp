@@ -47,7 +47,7 @@ namespace {
             : inherited (start, end, reserveExtraCharacters)
         {
         }
-        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+        virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
         {
             AssertNotReached (); // Since Strings now immutable, this should never be called
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
@@ -112,7 +112,7 @@ namespace {
  ****************************** String::_IRep ***********************************
  ********************************************************************************
  */
-Traversal::Iterator<Character> String::_IRep::MakeIterator (IteratorOwnerID suggestedOwner) const
+Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
 {
     struct MyIterRep_ : Iterator<Character>::IRep {
         _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
@@ -406,7 +406,7 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
     RequireNotNull (from);
     RequireNotNull (to);
     Require (from <= to);
-    if (sizeof (char16_t) == sizeof (wchar_t)) {
+    if constexpr (sizeof (char16_t) == sizeof (wchar_t)) {
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
@@ -430,7 +430,7 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
     RequireNotNull (from);
     RequireNotNull (to);
     Require (from <= to);
-    if (sizeof (char32_t) == sizeof (wchar_t)) {
+    if constexpr (sizeof (char32_t) == sizeof (wchar_t)) {
         return mk_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to));
     }
     else {
@@ -610,7 +610,7 @@ Memory::Optional<size_t> String::Find (const String& subString, size_t startAt, 
     return {};
 }
 
-Memory::Optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, size_t startAt) const
+Memory::Optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, [[maybe_unused]] size_t startAt) const
 {
     const String threadSafeCopy{*this};
     Require (startAt <= threadSafeCopy.GetLength ());
@@ -662,8 +662,8 @@ vector<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& r
         Assert (match.size () != 0);
         size_t                       n = match.size ();
         Containers::Sequence<String> s;
-        for (size_t i = 1; i < n; ++i) {
-            s.Append (match.str (i));
+        for (size_t j = 1; j < n; ++j) {
+            s.Append (match.str (j));
         }
         result.push_back (RegularExpressionMatch (match.str (0), s));
     }
@@ -838,7 +838,7 @@ String String::FilteredString (const Iterable<Character>& badCharacters, Memory:
     ;
 }
 
-String String::FilteredString (const RegularExpression& badCharacters, Memory::Optional<Character> replacement) const
+String String::FilteredString ([[maybe_unused]] const RegularExpression& badCharacters, [[maybe_unused]] Memory::Optional<Character> replacement) const
 {
     AssertNotImplemented ();
     return String{};
@@ -1155,7 +1155,7 @@ void String::AsUTF16 (u16string* into) const
     _SafeReadRepAccessor accessor{this};
     size_t               n{accessor._ConstGetRep ()._GetLength ()};
     const Character*     cp = accessor._ConstGetRep ()._Peek ();
-    if (sizeof (wchar_t) == sizeof (char16_t)) {
+    if constexpr (sizeof (wchar_t) == sizeof (char16_t)) {
         Assert (sizeof (Character) == sizeof (char16_t));
         const char16_t* wcp = (const char16_t*)cp;
         into->assign (wcp, wcp + n);
@@ -1177,7 +1177,7 @@ void String::AsUTF32 (u32string* into) const
     _SafeReadRepAccessor accessor{this};
     size_t               n{accessor._ConstGetRep ()._GetLength ()};
     const Character*     cp = accessor._ConstGetRep ()._Peek ();
-    if (sizeof (wchar_t) == sizeof (char32_t)) {
+    if constexpr (sizeof (wchar_t) == sizeof (char32_t)) {
         Assert (sizeof (Character) == sizeof (char32_t));
         const char32_t* wcp = (const char32_t*)cp;
         into->assign (wcp, wcp + n);

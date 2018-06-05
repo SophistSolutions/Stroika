@@ -37,7 +37,7 @@ namespace Stroika {
                         }
 
                     public:
-                        virtual void Activated (Context& r) override
+                        virtual void Activated ([[maybe_unused]] Context& r) override
                         {
                             fBuf_.clear (); // readers can legally be re-used
                         }

@@ -90,10 +90,10 @@ namespace {
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const void*)
 {
-    FromObjectMapperType<void> fromObjectMapper = [](const ObjectVariantMapper& mapper, const void* fromObjOfTypeT) -> VariantValue {
+    FromObjectMapperType<void> fromObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, [[maybe_unused]] const void* fromObjOfTypeT) -> VariantValue {
         return VariantValue{};
     };
-    ToObjectMapperType<void> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, void* intoObjOfTypeT) -> void {
+    ToObjectMapperType<void> toObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, [[maybe_unused]] const VariantValue& d, [[maybe_unused]] void* intoObjOfTypeT) -> void {
     };
     return TypeMappingDetails{typeid (void), fromObjectMapper, toObjectMapper};
 }
