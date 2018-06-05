@@ -716,7 +716,6 @@ void ChunkedArrayTextStore::RemoveMarkerOwner (MarkerOwner* owner)
             vector<Marker*>  markersWhichShouldHaveBeenDeleted;
             VectorMarkerSink tmp (&markersWhichShouldHaveBeenDeleted);
             CollectAllMarkersInRangeInto (0, GetEnd () + 2, owner, tmp);
-            int breakHere = 1; // Look here at the 'markersWhichShouldHaveBeenDeleted' - and see which ones they are!!!
         }
 #endif
     }

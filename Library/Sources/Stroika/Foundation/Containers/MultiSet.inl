@@ -94,7 +94,7 @@ namespace Stroika {
                     {
                         return fContext.fMultiSetIterator.GetOwner ();
                     }
-                    virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
+                    virtual bool Equals (const typename Iterator<T>::IRep* /*rhs*/) const override
                     {
                         AssertNotImplemented ();
                         return false;
@@ -225,7 +225,7 @@ namespace Stroika {
                     {
                         return this->_fContextForEachIterator.fMultiSet->IsEmpty ();
                     }
-                    virtual typename Iterable<T>::_IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+                    virtual typename Iterable<T>::_IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
                     {
                         return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
                     }

@@ -50,6 +50,6 @@ Interceptor::Interceptor (const function<void(Message*)>& handleMessage, const f
  *********************** WebServer::Interceptor::_IRep **************************
  ********************************************************************************
  */
-void Interceptor::_IRep::CompleteNormally (Message* m)
+void Interceptor::_IRep::CompleteNormally (Message* /*m*/)
 {
 }

@@ -3294,7 +3294,6 @@ struct CMAPENCODING {
 
 /* public functions */
 static USHORT GetTTUnicodeGlyphIndex (HDC hdc, USHORT ch);
-static USHORT GetTTUnicodeCharCount (HDC hdc);
 
 // DWORD packed four letter table name for each GetFontData()
 // function call when working with the CMAP TrueType table
@@ -3666,32 +3665,6 @@ static BOOL FindFormat4Segment (
     *piSeg = i;
     return TRUE;
 } /* end of function FindFormat4Segment */
-
-static USHORT GetTTUnicodeCharCount (
-    HDC hdc)
-/*
-    Returns the number of Unicode character glyphs that
-    are in the TrueType font that is selected into the hdc.
-*/
-{
-    LPCMAP4 pUnicodeCMapTable;
-    USHORT  cChar;
-    DWORD   dwSize;
-
-    // Get the Unicode CMAP table from the TT font
-    GetTTUnicodeCoverage (hdc, nullptr, 0, &dwSize);
-    pUnicodeCMapTable = (LPCMAP4)malloc (dwSize);
-    if (!GetTTUnicodeCoverage (hdc, pUnicodeCMapTable, dwSize, &dwSize)) {
-        // possibly no Unicode cmap, not a TT font selected,...
-        free (pUnicodeCMapTable);
-        return 0;
-    }
-
-    cChar = GetFontFormat4CharCount (pUnicodeCMapTable);
-    free (pUnicodeCMapTable);
-
-    return cChar;
-} /* end of function GetTTUnicodeCharCount */
 
 static USHORT GetTTUnicodeGlyphIndex (
     HDC    hdc, // DC with a TrueType font selected

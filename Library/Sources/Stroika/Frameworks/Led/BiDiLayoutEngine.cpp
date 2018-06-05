@@ -478,11 +478,8 @@ TextLayoutBlock_Basic::TextLayoutBlock_Basic (const Led_tChar* realText, const L
     Construct (realText, realTextEnd, &initialDirection);
 }
 
-void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tChar* realTextEnd, const TextDirection* initialDirection)
+void TextLayoutBlock_Basic::Construct (const Led_tChar* realText, const Led_tChar* realTextEnd, [[maybe_unused]] const TextDirection* initialDirection)
 {
-#if !qWideCharacters
-    Led_Arg_Unused (initialDirection);
-#endif
     size_t textLength = realTextEnd - realText;
     fTextLength       = textLength;
     fRealText.GrowToSize (textLength);

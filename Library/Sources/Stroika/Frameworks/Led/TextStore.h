@@ -584,23 +584,20 @@ namespace Stroika {
 
             //  class   TextStore::VectorMarkerSink
             inline TextStore::VectorMarkerSink::VectorMarkerSink (vector<Marker*>* markers)
-                : MarkerSink ()
-                , fMarkers (markers)
+                : fMarkers (markers)
             {
                 RequireNotNull (fMarkers);
             }
 
             //  class   TextStore::SmallStackBufferMarkerSink
             inline TextStore::SmallStackBufferMarkerSink::SmallStackBufferMarkerSink ()
-                : MarkerSink ()
-                , fMarkers (0)
+                : fMarkers (0)
             {
             }
 
             //  class   TextStore
             inline TextStore::TextStore ()
-                : MarkerOwner ()
-                , fMarkerOwners ()
+                : fMarkerOwners ()
                 , fTextBreaker ()
             {
                 fMarkerOwners.push_back (this);

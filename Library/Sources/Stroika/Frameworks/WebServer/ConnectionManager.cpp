@@ -274,7 +274,7 @@ void ConnectionManager::ReplaceInEarlyInterceptor_ (const Optional<Interceptor>&
     FixupInterceptorChain_ ();
 }
 
-void ConnectionManager::AbortConnection (const shared_ptr<Connection>& conn)
+void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 {
     AssertNotImplemented ();
 }

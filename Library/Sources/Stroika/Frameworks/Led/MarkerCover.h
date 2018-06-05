@@ -558,11 +558,11 @@ namespace Stroika {
                             // Now do we need to clone the old marker to go after ours?
                             lenLeftToFixup -= ourNewLen;
                             if (lenLeftToFixup != 0) {
-                                MARKER* newMarker = new MARKER (origFSP);
-                                fTextStore.AddMarker (newMarker, from + ourNewLen, lenLeftToFixup, this);
+                                MARKER* nm = new MARKER (origFSP);
+                                fTextStore.AddMarker (nm, from + ourNewLen, lenLeftToFixup, this);
                                 Assert (m->GetLength () != 0);
-                                prevNonEmptyMarker = m;         // update prevNonEmptyMarker
-                                m                  = newMarker; // be sure m points to LAST marker of results for this range
+                                prevNonEmptyMarker = m;  // update prevNonEmptyMarker
+                                m                  = nm; // be sure m points to LAST marker of results for this range
                             }
                         }
                         else if (m->GetEnd () > to) {
