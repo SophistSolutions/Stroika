@@ -274,7 +274,7 @@ RetryWithAuth:
         DISABLE_COMPILER_MSC_WARNING_START (4267)
         ThrowIfFalseGetLastError (::WinHttpSendRequest (
             hRequest,
-            useHeaderStrBuf.c_str (), -1,
+            useHeaderStrBuf.c_str (), static_cast<DWORD> (-1),
             const_cast<Byte*> (request.fData.begin ()), request.fData.size (),
             request.fData.size (),
             NULL));
