@@ -135,7 +135,7 @@ String DerivedKey::ToString () const
  */
 #if qHasFeature_OpenSSL
 namespace {
-    pair<BLOB, BLOB> mkWinCryptDeriveKey_ (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkWinCryptDeriveKey_ (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd)
     {
         // @todo https://stroika.atlassian.net/browse/STK-192
         /*
@@ -218,13 +218,13 @@ namespace {
         return 128 / 8;
     }
 }
-WinCryptDeriveKey::WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
-    : DerivedKey (mkWinCryptDeriveKey_ (keyLen, digestAlgorithm, passwd, salt))
+WinCryptDeriveKey::WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd)
+    : DerivedKey (mkWinCryptDeriveKey_ (keyLen, digestAlgorithm, passwd))
 {
 }
 
-WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt)
-    : DerivedKey (WinCryptDeriveKey (mkDefKeyLen_ (provider, cipherAlgorithm), digestAlgorithm, passwd, salt))
+WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd)
+    : DerivedKey (WinCryptDeriveKey (mkDefKeyLen_ (provider, cipherAlgorithm), digestAlgorithm, passwd))
 {
 }
 #endif

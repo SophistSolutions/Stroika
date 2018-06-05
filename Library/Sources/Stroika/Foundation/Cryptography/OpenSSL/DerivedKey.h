@@ -89,11 +89,11 @@ namespace Stroika {
                  *  \note for new code - PKCS5_PBKDF2_HMAC is the preferred DerviveKey subclass to use
                  */
                 struct WinCryptDeriveKey : DerivedKey {
-                    WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    WinCryptDeriveKey (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd);
                     enum Provider { Base,
                                     Enhanced,
                                     Strong };
-                    WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd, const Optional<BLOB>& salt = Optional<BLOB> ());
+                    WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherAlgorithm, DigestAlgorithm digestAlgorithm, const BLOB& passwd);
                 };
 
                 /**
