@@ -478,7 +478,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
     Require (not sKnownBadBeforeMainOrAfterMain_);
 
 #if qDebug
-    auto&& cleanupCheckMain = Finally ([]() noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+    [[maybe_unused]] auto&& cleanupCheckMain = Finally ([]() noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
 #endif
 
     try {
@@ -502,7 +502,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
             DbgTrace (L"Adding thread id %s to sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second); // .second true if inserted, so checking not already there
         }
-        auto&& cleanup = Finally (
+        [[maybe_unused]] auto&& cleanup = Finally (
             [thisThreadID]() noexcept {
                 Thread::SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
                 Require (not sKnownBadBeforeMainOrAfterMain_);                  // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
