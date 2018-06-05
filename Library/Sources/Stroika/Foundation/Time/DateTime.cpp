@@ -74,15 +74,15 @@ namespace {
             unsigned int hours   = minutes / 60;
 
             hours   = min (hours, 23U);
-            t.wHour = hours;
+            t.wHour = static_cast<WORD> (hours);
 
             minutes -= hours * 60;
             minutes   = min (minutes, 59U);
-            t.wMinute = minutes;
+            t.wMinute = static_cast<WORD> (minutes);
 
             seconds -= (60 * 60 * hours + 60 * minutes);
             seconds   = min (seconds, 59U);
-            t.wSecond = seconds;
+            t.wSecond = static_cast<WORD> (seconds);
         }
         return t;
     }
@@ -113,7 +113,7 @@ namespace {
         // On GLIBC systems, could use _mkgmtime64  - https://github.com/leelwh/clib/blob/master/c/mktime64.c
         // Based on https://stackoverflow.com/questions/12353011/how-to-convert-a-utc-date-time-to-a-time-t-in-c
         constexpr int kDaysOfMonth_[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-        auto          isLeapYear        = [](short year) -> bool {
+        auto          isLeapYear        = [](int year) -> bool {
             if (year % 4 != 0)
                 return false;
             if (year % 100 != 0)
@@ -298,7 +298,8 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
                     tz = Timezone::UTC ();
                 }
                 else {
-                    tz = Timezone (tzHr * 60 + tzMn);
+                    Assert (numeric_limits<int16_t>::min () <= tzHr * 60 + tzMn and tzHr * 60 + tzMn < numeric_limits<int16_t>::max ());
+                    tz = Timezone (static_cast<int16_t> (tzHr * 60 + tzMn));
                 }
             }
             else {

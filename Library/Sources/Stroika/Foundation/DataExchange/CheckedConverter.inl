@@ -27,7 +27,7 @@ namespace Stroika {
              */
             namespace Private_ {
                 template <typename T>
-                inline typename std::enable_if<!std::is_floating_point<T>::value, T>::type CheckedConverter_Range_Helper_Pinner_ (T t, T lower, T upper)
+                inline typename std::enable_if<not std::is_floating_point<T>::value, T>::type CheckedConverter_Range_Helper_Pinner_ (T t, T /*lower*/, T /*upper*/)
                 {
                     return t;
                 }

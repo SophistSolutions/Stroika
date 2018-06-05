@@ -101,7 +101,7 @@ namespace {
         }
     }
     template <typename CHARITERATOR>
-    void PrettyPrint_ (const Options_& options, CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>::Ptr& out)
+    void PrettyPrint_ (const Options_& /*options*/, CHARITERATOR start, CHARITERATOR end, const OutputStream<Character>::Ptr& out)
     {
         // A backslash can be followed by "\/bfnrtu (@ see http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf)
         Characters::StringBuilder sb;

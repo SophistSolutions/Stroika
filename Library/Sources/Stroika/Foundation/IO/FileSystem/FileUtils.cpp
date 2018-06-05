@@ -146,7 +146,7 @@ void IO::FileSystem::SetFileAccessWideOpened (const String& filePathName)
         }
 
         // Try to modify the object's DACL.
-        DWORD dwRes = SetNamedSecurityInfo (
+        [[maybe_unused]] DWORD dwRes = SetNamedSecurityInfo (
             const_cast<SDKChar*> (filePathName.AsSDKString ().c_str ()), // name of the object
             SE_FILE_OBJECT,                                              // type of object
             DACL_SECURITY_INFORMATION,                                   // change only the object's DACL
@@ -382,11 +382,11 @@ vector<String> IO::FileSystem::FindFilesOneDirUnder (const String& path, const S
     HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
-            SDKString fileName = (LPCTSTR)&fd.cFileName;
+            //SDKString fileName = (LPCTSTR)&fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                String       fileName = String::FromSDKString ((LPCTSTR)&fd.cFileName);
-                const String kDOT     = String_Constant (L".");
-                const String kDOTDOT  = String_Constant (L"..");
+                String              fileName = String::FromSDKString ((LPCTSTR)&fd.cFileName);
+                static const String kDOT     = String_Constant (L".");
+                static const String kDOTDOT  = String_Constant (L"..");
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
                     resultSet += Containers::Set<String> (FindFiles (usePath + fileName, fileNameToMatch));
                 }

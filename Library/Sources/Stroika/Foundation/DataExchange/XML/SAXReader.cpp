@@ -222,7 +222,7 @@ class MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
     // XMLErrorReporter
 public:
     virtual void error (
-        const unsigned int errCode, const XMLCh* const errDomain, const ErrTypes type, const XMLCh* const errorText, const XMLCh* const systemId, const XMLCh* const publicId, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
+        const unsigned int /*errCode*/, const XMLCh* const /*errDomain*/, const ErrTypes /*type*/, const XMLCh* const errorText, const XMLCh* const /*systemId*/, const XMLCh* const /*publicId*/, const XMLFileLoc lineNum, const XMLFileLoc colNum) override
     {
         Execution::Throw (BadFormatException (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
     }
@@ -232,7 +232,7 @@ public:
 
     // ErrorHandler
 public:
-    virtual void warning (const SAXParseException& exc) override
+    virtual void warning (const SAXParseException& /*exc*/) override
     {
         // ignore
     }
@@ -520,7 +520,7 @@ namespace {
         {
             fCallback.EndDocument ();
         }
-        virtual void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname, const Attributes& attributes) override
+        virtual void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const /*qname*/, const Attributes& attributes) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);

@@ -301,7 +301,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
 }
 
-String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool /*throwIfComponentsNotFound*/)
+String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, const String& /*relativeToDirectory*/, bool /*throwIfComponentsNotFound*/)
 {
     AssertNotImplemented ();
     return path2FileOrShortcut;
@@ -361,8 +361,8 @@ C:
     using Traversal::Iterator;
 
 #if qPlatform_Windows
-    bool isUNCName      = fileName.length () > 2 and fileName.StartsWith (L"\\\\");
-    bool isAbsolutePath = fileName.length () >= 1 and fileName.StartsWith (L"\\");
+    bool isUNCName = fileName.length () > 2 and fileName.StartsWith (L"\\\\");
+    //bool isAbsolutePath = fileName.length () >= 1 and fileName.StartsWith (L"\\");
 #else
 #endif
 #if qPlatform_Windows
@@ -551,7 +551,7 @@ Again:
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (directory, FileAccessMode::eWrite);
 }
 
-void IO::FileSystem::Ptr::CreateSymbolicLink (const String& linkName, const String& target)
+void IO::FileSystem::Ptr::CreateSymbolicLink ([[maybe_unused]] const String& linkName, [[maybe_unused]] const String& target)
 {
 #if qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (::symlink (target.AsNarrowSDKString ().c_str (), linkName.AsNarrowSDKString ().c_str ()));

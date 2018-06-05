@@ -84,7 +84,7 @@ namespace {
                 Require (IsOpenRead ());
                 return _fSeekOffset;
             }
-            virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+            virtual SeekOffsetType SeekRead (Whence /*whence*/, SignedSeekOffsetType /*offset*/) override
             {
                 RequireNotReached ();
                 Require (IsOpenRead ());

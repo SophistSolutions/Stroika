@@ -103,7 +103,7 @@ namespace Stroika {
                 return numeric_limits<size_type>::max () / sizeof (T);
             }
             template <typename T, typename BASE_ALLOCATOR>
-            inline bool STLAllocator<T, BASE_ALLOCATOR>::operator== (const STLAllocator<T, BASE_ALLOCATOR>& rhs) const
+            inline bool STLAllocator<T, BASE_ALLOCATOR>::operator== (const STLAllocator<T, BASE_ALLOCATOR>& /*rhs*/) const
             {
                 return true;
             }
