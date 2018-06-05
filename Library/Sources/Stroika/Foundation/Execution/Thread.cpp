@@ -270,7 +270,7 @@ namespace Stroika {
  ********************************** Thread::Rep_ ********************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Configuration>& configuration)
+Thread::Rep_::Rep_ (const Function<void()>& runnable, [[maybe_unused]] const Memory::Optional<Configuration>& configuration)
     : fRunnable_ (runnable)
     , fAccessSTDThreadMutex_ ()
     , fThread_ ()
@@ -280,6 +280,7 @@ Thread::Rep_::Rep_ (const Function<void()>& runnable, const Memory::Optional<Con
     , fThreadDoneAndCanJoin_{}
     , fThreadName_ ()
 {
+    // @todo - never used anything from configuration (yet) - should!)
 #if qPlatform_POSIX
     static bool sDidInit_{false}; // initialize after main() started, but before any threads
     if (not sDidInit_) {

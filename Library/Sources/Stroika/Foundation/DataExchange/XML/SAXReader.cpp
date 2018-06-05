@@ -94,13 +94,13 @@ namespace {
     {
         // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
         // --LGP 2016-07-29
-        if (sizeof (XMLCh) == sizeof (wchar_t)) {
+        if constexpr (sizeof (XMLCh) == sizeof (wchar_t)) {
             return String (reinterpret_cast<const wchar_t*> (s), reinterpret_cast<const wchar_t*> (e));
         }
-        else if (sizeof (XMLCh) == sizeof (char16_t)) {
+        else if constexpr (sizeof (XMLCh) == sizeof (char16_t)) {
             return String (reinterpret_cast<const char16_t*> (s), reinterpret_cast<const char16_t*> (e));
         }
-        else if (sizeof (XMLCh) == sizeof (char32_t)) {
+        else if constexpr (sizeof (XMLCh) == sizeof (char32_t)) {
             return String (reinterpret_cast<const char32_t*> (s), reinterpret_cast<const char32_t*> (e));
         }
         else {
@@ -112,13 +112,13 @@ namespace {
     {
         // nb: casts required cuz Xerces doesn't (currently) use wchar_t/char16_t/char32_t but something the sizeof char16_t
         // --LGP 2016-07-29
-        if (sizeof (XMLCh) == sizeof (wchar_t)) {
+        if constexpr (sizeof (XMLCh) == sizeof (wchar_t)) {
             return String (reinterpret_cast<const wchar_t*> (t));
         }
-        else if (sizeof (XMLCh) == sizeof (char16_t)) {
+        else if constexpr (sizeof (XMLCh) == sizeof (char16_t)) {
             return String (reinterpret_cast<const char16_t*> (t));
         }
-        else if (sizeof (XMLCh) == sizeof (char32_t)) {
+        else if constexpr (sizeof (XMLCh) == sizeof (char32_t)) {
             return String (reinterpret_cast<const char32_t*> (t));
         }
         else {

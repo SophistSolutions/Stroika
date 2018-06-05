@@ -1023,18 +1023,18 @@ namespace {
                             while (p < e) {
                                 DWORD written = 0;
                                 if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) == 0) {
-                                    DWORD err = ::GetLastError ();
+                                    DWORD lastErr = ::GetLastError ();
                                     // sometimes we fail because the target process hasn't read enough and the pipe is full.
                                     // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
                                     // documentation about what WriteFile () returns in this case... So there maybe other errors
                                     // that are innocuous that may cause is to prematurely terminate our 'RunExternalProcess'.
                                     //      -- LGP 2009-05-07
-                                    if (err != ERROR_SUCCESS and
-                                        err != ERROR_NO_MORE_FILES and
-                                        err != ERROR_PIPE_BUSY and
-                                        err != ERROR_NO_DATA) {
-                                        DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", err);
-                                        Execution::Platform::Windows::Exception::Throw (err);
+                                    if (lastErr != ERROR_SUCCESS and
+                                        lastErr != ERROR_NO_MORE_FILES and
+                                        lastErr != ERROR_PIPE_BUSY and
+                                        lastErr != ERROR_NO_DATA) {
+                                        DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", lastErr);
+                                        Execution::Platform::Windows::Exception::Throw (lastErr);
                                     }
                                 }
                                 Assert (written <= static_cast<size_t> (e - p));
@@ -1143,7 +1143,7 @@ namespace {
         }
         catch (...) {
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
-                (void)::TerminateProcess (processInfo.hProcess, -1); // if it exceeded the timeout - kill it
+                (void)::TerminateProcess (processInfo.hProcess, static_cast<UINT> (-1)); // if it exceeded the timeout - kill it
                 SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER_ (&processInfo.hThread);
             }

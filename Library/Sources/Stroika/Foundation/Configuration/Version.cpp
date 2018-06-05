@@ -40,7 +40,7 @@ Version Version::FromWin32Version4DotString (const Characters::String& win32Vers
     }
     int verStage = static_cast<uint16_t> (verStageOctet) >> 5;
     Assert (verStage == Memory::BitSubstring (verStageOctet, 5, 8)); // really only true cuz verStageOctet SB 8-bits - so if this fails, this answer probably better --LGP 2016-07-08
-    uint16_t verSubStage = static_cast<uint16_t> (Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8);
+    uint16_t verSubStage = static_cast<uint16_t> ((Memory::BitSubstring (verStageOctet, 0, 5) << 7) + Memory::BitSubstring (verSubStageOctet, 1, 8));
     bool     verFinal    = verSubStageOctet & 0x1;
     if (nMatchingItems != 4 or not(ToInt (VersionStage::eSTART) <= verStage and verStage <= ToInt (VersionStage::eLAST))) {
         DbgTrace (L"win32Version4DotString=%s", win32Version4DotString.c_str ());

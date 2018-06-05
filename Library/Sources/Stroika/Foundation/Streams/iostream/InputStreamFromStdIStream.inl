@@ -32,7 +32,7 @@ namespace Stroika {
                     using IStreamType = typename TRAITS::IStreamType;
 
                 private:
-                    static SeekableFlag DefaultSeekable_ (IStreamType& originalStream)
+                    static SeekableFlag DefaultSeekable_ (IStreamType& /*originalStream*/)
                     {
                         // SB something like lseek(fd, CURRENT, 0) not an error, but that doesn't work wtih seekg() on
                         // MSVC2k13. Not sure of a good portable, and yet non-destructive way...

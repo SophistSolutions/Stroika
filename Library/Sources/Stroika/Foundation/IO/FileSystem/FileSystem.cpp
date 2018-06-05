@@ -130,7 +130,7 @@ void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, bool checkCan
     }
 }
 
-Memory::Optional<String> IO::FileSystem::Ptr::FindExecutableInPath (const String& filename) const
+Memory::Optional<String> IO::FileSystem::Ptr::FindExecutableInPath (const String& /*filename*/) const
 {
     // @TODO A
     //   const char* pPath = ::getenv ("PATH");
@@ -238,7 +238,7 @@ String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
 }
 
-String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, bool throwIfComponentsNotFound)
+String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, bool /*throwIfComponentsNotFound*/)
 {
     try {
 #if qPlatform_POSIX
@@ -301,7 +301,7 @@ String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut,
     Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (path2FileOrShortcut, FileAccessMode::eRead);
 }
 
-String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool throwIfComponentsNotFound)
+String IO::FileSystem::Ptr::CanonicalizeName (const String& path2FileOrShortcut, const String& relativeToDirectory, bool /*throwIfComponentsNotFound*/)
 {
     AssertNotImplemented ();
     return path2FileOrShortcut;

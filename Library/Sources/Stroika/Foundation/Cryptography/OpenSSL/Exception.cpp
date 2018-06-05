@@ -117,10 +117,10 @@ void Exception::SetNamesSupported (bool openSSLStringsSupported)
             // nothing todo - just
         }
         else {
-            auto l = sNamesLoaded_.rwget ();
+            auto lNamesLoaded = sNamesLoaded_.rwget ();
             if (static_cast<bool> (l)) {
                 ERR_free_strings ();
-                l = false;
+                lNamesLoaded = false;
             }
         }
         sNamesSupported_ = openSSLStringsSupported;

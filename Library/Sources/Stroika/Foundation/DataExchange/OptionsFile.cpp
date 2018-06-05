@@ -73,7 +73,7 @@ String OptionsFile::LoggerMessage::FormatMessage () const
  ************************** DataExchange::OptionsFile ***************************
  ********************************************************************************
  */
-const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [](const Memory::Optional<Configuration::Version>& version, const VariantValue& rawVariantValue) -> VariantValue {
+const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [](const Memory::Optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue {
     return rawVariantValue;
 };
 
@@ -109,7 +109,7 @@ OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const
         };
 }
 
-const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = [](const String& moduleName) -> Optional<Configuration::Version> {
+const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = []([[maybe_unused]] const String & /*moduleName*/) -> Optional<Configuration::Version> {
     return Optional<Configuration::Version> (); // default to dont know
 };
 

@@ -63,11 +63,11 @@ namespace {
 }
 namespace {
     void PrettyPrint_ (const Options_& options, const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel);
-    void PrettyPrint_Null_ (const Options_& options, const OutputStream<Character>::Ptr& out)
+    void PrettyPrint_Null_ (const Options_& /*options*/, const OutputStream<Character>::Ptr& out)
     {
         out.Write (L"null");
     }
-    void PrettyPrint_ (const Options_& options, bool v, const OutputStream<Character>::Ptr& out)
+    void PrettyPrint_ (const Options_& /*options*/, bool v, const OutputStream<Character>::Ptr& out)
     {
         if (v) {
             out.Write (L"true");
@@ -76,13 +76,13 @@ namespace {
             out.Write (L"false");
         }
     }
-    void PrettyPrint_ (const Options_& options, long long int v, const OutputStream<Character>::Ptr& out)
+    void PrettyPrint_ (const Options_& /*options*/, long long int v, const OutputStream<Character>::Ptr& out)
     {
         wchar_t buf[1024];
         (void)::swprintf (buf, NEltsOf (buf), L"%lld", v);
         out.Write (buf);
     }
-    void PrettyPrint_ (const Options_& options, unsigned long long int v, const OutputStream<Character>::Ptr& out)
+    void PrettyPrint_ (const Options_& /*options*/, unsigned long long int v, const OutputStream<Character>::Ptr& out)
     {
         wchar_t buf[1024];
         (void)::swprintf (buf, NEltsOf (buf), L"%llu", v);

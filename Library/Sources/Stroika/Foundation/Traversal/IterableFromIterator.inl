@@ -134,7 +134,7 @@ namespace Stroika {
                             return fOriginalIterator;
 #endif
                         }
-                        virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
+                        virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
                         {
                             return Iterable<T>::template MakeSharedPtr<Rep> (*this);
                         }

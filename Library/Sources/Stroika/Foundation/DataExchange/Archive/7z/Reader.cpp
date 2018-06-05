@@ -37,7 +37,7 @@ namespace {
 class _7z::Reader::Rep_ : public Reader::_IRep {
 private:
     // could do smarter/block allocation or arena allocation, but KISS for now
-    static void* Alloc_ (void* p, size_t size)
+    static void* Alloc_ (void* /*p*/, size_t size)
     {
         Require (size > 0);
         return new Byte[size];
