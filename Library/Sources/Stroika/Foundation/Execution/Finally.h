@@ -78,7 +78,7 @@ namespace Stroika {
              *
              *  \par Example Usage
              *      \code
-             *          auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
+             *          [[maybe_unused]]auto&& cleanup  =   Finally ([] () noexcept { Require (not sKnownBadBeforeMainOrAfterMain_); });
              *      \endcode
              */
             template <typename FUNCTION>
