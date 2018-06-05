@@ -121,7 +121,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
  ******************* Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
-bool Main::IApplicationRep::HandleCommandLineArgument (const String& s)
+bool Main::IApplicationRep::HandleCommandLineArgument (const String& /*s*/)
 {
     return false;
 }
@@ -319,7 +319,7 @@ void Main::RunDirectly ()
     GetServiceRep_ ()._RunDirectly ();
 }
 
-void Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSecondsType unforcedStopTimeout)
+void Main::ForcedRestart ([[maybe_unused]] Time::DurationSecondsType timeout, [[maybe_unused]] Time::DurationSecondsType unforcedStopTimeout)
 {
     AssertNotImplemented ();
 }
@@ -551,7 +551,7 @@ void Main::RunTilIdleService::_RunDirectly ()
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
 }
 
-void Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
+void Main::RunTilIdleService::_Start ([[maybe_unused]] Time::DurationSecondsType timeout)
 {
     RequireNotNull (fAppRep_); // must call Attach_ first
     shared_ptr<IApplicationRep> appRep = fAppRep_;
@@ -1045,7 +1045,7 @@ void Main::WindowsService::_Start (Time::DurationSecondsType timeout)
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::StartService (hService, dwNumServiceArgs, lpServiceArgVectors));
 }
 
-void Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
+void Main::WindowsService::_Stop ([[maybe_unused]] Time::DurationSecondsType timeout)
 {
     // @todo - timeout not supported
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::_Stop");
@@ -1077,7 +1077,7 @@ void Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
     }
 }
 
-void Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
+void Main::WindowsService::_ForcedStop ([[maybe_unused]] Time::DurationSecondsType timeout)
 {
     AssertNotImplemented ();
 }
@@ -1094,7 +1094,7 @@ pid_t Main::WindowsService::_GetServicePID () const
         });
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    auto&& cleanup2 = Execution::Finally (
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
@@ -1118,7 +1118,7 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
     const DWORD               kServiceMgrAccessPrivs = SERVICE_QUERY_CONFIG;
     SC_HANDLE                 hSCM                   = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    auto&& cleanup1 = Execution::Finally (
+    [[maybe_unused]] auto&& cleanup1 = Execution::Finally (
         [hSCM]() noexcept {
             AssertNotNull (hSCM);
             ::CloseServiceHandle (hSCM);
@@ -1126,7 +1126,7 @@ bool Main::WindowsService::IsInstalled_ () const noexcept
 
     SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
-    auto&& cleanup2 = Execution::Finally (
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally (
         [hService]() noexcept {
             AssertNotNull (hService);
             ::CloseServiceHandle (hService);
@@ -1142,7 +1142,7 @@ void Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept
     ::SetServiceStatus (fServiceStatusHandle_, &fServiceStatus_);
 }
 
-void Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept
+void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_unused]] LPTSTR* lpszArgv) noexcept
 {
     Debug::TraceContextBumper traceCtx ("Stroika::Frameworks::Service::Main::WindowsService::ServiceMain_");
     ///@TODO - FIXUP EXCEPTION HANLDING HERE!!!

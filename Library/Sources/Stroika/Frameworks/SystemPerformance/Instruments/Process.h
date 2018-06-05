@@ -300,7 +300,7 @@ namespace Stroika {
                         /*
                          * Assign nullptr to disable commandline capture.
                          */
-                        FilterFunctionType fCaptureCommandLine{[](pid_t pid, const String& processPath) -> bool { return true; }};
+                        FilterFunctionType fCaptureCommandLine{[](pid_t /*pid*/, const String & /*processPath*/) -> bool { return true; }};
 
                         bool                 fCaptureEnvironmentVariables{true};
                         bool                 fCaptureCurrentWorkingDirectory{true};

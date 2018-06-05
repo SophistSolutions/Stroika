@@ -490,7 +490,7 @@ namespace Stroika {
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
                     return VariantValue (*nameMap.Lookup (*fromObjOfTypeT));
                 };
-                ToObjectMapperType<ENUM_TYPE> toObjectMapper = [nameMap](const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
+                ToObjectMapperType<ENUM_TYPE> toObjectMapper = [nameMap](const ObjectVariantMapper&, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     auto optVal = nameMap.InverseLookup (d.As<String> ());
                     if (not optVal.has_value ()) {

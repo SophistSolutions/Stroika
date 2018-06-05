@@ -787,13 +787,13 @@ namespace {
                 }
 
                 {
-                    ULARGE_INTEGER freeBytesAvailable{};
-                    ULARGE_INTEGER totalNumberOfBytes{};
-                    ULARGE_INTEGER totalNumberOfFreeBytes{};
-                    DWORD          xxx      = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
-                    v.fSizeInBytes          = totalNumberOfBytes.QuadPart;
-                    v.fUsedSizeInBytes      = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
-                    v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
+                    ULARGE_INTEGER         freeBytesAvailable{};
+                    ULARGE_INTEGER         totalNumberOfBytes{};
+                    ULARGE_INTEGER         totalNumberOfFreeBytes{};
+                    [[maybe_unused]] DWORD xxx = ::GetDiskFreeSpaceEx (mfinfo.fMountedOn.AsSDKString ().c_str (), &freeBytesAvailable, &totalNumberOfBytes, &totalNumberOfFreeBytes);
+                    v.fSizeInBytes             = totalNumberOfBytes.QuadPart;
+                    v.fUsedSizeInBytes         = *v.fSizeInBytes - freeBytesAvailable.QuadPart;
+                    v.fAvailableSizeInBytes    = *v.fSizeInBytes - *v.fUsedSizeInBytes;
 #if qUseWMICollectionSupport_
                     auto safePctInUse2QL_ = [](double pctInUse) {
                         // %InUse = QL / (1 + QL).

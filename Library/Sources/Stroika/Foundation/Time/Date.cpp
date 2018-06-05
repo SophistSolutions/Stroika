@@ -623,7 +623,7 @@ String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
     }
 }
 
-String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool allowMonths, bool abbrevUnit)
+String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool abbrevUnit)
 {
     if (birthDate.empty ()) {
         return String_Constant (L"?");

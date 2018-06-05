@@ -250,7 +250,6 @@ namespace {
                 DbgTrace (L"CreateToolhelp32Snapshot failed: %d", ::GetLastError ());
                 return;
             }
-            unsigned int cnt = 0;
             // Now walk the thread list of the system,
             do {
                 fThreads_.Add (te32.th32OwnerProcessID);

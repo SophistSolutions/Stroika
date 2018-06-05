@@ -143,8 +143,5 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
                 advertisement->fAlive = false;
             }
         }
-        else {
-            int hreab = 1;
-        }
     }
 }

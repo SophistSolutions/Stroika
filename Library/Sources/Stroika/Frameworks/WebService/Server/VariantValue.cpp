@@ -139,7 +139,7 @@ Sequence<DataExchange::VariantValue> Server::VariantValue::OrderParamValues (con
  ***************** WebService::Server::VariantValue::WriteResponse **************
  ********************************************************************************
  */
-void Server::VariantValue::WriteResponse (Response* response, const WebServiceMethodDescription& webServiceDescription)
+void Server::VariantValue::WriteResponse ([[maybe_unused]] Response* response, [[maybe_unused]] const WebServiceMethodDescription& webServiceDescription)
 {
     // nothing todo to write empty (void) response
 }
@@ -158,7 +158,7 @@ void Server::VariantValue::WriteResponse (Response* response, const WebServiceMe
  **************** WebService::Server::VariantValue::mkRequestHandler ************
  ********************************************************************************
  */
-WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<Memory::BLOB (WebServer::Message* m)>& f)
+WebServer::RequestHandler Server::VariantValue::mkRequestHandler (const WebServiceMethodDescription& webServiceDescription, [[maybe_unused]] const DataExchange::ObjectVariantMapper& objVarMapper, const function<Memory::BLOB (WebServer::Message* m)>& f)
 {
     return [=](WebServer::Message* m) {
         ExpectedMethod (m->GetRequestReference (), webServiceDescription);

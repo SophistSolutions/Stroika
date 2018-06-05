@@ -520,8 +520,8 @@ namespace Stroika {
             int                       YearDifference (const Date& lhs, const Date& rhs);
             float                     YearDifferenceF (const Date& lhs, const Date& rhs);
 
-            String GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());                                                          // returns ? if not a good src date
-            String GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool allowMonths = true, bool abbrevUnit = true); // returns ? if not a good src date
+            String GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());                                 // returns ? if not a good src date
+            String GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool abbrevUnit = true); // returns ? if not a good src date
         }
     }
 }
