@@ -80,7 +80,7 @@ namespace {
             RequireNotNull (fromObjOfTypeT);
             return VariantValue (static_cast<UseVariantType> (*fromObjOfTypeT));
         };
-        ToObjectMapperType<T> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, T* intoObjOfTypeT) -> void {
+        ToObjectMapperType<T> toObjectMapper = [](const ObjectVariantMapper&, const VariantValue& d, T* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             *intoObjOfTypeT = static_cast<T> (d.As<UseVariantType> ());
         };
@@ -90,10 +90,10 @@ namespace {
 
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const void*)
 {
-    FromObjectMapperType<void> fromObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, [[maybe_unused]] const void* fromObjOfTypeT) -> VariantValue {
+    FromObjectMapperType<void> fromObjectMapper = [](const ObjectVariantMapper&, const void*) -> VariantValue {
         return VariantValue{};
     };
-    ToObjectMapperType<void> toObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, [[maybe_unused]] const VariantValue& d, [[maybe_unused]] void* intoObjOfTypeT) -> void {
+    ToObjectMapperType<void> toObjectMapper = [](const ObjectVariantMapper&, const VariantValue&, void*) -> void {
     };
     return TypeMappingDetails{typeid (void), fromObjectMapper, toObjectMapper};
 }
@@ -203,10 +203,10 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Characters::String>
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<VariantValue> ()
 {
-    FromObjectMapperType<VariantValue> fromObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue* fromObjOfTypeT) -> VariantValue {
+    FromObjectMapperType<VariantValue> fromObjectMapper = [](const ObjectVariantMapper&, const VariantValue* fromObjOfTypeT) -> VariantValue {
         return *fromObjOfTypeT;
     };
-    ToObjectMapperType<VariantValue> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, VariantValue* intoObjOfTypeT) -> void {
+    ToObjectMapperType<VariantValue> toObjectMapper = [](const ObjectVariantMapper&, const VariantValue& d, VariantValue* intoObjOfTypeT) -> void {
         *reinterpret_cast<VariantValue*> (intoObjOfTypeT) = d;
     };
     return TypeMappingDetails{typeid (VariantValue), fromObjectMapper, toObjectMapper};
@@ -227,10 +227,10 @@ TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
 template <>
 TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
 {
-    FromObjectMapperType<Time::TimeOfDay> fromObjectMapper = [](const ObjectVariantMapper& mapper, const Time::TimeOfDay* fromObjOfTypeT) -> VariantValue {
+    FromObjectMapperType<Time::TimeOfDay> fromObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, const Time::TimeOfDay* fromObjOfTypeT) -> VariantValue {
         return VariantValue (fromObjOfTypeT->GetAsSecondsCount ());
     };
-    ToObjectMapperType<Time::TimeOfDay> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, Time::TimeOfDay* intoObjOfTypeT) -> void {
+    ToObjectMapperType<Time::TimeOfDay> toObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, Time::TimeOfDay* intoObjOfTypeT) -> void {
         *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay (d.As<uint32_t> ());
     };
     return TypeMappingDetails{typeid (TimeOfDay), fromObjectMapper, toObjectMapper};

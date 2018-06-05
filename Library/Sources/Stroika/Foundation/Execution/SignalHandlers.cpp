@@ -380,7 +380,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
         Require (SafeSignalsManager::sTheRep_ != nullptr);
     }
 
-    auto sigSetHandler = [](SignalID signal, void (*fun) (int)) {
+    auto sigSetHandler = [](SignalID signal, [[maybe_unused]] void (*fun) (int)) {
 #if qPlatform_POSIX
         struct sigaction sa {
         };
@@ -414,7 +414,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
             Platform::POSIX::ScopedBlockCurrentThreadSignal blockAllSignals2ThisThread{};
 #endif
         Again:
-            auto&& cleanup = Finally ([this]() noexcept { fDirectSignalHandlersCache_Lock_--; });
+            [[maybe_unused]] auto&& cleanup = Finally ([this]() noexcept { fDirectSignalHandlersCache_Lock_--; });
             if (fDirectSignalHandlersCache_Lock_++ == 0) {
                 fDirectSignalHandlersCache_[signal] = shs;
             }
@@ -618,7 +618,7 @@ void SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
          */
         Require (0 <= signal and signal < static_cast<SignalID> (NEltsOf (SHR.fDirectSignalHandlersCache_)));
     Again:
-        auto&& cleanup = Finally ([&SHR]() noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
+        [[maybe_unused]] auto&& cleanup = Finally ([&SHR]() noexcept { SHR.fDirectSignalHandlersCache_Lock_--; });
         if (SHR.fDirectSignalHandlersCache_Lock_++ == 0) {
             const vector<function<void(SignalID)>>* shs = &SHR.fDirectSignalHandlersCache_[signal];
             for (auto shi = shs->begin (); shi != shs->end (); ++shi) {

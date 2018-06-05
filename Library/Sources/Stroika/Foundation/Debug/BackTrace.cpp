@@ -29,7 +29,7 @@ using namespace Stroika::Foundation::Characters;
  ********************************* Debug::BackTrace *****************************
  ********************************************************************************
  */
-wstring Debug::BackTrace (unsigned int maxFrames)
+wstring Debug::BackTrace ([[maybe_unused]] unsigned int maxFrames)
 {
 #if qPlatform_Linux
     // @see http://man7.org/linux/man-pages/man3/backtrace.3.html

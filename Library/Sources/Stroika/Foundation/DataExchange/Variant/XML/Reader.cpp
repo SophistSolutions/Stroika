@@ -46,7 +46,7 @@ public:
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextReader::New (in));
     }
-    virtual VariantValue Read (const Streams::InputStream<Character>::Ptr& in) override
+    virtual VariantValue Read ([[maybe_unused]] const Streams::InputStream<Character>::Ptr& in) override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx ("DataExchange::XML::Reader::Rep_::Read");

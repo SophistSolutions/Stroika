@@ -70,8 +70,8 @@ namespace Stroika {
                          */
                         {
                             // TEST POSSIBLE FIX/WORKAROUND FOR https://stroika.atlassian.net/browse/STK-629
-                            Time::DurationSecondsType remaining = timeoutAt - Time::GetTickCount ();
-                            if (remaining < 0) {
+                            Time::DurationSecondsType stillRemaining = timeoutAt - Time::GetTickCount ();
+                            if (stillRemaining < 0) {
                                 return cv_status::timeout;
                             }
                             return std::cv_status::no_timeout; // can be spurious wakeup, or real, no way to know

@@ -48,9 +48,9 @@ namespace Stroika {
                     Require (IsOpenRead ());
                     return fRealIn_.GetOffset ();
                 }
-                virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
+                virtual SeekOffsetType SeekRead ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) override
                 {
-                    RequireNotReached ();
+                    RequireNotReached (); // not seekable (could fix)
                     Require (IsOpenRead ());
                     return 0;
                 }

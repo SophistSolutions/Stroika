@@ -83,7 +83,7 @@ Characters::String Execution::SignalToName (SignalID signal)
  **************************** Execution::SendSignal *****************************
  ********************************************************************************
  */
-errno_t Execution::SendSignal (std::thread::native_handle_type target, SignalID signal)
+errno_t Execution::SendSignal (std::thread::native_handle_type target, [[maybe_unused]] SignalID signal)
 {
 #if qPlatform_POSIX
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Stroika::Foundation::Execution::Signals::Execution::SendSignal", L"target = 0x%llx, signal = %s", (unsigned long long)(target), SignalToName (signal).c_str ())};

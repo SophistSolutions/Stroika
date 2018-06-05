@@ -427,7 +427,7 @@ namespace Stroika {
                             , fBijection_ (b)
                         {
                         }
-                        virtual Iterator<DOMAIN_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
                             auto getNext   = [myContext]() -> Memory::Optional<DOMAIN_TYPE> {
@@ -475,7 +475,7 @@ namespace Stroika {
                             , fBijection_ (b)
                         {
                         }
-                        virtual Iterator<RANGE_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
                             auto getNext   = [myContext]() -> Memory::Optional<RANGE_TYPE> {

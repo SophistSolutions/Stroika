@@ -1173,7 +1173,7 @@ string Execution::FormatThreadID_A (Thread::IDType threadID)
     constexpr size_t kSizeOfThreadID_ = sizeof (Thread::IDType);
 #endif
 
-    if (kSizeOfThreadID_ >= sizeof (uint64_t)) {
+    if constexpr (kSizeOfThreadID_ >= sizeof (uint64_t)) {
         uint64_t threadIDInt = 0;
         out >> threadIDInt;
         return Characters::CString::Format ("0x%016llx", threadIDInt);

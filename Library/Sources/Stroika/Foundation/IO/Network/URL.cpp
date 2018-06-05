@@ -173,8 +173,7 @@ URL URL::Parse (const String& w, ParseOptions po)
 
     size_t i = 0;
     {
-        size_t len = w.length ();
-        i          = hostNameStart;
+        i = hostNameStart;
 
         /*
          *  According to they BFN in http://www.ietf.org/rfc/rfc1738.txt, the hostname is required, and must contain

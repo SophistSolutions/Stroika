@@ -61,22 +61,22 @@ void WaitForIOReady::Add (FileDescriptorType fd, const TypeOfMonitorSet& flags)
     fPollData_.rwget ()->Add (pair<FileDescriptorType, TypeOfMonitorSet>{fd, flags});
 }
 
-void WaitForIOReady::Remove (FileDescriptorType fd)
+void WaitForIOReady::Remove ([[maybe_unused]] FileDescriptorType fd)
 {
     AssertNotImplemented ();
 }
 
-void WaitForIOReady::Remove (FileDescriptorType fd, const TypeOfMonitorSet& flags)
+void WaitForIOReady::Remove ([[maybe_unused]] FileDescriptorType fd, [[maybe_unused]] const TypeOfMonitorSet& flags)
 {
     AssertNotImplemented ();
 }
 
-void WaitForIOReady::RemoveAll (const Traversal::Iterable<FileDescriptorType>& fds)
+void WaitForIOReady::RemoveAll ([[maybe_unused]] const Traversal::Iterable<FileDescriptorType>& fds)
 {
     AssertNotImplemented ();
 }
 
-void WaitForIOReady::RemoveAll (const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
+void WaitForIOReady::RemoveAll ([[maybe_unused]] const Traversal::Iterable<pair<FileDescriptorType, TypeOfMonitorSet>>& fds)
 {
     AssertNotImplemented ();
 }

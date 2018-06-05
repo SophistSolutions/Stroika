@@ -447,7 +447,7 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
         }
         else {
             Synchronized<Memory::Optional<ProcessResultType>> pr;
-            auto&&                                            cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            [[maybe_unused]] auto&&                           cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
             CreateRunnable_ (&pr, nullptr, progress) ();
         }
     }
@@ -460,7 +460,7 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
         }
         else {
             Synchronized<Memory::Optional<ProcessResultType>> pr;
-            auto&&                                            cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            [[maybe_unused]] auto&&                           cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
             Thread::Ptr                                       t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
             t.WaitForDone (timeout);
             t.ThrowIfDoneWithException ();
@@ -1317,9 +1317,9 @@ pid_t Execution::DetachedProcessRunner (const String& executable, const Containe
     }
 #elif qPlatform_Windows
     PROCESS_INFORMATION processInfo{};
-    processInfo.hProcess = INVALID_HANDLE_VALUE;
-    processInfo.hThread  = INVALID_HANDLE_VALUE;
-    auto&& cleanup       = Finally (
+    processInfo.hProcess            = INVALID_HANDLE_VALUE;
+    processInfo.hThread             = INVALID_HANDLE_VALUE;
+    [[maybe_unused]] auto&& cleanup = Finally (
         [&processInfo]() noexcept {
             SAFE_HANDLE_CLOSER_ (&processInfo.hProcess);
             SAFE_HANDLE_CLOSER_ (&processInfo.hThread);

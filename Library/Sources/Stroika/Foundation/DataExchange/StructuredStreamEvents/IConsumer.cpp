@@ -21,14 +21,14 @@ void IConsumer::EndDocument ()
 {
 }
 
-void IConsumer::StartElement (const Name& name)
+void IConsumer::StartElement ([[maybe_unused]] const Name& name)
 {
 }
 
-void IConsumer::EndElement (const Name& name)
+void IConsumer::EndElement ([[maybe_unused]] const Name& name)
 {
 }
 
-void IConsumer::TextInsideElement (const String& text)
+void IConsumer::TextInsideElement ([[maybe_unused]] const String& text)
 {
 }

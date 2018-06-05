@@ -249,7 +249,7 @@ namespace {
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }
-        Assert (i == keyLen);
+        Assert (i == static_cast<int> (keyLen));
         return pair<BLOB, BLOB> (BLOB (useKey.begin (), useKey.end ()), BLOB (useIV.begin (), useIV.end ()));
     }
 }
