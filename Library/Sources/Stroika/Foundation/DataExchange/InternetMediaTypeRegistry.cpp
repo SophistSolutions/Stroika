@@ -219,14 +219,14 @@ namespace {
 #endif
 /*
  ********************************************************************************
- *************************** MimeTypes::Private::INIT ***************************
+ *************************** InternetMediaTypeRegistry **************************
  ********************************************************************************
  */
 
 Optional<FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
 {
 #if qPlatform_Windows
-    return GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension"));
+    return GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()));
 #else
     AssertNotImplemented ();
     return {};
