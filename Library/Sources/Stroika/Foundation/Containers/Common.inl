@@ -67,29 +67,29 @@ namespace Stroika {
             }
 
             template <typename CONTAINER>
-            inline size_t ReserveSpeedTweekAddNCapacity (const CONTAINER& c, size_t n, size_t kMinChunk)
+            inline size_t ReserveSpeedTweekAddNCapacity (const CONTAINER& c, size_t n, size_t minChunk)
             {
                 size_t size{c.size () + n};
                 size_t capacity{c.capacity ()};
                 if (size >= capacity) {
-                    return ReserveSpeedTweekAdjustCapacity (size);
+                    return ReserveSpeedTweekAdjustCapacity (size, minChunk);
                 }
                 return static_cast<size_t> (-1);
             }
 
             template <typename CONTAINER>
-            inline void ReserveSpeedTweekAddN (CONTAINER& c, size_t n, size_t kMinChunk)
+            inline void ReserveSpeedTweekAddN (CONTAINER& c, size_t n, size_t minChunk)
             {
-                size_t size = ReserveSpeedTweekAddNCapacity (c, n, kMinChunk);
+                size_t size = ReserveSpeedTweekAddNCapacity (c, n, minChunk);
                 if (size != -1) {
                     c.reserve (size);
                 }
             }
 
             template <typename CONTAINER>
-            inline void ReserveSpeedTweekAdd1 (CONTAINER& c, size_t kMinChunk)
+            inline void ReserveSpeedTweekAdd1 (CONTAINER& c, size_t minChunk)
             {
-                ReserveSpeedTweekAddN (c, 1, kMinChunk);
+                ReserveSpeedTweekAddN (c, 1, minChunk);
             }
         }
     }
