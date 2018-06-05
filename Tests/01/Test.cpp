@@ -152,18 +152,6 @@ namespace {
     }
 }
 
-#pragma warning(default : 4263)
-#pragma warning(default : 4266)
-namespace {
-    struct b {
-        int f1 () { return 1; }
-        virtual int f2 () { return 1; }
-    };
-    struct der : b {
-        int         f1 ()  { return 1; }
-        virtual int f2 ()  { return 1; }
-    };
-}
 int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     Stroika::TestHarness::Setup ();
