@@ -484,7 +484,7 @@ namespace Stroika {
                 static_assert (std::is_enum<ENUM_TYPE>::value, "MakeCommonSerializer_NamedEnumerations only works for enum types");
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
-                FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [nameMap](const ObjectVariantMapper& , const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
+                FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [nameMap](const ObjectVariantMapper&, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
