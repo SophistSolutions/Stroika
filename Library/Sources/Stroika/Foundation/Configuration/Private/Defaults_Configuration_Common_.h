@@ -107,18 +107,6 @@
 #define qSilenceAnnoyingCompilerWarnings 1
 #endif
 
-/**
- *      qSupportDeprecatedStroikaFeatures
- *
- *      This will be set to off for the near future, but once Stroika stabalizes, this can be used
- *  when new features are added to deprecate older code. Compatability can be written conditionally
- *  and users can transition thier Stroika-based code by temporarily turning this on, when they
- *  upgrade to a new Stroika version.
- */
-#ifndef qSupportDeprecatedStroikaFeatures
-#define qSupportDeprecatedStroikaFeatures 0
-#endif
-
 #if qPlatform_Windows
 // Too many differnt compoents have quirky dependencies about what to include in what order.
 // This define helps mittigate that problem.
