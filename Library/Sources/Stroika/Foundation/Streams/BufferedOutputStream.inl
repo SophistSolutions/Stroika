@@ -88,9 +88,9 @@ namespace Stroika {
                     Require (IsOpenWrite ());
                     return 0;
                 }
-                virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
+                virtual SeekOffsetType SeekWrite ([[maybe_unused]] Whence whence, [[maybe_unused]] SignedSeekOffsetType offset) override
                 {
-                    RequireNotReached ();
+                    RequireNotReached (); // cuz we ar enot seekable, but could be changed/improved
                     Require (IsOpenWrite ());
                     return 0;
                 }

@@ -162,7 +162,7 @@ namespace Stroika {
             namespace Private_ {
                 template <typename TC>
                 // @todo see if we can make this constexpr somehow?
-                const inline TC mkCompareEpsilon_ (TC l, TC r)
+                const inline TC mkCompareEpsilon_ (TC l, [[maybe_unused]] TC r)
                 {
                     static_assert (std::is_floating_point<TC>::value, "can only be used for float values");
 #if 1

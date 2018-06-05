@@ -18,7 +18,7 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 
-bool Execution::IsProcessRunning (pid_t pid)
+bool Execution::IsProcessRunning ([[maybe_unused]] pid_t pid)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper traceCtx (L"Stroika::Foundation::Execution::IsProcessRunning", L"pid=%d", pid);

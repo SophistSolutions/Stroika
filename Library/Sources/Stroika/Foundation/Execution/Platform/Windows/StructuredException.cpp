@@ -49,7 +49,7 @@ void Execution::Platform::Windows::StructuredException::trans_func_ (unsigned in
         DbgTrace (SDKSTR ("u = 0x%x (%s)"), u, LookupMessage (u).c_str ());
         if (pExp != nullptr) {
             if (pExp->ContextRecord != nullptr) {
-                TraceContextBumper ctx ("ContextRecord");
+                TraceContextBumper ctx1 ("ContextRecord");
                 DbgTrace ("ContextRecord->ContextFlags = 0x%x", pExp->ContextRecord->ContextFlags);
                 DbgTrace ("ContextRecord->Dr0 = 0x%x", pExp->ContextRecord->Dr0);
 #if qPlatform_Win32
@@ -57,7 +57,7 @@ void Execution::Platform::Windows::StructuredException::trans_func_ (unsigned in
 #endif
             }
             if (pExp->ExceptionRecord != nullptr) {
-                TraceContextBumper ctx ("ExceptionRecord");
+                TraceContextBumper ctx1 ("ExceptionRecord");
                 DbgTrace ("ExceptionRecord->ExceptionAddress = 0x%x", pExp->ExceptionRecord->ExceptionAddress);
                 DbgTrace ("ExceptionRecord->ExceptionCode = 0x%x", pExp->ExceptionRecord->ExceptionCode);
                 DbgTrace ("ExceptionRecord->ExceptionFlags = 0x%x", pExp->ExceptionRecord->ExceptionFlags);

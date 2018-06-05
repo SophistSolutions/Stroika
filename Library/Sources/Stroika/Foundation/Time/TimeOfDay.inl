@@ -21,7 +21,7 @@ namespace Stroika {
              ********************************************************************************
              */
             inline constexpr TimeOfDay::TimeOfDay ()
-                : fTime_ (-1)
+                : fTime_{static_cast<unsigned int> (-1)}
             {
                 Assert (empty () or fTime_ < kMaxSecondsPerDay);
             }
@@ -57,7 +57,7 @@ namespace Stroika {
             {
                 uint32_t n = GetAsSecondsCount () / (60 * 60);
                 Ensure (0 <= n and n <= 23);
-                return n;
+                return static_cast<uint8_t> (n);
             }
             inline uint8_t TimeOfDay::GetMinutes () const
             {
@@ -65,7 +65,7 @@ namespace Stroika {
                 n -= GetHours () * 60 * 60;
                 n /= 60;
                 Ensure (0 <= n and n <= 59);
-                return n;
+                return static_cast<uint8_t> (n);
             }
             inline uint8_t TimeOfDay::GetSeconds () const
             {
@@ -73,7 +73,7 @@ namespace Stroika {
                 n -= GetHours () * 60 * 60;
                 n -= GetMinutes () * 60;
                 Ensure (0 <= n and n <= 59);
-                return n;
+                return static_cast<uint8_t> (n);
             }
             inline String TimeOfDay::ToString () const
             {

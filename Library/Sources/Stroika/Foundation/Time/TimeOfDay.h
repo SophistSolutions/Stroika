@@ -101,7 +101,7 @@ namespace Stroika {
                 /**
                  * NB: The maximum value in a TimeOfDay struct is one less than kMaxSecondsPerDay
                  */
-                static constexpr uint32_t kMaxSecondsPerDay = 60 * 60 * 24; // nb: 86400: wont fit in uint16_t
+                static constexpr uint32_t kMaxSecondsPerDay = 60 * 60 * 24u; // nb: 86400: wont fit in uint16_t
 
             public:
                 /**

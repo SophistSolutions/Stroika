@@ -109,7 +109,7 @@ SDKString Execution::GetEXEPathT ()
 #endif
 }
 
-String Execution::GetEXEPath (pid_t processID)
+String Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
 {
 #if qPlatform_MacOS
     char pathbuf[PROC_PIDPATHINFO_MAXSIZE];
