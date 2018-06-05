@@ -1121,6 +1121,18 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
+#if qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER)
+// Our pattern of
+//      AssertNotReached();
+//      return x;
+//  generates this warning:
+//       warning C4702: unreachable code
+// and we do this all over the place. The issue is that the assert if debug is true expands to [[noreturn]]
+//  and if debug is false, expands to nothing. So the compiler sees differnt expectations of whether you ever get the the line
+//  return x;
+#pragma warning(disable : 4702)
+#endif
+
 // doesn't seem any portable way todo this, and not defined in C++ language
 // Note - this doesn't appear in http://en.cppreference.com/w/cpp/language/attributes - as of 2016-06-22
 #if defined(__clang__) || defined(__GNUC__)
