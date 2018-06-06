@@ -71,9 +71,6 @@ namespace {
                 if (label.Compare (L"ST", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     da.fTarget = value;
                 }
-                else {
-                    int hreab = 1;
-                }
             }
 
             bool matches = false;
