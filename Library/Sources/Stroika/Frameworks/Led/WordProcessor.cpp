@@ -3686,7 +3686,6 @@ void WordProcessor::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentR
         if (GetShowParagraphGlyphs ()) {
             // check for the last row of a partitionelement, and if we hit it - patch the text and rowEnd guys..
             PartitionElementCacheInfo pmCacheInfo = GetPartitionElementCacheInfo (GetPartitionMarkerContainingPosition (rowStart));
-            RowReference              row         = GetRowReferenceContainingPosition (rowStart);
             if (row.GetSubRow () + 1 == pmCacheInfo.GetRowCount () and rowEnd < GetEnd ()) {
                 const Led_tChar       newline            = '\n';
                 Led_FontSpecification nextCharsFontStyle = GetStyleInfo (rowEnd);
@@ -6202,7 +6201,7 @@ bool Table::OnUpdateCommand (TextInteractor::CommandUpdater* enabler)
     if (GetIntraCellMode (&row, &col)) {
         if (fCurrentOwningWP->PassAlongCommandToIntraCellModeTableCell (enabler->GetCmdID ())) {
             TemporarilyAllocateCellWithTablet wp (*this, row, col);
-            bool                              result = wp->OnUpdateCommand (enabler);
+            [[maybe_unused]] bool             result = wp->OnUpdateCommand (enabler);
             if (enabler->GetCmdID () == kSelectedEmbeddingProperties_CmdID and not enabler->GetEnabled ()) {
                 // SPR#1487: so default command handling will take care of it and we'll see the properties command
                 return false;

@@ -767,7 +767,6 @@ Led_tString StyledTextIOReader_HTML::MapInputTextToTString (const string& text)
 {
 #if qWideCharacters
     Memory::SmallStackBuffer<Led_tChar> wBuf (text.length () + 1);
-    size_t                              charsRead = 0;
     CodePageConverter                   cpc (kCodePage_ANSI);
     size_t                              outCharCnt = text.length ();
     cpc.MapToUNICODE (text.c_str (), text.length (), wBuf, &outCharCnt);

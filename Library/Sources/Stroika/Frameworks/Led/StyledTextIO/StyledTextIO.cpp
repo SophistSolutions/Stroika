@@ -580,7 +580,7 @@ void StyledTextIOSrcStream_FileDescriptor::SetBufferSize (size_t bufSize)
     }
 }
 
-void StyledTextIOSrcStream_FileDescriptor::ReadInWindow (size_t startAt)
+void StyledTextIOSrcStream_FileDescriptor::ReadInWindow ([[maybe_unused]] size_t startAt)
 {
     RequireNotNull (fInputBuffer);
     Require (fInputBufferSize > 0);

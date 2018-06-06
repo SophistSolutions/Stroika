@@ -92,9 +92,7 @@ void SimpleTextImager::MyPartitionWatcher::DidCoalece (void* infoRecord) const n
  ********************************************************************************
  */
 SimpleTextImager::SimpleTextImager ()
-    : TextImager ()
-    , PartitioningTextImager ()
-    , fICreatedPartition (false)
+    : fICreatedPartition (false)
     , fMyPartitionWatcher ()
     , fRowHeight (Led_Distance (-1))
     , fInterlineSpace (0)
@@ -520,7 +518,6 @@ void SimpleTextImager::Draw (const Led_Rect& subsetToDraw, bool printing)
     }
 
     try {
-        size_t       rowNumberInWindow = 0;
         size_t       totalRowsInWindow = GetTotalRowsInWindow_ ();
         RowReference topRowInWindow    = GetTopRowReferenceInWindow ();
         size_t       rowsLeftInWindow  = totalRowsInWindow;
@@ -896,7 +893,7 @@ void SimpleTextImager::GetStableTypingRegionContaingMarkerRange (size_t fromMark
             end--;
         }
 
-        size_t len = end - start;
+        //size_t len = end - start;
 
         // If we are strictly before the first row, we won't appear later...
         if (curTopRowRelativeRowNumber == 0 and (fromMarkerPos < start)) {

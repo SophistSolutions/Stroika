@@ -195,7 +195,6 @@ void SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
     Invariant ();
 
     Assert (fLength >= howMany);
-    size_t newBufSize    = fLength - howMany;
     size_t howManyToMove = fLength - (after + howMany);
     Assert (howManyToMove <= fLength);
     Assert (howManyToMove + after <= fLength);
@@ -209,7 +208,6 @@ void SimpleTextStore::DeleteAfter_ (size_t howMany, size_t after)
         size_t  len   = mi->GetLength ();
         size_t  end   = start + len;
         if (after < start) {
-            size_t newStart = start;
             if (howMany + after <= start) {
                 Assert (start >= howMany);
                 OurStuff (mi)->fStart = start - howMany;

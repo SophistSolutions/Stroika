@@ -57,7 +57,7 @@ using namespace Stroika::Frameworks::Led::StyledTextIO;
 inline int ConvertReadSingleHexDigit (char digit)
 {
     if (isupper (digit)) {
-        digit = tolower (digit);
+        digit = static_cast<char> (tolower (digit));
     }
     if (isdigit (digit)) {
         return digit - '0';
@@ -198,7 +198,7 @@ RTFIO::FontTableEntry::FontTableEntry ()
     : fFontName ()
     , fFNum (-1)
     , fFamily (eNil)
-    , fCharSet (-1)
+    , fCharSet (static_cast<Byte> (-1))
     , fPitch (0)
     , fCodePage (0)
 {
@@ -4977,7 +4977,7 @@ void StyledTextIOWriter_RTF::WriteFontTablesEntry (const FontTableEntry& entry)
             break;
     }
 
-    if (entry.fCharSet != -1) {
+    if (entry.fCharSet != static_cast<Byte> (-1)) {
         WriteTagNValue ("fcharset", entry.fCharSet);
     }
 

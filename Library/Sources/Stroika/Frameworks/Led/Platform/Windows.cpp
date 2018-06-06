@@ -239,7 +239,7 @@ namespace Stroika {
                     // ignore if already started
                     if (fTimerID == 0) {
                         int timeout = static_cast<int> (fSuggestedFrequency * 1000); // cvt specified frequency to milliseconds
-                        Verify (fTimerID = ::SetTimer (fIdleWnd, eTimerEventID, timeout, NULL));
+                        Verify ((fTimerID = ::SetTimer (fIdleWnd, eTimerEventID, timeout, NULL)) != 0);
                     }
                 }
 

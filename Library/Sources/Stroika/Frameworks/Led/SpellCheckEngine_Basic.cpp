@@ -178,7 +178,7 @@ bool SpellCheckEngine_Basic::LookupWord_ (const Led_tString& checkWord, Led_tStr
          */
         if (checkWord[0] < 127 and isupper (checkWord[0])) {
             Led_tString w2 = checkWord;
-            w2[0]          = tolower (w2[0]);
+            w2[0]          = static_cast<char> (tolower (w2[0]));
             if (LookupWordHelper_ (w2, matchedWordResult)) {
                 return true;
             }
@@ -192,7 +192,7 @@ bool SpellCheckEngine_Basic::LookupWord_ (const Led_tString& checkWord, Led_tStr
                 Led_tString caseFixedWord = checkWord;
                 for (auto i = caseFixedWord.begin (); i != caseFixedWord.end (); ++i) {
                     if (IsASCIIUpper (*i)) {
-                        *i = tolower (*i);
+                        *i = static_cast<char> (tolower (*i));
                     }
                     else {
                         allUpper = false;
@@ -464,7 +464,7 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
                 {
                     for (size_t i = 0; i < newWord.length (); ++i) {
                         if (Character (newWord[i]).IsAlphabetic ()) {
-                            newWord[i] = toupper (newWord[i]);
+                            newWord[i] = static_cast<char> (toupper (newWord[i]));
                         }
                     }
                 }
@@ -476,7 +476,7 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
                 Led_tString newWord = topSug;
                 {
                     if (Character (newWord[0]).IsAlphabetic ()) {
-                        newWord[0] = toupper (newWord[0]);
+                        newWord[0] = static_cast<char> (toupper (newWord[0]));
                     }
                 }
                 float newScore = topSugScores[0];
@@ -678,8 +678,7 @@ void SpellCheckEngine_Basic::Invariant_ () const
 {
     Assert (sizeof (InfoBlock) == sizeof (int)); // Not a REAL requirement - but we want to make sure - for the most part - the
     // compiler lays this out for us to be SMALL.
-    for (auto i = fDictionaries.begin (); i != fDictionaries.end (); ++i) {
-        const Dictionary* dict = *i;
+    for (const Dictionary* dict : fDictionaries) {
         AssertNotNull (dict);
         const InfoBlock* ibsStart = NULL;
         const InfoBlock* ibsEnd   = NULL;
@@ -703,8 +702,7 @@ void SpellCheckEngine_Basic::Invariant_ () const
                     // Assure words in alphabetical order
                     Assert (Led_tStrCmp (prevWord.c_str (), w.c_str ()) < 0);
                 }
-                prevWord      = w;
-                int breakHere = 1; // break here to look at each word
+                prevWord = w;
             }
         }
     }

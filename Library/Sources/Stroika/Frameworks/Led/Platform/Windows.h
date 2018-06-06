@@ -576,8 +576,7 @@ namespace Stroika {
                 //  class   Led_Win32_Helper<BASE_INTERACTOR>
                 template <typename BASE_INTERACTOR>
                 Led_Win32_Helper<BASE_INTERACTOR>::Led_Win32_Helper ()
-                    : BASE_INTERACTOR ()
-                    , fAccumulatedWheelDelta (0)
+                    : fAccumulatedWheelDelta (0)
                     , fDefaultWindowMargins ()
                     , fControlArrowsScroll (false)
                     , fFunnyMSPageUpDownAdjustSelectionBehavior (true)
@@ -697,7 +696,7 @@ namespace Stroika {
                         nChar = '\b';
                     }
 
-                    OnTypedNormalCharacter (nChar, false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
+                    OnTypedNormalCharacter (static_cast<Led_tChar> (nChar), false, !!(::GetKeyState (VK_SHIFT) & 0x8000), false, !!(::GetKeyState (VK_CONTROL) & 0x8000), !!(::GetKeyState (VK_MENU) & 0x8000));
 
 #if qSupportWindowsSDKCallbacks
                     HWND hWnd = GetValidatedHWND ();
@@ -1202,7 +1201,7 @@ namespace Stroika {
 #endif
                 }
                 template <typename BASE_INTERACTOR>
-                bool Led_Win32_Helper<BASE_INTERACTOR>::OnEraseBkgnd_Msg (HDC hDC)
+                bool Led_Win32_Helper<BASE_INTERACTOR>::OnEraseBkgnd_Msg ([[maybe_unused]] HDC hDC)
                 {
                     // We don't need our background erased - we take care of that when we draw
                     // Allowing it to be erased just produces flicker...
@@ -2693,7 +2692,7 @@ namespace Stroika {
                 template <typename BASECLASS>
                 LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgLineScroll (WPARAM wParam, LPARAM lParam)
                 {
-                    int nChars = int(wParam); // NOTE THAT FOR NOW WE IGNORE nChars since we only
+                    [[maybe_unused]] int nChars = int(wParam); // NOTE THAT FOR NOW WE IGNORE nChars since we only
                     // support word-wrapped text for this release...
                     int nLines = int(lParam);
                     ScrollByIfRoom (nLines);
@@ -2985,8 +2984,8 @@ namespace Stroika {
                                 wcex.lpszClassName = lpClassName;
                                 ATOM regResult     = ::RegisterClassEx (&wcex);
                                 if (regResult == 0) {
-                                    DWORD x = ::GetLastError ();
-                                    if (x == ERROR_CLASS_ALREADY_EXISTS) {
+                                    DWORD lastErr = ::GetLastError ();
+                                    if (lastErr == ERROR_CLASS_ALREADY_EXISTS) {
                                         // Shouldn't happen - but if it does - SB OK since StaticWndProc addr is the same!
                                     }
                                     else {

@@ -1163,9 +1163,9 @@ string Led_URLManager::FileSpecToURL (const FSSpec& fsp)
     return rr;
 }
 #elif qPlatform_Windows
-string Led_URLManager::FileSpecToURL (const string& path)
+string Led_URLManager::FileSpecToURL ([[maybe_unused]] const string& path)
 {
-    Assert (false); // nyi (not needed anywhere right now)
+    AssertNotImplemented (); // nyi (not needed anywhere right now)
     return "";
 }
 #endif

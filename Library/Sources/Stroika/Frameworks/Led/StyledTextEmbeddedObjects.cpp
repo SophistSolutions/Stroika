@@ -237,7 +237,7 @@ const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = kPICTClipForma
 // native format rep of the picture. So I've no guess what the RIGHT arg is to RegisterClipboardFormat.
 // So - this is as good a guess as any. At least then Led can xfer pictures among instances of itself.
 // LGP 960429
-const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = ::RegisterClipboardFormat (_T ("Mac PICT Format"));
+const Led_ClipFormat StandardMacPictureStyleMarker::kClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Mac PICT Format")));
 #endif
 const Led_PrivateEmbeddingTag StandardMacPictureStyleMarker::kEmbeddingTag = "Pict2";
 
@@ -504,8 +504,8 @@ const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = 'URLD';
 // Netscape USED to have some sort of predefined name like Netscsape Bookmark, or something like that.
 // Apparently not any more. Will have to investigate further to see what todo for Netscape...
 // LGP 960429
-const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat     = ::RegisterClipboardFormat (_T ("Netscape Bookmark"));
-const Led_ClipFormat StandardURLStyleMarker::kWin32URLClipFormat = ::RegisterClipboardFormat (_T ("UniformResourceLocator"));
+const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat     = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Netscape Bookmark")));
+const Led_ClipFormat StandardURLStyleMarker::kWin32URLClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("UniformResourceLocator")));
 #elif qXWindows
 const Led_ClipFormat StandardURLStyleMarker::kURLDClipFormat = 'URLD'; //??? NOT SURE WHAT RIGHT ANSWER SB HERE!!!
 #endif

@@ -312,7 +312,7 @@ namespace Stroika {
                         Led_SDK_String fFontName; //  font name
                         int            fFNum;     //  font number
                         FontFamily     fFamily;   //  font family
-                        int            fCharSet;  //  font charset
+                        Byte           fCharSet;  //  font charset (from https://msdn.microsoft.com/en-us/library/windows/desktop/dd145037(v=vs.85).aspx - this is a byte)
                         int            fPitch;    //  font pitch
                         int            fCodePage; //  font code page
                     };
