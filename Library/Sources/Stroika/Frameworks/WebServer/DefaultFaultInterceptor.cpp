@@ -45,7 +45,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
             DbgTrace (L"Oops! - not good, but nothing todo but burry it."); // not assert failure cuz could be out of memory
         }
     }
-    virtual void HandleMessage (Message* m) override
+    virtual void HandleMessage ([[maybe_unused]] Message* m) override
     {
     }
 };
@@ -61,7 +61,7 @@ struct DefaultFaultInterceptor::Rep_Explicit_ : Interceptor::_IRep {
         RequireNotNull (m);
         fHandleFault_ (m, e);
     }
-    virtual void HandleMessage (Message* m) override
+    virtual void HandleMessage ([[maybe_unused]] Message* m) override
     {
     }
 };

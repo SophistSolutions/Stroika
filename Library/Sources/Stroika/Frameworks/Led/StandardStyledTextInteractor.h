@@ -74,7 +74,7 @@ namespace Stroika {
                 StandardStyledTextInteractor ();
 
             public:
-                virtual ~StandardStyledTextInteractor ();
+                virtual ~StandardStyledTextInteractor () = default;
 
             public:
                 struct CommandNames;

@@ -246,8 +246,8 @@ void FlavorPackageInternalizer::InternalizeFlavor_FILEGuessFormatsFromName (
 #elif qPlatform_Windows || qXWindows
     const Led_SDK_Char* fileName,
 #endif
-    Led_ClipFormat* suggestedClipFormat,
-    CodePage*       suggestedCodePage)
+    Led_ClipFormat*            suggestedClipFormat,
+    [[maybe_unused]] CodePage* suggestedCodePage)
 {
 #if qPlatform_MacOS
 // Should add code here to grab file-type from OS. If called from XXX - then thats already done, but in case

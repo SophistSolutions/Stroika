@@ -2017,24 +2017,24 @@ namespace Stroika {
                 left = p.h;
             }
             template <typename POINT_TYPE, typename SIZE_TYPE>
-            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetTop (CoordinateType top)
+            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetTop (CoordinateType t)
             {
-                this->top = top;
+                this->top = t;
             }
             template <typename POINT_TYPE, typename SIZE_TYPE>
-            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetLeft (CoordinateType left)
+            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetLeft (CoordinateType l)
             {
-                this->left = left;
+                this->left = l;
             }
             template <typename POINT_TYPE, typename SIZE_TYPE>
-            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetBottom (CoordinateType bottom)
+            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetBottom (CoordinateType b)
             {
-                this->bottom = bottom;
+                this->bottom = b;
             }
             template <typename POINT_TYPE, typename SIZE_TYPE>
-            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetRight (CoordinateType right)
+            inline void Rect_Base<POINT_TYPE, SIZE_TYPE>::SetRight (CoordinateType r)
             {
-                this->right = right;
+                this->right = r;
             }
             template <typename POINT_TYPE, typename SIZE_TYPE>
             inline const Rect_Base<POINT_TYPE, SIZE_TYPE>& Rect_Base<POINT_TYPE, SIZE_TYPE>::operator+= (const POINT_TYPE& delta)

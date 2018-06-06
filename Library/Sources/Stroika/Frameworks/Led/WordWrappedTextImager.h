@@ -41,8 +41,8 @@ namespace Stroika {
             */
             class WordWrappedTextImager : public MultiRowTextImager {
             protected:
-                WordWrappedTextImager ();
-                virtual ~WordWrappedTextImager ();
+                WordWrappedTextImager ()          = default;
+                virtual ~WordWrappedTextImager () = default;
 
             private:
                 using inherited = MultiRowTextImager;
@@ -135,17 +135,6 @@ namespace Stroika {
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-
-            //  class   WordWrappedTextImager
-            inline WordWrappedTextImager::WordWrappedTextImager ()
-                : TextImager ()
-                , MultiRowTextImager () //,
-            {
-            }
-            inline WordWrappedTextImager::~WordWrappedTextImager ()
-            {
-            }
-
             //  class   TrivialWordWrappedImager<TEXTSTORE,IMAGER>
             template <typename TEXTSTORE, typename IMAGER>
             /*

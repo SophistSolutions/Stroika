@@ -694,7 +694,7 @@ searchSMORE:
             // a space/boundary char
             if (searchIdx > 0) {
                 CopyOut (searchIdx - 1, 1, &c);
-                bool boundaryChar = (isascii (c) and (isspace (c) or ispunct (c)));
+                boundaryChar = (isascii (c) and (isspace (c) or ispunct (c)));
                 if (not boundaryChar) {
                     // If the first char if the match wasn't a space/ending char, and the one
                     // preceeding it wasn't, then we've split a word. Try again
@@ -708,14 +708,14 @@ searchSMORE:
         if (patternLen > 0) {
             size_t lastCharMatchedIdx = searchIdx + (patternLen - 1);
             CopyOut (lastCharMatchedIdx, 1, &c);
-            bool boundaryChar = (isascii (c) and (isspace (c) or ispunct (c)));
+            boundaryChar = (isascii (c) and (isspace (c) or ispunct (c)));
             if (not boundaryChar) {
                 // if the selection ends with space, it must contain a whole (possibly zero) number of words
                 // only if it DOESNT end with a space character must we look forward one, and see that THAT is
                 // a space/boundary char
                 if (lastCharMatchedIdx < GetEnd ()) {
                     CopyOut (lastCharMatchedIdx + 1, 1, &c);
-                    bool boundaryChar = (isascii (c) and (isspace (c) or ispunct (c)));
+                    boundaryChar = (isascii (c) and (isspace (c) or ispunct (c)));
                     if (not boundaryChar) {
                         // If the first char if the match wasn't a space/ending char, and the one
                         // preceeding it wasn't, then we've split a word. Try again

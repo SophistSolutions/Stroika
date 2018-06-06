@@ -119,7 +119,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     ICMP::V4::PacketHeader pingRequest = [&]() {
         ICMP::V4::PacketHeader tmp{};
         tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
-        tmp.id        = skAllUInt16Distribution_ (sRng_);
+        tmp.id        = static_cast<uint16_t> (skAllUInt16Distribution_ (sRng_));
         tmp.seq       = fNextSequenceNumber_++;
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;

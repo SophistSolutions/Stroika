@@ -3462,51 +3462,6 @@ static BOOL GetFontFormat4Subtable (
     return TRUE;
 }
 
-static USHORT GetFontFormat4CharCount (
-    LPCMAP4 pFormat4 // pointer to a valid Format4 subtable
-)
-{
-    USHORT i,
-        *pendCount     = GetEndCountArray ((LPBYTE)pFormat4),
-        *pstartCount   = GetStartCountArray ((LPBYTE)pFormat4),
-        *idRangeOffset = GetIdRangeOffsetArray ((LPBYTE)pFormat4);
-
-    // Count the # of glyphs
-    USHORT nGlyphs = 0;
-
-    if (pFormat4 == nullptr)
-        return 0;
-
-    // by adding up the coverage of each segment
-    for (i = 0; i < (pFormat4->segCountX2 / 2); i++) {
-
-        if (idRangeOffset[i] == 0) {
-            // if per the TT spec, the idRangeOffset element is zero,
-            // all of the characters in this segment exist.
-            nGlyphs += pendCount[i] - pstartCount[i] + 1;
-        }
-        else {
-            // otherwise we have to test for glyph existence for
-            // each character in the segment.
-            USHORT idResult; //Intermediate id calc.
-            USHORT ch;
-
-            for (ch = pstartCount[i]; ch <= pendCount[i]; ch++) {
-                // determine if a glyph exists
-                idResult = *(
-                    idRangeOffset[i] / 2 +
-                    (ch - pstartCount[i]) +
-                    &idRangeOffset[i]); // indexing equation from TT spec
-                if (idResult != 0)
-                    // Yep, count it.
-                    nGlyphs++;
-            }
-        }
-    }
-
-    return nGlyphs;
-} /* end of function GetFontFormat4CharCount */
-
 static BOOL GetTTUnicodeCoverage (
     HDC     hdc,      // DC with TT font
     LPCMAP4 pBuffer,  // Properly allocated buffer
@@ -3525,7 +3480,7 @@ static BOOL GetTTUnicodeCoverage (
 */
 {
     USHORT       nEncodings; // # of encoding in the TT font
-    CMAPENCODING Encoding;   // The current encoding
+    CMAPENCODING Encoding{}; // The current encoding
     DWORD        dwResult;
     DWORD        i,
         iUnicode;             // The Unicode encoding

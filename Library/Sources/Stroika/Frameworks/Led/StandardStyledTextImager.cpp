@@ -54,13 +54,8 @@ Led_Distance StandardStyleMarker::MeasureSegmentBaseLine (const StyledTextImager
  ********************************************************************************
  */
 StandardStyledTextImager::StandardStyledTextImager ()
-    : StyledTextImager ()
-    , fStyleDatabase (nullptr)
+    : fStyleDatabase (nullptr)
     , fICreatedDatabase (false)
-{
-}
-
-StandardStyledTextImager::~StandardStyledTextImager ()
 {
 }
 

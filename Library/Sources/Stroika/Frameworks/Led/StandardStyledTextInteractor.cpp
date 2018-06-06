@@ -60,14 +60,8 @@ StandardStyledTextInteractor::CommandNames StandardStyledTextInteractor::sComman
 #endif
 
 StandardStyledTextInteractor::StandardStyledTextInteractor ()
-    : TextInteractor ()
-    , StandardStyledTextImager ()
-    , fEmptySelectionStyleSuppressMode (false)
+    : fEmptySelectionStyleSuppressMode (false)
     , fEmptySelectionStyle (GetStaticDefaultFont ())
-{
-}
-
-StandardStyledTextInteractor::~StandardStyledTextInteractor ()
 {
 }
 

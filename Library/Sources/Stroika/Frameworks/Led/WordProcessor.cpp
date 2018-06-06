@@ -773,7 +773,7 @@ bool WordProcessor::DialogSupport::PickOtherFontColor (Led_Color* color)
 }
 
 #if qPlatform_Windows
-UINT_PTR CALLBACK WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+UINT_PTR CALLBACK WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, UINT message, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     if (hWnd != nullptr and message == WM_INITDIALOG) {
         Led_CenterWindowInParent (hWnd);
@@ -5229,8 +5229,8 @@ void WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_Strin
                     using CellInfo = StyledTextIOWriter::SrcStream::Table::CellInfo;
                     vector<CellInfo> cellInfos;
                     tiom.GetRowInfo (r, &cellInfos);
-                    for (auto i = cellInfos.begin (); i != cellInfos.end (); ++i) {
-                        colorsUsed->insert ((*i).f_clcbpat);
+                    for (auto ci = cellInfos.begin (); ci != cellInfos.end (); ++ci) {
+                        colorsUsed->insert ((*ci).f_clcbpat);
                     }
                 }
             }
@@ -5969,7 +5969,7 @@ void Table::DrawTableBorders (WordProcessor& owningWP, Led_Tablet tablet, const 
     return;
 #endif
     Led_Distance bwh = Led_CvtScreenPixelsFromTWIPSH (fBorderWidth);
-    Led_Distance bwv = Led_CvtScreenPixelsFromTWIPSV (fBorderWidth);
+    //Led_Distance bwv = Led_CvtScreenPixelsFromTWIPSV (fBorderWidth);
 
     Led_Rect bounds = drawInto - Led_Point (0, owningWP.GetHScrollPos ());
     bounds.right    = bounds.left + fTotalWidth;
@@ -6740,12 +6740,12 @@ void Table::InteractiveSetFont (const Led_IncrementalFontSpecification& defaultF
     undoContext.CommandComplete ();
 }
 
-void Table::Write (SinkStream& sink)
+void Table::Write ([[maybe_unused]] SinkStream& sink)
 {
     //  sink.write (fData, fLength);
 }
 
-void Table::ExternalizeFlavors (WriterFlavorPackage& flavorPackage)
+void Table::ExternalizeFlavors ([[maybe_unused]] WriterFlavorPackage& flavorPackage)
 {
     // save done another way - AS RTF - not sure why this is never called - but
     // probably lose the whole SimpleEmbedding guy for tables - and just handle directly what
@@ -7545,7 +7545,7 @@ void Table::InsertColumn (size_t at)
     Led_TWIPS newColWidth = Led_CvtScreenPixelsToTWIPSH (100);
     if (fRows.size () > 0) {
         size_t nColsInRow = GetColumnCount (0);
-        size_t useCol     = at;
+        //size_t useCol     = at;
         if (at == nColsInRow and at > 0) {
             newColWidth = GetColumnWidth (0, at - 1);
         }

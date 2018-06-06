@@ -118,9 +118,9 @@ void WordWrappedTextImager::FillCache (PartitionMarker* pm, PartitionElementCach
             // Now OVERRIDE the above for soft-breaks...
             {
                 Assert (bestRowLength > 0);
-                const Led_tChar* text = buf + startSoFar;
-                const Led_tChar* end  = &text[min (bestRowLength + 1, leftToGo)];
-                AdjustBestRowLength (start + startSoFar, text, end, &bestRowLength);
+                const Led_tChar* text    = buf + startSoFar;
+                const Led_tChar* textEnd = &text[min (bestRowLength + 1, leftToGo)];
+                AdjustBestRowLength (start + startSoFar, text, textEnd, &bestRowLength);
                 Assert (bestRowLength > 0);
             }
 

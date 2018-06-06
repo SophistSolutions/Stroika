@@ -450,8 +450,7 @@ TextInteractor::SearchParameters  TextInteractor::sSearchParameters;
 TextInteractor::ReplaceParameters TextInteractor::sReplaceParameters;
 
 TextInteractor::TextInteractor ()
-    : TextImager ()
-    , fCommandHandler (nullptr)
+    : fCommandHandler (nullptr)
     , fSpellCheckEngine (nullptr)
     , fSuppressCommandBreaksContext (false)
     , fDefaultUpdateMode (eDelayedUpdate)

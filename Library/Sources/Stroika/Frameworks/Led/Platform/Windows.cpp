@@ -171,8 +171,8 @@ namespace Stroika {
                                 wcex.lpszClassName = lpClassName;
                                 ATOM regResult     = ::RegisterClassEx (&wcex);
                                 if (regResult == 0) {
-                                    DWORD x = ::GetLastError ();
-                                    if (x == ERROR_CLASS_ALREADY_EXISTS) {
+                                    DWORD laserErr = ::GetLastError ();
+                                    if (laserErr == ERROR_CLASS_ALREADY_EXISTS) {
                                         // Shouldn't happen - but if it does - SB OK since StaticWndProc addr is the same!
                                     }
                                     else {

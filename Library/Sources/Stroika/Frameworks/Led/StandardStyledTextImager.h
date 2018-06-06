@@ -47,7 +47,7 @@ namespace Stroika {
 
             protected:
                 StandardStyledTextImager ();
-                virtual ~StandardStyledTextImager ();
+                virtual ~StandardStyledTextImager () = default;
 
             protected:
                 virtual void    HookLosingTextStore () override;

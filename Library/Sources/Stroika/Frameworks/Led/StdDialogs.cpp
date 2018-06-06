@@ -902,10 +902,10 @@ void LedComboBoxWidget::ShowPopup ()
         // Set initial value based on current combo box text
         vector<Led_tString>::const_iterator i = std::find (fPopupItems.begin (), fPopupItems.end (), GetText ());
         if (i == fPopupItems.end ()) {
-            fComboListBoxPopup.SendMessage (LB_SETCURSEL, -1, 0); // none
+            fComboListBoxPopup.SendMessage (LB_SETCURSEL, static_cast<WPARAM> (-1), 0); // none
         }
         else {
-            fComboListBoxPopup.SendMessage (LB_SETCURSEL, i - fPopupItems.begin (), 0);
+            fComboListBoxPopup.SendMessage (LB_SETCURSEL, static_cast<WPARAM> (i - fPopupItems.begin ()), 0);
         }
     }
 
@@ -1052,7 +1052,7 @@ bool Led_StdDialogHelper::DoModal ()
 #if qNO_INT_PTR_DefinedCompilerBug
     using INT_PTR = int;
 #endif
-    INT_PTR x = ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
+    [[maybe_unused]] INT_PTR x = ::DialogBoxParam (fHINSTANCE, fResID, fParentWnd, reinterpret_cast<DLGPROC> (StaticDialogProc), reinterpret_cast<LPARAM> (this));
     if (oldFocusWnd != NULL) {
         ::SetFocus (oldFocusWnd);
     }
@@ -1184,7 +1184,7 @@ BOOL CALLBACK Led_StdDialogHelper::StaticDialogProc (HWND hWnd, UINT message, WP
     return pThis->DialogProc (message, wParam, lParam);
 }
 
-BOOL Led_StdDialogHelper::DialogProc (UINT message, WPARAM wParam, LPARAM lParam)
+BOOL Led_StdDialogHelper::DialogProc (UINT message, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     switch (message) {
         case WM_COMMAND: {
@@ -3163,7 +3163,6 @@ void Led_StdDialogHelper_EditTablePropertiesDialog::OnOK ()
     Info result    = fInfo;
     bool dataValid = true;
 
-    int tmp   = 0;
     dataValid = dataValid and
                 ParseStringToTWIPS (GetItemText (kLedStdDlg_EditTablePropertiesBox_BorderWidth), &result.fTableBorderWidth) and
                 result.fTableBorderWidth >= 0 and

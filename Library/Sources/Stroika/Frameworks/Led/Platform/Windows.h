@@ -2276,7 +2276,7 @@ namespace Stroika {
                     if (fAutoScrollTimerID == 0) {
                         const int kTimeout = 20; // 20 milliseconds - update autoscroll every 1/50
                         // second.
-                        Verify (fAutoScrollTimerID = ::SetTimer (GetValidatedHWND (), eAutoscrollingTimerEventID, kTimeout, NULL));
+                        Verify ((fAutoScrollTimerID = ::SetTimer (GetValidatedHWND (), eAutoscrollingTimerEventID, kTimeout, NULL)) != 0);
                     }
                 }
                 template <typename BASE_INTERACTOR>
@@ -2306,7 +2306,6 @@ namespace Stroika {
                 void Led_Win32_Helper<BASE_INTERACTOR>::OnCopyCommand_After ()
                 {
                     inherited::OnCopyCommand_After ();
-                    HWND hWnd = GetValidatedHWND ();
                     if (not::CloseClipboard ()) {
                         OnBadUserInput ();
                     }

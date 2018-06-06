@@ -426,8 +426,8 @@ vector<Led_tString> SpellCheckEngine_Basic::GenerateSuggestions (const Led_tStri
         dict->GetInfoBlocks (&ibsStart, &ibsEnd);
         const Led_tChar* dictBufStart = dict->GetTextBase ();
         // Look at each word in the dictionary and assign each a score (see if they would be a good suggestion)
-        for (const InfoBlock* i = ibsStart; i != ibsEnd; ++i) {
-            Led_tString w = Led_tString (dictBufStart + (*i).fIndex, dictBufStart + (*i).fIndex + (*i).fWordLen);
+        for (const InfoBlock* ib = ibsStart; ib != ibsEnd; ++ib) {
+            Led_tString w = Led_tString (dictBufStart + (*ib).fIndex, dictBufStart + (*ib).fIndex + (*ib).fWordLen);
             float       s = Heuristic (misspelledWord, w, scoreCutOff);
             AddToListsHelper (kMaxSug, topSugs, topSugScores, &scoreCutOff, s, w);
         }

@@ -39,7 +39,7 @@ namespace Stroika {
                 using inherited = void*; // prevent accidental references to this name in subclasses to base class name
 
             protected:
-                InteractorImagerMixinHelper ();
+                InteractorImagerMixinHelper () = default;
 
                 /*
                  *  Must combine behaviors of different mixins.
@@ -122,12 +122,6 @@ namespace Stroika {
              ********************************************************************************
              */
             //  class   InteractorImagerMixinHelper<IMAGER>
-            template <typename IMAGER>
-            InteractorImagerMixinHelper<IMAGER>::InteractorImagerMixinHelper ()
-                : TextInteractor ()
-                , IMAGER ()
-            {
-            }
             template <typename IMAGER>
             void InteractorImagerMixinHelper<IMAGER>::Draw (const Led_Rect& subsetToDraw, bool printing)
             {

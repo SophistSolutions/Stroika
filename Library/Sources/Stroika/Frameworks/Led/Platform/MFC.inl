@@ -312,7 +312,7 @@ namespace Stroika {
                     OnTimer_Msg (nEventID, NULL);
                 }
                 template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
-                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnUniChar (WPARAM wParam, LPARAM lParam)
+                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnUniChar ([[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
                 {
 #if qWideCharacters
                     return LED_WIN32_HELPER::OnUniChar_Msg (wParam, lParam);
@@ -321,7 +321,7 @@ namespace Stroika {
 #endif
                 }
                 template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
-                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnIMEChar (WPARAM wParam, LPARAM lParam)
+                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnIMEChar ([[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
                 {
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
                     return LED_WIN32_HELPER::OnIMEChar_Msg (wParam, lParam);
@@ -330,7 +330,7 @@ namespace Stroika {
 #endif
                 }
                 template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
-                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnIME_COMPOSITION (WPARAM wParam, LPARAM lParam)
+                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnIME_COMPOSITION ([[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
                 {
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
                     return LED_WIN32_HELPER::OnIME_COMPOSITION_Msg (wParam, lParam);
@@ -339,7 +339,7 @@ namespace Stroika {
 #endif
                 }
                 template <typename MFC_BASE_CLASS, typename BASE_INTERACTOR>
-                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnIME_ENDCOMPOSITION (WPARAM wParam, LPARAM lParam)
+                inline LRESULT Led_MFC_Helper<MFC_BASE_CLASS, BASE_INTERACTOR>::OnIME_ENDCOMPOSITION ([[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
                 {
 #if qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug
                     return LED_WIN32_HELPER::OnIME_ENDCOMPOSITION_Msg (wParam, lParam);

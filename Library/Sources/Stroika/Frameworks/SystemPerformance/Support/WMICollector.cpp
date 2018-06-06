@@ -78,8 +78,8 @@ void WMICollector::PerInstanceData_::AddCounter (const String& counterName)
     PDH_HCOUNTER newCounter = nullptr;
     PDH_STATUS   x          = ::PdhAddCounter (fQuery_, Characters::Format (L"\\%s(%s)\\%s", fObjectName_.c_str (), fInstance_.c_str (), counterName.c_str ()).c_str (), NULL, &newCounter);
     if (x != 0) {
-        bool isPDH_CSTATUS_NO_OBJECT  = (x == PDH_CSTATUS_NO_OBJECT);
-        bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
+        [[maybe_unused]] bool isPDH_CSTATUS_NO_OBJECT  = (x == PDH_CSTATUS_NO_OBJECT);
+        [[maybe_unused]] bool isPDH_CSTATUS_NO_COUNTER = (x == PDH_CSTATUS_NO_COUNTER);
         Execution::Throw (StringException (L"PdhAddCounter"));
     }
     fCounters_.Add (counterName, newCounter);
@@ -133,7 +133,7 @@ Mapping<String, double> WMICollector::PerInstanceData_::GetCurrentValues (const 
     }
     if (status != 0) {
         //PDH_CSTATUS_INVALID_DATA
-        bool isPDH_PDH_INVALID_DATA = (status == PDH_INVALID_DATA);
+        [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (status == PDH_INVALID_DATA);
         Execution::Throw (StringException (L"PdhGetFormattedCounterValue"));
     }
 

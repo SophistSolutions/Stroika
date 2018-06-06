@@ -613,7 +613,7 @@ public:                              \
 #if qPlatform_MacOS
             using Led_ClipFormat = OSType;
 #elif qPlatform_Windows
-            using Led_ClipFormat                 = UINT;
+            using Led_ClipFormat                 = CLIPFORMAT;
 #elif qXWindows
             using Led_ClipFormat                 = long;
 #endif

@@ -962,7 +962,6 @@ TextLayoutBlock_VirtualSubset::TextLayoutBlock_VirtualSubset (const TextLayoutBl
 {
     vector<ScriptRunElt> origRuns     = fSubsetOf.GetScriptRuns ();
     size_t               offsetSoFar  = 0;
-    size_t               subsetLen    = fEnd - fStart;
     const Led_tChar*     fullRealText = fSubsetOf.PeekAtRealText ();
     for (auto i = origRuns.begin (); i != origRuns.end (); ++i) {
         size_t offsetStart = (*i).fVirtualStart;
