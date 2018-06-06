@@ -2455,6 +2455,7 @@ void Led_StdDialogHelper_ParagraphIndentsDialog::PreDoModalHook ()
 
 void Led_StdDialogHelper_ParagraphIndentsDialog::OnOK ()
 {
+    DISABLE_COMPILER_MSC_WARNING_START (4706)
     Led_SDK_String leftMargin = GetItemText (kLedStdDlg_ParagraphIndents_LeftMarginFieldID);
     if (not(fLeftMargin_Valid = ParseStringToTWIPS (leftMargin, &fLeftMargin_Result))) {
         fLeftMargin_Result = fLeftMargin_Orig;
@@ -2469,6 +2470,7 @@ void Led_StdDialogHelper_ParagraphIndentsDialog::OnOK ()
     if (not(fLeftMargin_Valid = ParseStringToTWIPS (firstIndent, &fFirstIndent_Result))) {
         fFirstIndent_Result = fFirstIndent_Orig;
     }
+    DISABLE_COMPILER_MSC_WARNING_END (4706)
     inherited::OnOK ();
 }
 #endif

@@ -272,11 +272,6 @@ void StyleMarkerSummarySinkForSingleOwner::CombineElements (StyledTextImager::Ru
  ****************************** StyledTextImager ********************************
  ********************************************************************************
  */
-StyledTextImager::StyledTextImager ()
-    : TextImager ()
-{
-}
-
 /*
 @METHOD:        StyledTextImager::SummarizeStyleMarkers
 @DESCRIPTION:   <p>Create a summary of the style markers applied to a given range of text (by default using

@@ -66,7 +66,7 @@ namespace Stroika {
                 using inherited = TextImager;
 
             protected:
-                StyledTextImager ();
+                StyledTextImager () = default;
 
             public:
                 class StyleMarker;

@@ -96,10 +96,10 @@ namespace {
     {
         Require (i <= 15);
         if (i <= 9) {
-            return i + '0';
+            return static_cast<char> (i + '0');
         }
         else {
-            return i - 10 + 'a';
+            return static_cast<char> (i - 10 + 'a');
         }
     }
     static inline unsigned short HexCharToNum (char c)
