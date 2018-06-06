@@ -116,7 +116,7 @@ namespace {
 #if qPlatform_POSIX
                             int tmp = ThrowErrNoIfNegative (Handle_ErrNoResultInterruption ([&]() -> int { return ::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK); }));
 #elif qPlatform_Windows
-                            int tmp = ThrowErrNoIfNegative<Socket::PlatformNativeHandle> (::recv (fSD_, buf, NEltsOf (buf), MSG_PEEK));
+                            int tmp = ThrowErrNoIfNegative<int> (::recv (fSD_, buf, static_cast<int> (NEltsOf (buf)), MSG_PEEK));
 #else
                             AssertNotImplemented ();
 #endif
