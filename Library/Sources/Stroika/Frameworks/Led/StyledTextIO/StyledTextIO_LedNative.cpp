@@ -143,7 +143,7 @@ struct PortableStyleRunData_Version5 {
     {
         size_t xtra = offsetof (PortableStyleRunData_Version5, fFontName);
         Assert (len > xtra);
-        return static_cast < unsigned char> (len - xtra);
+        return static_cast<unsigned char> (len - xtra);
     }
     static unsigned char RecordLenFromNameLen (unsigned char len)
     {
@@ -252,7 +252,7 @@ struct PortableStyleRunData_Version6 {
     {
         size_t xtra = offsetof (PortableStyleRunData_Version6, fFontName);
         Assert (len > xtra);
-        return static_cast < unsigned char> (len - xtra);
+        return static_cast<unsigned char> (len - xtra);
     }
     static unsigned char RecordLenFromNameLen (unsigned char len)
     {
