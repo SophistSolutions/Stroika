@@ -104,8 +104,8 @@ struct MyOLEStream_input : OLESTREAM {
     static DWORD __stdcall MyOLE1STREAMGetter (LPOLESTREAM lpoleStr, void* data, DWORD nb)
     {
         MyOLEStream_input* myStream    = (MyOLEStream_input*)lpoleStr;
-        DWORD              bytesLeft   = myStream->end - myStream->cur;
-        DWORD              bytesToRead = min (bytesLeft, nb);
+        size_t             bytesLeft   = myStream->end - myStream->cur;
+        size_t             bytesToRead = min<size_t> (bytesLeft, nb);
         (void)::memcpy (data, myStream->cur, bytesToRead);
         myStream->cur += bytesToRead;
         return bytesToRead;

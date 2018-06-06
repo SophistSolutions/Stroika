@@ -1774,21 +1774,22 @@ namespace Stroika {
                 nonvirtual void UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y);
                 nonvirtual void SendSimpleMessage (HWND pWnd, UINT fnc, WPARAM wParam);
 
-                short(FAR PASCAL* fSendIMEMessageProc) (HWND, DWORD);
+                LRESULT (FAR PASCAL* fSendIMEMessageProc)
+                (HWND, DWORD);
                 BOOL (FAR PASCAL* fIMEEnableProc)
                 (HWND, BOOL);
-                DWORD (FAR PASCAL* fImmGetContext)
+                HIMC (FAR PASCAL* fImmGetContext)
                 (HWND);
                 BOOL (FAR PASCAL* fImmSetCompositionFont)
-                (DWORD, const LOGFONT*);
+                (HIMC, const LOGFONT*);
                 BOOL (FAR PASCAL* fImmReleaseContext)
-                (HWND, DWORD);
+                (HWND, HIMC);
                 LONG (FAR PASCAL* fImmGetCompositionStringW)
-                (DWORD, DWORD, LPVOID, DWORD);
+                (HIMC, DWORD, LPVOID, DWORD);
                 BOOL (FAR PASCAL* fImmSetCompositionWindow)
-                (DWORD, const void*);
+                (HIMC, const void*);
                 BOOL (FAR PASCAL* fImmSetOpenStatus)
-                (DWORD, BOOL);
+                (HIMC, BOOL);
 
                 bool  fWinNlsAvailable;
                 SHORT fLastX;

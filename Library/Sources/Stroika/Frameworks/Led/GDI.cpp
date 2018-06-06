@@ -137,10 +137,11 @@ inline GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDept
 #if qPlatform_Windows
 inline void Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 {
+    Require (nChars < numeric_limits<int>::max ());
 #if qWideCharacters
-    Verify (::GetTextExtentExPointW (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
+    Verify (::GetTextExtentExPointW (hdc, str, static_cast<int> (nChars), maxExtent, lpnFit, alpDx, lpSize));
 #else
-    Verify (::GetTextExtentExPointA (hdc, str, nChars, maxExtent, lpnFit, alpDx, lpSize));
+    Verify (::GetTextExtentExPointA (hdc, str, static_cast<int> (nChars), maxExtent, lpnFit, alpDx, lpSize));
 #endif
 }
 inline void Win32_GetTextExtentPoint (HDC hdc, const Led_tChar* str, int nChars, LPSIZE lpSize)
@@ -1801,7 +1802,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
             }
         }
         else {
-/*
+            /*
              *  A bunch of different ways to get the RTL code emitted. Try them each in order (some ifdefed out). When
              *  one succeeds - just to the succcess label.
              */
@@ -1834,8 +1835,8 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
 
             {
                 size_t len = nextTabAt - textCursor;
-// Fallback - if the above fails...
-// Displays the text in the right order, but doesn't do contextual shaping (tested on WinXP and WinME) - LGP 2002-12-10
+                // Fallback - if the above fails...
+                // Displays the text in the right order, but doesn't do contextual shaping (tested on WinXP and WinME) - LGP 2002-12-10
 #if qWideCharacters
                 Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor, len, nullptr));
 #else
@@ -3006,7 +3007,7 @@ Led_IME::Led_IME ()
 #endif
     HINSTANCE hNLS = ::GetModuleHandle (_T ("USER32.DLL"));
     if (hNLS != nullptr) {
-        fSendIMEMessageProc = (short(FAR PASCAL*) (HWND, DWORD))::GetProcAddress (hNLS, IMEPROCNAME);
+        fSendIMEMessageProc = (LRESULT (FAR PASCAL*) (HWND, DWORD))::GetProcAddress (hNLS, IMEPROCNAME);
         fIMEEnableProc      = (BOOL (FAR PASCAL*) (HWND, BOOL))::GetProcAddress (hNLS, "WINNLSEnableIME");
     }
     fWinNlsAvailable = fSendIMEMessageProc != nullptr and fIMEEnableProc != nullptr;
@@ -3014,16 +3015,16 @@ Led_IME::Led_IME ()
     HINSTANCE hIMM = ::GetModuleHandle (_T ("IMM32.DLL"));
     if (hIMM != nullptr) {
 #ifdef _UNICODE
-        const char ImmSetCompositionFontNAME[] = "ImmSetCompositionFontW";
+        constexpr char ImmSetCompositionFontNAME[] = "ImmSetCompositionFontW";
 #else
-        const char ImmSetCompositionFontNAME[] = "ImmSetCompositionFontA";
+        constexpr char ImmSetCompositionFontNAME[] = "ImmSetCompositionFontA";
 #endif
-        fImmGetContext            = (DWORD (FAR PASCAL*) (HWND))::GetProcAddress (hIMM, "ImmGetContext");
-        fImmSetCompositionFont    = (BOOL (FAR PASCAL*) (DWORD, const LOGFONT*))::GetProcAddress (hIMM, ImmSetCompositionFontNAME);
-        fImmReleaseContext        = (BOOL (FAR PASCAL*) (HWND, DWORD))::GetProcAddress (hIMM, "ImmReleaseContext");
-        fImmGetCompositionStringW = (LONG (FAR PASCAL*) (DWORD, DWORD, LPVOID, DWORD))::GetProcAddress (hIMM, "ImmGetCompositionStringW");
-        fImmSetCompositionWindow  = (BOOL (FAR PASCAL*) (DWORD, const void*))::GetProcAddress (hIMM, "ImmSetCompositionWindow");
-        fImmSetOpenStatus         = (BOOL (FAR PASCAL*) (DWORD, BOOL))::GetProcAddress (hIMM, "ImmSetOpenStatus");
+        fImmGetContext            = (HIMC (FAR PASCAL*) (HWND))::GetProcAddress (hIMM, "ImmGetContext");
+        fImmSetCompositionFont    = (BOOL (FAR PASCAL*) (HIMC, const LOGFONT*))::GetProcAddress (hIMM, ImmSetCompositionFontNAME);
+        fImmReleaseContext        = (BOOL (FAR PASCAL*) (HWND, HIMC))::GetProcAddress (hIMM, "ImmReleaseContext");
+        fImmGetCompositionStringW = (LONG (FAR PASCAL*) (HIMC, DWORD, LPVOID, DWORD))::GetProcAddress (hIMM, "ImmGetCompositionStringW");
+        fImmSetCompositionWindow  = (BOOL (FAR PASCAL*) (HIMC, const void*))::GetProcAddress (hIMM, "ImmSetCompositionWindow");
+        fImmSetOpenStatus         = (BOOL (FAR PASCAL*) (HIMC, BOOL))::GetProcAddress (hIMM, "ImmSetOpenStatus");
     }
 }
 
@@ -3037,7 +3038,7 @@ void Led_IME::NotifyPosition (HWND hWnd, const SHORT x, const SHORT y)
 void Led_IME::NotifyOfFontChange (HWND hWnd, const LOGFONT& lf)
 {
     if (fImmGetContext != nullptr and fImmSetCompositionFont != nullptr and fImmReleaseContext != nullptr) {
-        DWORD_PTR hImc = NULL;
+        HIMC hImc = NULL;
         if ((hImc = fImmGetContext (hWnd)) != NULL) {
             fImmSetCompositionFont (hImc, &lf);
             fImmReleaseContext (hWnd, hImc);
@@ -3074,7 +3075,7 @@ void Led_IME::IMEOn (HWND hWnd)
 {
 #if qUseNewIMECode
     if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
-        DWORD_PTR hImc = NULL;
+        HIMC hImc = NULL;
         if ((hImc = fImmGetContext (hWnd)) != NULL) {
             Verify (fImmSetOpenStatus (hImc, true));
             fImmReleaseContext (hWnd, hImc);
@@ -3089,7 +3090,7 @@ void Led_IME::IMEOff (HWND hWnd)
 {
 #if qUseNewIMECode
     if (fImmGetContext != nullptr and fImmSetOpenStatus != nullptr and fImmReleaseContext != nullptr) {
-        DWORD_PTR hImc = NULL;
+        HIMC hImc = NULL;
         if ((hImc = fImmGetContext (hWnd)) != NULL) {
             Verify (fImmSetOpenStatus (hImc, false));
             fImmReleaseContext (hWnd, hImc);
@@ -3105,7 +3106,7 @@ void Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
     if (fSendIMEMessageProc != nullptr) {
 #if qUseNewIMECode
         if (fImmGetContext != nullptr and fImmSetCompositionWindow != nullptr and fImmReleaseContext != nullptr) {
-            DWORD_PTR hImc = NULL;
+            HIMC hImc = NULL;
             if ((hImc = fImmGetContext (hWnd)) != NULL) {
                 COMPOSITIONFORM compForm;
                 memset (&compForm, 0, sizeof (compForm));
@@ -3160,7 +3161,7 @@ void Led_IME::UpdatePosition (const HWND hWnd, const SHORT x, const SHORT y)
             if ((hFont = (HFONT)::SendMessage (hWnd, WM_GETFONT, 0, 0L)) != nullptr) {
                 LOGFONT lFont;
                 if (::GetObject (hFont, sizeof (LOGFONT), &lFont)) {
-                    DWORD_PTR hImc = NULL;
+                    HIMC hImc = NULL;
                     if ((hImc = fImmGetContext (hWnd)) != NULL) {
                         fImmSetCompositionFont (hImc, &lFont);
                         fImmReleaseContext (hWnd, hImc);
@@ -3175,10 +3176,10 @@ wstring Led_IME::GetCompositionResultStringW (HWND hWnd)
 {
     wstring result;
     if (fImmGetCompositionStringW != nullptr and fImmGetContext != nullptr and fImmReleaseContext != nullptr) {
-        DWORD hImc = 0;
+        HIMC hImc = 0;
         if ((hImc = fImmGetContext (hWnd)) != 0) {
             wchar_t curIMEString[2048];
-            LONG    nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, NEltsOf (curIMEString));
+            LONG    nChars = fImmGetCompositionStringW (hImc, GCS_RESULTSTR, curIMEString, static_cast<DWORD> (NEltsOf (curIMEString)));
 
             nChars /= sizeof (wchar_t); // why???? LGP 991214
             if (nChars >= 0 and static_cast<size_t> (nChars) < NEltsOf (curIMEString)) {

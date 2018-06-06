@@ -242,7 +242,7 @@ void OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const string& v
 #if qPlatform_MacOS
     Assert (false); // NYI
 #elif qPlatform_Windows
-    (void)::RegSetValueExA (fKey, Led_SDKString2ANSI (prefName).c_str (), 0, REG_SZ, (LPBYTE)value.c_str (), (value.length () + 1) * sizeof (TCHAR));
+    (void)::RegSetValueExA (fKey, Led_SDKString2ANSI (prefName).c_str (), 0, REG_SZ, (LPBYTE)value.c_str (), static_cast<DWORD> ((value.length () + 1) * sizeof (TCHAR)));
 #endif
 }
 

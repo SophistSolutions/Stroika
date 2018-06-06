@@ -141,7 +141,7 @@ void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (
     /*
      *  Make HKCR/SUFFIX point to the progID
      */
-    ThrowIfRegError (::RegSetValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), REG_SZ, progID.c_str (), progID.length ()));
+    ThrowIfRegError (::RegSetValue (HKEY_CLASSES_ROOT, fFileSuffix.c_str (), REG_SZ, progID.c_str (), static_cast<DWORD> (progID.length ())));
 
     /*
      *  The Create/Make the pointed to progID, with appropriate subkeys.
