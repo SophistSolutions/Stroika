@@ -1454,13 +1454,13 @@ BOOL LedItApplication::PumpMessage ()
     return true;
 }
 
-void LedItApplication::HandleMFCException (CException* /*e*/) noexcept
+void LedItApplication::HandleMFCException ([[maybe_unused]] CException* e) noexcept
 {
     // tmp hack for now...
     HandleUnknownException ();
 }
 
-void LedItApplication::HandleHRESULTException (HRESULT hr) noexcept
+void LedItApplication::HandleHRESULTException ([[maybe_unused]] HRESULT hr) noexcept
 {
     // tmp hack for now...
     HandleUnknownException ();

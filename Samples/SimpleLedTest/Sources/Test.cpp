@@ -83,10 +83,7 @@ BOOL    InitInstance (HINSTANCE, int);
 LRESULT CALLBACK WndProc (HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK About (HWND, UINT, WPARAM, LPARAM);
 
-int APIENTRY WinMain (HINSTANCE hInstance,
-                      HINSTANCE hPrevInstance,
-                      LPSTR     lpCmdLine,
-                      int       nCmdShow)
+int APIENTRY WinMain (HINSTANCE hInstance, [[maybe_unused]] HINSTANCE hPrevInstance, [[maybe_unused]] LPSTR lpCmdLine, int nCmdShow)
 {
 #if CRTDBG_MAP_ALLOC
     _CrtSetDbgFlag (_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -180,7 +177,7 @@ LRESULT MyLedWindow::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
     switch (message) {
         case WM_COMMAND: {
             int  wmId    = LOWORD (wParam);
-            int  wmEvent = HIWORD (wParam);
+            [[maybe_unused]]int  wmEvent = HIWORD (wParam);
             HWND hWnd    = GetHWND ();
             // Parse the menu selections:
             switch (wmId) {
@@ -233,7 +230,7 @@ LRESULT MyLedWindow::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 // Mesage handler for about box.
-LRESULT CALLBACK About (HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK About (HWND hDlg, UINT message, WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     switch (message) {
         case WM_INITDIALOG:

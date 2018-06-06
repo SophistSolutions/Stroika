@@ -30,7 +30,7 @@ namespace Stroika {
             {
             }
             template <class _Fx, typename COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP>
-            RequestHandler::RequestHandler (_Fx _Func, COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP*, int j)
+            RequestHandler::RequestHandler (_Fx _Func, COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP*, [[maybe_unused]] int j)
                 : RequestHandler ([_Func](Message* message) { RequireNotNull (message); _Func (message->PeekRequest (), message->PeekResponse ()); })
             {
             }

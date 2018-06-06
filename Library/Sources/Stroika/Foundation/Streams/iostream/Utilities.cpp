@@ -33,7 +33,7 @@ wstring Streams::iostream::ReadTextStream (istream& in)
     streamoff end = in.tellg ();
     Assert (start <= end);
     DISABLE_COMPILER_MSC_WARNING_START (6237)
-    if constexpr ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
+    if  ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
         Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
     }
     size_t                         bufLen = static_cast<size_t> (end - start);
@@ -54,7 +54,7 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
     streamoff end = in.tellg ();
     Assert (start <= end);
     DISABLE_COMPILER_MSC_WARNING_START (6237)
-    if constexpr ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
+    if  ((sizeof (streamoff) > sizeof (size_t)) and ((end - start) > static_cast<streamoff> (numeric_limits<ptrdiff_t>::max ()))) {
         Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
     }
     size_t                            bufLen = static_cast<size_t> (end - start);
