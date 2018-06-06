@@ -802,7 +802,7 @@ bool String::Match (const RegularExpression& regEx) const
     return regex_match (tmp.begin (), tmp.end (), regEx.GetCompiled ());
 }
 
-String String::ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co) const
+String String::ReplaceAll (const RegularExpression& regEx, const String& with) const
 {
     return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));
 }

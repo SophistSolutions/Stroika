@@ -808,8 +808,10 @@ namespace Stroika {
                  *  Note - it IS legal to have with contain the original search for string, or even
                  *  to have it 'created' as part of where it gets
                  *  inserted. The implementation will only replace those that pre-existed.
+                 *
+                 *  \note To perform a regular expression replace-all, which is case insensitive, create the regular expression with CompareOptions::eCaseInsensitive
                  */
-                nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with) const;
                 nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
