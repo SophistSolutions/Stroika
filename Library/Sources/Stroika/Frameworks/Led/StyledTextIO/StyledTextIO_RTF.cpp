@@ -3715,7 +3715,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize
             size specified in the metafile itself.</p>
                 <p>This routine is only available if @'qPlatform_Windows'.</p>
 */
-Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, Led_TWIPS_Point bmSize, const HENHMETAFILE hMF)
+Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point shownSize, [[maybe_unused]] Led_TWIPS_Point bmSize, const HENHMETAFILE hMF)
 {
     RequireNotNull (hMF);
 
@@ -3870,7 +3870,7 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 break;
             }
 #endif
-            fontSpec.SetPointSize (newSize);
+            fontSpec.SetPointSize (static_cast<uint8_t> (newSize)); //pinned above 4..128
 #if qPlatform_Windows
             fCachedFontSize         = newSize;
             fCachedFontSizeTMHeight = fontSpec.PeekAtTMHeight ();

@@ -283,7 +283,7 @@ Led_FontSpecification StyledTextIOReader_MIMETextEnriched::GetAdjustedCurrentFon
         if (resultSize > 64) {
             resultSize = 64;
         }
-        fsp.SetPointSize (resultSize);
+        fsp.SetPointSize (static_cast<uint8_t> (resultSize)); // pinned 5..64 so fits in byte
     }
     return fsp;
 }

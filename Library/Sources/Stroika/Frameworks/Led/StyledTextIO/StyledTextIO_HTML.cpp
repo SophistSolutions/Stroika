@@ -1127,7 +1127,7 @@ Led_IncrementalFontSpecification StyledTextIOReader_HTML::ExtractFontSpecFromCSS
             int sizeVal = 0;
             if (ParseStringToInt_ (itemValue.substr (0, itemValue.length () - 2), &sizeVal) and
                 sizeVal >= 2 and sizeVal <= 128) {
-                f.SetPointSize (sizeVal);
+                f.SetPointSize (static_cast<uint8_t> (sizeVal)); // cast OK cuz sizeVal in range
             }
         }
     }
