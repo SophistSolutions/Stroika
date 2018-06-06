@@ -89,6 +89,7 @@ void SimpleAllocator_CallLIBCNewDelete::Deallocate (void* p)
 namespace {
     const unsigned int kPreGUARD   = 0x39;
     const unsigned int kPost_GUARD = 0x1f;
+    // force alignment to worst we can be required to support, so memory allocated by our object has good alignment
     struct alignas (double) MemWithExtraStuff {
         unsigned int fPreGuard;
         size_t       fBlockSize;
