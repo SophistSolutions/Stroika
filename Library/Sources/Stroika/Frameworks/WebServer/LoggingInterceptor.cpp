@@ -35,7 +35,7 @@ struct LoggingInterceptor::Rep_ : Interceptor::_IRep {
         : fLogger_ (logger)
     {
     }
-    virtual void HandleFault (Message* m, const exception_ptr& e) noexcept override
+    virtual void HandleFault (Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
     {
         RequireNotNull (m);
         shared_ptr<ILogHandler::MessageInstance> logID;
