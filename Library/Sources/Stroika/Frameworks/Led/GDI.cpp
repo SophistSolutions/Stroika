@@ -2953,7 +2953,7 @@ Led_DIB* Led::Led_DIBFromHBITMAP (HDC hDC, HBITMAP hbm)
         (void)::memcpy (dibResult, &bmiHdr, sizeof (bmiHdr));
     }
 
-    int nScanLinesCopied = ::GetDIBits (hDC, hbm, 0, dibResult->bmiHeader.biHeight, reinterpret_cast<char*> (dibResult) + Led_GetDIBPalletByteCount (dibResult) + sizeof (BITMAPINFOHEADER), dibResult, DIB_RGB_COLORS);
+    [[maybe_unused]] int nScanLinesCopied = ::GetDIBits (hDC, hbm, 0, dibResult->bmiHeader.biHeight, reinterpret_cast<char*> (dibResult) + Led_GetDIBPalletByteCount (dibResult) + sizeof (BITMAPINFOHEADER), dibResult, DIB_RGB_COLORS);
     Assert (nScanLinesCopied == dibResult->bmiHeader.biHeight);
     return dibResult;
 }

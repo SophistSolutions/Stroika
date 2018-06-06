@@ -541,14 +541,13 @@ STDMETHODIMP AL_UserCommandListHelper::Clear ()
 }
 
 /*
-     ********************************************************************************
-     ***************************** ActiveLedIt_UserCommand **************************
-     ********************************************************************************
-     */
+ ********************************************************************************
+ ***************************** ActiveLedIt_UserCommand **************************
+ ********************************************************************************
+ */
 ActiveLedIt_UserCommand::ActiveLedIt_UserCommand ()
 {
     fCommandNumber = UserCommandNameNumberRegistry::Get ().Enter (fInternalName);
-    ;
 }
 
 ActiveLedIt_UserCommand::~ActiveLedIt_UserCommand ()
@@ -1223,7 +1222,6 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
 
 WORD CmdObjOrName2Num (const VARIANT& cmdObjOrName)
 {
-    UINT32                cmdNum = 0;
     CComVariant           c (cmdObjOrName);
     CComQIPtr<IALCommand> bicc;
     if (SUCCEEDED (c.ChangeType (VT_BSTR))) {

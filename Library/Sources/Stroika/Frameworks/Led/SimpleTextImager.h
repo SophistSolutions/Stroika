@@ -438,7 +438,7 @@ namespace Stroika {
             */
             inline SimpleTextImager::RowReference SimpleTextImager::GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const
             {
-                bool result = GetIthRowReferenceFromHere (&fromHere, ith);
+                [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
                 return (fromHere);
             }
@@ -450,10 +450,10 @@ namespace Stroika {
             */
             inline SimpleTextImager::RowReference SimpleTextImager::GetIthRowReference (size_t ith) const
             {
-                RowReference fromHere ((PartitionMarker*)GetFirstPartitionMarker ());
-                bool         result = GetIthRowReferenceFromHere (&fromHere, ith);
+                RowReference          fromHere ((PartitionMarker*)GetFirstPartitionMarker ());
+                [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
-                return (fromHere);
+                return fromHere;
             }
             /*
             @METHOD:        SimpleTextImager::GetRowLength

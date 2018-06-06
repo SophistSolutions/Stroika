@@ -1421,9 +1421,9 @@ BOOL LedItApplication::InitInstance ()
 }
 
 #if _MFC_VER >= 0x0700
-void LedItApplication::WinHelpInternal (DWORD_PTR dwData, UINT nCmd)
+void LedItApplication::WinHelpInternal ([[maybe_unused]] DWORD_PTR dwData, [[maybe_unused]] UINT nCmd)
 #else
-void LedItApplication::WinHelp (DWORD dwData, UINT nCmd)
+void LedItApplication::WinHelp ([[maybe_unused]] DWORD dwData, [[maybe_unused]] UINT nCmd)
 #endif
 {
     // get path of executable

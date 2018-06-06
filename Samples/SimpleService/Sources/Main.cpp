@@ -117,7 +117,7 @@ namespace {
 int main (int argc, const char* argv[])
 {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-    auto&& cleanupReport = Execution::Finally ([]() {
+    [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([]() {
         DbgTrace (L"Exiting main with thread %s running", Characters::ToString (Execution::Thread::GetStatistics ().fRunningThreads).c_str ());
     });
 #endif
@@ -127,7 +127,7 @@ int main (int argc, const char* argv[])
      */
     SignalHandlerRegistry::SafeSignalsManager safeSignals;
 
-/*
+    /*
      *  Setup basic (optional) error handling.
      */
 #if qPlatform_Windows
@@ -148,11 +148,11 @@ int main (int argc, const char* argv[])
     SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, SignalHandlerRegistry::kIGNORED);
 #endif
 
-/*
+    /*
      *  Setup Logging to the OS logging facility.
      */
 #if qUseLogger
-    auto&& cleanup = Execution::Finally ([]() {
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([]() {
         Logger::ShutdownSingleton (); // make sure Logger threads shutdown before the end of main (), and flush buffered messages
     });
 #if qHas_Syslog

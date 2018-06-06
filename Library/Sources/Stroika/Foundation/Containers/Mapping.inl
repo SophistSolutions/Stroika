@@ -170,7 +170,7 @@ namespace Stroika {
             inline Memory::Optional<MAPPED_VALUE_TYPE> Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
             {
                 Memory::Optional<MAPPED_VALUE_TYPE> r;
-                bool                                result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
+                [[maybe_unused]] bool               result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
             }

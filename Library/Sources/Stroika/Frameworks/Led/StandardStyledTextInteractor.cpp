@@ -350,7 +350,7 @@ void StandardStyledTextInteractor::WhileSimpleMouseTracking (Led_Point newMouseP
     if ((clickedOnChar == dragAnchor or clickedOnChar + 1 == dragAnchor) and (oldSelEnd - oldSelStart == 1)) {
         vector<SimpleEmbeddedObjectStyleMarker*> embeddingList = CollectAllEmbeddingMarkersInRange (clickedOnChar, clickedOnChar + 1);
         if (embeddingList.size () == 1) {
-            SimpleEmbeddedObjectStyleMarker* embedding = embeddingList[0];
+            [[maybe_unused]] SimpleEmbeddedObjectStyleMarker* embedding = embeddingList[0];
             AssertMember (embedding, SimpleEmbeddedObjectStyleMarker);
             return;
         }

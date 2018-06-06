@@ -723,9 +723,9 @@ namespace Stroika {
             */
             inline MultiRowTextImager::RowReference MultiRowTextImager::GetIthRowReferenceFromHere (RowReference fromHere, ptrdiff_t ith) const
             {
-                bool result = GetIthRowReferenceFromHere (&fromHere, ith);
+                [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
-                return (fromHere);
+                return fromHere;
             }
             /*
             @METHOD:        MultiRowTextImager::GetIthRowReference

@@ -1088,8 +1088,8 @@ namespace Stroika {
             public:
                 using UpdateMode = typename IMAGER::UpdateMode;
                 virtual bool QueryInputKeyStrokesPending () const override { return false; };
-                virtual void RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const override {}
-                virtual void UpdateWindowRect_ (const Led_Rect& windowRectArea) const override {}
+                virtual void RefreshWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea, [[maybe_unused]] UpdateMode updateMode) const override {}
+                virtual void UpdateWindowRect_ ([[maybe_unused]] const Led_Rect& windowRectArea) const override {}
             };
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)

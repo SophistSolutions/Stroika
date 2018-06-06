@@ -346,9 +346,9 @@ void MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
 
     BreakInGroupedCommands ();
 
-    size_t start;
-    size_t end;
-    bool   result = GetLastCmdRangeBefore (&start, &end);
+    size_t                start;
+    size_t                end;
+    [[maybe_unused]] bool result = GetLastCmdRangeBefore (&start, &end);
     Assert (result);
 
 #if qDebug
@@ -379,9 +379,9 @@ void MultiLevelUndoCommandHandler::DoRedo (TextInteractor& interactor)
 
     IdleManager::NonIdleContext nonIdleContext;
 
-    size_t start;
-    size_t end;
-    bool   result = GetLastCmdRangeAfter (&start, &end);
+    size_t                start;
+    size_t                end;
+    [[maybe_unused]] bool result = GetLastCmdRangeAfter (&start, &end);
     Assert (result);
 
 #if qDebug
@@ -438,9 +438,9 @@ bool MultiLevelUndoCommandHandler::CanRedo ()
 const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName ()
 {
     if (CanUndo ()) {
-        size_t start;
-        size_t end;
-        bool   result = GetLastCmdRangeBefore (&start, &end);
+        size_t                start;
+        size_t                end;
+        [[maybe_unused]] bool result = GetLastCmdRangeBefore (&start, &end);
         Assert (result);
         // arbitrarily pick name from any of the commands in group
         return fCommands[start]->GetName ();
@@ -453,9 +453,9 @@ const Led_SDK_Char* MultiLevelUndoCommandHandler::GetUndoCmdName ()
 const Led_SDK_Char* MultiLevelUndoCommandHandler::GetRedoCmdName ()
 {
     if (CanRedo ()) {
-        size_t start;
-        size_t end;
-        bool   result = GetLastCmdRangeAfter (&start, &end);
+        size_t                start;
+        size_t                end;
+        [[maybe_unused]] bool result = GetLastCmdRangeAfter (&start, &end);
         Assert (result);
         // arbitrarily pick name from any of the commands in group
         return fCommands[start]->GetName ();

@@ -236,12 +236,12 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown (UINT uMsg, WPARAM w
     }
 }
 
-LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     /*
-         *  Pushing on a button causes it to grab the focus (cannot figure out how to stop this - but its not SO bad).
-         *  Instead - just reset the focus back to the OCX when the click is finihsed.
-         */
+     *  Pushing on a button causes it to grab the focus (cannot figure out how to stop this - but its not SO bad).
+     *  Instead - just reset the focus back to the OCX when the click is finihsed.
+     */
     LRESULT lr = DefWindowProc ();
     try {
         CComPtr<IDispatch> oal = fOwningActiveLedIt;
@@ -258,7 +258,7 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp (UINT uMsg, WPARAM wPa
     return lr;
 }
 
-LRESULT ActiveLedIt_IconButtonToolbarElement::OnMouseMove (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_IconButtonToolbarElement::OnMouseMove ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     if (GetCapture () == m_hWnd and fIconButtonStyle == eIconButton_PushButton) {
 #define MY_GET_X_LPARAM(lp) ((int)(short)LOWORD (lp))

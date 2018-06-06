@@ -1138,7 +1138,7 @@ namespace Stroika {
                         //const int kTimeout    =   25; // 25 milliseconds - update autoscroll every 1/40
                         const int kTimeout = 20; // 20 milliseconds - update autoscroll every 1/50
                         // second.
-                        Verify (fDragAutoScrollTimerID = SetTimer (eAutoscrolling4DragTimerEventID, kTimeout, NULL));
+                        Verify ((fDragAutoScrollTimerID = SetTimer (eAutoscrolling4DragTimerEventID, kTimeout, NULL)) != 0);
                     }
                 }
                 template <typename BASECLASS>

@@ -123,10 +123,10 @@ namespace Stroika {
                     // For STL containers, not sure how to find an equiv new iterator for an old one, but my best guess is to iterate through
                     // old for old, and when I match, stop on new
                     Require (pi->_fData == movedFrom);
-                    auto newI = this->_fHead;
-                    auto newE = nullptr;
-                    auto oldI = movedFrom->_fHead;
-                    auto oldE = nullptr;
+                    auto                  newI = this->_fHead;
+                    [[maybe_unused]] auto newE = nullptr;
+                    auto                  oldI = movedFrom->_fHead;
+                    [[maybe_unused]] auto oldE = nullptr;
                     while (oldI != pi->_fCurrent) {
                         Assert (newI != newE);
                         Assert (oldI != oldE);

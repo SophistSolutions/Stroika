@@ -2304,7 +2304,7 @@ void StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContext, 
             unique_ptr<Table> table (writerContext.GetSrcStream ().GetTableAt (writerContext.GetCurSrcOffset () - 1));
             if (table.get () != nullptr) {
                 WriteTable (writerContext, table.get ());
-                size_t x = table->GetOffsetEnd ();
+                [[maybe_unused]] size_t x = table->GetOffsetEnd ();
                 Assert (x == 1);
                 break;
             }
@@ -2480,7 +2480,7 @@ void StyledTextIOWriter_HTML::WriteCloseTag (WriterContext& writerContext, const
             handled that way.</p>
                 <p>See also @'StyledTextIOWriter_HTML::WriteOpenTag'.</p>
 */
-void StyledTextIOWriter_HTML::WriteOpenCloseTag (WriterContext& /*writerContext*/, const string& tagName, const string& tagExtras)
+void StyledTextIOWriter_HTML::WriteOpenCloseTag (WriterContext& /*writerContext*/, [[maybe_unused]] const string& tagName, const string& tagExtras)
 {
     Require (not tagName.empty ());
     Require (tagName[0] != '<'); // just the name - not the surrounding brackets...

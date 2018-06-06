@@ -207,7 +207,7 @@ namespace Stroika {
             inline Memory::Optional<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookup (ArgByValueType<RangeType> key) const
             {
                 Memory::Optional<DOMAIN_TYPE> r;
-                bool                          result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &r);
+                [[maybe_unused]] bool         result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
             }

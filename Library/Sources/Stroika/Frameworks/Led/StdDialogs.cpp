@@ -835,14 +835,11 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
 
         // Shrink it slightly to make room for the popup control
         DISABLE_COMPILER_MSC_WARNING_START (4312)
-        fTextWidget.Create (0, NULL, NULL, dwStyle | WS_VISIBLE | WS_CHILD | WS_TABSTOP,
-                            0, 0, 0, 0, GetHWND (), (HMENU)id, NULL);
+        fTextWidget.Create (0, NULL, NULL, dwStyle | WS_VISIBLE | WS_CHILD | WS_TABSTOP, 0, 0, 0, 0, GetHWND (), (HMENU)id, NULL);
         DISABLE_COMPILER_MSC_WARNING_END (4312)
 
         // Next - create the POPUP BUTTON
-        fPopupButton.SubclassWindow (::CreateWindowEx (0, _T("BUTTON"), _T (""), WS_CHILD | WS_VISIBLE | BS_BITMAP,
-                                                       0, 0, 0, 0,
-                                                       GetHWND (), NULL, NULL, NULL));
+        fPopupButton.SubclassWindow (::CreateWindowEx (0, _T("BUTTON"), _T (""), WS_CHILD | WS_VISIBLE | BS_BITMAP, 0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
         fPopupButton.SendMessage (BM_SETIMAGE, static_cast<WPARAM> (IMAGE_BITMAP), reinterpret_cast<LPARAM> (static_cast<HBITMAP> (fPopupButton.fDropDownArrow)));
 
         // Next - create the POPUP Listbox (hidden initially)
@@ -859,9 +856,7 @@ LRESULT LedComboBoxWidget::OnCreate_Msg (WPARAM wParam, LPARAM lParam)
                 goto alreadyCreated;
             }
 #endif
-            fComboListBoxPopup.SubclassWindow (::CreateWindowEx (WS_EX_TOPMOST, _T("ListBox"), NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP,
-                                                                 0, 0, 0, 0,
-                                                                 GetHWND (), NULL, NULL, NULL));
+            fComboListBoxPopup.SubclassWindow (::CreateWindowEx (WS_EX_TOPMOST, _T("ListBox"), NULL, WS_POPUP | LBS_NOTIFY | WS_BORDER | WS_TABSTOP, 0, 0, 0, 0, GetHWND (), NULL, NULL, NULL));
 #if !qSDK_UNICODE
         alreadyCreated:;
 #endif
