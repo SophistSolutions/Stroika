@@ -176,9 +176,9 @@ LRESULT MyLedWindow::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message) {
         case WM_COMMAND: {
-            int  wmId    = LOWORD (wParam);
-            [[maybe_unused]]int  wmEvent = HIWORD (wParam);
-            HWND hWnd    = GetHWND ();
+            int                  wmId    = LOWORD (wParam);
+            [[maybe_unused]] int wmEvent = HIWORD (wParam);
+            HWND                 hWnd    = GetHWND ();
             // Parse the menu selections:
             switch (wmId) {
                 case IDM_ABOUT:
