@@ -867,7 +867,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingy_EntityReference (const char* text
 #endif
 #endif
         if (refName[0] == '#') {
-            wchar_t result = ::atoi (refName.c_str () + 1);
+            wchar_t result = static_cast<wchar_t> (::atoi (refName.c_str () + 1));
 #if qWideCharacters
             EmitText (&result, 1);
 #else
@@ -1090,7 +1090,7 @@ void StyledTextIOReader_HTML::ExtractHTMLTagIntoTagNameBuf (const char* text, si
             char c = *in;
             if (isalnum (c) or (c == '!') or (c == '_') or (c == '-')) {
                 if (isupper (c)) {
-                    c = tolower (c);
+                    c = static_cast<char> (tolower (c));
                 }
                 *out = c;
                 out++;
@@ -1632,7 +1632,7 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_span (bool start, const char* 
     }
 }
 
-void StyledTextIOReader_HTML::HandleHTMLThingyTag_strike (bool start, const char* text, size_t nBytes)
+void StyledTextIOReader_HTML::HandleHTMLThingyTag_strike ([[maybe_unused]] bool start, [[maybe_unused]] const char* text, [[maybe_unused]] size_t nBytes)
 {
 #if qPlatform_Windows
     BasicFontStackOperation (start);
@@ -1641,10 +1641,6 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_strike (bool start, const char
         fsp.SetStyle_Strikeout (true);
         fFontStack.back () = fsp;
     }
-#else
-    Led_Arg_Unused (start);
-    Led_Arg_Unused (text);
-    Led_Arg_Unused (nBytes);
 #endif
 }
 

@@ -76,10 +76,10 @@ inline char ConvertWriteSingleHexDigit (int numZeroToFifteen)
     Require (numZeroToFifteen >= 0);
     Require (numZeroToFifteen <= 15);
     if (numZeroToFifteen < 10) {
-        return ('0' + numZeroToFifteen);
+        return static_cast<char> ('0' + numZeroToFifteen);
     }
     else {
-        return ('a' + (numZeroToFifteen - 10));
+        return static_cast<char> ('a' + (numZeroToFifteen - 10));
     }
 }
 
@@ -427,7 +427,11 @@ RTFIO::ListTables::ListTables (const vector<ListTableEntry>& listTableEntries, c
  ********************************************************************************
  */
 const Led_PrivateEmbeddingTag RTFIO::kRTFBodyGroupFragmentEmbeddingTag = "RTFBFrag";
-const Led_ClipFormat          RTFIO::kRTFBodyGroupFragmentClipFormat   = 'RTFF';
+#if qPlatform_Windows
+const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T("RTFF")));
+#else
+const Led_ClipFormat RTFIO::kRTFBodyGroupFragmentClipFormat = 'RTFF';
+#endif
 
 inline RTFIO::ControlWordNameMap RTFIO::mkDefaultControlWordNameMap ()
 {
@@ -1629,36 +1633,35 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         ConsumeNextChar ();
                         const wchar_t kFormula = 0x0006;
 #if qWideCharacters
-                        Led_tChar c = kFormula;
+                        Led_tChar cc = kFormula;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar c = 0;
+                        Led_tChar cc = 0;
                         size_t nBytes = 1;
-                        cvt.MapFromUNICODE (&kFormula, 1, &c, &nBytes);
+                        cvt.MapFromUNICODE (&kFormula, 1, &cc, &nBytes);
                         if (nBytes != 1) {
-                            c = fDefaultUnsupportedCharacterChar;
+                            cc = fDefaultUnsupportedCharacterChar;
                         }
 #endif
                         CheckIfAboutToStartBody (readerContext);
-                        readerContext.GetDestination ().AppendText (&c, 1);
+                        readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
 
                     case '~': {
                         ConsumeNextChar ();
-                        const wchar_t kNonBreakingSpace = 0x00A0;
 #if qWideCharacters
-                        Led_tChar c = kNonBreakingSpace;
+                        Led_tChar cc = kNonBreakingSpace;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar c = 0;
+                        Led_tChar cc = 0;
                         size_t nBytes = 1;
-                        cvt.MapFromUNICODE (&kNonBreakingSpace, 1, &c, &nBytes);
+                        cvt.MapFromUNICODE (&kNonBreakingSpace, 1, &cc, &nBytes);
                         if (nBytes != 1) {
-                            c = fDefaultUnsupportedCharacterChar;
+                            cc = fDefaultUnsupportedCharacterChar;
                         }
 #endif
                         CheckIfAboutToStartBody (readerContext);
-                        readerContext.GetDestination ().AppendText (&c, 1);
+                        readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
 
                     case '-': {
@@ -1667,36 +1670,36 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         const wchar_t kOptionalHyphen = 0x00AD; //  RTF 1.5 spec says "Optional Hyphen". This is the character from the UNICODE spec labeled "Soft Hyphen"
                                                                 //  that was the closest match I could find
 #if qWideCharacters
-                        Led_tChar c = kOptionalHyphen;
+                        Led_tChar cc = kOptionalHyphen;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar c = 0;
+                        Led_tChar cc = 0;
                         size_t nBytes = 1;
-                        cvt.MapFromUNICODE (&kOptionalHyphen, 1, &c, &nBytes);
+                        cvt.MapFromUNICODE (&kOptionalHyphen, 1, &cc, &nBytes);
                         if (nBytes != 1) {
-                            c = fDefaultUnsupportedCharacterChar;
+                            cc = fDefaultUnsupportedCharacterChar;
                         }
 #endif
                         CheckIfAboutToStartBody (readerContext);
-                        readerContext.GetDestination ().AppendText (&c, 1);
+                        readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
 
                     case '_': {
                         ConsumeNextChar ();
                         const wchar_t kNonBreakingHyphen = 0x2011;
 #if qWideCharacters
-                        Led_tChar c = kNonBreakingHyphen;
+                        Led_tChar cc = kNonBreakingHyphen;
 #else
                         CodePageConverter cvt (readerContext.GetCurrentOutputCharSetEncoding ());
-                        Led_tChar c = 0;
+                        Led_tChar cc = 0;
                         size_t nBytes = 1;
-                        cvt.MapFromUNICODE (&kNonBreakingHyphen, 1, &c, &nBytes);
+                        cvt.MapFromUNICODE (&kNonBreakingHyphen, 1, &cc, &nBytes);
                         if (nBytes != 1) {
-                            c = fDefaultUnsupportedCharacterChar;
+                            cc = fDefaultUnsupportedCharacterChar;
                         }
 #endif
                         CheckIfAboutToStartBody (readerContext);
-                        readerContext.GetDestination ().AppendText (&c, 1);
+                        readerContext.GetDestination ().AppendText (&cc, 1);
                     } break;
 
                     case ':': {
@@ -2091,7 +2094,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (unsigned(cword.fValue) << 8, 0, 0);
+                        curColor = Led_Color (static_cast<Led_Color::ColorValue> (unsigned(cword.fValue) << 8), 0, 0);
                     }
                 }
                 else {
@@ -2123,7 +2126,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (curColor.GetRed (), unsigned(cword.fValue) << 8, 0);
+                        curColor = Led_Color (curColor.GetRed (), static_cast<Led_Color::ColorValue> (unsigned(cword.fValue) << 8), 0);
                     }
                 }
                 else {
@@ -2155,7 +2158,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_colortbl (ReaderContext& readerCo
                         HandleBadlyFormattedInput ();
                     }
                     else {
-                        curColor = Led_Color (curColor.GetRed (), curColor.GetGreen (), unsigned(cword.fValue) << 8);
+                        curColor = Led_Color (curColor.GetRed (), curColor.GetGreen (), static_cast<Led_Color::ColorValue> (unsigned(cword.fValue) << 8));
                     }
                 }
                 else {
@@ -2618,14 +2621,13 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                                 ImageFormat     imageFormat = eDefaultImageFormat;
                                 ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &objData);
                                 /*
-                                     *  For now - simply convert whatever sort of data it is to DIB data, and then create a DIB embedding.
-                                     *  In the future - we may want to keep the original Data - in some cases - like for enhanced-meta-files etc. Then here - read the data another way,
-                                     *  and convert another sort of embedding object. The reason we might want to make that change is that the conversion from
-                                     *  meta-file data to DIB data can be lossy, and can make the data size much larger - both bad things.
-                                     *      --LGP 2000-07-08
-                                     */
-                                unique_ptr<Led_DIB> dib             = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
-                                bool                createSucceeded = dib.get () != nullptr;
+                                 *  For now - simply convert whatever sort of data it is to DIB data, and then create a DIB embedding.
+                                 *  In the future - we may want to keep the original Data - in some cases - like for enhanced-meta-files etc. Then here - read the data another way,
+                                 *  and convert another sort of embedding object. The reason we might want to make that change is that the conversion from
+                                 *  meta-file data to DIB data can be lossy, and can make the data size much larger - both bad things.
+                                 *      --LGP 2000-07-08
+                                 */
+                                unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
                                 if (dib.get () != nullptr) {
                                     RTFIO::UnknownRTFEmbedding* e = new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag, s.c_str (), s.length (), dib.get ());
                                     e->SetShownSize (shownSize);
@@ -3451,7 +3453,7 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& re
 {
 #if qPlatform_Windows
     using RTFOLEEmbedding                                                   = RTFIO::RTFOLEEmbedding;
-    const Led_ClipFormat                                kOLEEmbedClipFormat = (Led_ClipFormat)::RegisterClipboardFormat (_T ("Object Descriptor"));
+    const Led_ClipFormat                                kOLEEmbedClipFormat = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T ("Object Descriptor")));
     const vector<EmbeddedObjectCreatorRegistry::Assoc>& types               = EmbeddedObjectCreatorRegistry::Get ().GetAssocList ();
     for (size_t i = 0; i < types.size (); i++) {
         EmbeddedObjectCreatorRegistry::Assoc assoc = types[i];
@@ -4176,14 +4178,14 @@ StyledTextIOWriter_RTF::StyledTextIOWriter_RTF (SrcStream* srcStream, SinkStream
     , fSoftLineBreakChar (srcStream->GetSoftLineBreakCharacter ())
     , fHidableTextRuns (srcStream->GetHidableTextRuns ())
 {
-    const pair<string, wchar_t> kCharsWrittenByName[] = {
-        pair<string, wchar_t> ("tab", 0x0009),
-        pair<string, wchar_t> ("emdash", 0x2013),
-        pair<string, wchar_t> ("endash", 0x2014),
-        pair<string, wchar_t> ("lquote", 0x2018),
-        pair<string, wchar_t> ("rquote", 0x2019),
-        pair<string, wchar_t> ("ldblquote", 0x201c),
-        pair<string, wchar_t> ("rdblquote", 0x201d),
+    static const pair<string, wchar_t> kCharsWrittenByName[] = {
+        pair<string, wchar_t> ("tab", L'\x0009'),
+        pair<string, wchar_t> ("emdash", L'\x2013'),
+        pair<string, wchar_t> ("endash", L'\x2014'),
+        pair<string, wchar_t> ("lquote", L'\x2018'),
+        pair<string, wchar_t> ("rquote", L'\x2019'),
+        pair<string, wchar_t> ("ldblquote", L'\x201c'),
+        pair<string, wchar_t> ("rdblquote", L'\x201d'),
     };
     SetCharactersSavedByName (vector<pair<string, wchar_t>> (&kCharsWrittenByName[0], &kCharsWrittenByName[NEltsOf (kCharsWrittenByName)]));
 }

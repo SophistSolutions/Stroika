@@ -57,7 +57,7 @@ inline SIZE DPtoHIMETRIC (SIZE s)
 COleDocument* Led_MFC_ControlItem::DocContextDefiner::sDoc = NULL;
 
 // Note sure this is the right type????
-const Led_ClipFormat          Led_MFC_ControlItem::kClipFormat   = (CLIPFORMAT)::RegisterClipboardFormat (_T("Object Descriptor"));
+const Led_ClipFormat          Led_MFC_ControlItem::kClipFormat   = static_cast<Led_ClipFormat> (::RegisterClipboardFormat (_T("Object Descriptor")));
 const Led_PrivateEmbeddingTag Led_MFC_ControlItem::kEmbeddingTag = "OLE2Embed";
 
 IMPLEMENT_SERIAL (Led_MFC_ControlItem, COleClientItem, 0)

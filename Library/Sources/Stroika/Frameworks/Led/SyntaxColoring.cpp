@@ -408,7 +408,6 @@ void TableDrivenKeywordSyntaxAnalyzer::AddMarkers (TextStore* ts, TextInteractor
     size_t                      len = lookBackTo - lookBackStart;
     SmallStackBuffer<Led_tChar> buf (len);
     ts->CopyOut (lookBackStart, len, buf);
-    bool preceedingCharKWDelimiter = false;
     for (size_t i = 0; i < len; ++i) {
         size_t kwl = fKeywordTable.KeywordLength (&buf[i], len - i);
         if (kwl != 0) {

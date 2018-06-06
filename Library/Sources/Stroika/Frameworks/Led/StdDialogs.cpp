@@ -2187,7 +2187,7 @@ StdColorPickBox::StdColorPickBox (const Led_Color& initialColor)
 {
 }
 
-StdColorPickBox::StdColorPickBox (HINSTANCE hInstance, HWND parentWnd, const Led_Color& initialColor)
+StdColorPickBox::StdColorPickBox ([[maybe_unused]] HINSTANCE hInstance, HWND parentWnd, const Led_Color& initialColor)
     : fColor (initialColor)
     , fParentWnd (parentWnd)
 {
@@ -2238,7 +2238,7 @@ bool StdColorPickBox::DoModal ()
 #endif
 
 #if qPlatform_Windows
-UINT_PTR CALLBACK StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+UINT_PTR CALLBACK StdColorPickBox::ColorPickerINITPROC (HWND hWnd, UINT message, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam)
 {
     if (hWnd != NULL and message == WM_INITDIALOG) {
         Led_CenterWindowInParent (hWnd);

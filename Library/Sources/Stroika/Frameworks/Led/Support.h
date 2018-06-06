@@ -83,7 +83,7 @@ public:                              \
 #define STLOpEqualDeclare_BWA(T)
 #endif
 
-/*
+            /*
              *  The Standard C++ mechanism of commenting out unused parameters isn't good enuf
              *  in the case where the parameters might be used conditionally. This hack is
              *  to shutup compiler warnings in those cases.
@@ -94,7 +94,7 @@ public:                              \
 
             const size_t kBadIndex = size_t (-1);
 
-/*
+            /*
             @CLASS:         Led_tChar
             @DESCRIPTION:   <p>There are lots of different ways of encoding character sets. And it is
                 a goal for Led to be able to support them all. The three major ways are wide characters,
@@ -209,7 +209,7 @@ public:                              \
             */
             const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c);
 
-/*
+            /*
             @CLASS:         Led_SDK_Char
             @DESCRIPTION:   <p>See @'Led_SDK_String'</p>
             */
@@ -553,7 +553,7 @@ public:                              \
             struct DiscontiguousRun : vector<DiscontiguousRunElement<DATA>> {
             };
 
-/*
+            /*
              *  Character set support.
              */
 #if qMultiByteCharacters
@@ -603,7 +603,7 @@ public:                              \
             bool Led_CasedCharsEqual (char lhs, char rhs, bool ignoreCase = true);
             bool Led_CasedStringsEqual (const string& lhs, const string& rhs, bool ignoreCase = true);
 
-/*
+            /*
              *  Clipboard access support.
              *
              *      Note - when using this on the PC - be sure clipboard opened/closed
@@ -816,7 +816,7 @@ public:                              \
 
             string MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs = string ());
 
-/*
+            /*
             @CONFIGVAR:     qLedCheckCompilerFlagsConsistency
             @DESCRIPTION:   <p>Some development environments make it easy to accidentally provide an inconsistent set of compilation flags
                         across compilation units (e.g. MSVC/MS Visual Studio.Net is like this). This is a <em>bad</em> thing.</p>

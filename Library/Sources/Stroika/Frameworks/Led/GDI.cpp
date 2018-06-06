@@ -437,7 +437,7 @@ namespace {
 
         size_t aveSpace = 255 / nColorsLeft;
 
-        BYTE startAt = aveSpace;
+        BYTE startAt = static_cast<BYTE> (aveSpace);
         while (i < 254 and startAt < 255) {
             COLORREF c = RGB (startAt, startAt, startAt);
             Assert (sizeof (RGBQUAD) == sizeof (COLORREF));
@@ -447,7 +447,7 @@ namespace {
                 i++;
                 nColorsLeft--;
             }
-            startAt += aveSpace;
+            startAt += static_cast<BYTE> (aveSpace);
         }
 
         Assert (nColorsLeft == 255 - i);
@@ -456,9 +456,9 @@ namespace {
         Assert (nColorsLeft >= 1); // I'm pretty sure this has to get us under 5 - or pretty close...
 
         for (; i <= 255; ++i) {
-            colorTable[i].rgbRed   = i;
-            colorTable[i].rgbGreen = i;
-            colorTable[i].rgbBlue  = i;
+            colorTable[i].rgbRed   = static_cast<BYTE> (i);
+            colorTable[i].rgbGreen = static_cast<BYTE> (i);
+            colorTable[i].rgbBlue  = static_cast<BYTE> (i);
         }
     }
 
@@ -1666,7 +1666,7 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
             re-ordered in the argument passed in, and any mirroring should have already been done. This routine WILL
             take care of any contextual shaping required (glyph selection based on context - as with Arabic).</p>
 */
-void Led_Tablet_::TabbedTextOut (const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
+void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
                                  TextDirection direction,
                                  Led_Point outputAt, Led_Coordinate hTabOrigin, const Led_TabStopList& tabStopList,
                                  Led_Distance* amountDrawn, Led_Coordinate hScrollOffset)
@@ -2080,7 +2080,7 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Colo
                 <p>Note the backColor and foreColor are advisory - and maybe ignored if the GDI better supports (or the
             platform UI conventionally calls for) inverting the text via a simple XOR.</p>
 */
-void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, [[maybe_unused]] Led_Color hilightBackColor, [[maybe_unused]] Led_Color hilightForeColor, [[maybe_unused]] Led_Color oldBackColor, [[maybe_unused]] Led_Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
@@ -2820,7 +2820,7 @@ size_t Led::Led_GetDIBPalletByteCount (const Led_DIB* dib)
     if (IS_WIN30_DIB (dib)) {
         size_t                  byteCount = DIBNumColors (dib) * sizeof (RGBQUAD);
         const BITMAPINFOHEADER& hdr       = dib->bmiHeader;
-        unsigned short          bitCount  = Led_ByteSwapFromWindows (hdr.biBitCount);
+        //unsigned short          bitCount  = Led_ByteSwapFromWindows (hdr.biBitCount);
         if (Led_ByteSwapFromWindows (hdr.biCompression) == BI_BITFIELDS) {
 #if qPlatform_Windows
             Assert (sizeof (DWORD) == sizeof (unsigned int));
@@ -2828,7 +2828,7 @@ size_t Led::Led_GetDIBPalletByteCount (const Led_DIB* dib)
             Assert (4 == sizeof (unsigned int));
             byteCount += 3 * sizeof (unsigned int);
         }
-        return (byteCount);
+        return byteCount;
     }
     else {
         Assert (sizeof (RGBTRIPLE) == 3); // make sure we have this defined right on each platform
