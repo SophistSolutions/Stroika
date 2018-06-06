@@ -89,14 +89,9 @@ void SimpleAllocator_CallLIBCNewDelete::Deallocate (void* p)
 namespace {
     const unsigned int kPreGUARD   = 0x39;
     const unsigned int kPost_GUARD = 0x1f;
-    struct MemWithExtraStuff {
-        union {
-            struct {
-                unsigned int fPreGuard;
-                size_t       fBlockSize;
-            };
-            double fOtherStuff; // hack so we get right alignment
-        };
+    struct alignas (double) MemWithExtraStuff {
+        unsigned int fPreGuard;
+        size_t       fBlockSize;
     };
 }
 
