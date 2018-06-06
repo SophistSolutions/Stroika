@@ -18,8 +18,7 @@ using PartitionMarker = Partition::PartitionMarker;
  ********************************************************************************
  */
 Partition::Partition (TextStore& textStore)
-    : inherited ()
-    ,
+    :
 #if qDebug
     fFinalConstructCalled (false)
     ,
@@ -355,8 +354,7 @@ void Partition::Invariant_ () const
  ********************************************************************************
  */
 PartitioningTextImager::PartitioningTextImager ()
-    : inherited ()
-    , fPartition (nullptr)
+    : fPartition (nullptr)
 #if qCacheTextMeasurementsForPM
     , fMeasureTextCache ()
 #endif
@@ -689,7 +687,7 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
              *  get us past 'hOffset'
              */
             size_t absoluteSegStart = rowStart + se.fRealStart;
-            size_t segLen           = se.fRealEnd - se.fRealStart;
+            //size_t segLen           = se.fRealEnd - se.fRealStart;
 
             size_t prevEnd = rowStart + se.fRealStart;
             size_t segEnd  = rowStart + se.fRealEnd;

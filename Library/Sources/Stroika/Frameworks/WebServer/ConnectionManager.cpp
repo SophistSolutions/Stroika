@@ -45,7 +45,7 @@ namespace {
                 , fCORSModeSupport (corsSupportMode)
             {
             }
-            virtual void HandleFault (Message* m, const exception_ptr& e) noexcept override
+            virtual void HandleFault ([[maybe_unused]] Message* m, [[maybe_unused]] const exception_ptr& e) noexcept override
             {
             }
             virtual void HandleMessage (Message* m) override

@@ -91,7 +91,7 @@ double WMICollector::PerInstanceData_::GetCurrentValue (const String& counterNam
     PDH_HCOUNTER         counter = *fCounters_.Lookup (counterName);
     PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
     if (x != 0) {
-        bool isPDH_PDH_INVALID_DATA = (x == PDH_INVALID_DATA);
+        [[maybe_unused]] bool isPDH_PDH_INVALID_DATA = (x == PDH_INVALID_DATA);
         Execution::Throw (StringException (L"PdhGetFormattedCounterValue"));
     }
     return counterVal.doubleValue;

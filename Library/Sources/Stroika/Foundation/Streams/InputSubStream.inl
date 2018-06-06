@@ -111,7 +111,7 @@ namespace Stroika {
                     Require (intoEnd - intoStart >= 1); // rule for InputStream<>::_IRep
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     Require (IsOpenRead ());
-                    SignedSeekOffsetType realOffset = fRealIn_.GetOffset ();
+                    //SignedSeekOffsetType realOffset = fRealIn_.GetOffset ();
                     if (fForcedEndInReal_) {
                         // adjust intoEnd to accomodate shortened stream
                         SeekOffsetType curReal    = fRealIn_.GetOffset ();
