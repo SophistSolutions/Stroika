@@ -120,7 +120,7 @@ namespace Stroika {
                      ****************************** Win32CharSetToCodePage **************************
                      ********************************************************************************
                      */
-                    inline CodePage Win32CharSetToCodePage (unsigned char lfCharSet)
+                    inline CodePage Win32CharSetToCodePage (uint8_t lfCharSet)
                     {
 // See MSFT info article Q165478. No routine to map from these charset values - just this table... Sigh...
 // LGP 2001-04-30

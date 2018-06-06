@@ -44,8 +44,10 @@ namespace Stroika {
                     @DESCRIPTION:   <p>Map from a Win32 lfCharset enumeration (as appears in RTF font specifications and LOGFONT specifications)
                                 This routine is made portable to other platforms BECAUSE it is used in RTF files.
                                 This function returns the magic code page # zero (CP_ACP on windows) if there is no good mapping.</p>
+                                
+                                From https://msdn.microsoft.com/en-us/library/windows/desktop/dd145037(v=vs.85).aspx - we have that lfCharset is a BYTE (8 bits unsigned)
                     */
-                    CodePage Win32CharSetToCodePage (unsigned char lfCharSet);
+                    CodePage Win32CharSetToCodePage (uint8_t lfCharSet);
 
                     /*
                     @METHOD:        Win32PrimaryLangIDToCodePage
