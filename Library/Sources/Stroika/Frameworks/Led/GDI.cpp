@@ -137,7 +137,7 @@ inline GWorldFlags SafeUpdateGWorld (GWorldPtr* offscreenGWorld, short pixelDept
 #if qPlatform_Windows
 inline void Win32_GetTextExtentExPoint (HDC hdc, const Led_tChar* str, size_t nChars, int maxExtent, LPINT lpnFit, LPINT alpDx, LPSIZE lpSize)
 {
-    Require (nChars < numeric_limits<int>::max ());
+    Require (nChars < static_cast<size_t> (numeric_limits<int>::max ()));
 #if qWideCharacters
     Verify (::GetTextExtentExPointW (hdc, str, static_cast<int> (nChars), maxExtent, lpnFit, alpDx, lpSize));
 #else
