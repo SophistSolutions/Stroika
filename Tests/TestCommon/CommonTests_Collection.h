@@ -95,8 +95,8 @@ namespace CommonTests {
                     for (T it : s) {
                     }
                 }
-                for (T  it : s) {
-                    for (T  it1 : s) {
+                for (T it : s) {
+                    for (T it1 : s) {
                         s.RemoveAll ();
                     }
                 }
@@ -251,7 +251,7 @@ namespace CommonTests {
             template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY>
             void BasicIteratorTest_ (CONCRETE_CONTAINER_FACTORY factory)
             {
-                CONCRETE_CONTAINER                      collection = factory ();
+                CONCRETE_CONTAINER                                       collection = factory ();
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t1         = 1;
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t2         = 2;
                 [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t3         = 3;

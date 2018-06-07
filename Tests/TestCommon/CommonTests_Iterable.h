@@ -22,7 +22,7 @@ namespace CommonTests {
             {
                 size_t l   = container.GetLength ();
                 size_t cnt = 0;
-                for (auto [[maybe_unused]] i : container) {
+                for (auto i : container) {
                     cnt++;
                 }
                 VerifyTestResult (cnt == l);
