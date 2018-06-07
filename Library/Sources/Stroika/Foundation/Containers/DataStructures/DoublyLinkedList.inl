@@ -383,7 +383,7 @@ namespace Stroika {
                             _fTail = nullptr;
                         }
                         else {
-                            Assert (_fHead->fPrev = victim); // Victim used to be 'C's prev
+                            Assert (_fHead->fPrev == victim); // Victim used to be 'C's prev
                             _fHead->fPrev = nullptr;         // Now Nil!
                         }
                     }
@@ -397,7 +397,7 @@ namespace Stroika {
                             _fTail = victim->fPrev; //  'A' is now last
                         }
                         else {
-                            Assert (victim->fNext->fPrev = victim); // Victim used to be 'C's prev
+                            Assert (victim->fNext->fPrev == victim); // Victim used to be 'C's prev
                             victim->fNext->fPrev = victim->fPrev;   // Now 'A' is
                         }
                     }
@@ -473,7 +473,7 @@ namespace Stroika {
                             // Since fCurrent != nullptr from above, we update its prev, and dont have
                             // to worry about _fTail.
                             iteratorCurLink->fPrev = prev->fNext;
-                            Assert (i._fCurrent->fPrev->fPrev = prev); // old prev is two back now...
+                            Assert (i._fCurrent->fPrev->fPrev == prev); // old prev is two back now...
                         }
                     }
                     this->Invariant ();
