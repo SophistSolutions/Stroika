@@ -1025,9 +1025,9 @@ namespace Stroika {
                     }
                     if (heightUsed > windowHeight) {
                         // We went back one too far - forward one and return that.
-                        bool result = GetNextRowReference (&curRow);
+                        [[maybe_unused]] bool result = GetNextRowReference (&curRow);
                         Assert (result);
-                        return (curRow);
+                        return curRow;
                     }
                     else if (heightUsed == windowHeight) {
                         return (curRow); // Then we used all the space we could have - and that is a good row!

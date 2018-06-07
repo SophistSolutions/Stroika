@@ -2996,7 +2996,7 @@ namespace Stroika {
                             }
                         }
                     }
-                    HWND hWnd = ::CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
+                    [[maybe_unused]] HWND hWnd = ::CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, this);
                     Assert (hWnd == GetValidatedHWND ()); // already pre-set on the WM_CREATE message...
                 }
                 template <typename BASE_WIN32_HELPER>

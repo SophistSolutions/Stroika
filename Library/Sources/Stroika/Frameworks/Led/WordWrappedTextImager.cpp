@@ -418,7 +418,7 @@ size_t WordWrappedTextImager::FindWrapPointForOneLongWordForMeasuredText (
     // really big word. But don't bother with all the fancy stuff. Just take the charwidth of
     // the first character as an estimate, and then spin up or down til we get just the
     // right length...
-    size_t secondCharIdx = FindNextCharacter (offsetToMarkerCoords + 0);
+    [[maybe_unused]] size_t secondCharIdx = FindNextCharacter (offsetToMarkerCoords + 0);
     Assert (secondCharIdx >= offsetToMarkerCoords);
     Led_Distance fullWordWidth = LookupLengthInVector (widthsVector, startSoFar, length);
 

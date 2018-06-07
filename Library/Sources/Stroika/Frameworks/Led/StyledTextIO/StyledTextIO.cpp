@@ -801,7 +801,7 @@ void StyledTextIOWriterSinkStream_FileDescriptor::Flush ()
 {
     if (fBufferWindowStart != fBufferWindowEnd) {
         Assert (fOutputBufferSize != 0);
-        size_t bytesInWindow = fBufferWindowEnd - fBufferWindowStart;
+        [[maybe_unused]] size_t bytesInWindow = fBufferWindowEnd - fBufferWindowStart;
         Assert (fOutputBufferSize >= bytesInWindow);
 #if qPlatform_MacOS
         Led_ThrowOSErr (::SetFPos (fFileDescriptor, fsFromStart, fBufferWindowStart));

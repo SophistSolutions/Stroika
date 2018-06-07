@@ -143,7 +143,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename INT_TYPE, typename FLOAT_TYPE>
-            INT_TYPE Round (FLOAT_TYPE x)
+            inline INT_TYPE Round (FLOAT_TYPE x)
             {
                 FLOAT_TYPE tmp = std::round (x);
                 if (tmp > 0) {

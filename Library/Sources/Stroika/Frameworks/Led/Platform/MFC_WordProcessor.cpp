@@ -342,7 +342,7 @@ void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
 }
 
 void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                                       size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                       [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                        Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Require (to - from == 1);
@@ -370,16 +370,15 @@ void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const Run
     COleClientItem::Draw (Led_MFC_CDCFromTablet (tablet), CRect (AsRECT (innerBoundsRect)));
 }
 
-void Led_MFC_ControlItem::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
-                                               const Led_tChar* text,
-                                               Led_Distance*    distanceResults) const
+void Led_MFC_ControlItem::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                               [[maybe_unused]] const Led_tChar* text, Led_Distance* distanceResults) const
 {
     Assert (from + 1 == to);
     Assert (text[0] == kEmbeddingSentinalChar);
     distanceResults[0] = fSize.h + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance Led_MFC_ControlItem::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
     return fSize.v + 2 * kDefaultEmbeddingMargin.v;

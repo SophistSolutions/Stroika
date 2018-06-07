@@ -78,7 +78,7 @@ static __inline__ __u32 ethtool_cmd_speed (const struct ethtool_cmd* ep, HACK i 
 namespace {
     // Windows uses '-' as separator, and linux ':'. Pick arbitrarily (more linux machines
     // than windows, or soon will be)
-    auto PrintMacAddr_ (const uint8_t* macaddrBytes, const uint8_t* macaddrBytesEnd) -> String
+    auto PrintMacAddr_ (const uint8_t* macaddrBytes, [[maybe_unused]] const uint8_t* macaddrBytesEnd) -> String
     {
         Require (macaddrBytesEnd - macaddrBytes == 6);
         char buf[100]{};

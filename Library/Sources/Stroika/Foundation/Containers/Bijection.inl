@@ -168,7 +168,7 @@ namespace Stroika {
             inline Memory::Optional<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key) const
             {
                 Memory::Optional<RANGE_TYPE> r;
-                bool                         result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
+                [[maybe_unused]] bool        result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
             }

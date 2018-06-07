@@ -1545,7 +1545,7 @@ void TextImager::DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowR
                 <p>Note, only the invalidRect subset of currentRowRect need be drawn, though the rest CAN be.</p>
                 <p>Renamed/Moved to @'TextImager::DrawRowHilight' from MutliRowTextImager::DrawRowHilight for Led 3.1a3 release.</p>
 */
-void TextImager::DrawRowHilight (Led_Tablet tablet, const[[maybe_unused]] Led_Rect& currentRowRect, const Led_Rect& /*invalidRowRect*/,
+void TextImager::DrawRowHilight (Led_Tablet tablet, [[maybe_unused]] const Led_Rect& currentRowRect, const Led_Rect& /*invalidRowRect*/,
                                  const TextLayoutBlock& text, size_t rowStart, size_t rowEnd)
 {
     Require (rowEnd == GetEndOfRowContainingPosition (rowStart)); // passed in for performance reasons - so not computed multiple times
@@ -1786,7 +1786,7 @@ void TextImager::DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& f
      *  of different markers which overlap, and have come up with noting reasonable. So its
      *  up to YOU by overriding this method todo what you want.
      */
-    size_t length = to - from;
+    [[maybe_unused]] size_t length = to - from;
 
     /*
      *  Setup the colors to be drawn.

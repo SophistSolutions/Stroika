@@ -131,7 +131,7 @@ auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> C
     // USE ppoll? Also verify meaning of timeout, as docs on http://linux.die.net/man/2/poll seem to suggest
     // I have this wrong but I suspect docs wrong (says "The timeout argument specifies the minimum number of milliseconds that poll() will block"
     // which sounds backward...
-    int timeout_msecs = Math::Round<int> (time2Wait * 1000);
+    [[maybe_unused]] int timeout_msecs = Math::Round<int> (time2Wait * 1000);
     Assert (timeout_msecs >= 0);
     int pollResult;
 #if qPlatform_Windows

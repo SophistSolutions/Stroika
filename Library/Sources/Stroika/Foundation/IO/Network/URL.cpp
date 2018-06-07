@@ -526,9 +526,9 @@ bool URL::Equals (const URL& rhs) const
 
 int URL::Compare (const URL& rhs) const
 {
-    String lhsF   = GetFullURL ();
-    String rhsF   = rhs.GetFullURL ();
-    int    result = lhsF.Compare (rhsF);
+    String               lhsF   = GetFullURL ();
+    String               rhsF   = rhs.GetFullURL ();
+    [[maybe_unused]] int result = lhsF.Compare (rhsF);
     Assert (Equals (rhs) == (result == 0)); // ensure Compare matches Equals
     return lhsF.Compare (rhsF);
 }

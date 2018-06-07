@@ -852,7 +852,7 @@ bool WordProcessor::DialogSupport::AddNewTableDialog (size_t* nRows, size_t* nCo
     return true;
 }
 
-bool WordProcessor::DialogSupport::EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties)
+bool WordProcessor::DialogSupport::EditTablePropertiesDialog ([[maybe_unused]] TableSelectionPropertiesInfo* tableProperties)
 {
     RequireNotNull (tableProperties);
     return false; // You must implement this yourself in your own subclass - or don't enable commands that call it.
@@ -5184,7 +5184,7 @@ WordProcessorTextIOSrcStream::Table* WordProcessorTextIOSrcStream::GetTableAt (s
          *  Make sure we create a TableIOMapper for just the subset of the document selected. For now, this just
          *  applies to ROWS (no support yet for selecting columns).
          */
-        size_t realCoordEnd = min (maybeTable.fResult->GetEnd (), GetSelEnd ());
+        [[maybe_unused]] size_t realCoordEnd = min (maybeTable.fResult->GetEnd (), GetSelEnd ());
         Assert (realCoordStart < realCoordEnd);
         if (fUseTableSelection) {
             size_t rowSelStart = 0;
@@ -5818,7 +5818,7 @@ Done:
     }
 }
 
-void Table::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+void Table::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
                                  [[maybe_unused]] const Led_tChar* text, Led_Distance* distanceResults) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
@@ -5827,7 +5827,7 @@ void Table::MeasureSegmentWidth (const StyledTextImager* imager, const RunElemen
     distanceResults[0] = fTotalWidth;
 }
 
-Led_Distance Table::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
+Led_Distance Table::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
