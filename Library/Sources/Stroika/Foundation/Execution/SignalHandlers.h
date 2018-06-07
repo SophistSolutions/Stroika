@@ -307,7 +307,7 @@ namespace Stroika {
              *
              *  The easiest (and recommened) way to do this is to add the line:
              *      SignalHandlerRegistry::SafeSignalsManager   safeSignalsMgr;
-             *  to the beginning of main (int argc, const char* argv[])...
+             *  to the beginning of main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])...
              */
             class SignalHandlerRegistry::SafeSignalsManager {
             public:

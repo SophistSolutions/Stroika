@@ -1649,7 +1649,7 @@ void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
 }
 
 #if qSupportStdFindDlg
-    /*
+/*
  ********************************************************************************
  *************************** Led_StdDialogHelper_FindDialog *********************
  ********************************************************************************
@@ -2379,7 +2379,7 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
 #endif
 
 #if qSupportParagraphIndentsDlg
-    /*
+/*
  ********************************************************************************
  ******************* Led_StdDialogHelper_ParagraphIndentsDialog *****************
  ********************************************************************************
@@ -2680,7 +2680,7 @@ void Led_StdDialogHelper_OtherFontSizeDialog::OnOK ()
 #endif
 
 #if qSupportUnknownEmbeddingInfoDlg
-    /*
+/*
  ********************************************************************************
  ******************* Led_StdDialogHelper_UnknownEmbeddingInfoDialog *************
  ********************************************************************************
@@ -2741,7 +2741,7 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
-    /*
+/*
  ********************************************************************************
  ******************* Led_StdDialogHelper_URLXEmbeddingInfoDialog ****************
  ********************************************************************************
@@ -2865,7 +2865,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
-    /*
+/*
  ********************************************************************************
  ******************* Led_StdDialogHelper_AddURLXEmbeddingInfoDialog *************
  ********************************************************************************
@@ -2974,7 +2974,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
 #endif
 
 #if qSupportAddNewTableDlg
-    /*
+/*
  ********************************************************************************
  ********************* Led_StdDialogHelper_AddNewTableDialog ********************
  ********************************************************************************

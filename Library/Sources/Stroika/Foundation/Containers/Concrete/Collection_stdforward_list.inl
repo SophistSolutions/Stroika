@@ -129,15 +129,15 @@ namespace Stroika {
                         // HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
                         {
                             auto ei = fData_.before_begin ();
-                            for (auto i = fData_.begin (); i != fData_.end (); ++i) {
-                                if (i == mir.fIterator.fStdIterator) {
+                            for (auto ii = fData_.begin (); ii != fData_.end (); ++ii) {
+                                if (ii == mir.fIterator.fStdIterator) {
                                     Memory::SmallStackBuffer<typename DataStructureImplType_::ForwardIterator*> items2Patch (0);
-                                    fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
+                                    fData_.TwoPhaseIteratorPatcherPass1 (ii, &items2Patch);
                                     auto newI = fData_.erase_after (ei);
                                     fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
                                     return;
                                 }
-                                ei = i;
+                                ei = ii;
                             }
                         }
                     }

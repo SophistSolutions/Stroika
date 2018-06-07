@@ -146,7 +146,6 @@ namespace {
     }
 }
 
-
 #if !qWideCharacters
 
 /*
