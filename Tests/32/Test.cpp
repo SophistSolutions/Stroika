@@ -176,7 +176,7 @@ namespace {
         }
         void Test_2a_ObjectReader_viaRegistry_ ()
         {
-            TraceContextBumper ctx ("Test_2a_ObjectReader_viaRegistry_");
+            TraceContextBumper traceCtx{"Test_2a_ObjectReader_viaRegistry_"};
 
             ObjectReader::Registry registry;
 
@@ -834,7 +834,7 @@ namespace {
                     : fValuePtr_ (v)
                 {
                 }
-                virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+                virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
                 {
                     using namespace ObjectReader;
                     DISABLE_COMPILER_MSC_WARNING_START (4573)

@@ -34,7 +34,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"{}::RunTests_"};
         CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
             []() { return CONCRETE_CONTAINER (); },
-            []([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
+            []([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) { Lambda_Arg_Unused_BWA (c); });
     }
 }
 

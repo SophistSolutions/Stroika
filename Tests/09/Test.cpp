@@ -62,7 +62,7 @@ namespace {
     template <typename CONTAINER, typename COMPARER>
     void doIt_t3_ ()
     {
-        CommonTests::AssociationTests::SimpleAssociationTest_WhichRequiresExplcitValueComparer<CONTAINER, COMPARER> ([](const CONTAINER& c) {});
+        CommonTests::AssociationTests::SimpleAssociationTest_WhichRequiresExplcitValueComparer<CONTAINER, COMPARER> ([]([[maybe_unused]] const CONTAINER& c) {});
     }
     void Test3_SimpleAssociationTest_WhichRequiresExplcitValueComparer ()
     {

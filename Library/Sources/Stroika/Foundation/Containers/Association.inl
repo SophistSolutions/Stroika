@@ -126,7 +126,7 @@ namespace Stroika {
             inline Memory::Optional<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
             {
                 Memory::Optional<MAPPED_VALUE_TYPE> r;
-                bool                                result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
+                [[maybe_unused]] bool               result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
             }
@@ -426,7 +426,7 @@ namespace Stroika {
                             , fAssociation_ (map)
                         {
                         }
-                        virtual Iterator<KEY_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                             auto getNext   = [myContext]() -> Memory::Optional<KEY_TYPE> {
@@ -474,7 +474,7 @@ namespace Stroika {
                             , fAssociation_ (map)
                         {
                         }
-                        virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                        virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
                             auto getNext   = [myContext]() -> Memory::Optional<MAPPED_VALUE_TYPE> {

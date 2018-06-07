@@ -237,7 +237,7 @@ namespace CommonTests {
                         auto keys = c.Keys ();
                         VerifyTestResult (keys.length () == K);
                         int a = 0;
-                        for (auto i : keys) {
+                        for ([[maybe_unused]] auto i : keys) {
                             a++;
                         }
                         VerifyTestResult (a == K);

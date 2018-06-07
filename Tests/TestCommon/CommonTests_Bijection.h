@@ -83,7 +83,7 @@ namespace CommonTests {
             namespace Test3_ConstructFromOtherTypes_ {
 
                 template <typename TESTING_SCHEMA>
-                void DoAllTests_ (const TESTING_SCHEMA& testingSchema)
+                void DoAllTests_ ([[maybe_unused]] const TESTING_SCHEMA& testingSchema)
                 {
                     using USING_BIJECTION_CONTAINER = typename TESTING_SCHEMA::ConcreteContainerType;
                     using DomainType                = typename USING_BIJECTION_CONTAINER::DomainType;

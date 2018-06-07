@@ -93,6 +93,7 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= s.GetLength (); i++) {
                     for (T it : s) {
+                        Lambda_Arg_Unused_BWA (it);
                     }
                 }
                 for (T it : s) {
@@ -289,7 +290,7 @@ namespace CommonTests {
             }
 
             template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
-            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
+            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test4_IteratorsBasics_"};
                 BasicIteratorTest_<CONCRETE_CONTAINER> (factory);

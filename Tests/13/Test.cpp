@@ -39,13 +39,9 @@ namespace {
                 DataHyperRectangle2<int> x = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {
-                    int breakhere = 1;
-                    int b2        = 3;
                 }
                 x.SetAt (2, 2, 4);
                 for (auto t : x) {
-                    int breakhere = 1;
-                    int b2        = 3;
                 }
             }
         }
@@ -60,8 +56,6 @@ namespace {
                 DataHyperRectangle2<int> x = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
                 Verify (x.GetAt (2, 2) == 0);
                 for (auto t : x) {
-                    int breakhere = 1;
-                    int b2        = 3;
                 }
             }
         }
@@ -80,8 +74,6 @@ namespace {
             VerifyTestResult (tmp.GetAt (2, 2) == 4);
             Verify (tmp.GetLength () == 1);
             for (auto t : tmp) {
-                int breakhere = 1;
-                int b2        = 3;
             }
         }
     }
@@ -95,8 +87,6 @@ namespace {
             DataHyperRectangle2<int> x = CONCRETE_CONTAINER2{3, 4};
             Verify (x.GetAt (2, 2) == 0);
             for (auto t : x) {
-                int breakhere = 1;
-                int b2        = 3;
             }
         }
     }

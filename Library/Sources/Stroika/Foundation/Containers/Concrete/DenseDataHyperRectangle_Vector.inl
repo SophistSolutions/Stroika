@@ -64,7 +64,7 @@ namespace Stroika {
                         // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
                         return Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                     }
-                    virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                     {
 /// NYI
 #if 0
@@ -82,15 +82,16 @@ namespace Stroika {
                     {
                         return fData_.empty ();
                     }
-                    virtual void Apply (_APPLY_ARGTYPE doToElement) const override
+                    virtual void Apply ([[maybe_unused]] _APPLY_ARGTYPE doToElement) const override
                     {
+                        AssertNotImplemented ();
 #if 0
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
 #endif
                     }
-                    virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
+                    virtual Iterator<tuple<T, INDEXES...>> FindFirstThat ([[maybe_unused]] _APPLYUNTIL_ARGTYPE doToElement, [[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                     {
                         using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
 #if 1
@@ -133,10 +134,11 @@ namespace Stroika {
                         /// NYI
                         return T{};
                     }
-                    virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
+                    virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Configuration::ArgByValueType<T> v) override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         /// NYI
+                        AssertNotImplemented ();
                     }
 
                 private:

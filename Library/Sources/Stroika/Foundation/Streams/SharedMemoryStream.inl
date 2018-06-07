@@ -275,8 +275,9 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename ELEMENT_TYPE>
-            inline auto SharedMemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
+            inline auto SharedMemoryStream<ELEMENT_TYPE>::New ([[maybe_unused]] Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
             {
+                // always return internally synchronized rep
                 return make_shared<Rep_> ();
             }
             template <typename ELEMENT_TYPE>

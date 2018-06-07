@@ -216,7 +216,7 @@ namespace CommonTests {
 
         namespace Test_8_Iteration_With_Value_Comparer {
             template <typename USING_ASSOCIATION_CONTAINER, typename TEST_FUNCTION, typename VALUE_EQUALS_COMPARER_TYPE>
-            void DoAllTests_ (TEST_FUNCTION applyToContainer)
+            void DoAllTests_ ([[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
 #if 0
 

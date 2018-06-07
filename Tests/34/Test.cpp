@@ -78,7 +78,7 @@ namespace {
                 }
                 DB (const DB&)         = delete;
                 nonvirtual DB& operator= (const DB&) = delete;
-                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const Optional<String>& ScanLabel, ScanKindType_ scanKind, const Optional<SpectrumType_>& rawSpectrum, const PersistenceScanAuxDataType_& AuxData, const Optional<ScanIDType_>& Background, const Optional<ScanIDType_>& Reference)
+                nonvirtual ScanIDType_ ScanPersistenceAdd (const DateTime& ScanStart, const DateTime& ScanEnd, const Optional<String>& ScanLabel, ScanKindType_ scanKind, const Optional<SpectrumType_>& rawSpectrum)
                 {
                     String insertSQL = [&]() {
                         StringBuilder sb;
@@ -194,15 +194,12 @@ namespace {
                     }
                 }
                 DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).Value (-1));
-                SpectrumType_               spectrum;
-                PersistenceScanAuxDataType_ AuxData;
-                Optional<ScanIDType_>       Background;
-                Optional<ScanIDType_>       Reference;
-                const unsigned int          kNRecordsAddedPerTestCall = 100;
+                SpectrumType_      spectrum;
+                const unsigned int kNRecordsAddedPerTestCall = 100;
                 for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {
                     DateTime    scanStartTime = DateTime::Now () - Duration (.1);
                     DateTime    scanEndTime   = DateTime::Now ();
-                    ScanIDType_ sid           = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum, AuxData, Background, Reference);
+                    ScanIDType_ sid           = db.ScanPersistenceAdd (scanStartTime, scanEndTime, String{L"Hi Mom"}, ScanKindType_::Reference, spectrum);
                     Verify (sid == *db.GetLastScan (ScanKindType_::Reference));
                     Verify (sid == nTimesRanBefore * kNRecordsAddedPerTestCall + i + 1);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

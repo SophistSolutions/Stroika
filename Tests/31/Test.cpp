@@ -132,13 +132,13 @@ namespace {
         Variant::JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileOutputStream::Ptr tmp = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-            Variant::JSON::Writer ().Write (v, tmp);
+            IO::FileSystem::FileOutputStream::Ptr tmpFileStream = IO::FileSystem::FileOutputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            Variant::JSON::Writer ().Write (v, tmpFileStream);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::FileInputStream::Ptr tmp  = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-            SharedContactsConfig_                tmp2 = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmp));
+            IO::FileSystem::FileInputStream::Ptr tmpFileStream = IO::FileSystem::FileInputStream::New (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            SharedContactsConfig_                tmp2          = mapper.ToObject<SharedContactsConfig_> (Variant::JSON::Reader ().Read (tmpFileStream));
         }
 
         // THEN deserialized, and mapped back to C++ object form
