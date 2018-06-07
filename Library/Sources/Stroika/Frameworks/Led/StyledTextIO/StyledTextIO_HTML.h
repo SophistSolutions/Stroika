@@ -62,8 +62,8 @@ namespace Stroika {
                     // HTMLFontSizes are numbers from 1..7, and the default/normal is 3.
                     // Eventually, these could become virtual methods, and be hooked into stylesheets.
                 public:
-                    static int HTMLFontSizeToRealFontSize (int size);
-                    static int RealFontSizeToHTMLFontSize (int size);
+                    static Led_FontSpecification::FontSize HTMLFontSizeToRealFontSize (int size);
+                    static int                             RealFontSizeToHTMLFontSize (Led_FontSpecification::FontSize size);
 
                 public:
                     string         fDocTypeTag;

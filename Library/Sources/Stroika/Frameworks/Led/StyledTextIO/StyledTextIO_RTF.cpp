@@ -54,95 +54,98 @@ using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
-inline int ConvertReadSingleHexDigit (char digit)
-{
-    if (isupper (digit)) {
-        digit = static_cast<char> (tolower (digit));
+namespace {
+    inline int ConvertReadSingleHexDigit_ (char digit)
+    {
+        if (isupper (digit)) {
+            digit = static_cast<char> (tolower (digit));
+        }
+        if (isdigit (digit)) {
+            return digit - '0';
+        }
+        else if (islower (digit)) {
+            return 10 + (digit - 'a');
+        }
+        else {
+            Led_ThrowBadFormatDataException ();
+            Assert (false);
+            return 0; // not reached
+        }
     }
-    if (isdigit (digit)) {
-        return digit - '0';
+    inline char ConvertWriteSingleHexDigit_ (int numZeroToFifteen)
+    {
+        Require (numZeroToFifteen >= 0);
+        Require (numZeroToFifteen <= 15);
+        if (numZeroToFifteen < 10) {
+            return static_cast<char> ('0' + numZeroToFifteen);
+        }
+        else {
+            return static_cast<char> ('a' + (numZeroToFifteen - 10));
+        }
     }
-    else if (islower (digit)) {
-        return 10 + (digit - 'a');
-    }
-    else {
-        Led_ThrowBadFormatDataException ();
-        Assert (false);
-        return 0; // not reached
-    }
-}
-inline char ConvertWriteSingleHexDigit (int numZeroToFifteen)
-{
-    Require (numZeroToFifteen >= 0);
-    Require (numZeroToFifteen <= 15);
-    if (numZeroToFifteen < 10) {
-        return static_cast<char> ('0' + numZeroToFifteen);
-    }
-    else {
-        return static_cast<char> ('a' + (numZeroToFifteen - 10));
-    }
-}
 
-// RTF / Led_LineSpacing support
-inline static Led_LineSpacing mkLineSpacing_From_RTFValues (Led_Coordinate sl, bool multi)
-{
-    Led_LineSpacing result; // defaults to single line...
-    if (sl != 1000) {
-        if (multi) {
-            /*
+    // RTF / Led_LineSpacing support
+    inline static Led_LineSpacing mkLineSpacing_From_RTFValues_ (Led_Coordinate sl, bool multi)
+    {
+        Led_LineSpacing result; // defaults to single line...
+        if (sl != 1000) {
+            if (multi) {
+                /*
              *  This / 12 is total guesswork. The RTF 1.5 Spec is TOTALLY VAGUE. Much of this was just guestimated
              *  and infered from the Win32 Docs on PARAFORMAT2, plus the trial and error - which yielded that
              *  dividing by 12 got the right answer!
              *      -- LGP 2000/06/12
              */
-            if (sl < 0 or sl > 2000) {
-                sl = 240; // will work out to single line - don't let bogus values in the RTF file make trouble for us...
-            }
-            result = Led_LineSpacing (Led_LineSpacing::eExactLinesSpacing, sl / 12);
-        }
-        else {
-            if (sl < 0) {
-                result = Led_LineSpacing (Led_LineSpacing::eExactTWIPSSpacing, Led_TWIPS (-sl));
+                if (sl < 0 or sl > 2000) {
+                    sl = 240; // will work out to single line - don't let bogus values in the RTF file make trouble for us...
+                }
+                result = Led_LineSpacing (Led_LineSpacing::eExactLinesSpacing, sl / 12);
             }
             else {
-                result = Led_LineSpacing (Led_LineSpacing::eAtLeastTWIPSSpacing, Led_TWIPS (sl));
+                if (sl < 0) {
+                    result = Led_LineSpacing (Led_LineSpacing::eExactTWIPSSpacing, Led_TWIPS (-sl));
+                }
+                else {
+                    result = Led_LineSpacing (Led_LineSpacing::eAtLeastTWIPSSpacing, Led_TWIPS (sl));
+                }
             }
         }
+        return result;
     }
-    return result;
-}
-inline static void mkRTFValues_From_LineSpacing (Led_LineSpacing inLS, Led_Coordinate* sl, bool* multi)
-{
-    const int kOneLinesWorth = 240;
-    switch (inLS.fRule) {
-        case Led_LineSpacing::eOnePointFiveSpace:
-            *sl    = static_cast<Led_Coordinate> (kOneLinesWorth * 1.5);
-            *multi = true;
-            break;
-        case Led_LineSpacing::eDoubleSpace:
-            *sl    = kOneLinesWorth * 2;
-            *multi = true;
-            break;
-        case Led_LineSpacing::eAtLeastTWIPSSpacing:
-            *sl    = inLS.fArg;
-            *multi = false;
-            break;
-        case Led_LineSpacing::eExactTWIPSSpacing:
-            *sl    = -static_cast<Led_Coordinate> (inLS.fArg);
-            *multi = false;
-            break;
-        case Led_LineSpacing::eExactLinesSpacing:
-            *sl    = inLS.fArg * 12;
-            *multi = true;
-            break;
+    inline static void mkRTFValues_From_LineSpacing (Led_LineSpacing inLS, Led_Coordinate* sl, bool* multi)
+    {
+        const int kOneLinesWorth = 240;
+        switch (inLS.fRule) {
+            case Led_LineSpacing::eOnePointFiveSpace:
+                *sl    = static_cast<Led_Coordinate> (kOneLinesWorth * 1.5);
+                *multi = true;
+                break;
+            case Led_LineSpacing::eDoubleSpace:
+                *sl    = kOneLinesWorth * 2;
+                *multi = true;
+                break;
+            case Led_LineSpacing::eAtLeastTWIPSSpacing:
+                *sl    = inLS.fArg;
+                *multi = false;
+                break;
+            case Led_LineSpacing::eExactTWIPSSpacing:
+                *sl    = -static_cast<Led_Coordinate> (inLS.fArg);
+                *multi = false;
+                break;
+            case Led_LineSpacing::eExactLinesSpacing:
+                *sl    = inLS.fArg * 12;
+                *multi = true;
+                break;
 
-        default: // Treat as Single space
-        case Led_LineSpacing::eSingleSpace:
-            *sl    = 1000;
-            *multi = true;
-            break;
+            default: // Treat as Single space
+            case Led_LineSpacing::eSingleSpace:
+                *sl    = 1000;
+                *multi = true;
+                break;
+        }
     }
 }
+
 
 #if !qWideCharacters
 
@@ -368,7 +371,7 @@ size_t RTFIO::ColorTable::LookupColor (const Led_Color& color) const
     return 0;
 }
 
-int RTFIO::ColorTable::EnterColor (const Led_Color& color)
+size_t RTFIO::ColorTable::EnterColor (const Led_Color& color)
 {
     for (size_t i = 0; i < fEntries.size (); i++) {
         const Led_Color& c = fEntries[i];
@@ -846,7 +849,7 @@ void SinkStreamDestination::SetSpaceBetweenLines (Led_Coordinate sl)
     AboutToChange ();
     if (fCurrentContext.fSpaceBetweenLines != sl) {
         Flush ();
-        fSinkStream.SetLineSpacing (mkLineSpacing_From_RTFValues (fCurrentContext.fSpaceBetweenLines = sl, fCurrentContext.fSpaceBetweenLinesMult));
+        fSinkStream.SetLineSpacing (mkLineSpacing_From_RTFValues_ (fCurrentContext.fSpaceBetweenLines = sl, fCurrentContext.fSpaceBetweenLinesMult));
     }
 }
 
@@ -855,7 +858,7 @@ void SinkStreamDestination::SetSpaceBetweenLinesMult (bool multipleLineSpacing)
     AboutToChange ();
     if (fCurrentContext.fSpaceBetweenLinesMult != multipleLineSpacing) {
         Flush ();
-        fSinkStream.SetLineSpacing (mkLineSpacing_From_RTFValues (fCurrentContext.fSpaceBetweenLines, fCurrentContext.fSpaceBetweenLinesMult = multipleLineSpacing));
+        fSinkStream.SetLineSpacing (mkLineSpacing_From_RTFValues_ (fCurrentContext.fSpaceBetweenLines, fCurrentContext.fSpaceBetweenLinesMult = multipleLineSpacing));
     }
 }
 
@@ -1714,9 +1717,9 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                     case '\'': {
                         ConsumeNextChar ();
 
-                        int number = ConvertReadSingleHexDigit (GetNextChar ());
+                        int number = ConvertReadSingleHexDigit_ (GetNextChar ());
                         number *= 16;
-                        number += ConvertReadSingleHexDigit (GetNextChar ());
+                        number += ConvertReadSingleHexDigit_ (GetNextChar ());
                         c = number;
                         goto ReadNormalChar;
                     } break;
@@ -4438,8 +4441,8 @@ void StyledTextIOWriter_RTF::WriteHexCharHelper (unsigned char c)
     char buf[5];
     buf[0] = '\\';
     buf[1] = '\'';
-    buf[2] = ConvertWriteSingleHexDigit (c / 16);
-    buf[3] = ConvertWriteSingleHexDigit (c % 16);
+    buf[2] = ConvertWriteSingleHexDigit_ (c / 16);
+    buf[3] = ConvertWriteSingleHexDigit_ (c % 16);
     buf[4] = '\0';
     write (buf);
 }
@@ -4905,8 +4908,8 @@ void StyledTextIOWriter_RTF::WriteRTFHexByte (unsigned char theByte)
     unsigned char lowNibble = (theByte)&0xf;
     Require (hiNibble <= 0xf);
     Require (lowNibble <= 0xf);
-    write (ConvertWriteSingleHexDigit (hiNibble));
-    write (ConvertWriteSingleHexDigit (lowNibble));
+    write (ConvertWriteSingleHexDigit_ (hiNibble));
+    write (ConvertWriteSingleHexDigit_ (lowNibble));
 }
 
 void StyledTextIOWriter_RTF::WriteDocCharset ()

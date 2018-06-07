@@ -1065,7 +1065,7 @@ Led_Distance StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const S
 void StandardMacPictureWithURLStyleMarker::Write (SinkStream& sink)
 {
     {
-        uint32_t picSize = GetPictureByteSize ();
+        uint32_t picSize = static_cast<uint32_t> (GetPictureByteSize ());
         Led_ULONGToBuf (picSize, &picSize);
         Assert (sizeof (picSize) == 4);
         sink.write (&picSize, sizeof (picSize));
@@ -1260,7 +1260,7 @@ void StandardDIBWithURLStyleMarker::Write (SinkStream& sink)
 {
     const Led_DIB* dib = GetDIBData ();
     {
-        uint32_t dibSize = Led_GetDIBImageByteCount (dib);
+        uint32_t dibSize = static_cast<uint32_t> (Led_GetDIBImageByteCount (dib));
         Led_ULONGToBuf (dibSize, &dibSize);
         Assert (sizeof (dibSize) == 4);
         sink.write (&dibSize, sizeof (dibSize));

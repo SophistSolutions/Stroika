@@ -532,9 +532,9 @@ LRESULT LedComboBoxWidget::MyComboListBoxPopup::WndProc (UINT message, WPARAM wP
         }
         case WM_MOUSEMOVE: {
             /*
-                 *  As the mosue moves over the control - automatically select the item (like a menu behaivor)
-                 */
-            DWORD dw = SendMessage (LB_ITEMFROMPOINT, 0, lParam);
+             *  As the mosue moves over the control - automatically select the item (like a menu behaivor)
+             */
+            LRESULT dw = SendMessage (LB_ITEMFROMPOINT, 0, lParam);
             if (not HIWORD (dw)) {
                 int pos = LOWORD (dw);
                 Verify (SendMessage (LB_SETCURSEL, pos, 0) != LB_ERR);
@@ -622,7 +622,7 @@ void LedComboBoxWidget::MyComboListBoxPopup::ComputePreferedHeight (Led_Distance
     if (nElts >= kMaxElts) {
         nElts = kMaxElts;
     }
-    Led_Distance       singleEltHeight  = ::SendMessage (GetHWND (), LB_GETITEMHEIGHT, 0, 0);
+    Led_Distance       singleEltHeight  = static_cast<Led_Distance> (::SendMessage (GetHWND (), LB_GETITEMHEIGHT, 0, 0));
     const Led_Distance kEmpiricalKludge = 2; // LGP 2003-12-28
     *prefHeight                         = nElts * singleEltHeight + kEmpiricalKludge;
     *nEltsShown                         = nElts;
@@ -1649,7 +1649,7 @@ void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
 }
 
 #if qSupportStdFindDlg
-/*
+    /*
  ********************************************************************************
  *************************** Led_StdDialogHelper_FindDialog *********************
  ********************************************************************************
@@ -2348,13 +2348,13 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::PreDoModalHook ()
 #if qPlatform_Windows
     ::SetForegroundWindow (GetHWND ());
     Led_SDK_Char messageText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, messageText, NEltsOf (messageText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, messageText, static_cast<int> (NEltsOf (messageText)));
     Led_SDK_String m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fAppName);
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
     (void)::SetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_Msg, m.c_str ());
 
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg, messageText, NEltsOf (messageText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UpdateWin32FileAssocsDialog_KeepCheckingCheckboxMsg, messageText, static_cast<int> (NEltsOf (messageText)));
     m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fAppName);
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%1"), fTypeList);
@@ -2379,7 +2379,7 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
 #endif
 
 #if qSupportParagraphIndentsDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_ParagraphIndentsDialog *****************
  ********************************************************************************
@@ -2680,7 +2680,7 @@ void Led_StdDialogHelper_OtherFontSizeDialog::OnOK ()
 #endif
 
 #if qSupportUnknownEmbeddingInfoDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_UnknownEmbeddingInfoDialog *************
  ********************************************************************************
@@ -2741,7 +2741,7 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_URLXEmbeddingInfoDialog ****************
  ********************************************************************************
@@ -2852,9 +2852,9 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
     }
 #elif qPlatform_Windows
     Led_SDK_Char bufText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TitleText, bufText, NEltsOf (bufText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TitleText, bufText, static_cast<int> (NEltsOf (bufText)));
     fTitleText = bufText;
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, bufText, NEltsOf (bufText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_URLText, bufText, static_cast<int> (NEltsOf (bufText)));
     fURLText = bufText;
 #endif
 #if qPlatform_MacOS || qPlatform_Windows
@@ -2865,7 +2865,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_AddURLXEmbeddingInfoDialog *************
  ********************************************************************************
@@ -2974,7 +2974,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
 #endif
 
 #if qSupportAddNewTableDlg
-/*
+    /*
  ********************************************************************************
  ********************* Led_StdDialogHelper_AddNewTableDialog ********************
  ********************************************************************************

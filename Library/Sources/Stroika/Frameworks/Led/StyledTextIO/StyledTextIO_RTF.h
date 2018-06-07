@@ -346,7 +346,7 @@ namespace Stroika {
                     public:
                         nonvirtual Led_Color LookupColor (size_t colorNumber) const;  // throws if not present
                         nonvirtual size_t LookupColor (const Led_Color& color) const; // asserts if not present
-                        nonvirtual int    EnterColor (const Led_Color& color);        // LookupColor, and if not present, add it. Either way, return index
+                        nonvirtual size_t EnterColor (const Led_Color& color);        // LookupColor, and if not present, add it. Either way, return index
 
                     public:
                         vector<Led_Color> fEntries;

@@ -108,7 +108,7 @@ struct MyOLEStream_input : OLESTREAM {
         size_t             bytesToRead = min<size_t> (bytesLeft, nb);
         (void)::memcpy (data, myStream->cur, bytesToRead);
         myStream->cur += bytesToRead;
-        return bytesToRead;
+        return static_cast<DWORD> (bytesToRead);
     }
     MyOLEStream_input (const void* data, size_t nBytes)
         : start ((BYTE*)data)
@@ -129,7 +129,7 @@ SimpleEmbeddedObjectStyleMarker* Led_MFC_ControlItem::mkLed_MFC_ControlItemStyle
     //&&&&&&&
     if (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0) {
         Memory::SmallStackBuffer<char> buf (len);
-        CMemFile                       memFile ((unsigned char*)data, len);
+        CMemFile                       memFile ((unsigned char*)data, static_cast<UINT> (len));
         CArchive                       archive (&memFile, CArchive::load);
         builtItem->Serialize (archive);
     }

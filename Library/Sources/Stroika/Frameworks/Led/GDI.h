@@ -864,8 +864,10 @@ namespace Stroika {
                 nonvirtual void SetStyle_Strikeout (bool isStrikeout);
 #endif
 
-                nonvirtual unsigned short GetPointSize () const;
-                nonvirtual void           SetPointSize (unsigned short pointSize);
+                using FontSize = uint16_t;
+                nonvirtual FontSize GetPointSize () const;
+                nonvirtual void     SetPointSize (FontSize pointSize);
+
 #if qPlatform_Windows
                 nonvirtual long PeekAtTMHeight () const;        // Speed tweek
                 nonvirtual void PokeAtTMHeight (long tmHeight); // ditto
@@ -3596,7 +3598,7 @@ namespace Stroika {
             }
 #endif
             // FontSize info
-            inline unsigned short Led_FontSpecification::GetPointSize () const
+            inline Led_FontSpecification::FontSize Led_FontSpecification::GetPointSize () const
             {
 #if qPlatform_MacOS
                 return fFontSize;
@@ -3621,7 +3623,7 @@ namespace Stroika {
                 return fFontSize;
 #endif
             }
-            inline void Led_FontSpecification::SetPointSize (unsigned short pointSize)
+            inline void Led_FontSpecification::SetPointSize (FontSize pointSize)
             {
 #if qPlatform_MacOS
                 fFontSize = pointSize;

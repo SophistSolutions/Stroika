@@ -459,40 +459,33 @@ HTMLInfo::EntityRefMapEntry HTMLInfo::sDefaultEntityRefMapTable[] = {
 };
 const size_t HTMLInfo::kDefaultEntityRefMapTable_Count = NEltsOf (HTMLInfo::sDefaultEntityRefMapTable);
 
-int HTMLInfo::HTMLFontSizeToRealFontSize (int size)
+Led_FontSpecification::FontSize HTMLInfo::HTMLFontSizeToRealFontSize (int size)
 {
     size = min (size, 7);
     size = max (size, 1);
     switch (size) {
         case 1:
-            return (7);
-            break;
+            return 7;
         case 2:
-            return (9);
-            break;
+            return 9;
         case 3:
-            return (10);
-            break;
+            return 10;
         case 4:
-            return (12);
-            break;
+            return 12;
         case 5:
-            return (14);
-            break;
+            return 14;
         case 6:
-            return (18);
-            break;
+            return 18;
         case 7:
-            return (24);
-            break;
+            return 24;
         default:
             Assert (false);
     }
     Assert (false);
-    return (12);
+    return 12;
 }
 
-int HTMLInfo::RealFontSizeToHTMLFontSize (int size)
+int HTMLInfo::RealFontSizeToHTMLFontSize (Led_FontSpecification::FontSize size)
 {
     if (size <= 7) {
         return 1;

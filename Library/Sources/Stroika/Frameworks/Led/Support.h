@@ -1163,7 +1163,7 @@ namespace Stroika {
                 unsigned short* bufAsShortArray = (unsigned short*)buf;
                 return (((unsigned long)Led_BufToUSHORT (bufAsShortArray)) << 16) + Led_BufToUSHORT (bufAsShortArray + 1);
             }
-            inline void Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf)
+            inline void Led_ULONGToBuf (uint32_t ul, uint32_t* realBuf)
             {
                 unsigned short* buf = (unsigned short*)realBuf;
                 Led_USHORTToBuf ((unsigned short)(ul >> 16), buf);
