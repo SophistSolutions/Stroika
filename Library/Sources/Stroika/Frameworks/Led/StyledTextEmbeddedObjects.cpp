@@ -277,10 +277,9 @@ StandardMacPictureStyleMarker::~StandardMacPictureStyleMarker ()
 #endif
 }
 
-SimpleEmbeddedObjectStyleMarker* StandardMacPictureStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+SimpleEmbeddedObjectStyleMarker* StandardMacPictureStyleMarker::mk ([[maybe_unused]] const char* embeddingTag, const void* data, size_t len)
 {
     Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
-    Led_Arg_Unused (embeddingTag);
     return (new StandardMacPictureStyleMarker ((Led_Picture*)data, len));
 }
 
@@ -293,23 +292,20 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureStyleMarker::mk (ReaderFlavor
 }
 
 void StandardMacPictureStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                                                 size_t from, size_t to, const TextLayoutBlock& text,
+                                                 [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                  const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Assert (from + 1 == to);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     MacPictureDrawSegment (GetPictureHandle (), tablet,
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                            drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetMacPictSize ((Led_Picture*)locker.GetPointer ()));
 }
 
-void StandardMacPictureStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
-                                                         const Led_tChar* text,
-                                                         Led_Distance*    distanceResults) const
+void StandardMacPictureStyleMarker::MeasureSegmentWidth ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                                         [[maybe_unused]] const Led_tChar* text,
+                                                         Led_Distance*                     distanceResults) const
 {
     Assert (from + 1 == to);
     RequireNotNull (text);
@@ -324,18 +320,13 @@ void StandardMacPictureStyleMarker::MeasureSegmentWidth (const StyledTextImager*
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     distanceResults[0] = Led_GetMacPictWidth ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance StandardMacPictureStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance StandardMacPictureStyleMarker::MeasureSegmentHeight ([[maybe_unused]] const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     return (Led_GetMacPictHeight ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.v);
 }
@@ -395,10 +386,9 @@ StandardDIBStyleMarker::~StandardDIBStyleMarker ()
     delete fDIBData;
 }
 
-SimpleEmbeddedObjectStyleMarker* StandardDIBStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+SimpleEmbeddedObjectStyleMarker* StandardDIBStyleMarker::mk ([[maybe_unused]] const char* embeddingTag, const void* data, size_t len)
 {
     Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
-    Led_Arg_Unused (embeddingTag);
     if (len < 40) {
         // This is less than we need to peek and see size of DIB...
         Led_ThrowBadFormatDataException ();
@@ -429,23 +419,20 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBStyleMarker::mk (ReaderFlavorPackage
     return (mk (kEmbeddingTag, buf, length));
 }
 
-void StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text,
+void StandardDIBStyleMarker::DrawSegment (const StyledTextImager* imager, [[maybe_unused]] const RunElement& runElement, Led_Tablet tablet,
+                                          [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                           const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Assert (from + 1 == to);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     DIBDrawSegment (fDIBData, tablet,
                     imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                     drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetDIBImageSize (fDIBData));
 }
 
-void StandardDIBStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const
+void StandardDIBStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                                  [[maybe_unused]] const Led_tChar* text,
+                                                  Led_Distance*                     distanceResults) const
 {
     Assert (from + 1 == to);
     RequireNotNull (text);
@@ -460,17 +447,12 @@ void StandardDIBStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imag
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     distanceResults[0] = Led_GetDIBImageSize (GetDIBData ()).h + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance StandardDIBStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance StandardDIBStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
     return (Led_GetDIBImageSize (GetDIBData ()).v + 2 * kDefaultEmbeddingMargin.v);
 }
 
@@ -535,10 +517,9 @@ StandardURLStyleMarker::~StandardURLStyleMarker ()
 {
 }
 
-SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk ([[maybe_unused]] const char* embeddingTag, const void* data, size_t len)
 {
     Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
-    Led_Arg_Unused (embeddingTag);
     return (new StandardURLStyleMarker (Led_URLD (data, len)));
 }
 
@@ -570,14 +551,12 @@ SimpleEmbeddedObjectStyleMarker* StandardURLStyleMarker::mk (ReaderFlavorPackage
 }
 
 void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& runElement, Led_Tablet tablet,
-                                          size_t from, size_t to, const TextLayoutBlock& text,
+                                          size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                           const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     RequireNotNull (imager);
 
 #if qURLStyleMarkerNewDisplayMode
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     Led_FontSpecification fsp         = GetDisplayFont (runElement);
     Led_tString           displayText = GetDisplayString ();
     imager->DrawSegment_ (tablet, fsp, from, from + displayText.length (), TextLayoutBlock_Basic (displayText.c_str (), displayText.c_str () + displayText.length ()),
@@ -695,9 +674,9 @@ void StandardURLStyleMarker::DrawSegment (const StyledTextImager* imager, const 
 #endif
 }
 
-void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to,
-                                                  const Led_tChar* text,
-                                                  Led_Distance*    distanceResults) const
+void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                                  [[maybe_unused]] const Led_tChar* text,
+                                                  Led_Distance*                     distanceResults) const
 {
     Assert (from + 1 == to);
     RequireNotNull (text);
@@ -712,9 +691,6 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
 
 #if qURLStyleMarkerNewDisplayMode
     Led_FontSpecification fsp         = GetDisplayFont (runElement);
@@ -798,11 +774,9 @@ void StandardURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager
 #endif
 }
 
-Led_Distance StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, size_t from, size_t to) const
+Led_Distance StandardURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& runElement, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
 
 #if qURLStyleMarkerNewDisplayMode
     Led_FontSpecification fsp         = GetDisplayFont (runElement);
@@ -1015,23 +989,20 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureWithURLStyleMarker::mk (Reade
 }
 
 void StandardMacPictureWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                                                        size_t from, size_t to, const TextLayoutBlock& text,
+                                                        [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                         const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Assert (from + 1 == to);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     MacPictureDrawSegment (GetPictureHandle (), tablet,
                            imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                            drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetMacPictSize ((Led_Picture*)locker.GetPointer ()));
 }
 
-void StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
-                                                                const Led_tChar* text,
-                                                                Led_Distance*    distanceResults) const
+void StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                                                [[maybe_unused]] const Led_tChar* text,
+                                                                Led_Distance*                     distanceResults) const
 {
     Assert (from + 1 == to);
     RequireNotNull (text);
@@ -1046,18 +1017,13 @@ void StandardMacPictureWithURLStyleMarker::MeasureSegmentWidth (const StyledText
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     distanceResults[0] = Led_GetMacPictWidth ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance StandardMacPictureWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
     Led_StackBasedHandleLocker locker ((Led_StackBasedHandleLocker::GenericHandle)GetPictureHandle ());
     return (Led_GetMacPictHeight ((Led_Picture*)locker.GetPointer ()) + 2 * kDefaultEmbeddingMargin.v);
 }
@@ -1150,10 +1116,9 @@ StandardDIBWithURLStyleMarker::~StandardDIBWithURLStyleMarker ()
     delete fDIBData;
 }
 
-SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk (const char* embeddingTag, const void* data, size_t len)
+SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk ([[maybe_unused]] const char* embeddingTag, const void* data, size_t len)
 {
     Require (memcmp (embeddingTag, kEmbeddingTag, sizeof (kEmbeddingTag)) == 0);
-    Led_Arg_Unused (embeddingTag);
 
     if (len < 4 + 40) {
         // This is less than we need to peek and see size of DIB...
@@ -1212,22 +1177,19 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk (ReaderFlavor
 }
 
 void StandardDIBWithURLStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                                                 size_t from, size_t to, const TextLayoutBlock& text,
+                                                 [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                  const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Assert (from + 1 == to);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     DIBDrawSegment (fDIBData, tablet,
                     imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
                     drawInto - Led_Point (0, imager->GetHScrollPos ()), useBaseLine, pixelsDrawn, Led_GetDIBImageSize (fDIBData));
 }
 
-void StandardDIBWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to,
-                                                         const Led_tChar* text,
-                                                         Led_Distance*    distanceResults) const
+void StandardDIBWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                                         [[maybe_unused]] const Led_tChar* text,
+                                                         Led_Distance*                     distanceResults) const
 {
     Assert (from + 1 == to);
     RequireNotNull (text);
@@ -1242,17 +1204,12 @@ void StandardDIBWithURLStyleMarker::MeasureSegmentWidth (const StyledTextImager*
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     distanceResults[0] = Led_GetDIBImageSize (GetDIBData ()).h + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance StandardDIBWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance StandardDIBWithURLStyleMarker::MeasureSegmentHeight (const StyledTextImager* /*imager*/, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
     return (Led_GetDIBImageSize (GetDIBData ()).v + 2 * kDefaultEmbeddingMargin.v);
 }
 
@@ -1407,16 +1364,13 @@ Led_TWIPS_Point StandardUnknownTypeStyleMarker::CalcStaticDefaultShownSize ()
 }
 
 void StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                                                  size_t from, size_t to, const TextLayoutBlock& text,
+                                                  [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text,
                                                   const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Assert (from + 1 == to);
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     Led_Size shownPixelSize = Led_Size (tablet->CvtFromTWIPSV (fShownSize.v), tablet->CvtFromTWIPSH (fShownSize.h));
-    ;
+
     if (fDisplayDIB.get () != nullptr) {
         DIBDrawSegment (fDisplayDIB.get (), tablet,
                         imager->GetEffectiveDefaultTextColor (TextImager::eDefaultTextColor), imager->GetEffectiveDefaultTextColor (TextImager::eDefaultBackgroundColor),
@@ -1434,9 +1388,8 @@ void StandardUnknownTypeStyleMarker::DrawSegment (const StyledTextImager* imager
 #endif
 }
 
-void StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to,
-                                                          const Led_tChar* text,
-                                                          Led_Distance*    distanceResults) const
+void StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                                          [[maybe_unused]] const Led_tChar* text, Led_Distance* distanceResults) const
 {
     Assert (from + 1 == to);
     RequireNotNull (text);
@@ -1451,9 +1404,6 @@ void StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager
      *  character here. We know the right width here anyhow.
      *      See SPR#0821.
      */
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
     if (fDisplayDIB.get () != nullptr) {
         distanceResults[0] = Led_GetDIBImageSize (fDisplayDIB.get ()).h + 2 * kDefaultEmbeddingMargin.h;
         return;
@@ -1463,12 +1413,9 @@ void StandardUnknownTypeStyleMarker::MeasureSegmentWidth (const StyledTextImager
     distanceResults[0]                     = tablet->CvtFromTWIPSH (fShownSize.h) + 2 * kDefaultEmbeddingMargin.h;
 }
 
-Led_Distance StandardUnknownTypeStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance StandardUnknownTypeStyleMarker::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     Assert (from + 1 == to);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-
     if (fDisplayDIB.get () != nullptr) {
         return (Led_GetDIBImageSize (fDisplayDIB.get ()).v + 2 * kDefaultEmbeddingMargin.v);
     }
@@ -1614,17 +1561,15 @@ static void MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHandle 
 }
 #endif
 
-static void DIBDrawSegment (const Led_DIB* dib,
-                            Led_Tablet     tablet,
-                            Led_Color foreColor, Led_Color backColor,
+static void DIBDrawSegment (const Led_DIB*             dib,
+                            Led_Tablet                 tablet,
+                            [[maybe_unused]] Led_Color foreColor, [[maybe_unused]] Led_Color backColor,
                             const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn,
                             const Led_Size& imageSize,
                             const Led_Size& margin) noexcept
 {
     RequireNotNull (dib);
     RequireNotNull (tablet);
-    Led_Arg_Unused (foreColor);
-    Led_Arg_Unused (backColor);
 
 #if qPlatform_MacOS
     tablet->SetPort ();

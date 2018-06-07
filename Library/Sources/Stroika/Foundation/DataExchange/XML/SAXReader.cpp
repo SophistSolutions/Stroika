@@ -532,7 +532,7 @@ namespace {
                 fCallback.EndElement (attrName);
             }
         }
-        virtual void endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
+        virtual void endElement (const XMLCh* const uri, const XMLCh* const localName, [[maybe_unused]] const XMLCh* const qname) override
         {
             Require (uri != nullptr);
             Require (localName != nullptr);

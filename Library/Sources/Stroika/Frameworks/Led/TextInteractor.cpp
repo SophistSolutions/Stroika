@@ -1023,11 +1023,10 @@ void TextInteractor::SetDefaultUpdateMode (UpdateMode defaultUpdateMode)
             It may still see significant revision at some point as part of SPR #1040.
             </p>
 */
-bool TextInteractor::LooksLikeSmartPastableText (const Led_tChar* text, size_t /*nTextTChars*/, SmartCNPInfo* smartCNPInfo) const
+bool TextInteractor::LooksLikeSmartPastableText ([[maybe_unused]] const Led_tChar* text, size_t /*nTextTChars*/, SmartCNPInfo* smartCNPInfo) const
 {
     RequireNotNull (text);
     RequireNotNull (smartCNPInfo);
-    Led_Arg_Unused (text);
     if (GetSmartCutAndPasteMode ()) {
         size_t selStart = GetSelectionStart ();
         size_t selEnd   = GetSelectionEnd ();

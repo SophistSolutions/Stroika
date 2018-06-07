@@ -655,12 +655,10 @@ namespace Stroika {
                 NoteCoverRangeDirtied (from, to, markers);
             }
             template <typename MARKER, typename MARKERINFO, typename INCREMENTALMARKERINFO>
-            void MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::NoteCoverRangeDirtied (size_t from, size_t to, const MarkerVector& rangeAndSurroundingsMarkers)
+            void MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::NoteCoverRangeDirtied ([[maybe_unused]] size_t from, [[maybe_unused]] size_t to, const MarkerVector& rangeAndSurroundingsMarkers)
             {
                 Require (from <= to);
                 Require (to <= fTextStore.GetEnd () + 1);
-                Led_Arg_Unused (from);
-                Led_Arg_Unused (to);
                 CullZerod (rangeAndSurroundingsMarkers);
                 CheckForMerges (rangeAndSurroundingsMarkers);
             }

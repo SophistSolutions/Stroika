@@ -73,7 +73,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename TCHAR>
-            size_t CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            size_t CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
             {
                 RequireNotNull (srcText);
                 RequireNotNull (outBuf);
@@ -93,7 +93,6 @@ namespace Stroika {
                 }
                 size_t nBytes = outPtr - outBuf;
                 Assert (nBytes <= outBufSize);
-                Arg_Unused (outBufSize);
                 return (nBytes);
             }
             template <typename TCHAR>
@@ -118,7 +117,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename TCHAR>
-            size_t NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            size_t NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
             {
                 Require (srcText != outBuf); // though we support this for the others - its too hard
                 // in this case for the PC...
@@ -133,7 +132,6 @@ namespace Stroika {
                 }
                 size_t nBytes = outPtr - outBuf;
                 Assert (nBytes <= outBufSize);
-                Arg_Unused (outBufSize);
                 return (nBytes);
             }
             template <typename TCHAR>
@@ -153,7 +151,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename TCHAR>
-            size_t NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            size_t NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
             {
                 Require (srcText != outBuf); // though we support this for the others - its too hard
                 // in this case for the PC...
@@ -175,8 +173,7 @@ namespace Stroika {
                 }
                 size_t nBytes = outPtr - outBuf;
                 Assert (nBytes <= outBufSize);
-                Arg_Unused (outBufSize);
-                return (nBytes);
+                return nBytes;
             }
             template <typename TCHAR>
             inline basic_string<TCHAR> NLToNative (const basic_string<TCHAR>& text)
@@ -195,7 +192,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename TCHAR>
-            size_t NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
+            size_t NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
             {
                 Require (srcTextBytes == 0 or srcText != nullptr);
                 Require (outBufSize == 0 or outBuf != nullptr);
@@ -218,8 +215,7 @@ namespace Stroika {
                 }
                 size_t nBytes = outPtr - outBuf;
                 Assert (nBytes <= outBufSize);
-                Arg_Unused (outBufSize);
-                return (nBytes);
+                return nBytes;
             }
             template <typename TCHAR>
             inline void NormalizeTextToNL (basic_string<TCHAR>* text)

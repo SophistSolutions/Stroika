@@ -135,7 +135,7 @@ String DerivedKey::ToString () const
  */
 #if qHasFeature_OpenSSL
 namespace {
-    pair<BLOB, BLOB> mkWinCryptDeriveKey_ (size_t keyLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd)
+    pair<BLOB, BLOB> mkWinCryptDeriveKey_ (size_t keyLen, [[maybe_unused]] DigestAlgorithm digestAlgorithm, const BLOB& passwd)
     {
         // @todo https://stroika.atlassian.net/browse/STK-192
         /*

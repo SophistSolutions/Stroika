@@ -381,6 +381,7 @@ void SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Signal
     }
 
     auto sigSetHandler = [](SignalID signal, [[maybe_unused]] void (*fun) (int)) {
+        Lambda_Arg_Unused_BWA (fun);
 #if qPlatform_POSIX
         struct sigaction sa {
         };

@@ -735,10 +735,10 @@ namespace Stroika {
             */
             inline MultiRowTextImager::RowReference MultiRowTextImager::GetIthRowReference (size_t ith) const
             {
-                RowReference fromHere (GetFirstPartitionMarker (), 0);
-                bool         result = GetIthRowReferenceFromHere (&fromHere, ith);
+                RowReference          fromHere (GetFirstPartitionMarker (), 0);
+                [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&fromHere, ith);
                 Assert (result);
-                return (fromHere);
+                return fromHere;
             }
             /*
             @METHOD:        MultiRowTextImager::GetRowLength

@@ -244,10 +244,10 @@ size_t SimpleTextImager::CountRowDifference (RowReference lhs, RowReference rhs)
 
     size_t rowsGoneBy = 0;
     for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
-        bool result = GetIthRowReferenceFromHere (&cur, 1);
+        [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&cur, 1);
         Assert (result);
     }
-    return (rowsGoneBy);
+    return rowsGoneBy;
 }
 
 size_t SimpleTextImager::GetTopRowInWindow () const
@@ -834,7 +834,7 @@ size_t SimpleTextImager::GetRowCount () const
     // NB: This is an expensive routine because it forces a word-wrap on all the text!
     size_t rowCount = 0;
     for (PartitionMarker* cur = GetFirstPartitionMarker (); cur != NULL; cur = cur->GetNext ()) {
-        PartitionMarker* pm = cur;
+        [[maybe_unused]] PartitionMarker* pm = cur;
         AssertNotNull (pm);
         AssertMember (pm, PartitionMarker);
         rowCount += 1;

@@ -2699,7 +2699,7 @@ namespace Stroika {
                     return !!(GetStyle () & ES_MULTILINE);
                 }
                 template <typename BASECLASS>
-                LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgReplaceSel (WPARAM wParam, LPARAM lParam)
+                LRESULT Led_Win32_Win32SDKMessageMimicHelper<BASECLASS>::OnMsgReplaceSel ([[maybe_unused]] WPARAM wParam, LPARAM lParam)
                 {
                     using namespace Stroika::Foundation;
                     Assert (wParam == 0);

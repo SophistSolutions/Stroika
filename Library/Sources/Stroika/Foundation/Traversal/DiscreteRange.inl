@@ -59,7 +59,7 @@ namespace Stroika {
                      */
                     return typeid (*this).name ();
                 }
-                virtual bool Equals (const typename Iterator<T>::IRep* rhs) const override
+                virtual bool Equals ([[maybe_unused]] const typename Iterator<T>::IRep* rhs) const override
                 {
                     RequireNotNull (rhs);
                     AssertNotImplemented ();

@@ -44,7 +44,7 @@ inline Win32FileAssociationRegistrationHelper::KeyHolder::KeyHolder (HKEY baseKe
 {
     ThrowIfRegError (::RegOpenKey (baseKey, lpSubKey, &fKey));
 }
-inline Win32FileAssociationRegistrationHelper::KeyHolder::KeyHolder (HKEY baseKey, LPCTSTR lpSubKey, CreateIfNotThereFlag createIfNotThereFlag)
+inline Win32FileAssociationRegistrationHelper::KeyHolder::KeyHolder (HKEY baseKey, LPCTSTR lpSubKey, [[maybe_unused]] CreateIfNotThereFlag createIfNotThereFlag)
     : fKey (NULL)
 {
     Assert (createIfNotThereFlag == eCreateIfNotThere);

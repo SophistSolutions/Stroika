@@ -66,7 +66,7 @@ namespace {
             return n + EVP_MAX_BLOCK_LENGTH;
         }
         // return nBytes in outBuf, throws on error
-        size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, Byte* outBufEnd)
+        size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, [[maybe_unused]] Byte* outBufEnd)
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart)); // always need out buf big enuf for inbuf
             int outLen = 0;
@@ -77,7 +77,7 @@ namespace {
         }
         // return nBytes in outBuf, throws on error
         // Can call multiple times - it keeps track itself if finalized.
-        size_t _cipherFinal (Byte* outBufStart, Byte* outBufEnd)
+        size_t _cipherFinal (Byte* outBufStart, [[maybe_unused]] Byte* outBufEnd)
         {
             Require (outBufStart <= outBufEnd and static_cast<size_t> (outBufEnd - outBufStart) >= _GetMinOutBufSize (0));
             if (fFinalCalled_) {

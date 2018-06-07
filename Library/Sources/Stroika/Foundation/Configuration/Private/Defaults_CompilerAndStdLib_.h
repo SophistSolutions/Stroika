@@ -770,6 +770,17 @@ CLANG 5.0:
 
 #endif
 
+#ifndef qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy
+
+#if defined(_MSC_VER)
+// first noted in _MS_VS_2k17_15Pt7Pt3_
+#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
+#else
+#define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy 0
+#endif
+
+#endif
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
 
@@ -1141,15 +1152,12 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #define dont_inline __declspec(noinline)
 #endif
 
-/**
- *   The Standard C++ mechanism of commenting out unused parameters isn't good enuf
- *   in the case where the parameters might be used conditionally. This hack is
- *   to shutup compiler warnings in those cases.
- *
- *      @todo eventually (when compilers support it) switch to using [[maybe_unused]] - http://en.cppreference.com/w/cpp/language/attributes
- */
-#if !defined(Arg_Unused)
-#define Arg_Unused(x) ((void)&x)
+#if !defined(Lambda_Arg_Unused_BWA)
+#if qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy
+#define Lambda_Arg_Unused_BWA(x) ((void)&x)
+#else
+#define Lambda_Arg_Unused_BWA(x)
+#endif
 #endif
 
 /*

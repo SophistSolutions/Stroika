@@ -342,7 +342,7 @@ void Led_MFC_ControlItem::OnDeactivateUI (BOOL bUndoable)
 }
 
 void Led_MFC_ControlItem::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                                       size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
+                                       size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& /*invalidRect*/,
                                        Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn)
 {
     Require (to - from == 1);

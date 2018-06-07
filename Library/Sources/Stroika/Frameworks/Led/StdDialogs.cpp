@@ -1154,7 +1154,7 @@ bool Led_StdDialogHelper::HandleCommandClick (int itemNum)
 BOOL CALLBACK Led_StdDialogHelper::StaticDialogProc (HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     if (message == WM_INITDIALOG) {
-        LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
+        [[maybe_unused]] LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lParam;
         AssertNotNull (lpcs);
         Led_StdDialogHelper* pThis = reinterpret_cast<Led_StdDialogHelper*> (lParam);
         Assert (pThis->GetHWND () == NULL); // cuz not set yet...

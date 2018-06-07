@@ -465,7 +465,7 @@ int Led::Led_tStriCmp (const Led_tChar* lhs, const Led_tChar* rhs)
 }
 #endif
 
-size_t Led::Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize)
+size_t Led::Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, [[maybe_unused]] size_t outBufSize)
 {
     Led_tChar* outPtr = outBuf;
     for (size_t i = 1; i <= srcTextBytes; i++) {
@@ -489,11 +489,10 @@ size_t Led::Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_t
     }
     size_t nBytes = outPtr - outBuf;
     Assert (nBytes <= outBufSize);
-    Led_Arg_Unused (outBufSize);
     return (nBytes);
 }
 
-size_t Led::Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize)
+size_t Led::Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, [[maybe_unused]] size_t outBufSize)
 {
     Require (srcText != outBuf); // though we support this for the others - its too hard
     // in this case for the PC...
@@ -514,13 +513,12 @@ size_t Led::Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_t
     }
     size_t nBytes = outPtr - outBuf;
     Assert (nBytes <= outBufSize);
-    Led_Arg_Unused (outBufSize);
     return (nBytes);
 }
 
 // return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
 // always big enough!!!
-size_t Led::Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize)
+size_t Led::Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, [[maybe_unused]] size_t outBufSize)
 {
     // NB: We DO Support the case where srcText == outBuf!!!!
     Led_tChar* outPtr = outBuf;
@@ -539,7 +537,6 @@ size_t Led::Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes
     }
     size_t nBytes = outPtr - outBuf;
     Assert (nBytes <= outBufSize);
-    Led_Arg_Unused (outBufSize);
     return (nBytes);
 }
 

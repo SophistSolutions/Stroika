@@ -147,10 +147,10 @@ namespace Stroika {
 
                 size_t rowsGoneBy = 0;
                 for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
-                    bool result = GetIthRowReferenceFromHere (&cur, 1);
+                    [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&cur, 1);
                     Assert (result);
                 }
-                return (rowsGoneBy);
+                return rowsGoneBy;
             }
 
             /*
@@ -182,13 +182,13 @@ namespace Stroika {
 
                 size_t rowsGoneBy = 0;
                 for (RowReference cur = firstRowRef; cur != lastRowRef; rowsGoneBy++) {
-                    bool result = GetIthRowReferenceFromHere (&cur, 1);
+                    [[maybe_unused]] bool result = GetIthRowReferenceFromHere (&cur, 1);
                     Assert (result);
                     if (rowsGoneBy >= limit) {
                         break;
                     }
                 }
-                return (rowsGoneBy);
+                return rowsGoneBy;
             }
 
             size_t MultiRowTextImager::GetTopRowInWindow () const

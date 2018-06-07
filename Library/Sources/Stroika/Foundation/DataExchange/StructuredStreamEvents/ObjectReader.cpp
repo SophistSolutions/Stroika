@@ -211,7 +211,7 @@ void IConsumerDelegateToContext::StartElement (const StructuredStreamEvents::Nam
     AssertNotNull (eltToPush);
     fContext.Push (eltToPush);
 }
-void IConsumerDelegateToContext::EndElement (const StructuredStreamEvents::Name& name)
+void IConsumerDelegateToContext::EndElement ([[maybe_unused]] const StructuredStreamEvents::Name& name)
 {
     AssertNotNull (fContext.GetTop ());
 #if qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing

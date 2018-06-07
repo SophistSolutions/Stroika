@@ -20,7 +20,7 @@ namespace Stroika {
                  *********************** StructuredStreamEvents::Name ***************************
                  ********************************************************************************
                  */
-                inline Name::Name (NameType type)
+                inline Name::Name ([[maybe_unused]] NameType type)
                     : fType{eValue}
                 {
                     Require (type == eValue);

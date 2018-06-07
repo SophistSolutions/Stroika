@@ -53,46 +53,7 @@ namespace Stroika {
 
             using Foundation::Memory::Byte;
 
-            /*
-             **************** Compiler/Lib bug workarounds... **************
-             */
-
-#if qSTLTemplatesErroniouslyRequireOpLessCuzOfOverExpanding
-#define STLOpLessDeclare_BWA(T)      \
-                                     \
-public:                              \
-    friend bool operator< (T, T)     \
-    {                                \
-        Assert (false);              \
-        return false; /*notreached*/ \
-    }
-#else
-#define STLOpLessDeclare_BWA(T)
-#endif
-
-#if qSTLTemplatesErroniouslyRequireOpEqualsCuzOfOverExpanding
-#define STLOpEqualDeclare_BWA(T)     \
-                                     \
-public:                              \
-    friend bool operator== (T, T)    \
-    {                                \
-        Assert (false);              \
-        return false; /*notreached*/ \
-    }
-#else
-#define STLOpEqualDeclare_BWA(T)
-#endif
-
-            /*
-             *  The Standard C++ mechanism of commenting out unused parameters isn't good enuf
-             *  in the case where the parameters might be used conditionally. This hack is
-             *  to shutup compiler warnings in those cases.
-             */
-#ifndef Led_Arg_Unused
-#define Led_Arg_Unused(x) ((void)&x)
-#endif
-
-            const size_t kBadIndex = size_t (-1);
+            constexpr size_t kBadIndex = size_t (-1);
 
             /*
             @CLASS:         Led_tChar
@@ -1306,13 +1267,12 @@ namespace Stroika {
                 *   is true for SJIS - but I'm not posative it is always true - LGP 950216.
 
              */
-            inline const Led_tChar* Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere)
+            inline const Led_tChar* Led_PreviousChar ([[maybe_unused]] const Led_tChar* startOfString, const Led_tChar* fromHere)
             {
                 AssertNotNull (startOfString);
                 AssertNotNull (fromHere);
                 Assert (startOfString < fromHere); // Must be room for previous character to exist!
 #if qSingleByteCharacters || qWideCharacters
-                Led_Arg_Unused (startOfString);
                 return (fromHere - 1); // address arithmatic does the magic for wide characters
 #elif qMultiByteCharacters
                 /*

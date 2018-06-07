@@ -2993,7 +2993,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_tx (ReaderContext& readerContext,
     return false;
 }
 
-bool StyledTextIOReader_RTF::HandleControlWord_u (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+bool StyledTextIOReader_RTF::HandleControlWord_u ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] const RTFIO::ControlWord& controlWord)
 {
 // Unclear how I should treat this for the NON-UNICODE Led case. I COULD read the UNICODE chars - and then map them to narrow. But probably just
 // as good to just read whatever narrow characters were already there.
@@ -3007,14 +3007,11 @@ bool StyledTextIOReader_RTF::HandleControlWord_u (ReaderContext& readerContext, 
     else {
         HandleBadlyFormattedInput ();
     }
-#else
-    Led_Arg_Unused (readerContext);
-    Led_Arg_Unused (controlWord);
 #endif
     return false;
 }
 
-bool StyledTextIOReader_RTF::HandleControlWord_uc (ReaderContext& readerContext, const RTFIO::ControlWord& controlWord)
+bool StyledTextIOReader_RTF::HandleControlWord_uc ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] const RTFIO::ControlWord& controlWord)
 {
 #if qWideCharacters
     if (not controlWord.fHasArg) {
@@ -3023,9 +3020,6 @@ bool StyledTextIOReader_RTF::HandleControlWord_uc (ReaderContext& readerContext,
     else {
         readerContext.fUnicodeUCValue = max (0L, controlWord.fValue);
     }
-#else
-    Led_Arg_Unused (readerContext);
-    Led_Arg_Unused (controlWord);
 #endif
     return false;
 }
@@ -3451,7 +3445,7 @@ void StyledTextIOReader_RTF::ReadObjData (vector<char>* data)
     ConsumeNextChar (); // Eat terminating brace
 }
 
-void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& readerContext, Led_TWIPS_Point size, size_t nBytes, const void* data)
+void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo ([[maybe_unused]] ReaderContext& readerContext, [[maybe_unused]] Led_TWIPS_Point size, [[maybe_unused]] size_t nBytes, [[maybe_unused]] const void* data)
 {
 #if qPlatform_Windows
     using RTFOLEEmbedding                                                   = RTFIO::RTFOLEEmbedding;
@@ -3476,11 +3470,6 @@ void StyledTextIOReader_RTF::ConstructOLEEmebddingFromRTFInfo (ReaderContext& re
             }
         }
     }
-#else
-    Led_Arg_Unused (readerContext);
-    Led_Arg_Unused (size);
-    Led_Arg_Unused (nBytes);
-    Led_Arg_Unused (data);
 #endif
     Led_ThrowBadFormatDataException (); // Will be caught by caller, and use "unknown embedding object"
 }
@@ -3660,7 +3649,7 @@ void StyledTextIOReader_RTF::ReadTopLevelPictData (Led_TWIPS_Point* shownSize, I
 @DESCRIPTION:   <p>Take the given size and data parameters, and consturct a new Led_DIB (which must be freed by caller using delete()). Returns nullptr
     if unable to convert the given format.</p>
 */
-Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize, ImageFormat imageFormat, Led_TWIPS_Point bmSize, size_t nBytes, const void* data)
+Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] Led_TWIPS_Point shownSize, ImageFormat imageFormat, [[maybe_unused]] Led_TWIPS_Point bmSize, size_t nBytes, const void* data)
 {
     if (data == nullptr) {
         HandleBadlyFormattedInput ();
@@ -3702,9 +3691,6 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData (Led_TWIPS_Point shownSize
             Verify (::DeleteEnhMetaFile (hMF));
             return result;
         } break;
-#else
-            Led_Arg_Unused (shownSize);
-            Led_Arg_Unused (bmSize);
 #endif
     }
     return nullptr;

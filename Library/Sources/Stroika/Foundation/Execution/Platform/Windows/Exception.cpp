@@ -244,7 +244,7 @@ namespace {
      *  We treat these largely like ASSERTION errors, but then translate them into a THROW of an exception - since that is
      *  probably more often the right thing todo.
      */
-    void invalid_parameter_handler_ (const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, [[maybe_unused]] uintptr_t pReserved)
+    void invalid_parameter_handler_ ([[maybe_unused]] const wchar_t* expression, [[maybe_unused]] const wchar_t* function, [[maybe_unused]] const wchar_t* file, [[maybe_unused]] unsigned int line, [[maybe_unused]] uintptr_t pReserved)
     {
         TraceContextBumper trcCtx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"invalid_parameter_handler", L"Func='%s', expr='%s', file='%s', line=%d.", function, expression, file, line)};
         Assert (false);

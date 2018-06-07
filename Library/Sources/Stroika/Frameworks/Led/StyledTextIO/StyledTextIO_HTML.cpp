@@ -1432,15 +1432,12 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_html (bool start, const char* 
     }
 }
 
-void StyledTextIOReader_HTML::HandleHTMLThingyTag_hr (bool start, const char* text, size_t nBytes)
+void StyledTextIOReader_HTML::HandleHTMLThingyTag_hr ([[maybe_unused]] bool start, [[maybe_unused]] const char* text, [[maybe_unused]] size_t nBytes)
 {
     EndParaIfOpen ();
 // emit it unchanged (since we don't support these), but also emit a line-break as well so
 // looks more readable
 #if qThrowAwayMostUnknownHTMLTags
-    Led_Arg_Unused (start);
-    Led_Arg_Unused (text);
-    Led_Arg_Unused (nBytes);
     const Led_tChar kSeparator[] = LED_TCHAR_OF ("----------------------------------------------------------------");
     EmitText (kSeparator, Led_tStrlen (kSeparator));
 #else
@@ -1831,12 +1828,9 @@ void StyledTextIOReader_HTML::HandleHTMLThingyTag_xmp (bool start, const char* t
     StyledTextIOReader_HTML::HandleHTMLThingyTag_tt (start, text, nBytes);
 }
 
-void StyledTextIOReader_HTML::HandleHTMLThingyTagUnknown (bool /*start*/, const char* text, size_t nBytes)
+void StyledTextIOReader_HTML::HandleHTMLThingyTagUnknown ([[maybe_unused]] bool start, [[maybe_unused]] const char* text, [[maybe_unused]] size_t nBytes)
 {
-#if qThrowAwayMostUnknownHTMLTags
-    Led_Arg_Unused (text);
-    Led_Arg_Unused (nBytes);
-#else
+#if !qThrowAwayMostUnknownHTMLTags
     EmitText (text, nBytes);
 #endif
 }

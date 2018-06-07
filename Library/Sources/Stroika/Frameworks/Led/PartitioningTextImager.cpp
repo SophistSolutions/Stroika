@@ -652,9 +652,9 @@ size_t PartitioningTextImager::GetRowRelativeCharAtLoc (Led_Coordinate hOffset, 
      *  Note that this algoritm assumes that TextImager::CalcSegmentSize () measures the VIRTUAL characters,
      *  including any mapped characters (mirroring) that correspond to the argument REAL character range.
      */
-    size_t               rowEnd  = GetEndOfRowContainingPosition (rowStart);
-    size_t               rowLen  = rowEnd - rowStart;
-    TextLayoutBlock_Copy rowText = GetTextLayoutBlock (rowStart, rowEnd);
+    size_t                  rowEnd  = GetEndOfRowContainingPosition (rowStart);
+    [[maybe_unused]] size_t rowLen  = rowEnd - rowStart;
+    TextLayoutBlock_Copy    rowText = GetTextLayoutBlock (rowStart, rowEnd);
 
     using ScriptRunElt        = TextLayoutBlock::ScriptRunElt;
     vector<ScriptRunElt> runs = rowText.GetScriptRuns ();

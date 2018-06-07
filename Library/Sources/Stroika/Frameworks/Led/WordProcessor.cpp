@@ -67,12 +67,11 @@ public:
         }
         return len;
     }
-    virtual void InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
+    virtual void InsertSelf (TextInteractor* interactor, size_t at, [[maybe_unused]] size_t nBytesToOverwrite) override
     {
         RequireNotNull (dynamic_cast<WordProcessor*> (interactor));
         WordProcessor* wp = dynamic_cast<WordProcessor*> (interactor);
         RequireNotNull (wp);
-        Led_Arg_Unused (nBytesToOverwrite);
         Assert (nBytesToOverwrite == GetLength ()); // For THIS particular kind of update, the length cannot change since we don't save the text
         ParagraphDatabasePtr paraDBase = wp->GetParagraphDatabase ();
         paraDBase->SetParagraphInfo (at, fSavedInfo);
@@ -782,7 +781,7 @@ UINT_PTR CALLBACK WordProcessor::DialogSupport::ColorPickerINITPROC (HWND hWnd, 
 }
 #endif
 
-bool WordProcessor::DialogSupport::ChooseFont (Led_IncrementalFontSpecification* font)
+bool WordProcessor::DialogSupport::ChooseFont ([[maybe_unused]] Led_IncrementalFontSpecification* font)
 {
     RequireNotNull (font);
 
@@ -822,8 +821,6 @@ bool WordProcessor::DialogSupport::ChooseFont (Led_IncrementalFontSpecification*
         font->SetTextColor (Led_Color (cc.rgbColors));
         return true;
     }
-#else
-    Led_Arg_Unused (font);
 #endif
     return false;
 }
@@ -2962,13 +2959,12 @@ void WordProcessor::OnInsertURLCommand ()
     BreakInGroupedCommands ();
 }
 
-void WordProcessor::OnUpdateInsertSymbolCommand (CommandUpdater* enabler)
+void WordProcessor::OnUpdateInsertSymbolCommand ([[maybe_unused]] CommandUpdater* enabler)
 {
     RequireNotNull (enabler);
 #if qPlatform_Windows
     enabler->SetEnabled (true);
 #else
-    Led_Arg_Unused (enabler);
     Assert (false); //NYI
 #endif
 }
@@ -5758,16 +5754,13 @@ void Table::FinalizeAddition (WordProcessor::AbstractParagraphDatabaseRep* o, si
 }
 
 void Table::DrawSegment (const StyledTextImager* imager, const RunElement& /*runElement*/, Led_Tablet tablet,
-                         size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
+                         [[maybe_unused]] size_t from, [[maybe_unused]] size_t to, [[maybe_unused]] const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
                          Led_Coordinate /*useBaseLine*/, Led_Distance* pixelsDrawn)
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
     RequireNotNull (text.PeekAtVirtualText ());
     Require (text.PeekAtVirtualText ()[0] == kEmbeddingSentinalChar);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
 
     using TemporarilyUseTablet = EmbeddedTableWordProcessor::TemporarilyUseTablet;
 
@@ -5825,27 +5818,19 @@ Done:
     }
 }
 
-void Table::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to,
-                                 const Led_tChar* text,
-                                 Led_Distance*    distanceResults) const
+void Table::MeasureSegmentWidth (const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to,
+                                 [[maybe_unused]] const Led_tChar* text, Led_Distance* distanceResults) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
     RequireNotNull (text);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-    Led_Arg_Unused (text);
-
     distanceResults[0] = fTotalWidth;
 }
 
-Led_Distance Table::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, size_t from, size_t to) const
+Led_Distance Table::MeasureSegmentHeight (const StyledTextImager* imager, const RunElement& /*runElement*/, [[maybe_unused]] size_t from, [[maybe_unused]] size_t to) const
 {
     RequireMember (const_cast<StyledTextImager*> (imager), WordProcessor);
     Assert (from + 1 == to);
-    Led_Arg_Unused (from);
-    Led_Arg_Unused (to);
-
     // don't return zero-height as that could cause problems... even if not layed out yet...
     // LGP 2003-03-17 - not sure - maybe its OK to return zero if not layed out yet??
     return fTotalHeight == 0 ? 1 : fTotalHeight;
@@ -6999,14 +6984,12 @@ const Table::Cell& Table::GetRealCell (size_t row, size_t column) const
     return GetCell (row, column);
 }
 
-bool Table::CanMergeCells (size_t fromRow, size_t fromCol, size_t toRow, size_t toCol)
+bool Table::CanMergeCells (size_t fromRow, size_t fromCol, [[maybe_unused]] size_t toRow, [[maybe_unused]] size_t toCol)
 {
     Require (fromRow <= toRow);
     Require (fromCol <= toCol);
     Require (toRow <= GetRowCount ());
     Require (toCol <= GetColumnCount ());
-    Led_Arg_Unused (toRow);
-    Led_Arg_Unused (toCol);
     // for now - our only requirements are that the region to merge is square (and this doesn't need to be tested
     // for because of my API), and that the top-left is a plain cell, and not already merged into something else.
     return GetCellFlags (fromRow, fromCol) == ePlainCell;

@@ -1668,13 +1668,10 @@ void Led_Tablet_::MeasureText (const Led_FontMetrics& precomputedFontMetrics,
             take care of any contextual shaping required (glyph selection based on context - as with Arabic).</p>
 */
 void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomputedFontMetrics, const Led_tChar* text, size_t nBytes,
-                                 TextDirection direction,
+                                 [[maybe_unused]] TextDirection direction,
                                  Led_Point outputAt, Led_Coordinate hTabOrigin, const Led_TabStopList& tabStopList,
                                  Led_Distance* amountDrawn, Led_Coordinate hScrollOffset)
 {
-#if !qWideCharacters
-    Led_Arg_Unused (direction);
-#endif
 #if qPlatform_MacOS
     SetPort ();
 #endif
@@ -2011,13 +2008,10 @@ void Led_Tablet_::EraseBackground_SolidHelper (const Led_Rect& eraseRect, const 
             the background color to while, and the hilight colors the reverse of this (fore=black/back=white), this code will revert
             to the old algorithm, and run much faster.</p>
 */
-void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, Led_Color hilightBackColor, Led_Color hilightForeColor, Led_Color oldBackColor, Led_Color oldForeColor)
+void Led_Tablet_::HilightArea_SolidHelper (const Led_Rect& hilightArea, [[maybe_unused]] Led_Color hilightBackColor, [[maybe_unused]] Led_Color hilightForeColor, Led_Color oldBackColor, [[maybe_unused]] Led_Color oldForeColor)
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
-        Led_Arg_Unused (hilightBackColor);
-        Led_Arg_Unused (hilightForeColor);
-        Led_Arg_Unused (oldForeColor);
         SetPort ();
         LMSetHiliteMode (LMGetHiliteMode () & 0x7F);
         GDI_RGBBackColor (oldBackColor.GetOSRep ()); // Mac HilightMode code already knows the hilightBackColor - and exchanges it with the given backColor
@@ -2085,9 +2079,6 @@ void Led_Tablet_::HilightArea_SolidHelper (const Led_Region& hilightArea, [[mayb
 {
     if (not hilightArea.IsEmpty ()) {
 #if qPlatform_MacOS
-        Led_Arg_Unused (hilightBackColor);
-        Led_Arg_Unused (hilightForeColor);
-        Led_Arg_Unused (oldForeColor);
         SetPort ();
         LMSetHiliteMode (LMGetHiliteMode () & 0x7F);
         GDI_RGBBackColor (oldBackColor.GetOSRep ()); // Mac HilightMode code already knows the hilightBackColor - and exchanges it with the given backColor

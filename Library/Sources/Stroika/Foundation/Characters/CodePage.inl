@@ -87,12 +87,11 @@ namespace Stroika {
                 , fCodePage (codePage)
             {
             }
-            inline CodePageConverter::CodePageConverter (CodePage codePage, HandleBOMFlag h)
+            inline CodePageConverter::CodePageConverter (CodePage codePage, [[maybe_unused]] HandleBOMFlag h)
                 : fHandleBOM (true)
                 , fCodePage (codePage)
             {
                 Require (h == eHandleBOM);
-                Arg_Unused (h);
             }
             inline bool CodePageConverter::GetHandleBOM () const
             {

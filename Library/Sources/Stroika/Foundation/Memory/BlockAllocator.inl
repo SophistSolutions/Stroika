@@ -197,11 +197,10 @@ namespace Stroika {
              ********************************************************************************
              */
             template <size_t SIZE>
-            inline void* Private_::BlockAllocationPool_<SIZE>::Allocate (size_t n)
+            inline void* Private_::BlockAllocationPool_<SIZE>::Allocate ([[maybe_unused]] size_t n)
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 Require (n <= SIZE);
-                Arg_Unused (n); // n only used for debuggging, avoid compiler warning
 
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
             /*
@@ -380,12 +379,11 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            inline void* BlockAllocator<T>::Allocate (size_t n)
+            inline void* BlockAllocator<T>::Allocate ([[maybe_unused]] size_t n)
             {
                 using Private_::BlockAllocation_Private_AdjustSizeForPool_;
                 using Private_::BlockAllocationPool_;
                 Require (n == sizeof (T));
-                Arg_Unused (n); // n only used for debuggging, avoid compiler warning
 #if qAllowBlockAllocation
                 void* result = BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
 #else

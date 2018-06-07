@@ -385,10 +385,8 @@ void StandardStyledTextInteractor::SetSelection (size_t start, size_t end)
     }
 }
 
-void StandardStyledTextInteractor::SetSelection_ (size_t start, size_t end)
+void StandardStyledTextInteractor::SetSelection_ ([[maybe_unused]] size_t start, [[maybe_unused]] size_t end)
 {
-    Led_Arg_Unused (start);
-    Led_Arg_Unused (end);
     // SetEmptySelectionStyle () assumes selection already set - uses set one - assure that we're called
     // at the right time and that it already HAS been set
     Require (start == GetSelectionStart ());

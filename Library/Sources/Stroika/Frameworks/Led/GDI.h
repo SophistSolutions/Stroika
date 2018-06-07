@@ -2896,7 +2896,7 @@ namespace Stroika {
             @DESCRIPTION:   <p>Utility routine to ensure the first rect (typically used for a window) fits on the sceen.
                         Pin the edges so it fits. See also @'EnsureRectInRect'.</p>
             */
-            inline Led_Rect EnsureRectOnScreen (Led_Rect& r)
+            inline Led_Rect EnsureRectOnScreen ([[maybe_unused]] Led_Rect& r)
             {
 #if qPlatform_Windows
                 // Get the limits of the 'workarea'
@@ -2910,7 +2910,6 @@ namespace Stroika {
                 }
                 return EnsureRectInRect (r, AsLedRect (rWorkArea));
 #else
-                Led_Arg_Unused (r);
                 Assert (false); // NYI -
                 return Led_Rect (0, 0, 0, 0);
 #endif

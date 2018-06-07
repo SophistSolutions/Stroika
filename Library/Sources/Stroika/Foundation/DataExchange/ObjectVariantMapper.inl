@@ -484,14 +484,16 @@ namespace Stroika {
                 static_assert (std::is_enum<ENUM_TYPE>::value, "MakeCommonSerializer_NamedEnumerations only works for enum types");
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
-                FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [nameMap](const ObjectVariantMapper&, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
+                FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [nameMap]([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
+                    Lambda_Arg_Unused_BWA (mapper);
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
                     return VariantValue (*nameMap.Lookup (*fromObjOfTypeT));
                 };
-                ToObjectMapperType<ENUM_TYPE> toObjectMapper = [nameMap](const ObjectVariantMapper&, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
+                ToObjectMapperType<ENUM_TYPE> toObjectMapper = [nameMap]([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
+                    Lambda_Arg_Unused_BWA (mapper);
                     auto optVal = nameMap.InverseLookup (d.As<String> ());
                     if (not optVal.has_value ()) {
                         DbgTrace (L"Enumeration ('%s') value '%s' out of range", Characters::ToString (typeid (ENUM_TYPE)).c_str (), d.As<String> ().c_str ());
@@ -519,12 +521,13 @@ namespace Stroika {
                 static_assert (std::is_enum<ENUM_TYPE>::value, "This only works for enum types");
                 using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
                 static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
-                FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [](const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
+                FromObjectMapperType<ENUM_TYPE> fromObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
                     return VariantValue (static_cast<SerializeAsType> (*fromObjOfTypeT));
                 };
-                ToObjectMapperType<ENUM_TYPE> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
+                ToObjectMapperType<ENUM_TYPE> toObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, ENUM_TYPE* intoObjOfTypeT) -> void {
+                    Lambda_Arg_Unused_BWA (mapper);
                     RequireNotNull (intoObjOfTypeT);
                     *intoObjOfTypeT = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
                     Assert (static_cast<SerializeAsType> (*intoObjOfTypeT) == d.As<SerializeAsType> ()); // no round-trip loss
@@ -614,8 +617,9 @@ namespace Stroika {
                 return TypeMappingDetails{typeid (RANGE_TYPE), fromObjectMapper, toObjectMapper};
             }
             template <typename CLASS>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const
             {
+                Lambda_Arg_Unused_BWA (n);
 #if qDebug
                 for (auto i : fields) {
                     Require (i.fFieldMetaInfo.fOffset < n);
