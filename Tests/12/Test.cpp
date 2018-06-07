@@ -34,7 +34,7 @@ namespace {
         Debug::TraceContextBumper ctx{L"{}::RunTests_"};
         CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (
             []() { return CONCRETE_CONTAINER (); },
-            [](const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
+            []([[maybe_unused]] const typename CONCRETE_CONTAINER::ArchetypeContainerType& c) {});
     }
 }
 
@@ -90,7 +90,7 @@ namespace {
     }
 }
 
-int main (int argc, const char* argv[])
+int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

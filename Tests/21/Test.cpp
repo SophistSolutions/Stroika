@@ -32,7 +32,7 @@ namespace {
     void DoTestForConcreteContainer_ (CONCRETE_CONTAINER_FACTORY factory)
     {
         using T                  = typename CONCRETE_CONTAINER::value_type;
-        auto extraChecksFunction = [](const Set<T>& s) {
+        auto extraChecksFunction = []([[maybe_unused]] const Set<T>& s) {
             // only work todo on sorted sets
         };
         CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<T>> (factory, extraChecksFunction);
@@ -126,7 +126,7 @@ namespace {
     }
 }
 
-int main (int argc, const char* argv[])
+int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

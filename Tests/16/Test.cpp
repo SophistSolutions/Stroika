@@ -88,7 +88,7 @@ namespace {
             using KEY_TYPE                = int;
             using VALUE_TYPE              = B;
             using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
-            bool n1                       = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
+            [[maybe_unused]] bool n1      = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
 
             using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
             using ttt =
@@ -212,7 +212,7 @@ namespace {
     }
 }
 
-int main (int argc, const char* argv[])
+int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     return Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

@@ -46,22 +46,24 @@ namespace CommonTests {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
             void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
             {
-                using ELEMENT_TYPE    = typename USING_SET_CONTAINER::value_type;
-                USING_SET_CONTAINER s = factory ();
-                applyToContainer (s);
-                USING_SET_CONTAINER s1 = s;
-                applyToContainer (s1);
-                USING_BASESET_CONTAINER s2 = s;
-                applyToContainer (s2);
-                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
-                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2);
-                USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1, 3, 4, 2});
-                VerifyTestResult (s3.GetLength () == 4);
-                VerifyTestResult (s3.Contains (1));
-                VerifyTestResult (s3.Contains (2));
-                VerifyTestResult (s3.Contains (3));
-                VerifyTestResult (s3.Contains (4));
-                VerifyTestResult (not s3.Contains (5));
+                using ELEMENT_TYPE = typename USING_SET_CONTAINER::value_type;
+                {
+                    USING_SET_CONTAINER s = factory ();
+                    applyToContainer (s);
+                    USING_SET_CONTAINER s1 = s;
+                    applyToContainer (s1);
+                    USING_BASESET_CONTAINER s2 = s;
+                    applyToContainer (s2);
+                    IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
+                    IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2);
+                    USING_BASESET_CONTAINER s3 = mk_ (factory, initializer_list<int>{1, 3, 4, 2});
+                    VerifyTestResult (s3.GetLength () == 4);
+                    VerifyTestResult (s3.Contains (1));
+                    VerifyTestResult (s3.Contains (2));
+                    VerifyTestResult (s3.Contains (3));
+                    VerifyTestResult (s3.Contains (4));
+                    VerifyTestResult (not s3.Contains (5));
+                }
                 {
                     USING_SET_CONTAINER     s1 = mk_ (factory, initializer_list<int>{1});
                     USING_SET_CONTAINER     s2 = mk_ (factory, initializer_list<int>{1});
@@ -134,7 +136,7 @@ namespace CommonTests {
 
         namespace Test5_UnionDifferenceIntersectionEtc_ {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
-            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
+            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
                 USING_SET_CONTAINER s1 = factory ();
                 s1.Add (1);

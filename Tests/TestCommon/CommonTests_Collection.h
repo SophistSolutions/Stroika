@@ -95,8 +95,8 @@ namespace CommonTests {
                     for (T it : s) {
                     }
                 }
-                for (T it : s) {
-                    for (T it1 : s) {
+                for (T  it : s) {
+                    for (T  it1 : s) {
                         s.RemoveAll ();
                     }
                 }
@@ -163,7 +163,7 @@ namespace CommonTests {
             }
 
             template <typename CONCRETE_CONTAINER, typename CONCRETE_CONTAINER_FACTORY, typename TEST_FUNCTION>
-            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, TEST_FUNCTION applyToContainer)
+            void DoAllTests_ (CONCRETE_CONTAINER_FACTORY factory, [[maybe_unused]] TEST_FUNCTION applyToContainer)
             {
                 Debug::TraceContextBumper ctx{L"CommonTests::CollectionTests::Test1_OldMiscBagTests_"};
                 CONCRETE_CONTAINER        s = factory ();
@@ -252,9 +252,9 @@ namespace CommonTests {
             void BasicIteratorTest_ (CONCRETE_CONTAINER_FACTORY factory)
             {
                 CONCRETE_CONTAINER                      collection = factory ();
-                typename CONCRETE_CONTAINER::value_type t1         = 1;
-                typename CONCRETE_CONTAINER::value_type t2         = 2;
-                typename CONCRETE_CONTAINER::value_type t3         = 3;
+                [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t1         = 1;
+                [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t2         = 2;
+                [[maybe_unused]] typename CONCRETE_CONTAINER::value_type t3         = 3;
                 VerifyTestResult (collection.IsEmpty ());
                 collection.Add (t1);
                 collection.Add (t1);
