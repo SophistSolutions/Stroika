@@ -2617,7 +2617,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                         if (SearchForwardFor ("\\pict", s.length ())) {
                             ControlWord cw = ReadControlWord ();
                             if (cw.fWord == RTFIO::eControlAtom_pict) {
-                                Led_TWIPS_Point bmSize    = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
+                                Led_TWIPS_Point bmSize = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
                                 vector<char>    pictureData;
                                 ImageFormat     imageFormat = eDefaultImageFormat;
                                 ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &pictureData);
