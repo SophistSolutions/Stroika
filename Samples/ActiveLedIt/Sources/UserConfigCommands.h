@@ -44,20 +44,20 @@ private:
 };
 
 struct BuiltinCmdSpec {
-    BuiltinCmdSpec (WORD cmdNum, const char* cmdName)
+    BuiltinCmdSpec (UINT cmdNum, const char* cmdName)
         : fCmdNum (cmdNum)
         , fCmdName (cmdName)
         , fInternalCmdName (cmdName)
     {
     }
-    BuiltinCmdSpec (WORD cmdNum, const char* cmdName, const char* internalCmdName)
+    BuiltinCmdSpec (UINT cmdNum, const char* cmdName, const char* internalCmdName)
         : fCmdNum (cmdNum)
         , fCmdName (cmdName)
         , fInternalCmdName (internalCmdName)
     {
     }
 
-    WORD        fCmdNum;
+    UINT        fCmdNum;
     const char* fCmdName;
     const char* fInternalCmdName;
 };
@@ -305,7 +305,7 @@ public:
 protected:
     wstring fName;
     wstring fInternalName;
-    WORD    fCommandNumber;
+    UINT    fCommandNumber;
 };
 
 class ATL_NO_VTABLE AL_UserCommandHelper : public IDispatchImpl<IALUserCommand, &IID_IALUserCommand, &LIBID_ACTIVELEDITLib, qActiveLedIt_MajorVersion, qActiveLedIt_MinorVersion>,
@@ -687,8 +687,8 @@ string mkFontNameCMDName (const Led_SDK_String& fName);
 
 CComPtr<IDispatch> GenerateBuiltinCommandsObject ();
 
-WORD    CmdObjOrName2Num (const VARIANT& cmdObjOrName);
-wstring CmdNum2Name (WORD cmdNum);
+UINT    CmdObjOrName2Num (const VARIANT& cmdObjOrName);
+wstring CmdNum2Name (UINT cmdNum);
 
 /*
  ********************************************************************************

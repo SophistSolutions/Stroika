@@ -352,8 +352,8 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
 
     public:
         virtual void InternalizeFlavor_FILEGuessFormatsFromStartOfData (
-            Led_ClipFormat* suggestedClipFormat,
-            CodePage*       suggestedCodePage,
+            [[maybe_unused]] Led_ClipFormat* suggestedClipFormat,
+            CodePage*                        suggestedCodePage,
             const Byte* fileStart, const Byte* fileEnd) override
         {
             size_t curLineSize = 0;

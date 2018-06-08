@@ -124,11 +124,13 @@ namespace {
             else {
                 wstring     cmdName = CmdNum2Name (itemID);
                 CComVariant result;
-                Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &CComVariant (cmdName.c_str ()), &result));
+                CComVariant cmdNameCCV = cmdName.c_str ();
+                Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &cmdNameCCV, &result));
                 Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                 ::EnableMenuItem (menu, i, MF_BYPOSITION | (result.boolVal ? MF_ENABLED : MF_GRAYED));
 
-                Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &CComVariant (cmdName.c_str ()), &result));
+                cmdNameCCV = cmdName.c_str ();
+                Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &cmdNameCCV, &result));
                 Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                 ::CheckMenuItem (menu, i, MF_BYPOSITION | (result.boolVal ? MF_CHECKED : MF_UNCHECKED));
             }
@@ -166,7 +168,7 @@ void ActiveLedIt_IconButtonToolbarElement::FinalRelease ()
 {
 }
 
-LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
 {
     bHandled = true;
     try {
@@ -210,7 +212,8 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown (UINT uMsg, WPARAM w
                                 if (cmdNum != 0) {
                                     wstring cmdName = CmdNum2Name (cmdNum);
                                     if (cmdName.length () != 0) {
-                                        Led_ThrowIfErrorHRESULT (oal.Invoke1 (DISPID_InvokeCommand, &CComVariant (cmdName.c_str ())));
+                                        CComVariant cmdNameCCV = cmdName.c_str ();
+                                        Led_ThrowIfErrorHRESULT (oal.Invoke1 (DISPID_InvokeCommand, &cmdNameCCV));
                                     }
                                 }
                                 ::DestroyMenu (mH);
@@ -236,7 +239,7 @@ LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonDown (UINT uMsg, WPARAM w
     }
 }
 
-LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_IconButtonToolbarElement::OnLButtonUp ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
 {
     /*
      *  Pushing on a button causes it to grab the focus (cannot figure out how to stop this - but its not SO bad).
@@ -427,7 +430,8 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::UpdateEnableState ()
                 }
                 else {
                     CComVariant result;
-                    Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &CComVariant (fCommand), &result));
+                    CComVariant cmdCCV = fCommand;
+                    Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &cmdCCV, &result));
                     Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                     enabled = !!result.boolVal;
                 }
@@ -438,7 +442,8 @@ STDMETHODIMP ActiveLedIt_IconButtonToolbarElement::UpdateEnableState ()
                 if (fOwningActiveLedIt != NULL) {
                     CComPtr<IDispatch> al = fOwningActiveLedIt;
                     CComVariant        result;
-                    Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &CComVariant (fCommand), &result));
+                    CComVariant        commandCCV = fCommand;
+                    Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &commandCCV, &result));
                     Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                     checked = !!result.boolVal;
                 }
@@ -610,7 +615,7 @@ void ActiveLedIt_ComboBoxToolbarElement::FinalRelease ()
 {
 }
 
-LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBDropDown (USHORT uMsg, USHORT wParam, HWND ctlHandle, BOOL& bHandled)
+LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBDropDown ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam, [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
 {
     fDropDownActive = true;
     LRESULT lr      = DefWindowProc ();
@@ -618,12 +623,12 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBDropDown (USHORT uMsg, USHORT wP
     return lr;
 }
 
-LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBCloseUp (USHORT uMsg, USHORT wParam, HWND ctlHandle, BOOL& bHandled)
+LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBCloseUp ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam, [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
 {
     fDropDownActive = false;
     /*
-         *  Using the combobox grabs the focus. Reset the focus back to the OCX when the click is finihsed.
-         */
+     *  Using the combobox grabs the focus. Reset the focus back to the OCX when the click is finihsed.
+     */
     LRESULT lr = DefWindowProc ();
     try {
         CComPtr<IDispatch> oal = fOwningActiveLedIt;
@@ -640,7 +645,7 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBCloseUp (USHORT uMsg, USHORT wPa
     return lr;
 }
 
-LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange (USHORT uMsg, USHORT wParam, HWND ctlHandle, BOOL& bHandled)
+LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange ([[maybe_unused]] USHORT uMsg, [[maybe_unused]] USHORT wParam, [[maybe_unused]] HWND ctlHandle, BOOL& bHandled)
 {
     bHandled   = true;
     LRESULT lr = DefWindowProc ();
@@ -650,8 +655,9 @@ LRESULT ActiveLedIt_ComboBoxToolbarElement::OnCBSelChange (USHORT uMsg, USHORT w
             CComQIPtr<IALCommand> alc = fCommandListCache[r];
             CComBSTR              internalName;
             Led_ThrowIfErrorHRESULT (alc->get_InternalName (&internalName));
-            CComPtr<IDispatch> al = fOwningActiveLedIt;
-            Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_InvokeCommand, &CComVariant (internalName)));
+            CComPtr<IDispatch> al              = fOwningActiveLedIt;
+            CComVariant        internalNameCCV = internalName;
+            Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_InvokeCommand, &internalNameCCV));
         }
     }
     catch (...) {
@@ -788,14 +794,14 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
         if (m_hWnd != NULL and not fDropDownActive) {
             // Walk list of all subcommands - and if ANY enabled - then we are, and otherwise  we are disabled
             bool   enabled     = false;
-            bool   checked     = false;
             size_t idxSelected = kBadIndex;
             if (fOwningActiveLedIt != NULL) {
                 CComPtr<IDispatch> al = fOwningActiveLedIt;
                 for (vector<CComPtr<IALCommand>>::iterator i = fCommandListCache.begin (); i != fCommandListCache.end (); ++i) {
                     {
                         CComVariant result;
-                        Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &CComVariant (*i), &result));
+                        CComVariant alcmdCCV = *i;
+                        Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandEnabled, &alcmdCCV, &result));
                         Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                         if (result.boolVal) {
                             enabled = true;
@@ -803,7 +809,8 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
                     }
                     {
                         CComVariant result;
-                        Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &CComVariant (*i), &result));
+                        CComVariant alcmdCCV = *i;
+                        Led_ThrowIfErrorHRESULT (al.Invoke1 (DISPID_CommandChecked, &alcmdCCV, &result));
                         Led_ThrowIfErrorHRESULT (result.ChangeType (VT_BOOL));
                         if (result.boolVal) {
                             idxSelected = i - fCommandListCache.begin ();
@@ -813,7 +820,7 @@ STDMETHODIMP ActiveLedIt_ComboBoxToolbarElement::UpdateEnableState ()
             }
             fComboBox.EnableWindow (enabled);
             if (idxSelected == kBadIndex) {
-                (void)fComboBox.SendMessage (CB_SETCURSEL, -1, 0);
+                (void)fComboBox.SendMessage (CB_SETCURSEL, static_cast<WPARAM> (-1), 0);
             }
             else {
                 Verify (fComboBox.SendMessage (CB_SETCURSEL, static_cast<int> (idxSelected), 0) != CB_ERR);
@@ -1041,13 +1048,15 @@ ActiveLedIt_Toolbar::~ActiveLedIt_Toolbar ()
 {
 }
 
-LRESULT ActiveLedIt_Toolbar::OnCommand (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_Toolbar::OnCommand ([[maybe_unused]] UINT uMsg, WPARAM wParam, [[maybe_unused]] LPARAM lParam, BOOL& bHandled)
 {
     if (!HIWORD (wParam)) {
         if (fOwningActiveLedIt != NULL) {
-            CComPtr<IDispatch> oal     = fOwningActiveLedIt;
-            wstring            cmdName = CmdNum2Name (LOWORD (wParam));
-            oal.Invoke1 (DISPID_InvokeCommand, &CComVariant (cmdName.c_str ()));
+            CComPtr<IDispatch> oal        = fOwningActiveLedIt;
+            wstring            cmdName    = CmdNum2Name (LOWORD (wParam));
+            CComVariant        cmdNameCCV = cmdName.c_str ();
+            oal.Invoke1 (DISPID_InvokeCommand, &cmdNameCCV);
+            bHandled = true;
         }
     }
     return -1;
@@ -1396,7 +1405,7 @@ void ActiveLedIt_ToolbarList::FinalRelease ()
 {
 }
 
-LRESULT ActiveLedIt_ToolbarList::OnPaint (UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT ActiveLedIt_ToolbarList::OnPaint ([[maybe_unused]] UINT uMsg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam, [[maybe_unused]] BOOL& bHandled)
 {
     PAINTSTRUCT ps;
     HDC         hdc = ::BeginPaint (m_hWnd, &ps);

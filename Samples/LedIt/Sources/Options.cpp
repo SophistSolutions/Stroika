@@ -290,7 +290,8 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
 void Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont)
 {
 #if qPlatform_Windows
-    gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const Byte*> (&defaultNewDocFont.GetOSRep ()));
+    auto tmp = defaultNewDocFont.GetOSRep ();
+    gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const Byte*> (&tmp));
 #else
     Led_Arg_Unused (defaultNewDocFont);
 #endif

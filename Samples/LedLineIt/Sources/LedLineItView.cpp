@@ -579,7 +579,7 @@ BOOL LedLineItView::IsSelected (const CObject* pDocItem) const
 
     // TODO: implement this function that tests for a selected OLE client item
     //return pDocItem == GetSoleSelectedOLEEmbedding ();
-    BOOL test = inherited::IsSelected (pDocItem);
+    [[maybe_unused]] BOOL test = inherited::IsSelected (pDocItem);
     return false; // should I even need to override this? Probably NO!!!
 }
 
@@ -645,7 +645,7 @@ void LedLineItView::OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI)
 
 void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
 {
-    Led_IncrementalFontSpecification::FontSize chosenFontSize = FontCmdToSize (cmdNum);
+    Led_FontSpecification::FontSize chosenFontSize = FontCmdToSize (cmdNum);
     if (chosenFontSize == 0) {
         switch (cmdNum) {
             case kFontSizeSmallerCmdID: {
@@ -662,7 +662,7 @@ void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
             } break;
             case kFontSizeOtherCmdID: {
                 Led_Distance oldSize = GetDefaultFont ().GetPointSize ();
-                chosenFontSize       = PickOtherFontHeight (oldSize);
+                chosenFontSize       = static_cast<Led_FontSpecification::FontSize> (PickOtherFontHeight (oldSize));
             } break;
         }
     }

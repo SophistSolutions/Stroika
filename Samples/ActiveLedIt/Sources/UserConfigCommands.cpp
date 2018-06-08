@@ -835,9 +835,9 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 // See if its in the builtin command list
                 long bicc = 0;
                 builtins->get_Count (&bicc);
-                for (size_t i = 0; i < static_cast<size_t> (bicc); ++i) {
+                for (size_t ii = 0; ii < static_cast<size_t> (bicc); ++ii) {
                     CComPtr<IDispatch> e;
-                    Led_ThrowIfErrorHRESULT (builtins->get_Item (i, &e));
+                    Led_ThrowIfErrorHRESULT (builtins->get_Item (ii, &e));
                     CComQIPtr<IALCommand> alc = e;
                     CComBSTR              bicCmdName;
                     Led_ThrowIfErrorHRESULT (alc->get_InternalName (&bicCmdName));
@@ -861,9 +861,10 @@ STDMETHODIMP ActiveLedIt_AcceleratorTable::GenerateWin32AcceleratorTable (HACCEL
                 Led_ThrowIfErrorHRESULT (ae->get_ModifierFlag (&modfierFlag));
                 WORD key;
                 Led_ThrowIfErrorHRESULT (ae->get_Key (&key));
-                accels[goodKeysFound].fVirt = modfierFlag;
+                accels[goodKeysFound].fVirt = static_cast<BYTE> (modfierFlag);
                 accels[goodKeysFound].key   = key;
-                accels[goodKeysFound].cmd   = cmdNum;
+                Assert (cmdNum <= numeric_limits<WORD>::max ());
+                accels[goodKeysFound].cmd = static_cast<WORD> (cmdNum);
                 goodKeysFound++;
             }
             *pVal = ::CreateAcceleratorTable (accels, goodKeysFound);
@@ -1215,15 +1216,13 @@ CComPtr<IDispatch> GenerateBuiltinCommandsObject ()
 }
 
 /*
-     ********************************************************************************
-     *********************************** CmdObjOrName2Num ***************************
-     ********************************************************************************
-     */
-
-WORD CmdObjOrName2Num (const VARIANT& cmdObjOrName)
+ ********************************************************************************
+ *********************************** CmdObjOrName2Num ***************************
+ ********************************************************************************
+ */
+UINT CmdObjOrName2Num (const VARIANT& cmdObjOrName)
 {
-    CComVariant           c (cmdObjOrName);
-    CComQIPtr<IALCommand> bicc;
+    CComVariant c (cmdObjOrName);
     if (SUCCEEDED (c.ChangeType (VT_BSTR))) {
         wstring lookForCmdName = c.bstrVal == NULL ? wstring () : wstring (c.bstrVal);
         for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + NEltsOf (kAllCmds); ++i) {
@@ -1247,11 +1246,9 @@ WORD CmdObjOrName2Num (const VARIANT& cmdObjOrName)
         }
 
         // If not found in builtin cmd list - maybe a user command?
-        if (bicc.p == NULL) {
-            UINT uCmdNum = 0;
-            if (UserCommandNameNumberRegistry::Get ().Lookup (c.bstrVal, &uCmdNum)) {
-                return uCmdNum;
-            }
+        UINT uCmdNum = 0;
+        if (UserCommandNameNumberRegistry::Get ().Lookup (c.bstrVal, &uCmdNum)) {
+            return uCmdNum;
         }
     }
     else if (SUCCEEDED (c.ChangeType (VT_DISPATCH))) {
@@ -1277,11 +1274,11 @@ WORD CmdObjOrName2Num (const VARIANT& cmdObjOrName)
 }
 
 /*
-     ********************************************************************************
-     *********************************** CmdNum2Name ********************************
-     ********************************************************************************
-     */
-wstring CmdNum2Name (WORD cmdNum)
+ ********************************************************************************
+ *********************************** CmdNum2Name ********************************
+ ********************************************************************************
+ */
+wstring CmdNum2Name (UINT cmdNum)
 {
     // regular builtin CMD
     for (const BuiltinCmdSpec* i = kAllCmds; i != kAllCmds + NEltsOf (kAllCmds); ++i) {
