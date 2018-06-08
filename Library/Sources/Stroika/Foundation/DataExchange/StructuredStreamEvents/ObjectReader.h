@@ -126,7 +126,7 @@ namespace Stroika {
                     using Containers::Set;
                     using Memory::Byte;
 
-/**
+                    /**
                      */
 #ifndef qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing
 #define qStroika_Foundation_DataExchange_StructuredStreamEvents_SupportTracing qDebug
@@ -182,31 +182,31 @@ namespace Stroika {
                      *
                      *  \par Example Usage
                      *      \code
-                     *      struct  Person_ {
-                     *          String      firstName;
-                     *          String      lastName;
-                     *      };
-                     *      using   namespace   ObjectReader;
-                     *      Registry mapper;
-                     *      mapper.AddCommonType<String> ();
-                     *      mapper.AddClass<Person_> (initializer_list<StructFieldInfo> {
-                     *          { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
-                     *          { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
-                     *      });
-                     *      Person_ p;
-                     *      IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ReadDownToReader> (mapper.MakeContextReader (&p)));
-                     *      XML::SAXParse (mkdata_ (), tmpCtx1);
+                     *          struct  Person_ {
+                     *              String      firstName;
+                     *              String      lastName;
+                     *          };
+                     *          using   namespace   ObjectReader;
+                     *          Registry mapper;
+                     *          mapper.AddCommonType<String> ();
+                     *          mapper.AddClass<Person_> (initializer_list<StructFieldInfo> {
+                     *              { Name { L"FirstName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, firstName) },
+                     *              { Name { L"LastName" }, Stroika_Foundation_DataExchange_StructFieldMetaInfo (Person_, lastName) },
+                     *          });
+                     *          Person_ p;
+                     *          IConsumerDelegateToContext tmpCtx1 (mapper, make_shared<ReadDownToReader> (mapper.MakeContextReader (&p)));
+                     *          XML::SAXParse (mkdata_ (), tmpCtx1);
                      *      \endcode
                      *
                      *  \par Example Usage2
                      *      @see T3_SAXObjectReader_ReadDown2Sample_ in RegressionTest 'Foundation::DataExchangeFormat::XML::SaxParser'
                      *
                      *      \code
-                     *      .. start with the types and mapper from Example 1, and add
-                     *      Sequence<Person_> people;
-                     *      mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
-                     *      IConsumerDelegateToContext tmpCtx2 { mapper, make_shared<ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
-                     *      XML::SAXParse (mkdata_ (), tmp);
+                     *          .. start with the types and mapper from Example 1, and add
+                     *          Sequence<Person_> people;
+                     *          mapper.AddCommonType<Sequence<Person_>> (Name (L"WithWhom"));
+                     *          IConsumerDelegateToContext tmpCtx2 { mapper, make_shared<ReadDownToReader> (newRegistry.MakeContextReader (&people)) };
+                     *          XML::SAXParse (mkdata_ (), tmp);
                      *      \endcode
                      */
                     class Registry {

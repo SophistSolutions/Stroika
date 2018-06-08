@@ -720,7 +720,7 @@ namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        auto&& cleanupReport = Execution::Finally ([]() {
+        [[maybe_unused]] auto&& cleanupReport = Execution::Finally ([]() {
             auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
             DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());
             for (Execution::Thread::IDType threadID : runningThreads) {

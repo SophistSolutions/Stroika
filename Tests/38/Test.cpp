@@ -501,7 +501,7 @@ namespace {
         Debug::TraceContextBumper traceCtx ("RegressionTest6_ThreadWaiting_");
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         // if this triggers - add waits to end of procedure - so we assure no 'side effects' moving on to next test...
-        auto&& cleanupReport = Finally (
+        [[maybe_unused]] auto&& cleanupReport = Finally (
             []() {
                 again:
                     auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
@@ -1139,7 +1139,7 @@ namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
-        auto&& cleanupReport = Finally (
+        [[maybe_unused]] auto&& cleanupReport = Finally (
             []() {
                 auto runningThreads = Execution::Thread::GetStatistics ().fRunningThreads;
                 DbgTrace (L"Total Running threads at end: %d", runningThreads.size ());

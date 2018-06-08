@@ -138,7 +138,7 @@ namespace Stroika {
                  *
                  *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
                  */
-                shared_ptr<WE_> we      = make_shared<WE_> (eAutoReset);
+                shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
                 [[maybe_unused]] auto&& cleanup = Finally (
                     [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
                         Thread::SuppressInterruptionInContext suppressThreadInterrupts;
@@ -201,8 +201,8 @@ namespace Stroika {
                  *
                  *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
                  */
-                shared_ptr<WE_> we      = make_shared<WE_> (eAutoReset);
-                auto&&          cleanup = Finally (
+                shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
+                [[maybe_unused]] auto&& cleanup = Finally (
                     [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
                         Thread::SuppressInterruptionInContext suppressThreadInterrupts;
 #if qCompilerAndStdLib_make_unique_lock_IsSlow

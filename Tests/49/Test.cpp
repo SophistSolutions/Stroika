@@ -226,16 +226,16 @@ namespace {
         {
             Containers::Sequence<int> s = {1, 2, 3};
             {
-                shared_ptr<int> countSoFar = shared_ptr<int> (new int(0));
-                [[maybe_unused]] size_t          answer =
-                    FunctionalApplicationContext<int> (s).Filter<int> ([countSoFar](int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).Map<int> ([](int s) { return s + 5; }).Reduce<size_t> ([](int s, size_t memo) { return memo + 1; });
+                shared_ptr<int>         countSoFar = shared_ptr<int> (new int(0));
+                [[maybe_unused]] size_t answer =
+                    FunctionalApplicationContext<int> (s).Filter<int> ([countSoFar](int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).Map<int> ([](int s) { return s + 5; }).Reduce<size_t> ([]([[maybe_unused]] int s, size_t memo) { Lambda_Arg_Unused_BWA (s); return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
                 size_t answer =
-                    FunctionalApplicationContext<int> (s).Filter<int> ([&countSoFar](int) -> bool { ++countSoFar; return countSoFar & 1; }).Map<int> ([](int s) { return s + 5; }).Reduce<size_t> ([](int s, size_t memo) { return memo + 1; });
+                    FunctionalApplicationContext<int> (s).Filter<int> ([&countSoFar](int) -> bool { ++countSoFar; return countSoFar & 1; }).Map<int> ([](int s) { return s + 5; }).Reduce<size_t> ([]([[maybe_unused]] int s, size_t memo) { Lambda_Arg_Unused_BWA (s); return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
             {
@@ -265,7 +265,7 @@ namespace {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
                 size_t answer =
-                    FunctionalApplicationContext<String> (s).Filter<String> ([&countSoFar](String) -> bool { ++countSoFar; return countSoFar & 1; }).Map<String> ([](String s) { return s + L" hello"; }).Reduce<size_t> ([](String s, size_t memo) { return memo + 1; });
+                    FunctionalApplicationContext<String> (s).Filter<String> ([&countSoFar](String) -> bool { ++countSoFar; return countSoFar & 1; }).Map<String> ([](String s) { return s + L" hello"; }).Reduce<size_t> ([]([[maybe_unused]] String s, size_t memo) { Lambda_Arg_Unused_BWA (s); return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
             {
