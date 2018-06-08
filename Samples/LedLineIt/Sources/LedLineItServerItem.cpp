@@ -88,8 +88,6 @@ BOOL LedLineItServerItem::OnDraw (CDC* pDC, CSize& /*rSize*/)
     // The following code draws the first item at an arbitrary position.
 
     // TODO: remove this code when your real drawing code is complete
-
-    POSITION pos = pDoc->GetStartPosition ();
 #if 0
     LedLineItControlItem* pItem = (LedLineItControlItem*)pDoc->GetNextClientItem(pos);
     if (pItem != NULL) {

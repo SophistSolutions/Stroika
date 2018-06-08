@@ -36,7 +36,7 @@ namespace Stroika {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(4 : 4250)
+#pragma warning(disable : 4250)
 #endif
             /*
             @CLASS:         WaterMarkHelper<TEXTSTORE,WORDPROCESSOR>
@@ -87,7 +87,7 @@ namespace Stroika {
                          */
                         SetImageUsingOffscreenBitmaps (false);
                     }
-                    virtual void EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override
+                    virtual void EraseBackground ([[maybe_unused]] Led_Tablet tablet, [[maybe_unused]] const Led_Rect& subsetToDraw, [[maybe_unused]] bool printing) override
                     {
                         // Do no erasing - just draw the text...
                         // Note - its CRITICAL that we shutoff offscreen bitmaps for this imager so that we don't get garbage bits

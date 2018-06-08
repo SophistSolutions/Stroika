@@ -638,8 +638,8 @@ namespace Stroika {
 
 #if qPlatform_Windows
                 private:
-                    unsigned short fCachedFontSize; // Keep these as a speedtweek - SetPointSize() expensive on WIN32
-                    long           fCachedFontSizeTMHeight;
+                    Led_FontSpecification::FontSize fCachedFontSize; // Keep these as a speedtweek - SetPointSize() expensive on WIN32
+                    long                            fCachedFontSizeTMHeight;
 #endif
                 };
 

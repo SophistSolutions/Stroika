@@ -755,7 +755,7 @@ extern short AFXAPI _AfxShiftState ();
 void LedItView::OnSysKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     if (fController != NULL) {
-        USHORT shortChar = nChar;
+        USHORT shortChar = static_cast<USHORT> (nChar);
         fController->FireKeyDown (&shortChar, _AfxShiftState ());
     }
     inherited::OnSysKeyDown (nChar, nRepCnt, nFlags);
@@ -764,7 +764,7 @@ void LedItView::OnSysKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
 void LedItView::OnSysKeyUp (UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     if (fController != NULL) {
-        USHORT shortChar = nChar;
+        USHORT shortChar = static_cast<USHORT> (nChar);
         fController->FireKeyUp (&shortChar, _AfxShiftState ());
     }
     inherited::OnSysKeyUp (nChar, nRepCnt, nFlags);
@@ -773,7 +773,7 @@ void LedItView::OnSysKeyUp (UINT nChar, UINT nRepCnt, UINT nFlags)
 void LedItView::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     if (fController != NULL) {
-        USHORT shortChar = nChar;
+        USHORT shortChar = static_cast<USHORT> (nChar);
         fController->FireKeyDown (&shortChar, _AfxShiftState ());
     }
     inherited::OnKeyDown (nChar, nRepCnt, nFlags);
@@ -782,7 +782,7 @@ void LedItView::OnKeyDown (UINT nChar, UINT nRepCnt, UINT nFlags)
 void LedItView::OnKeyUp (UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     if (fController != NULL) {
-        USHORT shortChar = nChar;
+        USHORT shortChar = static_cast<USHORT> (nChar);
         fController->FireKeyUp (&shortChar, _AfxShiftState ());
     }
     inherited::OnKeyUp (nChar, nRepCnt, nFlags);

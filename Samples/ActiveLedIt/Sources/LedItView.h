@@ -61,7 +61,7 @@ using LedItViewAlmostBASE = Led_MFC_ExceptionHandlerHelper<Led_MFC_X<WordProcess
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(4 : 4250)
+#pragma warning(disable : 4250)
 #endif
 
 class LedItView : public WordProcessorCommonCommandHelper_MFC<LedItViewAlmostBASE> {

@@ -34,18 +34,18 @@ namespace {
 
 using SearchParameters = TextInteractor::SearchParameters;
 
-static const TCHAR kDockBarStateEntry[]               = _T ("DockBarState");
-static const TCHAR kSearchParamsMatchString[]         = _T ("MatchString");
-static const TCHAR kSearchParamsRecentMatchStrings[]  = _T ("RecentMatchStrings");
-static const TCHAR kSearchParamsWrapSearch[]          = _T ("WrapSearch");
-static const TCHAR kSearchParamsWholeWordSearch[]     = _T ("WholeWordSearch");
-static const TCHAR kSearchParamsCaseSensativeSearch[] = _T ("CaseSensativeSearch");
-static const TCHAR kSmartCutAndPaste[]                = _T ("SmartCutAndPaste");
-static const TCHAR kAutoIndent[]                      = _T ("AutoIndent");
-static const TCHAR kTabAutoShiftsText[]               = _T ("TabAutoShiftsText");
-static const TCHAR kSyntaxColoring[]                  = _T ("kSyntaxColoring");
-static const TCHAR kCheckFileAssocAtStartup[]         = _T ("CheckFileAssocAtStartup");
-static const TCHAR kDefaultNewDocFont[]               = _T ("DefaultNewDocFont");
+static constexpr TCHAR kDockBarStateEntry[]               = _T ("DockBarState");
+static constexpr TCHAR kSearchParamsMatchString[]         = _T ("MatchString");
+static constexpr TCHAR kSearchParamsRecentMatchStrings[]  = _T ("RecentMatchStrings");
+static constexpr TCHAR kSearchParamsWrapSearch[]          = _T ("WrapSearch");
+static constexpr TCHAR kSearchParamsWholeWordSearch[]     = _T ("WholeWordSearch");
+static constexpr TCHAR kSearchParamsCaseSensativeSearch[] = _T ("CaseSensativeSearch");
+static constexpr TCHAR kSmartCutAndPaste[]                = _T ("SmartCutAndPaste");
+static constexpr TCHAR kAutoIndent[]                      = _T ("AutoIndent");
+static constexpr TCHAR kTabAutoShiftsText[]               = _T ("TabAutoShiftsText");
+static constexpr TCHAR kSyntaxColoring[]                  = _T ("kSyntaxColoring");
+static constexpr TCHAR kCheckFileAssocAtStartup[]         = _T ("CheckFileAssocAtStartup");
+static constexpr TCHAR kDefaultNewDocFont[]               = _T ("DefaultNewDocFont");
 
 /*
  ********************************************************************************
@@ -199,11 +199,6 @@ Led_FontSpecification Options::GetDefaultNewDocFont () const
 
 void Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFont)
 {
-    gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const Byte*> (&defaultNewDocFont.GetOSRep ()));
+    auto tmp = defaultNewDocFont.GetOSRep ();
+    gMyPrefsFile.StorePref (kDefaultNewDocFont, sizeof (LOGFONT), reinterpret_cast<const Byte*> (&tmp));
 }
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

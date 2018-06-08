@@ -1048,7 +1048,7 @@ namespace Stroika {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(4 : 4250)
+#pragma warning(disable : 4250)
 #endif
             /*
             @CLASS:         TrivialImager_Interactor<TEXTSTORE,IMAGER>
@@ -1155,7 +1155,7 @@ namespace Stroika {
             template <typename TARGET_COMMAND_NUMBER>
             inline void CommandNumberMapping<TARGET_COMMAND_NUMBER>::AddRangeAssociation (TARGET_COMMAND_NUMBER externalRangeStart, TARGET_COMMAND_NUMBER externalRangeEnd, CommandNumber internalRangeStart, CommandNumber internalRangeEnd)
             {
-                Require ((externalRangeEnd - externalRangeStart) == (internalRangeEnd - internalRangeStart)); // ranges same length.
+                Require (int(externalRangeEnd - externalRangeStart) == int(internalRangeEnd - internalRangeStart)); // ranges same length.
 
                 RangeElt re;
                 re.fExternalCmds.first  = externalRangeStart;

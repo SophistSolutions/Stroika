@@ -1263,9 +1263,9 @@ WORD CmdObjOrName2Num (const VARIANT& cmdObjOrName)
             HMENU hMenu = ::CreatePopupMenu ();
             try {
                 Led_ThrowIfErrorHRESULT (bicc->AppendSelfToMenu (hMenu, NULL));
-                UINT32 cmdNum = ::GetMenuItemID (hMenu, 0);
+                UINT cmdNum = ::GetMenuItemID (hMenu, 0);
                 ::DestroyMenu (hMenu);
-                return cmdNum;
+                return static_cast<WORD> (cmdNum);
             }
             catch (...) {
                 ::DestroyMenu (hMenu);

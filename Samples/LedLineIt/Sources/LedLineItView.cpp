@@ -138,7 +138,7 @@ public:
 };
 static LedLineIt_DialogSupport sLedLineIt_DialogSupport;
 
-inline short FontCmdToSize (UINT cmd)
+inline Led_IncrementalFontSpecification::FontSize FontCmdToSize (UINT cmd)
 {
     switch (cmd) {
         case kFontSize9CmdID:
@@ -645,7 +645,7 @@ void LedLineItView::OnUpdateFontSizeChangeCommand (CCmdUI* pCmdUI)
 
 void LedLineItView::OnFontSizeChangeCommand (UINT cmdNum)
 {
-    int chosenFontSize = FontCmdToSize (cmdNum);
+    Led_IncrementalFontSpecification::FontSize chosenFontSize = FontCmdToSize (cmdNum);
     if (chosenFontSize == 0) {
         switch (cmdNum) {
             case kFontSizeSmallerCmdID: {

@@ -91,7 +91,8 @@ bool COMBased_SpellCheckEngine::ScanForUndefinedWord (const Led_tChar* startBuf,
         CComVariant textToScan (bstrVal);
         ::SysFreeString (bstrVal);
         CComVariant result;
-        Led_ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("CreateScanContext"), &textToScan, &CComVariant (cursorIdx), &result));
+        CComVariant cursorIdxAsCCV = cursorIdx;
+        Led_ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("CreateScanContext"), &textToScan, &cursorIdxAsCCV, &result));
         Led_ThrowIfErrorHRESULT (result.ChangeType (VT_DISPATCH));
         if (result.vt == VT_DISPATCH) {
             CComPtr<IDispatch> scanContext = result.pdispVal;
@@ -129,7 +130,8 @@ bool COMBased_SpellCheckEngine::LookupWord_ (const Led_tString& checkWord, Led_t
 {
     CComVariant comMissingWord;
     CComVariant result;
-    Led_ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("LookupWord"), &CComVariant (checkWord.c_str ()), matchedWordResult == NULL ? NULL : &comMissingWord, &result));
+    CComVariant checkWordCCV = CComVariant (checkWord.c_str ());
+    Led_ThrowIfErrorHRESULT (fEngine.Invoke2 (CA2W ("LookupWord"), &checkWordCCV, matchedWordResult == NULL ? NULL : &comMissingWord, &result));
     if (SUCCEEDED (result.ChangeType (VT_BOOL)) and
         result.boolVal) {
         if (matchedWordResult != NULL) {
@@ -149,7 +151,8 @@ bool COMBased_SpellCheckEngine::LookupWord_ (const Led_tString& checkWord, Led_t
 vector<Led_tString> COMBased_SpellCheckEngine::GenerateSuggestions (const Led_tString& misspelledWord)
 {
     CComVariant comResult;
-    Led_ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("GenerateSuggestions"), &CComVariant (misspelledWord.c_str ()), &comResult));
+    CComVariant misspelledWordAsCCV = misspelledWord.c_str ();
+    Led_ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("GenerateSuggestions"), &misspelledWordAsCCV, &comResult));
     return UnpackVectorOfStringsFromVariantArray (comResult);
 }
 
@@ -163,8 +166,10 @@ void COMBased_SpellCheckEngine::FindWordBreaks (const Led_tChar* startOfText, si
 {
     Led_tString        text = Led_tString (startOfText, startOfText + lengthOfText);
     CComVariant        wordInfoResult;
-    CComPtr<IDispatch> engine = fEngine;
-    Led_ThrowIfErrorHRESULT (engine.Invoke2 (CA2W ("FindWordBreaks"), &CComVariant (text.c_str ()), &CComVariant (textOffsetToStartLookingForWord), &wordInfoResult));
+    CComPtr<IDispatch> engine                               = fEngine;
+    CComVariant        textOffsetToStartLookingForWordAsCCV = textOffsetToStartLookingForWord;
+    CComVariant        textAsCCV                            = text.c_str ();
+    Led_ThrowIfErrorHRESULT (engine.Invoke2 (CA2W ("FindWordBreaks"), &textAsCCV, &textOffsetToStartLookingForWordAsCCV, &wordInfoResult));
     Led_ThrowIfErrorHRESULT (wordInfoResult.ChangeType (VT_DISPATCH));
     if (wordInfoResult.vt == VT_DISPATCH) {
         CComPtr<IDispatch> wordInfo = wordInfoResult.pdispVal;
@@ -216,7 +221,8 @@ bool COMBased_SpellCheckEngine::AddWordToUserDictionarySupported () const
 
 void COMBased_SpellCheckEngine::AddWordToUserDictionary (const Led_tString& word)
 {
-    Led_ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("AddWordToUserDictionary"), &CComVariant (word.c_str ())));
+    CComVariant wordAsCCV = word.c_str ();
+    Led_ThrowIfErrorHRESULT (fEngine.Invoke1 (CA2W ("AddWordToUserDictionary"), &wordAsCCV));
 }
 
 /*
@@ -662,7 +668,7 @@ void ActiveLedItControl::DoPropExchange (CPropExchange* pPX)
             PX_String (pPX, _T("DefaultFontSize"), aProp, _T(""));
             if (not aProp.IsEmpty ()) {
                 Led_IncrementalFontSpecification applyFontSpec;
-                applyFontSpec.SetPointSize (_ttoi ((const TCHAR*)aProp));
+                applyFontSpec.SetPointSize (static_cast<Led_FontSpecification::FontSize> (_ttoi ((const TCHAR*)aProp)));
                 fEditor.SetDefaultFont (applyFontSpec);
             }
         }
@@ -753,7 +759,7 @@ void ActiveLedItControl::OnGetControlInfo (LPCONTROLINFO pControlInfo)
     //pControlInfo->hAccel = ::LoadAccelerators (AfxGetResourceHandle (),MAKEINTRESOURCE (kAcceleratorTableID));
     pControlInfo->hAccel = hAccel;
     // NB: queer - but CopyAcceleratorTable also counts # of entries...
-    pControlInfo->cAccel  = pControlInfo->hAccel == NULL ? 0 : ::CopyAcceleratorTable (pControlInfo->hAccel, NULL, 0);
+    pControlInfo->cAccel  = pControlInfo->hAccel == NULL ? 0 : static_cast<USHORT> (::CopyAcceleratorTable (pControlInfo->hAccel, NULL, 0));
     pControlInfo->dwFlags = CTRLINFO_EATS_RETURN;
 }
 
@@ -2256,9 +2262,9 @@ VARIANT ActiveLedItControl::GetBufferTextAsDIB ()
             offscreenRect.bottom = fEditor.GetHeightOfRows (0, fEditor.GetRowCount ()); // make sure extends far enuf down - and then reset the WindowRect accordingly...
             fEditor.SetWindowRect (offscreenRect);
 
-            Led_Distance rhsMargin = fEditor.CalculateFarthestRightMarginInWindow ();
-            if (rhsMargin != offscreenRect.GetRight () and rhsMargin > 10) {
-                offscreenRect.right = rhsMargin;
+            Led_Distance farthestRHSMargin = fEditor.CalculateFarthestRightMarginInWindow ();
+            if (farthestRHSMargin != static_cast<Led_Distance> (offscreenRect.GetRight ()) and farthestRHSMargin > 10) {
+                offscreenRect.right = farthestRHSMargin;
                 if (++nTimes > 5) {
                     // don't think this can ever happen - but in case...
                     Assert (false);
@@ -2797,7 +2803,7 @@ namespace {
             const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
             Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
             for (size_t i = 0; i < fontNames.size (); i++) {
-                WORD cmdNum = kBaseFontNameCmd + i;
+                WORD cmdNum = static_cast<WORD> (kBaseFontNameCmd + i);
                 if (cmdNum > kLastFontNameCmd) {
                     break; // asserted out before above - now just ignore extra font names...
                 }
@@ -3032,8 +3038,8 @@ HACCEL ActiveLedItControl::GetCurrentWin32AccelTable ()
                 // than the old...
                 bool keepOld = false;
                 if (fWin32AccelTable != NULL) {
-                    size_t accelTableSize = ::CopyAcceleratorTable (fWin32AccelTable, NULL, 0);
-                    if (accelTableSize == ::CopyAcceleratorTable (maybeNewAccelTable, NULL, 0)) {
+                    size_t accelTableSize = static_cast<size_t> (::CopyAcceleratorTable (fWin32AccelTable, NULL, 0));
+                    if (accelTableSize == static_cast<size_t> (::CopyAcceleratorTable (maybeNewAccelTable, NULL, 0))) {
                         Memory::SmallStackBuffer<ACCEL> oldOne (accelTableSize);
                         Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, accelTableSize) == static_cast<int> (accelTableSize));
                         Memory::SmallStackBuffer<ACCEL> newOne (accelTableSize);
@@ -3620,10 +3626,9 @@ void ActiveLedItControl::SetSelLength (long length)
     if (length < 0) {
         length = 0;
     }
-    size_t s;
-    size_t e;
+    size_t                  s;
+    [[maybe_unused]] size_t e;
     fEditor.GetSelection (&s, &e);
-    size_t l      = e - s;
     size_t bufLen = fEditor.GetLength ();
     size_t newEnd = min (s + static_cast<size_t> (length), bufLen);
     fEditor.SetSelection (s, newEnd);
@@ -4032,7 +4037,7 @@ UINT ActiveLedItControl::OLE_GetSelListStyle ()
             return static_cast<::ListStyle> (listStyle);
         }
         else {
-            return eNoCommonListStyle;
+            return static_cast<UINT> (eNoCommonListStyle);
         }
     }
     CATCH_AND_HANDLE_EXCEPTIONS ();

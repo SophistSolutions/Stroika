@@ -2608,20 +2608,19 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
 
                     SimpleEmbeddedObjectStyleMarker* embedding = nullptr;
                     /*
-                         *  If there is a result tag and a PICT we can read in it - great. Use that as an arg to the UnknownRTFEmbedding ().
-                         *  Otherwise - create one without the DIB/PICT.
-                         */
+                     *  If there is a result tag and a PICT we can read in it - great. Use that as an arg to the UnknownRTFEmbedding ().
+                     *  Otherwise - create one without the DIB/PICT.
+                     */
                     if (resultFoundAt != size_t (-1)) {
                         size_t RETURN_TO = readerContext.GetReader ().GetSrcStream ().current_offset ();
                         GetSrcStream ().seek_to (resultFoundAt);
                         if (SearchForwardFor ("\\pict", s.length ())) {
                             ControlWord cw = ReadControlWord ();
                             if (cw.fWord == RTFIO::eControlAtom_pict) {
-                                Led_TWIPS_Point shownSize = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
                                 Led_TWIPS_Point bmSize    = Led_TWIPS_Point (Led_TWIPS (0), Led_TWIPS (0));
-                                vector<char>    objData;
+                                vector<char>    pictureData;
                                 ImageFormat     imageFormat = eDefaultImageFormat;
-                                ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &objData);
+                                ReadTopLevelPictData (&shownSize, &imageFormat, &bmSize, &pictureData);
                                 /*
                                  *  For now - simply convert whatever sort of data it is to DIB data, and then create a DIB embedding.
                                  *  In the future - we may want to keep the original Data - in some cases - like for enhanced-meta-files etc. Then here - read the data another way,
@@ -2629,7 +2628,7 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
                                  *  meta-file data to DIB data can be lossy, and can make the data size much larger - both bad things.
                                  *      --LGP 2000-07-08
                                  */
-                                unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
+                                unique_ptr<Led_DIB> dib = unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &pictureData.front ()));
                                 if (dib.get () != nullptr) {
                                     RTFIO::UnknownRTFEmbedding* e = new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag, s.c_str (), s.length (), dib.get ());
                                     e->SetShownSize (shownSize);
@@ -3858,9 +3857,9 @@ void StyledTextIOReader_RTF::ApplyFontSpec (ReaderContext& readerContext, const 
                 break;
             }
 #endif
-            fontSpec.SetPointSize (static_cast<uint8_t> (newSize)); //pinned above 4..128
+            fontSpec.SetPointSize (static_cast<Led_FontSpecification::FontSize> (newSize)); //pinned above 4..128
 #if qPlatform_Windows
-            fCachedFontSize         = newSize;
+            fCachedFontSize         = static_cast<Led_FontSpecification::FontSize> (newSize);
             fCachedFontSizeTMHeight = fontSpec.PeekAtTMHeight ();
 #endif
         } break;

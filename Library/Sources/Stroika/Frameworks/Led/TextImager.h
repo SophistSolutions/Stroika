@@ -961,7 +961,7 @@ namespace Stroika {
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(4 : 4250)
+#pragma warning(disable : 4250)
 #endif
 
             /*

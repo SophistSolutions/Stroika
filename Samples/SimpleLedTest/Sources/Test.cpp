@@ -31,9 +31,8 @@ typedef SimpleLedLineEditor _BASE_;
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(push)
-#pragma warning(4 : 4250)
+#pragma warning(disable : 4250)
 #endif
-
 class MyLedWindow : public _BASE_ {
 private:
     typedef _BASE_ inherited;
