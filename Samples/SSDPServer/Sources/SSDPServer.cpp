@@ -67,7 +67,7 @@ namespace {
     };
 }
 
-int main (int argc, const char* argv[])
+int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 {
 #if qPlatform_POSIX
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);

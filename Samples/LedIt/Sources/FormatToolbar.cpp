@@ -186,7 +186,7 @@ void FormatToolbar::OnFontSizeKillFocus ()
         SetCharFormat(cf);
 #endif
         Led_IncrementalFontSpecification fsp;
-        fsp.SetPointSize (nSize / 20);
+        fsp.SetPointSize (static_cast<Led_IncrementalFontSpecification::FontSize> (nSize / 20));
         fOwner.SetCurFont (fsp);
     }
 }

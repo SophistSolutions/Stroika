@@ -1647,7 +1647,7 @@ Led_SDK_String ExtractFileSuffix (const Led_SDK_String& from)
         Led_SDK_String suffix = from.substr (i);
         for (size_t j = 0; j < suffix.length (); ++j) {
             if (isascii (suffix[j]) and isupper (suffix[j])) {
-                suffix[j] = tolower (suffix[j]);
+                suffix[j] = static_cast<Led_tChar> (tolower (suffix[j]));
             }
         }
         return suffix;

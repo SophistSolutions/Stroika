@@ -73,8 +73,8 @@ void SampleAppServiceRep::MainLoop (const std::function<void()>& startedCB)
 
 #if qUseLogger
     // Just so you get a clear message in the log that the service didn't startup. The things that actually caused the problem should
-    bool   successfullyStarted{false};
-    auto&& cleanup = Execution::Finally ([&]() {
+    bool                    successfullyStarted{false};
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() {
         if (not successfullyStarted) {
             Logger::Get ().Log (Logger::Priority::eError, L"Failed to successfully start service");
         }
@@ -98,7 +98,7 @@ void SampleAppServiceRep::MainLoop (const std::function<void()>& startedCB)
 
     // the final object delcared on the stack before we wait, so its the first run when we are handling the
     // thread aboort exception, and unwinding this call.
-    auto&& cleanup2 = Execution::Finally ([&]() {
+    [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&]() {
         Logger::Get ().Log (Logger::Priority::eInfo, L"Beginning service shutdown");
     });
 #endif

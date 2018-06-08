@@ -1076,7 +1076,7 @@ void ActiveLedItControl::WriteBytesToFile (LPCTSTR filename, const void* buffer,
             AfxThrowFileException (CFileException::fileNotFound, -1, filename);
         }
         int nBytes = ::_write (fd, buffer, size);
-        if (nBytes != size) {
+        if (nBytes != static_cast<int> (size)) {
             AfxThrowFileException (CFileException::genericException, -1, filename);
         }
         (void)::_close (fd);
@@ -2797,7 +2797,7 @@ namespace {
             const vector<Led_SDK_String>& fontNames = GetUsableFontNames ();
             Assert (fontNames.size () <= kLastFontNameCmd - kBaseFontNameCmd + 1);
             for (size_t i = 0; i < fontNames.size (); i++) {
-                int cmdNum = kBaseFontNameCmd + i;
+                WORD cmdNum = kBaseFontNameCmd + i;
                 if (cmdNum > kLastFontNameCmd) {
                     break; // asserted out before above - now just ignore extra font names...
                 }
@@ -3035,9 +3035,9 @@ HACCEL ActiveLedItControl::GetCurrentWin32AccelTable ()
                     size_t accelTableSize = ::CopyAcceleratorTable (fWin32AccelTable, NULL, 0);
                     if (accelTableSize == ::CopyAcceleratorTable (maybeNewAccelTable, NULL, 0)) {
                         Memory::SmallStackBuffer<ACCEL> oldOne (accelTableSize);
-                        Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, accelTableSize) == accelTableSize);
+                        Verify (::CopyAcceleratorTable (fWin32AccelTable, oldOne, accelTableSize) == static_cast<int> (accelTableSize));
                         Memory::SmallStackBuffer<ACCEL> newOne (accelTableSize);
-                        Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, accelTableSize) == accelTableSize);
+                        Verify (::CopyAcceleratorTable (maybeNewAccelTable, newOne, accelTableSize) == static_cast<int> (accelTableSize));
                         if (::memcmp (oldOne, newOne, accelTableSize * sizeof (ACCEL)) == 0) {
                             keepOld = true;
                         }
@@ -3263,7 +3263,7 @@ BOOL ActiveLedItControl::OLE_CommandChecked (const VARIANT& command)
                 , fChecked (false)
             {
             }
-            virtual void Enable (BOOL bOn) override
+            virtual void Enable ([[maybe_unused]] BOOL bOn) override
             {
                 m_bEnableChanged = TRUE;
             }

@@ -1025,7 +1025,7 @@ namespace Stroika {
                 nonvirtual unsigned short GetPointSize () const;
                 nonvirtual bool           GetPointSize_Valid () const;
                 nonvirtual void           InvalidatePointSize ();
-                nonvirtual void           SetPointSize (unsigned short pointSize);
+                nonvirtual void           SetPointSize (FontSize pointSize);
 #if qPlatform_Windows
                 nonvirtual void PokeAtTMHeight (long tmHeight); // ditto
 #endif
@@ -4134,7 +4134,7 @@ namespace Stroika {
                 fDidSetOSRepCallFlag = false;
 #endif
             }
-            inline void Led_IncrementalFontSpecification::SetPointSize (unsigned short pointSize)
+            inline void Led_IncrementalFontSpecification::SetPointSize (FontSize pointSize)
             {
                 fFontSizeValid = true;
 #if qPlatform_Windows

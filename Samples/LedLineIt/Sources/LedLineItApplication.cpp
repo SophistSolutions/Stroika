@@ -448,7 +448,7 @@ BOOL LedLineItApplication::InitInstance ()
     return true;
 }
 
-void LedLineItApplication::WinHelpInternal (DWORD_PTR dwData, UINT nCmd)
+void LedLineItApplication::WinHelpInternal ([[maybe_unused]] DWORD_PTR dwData, [[maybe_unused]] UINT nCmd)
 {
     // get path of executable
     TCHAR directoryName[_MAX_PATH];
