@@ -361,8 +361,7 @@ namespace Stroika {
                     out += L"{}";
                 }
                 else if (GetLowerBound () == GetUpperBound ()) {
-                    // if single point, open and closed must be same (or always must be closed?
-                    bool closed = true; // cuz otherwise would be empty set
+                    // if single point, open and closed must be same (or always must be closed?)
                     out += L"[";
                     out += eltToString (GetLowerBound ());
                     out += L"]";

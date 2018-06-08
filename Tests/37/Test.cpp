@@ -28,7 +28,7 @@ namespace {
         {
             bool called = false;
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called]([[maybe_unused]] SignalID signal) -> void { Lambda_Arg_Unused_BWA (signal); called = true; }, SignalHandler::eDirect));
-            [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
+            [[maybe_unused]] auto&& cleanup2 = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             ::raise (SIGINT);
             VerifyTestResult (called);
         }
@@ -44,7 +44,7 @@ namespace {
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             {
                 atomic<bool> called{false};
-                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
+                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called]([[maybe_unused]] SignalID signal) -> void { Lambda_Arg_Unused_BWA (signal); called = true; }));
                 // @todo - as of 2018-02-18 - helgrind still doesn't understand that atomic<bool> is threadsafe
                 Stroika_Foundation_Debug_ValgrindDisableHelgrind (called);
                 ::raise (SIGINT);
@@ -57,7 +57,7 @@ namespace {
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() noexcept { SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved); });
             {
                 Execution::Synchronized<bool> called = false;
-                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called](SignalID signal) -> void { called = true; }));
+                SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called]([[maybe_unused]] SignalID signal) -> void { Lambda_Arg_Unused_BWA (signal); called = true; }));
                 ::raise (SIGINT);
                 Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
                 VerifyTestResult (called);

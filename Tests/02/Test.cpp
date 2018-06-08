@@ -414,7 +414,7 @@ namespace {
         return (b);
     }
     template <typename STRING>
-    void Test6_Helper_ (const char* testMessage)
+    void Test6_Helper_ ([[maybe_unused]] const char* testMessage)
     {
 #if qPrintTimings
         const int kRecurseDepth = 10;

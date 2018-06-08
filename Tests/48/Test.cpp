@@ -61,7 +61,7 @@ namespace {
 #if !qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_
 namespace {
     template <>
-    void TestRoundTripFormatThenParseNoChange_ (TimeOfDay startDateOrTime)
+    void TestRoundTripFormatThenParseNoChange_ ([[maybe_unused]] TimeOfDay startDateOrTime)
     {
     }
 }
@@ -70,7 +70,7 @@ namespace {
 #if !qSupport_TestRoundTripFormatThenParseNoChange_For_Date_
 namespace {
     template <>
-    void TestRoundTripFormatThenParseNoChange_ (Date startDateOrTime)
+    void TestRoundTripFormatThenParseNoChange_ ([[maybe_unused]] Date startDateOrTime)
     {
     }
 }
@@ -79,7 +79,7 @@ namespace {
 #if !qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_
 namespace {
     template <>
-    void TestRoundTripFormatThenParseNoChange_ (DateTime startDateOrTime)
+    void TestRoundTripFormatThenParseNoChange_ ([[maybe_unused]] DateTime startDateOrTime)
     {
     }
 }
@@ -644,7 +644,6 @@ namespace {
             // This verify was wrong. Consider a system on GMT! Besides that - its still not reliable because DST doesnt end 180 days exactly apart.
             //VerifyTestResult (IsDaylightSavingsTime (n) != IsDaylightSavingsTime (n2));
             if (n.IsDaylightSavingsTime () != n2.IsDaylightSavingsTime ()) {
-                int breakhere = 1;
             }
         }
         {
@@ -652,7 +651,6 @@ namespace {
             Memory::Optional<bool> isDst = n.IsDaylightSavingsTime ();
             DateTime               n2    = n.AddDays (60);
             if (n.IsDaylightSavingsTime () == n2.IsDaylightSavingsTime ()) {
-                int breakhere = 1;
             }
         }
     }

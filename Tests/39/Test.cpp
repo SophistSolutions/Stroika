@@ -63,7 +63,7 @@ namespace {
                 //DbgTrace ("Iterate thread loop %d", i);
                 lock_guard<decltype (*lock)> critSec (*lock);
                 for (value_type e : iterable->load ()) {
-                    value_type e2 = e; // do something
+                    [[maybe_unused]] value_type e2 = e; // do something
                 }
             }
         });
@@ -699,18 +699,18 @@ namespace {
             int64_t                   cnt{};
             Private_::TestBasics_<Sequence<int>> (
                 [](Sequence<int>* c, int i) { c->Append (i); },
-                [](Sequence<int>* c, int i) { size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
-                [](const Sequence<int>* c) { size_t n = c->IndexOf (3).Value (); },
+                [](Sequence<int>* c, [[maybe_unused]] int i) { Lambda_Arg_Unused_BWA (i); size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
+                [](const Sequence<int>* c) { [[maybe_unused]] size_t n = c->IndexOf (3).Value (); },
                 [&cnt](int v) { cnt += v; });
             Private_::TestBasics_<Set<int>> (
                 [](Set<int>* c, int i) { c->Add (i); },
                 [](Set<int>* c, int i) { c->Remove (i); },
-                [](const Set<int>* c) { bool b = c->Contains (5); },
+                [](const Set<int>* c) { [[maybe_unused]] bool b = c->Contains (5); },
                 [&cnt](int v) { cnt += v; });
             Private_::TestBasics_<Mapping<int, Time::DateTime>> (
                 [](Mapping<int, Time::DateTime>* c, int i) { c->Add (i, Time::DateTime::Now ()); },
                 [](Mapping<int, Time::DateTime>* c, int i) { c->Remove (i); },
-                [](const Mapping<int, Time::DateTime>* c) { bool b = c->ContainsKey (5); },
+                [](const Mapping<int, Time::DateTime>* c) { [[maybe_unused]] bool b = c->ContainsKey (5); },
                 [&cnt](KeyValuePair<int, Time::DateTime> v) { cnt += v.fKey; });
         }
     }

@@ -38,7 +38,7 @@ using Characters::String_Constant;
 #if qPlatform_Windows && qHasFeature_ATLMFC
 namespace {
     DISABLE_COMPILER_MSC_WARNING_START (6262)
-    void OLD_Cracker_ (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
+    void OLD_Cracker_ (const String& w, String* protocol, String* host, [[maybe_unused]] String* port, String* relPath, String* query)
     {
         using Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
         RequireNotNull (protocol);
@@ -349,7 +349,7 @@ namespace {
     {
         Debug::TraceContextBumper trcCtx ("Test3_NetworkInterfaceList_");
         for (Interface iFace : Network::GetInterfaces ()) {
-            Debug::TraceContextBumper trcCtx ("iface");
+            Debug::TraceContextBumper trcCtx1 ("iface");
             DbgTrace (L"fInternalInterfaceID: %s", iFace.fInternalInterfaceID.c_str ());
 #if qPlatform_POSIX
             DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ().c_str ());

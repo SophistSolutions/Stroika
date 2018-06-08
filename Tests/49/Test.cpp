@@ -227,7 +227,7 @@ namespace {
             Containers::Sequence<int> s = {1, 2, 3};
             {
                 shared_ptr<int> countSoFar = shared_ptr<int> (new int(0));
-                size_t          answer =
+                [[maybe_unused]] size_t          answer =
                     FunctionalApplicationContext<int> (s).Filter<int> ([countSoFar](int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).Map<int> ([](int s) { return s + 5; }).Reduce<size_t> ([](int s, size_t memo) { return memo + 1; });
                 VerifyTestResult (answer == 2);
             }
