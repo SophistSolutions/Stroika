@@ -236,7 +236,7 @@ namespace CommonTests {
                         // be sure copying and iterating multiple times over the iterable doesnt produce differnt results.
                         auto keys = c.Keys ();
                         VerifyTestResult (keys.length () == K);
-                        int a = 0;
+                        size_t a = 0;
                         for ([[maybe_unused]] auto i : keys) {
                             Lambda_Arg_Unused_BWA (i);
                             a++;

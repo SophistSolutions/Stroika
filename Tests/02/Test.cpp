@@ -97,9 +97,9 @@ namespace {
 
         void StressTest1_ (String big)
         {
-            for (int j = 1; j <= kLoopEnd / 50; j++) {
+            for (size_t j = 1; j <= kLoopEnd / 50; j++) {
                 String_ExternalMemoryOwnership_ApplicationLifetime a (L"a");
-                for (int i = 0; i <= kLoopEnd; i++) {
+                for (size_t i = 0; i <= kLoopEnd; i++) {
                     big += a;
                     VerifyTestResult ((big.GetLength () - 1) == i);
                     VerifyTestResult (big[i] == 'a');
@@ -644,8 +644,8 @@ namespace {
         VerifyTestResult (Format (L"%20s", L"123") == L"                 123");
         VerifyTestResult (Format (L"%.20s", L"123") == L"123");
 
-        for (int i = 1; i < 1000; ++i) {
-            String format = Format (L"%%%ds", i);
+        for (size_t i = 1; i < 1000; ++i) {
+            String format = Format (L"%%%ds", static_cast<int> (i));
             VerifyTestResult (Format (format.c_str (), L"x").length () == i);
         }
         VerifyTestResult (Characters::Format (L"%d.%d%s%s", 1, 0, L"a", L"1x") == L"1.0a1x"); // 2 conseq %s%s POSIX bug fixed 2014-01-22
