@@ -177,7 +177,7 @@ namespace Stroika {
                 struct context_ {
                     Containers::Sequence<RangeType> fSubRanges;
                     size_t                          fSubRangeIdx{};
-                    value_type                      fCurrentSubRangeIteratorAt{};
+                    UnsignedDifferenceType          fCurrentSubRangeIteratorAt{};
                     context_ () = delete;
                     context_ (const Containers::Sequence<RangeType>& sr)
                         : fSubRanges (sr)
@@ -190,7 +190,7 @@ namespace Stroika {
                     if (myContext->fSubRangeIdx < myContext->fSubRanges.size ()) {
                         RangeType              curRange{myContext->fSubRanges[myContext->fSubRangeIdx]};
                         UnsignedDifferenceType nEltsPerRange{curRange.GetDistanceSpanned ()};
-                        Assert (static_cast<UnsignedDifferenceType> (myContext->fCurrentSubRangeIteratorAt) <= nEltsPerRange);
+                        Assert (myContext->fCurrentSubRangeIteratorAt <= nEltsPerRange);
                         value_type result{curRange.GetLowerBound () + myContext->fCurrentSubRangeIteratorAt};
                         if (myContext->fCurrentSubRangeIteratorAt == nEltsPerRange) {
                             myContext->fSubRangeIdx++;
