@@ -253,7 +253,7 @@ XF=`cat $TEST_OUT_FILE | grep -i FAILED | wc -l`
 XE=`cat $TEST_OUT_FILE | grep -i error: | wc -l`
 XC=`cat $TEST_OUT_FILE | grep -i "core dump" | wc -l`
 VOL=`grep == $TEST_OUT_FILE | wc -l`
-XW=`cat $TEST_OUT_FILE | grep -i "warning:" | wc -l`
+XW=`cat $TEST_OUT_FILE | grep -E -i "warning.*:" | wc -l`
 
 if [ $X1 -lt $TOTAL_REGTESTS_EXPECTED_TO_PASS ]; then
 	echo "   ***   WARNING: $X1 tests succeeded and expected $TOTAL_REGTESTS_EXPECTED_TO_PASS";
