@@ -193,7 +193,7 @@ namespace {
                         DbgTrace (L"ROW: %s", Characters::ToString (*r).c_str ());
                     }
                 }
-                DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).Value (-1));
+                DbgTrace ("Latest Reference=%d", db.GetLastScan (ScanKindType_::Reference).Value (static_cast<ScanIDType_> (-1)));
                 SpectrumType_      spectrum;
                 const unsigned int kNRecordsAddedPerTestCall = 100;
                 for (int i = 0; i < kNRecordsAddedPerTestCall; ++i) {

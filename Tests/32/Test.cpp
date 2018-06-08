@@ -616,7 +616,7 @@ namespace {
                 : fValuePtr_ (v)
             {
             }
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+            virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
             {
                 using namespace ObjectReader;
                 DISABLE_COMPILER_MSC_WARNING_START (4573)
@@ -861,7 +861,7 @@ namespace {
                     : fValuePtr_ (v)
                 {
                 }
-                virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+                virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
                 {
                     using namespace ObjectReader;
                     DISABLE_COMPILER_MSC_WARNING_START (4573)
@@ -959,7 +959,7 @@ namespace {
         void DoTest ()
         {
             using namespace PRIVATE_;
-            TraceContextBumper     ctx ("T10_SAXObjectReader_NANValues_");
+            TraceContextBumper     traceCtx ("T10_SAXObjectReader_NANValues_");
             ObjectReader::Registry registry;
             registry.AddCommonType<double> ();
             DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
@@ -1063,7 +1063,7 @@ namespace {
                 : fValuePtr_ (v)
             {
             }
-            virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+            virtual shared_ptr<IElementConsumer> HandleChildStart ([[maybe_unused]] const Name& name) override
             {
                 using namespace ObjectReader;
                 struct MyKVPReader_ : MixinReader<KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>> {
@@ -1176,7 +1176,7 @@ namespace {
         void DoTest ()
         {
             using namespace PRIVATE_;
-            TraceContextBumper     ctx ("T12_RangeReader_");
+            TraceContextBumper     traceCtx ("T12_RangeReader_");
             ObjectReader::Registry registry;
             registry.AddCommonType<MY_TEST_RANGE_::value_type> ();
             registry.Add<MY_TEST_RANGE_> (ObjectReader::RangeReader<MY_TEST_RANGE_>::AsFactory ());

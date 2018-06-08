@@ -621,8 +621,7 @@ namespace {
                     VariantValue                       v   = VariantValue (44905.3);
                     Streams::MemoryStream<Byte>::Ptr   out = Streams::MemoryStream<Byte>::New ();
                     w.Write (v, out);
-                    string x         = out.As<string> ();
-                    int    breakhere = 1;
+                    string x = out.As<string> ();
                 }
                 {
                     DataExchange::Variant::XML::Writer w;
@@ -631,8 +630,7 @@ namespace {
                     VariantValue                     v   = VariantValue (mv);
                     Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
                     w.Write (v, out);
-                    string x         = out.As<string> ();
-                    int    breakhere = 1;
+                    string x = out.As<string> ();
                 }
             }
         }

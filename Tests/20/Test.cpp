@@ -597,7 +597,8 @@ namespace {
 
         auto counter = [](SEQ s) -> size_t {
             size_t cnt = 0;
-            for (auto i : s) {
+            for ([[maybe_unused]] auto i : s) {
+                Lambda_Arg_Unused_BWA (i);
                 ++cnt;
             }
             return cnt;
@@ -672,7 +673,7 @@ namespace SequenceIndexing_Test_16_ {
         {
             Sequence<int> a;
             a += 1;
-            int a0 = a[0];
+            [[maybe_unused]] int a0 = a[0];
             // Should fail to compile
             //a[0]   = 3; --- @todo - @see and maybe use https://stroika.atlassian.net/browse/STK-583 AssertDoesntCompile
         }
@@ -701,7 +702,6 @@ namespace SequenceIndexing_Test_16_ {
             Sequence<String> a;
             a += L"1";
             String a0 = a[0];
-            int    jj = 3;
             // Should fail to compile
             //a[0]   = 3; --- @todo - @see and maybe use https://stroika.atlassian.net/browse/STK-583 AssertDoesntCompile
         }

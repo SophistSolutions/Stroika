@@ -264,7 +264,7 @@ namespace {
                     VerifyTestResult (sharedValue.load () == kMaxVal_);
                 });
                 Thread::Start ({reader, adder});
-                auto&& cleanup = Execution::Finally ([&reader, &adder]() {
+                [[maybe_unused]] auto&& cleanup = Execution::Finally ([&reader, &adder]() {
                     Thread::AbortAndWaitForDone ({reader, adder});
                 });
                 // wait long time cuz of debuggers (esp valgrind) etc

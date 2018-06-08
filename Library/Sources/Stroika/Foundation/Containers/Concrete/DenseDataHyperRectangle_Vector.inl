@@ -128,6 +128,7 @@ namespace Stroika {
                             ///return Iterable<T>::template MakeSharedPtr<Rep_> (std::forward<INDEXES> (fDimensions_)...);
                         }
                     }
+                    DISABLE_COMPILER_MSC_WARNING_START (4100)
                     virtual T GetAt (INDEXES... indexes) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
@@ -140,6 +141,7 @@ namespace Stroika {
                         /// NYI
                         AssertNotImplemented ();
                     }
+                    DISABLE_COMPILER_MSC_WARNING_END (4100)
 
                 private:
                     using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;

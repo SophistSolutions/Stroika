@@ -23,6 +23,7 @@ namespace CommonTests {
                 size_t l   = container.GetLength ();
                 size_t cnt = 0;
                 for (auto i : container) {
+                    Lambda_Arg_Unused_BWA (i);
                     cnt++;
                 }
                 VerifyTestResult (cnt == l);

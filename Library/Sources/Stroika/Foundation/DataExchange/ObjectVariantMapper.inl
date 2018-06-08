@@ -523,6 +523,7 @@ namespace Stroika {
                 static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
                 FromObjectMapperType<ENUM_TYPE> fromObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
+                    Lambda_Arg_Unused_BWA (mapper);
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*fromObjOfTypeT)) == *fromObjOfTypeT); // no round-trip loss
                     return VariantValue (static_cast<SerializeAsType> (*fromObjOfTypeT));
                 };
@@ -715,7 +716,7 @@ namespace Stroika {
                 return TypeMappingDetails{forTypeInfo, fromObjectMapper, toObjectMapper};
             }
             template <typename CLASS, typename BASE_CLASS>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const
             {
 #if qDebug
                 for (auto i : fields) {

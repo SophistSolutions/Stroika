@@ -69,8 +69,8 @@ namespace CommonTests {
                     IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
                     /*
-                    * Try removes while iterating forward.
-                    */
+                     * Try removes while iterating forward.
+                     */
                     {
                         for (int i = 1; i <= kTestSize; i++) {
                             s.Add (T (i));
@@ -226,19 +226,23 @@ namespace CommonTests {
                     }
                     applyToContainer (s);
 
-                    for (auto it = s.begin (); it != s.end (); ++it) {
-                        for (auto it1 : s.Elements ()) {
+                    for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
+                        Lambda_Arg_Unused_BWA (it);
+                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
+                            Lambda_Arg_Unused_BWA (it1);
                             applyToContainer (s);
                         }
                     }
-                    for (auto it = s.begin (); it != s.end (); ++it) {
-                        for (auto it1 : s.UniqueElements ()) {
+                    for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
+                        for ([[maybe_unused]] auto it1 : s.UniqueElements ()) {
+                            Lambda_Arg_Unused_BWA (it1);
                             applyToContainer (s);
                         }
                     }
                     {
                         auto saved = s;
-                        for (auto it = s.begin (); it != s.end (); ++it) {
+                        for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
+                            Lambda_Arg_Unused_BWA (it);
                             s.RemoveAll ();
                         }
                         s = saved;
@@ -246,7 +250,8 @@ namespace CommonTests {
                     {
                         auto saved = s;
                         s.Add (32);
-                        for (auto it1 : s) {
+                        for ([[maybe_unused]] auto it1 : s) {
+                            Lambda_Arg_Unused_BWA (it1);
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
@@ -254,8 +259,8 @@ namespace CommonTests {
                     }
 
                     {
-                        for (auto it = s.begin (); it != s.end (); ++it) {
-                            auto tmp = s;
+                        for ([[maybe_unused]] auto it = s.begin (); it != s.end (); ++it) {
+                            [[maybe_unused]] auto tmp = s;
                             s.Add (1);
                         }
                         for (auto it = s.begin (); it != s.end (); ++it) {
@@ -266,7 +271,8 @@ namespace CommonTests {
                         }
                         for (auto it = s.begin (); it != s.end (); ++it) {
                             auto tmp = s.Elements ();
-                            for (auto it1 : tmp) {
+                            for ([[maybe_unused]] auto it1 : tmp) {
+                                Lambda_Arg_Unused_BWA (it1);
                             }
                         }
                     }
@@ -281,7 +287,8 @@ namespace CommonTests {
                     }
 
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for (auto it1 : s.Elements ()) {
+                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
+                            Lambda_Arg_Unused_BWA (it1);
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }
@@ -290,14 +297,16 @@ namespace CommonTests {
                         }
                     }
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for (auto it1 : s.Elements ()) {
+                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
+                            Lambda_Arg_Unused_BWA (it1);
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
                     }
                     s.Add (3);
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for (auto it1 : s.UniqueElements ()) {
+                        for ([[maybe_unused]] auto it1 : s.UniqueElements ()) {
+                            Lambda_Arg_Unused_BWA (it1);
                             s.RemoveAll ();
                             applyToContainer (s);
                         }
@@ -413,13 +422,13 @@ namespace CommonTests {
                     Debug::TraceContextBumper ctx{L"{}::Test5_Elements_Crasher_::DoAllTests_"};
                     using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     CONCRETE_CONTAINER s     = testingSchema.Factory ();
-                    size_t             three = 3;
                     const size_t       K     = 500;
                     for (size_t i = 1; i <= K / 50; i++) {
                         s.Add (i);
                     }
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for (auto it1 : s.Elements ()) {
+                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
+                            Lambda_Arg_Unused_BWA (it1);
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }
@@ -432,7 +441,6 @@ namespace CommonTests {
                 {
                     using CONCRETE_CONTAINER = typename DEFAULT_TESTING_SCHEMA::ConcreteContainerType;
                     CONCRETE_CONTAINER s     = testingSchema.Factory ();
-                    size_t             three = 3;
                     const size_t       K     = 500;
                     s.RemoveAll ();
                     VerifyTestResult (s.IsEmpty ());
@@ -441,7 +449,8 @@ namespace CommonTests {
                     }
                     testingSchema.ApplyToContainerExtraTest (s);
                     for (auto it = s.begin (); it != s.end (); ++it) {
-                        for (auto it1 : s.Elements ()) {
+                        for ([[maybe_unused]] auto it1 : s.Elements ()) {
+                            Lambda_Arg_Unused_BWA (it1);
                             if (s.TotalOccurrences () < 25) {
                                 s.Add (1);
                             }

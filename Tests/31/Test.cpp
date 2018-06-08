@@ -716,10 +716,12 @@ namespace {
         ObjectVariantMapper mapper;
 
         mapper.Add<RGBColor> (
-            [](const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
+            []([[maybe_unused]] const ObjectVariantMapper& mapper, const RGBColor* obj) -> VariantValue {
+                Lambda_Arg_Unused_BWA (mapper);
                 return L"#" + Characters::Format (L"%2x%2x%2x", obj->red, obj->green, obj->blue);
             },
-            [](const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
+            []([[maybe_unused]] const ObjectVariantMapper& mapper, const VariantValue& d, RGBColor* intoObj) -> void {
+                Lambda_Arg_Unused_BWA (mapper);
                 String tmpInBuf = d.As<String> ();
                 if (tmpInBuf.length () != 7) {
                     Execution::Throw (DataExchange::BadFormatException (L"RGBColor sb length 7"));

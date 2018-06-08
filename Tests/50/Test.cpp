@@ -135,8 +135,7 @@ namespace {
     {
         ostream& outTo = GetOutStream_ ();
         outTo << "Test " << testName.AsNarrowSDKString () << " (" << baselineTName.AsNarrowSDKString () << " vs " << compareWithTName.AsNarrowSDKString () << ")" << endl;
-        DurationSecondsType totalTime        = baselineTime + compareWithTime;
-        double              performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
+        double performanceScore = (baselineTime == 0) ? 1000000 : compareWithTime / baselineTime;
         //const char    kOneTab_[]  =   "      ";
         const char kOneTab_[] = "\t";
         {
@@ -1193,13 +1192,13 @@ namespace {
         }
         void Test_WString2UTF8_codecvt_utf8 (const wchar_t* s, const wchar_t* e)
         {
-            const wchar_t*                sc = s;
-            const wchar_t*                ec = e;
-            std::string                   tmp ((e - s) * kConverter_.max_length (), '\0');
-            const wchar_t*                from_next;
-            char*                         to_next;
-            mbstate_t                     mb{};
-            codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, from_next, &tmp[0], &tmp[tmp.size ()], to_next);
+            const wchar_t*                                 sc = s;
+            const wchar_t*                                 ec = e;
+            std::string                                    tmp ((e - s) * kConverter_.max_length (), '\0');
+            const wchar_t*                                 from_next;
+            char*                                          to_next;
+            mbstate_t                                      mb{};
+            [[maybe_unused]] codecvt_utf8<wchar_t>::result r = kConverter_.out (mb, sc, ec, from_next, &tmp[0], &tmp[tmp.size ()], to_next);
             tmp.resize (to_next - &tmp[0]);
         }
     }

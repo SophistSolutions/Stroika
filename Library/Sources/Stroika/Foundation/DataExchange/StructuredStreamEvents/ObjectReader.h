@@ -825,7 +825,7 @@ namespace Stroika {
                     private:
                         ContainerType*                              fValuePtr_{};
                         Memory::Optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
-                        function<bool(Name)>                        fReadThisName_{[](const Name& n) { return true; }};
+                        function<bool(Name)>                        fReadThisName_{[]([[maybe_unused]] const Name& n) { Lambda_Arg_Unused_BWA (n); return true; }};
                         ElementType                                 fProxyValue_{};
                         shared_ptr<IElementConsumer>                fActiveSubReader_{};
                     };

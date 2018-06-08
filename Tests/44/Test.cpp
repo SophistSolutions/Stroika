@@ -29,13 +29,13 @@ namespace {
     {
         Debug::TraceContextBumper ctx ("Test1_DirectoryIterator_");
         {
-            Debug::TraceContextBumper ctx ("simple test");
+            Debug::TraceContextBumper ctx1 ("simple test");
             for (DirectoryIterator i{WellKnownLocations::GetTemporary ()}; not i.Done (); ++i) {
                 DbgTrace (L"filename = %s", i->c_str ());
             }
         }
         {
-            Debug::TraceContextBumper ctx ("t2");
+            Debug::TraceContextBumper ctx1 ("t2");
             DirectoryIterator         i{WellKnownLocations::GetTemporary ()};
             for (DirectoryIterator i2 = i; not i2.Done (); ++i2) {
                 DbgTrace (L"filename = %s", i2->c_str ());
@@ -52,11 +52,11 @@ namespace {
             DbgTrace (L"filename = %s", filename.c_str ());
         }
         {
-            Debug::TraceContextBumper            ctx ("test-known-dir");
+            Debug::TraceContextBumper            ctx1 ("test-known-dir");
             static const Containers::Set<String> kFileNamesForDir_{L"foo.txt", L"bar.png", L"t3.txt", L"blag.nope"};
             static const String                  kTestSubDir_ = AssureDirectoryPathSlashTerminated (WellKnownLocations::GetTemporary () + L"Regtest-write-files-" + Characters::ToString (Execution::GetCurrentProcessID ()));
             IO::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::eRemoveAnyContainedFiles);
-            auto&& cleanup = Execution::Finally ([]() noexcept {
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([]() noexcept {
                 IgnoreExceptionsForCall (IO::FileSystem::Default ().RemoveDirectoryIf (kTestSubDir_, IO::FileSystem::eRemoveAnyContainedFiles));
             });
             IO::FileSystem::Directory (kTestSubDir_).AssureExists ();

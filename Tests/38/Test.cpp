@@ -40,7 +40,7 @@ namespace {
     {
         Debug::TraceContextBumper traceCtx ("RegressionTest1_");
         struct FRED {
-            static void DoIt (void* ignored)
+            static void DoIt ([[maybe_unused]] void* ignored)
             {
                 for (int i = 1; i < 10; i++) {
                     Execution::Sleep (1ms);
@@ -696,7 +696,7 @@ namespace {
             innerThread.SetThreadName (L"innerThread");
             Thread::Ptr testThread = Thread::New ([&innerThread]() {
                 innerThread.Start ();
-                auto&& cleanup = Finally (
+                [[maybe_unused]] auto&& cleanup = Finally (
                     [&innerThread]() noexcept {
                         Thread::SuppressInterruptionInContext suppressInterruptions;
                         innerThread.AbortAndWaitForDone ();
@@ -753,21 +753,20 @@ namespace {
     {
         Debug::TraceContextBumper ctx{"RegressionTest13_WaitAll_"};
         // EXPERIMENTAL
-        WaitableEvent             we1{WaitableEvent::eAutoReset};
-        WaitableEvent             we2{WaitableEvent::eAutoReset};
-        bool                      w1Fired = false;
-        bool                      w2Fired = false;
-        Thread::Ptr               t1      = Thread::New ([&we1, &w1Fired]() {
+        WaitableEvent we1{WaitableEvent::eAutoReset};
+        WaitableEvent we2{WaitableEvent::eAutoReset};
+        bool          w1Fired = false;
+        bool          w2Fired = false;
+        Thread::Ptr   t1      = Thread::New ([&we1, &w1Fired]() {
             Execution::Sleep (0.5);
             w1Fired = true;
             we1.Set ();
         });
-        Thread::Ptr               t2      = Thread::New ([&we2, &w2Fired]() {
+        Thread::Ptr   t2      = Thread::New ([&we2, &w2Fired]() {
             Execution::Sleep (0.1);
             w2Fired = true;
             we2.Set ();
         });
-        Time::DurationSecondsType startAt = Time::GetTickCount ();
         t2.Start ();
         t1.Start ();
         WaitableEvent::WaitForAll (Sequence<WaitableEvent*> ({&we1, &we2}));

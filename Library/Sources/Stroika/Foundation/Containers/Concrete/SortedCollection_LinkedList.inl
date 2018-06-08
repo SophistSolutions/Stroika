@@ -168,7 +168,7 @@ namespace Stroika {
                     {
                         return InOrderComparerType{fInorderComparer_};
                     }
-                    virtual bool Equals (const typename Collection<T>::_IRep& rhs) const override
+                    virtual bool Equals ([[maybe_unused]] const typename Collection<T>::_IRep& rhs) const override
                     {
                         AssertNotImplemented ();
                         return false;

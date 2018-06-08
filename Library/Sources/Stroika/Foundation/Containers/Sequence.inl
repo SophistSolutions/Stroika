@@ -246,8 +246,8 @@ namespace Stroika {
             {
                 Require (i <= this->GetLength ());
                 size_t insertAt = i;
-                for (auto i = start; i != end; ++i) {
-                    Insert (insertAt++, *i);
+                for (auto ii = start; ii != end; ++ii) {
+                    Insert (insertAt++, *ii);
                 }
             }
             template <typename T>

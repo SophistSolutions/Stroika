@@ -97,7 +97,9 @@ namespace CommonTests {
                     }
                 }
                 for (T it : s) {
+                    Lambda_Arg_Unused_BWA (it);
                     for (T it1 : s) {
+                        Lambda_Arg_Unused_BWA (it1);
                         s.RemoveAll ();
                     }
                 }
@@ -105,7 +107,9 @@ namespace CommonTests {
                 VerifyTestResult (s.GetLength () == 0);
 
                 for (T it1 : s) {
+                    Lambda_Arg_Unused_BWA (it1);
                     for (T it2 : s) {
+                        Lambda_Arg_Unused_BWA (it2);
                         VerifyTestResult (false);
                     }
                 }

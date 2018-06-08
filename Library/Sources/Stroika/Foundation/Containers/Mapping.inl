@@ -331,7 +331,7 @@ namespace Stroika {
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             template <typename CONTAINER_OF_Key_T>
-            CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (typename enable_if<is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair) const
+            CONTAINER_OF_Key_T Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ ([[maybe_unused]] typename enable_if<is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair) const
             {
                 CONTAINER_OF_Key_T result;
                 for (auto i : *this) {

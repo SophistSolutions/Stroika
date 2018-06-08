@@ -238,11 +238,13 @@ namespace CommonTests {
                         VerifyTestResult (keys.length () == K);
                         int a = 0;
                         for ([[maybe_unused]] auto i : keys) {
+                            Lambda_Arg_Unused_BWA (i);
                             a++;
                         }
                         VerifyTestResult (a == K);
                         a = 0;
-                        for (auto i : keys) {
+                        for ([[maybe_unused]] auto i : keys) {
+                            Lambda_Arg_Unused_BWA (i);
                             a++;
                         }
                         VerifyTestResult (a == K);

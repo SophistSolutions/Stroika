@@ -162,7 +162,6 @@ namespace Stroika {
                         // quickie poor impl
                         // See Stroika v1 - much better - handling cases of remove near start or end of linked list
                         else if (at == 0) {
-                            size_t len = to - from;
                             for (size_t i = (to - from); i > 0; --i) {
                                 fData_.Prepend (from[i - 1]);
                             }
