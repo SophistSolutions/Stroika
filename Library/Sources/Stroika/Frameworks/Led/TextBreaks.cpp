@@ -319,8 +319,8 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
     else {
 #if qWideCharacters
         Led_tChar prevChar = thisChar; // for Kinsoku rule - need to keep track of previous character...
-        // But since we skip first char at start of loop, initialize with
-        // first char!
+                                       // But since we skip first char at start of loop, initialize with
+                                       // first char!
 
         CharacterClasses prevCharWordClass = startCharClass;
 #endif
@@ -329,9 +329,9 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
         const Led_tChar* cur = Led_NextChar (&startOfText[textOffsetToStartLookingForWord]);
         for (; cur < end; cur = Led_NextChar (cur)) {
 #if qSingleByteCharacters || qWideCharacters
-            Led_tChar thisChar = *cur;
+            Led_tChar thisLoopCurChar = *cur;
 #elif qMultiByteCharacters
-            Led_tChar thisChar[2] = {*cur, Led_IsLeadByte (*cur) ? *(cur + 1) : '\0'};
+            Led_tChar thisLoopCurChar[2] = {*cur, Led_IsLeadByte (*cur) ? *(cur + 1) : '\0'};
 #endif
 
             CharacterClasses charClass = CharToCharacterClass (startOfText, lengthOfText, cur);
@@ -342,7 +342,7 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
             /*
              *  On a change of char-class break (space-ness) - we return a possible row break.
              */
-            bool curCharSpaceChar = IsASCIISpace (thisChar);
+            bool curCharSpaceChar = IsASCIISpace (thisLoopCurChar);
             if (isSpaceChar != curCharSpaceChar) {
                 break;
             }
@@ -355,11 +355,11 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
             //   any character followed by an BOL character.
             //   any non-white space english characters.
             if (not isSpaceChar) {
-                if ((charClass != eWordClass or prevCharWordClass != eWordClass or IsASCIISpace (thisChar)) and not IsJapaneseEOLChar (prevChar) and not IsJapaneseBOLChar (thisChar)) {
+                if ((charClass != eWordClass or prevCharWordClass != eWordClass or IsASCIISpace (thisLoopCurChar)) and not IsJapaneseEOLChar (prevChar) and not IsJapaneseBOLChar (thisLoopCurChar)) {
                     break;
                 }
             }
-            prevChar          = thisChar;
+            prevChar          = thisLoopCurChar;
             prevCharWordClass = charClass;
 #endif
         }
@@ -367,7 +367,7 @@ void TextBreaks_Basic::FindLineBreaks (const Led_tChar* startOfText, size_t leng
     }
     *wordReal = (not(IsASCIISpace (thisChar))) and (textOffsetToStartLookingForWord != *wordEndResult);
     Assert (*wordEndResult <= lengthOfText); // LGP added 950208 - in response to Alecs email message of same date - not
-// sure this assert is right, but might help debugging later...
+                                             // sure this assert is right, but might help debugging later...
 #if qMultiByteCharacters
     Assert (Led_IsValidMultiByteString (startOfText, *wordEndResult)); // be sure
 #endif

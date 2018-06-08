@@ -16,6 +16,7 @@
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/CodePage.h"
 #include "../../../Foundation/Characters/String.h"
+#include "../../../Foundation/Execution/StringException.h"
 
 #include "../StyledTextEmbeddedObjects.h"
 
@@ -145,8 +146,11 @@ struct PortableStyleRunData_Version5 {
         Assert (len > xtra);
         return static_cast<unsigned char> (len - xtra);
     }
-    static unsigned char RecordLenFromNameLen (unsigned char len)
+    static unsigned char RecordLenFromNameLen (unsigned int len)
     {
+        if (len > 255) {
+            Execution::Throw (Execution::StringException (L"RecordLenFromNameLen too long"));
+        }
         size_t xtra = offsetof (PortableStyleRunData_Version5, fFontName);
         return (unsigned char)min (xtra + size_t (len), size_t (256));
     }
@@ -254,8 +258,11 @@ struct PortableStyleRunData_Version6 {
         Assert (len > xtra);
         return static_cast<unsigned char> (len - xtra);
     }
-    static unsigned char RecordLenFromNameLen (unsigned char len)
+    static unsigned char RecordLenFromNameLen (unsigned int len)
     {
+        if (len > 255) {
+            Execution::Throw (Execution::StringException (L"RecordLenFromNameLen too long"));
+        }
         size_t xtra = offsetof (PortableStyleRunData_Version6, fFontName);
         return (unsigned char)min (xtra + size_t (len), size_t (256));
     }

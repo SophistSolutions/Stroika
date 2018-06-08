@@ -1719,7 +1719,7 @@ void StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                         int number = ConvertReadSingleHexDigit_ (GetNextChar ());
                         number *= 16;
                         number += ConvertReadSingleHexDigit_ (GetNextChar ());
-                        c = number;
+                        c = static_cast<char> (number);
                         goto ReadNormalChar;
                     } break;
 
@@ -2564,8 +2564,8 @@ bool StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerCont
             } break;
             case RTFIO::kRTFCloseGroupChar: {
                 /*
-                     * Sanity check shown size.
-                     */
+                 * Sanity check shown size.
+                 */
                 shownSize.h *= scaleX;
                 shownSize.v *= scaleY;
                 if (shownSize.v > 20000 or shownSize.h > 20000 or shownSize.h < 100 or shownSize.v < 100) {
@@ -3346,7 +3346,7 @@ ReadRest:
                     HandleBadlyFormattedInput ();
                 }
                 else {
-                    entry.fCharSet = cword.fValue;
+                    entry.fCharSet = static_cast<Byte> (cword.fValue);
                 }
             } break;
             case RTFIO::eControlAtom_fprq: {
@@ -3745,7 +3745,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromEMFHelper (Led_TWIPS_Point show
             if (nPalEntries != 0) {
                 LOGPALETTE* paletteData    = reinterpret_cast<LOGPALETTE*> (new char[sizeof (LOGPALETTE) + nPalEntries * sizeof (PALETTEENTRY)]);
                 paletteData->palVersion    = 0;
-                paletteData->palNumEntries = nPalEntries;
+                paletteData->palNumEntries = static_cast<WORD> (nPalEntries);
                 Verify (::GetEnhMetaFilePaletteEntries (hMF, nPalEntries, paletteData->palPalEntry) == nPalEntries);
                 usePalette = ::CreatePalette (paletteData);
                 delete[](char*) paletteData;
