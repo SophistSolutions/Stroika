@@ -1824,7 +1824,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
                 size_t len = nextTabAt - textCursor;
                 Memory::SmallStackBuffer<wchar_t> glyphs (len);
                 if (Win9x_Workaround_GetCharPlacementFunction (m_hDC, textCursor, len, glyphs) != 0) {
-                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, glyphs, len, nullptr));
+                    Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, glyphs, static_cast<UINT> (len), nullptr));
                     goto Succeeded_But_Need_To_Adjust_Width;
                 }
             }
@@ -1835,9 +1835,9 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
                 // Fallback - if the above fails...
                 // Displays the text in the right order, but doesn't do contextual shaping (tested on WinXP and WinME) - LGP 2002-12-10
 #if qWideCharacters
-                Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor, len, nullptr));
+                Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor, static_cast<UINT> (len), nullptr));
 #else
-                Verify (::ExtTextOutA (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor, len, nullptr));
+                Verify (::ExtTextOutA (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, 0, nullptr, textCursor, static_cast<UINT> (len), nullptr));
 #endif
             }
 
@@ -1850,7 +1850,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
             // is nullptr (typically TRUE) - LGP 960521
             if (amountDrawn != nullptr or (nextTabAt < textEnd)) {
                 SIZE size;
-                Win32_GetTextExtentPoint (m_hAttribDC, textCursor, nextTabAt - textCursor, &size);
+                Win32_GetTextExtentPoint (m_hAttribDC, textCursor, static_cast<int> (nextTabAt - textCursor), &size);
                 widthSoFar += size.cx;
             }
         }

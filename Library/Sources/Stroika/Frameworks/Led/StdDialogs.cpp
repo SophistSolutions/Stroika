@@ -2716,7 +2716,7 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
     ::SetDialogDefaultItem (GetDialogPtr (), 1);
 #elif qPlatform_Windows
     Led_SDK_Char messageText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, messageText, NEltsOf (messageText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_UnknownEmbeddingInfoBox_TypeTextMsg, messageText, static_cast<int> (NEltsOf (messageText)));
 
     Led_SDK_String m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fEmbeddingTypeName);
@@ -2801,7 +2801,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::PreDoModalHook ()
     }
 #elif qPlatform_Windows
     Led_SDK_Char messageText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg, messageText, NEltsOf (messageText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_URLXEmbeddingInfoBox_TypeTextMsg, messageText, static_cast<int> (NEltsOf (messageText)));
 
     Led_SDK_String m = messageText;
     ReplaceAllTokens (&m, Led_SDK_TCHAROF ("%0"), fEmbeddingTypeName);
@@ -2964,9 +2964,9 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
     }
 #elif qPlatform_Windows
     Led_SDK_Char bufText[1024];
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, bufText, NEltsOf (bufText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_TitleText, bufText, static_cast<int> (NEltsOf (bufText)));
     fTitleText = bufText;
-    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, bufText, NEltsOf (bufText));
+    (void)::GetDlgItemText (GetHWND (), kLedStdDlg_AddURLXEmbeddingInfoBox_URLText, bufText, static_cast<int> (NEltsOf (bufText)));
     fURLText = bufText;
 #endif
     inherited::OnOK ();

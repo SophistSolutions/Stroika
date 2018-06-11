@@ -197,7 +197,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILE (ReaderFlavorPackage& fla
             Led_ThrowIfNull (hdrop);
             (void)::memcpy (hdrop, fileSpecBuffer, fileSpecBufferLength);
             size_t nChars = ::DragQueryFile (hdrop, 0, nullptr, 0);
-            Verify (::DragQueryFile (hdrop, 0, realFileName, nChars + 1) == nChars);
+            Verify (::DragQueryFile (hdrop, 0, realFileName, static_cast<UINT> (nChars + 1)) == nChars);
             ::GlobalFree (hdrop);
         }
         Led_ClipFormat suggestedClipFormat = kBadClipFormat; // no guess - examine text later

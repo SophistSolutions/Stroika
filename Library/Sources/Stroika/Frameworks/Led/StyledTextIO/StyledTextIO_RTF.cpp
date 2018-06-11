@@ -4397,7 +4397,7 @@ void StyledTextIOWriter_RTF::WritePlainUnicodeCharCharacterHelper (wchar_t c)
     bool needToWriteUNICODE = c >= 0x80; //  write UNICODE if non-ascii
     if (needToWriteUNICODE) {
         // write \uc\u stuff
-        WriteTagNValue ("uc", mbCharCount); // keep track of prev value of this guy - so we don't need to write so often - in a context object???
+        WriteTagNValue ("uc", static_cast<int> (mbCharCount)); // keep track of prev value of this guy - so we don't need to write so often - in a context object???
         WriteTagNValue ("u", c);
     }
 
@@ -4589,7 +4589,7 @@ void StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table* ta
         {
             Led_TWIPS cellxSoFar = Led_TWIPS (0);
             for (vector<CellInfo>::const_iterator i = cellInfos.begin (); i != cellInfos.end (); ++i) {
-                WriteTagNValue ("clcbpat", fColorTable->LookupColor (i->f_clcbpat));
+                WriteTagNValue ("clcbpat", static_cast<int> (fColorTable->LookupColor (i->f_clcbpat)));
 
                 // This value of 3/2 * LHS is somewhat empirically derived from the output of MS Word XP. Its really quite
                 // hadly documented - the relationship between cell spacing and cellx values.
@@ -4747,7 +4747,7 @@ bool StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*writer
         WriteTagNValue ("picw", Led_CvtScreenPixelsToTWIPSH (size.h));
         WriteTagNValue ("wbmbitspixel", dib->bmiHeader.biBitCount == 0 ? 24 : dib->bmiHeader.biBitCount);
         WriteTagNValue ("wbmplanes", dib->bmiHeader.biPlanes == 0 ? 1 : dib->bmiHeader.biPlanes);
-        WriteTagNValue ("wbmwidthbytes", Led_GetDIBImageRowByteCount (dib));
+        WriteTagNValue ("wbmwidthbytes", static_cast<int> (Led_GetDIBImageRowByteCount (dib)));
 #else
         WriteTagNValue ("wmetafile", 8); // not sure what 8 means - but thats what MSWord 2000 seems to write - LGP 2000-07-08
 

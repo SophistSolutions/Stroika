@@ -356,7 +356,7 @@ void MultiLevelUndoCommandHandler::DoUndo (TextInteractor& interactor)
     fDoingCommands = true;
     try {
 #endif
-        for (long i = end; i >= long(start); i--) {
+        for (int i = static_cast<int> (end); i >= static_cast<int> (start); i--) {
             fCommands[i]->UnDo (interactor);
         }
 #if qDebug
