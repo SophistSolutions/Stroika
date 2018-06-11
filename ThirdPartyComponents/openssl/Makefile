@@ -112,7 +112,10 @@ endif
 #
 CONFIG_ARGS+=	-no-dso
 ifeq (Unix,$(ProjectPlatformSubdir))
+# for soone reason, no-engines not working on Ubuntu 1804 and 1.1.0g openssl - not worth debugging now...
+ifneq (1.1.0,$(findstring 1.1.0,$(VERSION)))
 CONFIG_ARGS+=	-no-engines
+endif
 endif
 
 
@@ -247,9 +250,9 @@ doBuilds_:
 	@
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (output to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT) ..."` " "
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && eval (./config -t | tail -1) $(CONFIG_ARGS)" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
-	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config -t | tail -1) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
-	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && eval ./config $(CONFIG_ARGS)) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config -t) > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	@$(ECHO) "export CC=$(CC); export AR=$(AR); cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@(export CC="$(CC)"; export AR="$(AR)"; export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config $(CONFIG_ARGS)) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	echo "MFLAGS= MAKEFLAGS= cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
