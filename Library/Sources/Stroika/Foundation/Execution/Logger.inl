@@ -38,12 +38,12 @@ namespace Stroika {
                 return logLevel >= fMinLogLevel_ and GetAppender () != nullptr;
             }
 #if !qDefaultTracingOn
-            inline void Logger::Log (Priority logLevel, String format, ...)
+            inline void Logger::Log (Priority logLevel, const wchar_t* format, ...)
             {
                 if (WouldLog (logLevel)) {
                     va_list argsList;
                     va_start (argsList, format);
-                    String msg = Characters::FormatV (format.c_str (), argsList);
+                    String msg = Characters::FormatV (format, argsList);
                     va_end (argsList);
                     Log_ (logLevel, msg);
                 }
