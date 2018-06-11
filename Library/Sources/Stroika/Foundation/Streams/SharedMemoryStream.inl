@@ -274,12 +274,14 @@ namespace Stroika {
              ********************** SharedMemoryStream<ELEMENT_TYPE> ************************
              ********************************************************************************
              */
+            DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wattributes\"")
             template <typename ELEMENT_TYPE>
             inline auto SharedMemoryStream<ELEMENT_TYPE>::New ([[maybe_unused]] Execution::InternallySyncrhonized internallySyncrhonized) -> Ptr
             {
                 // always return internally synchronized rep
                 return make_shared<Rep_> ();
             }
+            DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wattributes\"")
             template <typename ELEMENT_TYPE>
             inline auto SharedMemoryStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
             {
