@@ -315,11 +315,11 @@ void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>&
 }
 
 #if qDefaultTracingOn
-void Logger::Log (Priority logLevel, String format, ...)
+void Logger::Log (Priority logLevel, const wchar_t* format, ...)
 {
     va_list argsList;
     va_start (argsList, format);
-    String msg = Characters::FormatV (format.c_str (), argsList);
+    String msg = Characters::FormatV (format, argsList);
     va_end (argsList);
     DbgTrace (L"Logger::Log (%s, \"%s\")", Characters::ToString (logLevel).c_str (), msg.c_str ());
     if (WouldLog (logLevel)) {
@@ -331,7 +331,7 @@ void Logger::Log (Priority logLevel, String format, ...)
 }
 #endif
 
-void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...)
+void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, const wchar_t* format, ...)
 {
     Require (suppressionTimeWindow > 0);
     RequireNotNull (fRep_);
@@ -339,7 +339,7 @@ void Logger::LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionT
     fRep_->fMaxWindow_.store (max (suppressionTimeWindow, fRep_->fMaxWindow_.load ())); // doesn't need to be synchronized
     va_list argsList;
     va_start (argsList, format);
-    String msg = Characters::FormatV (format.c_str (), argsList);
+    String msg = Characters::FormatV (format, argsList);
     va_end (argsList);
     DbgTrace (L"Logger::LogIfNew (%s, %e, \"%s\")", Characters::ToString (logLevel).c_str (), suppressionTimeWindow, msg.c_str ());
     if (WouldLog (logLevel)) {

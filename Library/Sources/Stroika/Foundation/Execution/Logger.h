@@ -285,7 +285,7 @@ namespace Stroika {
                  *          Logger::Get ().Log (Logger::Priority::eError, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
-                nonvirtual void Log (Priority logLevel, String format, ...); // varargs logger
+                nonvirtual void Log (Priority logLevel, const wchar_t* format, ...); // varargs logger
 
             public:
                 /**
@@ -300,7 +300,7 @@ namespace Stroika {
                  *          Logger::Get ().LogIfNew (Logger::Priority::eError, 60.0, L"Failed to correct something important in file %s", fileName.c_str ());
                  *      \endcode
                  */
-                nonvirtual void LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, String format, ...);
+                nonvirtual void LogIfNew (Priority logLevel, Time::DurationSecondsType suppressionTimeWindow, const wchar_t* format, ...);
 
             private:
                 nonvirtual void Log_ (Priority logLevel, const String& msg);
