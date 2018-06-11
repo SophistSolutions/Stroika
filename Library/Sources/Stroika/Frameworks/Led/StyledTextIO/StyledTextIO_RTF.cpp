@@ -3666,7 +3666,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] Led_TWIP
 #if qPlatform_Windows
         case eEMF: {
             Led_DIB*     result = nullptr;
-            HENHMETAFILE hMF    = ::SetEnhMetaFileBits (nBytes, reinterpret_cast<const unsigned char*> (data));
+            HENHMETAFILE hMF    = ::SetEnhMetaFileBits (static_cast<UINT> (nBytes), reinterpret_cast<const unsigned char*> (data));
             try {
                 result = ConstructDIBFromEMFHelper (shownSize, bmSize, hMF);
             }
@@ -3679,7 +3679,7 @@ Led_DIB* StyledTextIOReader_RTF::ConstructDIBFromData ([[maybe_unused]] Led_TWIP
         } break;
         case eWMF: {
             Led_DIB*     result = nullptr;
-            HENHMETAFILE hMF    = ::SetWinMetaFileBits (nBytes, reinterpret_cast<const unsigned char*> (data), nullptr, nullptr);
+            HENHMETAFILE hMF    = ::SetWinMetaFileBits (static_cast<UINT> (nBytes), reinterpret_cast<const unsigned char*> (data), nullptr, nullptr);
             try {
                 result = ConstructDIBFromEMFHelper (shownSize, bmSize, hMF);
             }
@@ -5121,7 +5121,7 @@ void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContex
     }
 #endif
 
-    WriteTagNValue ("cf", fColorTable->LookupColor (newOne.GetTextColor ()));
+    WriteTagNValue ("cf", static_cast<int> (fColorTable->LookupColor (newOne.GetTextColor ())));
 }
 
 void StyledTextIOWriter_RTF::EmitBodyFontInfoChange (WriterContext& writerContext, const Led_FontSpecification& newOne, const Led_FontSpecification& /*oldOne*/)

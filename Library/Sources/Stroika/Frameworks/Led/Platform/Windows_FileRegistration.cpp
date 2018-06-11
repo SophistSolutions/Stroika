@@ -146,21 +146,21 @@ void Win32FileAssociationRegistrationHelper::SetAssociatedProgIDAndOpenCommand (
     /*
      *  The Create/Make the pointed to progID, with appropriate subkeys.
      */
-    ThrowIfRegError (::RegSetValue (HKEY_CLASSES_ROOT, progID.c_str (), REG_SZ, progIDPrettyName.c_str (), progIDPrettyName.length ()));
+    ThrowIfRegError (::RegSetValue (HKEY_CLASSES_ROOT, progID.c_str (), REG_SZ, progIDPrettyName.c_str (), static_cast<DWORD> (progIDPrettyName.length ())));
 
     KeyHolder progIDKey (HKEY_CLASSES_ROOT, progID.c_str (), KeyHolder::eCreateIfNotThere);
     if (defaultIcon != Win32UIFileAssociationInfo::kNoChange) {
-        ThrowIfRegError (::RegSetValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), REG_SZ, defaultIcon.c_str (), defaultIcon.length ()));
+        ThrowIfRegError (::RegSetValue (progIDKey, Led_SDK_TCHAROF ("DefaultIcon"), REG_SZ, defaultIcon.c_str (), static_cast<DWORD> (defaultIcon.length ())));
     }
     if (editCommandLine != Win32UIFileAssociationInfo::kNoChange) {
         KeyHolder shellKey (progIDKey, Led_SDK_TCHAROF ("shell"), KeyHolder::eCreateIfNotThere);
         KeyHolder openKey (shellKey, Led_SDK_TCHAROF ("edit"), KeyHolder::eCreateIfNotThere);
-        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, editCommandLine.c_str (), editCommandLine.length ()));
+        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, editCommandLine.c_str (), static_cast<DWORD> (editCommandLine.length ())));
     }
     if (openCommandLine != Win32UIFileAssociationInfo::kNoChange) {
         KeyHolder shellKey (progIDKey, Led_SDK_TCHAROF ("shell"), KeyHolder::eCreateIfNotThere);
         KeyHolder openKey (shellKey, Led_SDK_TCHAROF ("open"), KeyHolder::eCreateIfNotThere);
-        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, openCommandLine.c_str (), openCommandLine.length ()));
+        ThrowIfRegError (::RegSetValue (openKey, Led_SDK_TCHAROF ("command"), REG_SZ, openCommandLine.c_str (), static_cast<DWORD> (openCommandLine.length ())));
     }
 }
 

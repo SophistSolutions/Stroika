@@ -622,10 +622,10 @@ void LedComboBoxWidget::MyComboListBoxPopup::ComputePreferedHeight (Led_Distance
     if (nElts >= kMaxElts) {
         nElts = kMaxElts;
     }
-    Led_Distance       singleEltHeight  = static_cast<Led_Distance> (::SendMessage (GetHWND (), LB_GETITEMHEIGHT, 0, 0));
-    const Led_Distance kEmpiricalKludge = 2; // LGP 2003-12-28
-    *prefHeight                         = nElts * singleEltHeight + kEmpiricalKludge;
-    *nEltsShown                         = nElts;
+    Led_Distance           singleEltHeight  = static_cast<Led_Distance> (::SendMessage (GetHWND (), LB_GETITEMHEIGHT, 0, 0));
+    constexpr Led_Distance kEmpiricalKludge = 2; // LGP 2003-12-28
+    *prefHeight                             = static_cast<Led_Distance> (nElts * singleEltHeight + kEmpiricalKludge);
+    *nEltsShown                             = nElts;
 }
 #endif
 
@@ -1649,7 +1649,7 @@ void Led_StdDialogHelper_AboutBox::OnClickInLedWebPageField ()
 }
 
 #if qSupportStdFindDlg
-/*
+    /*
  ********************************************************************************
  *************************** Led_StdDialogHelper_FindDialog *********************
  ********************************************************************************
@@ -2379,7 +2379,7 @@ void Led_StdDialogHelper_UpdateWin32FileAssocsDialog::OnCancel ()
 #endif
 
 #if qSupportParagraphIndentsDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_ParagraphIndentsDialog *****************
  ********************************************************************************
@@ -2680,7 +2680,7 @@ void Led_StdDialogHelper_OtherFontSizeDialog::OnOK ()
 #endif
 
 #if qSupportUnknownEmbeddingInfoDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_UnknownEmbeddingInfoDialog *************
  ********************************************************************************
@@ -2741,7 +2741,7 @@ void Led_StdDialogHelper_UnknownEmbeddingInfoDialog::PreDoModalHook ()
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_URLXEmbeddingInfoDialog ****************
  ********************************************************************************
@@ -2865,7 +2865,7 @@ void Led_StdDialogHelper_URLXEmbeddingInfoDialog::OnOK ()
 #endif
 
 #if qSupportURLXEmbeddingInfoDlg
-/*
+    /*
  ********************************************************************************
  ******************* Led_StdDialogHelper_AddURLXEmbeddingInfoDialog *************
  ********************************************************************************
@@ -2974,7 +2974,7 @@ void Led_StdDialogHelper_AddURLXEmbeddingInfoDialog::OnOK ()
 #endif
 
 #if qSupportAddNewTableDlg
-/*
+    /*
  ********************************************************************************
  ********************* Led_StdDialogHelper_AddNewTableDialog ********************
  ********************************************************************************
@@ -3012,8 +3012,8 @@ void Led_StdDialogHelper_AddNewTableDialog::PreDoModalHook ()
 #elif qXWindows && qUseGTKForLedStandardDialogs
 #endif
 #if qPlatform_MacOS || qPlatform_Windows
-    SetItemText (kLedStdDlg_AddNewTableBox_RowCount, FormatINTAsString (fRows));
-    SetItemText (kLedStdDlg_AddNewTableBox_ColCount, FormatINTAsString (fColumns));
+    SetItemText (kLedStdDlg_AddNewTableBox_RowCount, FormatINTAsString (static_cast<int> (fRows)));
+    SetItemText (kLedStdDlg_AddNewTableBox_ColCount, FormatINTAsString (static_cast<int> (fColumns)));
 #endif
 
     SetFocusedItem (kLedStdDlg_AddNewTableBox_RowCount);
