@@ -1,4 +1,4 @@
-﻿Stroika
+﻿Stroika v2.0
 ----------
 
 Stroika is a C++ application framework designed to make high performance, 
