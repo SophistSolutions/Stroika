@@ -141,13 +141,13 @@ struct PortableStyleRunData_Version5 {
     uint32_t       fLength;
     char           fFontName[256]; // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 
-    static unsigned char NameLenFromRecordLen (unsigned char len)
+    static size_t NameLenFromRecordLen (unsigned char len)
     {
         size_t xtra = offsetof (PortableStyleRunData_Version5, fFontName);
         Assert (len > xtra);
         return static_cast<unsigned char> (len - xtra);
     }
-    static unsigned char RecordLenFromNameLen (unsigned int len)
+    static unsigned char RecordLenFromNameLen (size_t len)
     {
         if (len > 255) {
             Execution::Throw (Execution::StringException (L"RecordLenFromNameLen too long"));
@@ -253,13 +253,13 @@ struct PortableStyleRunData_Version6 {
     uint32_t fLength;
     char     fFontName[256]; // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 
-    static unsigned char NameLenFromRecordLen (unsigned char len)
+    static size_t NameLenFromRecordLen (unsigned char len)
     {
         size_t xtra = offsetof (PortableStyleRunData_Version6, fFontName);
         Assert (len > xtra);
         return static_cast<unsigned char> (len - xtra);
     }
-    static unsigned char RecordLenFromNameLen (unsigned int len)
+    static unsigned char RecordLenFromNameLen (size_t len)
     {
         if (len > 255) {
             Execution::Throw (Execution::StringException (L"RecordLenFromNameLen too long"));
