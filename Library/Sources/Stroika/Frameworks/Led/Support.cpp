@@ -311,7 +311,6 @@ void Led::Led_Set_OutOfMemoryException_Handler (void (*outOfMemoryHandler) ())
     sLedOutOfMemoryExceptionCallback = outOfMemoryHandler;
 }
 
-#if !qNoSTRNICMP
 int Led::Led_tStrniCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
 {
     RequireNotNull (l);
@@ -337,7 +336,6 @@ int Led::Led_tStriCmp (const Led_tChar* l, const Led_tChar* r)
     return ::_wcsicmp (l, r);
 #endif
 }
-#endif
 
 /*
  ********************************************************************************
@@ -397,71 +395,6 @@ void (*Led::Led_Get_ThrowOSErrException_Handler ()) (OSErr err)
 void Led::Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallback) (OSErr err))
 {
     sLedThrowOSErrExceptionCallback = throwOSErrExceptionCallback;
-}
-#endif
-
-#if qNoSTRNICMP
-int Led::Led_tStrniCmp (const Led_tChar* lhs, const Led_tChar* rhs, size_t n)
-{
-    RequireNotNull (lhs);
-    RequireNotNull (rhs);
-#if qSingleByteCharacters || qWideCharacters
-    if (n) {
-        int f;
-        int l;
-        do {
-#if qSingleByteCharacters
-            if (((f = (unsigned short)(*(lhs++))) >= 'A') && (f <= 'Z')) {
-                f -= 'A' - 'a';
-            }
-            if (((l = (unsigned short)(*(rhs++))) >= 'A') && (l <= 'Z')) {
-                l -= 'A' - 'a';
-            }
-#elif qWideCharacters
-            if (((f = (unsigned char)(*(lhs++))) >= 'A') && (f <= 'Z')) {
-                f -= 'A' - 'a';
-            }
-            if (((l = (unsigned char)(*(rhs++))) >= 'A') && (l <= 'Z')) {
-                l -= 'A' - 'a';
-            }
-#endif
-        } while (--n && f && (f == l));
-        return (f - l);
-    }
-    return (0);
-#else
-    Assert (false); //NYI
-#endif
-}
-
-int Led::Led_tStriCmp (const Led_tChar* lhs, const Led_tChar* rhs)
-{
-    RequireNotNull (lhs);
-    RequireNotNull (rhs);
-#if qSingleByteCharacters || qWideCharacters
-    int f;
-    int l;
-    do {
-#if qSingleByteCharacters
-        if (((f = (unsigned short)(*(lhs++))) >= 'A') && (f <= 'Z')) {
-            f -= 'A' - 'a';
-        }
-        if (((l = (unsigned short)(*(rhs++))) >= 'A') && (l <= 'Z')) {
-            l -= 'A' - 'a';
-        }
-#elif qWideCharacters
-        if (((f = (unsigned char)(*(lhs++))) >= 'A') && (f <= 'Z')) {
-            f -= 'A' - 'a';
-        }
-        if (((l = (unsigned char)(*(rhs++))) >= 'A') && (l <= 'Z')) {
-            l -= 'A' - 'a';
-        }
-#endif
-    } while (f && (f == l));
-    return (f - l);
-#else
-    Assert (false); //NYI
-#endif
 }
 #endif
 
