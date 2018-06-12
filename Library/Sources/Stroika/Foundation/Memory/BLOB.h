@@ -66,15 +66,12 @@ namespace Stroika {
         namespace Memory {
 
             /**
-             *  \def qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr
-             *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
+             *      If kBLOBUsesStroikaSharedPtr is true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
              *      internal implementaiton detail, and may go away as an option.
              *
              *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
-#ifndef qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-#define qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_ qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
-#endif
+            constexpr bool kBLOBUsesStroikaSharedPtr = qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr;
 
             using namespace std;
 
@@ -150,13 +147,8 @@ namespace Stroika {
             protected:
                 /**
                  */
-#if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
                 template <typename T>
-                using _SharedRepImpl = Memory::SharedPtr<T>;
-#else
-                template <typename T>
-                using _SharedRepImpl = shared_ptr<T>;
-#endif
+                using _SharedRepImpl = conditional_t<kBLOBUsesStroikaSharedPtr, Memory::SharedPtr<T>, shared_ptr<T>>;
 
             protected:
                 /**
@@ -348,13 +340,7 @@ namespace Stroika {
              *
              *  \note   we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
              */
-            struct BLOB::_IRep
-#if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-                : public Memory::enable_shared_from_this<BLOB::_IRep>
-#else
-                : public std::enable_shared_from_this<BLOB::_IRep>
-#endif
-            {
+            struct BLOB::_IRep : conditional_t<kBLOBUsesStroikaSharedPtr, Memory::enable_shared_from_this<BLOB::_IRep>, std::enable_shared_from_this<BLOB::_IRep>> {
                 _IRep ()                                                  = default;
                 _IRep (const _IRep&)                                      = delete;
                 virtual ~_IRep ()                                         = default;

@@ -95,11 +95,12 @@ namespace Stroika {
             template <typename T, typename... ARGS_TYPE>
             inline BLOB::_SharedRepImpl<T> BLOB::_MakeSharedPtr (ARGS_TYPE&&... args)
             {
-#if qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_
-                return Memory::MakeSharedPtr<T> (forward<ARGS_TYPE> (args)...);
-#else
-                return make_shared<T> (forward<ARGS_TYPE> (args)...);
-#endif
+                if constexpr (kBLOBUsesStroikaSharedPtr) {
+                    return Memory::MakeSharedPtr<T> (forward<ARGS_TYPE> (args)...);
+                }
+                else {
+                    return make_shared<T> (forward<ARGS_TYPE> (args)...);
+                }
             }
             inline BLOB::BLOB ()
                 : fRep_{_MakeSharedPtr<ZeroRep_> ()}
