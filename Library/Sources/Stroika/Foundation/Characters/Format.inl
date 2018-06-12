@@ -12,10 +12,8 @@
 #include "../Containers/Common.h"
 #include "../Memory/SmallStackBuffer.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-        }
+namespace Stroika::Foundation {
+    namespace Characters {
     }
 }
 #endif /*_Stroika_Foundation_Characters_Format_inl_*/
