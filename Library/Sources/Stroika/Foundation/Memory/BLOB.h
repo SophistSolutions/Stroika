@@ -254,8 +254,8 @@ namespace Stroika::Foundation {
 
         public:
             /**
-			 *  Pointers returned by end(), remain valid for the lifetime of the containing BLOB.
-			 */
+             *  Pointers returned by end(), remain valid for the lifetime of the containing BLOB.
+             */
             nonvirtual const Byte* end () const;
 
         public:
