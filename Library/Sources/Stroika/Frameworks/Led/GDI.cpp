@@ -1784,7 +1784,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
 #endif
 
         if (direction == eLeftToRight) {
-            Win32_TextOut (m_hDC, static_cast<int> (outputAt.h + widthSoFar - hScrollOffset), static_cast<int> (outputAt.v), textCursor, nextTabAt - textCursor);
+            Win32_TextOut (m_hDC, static_cast<int> (outputAt.h + widthSoFar - hScrollOffset), static_cast<int> (outputAt.v), textCursor, static_cast<int> (nextTabAt - textCursor));
 
             // Geez! There must be SOME API within Win32 to give me this info (like SetTextAlign (UPDATE_CP))
             // without recomputing it. But there doesn't appear to be. So we must recompute!
@@ -1794,7 +1794,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
             // is nullptr (typically TRUE) - LGP 960521
             if (amountDrawn != nullptr or (nextTabAt < textEnd)) {
                 SIZE size;
-                Win32_GetTextExtentPoint (m_hAttribDC, textCursor, nextTabAt - textCursor, &size);
+                Win32_GetTextExtentPoint (m_hAttribDC, textCursor, static_cast<int> (nextTabAt - textCursor), &size);
                 widthSoFar += size.cx;
             }
         }
