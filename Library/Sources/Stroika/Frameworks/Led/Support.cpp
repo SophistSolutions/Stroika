@@ -398,7 +398,6 @@ void Led::Led_Set_ThrowOSErrException_Handler (void (*throwOSErrExceptionCallbac
 }
 #endif
 
-
 /*
 @METHOD:        Led_SkrunchOutSpecialChars
 @DESCRIPTION:   <p>This function is useful to remove embedded NUL-characters from a string, or
