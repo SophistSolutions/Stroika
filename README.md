@@ -1,12 +1,13 @@
-﻿Stroika v2
+﻿Stroika
 ----------
 
 Stroika is a C++ application framework designed to make high performance, 
 modern, reliable and multi-threaded applications easier to write.
 
-Stroika is now at the late alpha stage - still underoing much revision - but
-very usable, and now used in a wide variety of applications.
-	[Release-Notes.md](Release-Notes.md)
+Stroika v2.0 is very stable, and nearly complete, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
+
+For more details on individual release changes, see Release-Notes.md
+
 
 Quick start building instructions can be found in
 	[Documentation/Building Stroika.pdf](Documentation/Building%20Stroika.pdf)
