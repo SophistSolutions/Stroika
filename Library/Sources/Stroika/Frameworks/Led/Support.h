@@ -398,8 +398,8 @@ namespace Stroika {
             uint32_t BufToUInt32 (const uint32_t* buf);
 
             /*
-			 *	Store as UInt32, but throw if won't fit
-			 */
+             *  Store as UInt32, but throw if won't fit
+             */
             void   SizeTToBuf (size_t ul, uint32_t* realBuf);
             size_t BufToSizeT (const uint32_t* buf);
 
@@ -821,7 +821,7 @@ namespace Stroika {
             }
 #endif
 
-                /*
+            /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
@@ -1121,7 +1121,7 @@ namespace Stroika {
                 using Stroika::Foundation::Execution::Throw;
                 if (ul > numeric_limits<uint32_t>::max ()) {
                     Throw (range_error ("size_t wont fit in 32-bits"));
-				}
+                }
                 UInt32ToBuf (static_cast<uint32_t> (ul), realBuf);
             }
             inline size_t BufToSizeT (const uint32_t* buf)
