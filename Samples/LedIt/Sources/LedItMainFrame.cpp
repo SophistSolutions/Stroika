@@ -269,9 +269,3 @@ void LedItMainFrame::Dump (CDumpContext& dc) const
     inherited::Dump (dc);
 }
 #endif //_DEBUG
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

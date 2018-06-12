@@ -702,9 +702,3 @@ static void AppendFilterSuffix (CString& filter, OPENFILENAME& ofn, CDocTemplate
         AppendFilterSuffix (filter, ofn, strFilterExt, strFilterName);
     }
 }
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

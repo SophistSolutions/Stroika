@@ -216,9 +216,3 @@ inline CommandHandler& LedItDocument::GetCommandHandler ()
 }
 
 #endif /*__LedItDocument_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

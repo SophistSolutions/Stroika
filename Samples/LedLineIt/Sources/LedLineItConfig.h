@@ -43,9 +43,3 @@ const unsigned int kMaxNumUndoLevels = 1024;
 #define qIncludeBasicSpellcheckEngine 1
 
 #endif /*__LedLineItConfig__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

@@ -617,9 +617,3 @@ BOOL LocalComboBox::PreTranslateMessage (MSG* pMsg)
     return CComboBox::PreTranslateMessage (pMsg);
 }
 #endif
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

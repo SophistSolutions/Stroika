@@ -45,9 +45,3 @@ Led_SDK_String CmdNumToFontName (UINT cmdNum)
     vector<Led_SDK_String> fontNames = sInstalledFonts.GetUsableFontNames ();
     return (fontNames[cmdNum - cmdFontMenuFirst]);
 }
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

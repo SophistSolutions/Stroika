@@ -95,9 +95,3 @@ protected:
 };
 
 #endif /*__FilteredFIlePicker_h__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

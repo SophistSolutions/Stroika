@@ -200,9 +200,3 @@ int main (int argc, char** argv)
     return (0);
 }
 #endif
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

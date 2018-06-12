@@ -69,9 +69,3 @@ const Led_TWIPS kLedItViewRHSMargin    = Led_TWIPS (0);
 //#endif
 
 #endif /*__LedItConfig__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

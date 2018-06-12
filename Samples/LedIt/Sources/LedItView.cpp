@@ -956,9 +956,3 @@ LedItDocument& LedItView::GetDocument () const // non-debug version is inline
 }
 #endif //_DEBUG
 #endif
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

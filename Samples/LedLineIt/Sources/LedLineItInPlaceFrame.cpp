@@ -102,9 +102,3 @@ void LedLineItInPlaceFrame::Dump (CDumpContext& dc) const
     COleIPFrameWnd::Dump (dc);
 }
 #endif //_DEBUG
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

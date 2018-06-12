@@ -296,9 +296,3 @@ void Options::SetDefaultNewDocFont (const Led_FontSpecification& defaultNewDocFo
     Led_Arg_Unused (defaultNewDocFont);
 #endif
 }
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

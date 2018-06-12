@@ -27,9 +27,3 @@ Led_SDK_String CmdNumToFontName (UINT cmdNum);
  */
 
 #endif /*__FontMenu_hh__*/
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

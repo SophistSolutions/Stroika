@@ -347,9 +347,3 @@ void LedLineItMainFrame::OnCloseAllWindowsCommand ()
         childFrame->SendMessage (WM_SYSCOMMAND, SC_CLOSE);
     }
 }
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***

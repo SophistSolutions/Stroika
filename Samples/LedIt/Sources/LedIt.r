@@ -5657,12 +5657,3 @@ resource 'DITL' (kSaveDLOGAdditionItems_DialogID, purgeable) {
 /// DO #DEFINES HERE TO CONTROL WHICH RESOURCES LOADED
 #include	"LedStdDialogs.r"
 
-
-
-
-
-// For gnuemacs:
-// Local Variables: ***
-// mode:c++ ***
-// tab-width:4 ***
-// End: ***
