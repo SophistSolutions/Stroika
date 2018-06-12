@@ -993,11 +993,11 @@ namespace {
 }
 
 namespace {
-    String Test23_help1_ (String format, va_list argsList)
+    String Test23_help1_ (const wchar_t* format, va_list argsList)
     {
-        return Characters::FormatV (format.c_str (), argsList);
+        return Characters::FormatV (format, argsList);
     }
-    String Test23_help1_HELPER (String format, ...)
+    String Test23_help1_HELPER (const wchar_t* format, ...)
     {
         va_list argsList;
         va_start (argsList, format);
