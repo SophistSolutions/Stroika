@@ -4,6 +4,8 @@
 #ifndef _Stroika_Frameworks_Led_Platform_MFC_inl_
 #define _Stroika_Frameworks_Led_Platform_MFC_inl_ 1
 
+#include "../../../Foundation/Characters/LineEndings.h"
+
 namespace Stroika {
     namespace Frameworks {
         namespace Led {
@@ -1422,7 +1424,7 @@ namespace Stroika {
                         AfxThrowArchiveException (CArchiveException::endOfFile);
                     }
                     // Replace the editing edit buffer with the newly loaded data
-                    nLen = static_cast<UINT> (Led_NormalizeTextToNL (buf, nLen, buf, nLen));
+                    nLen = static_cast<UINT> (Characters::NormalizeTextToNL<Led_tChar> (buf, nLen, buf, nLen));
                     if (ValidateTextForCharsetConformance (buf, nLen)) {
                         Replace (0, 0, buf, nLen);
                     }
@@ -1443,7 +1445,7 @@ namespace Stroika {
                     Memory::SmallStackBuffer<Led_tChar> buf (nLen);
                     CopyOut (0, nLen, buf);
                     Memory::SmallStackBuffer<Led_tChar> buf2 (2 * nLen);
-                    nLen = Led_NLToNative (buf, nLen, buf2, 2 * nLen);
+                    nLen = Characters::NLToNative<Led_tChar> (buf, nLen, buf2, 2 * nLen);
                     ar.Write (buf2, static_cast<UINT> (nLen * sizeof (Led_tChar)));
 
                     ASSERT_VALID (this);

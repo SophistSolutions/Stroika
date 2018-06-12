@@ -2489,7 +2489,7 @@ namespace Stroika {
                     CopyOut (0, len, buf);
                     size_t                              len2 = 2 * len;
                     Memory::SmallStackBuffer<Led_tChar> buf2 (len2);
-                    len2 = Led_NLToNative (buf, len, buf2, len2);
+                    len2 = Characters::NLToNative<Led_tChar> (buf, len, buf2, len2);
 #if qWideCharacters
                     // Assume they want ANSI code page text?
                     int nChars = ::WideCharToMultiByte (CP_ACP, 0, buf2, static_cast<int> (len2), lpText, cchTextMax - 1, NULL, NULL);
@@ -2522,7 +2522,7 @@ namespace Stroika {
 #else
                         (void)::memcpy (buf, lpText, len);
 #endif
-                        len = Led_NormalizeTextToNL (buf, len, buf, len);
+                        len = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
                         Replace (0, 0, buf, len);
                     }
 
@@ -2716,7 +2716,7 @@ namespace Stroika {
 #elif !qWideCharacters && qSDK_UNICODE
                     Assert (false); // NOT IMPLEMENTED - WHY WOULD YOU DO THIS?
 #endif
-                    size_t nLen = Led_NormalizeTextToNL (buf, len, buf, len);
+                    size_t nLen = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
                     Assert (ValidateTextForCharsetConformance (buf, nLen));
                     Replace (GetSelectionStart (), GetSelectionEnd (), buf, nLen);
                     return 0; // result ignored...

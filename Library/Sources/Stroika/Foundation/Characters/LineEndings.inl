@@ -83,7 +83,7 @@ namespace Stroika {
                     if (c == '\r') {
                         // peek at next character - and if we have a CRLF sequence - then advance pointer
                         // (so we skip next NL) and pretend this was an NL..
-                        // NB: we DONT map plain CR to NL - to get that to happen - use Led_NormalizeTextToNL()
+                        // NB: we DONT map plain CR to NL - to get that to happen - use NormalizeTextToNL()
                         if (i < srcTextBytes and srcText[i] == '\n') {
                             c = '\n';
                             i++;
@@ -120,7 +120,7 @@ namespace Stroika {
             size_t NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
             {
                 Require (srcText != outBuf); // though we support this for the others - its too hard
-                // in this case for the PC...
+                                             // in this case for the PC...
                 TCHAR* outPtr = outBuf;
                 for (size_t i = 1; i <= srcTextBytes; i++) {
                     Assert (outPtr < outBuf + outBufSize);
@@ -154,7 +154,7 @@ namespace Stroika {
             size_t NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
             {
                 Require (srcText != outBuf); // though we support this for the others - its too hard
-                // in this case for the PC...
+                                             // in this case for the PC...
                 TCHAR* outPtr = outBuf;
                 for (size_t i = 1; i <= srcTextBytes; i++) {
                     Assert (outPtr < outBuf + outBufSize);

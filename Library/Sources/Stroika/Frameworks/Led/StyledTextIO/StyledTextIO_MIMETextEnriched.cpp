@@ -6,6 +6,7 @@
 
 #include <cctype>
 
+#include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "StyledTextIO_MIMETextEnriched.h"
@@ -69,7 +70,7 @@ void StyledTextIOReader_MIMETextEnriched::Read ()
             SmallStackBuffer<Led_tChar> buf (len);
             GetSrcStream ().seek_to (lastOffset);
             GetSrcStream ().read (buf, len);
-            len = Led_NormalizeTextToNL (buf, len, buf, len);
+            len = Characters::NormalizeTextToNL<Led_tChar> (buf, len, buf, len);
             if (fNoFillMode == 0) {
                 // Strip xtra CRLF, and merge spaces - not really sure what should be done here.
                 // Just take a WILD STAB GUESS!!!

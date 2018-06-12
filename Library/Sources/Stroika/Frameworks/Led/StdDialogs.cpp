@@ -18,6 +18,7 @@
 
 #include "../../Foundation/Characters/CString/Utilities.h"
 #include "../../Foundation/Characters/Format.h"
+#include "../../Foundation/Characters/LineEndings.h"
 
 #include "GDI.h"
 
@@ -444,7 +445,7 @@ Led_tString LedDialogWidget::GetText () const
     buf[len]                         = '\0';
     size_t                      len2 = 2 * len + 1;
     SmallStackBuffer<Led_tChar> buf2 (len2);
-    len2       = Led_NLToNative (buf, len, buf2, len2);
+    len2       = Characters::NLToNative<Led_tChar> (buf, len, buf2, len2);
     buf2[len2] = '\0';
     return Led_tString (buf2);
 }
@@ -453,7 +454,7 @@ void LedDialogWidget::SetText (const Led_tString& t)
 {
     size_t                      len = t.length ();
     SmallStackBuffer<Led_tChar> buf (len);
-    len = Led_NormalizeTextToNL (t.c_str (), len, buf, len);
+    len = Characters::NormalizeTextToNL<Led_tChar> (t.c_str (), len, buf, len);
     Replace (0, GetEnd (), buf, len);
 }
 #endif
@@ -1212,7 +1213,7 @@ Led_SDK_String Led_StdDialogHelper::GetItemText (DialogItemID itemID) const
     return Led_SDK_String ((char*)&textPStr[1], textPStr[0]);
 #elif qPlatform_Windows
     Led_SDK_Char widgetText[2 * 1024]; // sb big enough for the most part???
-    (void)::GetDlgItemText (GetHWND (), itemID, widgetText, NEltsOf (widgetText));
+    (void)::GetDlgItemText (GetHWND (), itemID, widgetText, static_cast<UINT> (NEltsOf (widgetText)));
     return widgetText;
 #elif qXWindows && qUseGTKForLedStandardDialogs
     return (char*)gtk_entry_get_text (GTK_ENTRY (itemID)); // gtk returns internal pointer - DONT FREE

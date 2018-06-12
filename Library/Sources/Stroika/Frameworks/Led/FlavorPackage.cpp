@@ -4,6 +4,7 @@
 #include "../../Foundation/StroikaPreComp.h"
 
 #include "../../Foundation/Characters/CodePage.h"
+#include "../../Foundation/Characters/LineEndings.h"
 #include "../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../Foundation/Memory/BLOB.h"
 
@@ -100,9 +101,9 @@ void FlavorPackageExternalizer::ExternalizeFlavor_TEXT (WriterFlavorPackage& fla
         Memory::SmallStackBuffer<Led_tChar> buf2 (length);
         GetTextStore ().CopyOut (start, length, buf2);
 #if qPlatform_MacOS || qXWindows
-        length = Led_NLToNative (buf2, length, buf, length);
+        length = Characters::NLToNative<Led_tChar> (buf2, length, buf, length);
 #elif qPlatform_Windows
-        length = Led_NLToNative (buf2, length, buf, 2 * length + 1);
+        length = Characters::NLToNative<Led_tChar> (buf2, length, buf, 2 * length + 1);
 #endif
     }
 
@@ -166,7 +167,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_TEXT (ReaderFlavorPackage& fla
         size_t end   = to;
         Require (start <= end);
 
-        nTChars = Led_NormalizeTextToNL (buffp, nTChars, buffp, nTChars);
+        nTChars = Characters::NormalizeTextToNL<Led_tChar> (buffp, nTChars, buffp, nTChars);
         GetTextStore ().Replace (start, end, buffp, nTChars);
         return true;
     }
@@ -327,7 +328,7 @@ bool FlavorPackageInternalizer::InternalizeFlavor_FILEDataRawBytes (
     memcpy (fileData2, (char*)rawBytes, nRawBytes);
     size_t charsRead = nRawBytes;
 #endif
-    charsRead = Led_NormalizeTextToNL (fileData2, charsRead, fileData2, charsRead);
+    charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2, charsRead, fileData2, charsRead);
     GetTextStore ().Replace (from, to, fileData2, charsRead);
     return true;
 }

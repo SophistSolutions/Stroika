@@ -2118,7 +2118,7 @@ BSTR ActiveLedItControl::GetBufferTextCRLF ()
         fEditor.CopyOut (0, len, buf);
         buf[len] = '\0';
         Memory::SmallStackBuffer<Led_tChar> buf2 (2 * len + 1);
-        len       = Led_NLToNative (buf, len, buf2, 2 * len + 1);
+        len       = Characters::NLToNative<Led_tChar> (buf, len, buf2, 2 * len + 1);
         buf2[len] = '\0';
         return CString (buf2).AllocSysString ();
     }
@@ -3657,7 +3657,7 @@ void ActiveLedItControl::SetSelText (LPCTSTR text)
     try {
         size_t                              len = ::_tcslen (text);
         Memory::SmallStackBuffer<Led_tChar> buf (len + 1);
-        len = Led_NativeToNL (Led_SDKString2tString (text).c_str (), len, buf, len + 1);
+        len = Characters::NativeToNL<Led_tChar> (Led_SDKString2tString (text).c_str (), len, buf, len + 1);
         size_t s;
         size_t e;
         fEditor.GetSelection (&s, &e);

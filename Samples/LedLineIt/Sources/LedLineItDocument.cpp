@@ -8,6 +8,7 @@
 
 #include "Stroika/Foundation/Characters/CString/Utilities.h"
 #include "Stroika/Foundation/Characters/Format.h"
+#include "Stroika/Foundation/Characters/LineEndings.h"
 #include "Stroika/Frameworks/Led/FlavorPackage.h"
 
 #include "LedLineItServerItem.h"
@@ -404,7 +405,7 @@ BOOL LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
                 cpc.MapToUNICODE (reinterpret_cast<const char*> (rawBytes), nRawBytes, static_cast<wchar_t*> (fileData2), &outCharCnt);
                 size_t charsRead = outCharCnt;
                 Assert (charsRead <= nRawBytes);
-                charsRead = Led_NormalizeTextToNL (fileData2, charsRead, fileData2, charsRead);
+                charsRead = Characters::NormalizeTextToNL<Led_tChar> (fileData2, charsRead, fileData2, charsRead);
 
                 {
                     SmallStackBuffer<Led_tChar> patchedData (charsRead + charsRead / fBreakWidths);
@@ -494,7 +495,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
 #elif qPlatform_Windows
             Led_tChar buf2[2 * sizeof (buf)];
 #endif
-            charsToWrite = Led_NLToNative (buf, charsToWrite, buf2, sizeof (buf2));
+            charsToWrite = Characters::NLToNative<Led_tChar> (buf, charsToWrite, buf2, sizeof (buf2));
 #if qWideCharacters
             CodePageConverter cpc = CodePageConverter (fCodePage);
             cpc.SetHandleBOM (firstTime); // only for the first block of text do we write a byte-order mark
@@ -543,7 +544,7 @@ void LedLineItDocument::Serialize (CArchive& ar)
         Led_tChar* buffp = static_cast<char*> (buf);
 #endif
 
-        nLen = Led_NormalizeTextToNL (buffp, nLen, buffp, nLen);
+        nLen = Characters::NormalizeTextToNL<Led_tChar> (buffp, nLen, buffp, nLen);
         fTextStore.Replace (0, 0, buffp, nLen);
 
         fCodePage = useCodePage; // whatever codepage I just used to read the doc should be the new codepage...

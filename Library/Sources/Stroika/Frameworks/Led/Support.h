@@ -398,20 +398,6 @@ namespace Stroika {
             void           Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf);
             unsigned int   Led_BufToULONG (const unsigned int* buf);
 
-            // These functions do NOT null terminate.
-            // they both return the number of bytes in the target text based on conversion from
-            // the source text. They silently ignore and do the best they can filtering
-            // any bad characters out. They both ASSERT the dest buffer is big enough.
-            // 2* input buffer size is ALWAYS big enough (really only need bigger out
-            // on PC going from NL to native - same size good enuf in all other cases)
-            size_t Led_NativeToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize);
-            size_t Led_NLToNative (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize);
-
-            // return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
-            // always big enough!!!
-            // NB: This routine is written carefully so that srcText CAN EQUAL outBuf!!!
-            size_t Led_NormalizeTextToNL (const Led_tChar* srcText, size_t srcTextBytes, Led_tChar* outBuf, size_t outBufSize);
-
             size_t Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tChar charToRemove);
 
             /*

@@ -4,6 +4,7 @@
 #include "../../../Foundation/StroikaPreComp.h"
 
 #include "../../../Foundation/Characters/CodePage.h"
+#include "../../../Foundation/Characters/LineEndings.h"
 #include "../../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "StyledTextIO_PlainText.h"
@@ -48,7 +49,7 @@ void StyledTextIOReader_PlainText::Read ()
     // (for reasons I don't completely understand, but don't care so much about either...)
     // LGP 960515
     // Also note: this makes the dealing with CRLF strattling a buffer-bounary problem go away.
-    // If we tried to read in chunks, we'd need to be more careful about the Led_NormalizeTextToNL () code.
+    // If we tried to read in chunks, we'd need to be more careful about the Characters::NormalizeTextToNL<Led_tChar> () code.
     size_t oldPos = GetSrcStream ().current_offset ();
     GetSrcStream ().seek_to (UINT_MAX);
     size_t endPos = GetSrcStream ().current_offset ();
@@ -75,7 +76,7 @@ void StyledTextIOReader_PlainText::Read ()
     size_t             charsRead = len;
     Led_tChar*         useBuf    = buf;
 #endif
-    charsRead = Led_NormalizeTextToNL (useBuf, charsRead, useBuf, charsRead);
+    charsRead = Characters::NormalizeTextToNL<Led_tChar> (useBuf, charsRead, useBuf, charsRead);
     GetSinkStream ().AppendText (useBuf, charsRead, nullptr);
     GetSinkStream ().EndOfBuffer ();
 }
@@ -104,9 +105,6 @@ StyledTextIOWriter_PlainText::StyledTextIOWriter_PlainText (SrcStream* srcStream
 {
 }
 
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress : 6262)
-#endif
 void StyledTextIOWriter_PlainText::Write ()
 {
     Led_tChar buf[8 * 1024];
@@ -117,16 +115,12 @@ void StyledTextIOWriter_PlainText::Write ()
 #elif qPlatform_Windows
         Led_tChar buf2[2 * NEltsOf (buf)];
 #endif
-        bytesRead = Led_NLToNative (buf, bytesRead, buf2, NEltsOf (buf2));
+        bytesRead = Characters::NLToNative<Led_tChar> (buf, bytesRead, buf2, NEltsOf (buf2));
 #if qWideCharacters
         Memory::SmallStackBuffer<char> ansiBuf (bytesRead * sizeof (Led_tChar));
-#if 1
-        size_t nChars = bytesRead * sizeof (Led_tChar);
+        size_t                         nChars = bytesRead * sizeof (Led_tChar);
         CodePageConverter (GetDefaultSDKCodePage ()).MapFromUNICODE (buf2, bytesRead, ansiBuf, &nChars);
         bytesRead = nChars;
-#else
-        bytesRead = ::WideCharToMultiByte (CP_ACP, 0, buf2, bytesRead, ansiBuf, bytesRead * sizeof (Led_tChar), nullptr, nullptr);
-#endif
         write (ansiBuf, bytesRead);
 #else
         write (buf2, bytesRead);

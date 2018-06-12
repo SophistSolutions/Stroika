@@ -4,6 +4,7 @@
 #include "../../../Foundation/StroikaPreComp.h"
 
 #include "../../../Foundation/Characters/CodePage.h"
+#include "../../../Foundation/Characters/LineEndings.h"
 
 #include "StyledTextIO_STYLText.h"
 
@@ -60,10 +61,10 @@ void StyledTextIOReader_STYLText::Read ()
 #if qWideCharacters
         SmallStackBuffer<Led_tChar> tCharBuf (totalRead);
         CodePageConverter (GetDefaultSDKCodePage ()).MapToUNICODE (buf, totalRead, tCharBuf, &totalRead);
-        totalRead = Led_NormalizeTextToNL (tCharBuf, totalRead, tCharBuf, totalRead);
+        totalRead = Characters::NormalizeTextToNL<Led_tChar> (tCharBuf, totalRead, tCharBuf, totalRead);
         GetSinkStream ().AppendText (tCharBuf, totalRead, NULL);
 #else
-        totalRead = Led_NormalizeTextToNL (buf, totalRead, buf, totalRead);
+        totalRead = Characters::NormalizeTextToNL<Led_tChar> (buf, totalRead, buf, totalRead);
         GetSinkStream ().AppendText (buf, totalRead, NULL);
 #endif
     }

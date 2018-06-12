@@ -8,6 +8,7 @@
 
 #include "../../../Foundation/Characters/CString/Utilities.h"
 #include "../../../Foundation/Characters/CodePage.h"
+#include "../../../Foundation/Characters/LineEndings.h"
 
 #include "../Config.h"
 
@@ -789,7 +790,7 @@ void StyledTextIOReader_HTML::EmitText (const Led_tChar* text, size_t nBytes, bo
     }
 
     Memory::SmallStackBuffer<Led_tChar> outBuf (nBytes);
-    nBytes = Led_NormalizeTextToNL (text, nBytes, outBuf, nBytes);
+    nBytes = Characters::NormalizeTextToNL<Led_tChar> (text, nBytes, outBuf, nBytes);
 
     if (not skipNLCheck and fNormalizeInputWhitespace) {
         Assert (fNormalizeInputWhitespace);

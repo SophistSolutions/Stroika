@@ -33,6 +33,8 @@ namespace Stroika {
             void AssureHasLineTermination (basic_string<CHAR>* text);
 
             /**
+             *  \brief Convert the argument srcText buffer from CRLF format line endings, to NL format line endings.
+             *
              * return #bytes in output buffer (NO nullptr TERM) - assert buffer big enough - output buf as big is input buf
              * always big enough. OK for srcText and outBuf to be SAME PTR.
              */
@@ -44,6 +46,7 @@ namespace Stroika {
             basic_string<TCHAR> CRLFToNL (const basic_string<TCHAR>& text);
 
             /**
+             *  \brief Convert the argument srcText buffer from NL format line endings, to CRLF format line endings.
              */
             template <typename TCHAR>
             size_t NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
