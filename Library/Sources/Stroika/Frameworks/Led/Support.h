@@ -6,6 +6,7 @@
 
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Debug/Assertions.h"
+#include "../../Foundation/Execution/Exceptions.h"
 #include "../../Foundation/Memory/Common.h"
 #include "../../Foundation/StroikaPreComp.h"
 #include "../../Foundation/Time/Realtime.h"
@@ -391,12 +392,16 @@ namespace Stroika {
             long           Led_ByteSwapFromWindows (long src);
             unsigned long  Led_ByteSwapFromWindows (unsigned long src);
 
-            void           Led_USHORTToBuf (unsigned short u, unsigned short* realBuf);
-            unsigned short Led_BufToUSHORT (const unsigned short* realBuf);
-            void           Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf);
-            unsigned long  Led_BufToULONG (const unsigned long* buf);
-            void           Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf);
-            unsigned int   Led_BufToULONG (const unsigned int* buf);
+            void     UInt16ToBuf (uint16_t u, uint16_t* realBuf);
+            uint16_t BufToUInt16 (const uint16_t* realBuf);
+            void     UInt32ToBuf (uint32_t ul, uint32_t* realBuf);
+            uint32_t BufToUInt32 (const uint32_t* buf);
+
+            /*
+			 *	Store as UInt32, but throw if won't fit
+			 */
+            void   SizeTToBuf (size_t ul, uint32_t* realBuf);
+            size_t BufToSizeT (const uint32_t* buf);
 
             size_t Led_SkrunchOutSpecialChars (Led_tChar* text, size_t textLen, Led_tChar charToRemove);
 
@@ -816,7 +821,7 @@ namespace Stroika {
             }
 #endif
 
-            /*
+                /*
              ********************************************************************************
              ***************************** Implementation Details ***************************
              ********************************************************************************
@@ -1088,38 +1093,45 @@ namespace Stroika {
                 return long(Led_ByteSwapFromWindows ((unsigned long)src));
             }
 
-            inline void Led_USHORTToBuf (unsigned short u, unsigned short* realBuf)
+            inline void UInt16ToBuf (uint16_t u, uint16_t* realBuf)
             {
                 unsigned char* buf = (unsigned char*)realBuf;
                 buf[0]             = (unsigned char)(u >> 8);
                 buf[1]             = (unsigned char)u;
             }
-            inline unsigned short Led_BufToUSHORT (const unsigned short* realBuf)
+            inline uint16_t BufToUInt16 (const uint16_t* realBuf)
             {
                 const unsigned char* buf = (const unsigned char*)realBuf;
-                return (unsigned short)((((unsigned short)buf[0]) << 8) + (unsigned short)buf[1]);
+                return (uint16_t) ((((uint16_t)buf[0]) << 8) + (uint16_t)buf[1]);
             }
-            inline void Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf)
+            inline void UInt32ToBuf (uint32_t ul, uint32_t* realBuf)
             {
                 unsigned short* buf = (unsigned short*)realBuf;
-                Led_USHORTToBuf ((unsigned short)(ul >> 16), buf);
-                Led_USHORTToBuf ((unsigned short)(ul), buf + 1);
+                UInt16ToBuf ((unsigned short)(ul >> 16), buf);
+                UInt16ToBuf ((unsigned short)(ul), buf + 1);
             }
-            inline unsigned long Led_BufToULONG (const unsigned long* buf)
+            inline uint32_t BufToUInt32 (const uint32_t* buf)
             {
                 unsigned short* bufAsShortArray = (unsigned short*)buf;
-                return (((unsigned long)Led_BufToUSHORT (bufAsShortArray)) << 16) + Led_BufToUSHORT (bufAsShortArray + 1);
+                return (((unsigned long)BufToUInt16 (bufAsShortArray)) << 16) + BufToUInt16 (bufAsShortArray + 1);
             }
-            inline void Led_ULONGToBuf (uint32_t ul, uint32_t* realBuf)
+
+            inline void SizeTToBuf (size_t ul, uint32_t* realBuf)
             {
-                unsigned short* buf = (unsigned short*)realBuf;
-                Led_USHORTToBuf ((unsigned short)(ul >> 16), buf);
-                Led_USHORTToBuf ((unsigned short)(ul), buf + 1);
+                using Stroika::Foundation::Execution::Throw;
+                if (ul > numeric_limits<uint32_t>::max ()) {
+                    Throw (range_error ("size_t wont fit in 32-bits"));
+				}
+                UInt32ToBuf (static_cast<uint32_t> (ul), realBuf);
             }
-            inline unsigned int Led_BufToULONG (const uint32_t* buf)
+            inline size_t BufToSizeT (const uint32_t* buf)
             {
-                unsigned short* bufAsShortArray = (unsigned short*)buf;
-                return (((unsigned long)Led_BufToUSHORT (bufAsShortArray)) << 16) + Led_BufToUSHORT (bufAsShortArray + 1);
+                using Stroika::Foundation::Execution::Throw;
+                uint32_t r = BufToUInt32 (buf);
+                if (r > numeric_limits<size_t>::max ()) {
+                    Throw (range_error ("32-bits wont fit in size_t"));
+                }
+                return static_cast<size_t> (r);
             }
 
 #if qPlatform_MacOS

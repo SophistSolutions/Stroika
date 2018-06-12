@@ -960,7 +960,7 @@ SimpleEmbeddedObjectStyleMarker* StandardMacPictureWithURLStyleMarker::mk (const
         }
 
         uint32_t picSize = *(uint32_t*)data;
-        picSize          = Led_BufToULONG (&picSize);
+        picSize          = BufToUInt32 (&picSize);
 
         Led_Picture* picBuf = (Led_Picture*)((char*)data + 4);
 
@@ -1032,7 +1032,7 @@ void StandardMacPictureWithURLStyleMarker::Write (SinkStream& sink)
 {
     {
         uint32_t picSize = static_cast<uint32_t> (GetPictureByteSize ());
-        Led_ULONGToBuf (picSize, &picSize);
+        UInt32ToBuf (picSize, &picSize);
         Assert (sizeof (picSize) == 4);
         sink.write (&picSize, sizeof (picSize));
     }
@@ -1126,7 +1126,7 @@ SimpleEmbeddedObjectStyleMarker* StandardDIBWithURLStyleMarker::mk ([[maybe_unus
     }
 
     uint32_t picSize = *(uint32_t*)data;
-    picSize          = Led_BufToULONG (&picSize);
+    picSize          = BufToUInt32 (&picSize);
 
     Led_DIB* picBuf = (Led_DIB*)((char*)data + 4);
 
@@ -1218,7 +1218,7 @@ void StandardDIBWithURLStyleMarker::Write (SinkStream& sink)
     const Led_DIB* dib = GetDIBData ();
     {
         uint32_t dibSize = static_cast<uint32_t> (Led_GetDIBImageByteCount (dib));
-        Led_ULONGToBuf (dibSize, &dibSize);
+        UInt32ToBuf (dibSize, &dibSize);
         Assert (sizeof (dibSize) == 4);
         sink.write (&dibSize, sizeof (dibSize));
     }

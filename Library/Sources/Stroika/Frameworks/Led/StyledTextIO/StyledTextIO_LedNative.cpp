@@ -39,19 +39,21 @@ using Memory::SmallStackBuffer;
 const Led_PrivateEmbeddingTag kPictTag_V1 = "Pict";
 #endif
 
-static inline void OutputStandardToSinkStream_ULONG (StyledTextIOWriter::SinkStream& sinkStream, unsigned long n)
-{
-    unsigned long buf;
-    Led_ULONGToBuf (n, &buf);
-    sinkStream.write (&buf, sizeof (buf));
-}
-static inline unsigned long InputStandardFromSrcStream_ULONG (StyledTextIOReader::SrcStream& srcStream)
-{
-    unsigned long buf;
-    if (srcStream.read (&buf, sizeof (buf)) != sizeof (buf)) {
-        Led_ThrowBadFormatDataException ();
+namespace {
+    inline void OutputStandardToSinkStream_size_t_ (StyledTextIOWriter::SinkStream& sinkStream, size_t n)
+    {
+        uint32_t buf;
+        SizeTToBuf (n, &buf);
+        sinkStream.write (&buf, sizeof (buf));
     }
-    return (Led_BufToULONG (&buf));
+    inline unsigned long InputStandardFromSrcStream_ULONG (StyledTextIOReader::SrcStream& srcStream)
+    {
+        uint32_t buf;
+        if (srcStream.read (&buf, sizeof (buf)) != sizeof (buf)) {
+            Led_ThrowBadFormatDataException ();
+        }
+        return (BufToUInt32 (&buf));
+    }
 }
 
 /*
@@ -100,13 +102,13 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
     fsp.SetStyle_Bold (srcData.fBoldWeight >= PortableStyleRunData_Version4::eBoldnessBold);
     fsp.SetStyle_Italic (!!srcData.fItalic);
     fsp.SetStyle_Underline (!!srcData.fUnderline);
-    short fontSize = Led_BufToUSHORT (&srcData.fFontSize);
+    short fontSize = BufToUInt16 (&srcData.fFontSize);
     if (fontSize < 3 or fontSize > 128) {
         fontSize = 12; // a reasonable default for bogus/corrupt data
     }
     fsp.SetPointSize (fontSize);
     fsp.SetFontName (Led_ANSI2SDKString (srcData.fFontName));
-    return (StandardStyledTextImager::InfoSummaryRecord (fsp, Led_BufToULONG (&srcData.fLength)));
+    return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
 
 /*
@@ -186,8 +188,8 @@ inline PortableStyleRunData_Version5 mkPortableStyleRunData_Version5 (const Stan
 #elif qPlatform_Windows
     data.fStyleSet |= isr.GetStyle_Strikeout () ? (1 << data.eStrikeout) : 0;
 #endif
-    Led_USHORTToBuf (isr.GetPointSize (), &data.fPointSize);
-    Led_ULONGToBuf (isr.fLength, &data.fLength);
+    UInt16ToBuf (isr.GetPointSize (), &data.fPointSize);
+    SizeTToBuf (isr.fLength, &data.fLength);
     return data;
 }
 inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version5& srcData)
@@ -206,7 +208,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
 #elif qPlatform_Windows
     fsp.SetStyle_Strikeout (!!(srcData.fStyleSet & (1 << srcData.eStrikeout)));
 #endif
-    short fontSize = Led_BufToUSHORT (&srcData.fPointSize);
+    short fontSize = BufToUInt16 (&srcData.fPointSize);
     if (fontSize < 3 or fontSize > 128) {
         fontSize = 12; // a reasonable default for bogus/corrupt data
     }
@@ -215,7 +217,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
         fsp.SetFontName (Led_ANSI2SDKString (string (srcData.fFontName, fontNameLen)));
     }
-    return (StandardStyledTextImager::InfoSummaryRecord (fsp, Led_BufToULONG (&srcData.fLength)));
+    return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
 
 /*
@@ -299,11 +301,11 @@ inline PortableStyleRunData_Version6 mkPortableStyleRunData_Version6 (const Stan
 #endif
     data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSubscript) ? (1 << data.eSubscript) : 0;
     data.fStyleSet |= (isr.GetStyle_SubOrSuperScript () == Led_FontSpecification::eSuperscript) ? (1 << data.eSuperscript) : 0;
-    Led_USHORTToBuf (isr.GetTextColor ().GetRed (), &data.fColor[0]);
-    Led_USHORTToBuf (isr.GetTextColor ().GetGreen (), &data.fColor[1]);
-    Led_USHORTToBuf (isr.GetTextColor ().GetBlue (), &data.fColor[2]);
-    Led_USHORTToBuf (isr.GetPointSize (), &data.fPointSize);
-    Led_ULONGToBuf (isr.fLength, &data.fLength);
+    UInt16ToBuf (isr.GetTextColor ().GetRed (), &data.fColor[0]);
+    UInt16ToBuf (isr.GetTextColor ().GetGreen (), &data.fColor[1]);
+    UInt16ToBuf (isr.GetTextColor ().GetBlue (), &data.fColor[2]);
+    UInt16ToBuf (isr.GetPointSize (), &data.fPointSize);
+    SizeTToBuf (isr.fLength, &data.fLength);
     return data;
 }
 inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortData (const PortableStyleRunData_Version6& srcData)
@@ -329,9 +331,9 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
         fsp.SetStyle_SubOrSuperScript (Led_FontSpecification::eSuperscript);
     }
 
-    fsp.SetTextColor (Led_Color (Led_BufToUSHORT (&srcData.fColor[0]), Led_BufToUSHORT (&srcData.fColor[1]), Led_BufToUSHORT (&srcData.fColor[2])));
+    fsp.SetTextColor (Led_Color (BufToUInt16 (&srcData.fColor[0]), BufToUInt16 (&srcData.fColor[1]), BufToUInt16 (&srcData.fColor[2])));
 
-    short fontSize = Led_BufToUSHORT (&srcData.fPointSize);
+    short fontSize = BufToUInt16 (&srcData.fPointSize);
     if (fontSize < 3 or fontSize > 128) {
         fontSize = 12; // a reasonable default for bogus/corrupt data
     }
@@ -340,7 +342,7 @@ inline StandardStyledTextImager::InfoSummaryRecord mkInfoSummaryRecordFromPortDa
         size_t fontNameLen = srcData.NameLenFromRecordLen (srcData.fThisRecordLength);
         fsp.SetFontName (Led_ANSI2SDKString (string (srcData.fFontName, fontNameLen)));
     }
-    return (StandardStyledTextImager::InfoSummaryRecord (fsp, Led_BufToULONG (&srcData.fLength)));
+    return (StandardStyledTextImager::InfoSummaryRecord (fsp, BufToUInt32 (&srcData.fLength)));
 }
 
 /*
@@ -407,7 +409,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version4 (const char* cookie)
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
             Led_ThrowBadFormatDataException ();
         }
-        totalTextLength = Led_BufToULONG (&lenAsBuf);
+        totalTextLength = BufToUInt32 (&lenAsBuf);
     }
     const size_t kMaxBufSize = 64 * 1024 * 1024; // not a REAL limit - just a sanity check input data not garbage,
     // and so we don't get errors from our malloc for asking for huge number
@@ -510,7 +512,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version5 (const char* cookie)
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
             Led_ThrowBadFormatDataException ();
         }
-        totalTextLength = Led_BufToULONG (&lenAsBuf);
+        totalTextLength = BufToUInt32 (&lenAsBuf);
     }
     const size_t kMaxBufSize = 64 * 1024 * 1024; // not a REAL limit - just a sanity check input data not garbage,
     // and so we don't get errors from our malloc for asking for huge number
@@ -625,7 +627,7 @@ void StyledTextIOReader_LedNativeFileFormat::Read_Version6 (const char* cookie)
         if (GetSrcStream ().read (&lenAsBuf, sizeof (lenAsBuf)) != sizeof (lenAsBuf)) {
             Led_ThrowBadFormatDataException ();
         }
-        totalTextLength = Led_BufToULONG (&lenAsBuf);
+        totalTextLength = BufToUInt32 (&lenAsBuf);
     }
     const size_t kMaxBufSize = 64 * 1024 * 1024; // not a REAL limit - just a sanity check input data not garbage,
     // and so we don't get errors from our malloc for asking for huge number
@@ -787,7 +789,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
     size_t totalTextLength = GetSrcStream ().GetTotalTextLength ();
     {
         size_t encodedTL = 0;
-        Led_ULONGToBuf (totalTextLength, &encodedTL);
+        Uint32ToBuf (totalTextLength, &encodedTL);
         write (&encodedTL, sizeof (encodedTL));
     }
 
@@ -812,7 +814,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
 
         size_t howManyBytes              = 0; // write place-holder, than then come back and patch this!
         size_t styleRunInfoSectionCursor = GetSinkStream ().current_offset ();
-        OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+        OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
 
         size_t styleRuns = styleRunInfo.size ();
         for (size_t i = 0; i < styleRuns; i++) {
@@ -825,25 +827,25 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
         size_t here  = GetSinkStream ().current_offset ();
         howManyBytes = here - (styleRunInfoSectionCursor + 4); //+4 cuz don't count size marker length itself.
         GetSinkStream ().seek_to (styleRunInfoSectionCursor);
-        OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+        OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
         GetSinkStream ().seek_to (here); // back to where we left off...
     }
 
     // Write the embedded objects
     {
         vector<SimpleEmbeddedObjectStyleMarker*> embeddings = GetSrcStream ().CollectAllEmbeddingMarkersInRange (0, totalTextLength);
-        OutputStandardToSinkStream_ULONG (GetSinkStream (), embeddings.size ());
+        OutputStandardToSinkStream_size_t_ (GetSinkStream (), embeddings.size ());
         size_t markerPosOffset = GetSrcStream ().GetEmbeddingMarkerPosOffset ();
         for (size_t i = 0; i < embeddings.size (); i++) {
             SimpleEmbeddedObjectStyleMarker* embedding = embeddings[i];
             // Write where embedding is located in text, relative to beginning of text (being internalized/extenralized)
             size_t whereAt = embedding->GetStart () - markerPosOffset;
-            OutputStandardToSinkStream_ULONG (GetSinkStream (), whereAt);
+            OutputStandardToSinkStream_size_t_ (GetSinkStream (), whereAt);
 
             // Note: this howManyBytes refers to the content-type specific portion.
             size_t howManyBytes        = 0; // write place-holder, than then come back and patch this!
             size_t embeddingSizeCursor = GetSinkStream ().current_offset ();
-            OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+            OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
 
             size_t embeddingCursor = GetSinkStream ().current_offset ();
             write (embedding->GetTag (), sizeof (Led_PrivateEmbeddingTag));
@@ -854,7 +856,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version5 ()
             size_t here  = GetSinkStream ().current_offset ();
             howManyBytes = here - embeddingCursor;
             GetSinkStream ().seek_to (embeddingSizeCursor);
-            OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+            OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
             GetSinkStream ().seek_to (here); // back to where we left off...
         }
     }
@@ -886,14 +888,14 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
 #endif
         {
             uint32_t encodedTL = 0;
-            Led_ULONGToBuf (nChars, &encodedTL);
+            SizeTToBuf (nChars, &encodedTL);
             write (&encodedTL, sizeof (encodedTL));
         }
         write (result, nChars);
 #else
         {
             size_t encodedTL = 0;
-            Led_ULONGToBuf (totalTextLength, &encodedTL);
+            UInt32ToBuf (totalTextLength, &encodedTL);
             write (&encodedTL, sizeof (encodedTL));
         }
         write (buf, totalTextLength);
@@ -906,7 +908,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
 
         size_t howManyBytes              = 0; // write place-holder, than then come back and patch this!
         size_t styleRunInfoSectionCursor = GetSinkStream ().current_offset ();
-        OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+        OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
 
         size_t styleRuns = styleRunInfo.size ();
         for (size_t i = 0; i < styleRuns; i++) {
@@ -919,25 +921,25 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
         size_t here  = GetSinkStream ().current_offset ();
         howManyBytes = here - (styleRunInfoSectionCursor + 4); //+4 cuz don't count size marker length itself.
         GetSinkStream ().seek_to (styleRunInfoSectionCursor);
-        OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+        OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
         GetSinkStream ().seek_to (here); // back to where we left off...
     }
 
     // Write the embedded objects
     {
         vector<SimpleEmbeddedObjectStyleMarker*> embeddings = GetSrcStream ().CollectAllEmbeddingMarkersInRange (0, totalTextLength);
-        OutputStandardToSinkStream_ULONG (GetSinkStream (), embeddings.size ());
+        OutputStandardToSinkStream_size_t_ (GetSinkStream (), embeddings.size ());
         size_t markerPosOffset = GetSrcStream ().GetEmbeddingMarkerPosOffset ();
         for (size_t i = 0; i < embeddings.size (); i++) {
             SimpleEmbeddedObjectStyleMarker* embedding = embeddings[i];
             // Write where embedding is located in text, relative to beginning of text (being internalized/extenralized)
             size_t whereAt = embedding->GetStart () - markerPosOffset;
-            OutputStandardToSinkStream_ULONG (GetSinkStream (), whereAt);
+            OutputStandardToSinkStream_size_t_ (GetSinkStream (), whereAt);
 
             // Note: this howManyBytes refers to the content-type specific portion.
             size_t howManyBytes        = 0; // write place-holder, than then come back and patch this!
             size_t embeddingSizeCursor = GetSinkStream ().current_offset ();
-            OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+            OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
 
             size_t embeddingCursor = GetSinkStream ().current_offset ();
             write (embedding->GetTag (), sizeof (Led_PrivateEmbeddingTag));
@@ -948,7 +950,7 @@ void StyledTextIOWriter_LedNativeFileFormat::Write_Version6 ()
             size_t here  = GetSinkStream ().current_offset ();
             howManyBytes = here - embeddingCursor;
             GetSinkStream ().seek_to (embeddingSizeCursor);
-            OutputStandardToSinkStream_ULONG (GetSinkStream (), howManyBytes);
+            OutputStandardToSinkStream_size_t_ (GetSinkStream (), howManyBytes);
             GetSinkStream ().seek_to (here); // back to where we left off...
         }
     }
