@@ -2918,7 +2918,7 @@ void WordProcessor::OnInsertTableCommand ()
                             targetWidth = Led_CvtScreenPixelsToTWIPSH (rhs - lhs);
                             targetWidth = Led_TWIPS ((targetWidth / 5) * 4); // just make it a bit smaller than total possible width
                         }
-                        t->SetColumnWidth (r, c, Led_TWIPS (targetWidth / cols));
+                        t->SetColumnWidth (r, c, Led_TWIPS (static_cast<long> (targetWidth / cols)));
 
                         TextStore* ts = nullptr;
                         t->GetCellWordProcessorDatabases (r, c, &ts);
@@ -3773,7 +3773,7 @@ void WordProcessor::DrawSegment (Led_Tablet tablet,
                     pts[0] = AsPOINT (tip);
                     pts[1] = AsPOINT (topPt);
                     pts[2] = AsPOINT (botPt);
-                    Verify (::Polygon (*tablet, pts, NEltsOf (pts)));
+                    Verify (::Polygon (*tablet, pts, static_cast<int> (NEltsOf (pts))));
 #elif qPlatform_MacOS
                     PolyHandle ph = ::OpenPoly ();
                     ::MoveTo (tip.h, tip.v);
@@ -7306,7 +7306,7 @@ void Table::PerformLayout ()
             fRows[r].fHeight = rowHeight;
             runningHeight += rowHeight;
 
-            Led_Distance rowWidthWithSpacingNBorders = rowWidth + (cols + 1) * (spacing + border.h);
+            Led_Distance rowWidthWithSpacingNBorders = rowWidth + static_cast<Led_Distance> ((cols + 1) * (spacing + border.h));
             maxTableWidth                            = max (maxTableWidth, rowWidthWithSpacingNBorders);
 
             /*
@@ -7320,10 +7320,10 @@ void Table::PerformLayout ()
                         Cell     cell     = GetCell (r, c);
                         Led_Rect cellRect = Led_Rect (runningHeight - rowHeight, runningWidth, rowHeight, realCellWidths[c]);
 
-                        cellRect += Led_Point ((r + 1) * border.v, (c + 1) * border.h);
+                        cellRect += Led_Point (static_cast<Led_Coordinate> ((r + 1) * border.v), static_cast<Led_Coordinate> ((c + 1) * border.h));
 
                         // add in cell spacing
-                        cellRect += Led_Point ((r + 1) * spacing, (c + 1) * spacing);
+                        cellRect += Led_Point (static_cast<Led_Coordinate> ((r + 1) * spacing), static_cast<Led_Coordinate> ((c + 1) * spacing));
 
                         cell.SetCachedBoundsRect (cellRect);
                         lastRealCellIdx = c;
@@ -7338,7 +7338,7 @@ void Table::PerformLayout ()
             for (auto i = fRows.begin (); i != fRows.end (); ++i) {
                 totalHeight += (*i).fHeight;
             }
-            fTotalHeight = totalHeight + (spacing + border.v) * (fRows.size () + 1);
+            fTotalHeight = totalHeight + static_cast<Led_Distance> ((spacing + border.v) * (fRows.size () + 1));
         }
 
         fTotalWidth = maxTableWidth;

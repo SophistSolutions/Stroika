@@ -1784,7 +1784,7 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
 #endif
 
         if (direction == eLeftToRight) {
-            Win32_TextOut (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, textCursor, nextTabAt - textCursor);
+            Win32_TextOut (m_hDC, static_cast<int> (outputAt.h + widthSoFar - hScrollOffset), static_cast<int> (outputAt.v), textCursor, nextTabAt - textCursor);
 
             // Geez! There must be SOME API within Win32 to give me this info (like SetTextAlign (UPDATE_CP))
             // without recomputing it. But there doesn't appear to be. So we must recompute!
@@ -1811,8 +1811,8 @@ void Led_Tablet_::TabbedTextOut ([[maybe_unused]] const Led_FontMetrics& precomp
                 memset (&gcpResult, 0, sizeof (gcpResult));
                 gcpResult.lStructSize = sizeof (GCP_RESULTS);
                 gcpResult.lpGlyphs = glyphs;
-                gcpResult.nGlyphs = len;
-                if (::GetCharacterPlacementW (m_hDC, textCursor, len, 0, &gcpResult, GCP_GLYPHSHAPE | GCP_LIGATE) != 0) {
+                gcpResult.nGlyphs = static_cast<UINT> (len);
+                if (::GetCharacterPlacementW (m_hDC, textCursor, static_cast<int> (len), 0, &gcpResult, GCP_GLYPHSHAPE | GCP_LIGATE) != 0) {
                     Verify (::ExtTextOutW (m_hDC, outputAt.h + widthSoFar - hScrollOffset, outputAt.v, ETO_GLYPH_INDEX, nullptr, gcpResult.lpGlyphs, gcpResult.nGlyphs, nullptr));
                     goto Succeeded_But_Need_To_Adjust_Width;
                 }

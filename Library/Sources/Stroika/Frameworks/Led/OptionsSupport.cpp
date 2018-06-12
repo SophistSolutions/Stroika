@@ -252,10 +252,10 @@ void OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const wstring& 
 #if qPlatform_MacOS
     Assert (false); // NYI
 #elif qPlatform_Windows
-    if (::RegSetValueExW (fKey, Led_SDKString2Wide (prefName).c_str (), 0, REG_SZ, reinterpret_cast<const Byte*> (value.c_str ()), (value.length () + 1) * sizeof (wchar_t)) != ERROR_SUCCESS) {
+    if (::RegSetValueExW (fKey, Led_SDKString2Wide (prefName).c_str (), 0, REG_SZ, reinterpret_cast<const Byte*> (value.c_str ()), static_cast<DWORD> ((value.length () + 1) * sizeof (wchar_t))) != ERROR_SUCCESS) {
         // failure to write a UNICODE string could be because the OS doesn't support it - so try writing it as ANSI
         string tmp = Wide2ACPString (value);
-        (void)::RegSetValueExA (fKey, Led_SDKString2ANSI (prefName).c_str (), 0, REG_SZ, reinterpret_cast<const Byte*> (tmp.c_str ()), tmp.length () + 1);
+        (void)::RegSetValueExA (fKey, Led_SDKString2ANSI (prefName).c_str (), 0, REG_SZ, reinterpret_cast<const Byte*> (tmp.c_str ()), static_cast<DWORD> (tmp.length () + 1));
     }
 #endif
 }
@@ -284,7 +284,7 @@ void OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, size_t nBytes, 
 #if qPlatform_MacOS
     Assert (false); // NYI
 #elif qPlatform_Windows
-    (void)::RegSetValueEx (fKey, prefName, 0, REG_BINARY, (LPBYTE)data, nBytes);
+    (void)::RegSetValueEx (fKey, prefName, 0, REG_BINARY, (LPBYTE)data, static_cast<DWORD> (nBytes));
 #endif
 }
 
