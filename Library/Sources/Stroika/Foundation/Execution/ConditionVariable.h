@@ -111,8 +111,8 @@ namespace Stroika {
 
                 using MutexType             = MUTEX;
                 using ConditionVariableType = CONDITION_VARIABLE;
-                using LockType              = std::unique_lock<MUTEX>;
-                using QuickLockType         = std::lock_guard<MUTEX>;
+                using LockType              = unique_lock<MUTEX>;
+                using QuickLockType         = lock_guard<MUTEX>;
 
                 MutexType          fMutex;
                 CONDITION_VARIABLE fConditionVariable;

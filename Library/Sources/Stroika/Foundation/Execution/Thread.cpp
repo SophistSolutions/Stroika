@@ -499,7 +499,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         {
             Require (not sKnownBadBeforeMainOrAfterMain_);
-            [[maybe_unused]] auto&& critSec = std::lock_guard{sThreadSupportStatsMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
             DbgTrace (L"Adding thread id %s to sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second); // .second true if inserted, so checking not already there
         }
@@ -507,7 +507,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
             [thisThreadID]() noexcept {
                 Thread::SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
                 Require (not sKnownBadBeforeMainOrAfterMain_);                  // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
-                [[maybe_unused]] auto&& critSec = std::lock_guard{sThreadSupportStatsMutex_};
+                [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
                 DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
                 Verify (sRunningThreads_.erase (thisThreadID) == 1); // verify exactly one erased
             });

@@ -125,7 +125,7 @@ private:
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
-            std::lock_guard<std::mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
+            lock_guard<std::mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
             fWorkMaybeAvailable_ = true;
         }
         fRecievedSig_.notify_one ();

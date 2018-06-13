@@ -54,7 +54,7 @@ AtomManager_Default::AtomInternalType AtomManager_Default::Intern (const String&
 {
     AtomManager_Default::AtomInternalType v;
     {
-        [[maybe_unused]] auto&& critSec = std::lock_guard{sCritSec_};
+        [[maybe_unused]] auto&& critSec = lock_guard{sCritSec_};
         auto                    i       = sMap_->Lookup (s);
         if (i.has_value ()) {
             return *i;

@@ -17,7 +17,7 @@ namespace Stroika {
         namespace Execution {
 
             /**
-             *  Like std::lock_guard, but only used on TIMED mutexes, and instead of unique_lock::try_lock() returning false
+             *  Like lock_guard, but only used on TIMED mutexes, and instead of unique_lock::try_lock() returning false
              *  or the CTOR just silently failing to lock, this throws a lock failure.
              */
             template <typename MUTEX = timed_mutex>

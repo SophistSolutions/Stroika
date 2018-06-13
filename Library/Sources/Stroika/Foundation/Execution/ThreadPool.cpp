@@ -194,7 +194,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....
     Thread::Ptr thread2Kill;
     {
-        [[maybe_unused]] auto&& critSec = std::lock_guard{fCriticalSection_};
+        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
             TaskType                ct{tr->GetCurrentTask ()};

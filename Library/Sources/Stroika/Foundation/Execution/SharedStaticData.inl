@@ -48,7 +48,7 @@ namespace Stroika {
             template <typename T>
             SharedStaticData<T>::SharedStaticData ()
             {
-                auto critSec = std::lock_guard{sMutex_};
+                [[maybe_unused]] auto&& critSec = lock_guard{sMutex_};
                 ++sCountUses_;
                 if (sCountUses_ == 1) {
                     sOnceObj_ = new T{};

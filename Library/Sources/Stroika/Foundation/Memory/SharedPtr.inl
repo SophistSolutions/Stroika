@@ -565,7 +565,7 @@ namespace std {
     {
         using namespace Stroika::Foundation;
         RequireNotNull (copyFrom);
-        auto                                      critSec = std::lock_guard{Memory::Private_::sSharedPtrCopyLock_};
+        [[maybe_unused]] auto&&                                      critSec = lock_guard{Memory::Private_::sSharedPtrCopyLock_};
         Stroika::Foundation::Memory::SharedPtr<T> result  = *copyFrom;
         return result;
     }
@@ -579,7 +579,7 @@ namespace std {
     inline void atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
     {
         using namespace Stroika::Foundation;
-        auto critSec = std::lock_guard{Memory::Private_::sSharedPtrCopyLock_};
+        [[maybe_unused]] auto&& critSec = lock_guard{Memory::Private_::sSharedPtrCopyLock_};
         storeTo->swap (o);
     }
     template <typename T>

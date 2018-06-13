@@ -66,7 +66,7 @@ namespace Stroika {
                     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     void PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const
                     {
-                        [[maybe_unused]] auto&& critSec = lock_guard<std::mutex>  (fActiveIteratorsMutex_);
+                        [[maybe_unused]] auto&& critSec = lock_guard<std::mutex> (fActiveIteratorsMutex_);
                         for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
                             Assert (v->fOwnerID_ != oBeingDeleted);
                         }
