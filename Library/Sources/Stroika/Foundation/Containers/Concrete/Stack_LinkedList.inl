@@ -115,8 +115,8 @@ namespace Stroika {
                     }
                     virtual T Pop () override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        T                                                              result = fData_.GetFirst ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        T                                                         result = fData_.GetFirst ();
                         fData_.RemoveFirst ();
                         // FIX/PATCH
                         return result;

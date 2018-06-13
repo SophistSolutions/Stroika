@@ -374,7 +374,7 @@ namespace {
                 }
                 {
                     static Synchronized<String> tmp{L"x"};
-                    auto                        critSec{Execution::make_unique_lock (tmp)}; // make sure explicit locks work too
+                    [[maybe_unused]] auto&&     critSec = lock_guard{tmp}; // make sure explicit locks work too
                     String                      a{tmp};
                     VerifyTestResult (a == L"x");
                     VerifyTestResult (tmp.cget ()->find ('z') == string::npos);

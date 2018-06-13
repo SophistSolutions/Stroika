@@ -565,7 +565,7 @@ namespace std {
     {
         using namespace Stroika::Foundation;
         RequireNotNull (copyFrom);
-        [[maybe_unused]] auto&&                                      critSec = lock_guard{Memory::Private_::sSharedPtrCopyLock_};
+        [[maybe_unused]] auto&&                   critSec = lock_guard{Memory::Private_::sSharedPtrCopyLock_};
         Stroika::Foundation::Memory::SharedPtr<T> result  = *copyFrom;
         return result;
     }

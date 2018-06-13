@@ -142,13 +142,13 @@ namespace Stroika {
                 [[maybe_unused]] auto&& cleanup = Finally (
                     [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
                         Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-                        auto                                  critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+                        [[maybe_unused]] auto&&               critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                         for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                             (*i)->fExtraWaitableEvents_.remove (we);
                         }
                     });
                 {
-                    auto critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+                    [[maybe_unused]] auto&& critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }
@@ -197,13 +197,13 @@ namespace Stroika {
                 [[maybe_unused]] auto&& cleanup = Finally (
                     [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
                         Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-                        auto                                  critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+                        [[maybe_unused]] auto&&               critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                         for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                             (*i)->fExtraWaitableEvents_.remove (we);
                         }
                     });
                 {
-                    auto critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
+                    [[maybe_unused]] auto&& critSec = lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }

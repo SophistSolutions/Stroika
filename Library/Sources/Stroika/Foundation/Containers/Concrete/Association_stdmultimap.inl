@@ -137,7 +137,7 @@ namespace Stroika {
                     }
                     virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Invariant ();
                         auto i = fData_.find (key);
                         if (i == fData_.end ()) {
@@ -151,7 +151,7 @@ namespace Stroika {
                     }
                     virtual void Remove (ArgByValueType<KEY_TYPE> key) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Invariant ();
                         auto i = fData_.find (key);
                         if (i != fData_.end ()) {
@@ -160,7 +160,7 @@ namespace Stroika {
                     }
                     virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock>            critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
                         const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);

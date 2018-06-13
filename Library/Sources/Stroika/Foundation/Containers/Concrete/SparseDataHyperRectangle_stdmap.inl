@@ -120,8 +120,8 @@ namespace Stroika {
                     }
                     virtual T GetAt (INDEXES... indexes) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        auto                                                            i = fData_.find (tuple<INDEXES...>{indexes...});
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto                                                       i = fData_.find (tuple<INDEXES...>{indexes...});
                         if (i != fData_.end ()) {
                             return i->second;
                         }
@@ -129,7 +129,7 @@ namespace Stroika {
                     }
                     virtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (v == fDefaultValue_) {
                             auto i = fData_.find (tuple<INDEXES...> (indexes...));
                             if (i != fData_.end ()) {
