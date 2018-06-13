@@ -3,8 +3,6 @@
  */
 #include "../StroikaPreComp.h"
 
-#include <random>
-
 #include "../../Foundation/Characters/StringBuilder.h"
 #include "../../Foundation/Characters/ToString.h"
 #include "../../Foundation/Containers/Collection.h"
@@ -84,8 +82,7 @@ String Pinger::ResultType::ToString () const
  ********************************************************************************
  */
 namespace {
-    std::mt19937                                             sRng_{std::random_device () ()}; // not sure if this needs to be synchonized?
-    std::uniform_int_distribution<std::mt19937::result_type> skAllUInt16Distribution_ (0, numeric_limits<uint16_t>::max ());
+    const std::uniform_int_distribution<std::mt19937::result_type> kAllUInt16Distribution_ (0, numeric_limits<uint16_t>::max ());
 }
 
 Pinger::Pinger (const InternetAddress& addr, const Options& options)
@@ -94,14 +91,14 @@ Pinger::Pinger (const InternetAddress& addr, const Options& options)
     , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}
-    , fNextSequenceNumber_{static_cast<uint16_t> (skAllUInt16Distribution_ (sRng_))}
-    , fPingTimeout{options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
+    , fNextSequenceNumber_{static_cast<uint16_t> (kAllUInt16Distribution_ (fRng_))}
+    , fPingTimeout_{options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
 {
     DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (), Characters::ToString (fOptions_).c_str ());
     // use random data as a payload
     for (Byte* p = (Byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
         static std::uniform_int_distribution<std::mt19937::result_type> sAnyByteDistribution_ (0, numeric_limits<Byte>::max ());
-        *p = static_cast<Byte> (sAnyByteDistribution_ (sRng_));
+        *p = static_cast<Byte> (sAnyByteDistribution_ (fRng_));
     }
 }
 
@@ -119,7 +116,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     ICMP::V4::PacketHeader pingRequest = [&]() {
         ICMP::V4::PacketHeader tmp{};
         tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
-        tmp.id        = static_cast<uint16_t> (skAllUInt16Distribution_ (sRng_));
+        tmp.id        = static_cast<uint16_t> (kAllUInt16Distribution_ (fRng_));
         tmp.seq       = fNextSequenceNumber_++;
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;
@@ -129,13 +126,13 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     fSocket_.SendTo (fSendPacket_.begin (), fSendPacket_.end (), SocketAddress{fDestination_, 0});
 
     // Find first packet responding (some packets could be bogus/ignored)
-    Time::DurationSecondsType pingTimeoutAfter = Time::GetTickCount () + fPingTimeout;
+    Time::DurationSecondsType pingTimeoutAfter = Time::GetTickCount () + fPingTimeout_;
     while (true) {
         ThrowTimeoutExceptionAfter (pingTimeoutAfter);
         SocketAddress          fromAddress;
         constexpr size_t       kExtraSluff_{100};                                                                                                // Leave a little extra room in case some packets return extra
         SmallStackBuffer<Byte> recv_buf (fICMPPacketSize_ + sizeof (ICMP::V4::PacketHeader) + 2 * sizeof (IP::V4::PacketHeader) + kExtraSluff_); // icmpPacketSize includes ONE ICMP header and payload, but we get 2 IP and 2 ICMP headers in TTL Exceeded response
-        size_t                 n = fSocket_.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, fPingTimeout);
+        size_t                 n = fSocket_.ReceiveFrom (begin (recv_buf), end (recv_buf), 0, &fromAddress, fPingTimeout_);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"got back packet from %s", Characters::ToString (fromAddress).c_str ());
 #endif

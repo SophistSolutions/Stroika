@@ -12,11 +12,9 @@
 #include "../../Foundation/Configuration/Endian.h"
 #include "../../Foundation/Debug/Assertions.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace NetworkMonitor {
-            namespace Ping {
-            }
+namespace Stroika::Frameworks {
+    namespace NetworkMonitor {
+        namespace Ping {
         }
     }
 }
