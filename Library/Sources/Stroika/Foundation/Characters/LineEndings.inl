@@ -147,6 +147,49 @@ namespace Stroika {
 
             /*
              ********************************************************************************
+             ********************************* NativeToNL ***********************************
+             ********************************************************************************
+             */
+            template <typename TCHAR>
+            size_t NativeToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, [[maybe_unused]] size_t outBufSize)
+            {
+                TCHAR* outPtr = outBuf;
+                for (size_t i = 1; i <= srcTextBytes; i++) {
+#if qPlatform_MacOS
+                    TCHAR c = (srcText[i - 1] == '\r') ? '\n' : srcText[i - 1];
+#elif qPlatform_Windows
+                    TCHAR c = srcText[i - 1];
+                    if (c == '\r') {
+                        // peek at next character - and if we have a CRLF sequence - then advance pointer
+                        // (so we skip next NL) and pretend this was an NL..
+                        // NB: we DONT map plain CR to NL - to get that to happen - use Led_NormalizeTextToNL()
+                        if (i < srcTextBytes and srcText[i] == '\n') {
+                            c = '\n';
+                            i++;
+                        }
+                    }
+#elif qXWindows
+                    TCHAR c = srcText[i - 1];
+#endif
+                    *outPtr++ = c;
+                }
+                size_t nBytes = outPtr - outBuf;
+                Assert (nBytes <= outBufSize);
+                return nBytes;
+            }
+            template <typename TCHAR>
+            inline basic_string<TCHAR> NativeToNL (const basic_string<TCHAR>& text)
+            {
+                size_t                          outBufSize = text.length () + 1;
+                Memory::SmallStackBuffer<TCHAR> outBuf (outBufSize);
+                size_t                          newSize = NativeToNL<TCHAR> (Containers::Start (text), text.length (), outBuf.begin (), outBufSize);
+                Assert (newSize < outBufSize);
+                outBuf[newSize] = '\0';
+                return basic_string<TCHAR> (outBuf);
+            }
+
+            /*
+             ********************************************************************************
              ********************************* NLToNative ***********************************
              ********************************************************************************
              */

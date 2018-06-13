@@ -20,6 +20,8 @@
 
 #include <atlbase.h>
 
+#include "Stroika/Foundation/Characters/LineEndings.h"
+
 #include "Stroika/Frameworks/Led/StdDialogs.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_LedNative.h"
 #include "Stroika/Frameworks/Led/StyledTextIO/StyledTextIO_PlainText.h"

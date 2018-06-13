@@ -56,6 +56,13 @@ namespace Stroika {
             /**
              */
             template <typename TCHAR>
+            size_t NativeToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
+            template <typename TCHAR>
+            basic_string<TCHAR> NativeToNL (const basic_string<TCHAR>& text);
+
+            /**
+             */
+            template <typename TCHAR>
             size_t NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize);
             template <typename TCHAR>
             basic_string<TCHAR> NLToNative (const basic_string<TCHAR>& text);
