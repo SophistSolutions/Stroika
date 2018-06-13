@@ -48,11 +48,7 @@ namespace Stroika {
             template <typename T>
             SharedStaticData<T>::SharedStaticData ()
             {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                MACRO_LOCK_GUARD_CONTEXT (sMutex_);
-#else
-                auto critSec{make_unique_lock (sMutex_)};
-#endif
+                auto critSec = std::lock_guard{sMutex_};
                 ++sCountUses_;
                 if (sCountUses_ == 1) {
                     sOnceObj_ = new T{};

@@ -297,7 +297,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
                 HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
                 if (f != nullptr) {
                     CloseHandle (f);
-                    auto    critSec { make_unique_lock (fCriticalSection_) };
+                    auto critSec = lock_guard{fCriticalSection_};
                     fFiles.insert (s);
                     return s;
                 }
@@ -328,13 +328,13 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
             char    buf[100];
             {
                 // man page doesn't gaurantee thread-safety of rand ()
-                auto    critSec { make_unique_lock (fCriticalSection_) };
+                auto critSec = lock_guard{fCriticalSection_};
                 (void)std::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
             }
             s.append (NarrowSDKStringToWide  (buf));
             if (not Directory (s).Exists ()) {
                 FileSystem::CreateDirectory (s, true);
-                auto    critSec { make_unique_lock (fCriticalSection_) };
+                auto critSec = lock_guard{fCriticalSection_};
                 fFiles.insert (s);
                 return s;
             }

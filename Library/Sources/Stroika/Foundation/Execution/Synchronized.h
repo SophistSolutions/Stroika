@@ -159,9 +159,9 @@ namespace Stroika {
              *          lockedConfigData.store (value);
              *      \endcode
              *
-             *  or, because Synchronized<> has lock/unlock methods, it can be used with a lock_guard/make_unique_lock (if associated mutex recursive), as in:
+             *  or, because Synchronized<> has lock/unlock methods, it can be used with a lock_guard (if associated mutex recursive), as in:
              *      \code
-             *          auto    critSec { Execution::make_unique_lock (n) };
+             *          auto critSec = lock_guard{n};
              *          // lock to make sure someone else doesn't change n after we made sure it looked good
              *          if (looks_good (n)) {
              *              String a = n;

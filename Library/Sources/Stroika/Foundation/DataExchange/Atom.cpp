@@ -54,12 +54,8 @@ AtomManager_Default::AtomInternalType AtomManager_Default::Intern (const String&
 {
     AtomManager_Default::AtomInternalType v;
     {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-        MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
-#else
-        auto critSec{Execution::make_unique_lock (sCritSec_)};
-#endif
-        auto i = sMap_->Lookup (s);
+        auto critSec = std::lock_guard{sCritSec_};
+        auto i       = sMap_->Lookup (s);
         if (i.has_value ()) {
             return *i;
         }
@@ -74,10 +70,6 @@ AtomManager_Default::AtomInternalType AtomManager_Default::Intern (const String&
 String AtomManager_Default::Extract (AtomInternalType atomI)
 {
     Require (atomI != kEmpty);
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-    MACRO_LOCK_GUARD_CONTEXT (sCritSec_);
-#else
-    auto critSec{Execution::make_unique_lock (sCritSec_)};
-#endif
+    auto critSec = std::lock_guard{sCritSec_};
     return (*sSeq_)[atomI];
 }

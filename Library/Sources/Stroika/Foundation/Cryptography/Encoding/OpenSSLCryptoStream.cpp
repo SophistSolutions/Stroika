@@ -147,7 +147,7 @@ public:
          *  and use that to re-populate fOutBuf_.
          */
         Require (intoStart < intoEnd);
-        auto critSec{Execution::make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         Require (IsOpenRead ());
         if (fOutBufStart_ == fOutBufEnd_) {
             /*
@@ -189,7 +189,7 @@ public:
     virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
-        auto critSec{Execution::make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         Require (IsOpenRead ());
         // advance fOutBufStart_ if possible, and then we know if there is upstream data, and can use _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
         if (fOutBufStart_ == fOutBufEnd_) {
@@ -287,7 +287,7 @@ public:
         Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
         Require (IsOpenWrite ());
         Memory::SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (_GetMinOutBufSize (end - start));
-        auto                                                        critSec{Execution::make_unique_lock (fCriticalSection_)};
+        auto                                                        critSec        = lock_guard{fCriticalSection_};
         size_t                                                      nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);

@@ -68,7 +68,7 @@ namespace Stroika {
             inline ProgressMonitor::CurrentTaskInfo ProgressMonitor::GetCurrentTaskInfo () const
             {
                 RequireNotNull (fRep_);
-                auto critSec{make_unique_lock (fRep_->fCurTaskInfo_CritSect_)};
+                auto critSec = lock_guard{fRep_->fCurTaskInfo_CritSect_};
                 return fRep_->fCurrentTaskInfo_;
             }
 
@@ -126,7 +126,7 @@ namespace Stroika {
             inline void ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
             {
                 if (fRep_.get () != nullptr) {
-                    auto critSec{make_unique_lock (fRep_->fCurTaskInfo_CritSect_)};
+                    auto critSec             = lock_guard{fRep_->fCurTaskInfo_CritSect_};
                     fRep_->fCurrentTaskInfo_ = taskInfo;
                 }
             }

@@ -34,8 +34,6 @@ using namespace Stroika::Frameworks::UPnP;
 using namespace Stroika::Frameworks::UPnP::SSDP;
 using namespace Stroika::Frameworks::UPnP::SSDP::Client;
 
-using Execution::make_unique_lock;
-
 // Comment this in to turn on tracing in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
@@ -66,7 +64,7 @@ public:
     ~Rep_ () = default;
     void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
     {
-        auto critSec{make_unique_lock (fCritSection_)};
+        auto critSec = lock_guard{fCritSection_};
         fFoundCallbacks_.push_back (callOnFinds);
     }
     void Start ()
@@ -160,7 +158,7 @@ public:
             }
 
             {
-                auto critSec{make_unique_lock (fCritSection_)};
+                auto critSec = lock_guard{fCritSection_};
                 for (auto i : fFoundCallbacks_) {
                     i (d);
                 }

@@ -164,7 +164,7 @@ namespace {
         void DUMPCurMemStats ()
         {
             TraceContextBumper ctx ("MyXercesMemMgr_::DUMPCurMemStats");
-            auto               critSec{Execution::make_unique_lock (fLastSnapshot_CritSection)};
+            auto               critSec = lock_guard{fLastSnapshot_CritSection};
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
             fLastSnapshot = fAllocator.GetSnapshot ();

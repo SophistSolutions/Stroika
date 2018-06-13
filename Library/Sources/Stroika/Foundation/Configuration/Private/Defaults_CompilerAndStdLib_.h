@@ -894,26 +894,6 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #endif
 
 /**
- *  This works, and as near as I can tell, its just a compiler 'misfeature' with that make_unique_lock is slightly slower.
- *
- *  Tell that this is slow by running/comparing performance regtests with and without.
- *      Test:
- *          time Builds/Release-U-32/Test47/Test47 -x 1
- *
- *          Run test several time and average realtime results.
- *
- *          Run same test on UNIX and Windows.
- *
- *      \note   Tiny improvement found 2016-06-09 - v2.0a148x - with setting '1' on gcc 5.3-release, and even more tiny improvement
- *              for vs2k15 (Release-U-32). But for now - take the improvement
- */
-#ifndef qCompilerAndStdLib_make_unique_lock_IsSlow
-
-#define qCompilerAndStdLib_make_unique_lock_IsSlow 1
-
-#endif /*qCompilerAndStdLib_make_unique_lock_IsSlow*/
-
-/**
  // _mkgmtime64 not portable, but seems to be defined everywhere I've tried - add a qSupported if/when needed
  https://msdn.microsoft.com/en-us/library/2093ets1.aspx
  */

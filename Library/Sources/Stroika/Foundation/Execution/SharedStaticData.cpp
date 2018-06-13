@@ -24,11 +24,7 @@ bool Execution::Private_::SharedStaticData_DTORHelper_ (
     unsigned int* cu)
 {
     Thread::SuppressInterruptionInContext suppressAborts;
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-    MACRO_LOCK_GUARD_CONTEXT (*m);
-#else
-    auto critSec{make_unique_lock (*m)};
-#endif
+    auto                                  critSec = std::lock_guard{*m};
     --(*cu);
     if (*cu == 0) {
         return true;

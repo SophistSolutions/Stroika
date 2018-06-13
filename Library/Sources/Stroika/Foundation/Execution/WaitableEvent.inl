@@ -142,21 +142,13 @@ namespace Stroika {
                 [[maybe_unused]] auto&& cleanup = Finally (
                     [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
                         Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                        MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
-#else
-                        auto critSec{make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)};
-#endif
+                        auto                                  critSec = std::lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                         for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                             (*i)->fExtraWaitableEvents_.remove (we);
                         }
                     });
                 {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
-#else
-                    auto     critSec{make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)};
-#endif
+                    auto critSec = std::lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }
@@ -205,21 +197,13 @@ namespace Stroika {
                 [[maybe_unused]] auto&& cleanup = Finally (
                     [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {
                         Thread::SuppressInterruptionInContext suppressThreadInterrupts;
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                        MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
-#else
-                        auto critSec{make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)};
-#endif
+                        auto                                  critSec = std::lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                         for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                             (*i)->fExtraWaitableEvents_.remove (we);
                         }
                     });
                 {
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-                    MACRO_LOCK_GUARD_CONTEXT (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_);
-#else
-                    auto     critSec{make_unique_lock (_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_)};
-#endif
+                    auto critSec = std::lock_guard{_Stroika_Foundation_Execution_Private_WaitableEvent_ModuleInit_.Actual ().fExtraWaitableEventsMutex_};
                     for (ITERATOR_OF_WAITABLE_EVENTS i = waitableEventsStart; i != waitableEventsEnd; ++i) {
                         (*i)->fExtraWaitableEvents_.push_front (we);
                     }

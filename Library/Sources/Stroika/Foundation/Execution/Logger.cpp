@@ -307,7 +307,7 @@ void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>&
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.Value (-1))};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0);
     RequireNotNull (fRep_); // not destroyed
-    auto critSec{Execution::make_unique_lock (fRep_->fSuppressDuplicatesThreshold_)};
+    auto critSec = lock_guard{fRep_->fSuppressDuplicatesThreshold_};
     if (fRep_->fSuppressDuplicatesThreshold_ != suppressDuplicatesThreshold) {
         fRep_->fSuppressDuplicatesThreshold_ = suppressDuplicatesThreshold;
         fRep_->UpdateBookkeepingThread_ ();

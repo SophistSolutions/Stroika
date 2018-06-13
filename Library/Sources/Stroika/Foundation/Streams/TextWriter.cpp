@@ -22,8 +22,6 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Streams;
 
-using Execution::make_unique_lock;
-
 namespace {
     const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
 }

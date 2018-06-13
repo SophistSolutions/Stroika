@@ -39,7 +39,7 @@ public:
 public:
     ThreadPool::TaskType GetCurrentTask () const
     {
-        auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
+        auto critSec = lock_guard{fCurTaskUpdateCritSection_};
         // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
         // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
         Assert (fCurTask_ == nullptr or fNextTask_ == nullptr); // one or both must be null
@@ -55,7 +55,7 @@ public:
         while (true) {
             {
                 fThreadPool_.WaitForNextTask_ (&fNextTask_); // This will block INDEFINITELY until ThreadAbort throws out or we have a new task to run
-                auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
+                auto critSec = lock_guard{fCurTaskUpdateCritSection_};
                 Assert (fNextTask_ != nullptr);
                 Assert (fCurTask_ == nullptr);
                 fCurTask_  = fNextTask_;
@@ -64,15 +64,15 @@ public:
                 Assert (fNextTask_ == nullptr);
             }
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
-                auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
-                fCurTask_ = nullptr;
+                auto critSec = lock_guard{fCurTaskUpdateCritSection_};
+                fCurTask_    = nullptr;
             });
             try {
                 // Use lock to access fCurTask_, but dont hold the lock during run, so others can call getcurrenttask
                 ThreadPool::TaskType task2Run;
                 {
-                    auto critSec{make_unique_lock (fCurTaskUpdateCritSection_)};
-                    task2Run = fCurTask_;
+                    auto critSec = lock_guard{fCurTaskUpdateCritSection_};
+                    task2Run     = fCurTask_;
                 }
                 task2Run ();
             }
@@ -110,7 +110,7 @@ ThreadPool::~ThreadPool ()
 
 unsigned int ThreadPool::GetPoolSize () const
 {
-    auto critSec{make_unique_lock (fCriticalSection_)};
+    auto critSec = lock_guard{fCriticalSection_};
     return static_cast<unsigned int> (fThreads_.size ());
 }
 
@@ -118,7 +118,7 @@ void ThreadPool::SetPoolSize (unsigned int poolSize)
 {
     Debug::TraceContextBumper ctx (L"ThreadPool::SetPoolSize", L"poolSize=%d", poolSize);
     Require (not fAborted_);
-    auto critSec{make_unique_lock (fCriticalSection_)};
+    auto critSec = lock_guard{fCriticalSection_};
     DbgTrace (L"fThreads_.size ()=%d", fThreads_.size ());
     while (poolSize > fThreads_.size ()) {
         fThreads_.Add (mkThread_ ());
@@ -153,7 +153,7 @@ ThreadPool::TaskType ThreadPool::AddTask (const TaskType& task)
 #endif
     Require (not fAborted_);
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         fPendingTasks_.push_back (task);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         DbgTrace (L"fPendingTasks.size () now = %d", (int)fPendingTasks_.size ());
@@ -172,7 +172,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
     Debug::TraceContextBumper ctx ("ThreadPool::AbortTask");
     {
         // First see if its in the Q
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = std::lock_guard{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (*i == task) {
                 fPendingTasks_.erase (i);
@@ -194,7 +194,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
     //      Anyhow SB OK for now to just not allow aborting a task which has already started....
     Thread::Ptr thread2Kill;
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = std::lock_guard{fCriticalSection_};
         for (Iterator<TPInfo_> i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
             TaskType                ct{tr->GetCurrentTask ()};
@@ -215,17 +215,17 @@ void ThreadPool::AbortTasks (Time::DurationSecondsType timeout)
     Debug::TraceContextBumper ctx ("ThreadPool::AbortTasks");
     auto                      tps = GetPoolSize ();
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         fPendingTasks_.clear ();
     }
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         for (TPInfo_ ti : fThreads_) {
             ti.fThread.Abort ();
         }
     }
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         for (TPInfo_ ti : fThreads_) {
             // @todo fix wrong timeout value here
             ti.fThread.AbortAndWaitForDone (timeout);
@@ -241,7 +241,7 @@ bool ThreadPool::IsPresent (const TaskType& task) const
     Require (task != nullptr);
     {
         // First see if its in the Q
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (*i == task) {
                 return true;
@@ -255,7 +255,7 @@ bool ThreadPool::IsRunning (const TaskType& task) const
 {
     Require (task != nullptr);
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
             TaskType                rTask{tr->GetCurrentTask ()};
@@ -287,7 +287,7 @@ Collection<ThreadPool::TaskType> ThreadPool::GetTasks () const
 {
     Collection<ThreadPool::TaskType> result;
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         result.AddAll (fPendingTasks_.begin (), fPendingTasks_.end ()); // copy pending tasks
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
@@ -304,7 +304,7 @@ Collection<ThreadPool::TaskType> ThreadPool::GetRunningTasks () const
 {
     Collection<ThreadPool::TaskType> result;
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
             TaskType                task{tr->GetCurrentTask ()};
@@ -321,7 +321,7 @@ size_t ThreadPool::GetTasksCount () const
     size_t count = 0;
     {
         // First see if its in the Q
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         count += fPendingTasks_.size ();
         for (auto i = fThreads_.begin (); i != fThreads_.end (); ++i) {
             shared_ptr<MyRunnable_> tr{i->fRunnable};
@@ -338,7 +338,7 @@ size_t ThreadPool::GetPendingTasksCount () const
 {
     size_t count = 0;
     {
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         count += fPendingTasks_.size ();
     }
     return count;
@@ -379,7 +379,7 @@ void ThreadPool::Abort_ () noexcept
                                                                   // no need to set fTasksMaybeAdded_, since aborting each thread should be sufficient
     {
         // Clear the task Q and then abort each thread
-        auto critSec{make_unique_lock (fCriticalSection_)};
+        auto critSec = lock_guard{fCriticalSection_};
         fPendingTasks_.clear ();
         for (TPInfo_&& ti : fThreads_) {
             ti.fThread.Abort ();
@@ -397,7 +397,7 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
         Abort_ (); // to get the rest of the threadpool abort stuff triggered - flag saying aborting
         Collection<Thread::Ptr> threadsToShutdown;
         {
-            auto critSec{make_unique_lock (fCriticalSection_)};
+            auto critSec = lock_guard{fCriticalSection_};
             fThreads_.Apply ([&](const TPInfo_& i) { threadsToShutdown.Add (i.fThread); });
         }
         Thread::AbortAndWaitForDone (threadsToShutdown);
@@ -413,7 +413,7 @@ void ThreadPool::AbortAndWaitForDone_ () noexcept
 
 String ThreadPool::ToString () const
 {
-    auto          critSec{make_unique_lock (fCriticalSection_)};
+    auto          critSec = lock_guard{fCriticalSection_};
     StringBuilder sb;
     sb += L"{";
     if (fThreadPoolName_) {
@@ -436,7 +436,7 @@ void ThreadPool::WaitForNextTask_ (TaskType* result)
         }
 
         {
-            auto critSec{make_unique_lock (fCriticalSection_)};
+            auto critSec = lock_guard{fCriticalSection_};
             if (not fPendingTasks_.empty ()) {
                 *result = fPendingTasks_.front ();
                 fPendingTasks_.pop_front ();

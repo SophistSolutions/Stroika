@@ -18,7 +18,6 @@ using namespace Stroika::Foundation::Streams;
 
 using Characters::String;
 using Characters::String_Constant;
-using Execution::make_unique_lock;
 using Memory::Byte;
 using Memory::Optional;
 

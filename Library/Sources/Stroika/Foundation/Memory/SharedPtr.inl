@@ -21,8 +21,8 @@ namespace Stroika::Foundation {
     namespace Memory {
 
         namespace Private_ {
-			// OK to declare this way because we cannot have threads before main, and since declared this way till be
-			// properly zero initialized
+            // OK to declare this way because we cannot have threads before main, and since declared this way till be
+            // properly zero initialized
 #if qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
             extern Execution::SpinLock sSharedPtrCopyLock_;
 #else
@@ -565,12 +565,8 @@ namespace std {
     {
         using namespace Stroika::Foundation;
         RequireNotNull (copyFrom);
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-        MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
-#else
-        auto critSec{make_unique_lock (Memory::Private_::sSharedPtrCopyLock_)};
-#endif
-        Stroika::Foundation::Memory::SharedPtr<T> result = *copyFrom;
+        auto                                      critSec = std::lock_guard{Memory::Private_::sSharedPtrCopyLock_};
+        Stroika::Foundation::Memory::SharedPtr<T> result  = *copyFrom;
         return result;
     }
     template <typename T>
@@ -583,11 +579,7 @@ namespace std {
     inline void atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order)
     {
         using namespace Stroika::Foundation;
-#if qCompilerAndStdLib_make_unique_lock_IsSlow
-        MACRO_LOCK_GUARD_CONTEXT (Memory::Private_::sSharedPtrCopyLock_);
-#else
-        auto critSec{make_unique_lock (Memory::Private_::sSharedPtrCopyLock_)};
-#endif
+        auto critSec = std::lock_guard{Memory::Private_::sSharedPtrCopyLock_};
         storeTo->swap (o);
     }
     template <typename T>
