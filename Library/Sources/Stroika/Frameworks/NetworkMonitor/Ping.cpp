@@ -81,19 +81,16 @@ String Pinger::ResultType::ToString () const
  *************************** NetworkMonitor::Ping::Pinger ***********************
  ********************************************************************************
  */
-namespace {
-    const std::uniform_int_distribution<std::mt19937::result_type> kAllUInt16Distribution_ (0, numeric_limits<uint16_t>::max ());
-}
-
 Pinger::Pinger (const InternetAddress& addr, const Options& options)
     : fDestination_ (addr)
     , fOptions_ (options)
     , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}
-    , fNextSequenceNumber_{static_cast<uint16_t> (kAllUInt16Distribution_ (fRng_))}
+    , fNextSequenceNumber_{static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_))}
     , fPingTimeout_{options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
 {
+    Assert (false);
     DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (), Characters::ToString (fOptions_).c_str ());
     // use random data as a payload
     for (Byte* p = (Byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
@@ -116,7 +113,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
     ICMP::V4::PacketHeader pingRequest = [&]() {
         ICMP::V4::PacketHeader tmp{};
         tmp.type      = ICMP::V4::ICMP_ECHO_REQUEST;
-        tmp.id        = static_cast<uint16_t> (kAllUInt16Distribution_ (fRng_));
+        tmp.id        = static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_));
         tmp.seq       = fNextSequenceNumber_++;
         tmp.timestamp = static_cast<uint32_t> (Time::GetTickCount () * 1000);
         return tmp;

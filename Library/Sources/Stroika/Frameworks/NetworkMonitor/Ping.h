@@ -109,14 +109,15 @@ namespace Stroika::Frameworks {
                 nonvirtual ResultType RunOnce_ICMP_ (unsigned int ttl);
 
             private:
-                std::mt19937                           fRng_{std::random_device () ()}; // not sure if this needs to be synchonized?
-                InternetAddress                        fDestination_;
-                Options                                fOptions_;
-                size_t                                 fICMPPacketSize_;
-                Memory::SmallStackBuffer<Memory::Byte> fSendPacket_;
-                IO::Network::ConnectionlessSocket::Ptr fSocket_;
-                uint16_t                               fNextSequenceNumber_;
-                Time::DurationSecondsType              fPingTimeout_;
+                std::uniform_int_distribution<std::mt19937::result_type> fAllUInt16Distribution_{0, numeric_limits<uint16_t>::max ()};
+                std::mt19937                                             fRng_{std::random_device () ()}; // not sure if this needs to be synchonized?
+                InternetAddress                                          fDestination_;
+                Options                                                  fOptions_;
+                size_t                                                   fICMPPacketSize_;
+                Memory::SmallStackBuffer<Memory::Byte>                   fSendPacket_;
+                IO::Network::ConnectionlessSocket::Ptr                   fSocket_;
+                uint16_t                                                 fNextSequenceNumber_;
+                Time::DurationSecondsType                                fPingTimeout_;
             };
 
             /**
