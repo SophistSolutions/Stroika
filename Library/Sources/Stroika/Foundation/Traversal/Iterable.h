@@ -73,9 +73,6 @@ namespace Stroika {
              *  Stroika's Memory::SharedPtr<> appears to be a bit faster than the std::shated_ptr. Iterable
              *  at one time, and on some systems.
              *
-             *  You can configure this to always use shared_ptr using ./configure, but by default
-             *  qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr uses whichever implementation is faster.
-             *
              *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
              */
             constexpr bool kIterableUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
