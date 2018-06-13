@@ -1224,6 +1224,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Concepts.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Empty.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h" />
