@@ -35,9 +35,12 @@ using Traversal::Iterator;
 using Traversal::IteratorOwnerID;
 
 namespace {
+    // note - we use UseBlockAllocationIfAppropriate iff kIterableUsesStroikaSharedPtr because SharedPtr separately allocates
+    // counter and counted object. So we benefit from blockallocation on T. But if using shared_ptr, this uses make_shared that already combines the counter and
+    // the shared object...
     class String_BufferedArray_Rep_
         : public Concrete::Private::BufferedStringRep::_Rep,
-          public conditional_t<qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_>, Configuration::Empty> {
+          public conditional_t<Traversal::kIterableUsesStroikaSharedPtr, Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_>, Configuration::Empty> {
 
     private:
         using inherited = Concrete::Private::BufferedStringRep::_Rep;

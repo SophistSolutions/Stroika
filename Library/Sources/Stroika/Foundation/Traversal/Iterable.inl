@@ -27,7 +27,7 @@ namespace Stroika {
             template <typename SHARED_T, typename... ARGS_TYPE>
             inline auto IterableBase::MakeSharedPtr (ARGS_TYPE&&... args) -> SharedPtrImplementationTemplate<SHARED_T>
             {
-                if constexpr (qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr) {
+                if constexpr (kIterableUsesStroikaSharedPtr) {
                     return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
                 }
                 else {
@@ -201,7 +201,7 @@ namespace Stroika {
                 : _fRep (std::move (from._fRep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-                if constexpr (!qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr) {
+                if constexpr (!kIterableUsesStroikaSharedPtr) {
                     Require (from._fRep == nullptr); // after move
                 }
             }
@@ -221,7 +221,7 @@ namespace Stroika {
                 : _fRep (std::move (rep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-                if constexpr (!qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr) {
+                if constexpr (!kIterableUsesStroikaSharedPtr) {
                     Require (rep == nullptr); // after move
                 }
             }

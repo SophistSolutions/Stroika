@@ -78,15 +78,13 @@ namespace Stroika {
              *
              *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
              */
-#ifndef qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-#define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
-#endif
+            constexpr bool kIterableUsesStroikaSharedPtr = qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr;
 
             /**
              *  EXPERIMENTAL AS OF v2.0a22x
              *
              *  @todo - TEST. I dont think this is important one way or the other, but I think it may aid performance,
-             *          especailly if NOT using qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, because of the single
+             *          especailly if NOT using kIterableUsesStroikaSharedPtr, because of the single
              *          memory allocation (like make_shared<>?).
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
@@ -98,7 +96,7 @@ namespace Stroika {
             struct IterableBase {
             public:
                 template <typename SHARED_T>
-                using SharedPtrImplementationTemplate = conditional_t<qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
+                using SharedPtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
 
             public:
                 template <typename SHARED_T, typename... ARGS_TYPE>
@@ -106,7 +104,7 @@ namespace Stroika {
 
             public:
                 template <typename SHARED_T>
-                using enable_shared_from_this_SharedPtrImplementationTemplate = conditional_t<qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
+                using enable_shared_from_this_SharedPtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
             };
 
             /**
