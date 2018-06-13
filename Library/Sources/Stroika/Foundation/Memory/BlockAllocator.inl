@@ -122,12 +122,7 @@ namespace Stroika {
                 */
                 constexpr size_t kTargetMallocSize_ = 16360; // 16384 = 16K - leave a few bytes sluff...
 
-                inline
-#if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14
-                    constexpr
-#endif
-                    size_t
-                    BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
+                inline constexpr size_t  BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
                 {
                     return std::max (static_cast<size_t> (kTargetMallocSize_ / poolElementSize), static_cast<size_t> (10));
                 }
