@@ -168,7 +168,7 @@ namespace Stroika {
                             i++;
                         }
                     }
-#elif qXWindows
+#else
                     TCHAR c = srcText[i - 1];
 #endif
                     *outPtr++ = c;
