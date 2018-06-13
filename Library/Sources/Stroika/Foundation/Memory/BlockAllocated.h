@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include "../Configuration/Empty.h"
+
 #include "BlockAllocator.h"
 
 /**
@@ -73,6 +75,26 @@
 namespace Stroika {
     namespace Foundation {
         namespace Memory {
+
+            template <typename T>
+            struct BlockAllocationUseHelper {
+                static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<T>::Allocate (n)); }
+                static void* operator new (size_t n, int, const char*, int) { return (Stroika::Foundation::Memory::BlockAllocator<T>::Allocate (n)); }
+                static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
+                static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
+            };
+            template <typename T>
+            struct BlockAllocationUseGlobalAllocatorHelper {
+                static void* operator new (size_t n) { return ::operator new (n); }
+                static void* operator new (size_t n, int, const char*, int) { return ::operator new (n); }
+                static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
+                static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
+            };
+
+            /**
+             */
+            template <typename T>
+            using UseBlockAllocationIfAppropriate = conditional_t<qAllowBlockAllocation, BlockAllocationUseHelper<T>, Configuration::Empty>;
 
             /**
              * \def DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
