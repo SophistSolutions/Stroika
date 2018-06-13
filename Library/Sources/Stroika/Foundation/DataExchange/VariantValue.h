@@ -39,9 +39,9 @@ namespace Stroika::Foundation {
          *      If true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
          *      internal implementaiton detail, and may go away as an option.
          *
-         *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+         *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
          */
-        constexpr bool kVariantValueUsesStroikaSharedPtr_ = qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr;
+        constexpr bool kVariantValueUsesStroikaSharedPtr_ = Memory::kSharedPtr_IsFasterThan_shared_ptr;
 
         [[deprecated ("use kVariantValueUsesStroikaSharedPtr_ since Stroika v2.1d1")]] constexpr bool qStroika_Foundation_DataExchange_VariantValueUsesStroikaSharedPtr_ = kVariantValueUsesStroikaSharedPtr_;
 

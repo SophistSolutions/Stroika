@@ -60,9 +60,9 @@ namespace Stroika::Foundation {
          *      If kBLOBUsesStroikaSharedPtr is true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
          *      internal implementaiton detail, and may go away as an option.
          *
-         *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+         *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
          */
-        constexpr bool kBLOBUsesStroikaSharedPtr = qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr;
+        constexpr bool kBLOBUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
 
         using namespace std;
 

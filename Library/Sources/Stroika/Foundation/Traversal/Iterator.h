@@ -91,9 +91,9 @@ namespace Stroika::Foundation {
          *  You can configure this to always use shared_ptr using ./configure, but by default
          *  kIteratorUsesStroikaSharedPtr uses whichever implementation is faster.
          *
-         *      This defaults to @see qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr
+         *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
          */
-        constexpr bool kIteratorUsesStroikaSharedPtr = qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr;
+        constexpr bool kIteratorUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
 
         /**
          *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
@@ -125,7 +125,7 @@ namespace Stroika::Foundation {
              *          -- LGP 2014-02-23
              */
             template <typename SHARED_T>
-            using SharedPtrImplementationTemplate = conditional_t<qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
+            using SharedPtrImplementationTemplate = conditional_t<kIteratorUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
 
         public:
             template <typename SHARED_T, typename... ARGS_TYPE>
