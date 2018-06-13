@@ -67,14 +67,14 @@ void Memory::Private_::DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** stat
      *  and can be used in DTOR. You can interrupt (abort) a thread while it deletes things.
      */
     try {
-        auto critSec = std::lock_guard{Private_::GetLock_ ()};
+        auto critSec = lock_guard{Private_::GetLock_ ()};
         // push p onto the head of linked free list
         (*(void**)p)     = *staticNextLinkP;
         *staticNextLinkP = p;
     }
     catch (const Execution::Thread::InterruptException&) {
         Execution::Thread::SuppressInterruptionInContext suppressContext;
-        auto                                             critSec = std::lock_guard{Private_::GetLock_ ()};
+        auto                                             critSec = lock_guard{Private_::GetLock_ ()};
         // push p onto the head of linked free list
         (*(void**)p)     = *staticNextLinkP;
         *staticNextLinkP = p;

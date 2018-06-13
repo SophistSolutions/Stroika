@@ -133,7 +133,7 @@ namespace Stroika {
                     }
                     virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_[it.CurrentIndex ()].fValue = newElt;

@@ -78,7 +78,7 @@ namespace Stroika {
             inline auto Synchronized<T, TRAITS>::operator= (const Synchronized& rhs) -> Synchronized&
             {
                 if (&rhs != this) {
-                    auto&& critSec   = std::lock_guard{fLock_};
+                    [[maybe_unused]] auto&& critSec   = std::lock_guard{fLock_};
                     fProtectedValue_ = rhs.load ();
                 }
                 return *this;

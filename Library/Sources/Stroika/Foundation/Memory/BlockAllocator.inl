@@ -225,7 +225,7 @@ namespace Stroika {
                 Verify (sHeadLink_.exchange (next, memory_order_acq_rel) == Private_::kLockedSentinal_); // must return Private_::kLockedSentinal_ cuz we owned lock, so Private_::kLockedSentinal_ must be there
                 return result;
 #else
-                auto critSec = std::lock_guard{Private_::GetLock_ ()};
+                [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
                 /*
                  * To implement linked list of BlockAllocated(T)'s before they are
                  * actually alloced, re-use the begining of this as a link pointer.
@@ -281,7 +281,7 @@ namespace Stroika {
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 // cannot compact lock-free - no biggie
 #else
-                auto critSec = std::lock_guard{Private_::GetLock_ ()};
+                [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
 
                 // step one: put all the links into a single, sorted vector
                 const size_t kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);

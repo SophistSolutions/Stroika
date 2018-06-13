@@ -172,7 +172,7 @@ void ThreadPool::AbortTask (const TaskType& task, Time::DurationSecondsType time
     Debug::TraceContextBumper ctx ("ThreadPool::AbortTask");
     {
         // First see if its in the Q
-        [[maybe_unused]] auto&& critSec = std::lock_guard{fCriticalSection_};
+        [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
         for (auto i = fPendingTasks_.begin (); i != fPendingTasks_.end (); ++i) {
             if (*i == task) {
                 fPendingTasks_.erase (i);

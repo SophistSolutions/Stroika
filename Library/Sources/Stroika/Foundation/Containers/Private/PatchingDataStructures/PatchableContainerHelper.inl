@@ -29,7 +29,7 @@ namespace Stroika {
                         : inherited ((RequireNotNull (rhs), *rhs))
                     {
                         Assert (not HasActiveIterators ());
-                        std::lock_guard<std::mutex> critSec (rhs->fActiveIteratorsMutex_);
+                        [[maybe_unused]] auto&& critSec = lock_guard<std::mutex> (rhs->fActiveIteratorsMutex_);
                     Again:
                         for (auto v = rhs->fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
                             if (v->fOwnerID_ == newOwnerID) {
@@ -66,7 +66,7 @@ namespace Stroika {
                     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     void PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::AssertNoIteratorsReferenceOwner_ (IteratorOwnerID oBeingDeleted) const
                     {
-                        std::lock_guard<std::mutex> critSec (fActiveIteratorsMutex_);
+                        [[maybe_unused]] auto&& critSec = lock_guard<std::mutex>  (fActiveIteratorsMutex_);
                         for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->fNextActiveIterator_) {
                             Assert (v->fOwnerID_ != oBeingDeleted);
                         }
