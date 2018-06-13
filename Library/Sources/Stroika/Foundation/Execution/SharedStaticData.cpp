@@ -12,7 +12,7 @@ using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- ****************** Execution::Private_::SharedStaticData_DTORHelper_ ***********
+ **************** Execution::Private_::SharedStaticData_DTORHelper_ *************
  ********************************************************************************
  */
 bool Execution::Private_::SharedStaticData_DTORHelper_ (
