@@ -141,7 +141,7 @@ namespace Stroika {
                     const size_t kChunks = BlockAllocation_Private_ComputeChunks_ (sz);
                     Assert (kChunks >= 1);
 
-/*
+					/*
                      * Please note that the following line is NOT a memory leak. Please look at the
                      * Led FAQ question#29 - "Does Led have any memory leaks?
                      * How does qAllowBlockAllocation affect memory leaks?"
@@ -257,7 +257,7 @@ namespace Stroika {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
                 RequireNotNull (p);
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-            /*
+				/*
                  *  Note - once we have stored Private_::kLockedSentinal_ in the sHeadLink_ and gotten back something other than that, we
                  *  effectively have a lock for the scope below (because nobody else can get other than Private_::kLockedSentinal_ from exchange).
                  */
