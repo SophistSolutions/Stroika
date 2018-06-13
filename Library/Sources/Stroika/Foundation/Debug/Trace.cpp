@@ -126,13 +126,15 @@ namespace {
             catch (...) {
                 mfname = SDKSTR ("{unknown}");
             }
-            size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
-            if (i != SDKString::npos) {
-                mfname = mfname.substr (i + 1);
-            }
-            i = mfname.rfind ('.');
-            if (i != SDKString::npos) {
-                mfname.erase (i);
+            {
+                size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
+                if (i != SDKString::npos) {
+                    mfname = mfname.substr (i + 1);
+                }
+                i = mfname.rfind ('.');
+                if (i != SDKString::npos) {
+                    mfname.erase (i);
+                }
             }
             for (auto i = mfname.begin (); i != mfname.end (); ++i) {
                 if (*i == ' ') {
