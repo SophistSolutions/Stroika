@@ -11,6 +11,7 @@
 #include <string>
 
 #include "../Characters/CString/Utilities.h"
+#include "../Configuration/Empty.h"
 #include "../Containers/Common.h"
 #include "../Execution/Exceptions.h"
 #include "../Execution/StringException.h"
@@ -34,7 +35,10 @@ using Traversal::Iterator;
 using Traversal::IteratorOwnerID;
 
 namespace {
-    class String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep {
+    class String_BufferedArray_Rep_
+        : public Concrete::Private::BufferedStringRep::_Rep,
+          public conditional_t<qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_>, Configuration::Empty> {
+
     private:
         using inherited = Concrete::Private::BufferedStringRep::_Rep;
 
@@ -54,10 +58,6 @@ namespace {
             // ignore suggested IteratorOwnerID
             return String::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
         }
-#if qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-    public:
-        DECLARE_USE_BLOCK_ALLOCATION (String_BufferedArray_Rep_);
-#endif
     };
 }
 
