@@ -74,7 +74,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Memory {
 
-/**
+            /**
              * \def DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
              *
              *  \brief  Use this to enable block allocation for a particular class. *Beware* of subclassing.
@@ -112,7 +112,7 @@ namespace Stroika {
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
 
-/**
+            /**
              *  \def    DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
              *
              *  \brief  Use this to disable block allocation for a subclass of a class that HAD been using block allocation.

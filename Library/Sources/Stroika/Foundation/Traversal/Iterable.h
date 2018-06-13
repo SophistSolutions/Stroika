@@ -97,25 +97,16 @@ namespace Stroika {
              */
             struct IterableBase {
             public:
-#if qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
                 template <typename SHARED_T>
-                using SharedPtrImplementationTemplate = Memory::SharedPtr<SHARED_T>;
-                template <typename SHARED_T, typename... ARGS_TYPE>
-                static Memory::SharedPtr<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
-#else
-                template <typename SHARED_T>
-                using SharedPtrImplementationTemplate = shared_ptr<SHARED_T>;
-                template <typename SHARED_T, typename... ARGS_TYPE>
-                static shared_ptr<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
-#endif
+                using SharedPtrImplementationTemplate = conditional_t<qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
 
-#if qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
+            public:
+                template <typename SHARED_T, typename... ARGS_TYPE>
+                static SharedPtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
+
+            public:
                 template <typename SHARED_T>
-                using enable_shared_from_this_SharedPtrImplementationTemplate = Memory::enable_shared_from_this<SHARED_T>;
-#else
-                template <typename SHARED_T>
-                using enable_shared_from_this_SharedPtrImplementationTemplate = std::enable_shared_from_this<SHARED_T>;
-#endif
+                using enable_shared_from_this_SharedPtrImplementationTemplate = conditional_t<qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
             };
 
             /**

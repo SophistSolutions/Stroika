@@ -1,8 +1,6 @@
 TODO (Foundation::Containers)
 
 
-	(o)		Get qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr working (value=true)
-
 	(o)		Performance tweak: where its costly to allocate a mutex (in each iterable<> wrapper object)
 			allocate it as a free pool of objects (a bit like the block-allocated code but they remain
 			constructed and I dont make an array of them).

@@ -24,19 +24,16 @@ namespace Stroika {
              ********************************* IterableBase *********************************
              ********************************************************************************
              */
-#if qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
             template <typename SHARED_T, typename... ARGS_TYPE>
-            inline Memory::SharedPtr<SHARED_T> IterableBase::MakeSharedPtr (ARGS_TYPE&&... args)
+            inline auto IterableBase::MakeSharedPtr (ARGS_TYPE&&... args) -> SharedPtrImplementationTemplate<SHARED_T>
             {
-                return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
+                if constexpr (qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr) {
+                    return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
+                }
+                else {
+                    return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
+                }
             }
-#else
-            template <typename SHARED_T, typename... ARGS_TYPE>
-            inline shared_ptr<SHARED_T> IterableBase::MakeSharedPtr (ARGS_TYPE&&... args)
-            {
-                return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
-            }
-#endif
 
             /*
              ********************************************************************************
@@ -204,9 +201,9 @@ namespace Stroika {
                 : _fRep (std::move (from._fRep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-#if !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-                Require (from._fRep == nullptr); // after move
-#endif
+                if constexpr (!qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr) {
+                    Require (from._fRep == nullptr); // after move
+                }
             }
             template <typename T>
             template <typename CONTAINER_OF_T, typename ENABLE_IF>
@@ -224,9 +221,9 @@ namespace Stroika {
                 : _fRep (std::move (rep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
-#if !qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr
-                Require (rep == nullptr); // after move
-#endif
+                if constexpr (!qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr) {
+                    Require (rep == nullptr); // after move
+                }
             }
             template <typename T>
             inline Iterable<T>& Iterable<T>::operator= (const Iterable<T>& rhs)
