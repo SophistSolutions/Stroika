@@ -499,7 +499,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
         {
             Require (not sKnownBadBeforeMainOrAfterMain_);
-            auto critSec = std::lock_guard{sThreadSupportStatsMutex_};
+            [[maybe_unused]] auto&& critSec = std::lock_guard{sThreadSupportStatsMutex_};
             DbgTrace (L"Adding thread id %s to sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
             Verify (sRunningThreads_.insert (thisThreadID).second); // .second true if inserted, so checking not already there
         }
@@ -507,7 +507,7 @@ void Thread::Rep_::ThreadMain_ (const shared_ptr<Rep_>* thisThreadRep) noexcept
             [thisThreadID]() noexcept {
                 Thread::SuppressInterruptionInContext suppressThreadInterrupts; // may not be needed, but safer/harmless
                 Require (not sKnownBadBeforeMainOrAfterMain_);                  // Note: A crash in this code is FREQUENTLY the result of an attempt to destroy a thread after existing main () has started
-                auto critSec = std::lock_guard{sThreadSupportStatsMutex_};
+                [[maybe_unused]] auto&& critSec = std::lock_guard{sThreadSupportStatsMutex_};
                 DbgTrace (L"removing thread id %s from sRunningThreads_ (%s)", Characters::ToString (thisThreadID).c_str (), Characters::ToString (sRunningThreads_).c_str ());
                 Verify (sRunningThreads_.erase (thisThreadID) == 1); // verify exactly one erased
             });
@@ -663,7 +663,7 @@ void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
     if (*fTLSInterruptFlag_ != InterruptFlagState_::eNone) {
 #if qPlatform_POSIX
         {
-            auto critSec = lock_guard{sHandlerInstalled_};
+            auto&& critSec = lock_guard{sHandlerInstalled_};
             if (not sHandlerInstalled_) {
                 SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
@@ -1068,7 +1068,7 @@ void Thread::SetDefaultConfiguration (const Configuration& config)
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
 Thread::Statistics Thread::GetStatistics ()
 {
-    auto critSec = std::lock_guard{sThreadSupportStatsMutex_};
+    [[maybe_unused]] auto&& critSec = lock_guard{sThreadSupportStatsMutex_};
     return Statistics{Containers::Set<Thread::IDType>{sRunningThreads_}};
 }
 #endif
@@ -1134,7 +1134,7 @@ void Thread::WaitForDoneUntil (const Traversal::Iterable<Thread::Ptr>& threads, 
 #if qPlatform_POSIX
 void Thread::SetSignalUsedForThreadInterrupt (SignalID signalNumber)
 {
-    auto critSec = lock_guard{sHandlerInstalled_};
+    auto&& critSec = lock_guard{sHandlerInstalled_};
     if (sHandlerInstalled_) {
         SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadInterrupt (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = false;

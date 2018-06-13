@@ -349,7 +349,7 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::EmitTraceMessage (size_t buffe
 template <typename CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
 {
-    auto critSec = lock_guard{GetCritSection_ ()};
+    [[maybe_unused]] auto&& critSec = lock_guard{GetCritSection_ ()};
     FlushBufferedCharacters_ ();
     Time::DurationSecondsType curRelativeTime = Time::GetTickCount ();
     {
@@ -441,7 +441,7 @@ void Emitter::FlushBufferedCharacters_ ()
 
 bool Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
-    auto critSec = lock_guard{GetCritSection_ ()};
+    [[maybe_unused]] auto&& critSec = lock_guard{GetCritSection_ ()};
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
@@ -582,7 +582,7 @@ TraceContextBumper::~TraceContextBumper ()
 {
     DecrCount_ ();
     if (fDoEndMarker) {
-        auto critSec = lock_guard{GetCritSection_ ()};
+        [[maybe_unused]] auto&& critSec = lock_guard{GetCritSection_ ()};
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
             Emitter::Get ().EmitUnadornedText ("/>");
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());

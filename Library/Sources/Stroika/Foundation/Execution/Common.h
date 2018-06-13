@@ -21,7 +21,7 @@ namespace Stroika {
              *  This will be fixed and obsoleted by C++17 (http://en.cppreference.com/w/cpp/language/class_template_argument_deduction)
              */
             template <typename MUTEX, typename... ARGS>
-            [[deprecated ("use              auto critSec = lock_guard{fCriticalSection_}; - deprecated in Stroika v2.1d3")]] inline auto make_unique_lock (MUTEX&& m, ARGS&&... args) -> std::unique_lock<typename std::remove_reference<MUTEX>::type>
+            [[deprecated ("use              [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_}; - make_unique_lock () deprecated in Stroika v2.1d3")]] inline auto make_unique_lock (MUTEX&& m, ARGS&&... args) -> std::unique_lock<typename std::remove_reference<MUTEX>::type>
             {
                 using namespace std;
                 return unique_lock<typename remove_reference<MUTEX>::type> (forward<MUTEX> (m), forward<ARGS> (args)...);

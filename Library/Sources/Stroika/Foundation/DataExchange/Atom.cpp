@@ -54,8 +54,8 @@ AtomManager_Default::AtomInternalType AtomManager_Default::Intern (const String&
 {
     AtomManager_Default::AtomInternalType v;
     {
-        auto critSec = std::lock_guard{sCritSec_};
-        auto i       = sMap_->Lookup (s);
+        [[maybe_unused]] auto&& critSec = std::lock_guard{sCritSec_};
+        auto                    i       = sMap_->Lookup (s);
         if (i.has_value ()) {
             return *i;
         }
@@ -70,6 +70,6 @@ AtomManager_Default::AtomInternalType AtomManager_Default::Intern (const String&
 String AtomManager_Default::Extract (AtomInternalType atomI)
 {
     Require (atomI != kEmpty);
-    auto critSec = std::lock_guard{sCritSec_};
+    [[maybe_unused]] auto&& critSec = lock_guard{sCritSec_};
     return (*sSeq_)[atomI];
 }

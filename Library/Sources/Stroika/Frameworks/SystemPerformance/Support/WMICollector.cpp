@@ -167,7 +167,7 @@ WMICollector::WMICollector (const WMICollector& from)
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::WMICollector");
 #endif
-    /// @todo auto critSec = lock_guard{fCritSection_}; before copy elts!!!
+    /// @todo auto&& critSec = lock_guard{fCritSection_}; before copy elts!!!
 
     // Note the above copy CTOR does a second collect, because we dont know how to clone collected data?
 }

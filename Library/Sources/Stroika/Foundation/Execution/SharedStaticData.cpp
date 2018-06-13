@@ -24,7 +24,7 @@ bool Execution::Private_::SharedStaticData_DTORHelper_ (
     unsigned int* cu)
 {
     Thread::SuppressInterruptionInContext suppressAborts;
-    auto                                  critSec = std::lock_guard{*m};
+    [[maybe_unused]] auto&&               critSec = std::lock_guard{*m};
     --(*cu);
     if (*cu == 0) {
         return true;

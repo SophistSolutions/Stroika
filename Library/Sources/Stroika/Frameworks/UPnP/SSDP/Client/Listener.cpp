@@ -64,7 +64,7 @@ public:
     ~Rep_ () = default;
     void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
     {
-        auto critSec = lock_guard{fCritSection_};
+        auto&& critSec = lock_guard{fCritSection_};
         fFoundCallbacks_.push_back (callOnFinds);
     }
     void Start ()
@@ -158,7 +158,7 @@ public:
             }
 
             {
-                auto critSec = lock_guard{fCritSection_};
+                auto&& critSec = lock_guard{fCritSection_};
                 for (auto i : fFoundCallbacks_) {
                     i (d);
                 }

@@ -9,6 +9,7 @@
 #include <functional>
 #include <mutex>
 #include <shared_mutex>
+#include <type_traits>
 
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
@@ -161,7 +162,7 @@ namespace Stroika {
              *
              *  or, because Synchronized<> has lock/unlock methods, it can be used with a lock_guard (if associated mutex recursive), as in:
              *      \code
-             *          auto critSec = lock_guard{n};
+             *          auto&& critSec = lock_guard{n};
              *          // lock to make sure someone else doesn't change n after we made sure it looked good
              *          if (looks_good (n)) {
              *              String a = n;
@@ -573,7 +574,7 @@ namespace Stroika {
              * onto the lock for extended periods ;-).
              */
             template <typename T>
-            using QuickSynchronized = conditional_t<qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>);
+            using QuickSynchronized = conditional_t<qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
 
             /**
              * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer. Typically, using shared_timed_mutex,

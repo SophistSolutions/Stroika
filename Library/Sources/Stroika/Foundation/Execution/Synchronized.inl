@@ -78,7 +78,7 @@ namespace Stroika {
             inline auto Synchronized<T, TRAITS>::operator= (const Synchronized& rhs) -> Synchronized&
             {
                 if (&rhs != this) {
-                    auto critSec     = std::lock_guard{fLock_};
+                    auto&& critSec   = std::lock_guard{fLock_};
                     fProtectedValue_ = rhs.load ();
                 }
                 return *this;
@@ -86,8 +86,8 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline auto Synchronized<T, TRAITS>::operator= (const T& rhs) -> Synchronized&
             {
-                auto critSec     = std::lock_guard{fLock_};
-                fProtectedValue_ = rhs;
+                [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
+                fProtectedValue_                = rhs;
                 return *this;
             }
             template <typename T, typename TRAITS>
@@ -104,14 +104,14 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::store (const T& v)
             {
-                auto critSec     = std::lock_guard{fLock_};
-                fProtectedValue_ = v;
+                [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
+                fProtectedValue_                = v;
             }
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::store (T&& v)
             {
-                auto critSec     = std::lock_guard{fLock_};
-                fProtectedValue_ = move (v);
+                [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
+                fProtectedValue_                = move (v);
             }
             template <typename T, typename TRAITS>
             inline auto Synchronized<T, TRAITS>::cget () const -> ReadableReference
