@@ -23,11 +23,7 @@ namespace Stroika::Foundation {
         namespace Private_ {
             // OK to declare this way because we cannot have threads before main, and since declared this way till be
             // properly zero initialized
-#if qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
-            extern Execution::SpinLock sSharedPtrCopyLock_;
-#else
-            extern mutex sSharedPtrCopyLock_;
-#endif
+            extern conditional_t<qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex> sSharedPtrCopyLock_;
         }
 
         /*
