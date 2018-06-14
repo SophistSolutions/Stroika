@@ -474,14 +474,7 @@ sub	SetDefaultForCompilerDriver_
 			$CPPSTD_VERSION_FLAG="--std=c++17"
 		}
 		elsif (IsClangOrClangPlusPlus_ ($COMPILER_DRIVER)) {
-			if ("$^O" eq "darwin") {
-				### As of clang 9.2, we seem to get myterious link errors (constexpr statics)... SO until I debug that, just use c++14
-				### @see qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
-				$CPPSTD_VERSION_FLAG="--std=c++14"
-			}
-			else {
-				$CPPSTD_VERSION_FLAG="--std=c++17"
-			}
+			$CPPSTD_VERSION_FLAG="--std=c++17"
 		}
 	}
 	if ($PROJECTPLATFORMSUBDIR eq 'Unix') {
