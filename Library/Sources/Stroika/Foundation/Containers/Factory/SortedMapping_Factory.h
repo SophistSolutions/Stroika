@@ -29,7 +29,11 @@ namespace Stroika {
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER = std::less<KEY_TYPE>>
                 class SortedMapping_Factory {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_;
+#else
+                    static inline atomic<SortedMapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_INORDER_COMPARER&)> sFactory_{nullptr};
+#endif
 
                 public:
                     static_assert (Common::IsStrictInOrderComparer<KEY_INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMapping");

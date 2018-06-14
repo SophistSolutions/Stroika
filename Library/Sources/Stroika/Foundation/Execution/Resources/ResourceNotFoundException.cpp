@@ -20,4 +20,3 @@ ResourceNotFoundException::ResourceNotFoundException ()
     : StringException (String_Constant (L"Resource Not Found"))
 {
 }
-const ResourceNotFoundException ResourceNotFoundException::kThe;

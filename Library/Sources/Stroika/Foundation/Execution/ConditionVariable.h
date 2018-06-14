@@ -106,8 +106,12 @@ namespace Stroika {
                  *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
                  *  effecitvely busy wait, and this checking is ONLY needed for the specail, rare case of thread abort.
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 static Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
-                Time::DurationSecondsType        fThreadAbortCheckFrequency{sThreadAbortCheckFrequency_Default};
+#else
+                static inline Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
+#endif
+                Time::DurationSecondsType fThreadAbortCheckFrequency{sThreadAbortCheckFrequency_Default};
 
                 using MutexType             = MUTEX;
                 using ConditionVariableType = CONDITION_VARIABLE;

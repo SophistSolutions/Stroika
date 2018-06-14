@@ -37,7 +37,11 @@ namespace Stroika {
                 template <typename T, typename TRAITS, typename EQUALS_COMPARER>
                 class MultiSet_Factory {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<MultiSet<T, TRAITS> (*) (const EQUALS_COMPARER&)> sFactory_;
+#else
+                    static inline atomic<MultiSet<T, TRAITS> (*) (const EQUALS_COMPARER&)> sFactory_{nullptr};
+#endif
 
                 public:
                     static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with MultiSet_Factory");

@@ -24,8 +24,10 @@ namespace Stroika {
                  ********* Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> *******
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
                 atomic<Association<KEY_TYPE, VALUE_TYPE> (*) ()> Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
+#endif
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
                 inline Association<KEY_TYPE, VALUE_TYPE> Association_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() () const
                 {
@@ -67,8 +69,10 @@ namespace Stroika {
                  ********** Association_Factory<KEY_TYPE, VALUE_TYPE, false_type> ***************
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename KEY_TYPE, typename VALUE_TYPE>
                 atomic<Association<KEY_TYPE, VALUE_TYPE> (*) ()> Association_Factory<KEY_TYPE, VALUE_TYPE, false_type>::sFactory_ (nullptr);
+#endif
                 template <typename KEY_TYPE, typename VALUE_TYPE>
                 inline Association<KEY_TYPE, VALUE_TYPE> Association_Factory<KEY_TYPE, VALUE_TYPE, false_type>::operator() () const
                 {

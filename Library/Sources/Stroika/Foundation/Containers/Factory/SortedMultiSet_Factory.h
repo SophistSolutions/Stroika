@@ -37,7 +37,11 @@ namespace Stroika {
                 template <typename T, typename TRAITS, typename INORDER_COMPARER>
                 class SortedMultiSet_Factory {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_;
+#else
+                    static inline atomic<SortedMultiSet<T, TRAITS> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};
+#endif
 
                 public:
                     static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedMultiSet");

@@ -23,8 +23,10 @@ namespace Stroika {
                  ************************ SortedSet_Factory<T, INORDER_COMPARER> ****************
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename T, typename INORDER_COMPARER>
                 atomic<SortedSet<T> (*) (const INORDER_COMPARER&)> SortedSet_Factory<T, INORDER_COMPARER>::sFactory_ (nullptr);
+#endif
                 template <typename T, typename INORDER_COMPARER>
                 inline SortedSet_Factory<T, INORDER_COMPARER>::SortedSet_Factory (const INORDER_COMPARER& inorderComparer)
                     : fInorderComparer_ (inorderComparer)

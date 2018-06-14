@@ -20,11 +20,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
+                 ************ SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***********
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 atomic<SortedAssociation<KEY_TYPE, VALUE_TYPE> (*) ()> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
+#endif
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline SortedAssociation<KEY_TYPE, VALUE_TYPE> SortedAssociation_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::operator() () const
                 {

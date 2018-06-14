@@ -393,9 +393,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileBusyException.cpp">
       <Filter>Sources\IO</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\UserCanceledException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>

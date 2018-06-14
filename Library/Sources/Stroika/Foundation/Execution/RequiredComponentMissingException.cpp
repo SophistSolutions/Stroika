@@ -16,13 +16,6 @@ using namespace Stroika::Foundation::Execution;
  ********************** RequiredComponentMissingException ***********************
  ********************************************************************************
  */
-const wchar_t RequiredComponentMissingException::kJava[]                   = L"Java";
-const wchar_t RequiredComponentMissingException::kPDFViewer[]              = L"PDFViewer";
-const wchar_t RequiredComponentMissingException::kPDFOCXViewer[]           = L"PDFOCXViewer";
-const wchar_t RequiredComponentMissingException::kSAXFactory[]             = L"SAXFactory";
-const wchar_t RequiredComponentMissingException::kIONetworkClientFactory[] = L"kIONetworkClientFactory";
-const wchar_t RequiredComponentMissingException::kOpenSSL[]                = L"OpenSSL";
-
 namespace {
     wstring mkMsg (const wstring& component)
     {

@@ -19,7 +19,7 @@ namespace Stroika {
         namespace Containers {
             namespace Factory {
 
-            /*
+                /*
                  ********************************************************************************
                  ****** Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> **************
                  ********************************************************************************

@@ -23,9 +23,10 @@ namespace Stroika {
                  ****************************** Collection_Factory<T> ***************************
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename T>
                 atomic<Collection<T> (*) ()> Collection_Factory<T>::sFactory_ (nullptr);
-
+#endif
                 template <typename T>
                 inline Collection<T> Collection_Factory<T>::operator() () const
                 {

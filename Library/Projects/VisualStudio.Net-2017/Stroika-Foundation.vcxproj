@@ -893,7 +893,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SpinLock.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp" />

@@ -80,7 +80,7 @@ namespace Stroika {
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
 #else
-                    static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()>                    sFactory_{nullptr};
+                    static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()>                           sFactory_{nullptr};
 #endif
 
                 public:

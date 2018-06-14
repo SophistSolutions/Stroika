@@ -154,7 +154,11 @@ namespace Stroika {
 
             private:
                 alignas (alignof (MODULE_DATA)) static Byte sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 static uint16_t sInitCnt_;
+#else
+                static uint16_t sInitCnt_{0};
+#endif
             };
         }
     }

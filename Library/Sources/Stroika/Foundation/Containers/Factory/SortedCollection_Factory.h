@@ -36,7 +36,11 @@ namespace Stroika {
                 template <typename T, typename INORDER_COMPARER = less<T>>
                 class SortedCollection_Factory {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> sFactory_;
+#else
+                    static inline atomic<SortedCollection<T> (*) (const INORDER_COMPARER&)> sFactory_{nullptr};
+#endif
 
                 public:
                     static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedCollection");

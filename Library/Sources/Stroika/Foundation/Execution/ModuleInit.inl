@@ -73,8 +73,10 @@ namespace Stroika {
             }
             template <typename MODULE_DATA>
             alignas (alignof (MODULE_DATA)) Byte ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
             template <typename MODULE_DATA>
             unsigned short ModuleInitializer<MODULE_DATA>::sInitCnt_;
+#endif
         }
     }
 }
