@@ -17,7 +17,7 @@ namespace Stroika {
              */
             class SilentException {
             public:
-                static inline const SilentException kThe;
+                static const SilentException kThe;
             };
         }
     }

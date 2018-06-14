@@ -34,6 +34,7 @@ Objs	=	\
 	$(ObjDir)RequiredComponentMissingException.o\
 	$(ObjDir)RequiredComponentVersionMismatchException.o\
 	$(ObjDir)SharedStaticData.o\
+	$(ObjDir)SilentException.o\
 	$(ObjDir)Signals.o\
 	$(ObjDir)SignalHandlers.o\
 	$(ObjDir)Sleep.o\
