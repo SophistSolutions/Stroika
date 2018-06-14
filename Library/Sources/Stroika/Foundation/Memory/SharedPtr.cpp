@@ -9,4 +9,4 @@ using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Memory;
 
-conditional_t<qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex> Private_::sSharedPtrCopyLock_;
+conditional_t<Execution::kSpinLock_IsFasterThan_mutex, Execution::SpinLock, mutex> Private_::sSharedPtrCopyLock_;

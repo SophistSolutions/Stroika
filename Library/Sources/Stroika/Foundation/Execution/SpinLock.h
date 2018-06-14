@@ -24,17 +24,15 @@ namespace Stroika::Foundation {
     namespace Execution {
 
         /**
-         *  SpinLock and mutex can be nearly used interchangeably. Often types, users will want to define a typedef which selects
+         *  SpinLock and mutex can be nearly used interchangeably. Oftentimes, users will want to define a typedef which selects
          *  the faster implementation.
          *
-         *  \note   Stroika 2.0a155 and earlier - qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex was always true
+         *  \note   Stroika 2.0a155 and earlier - Execution::kSpinLock_IsFasterThan_mutex was always true
          *
          *  \note   Stroika 2.0a156 and later - due to threadFence and https://stroika.atlassian.net/browse/STK-494 - SpinLock
          *          slowed slightly, but its still notably faster (with the default barrier style) on gcc/unix/windows (x86 only tested).
          */
-#ifndef qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
-#define qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex 1
-#endif
+        constexpr bool kSpinLock_IsFasterThan_mutex = true;
 
         /**
          *  Implementation based on

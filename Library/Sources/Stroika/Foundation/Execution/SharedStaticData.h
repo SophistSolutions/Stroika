@@ -106,9 +106,9 @@ namespace Stroika {
 
             private:
                 // nb. use mutex instead of atomic<> because must lock sOnceObj_ at same time (block subsequent callers while constructing)
-                static conditional_t<qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex, SpinLock, mutex> sMutex_;
-                static unsigned int                                                                              sCountUses_;
-                static T*                                                                                        sOnceObj_;
+                static conditional_t<kSpinLock_IsFasterThan_mutex, SpinLock, mutex> sMutex_;
+                static unsigned int                                                 sCountUses_;
+                static T*                                                           sOnceObj_;
                 //                alignas (alignof (T)) Memory::Byte fOnceObj_Storage_[sizeof (T)]; // avoid actual memory allocation call - since only one of these
             };
         }

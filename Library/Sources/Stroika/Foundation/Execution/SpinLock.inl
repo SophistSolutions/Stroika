@@ -37,10 +37,10 @@ namespace Stroika::Foundation {
 #endif
         inline bool SpinLock::try_lock ()
         {
-			// Atomically set fLock to true and examine the previous value. If it was false, we
-			// successfully gained the lock. If it was already true (someone else holds the lock),
-			// we did NOT gain the lock, but we changed nothing. The fact that we changed nothing in the case where
-			// we didn't gain the lock, is why this is not a race.
+            // Atomically set fLock to true and examine the previous value. If it was false, we
+            // successfully gained the lock. If it was already true (someone else holds the lock),
+            // we did NOT gain the lock, but we changed nothing. The fact that we changed nothing in the case where
+            // we didn't gain the lock, is why this is not a race.
 #if qStroika_FeatureSupported_Valgrind
             VALGRIND_HG_MUTEX_LOCK_PRE (&fLock_, true);
 #endif
@@ -95,7 +95,7 @@ namespace Stroika::Foundation {
                 default:
                     break;
             }
-                    // release lock
+                // release lock
 #if qStroika_FeatureSupported_Valgrind
             VALGRIND_HG_MUTEX_UNLOCK_PRE (&fLock_);
 #endif

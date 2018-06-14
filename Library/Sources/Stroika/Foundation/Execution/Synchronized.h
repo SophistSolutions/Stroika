@@ -574,7 +574,7 @@ namespace Stroika {
              * onto the lock for extended periods ;-).
              */
             template <typename T>
-            using QuickSynchronized = conditional_t<qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
+            using QuickSynchronized = conditional_t<kSpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
 
             /**
              * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer. Typically, using shared_timed_mutex,

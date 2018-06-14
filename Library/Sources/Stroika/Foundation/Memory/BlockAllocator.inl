@@ -31,17 +31,6 @@
 #endif
 
 /*
- *  qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ is probaly best true (empirical tests with the
- *  performance regression test indicated that this helped considerably).
- *
- *  It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
- *  spinning. And we could reduce this further during mallocs of new blocks.
- */
-#if !defined(qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_)
-#define qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_ !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ && qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex
-#endif
-
-/*
  *  qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_ is currently experimental as
  *  a test to see if its faster than calling operator new (for blocks of RAM).
  *
@@ -62,6 +51,15 @@ namespace Stroika {
         namespace Memory {
 
             namespace Private_ {
+
+                /*
+                 *  kUseSpinLock_ is probaly best true (empirical tests with the
+                 *  performance regression test indicated that this helped considerably).
+                 *
+                 *  It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
+                 *  spinning. And we could reduce this further during mallocs of new blocks.
+                 */
+                constexpr bool kUseSpinLock_ = !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ && Execution::kSpinLock_IsFasterThan_mutex;
 
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
                 /**
@@ -89,11 +87,7 @@ namespace Stroika {
                     ~BlockAllocator_ModuleInit_ ();
                 };
 
-#if qStroika_Foundation_Memory_BlockAllocator_UseSpinLock_
-                using LockType_ = Execution::SpinLock;
-#else
-                using LockType_ = mutex;
-#endif
+                using LockType_ = conditional_t<kUseSpinLock_, Execution::SpinLock, mutex>;
                 extern LockType_* sLock_;
 
                 inline LockType_& GetLock_ ()
