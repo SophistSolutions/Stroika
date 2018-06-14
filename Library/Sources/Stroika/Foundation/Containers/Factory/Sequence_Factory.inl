@@ -23,8 +23,10 @@ namespace Stroika {
                  **************************** Sequence_Factory<T> *******************************
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename T>
                 atomic<Sequence<T> (*) ()> Sequence_Factory<T>::sFactory_ (nullptr);
+#endif
                 template <typename T>
                 inline Sequence<T> Sequence_Factory<T>::operator() () const
                 {

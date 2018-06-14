@@ -19,13 +19,15 @@ namespace Stroika {
         namespace Containers {
             namespace Factory {
 
-                /*
+            /*
                  ********************************************************************************
                  ****** Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER> **************
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
                 atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::sFactory_ (nullptr);
+#endif
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER>
                 inline Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::Mapping_Factory (const KEY_EQUALS_COMPARER& keyEqualsComparer)
                     : fKeyEqualsComparer_ (keyEqualsComparer)
@@ -35,12 +37,12 @@ namespace Stroika {
                 inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER>::operator() () const
                 {
                     /*
-                    *  Would have been more performant to just and assure always properly set, but to initialize
-                    *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
-                    *  with containers constructed before main.
-                    *
-                    *  This works more generally (and with hopefully modest enough performance impact).
-                    */
+                     *  Would have been more performant to just and assure always properly set, but to initialize
+                     *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+                     *  with containers constructed before main.
+                     *
+                     *  This works more generally (and with hopefully modest enough performance impact).
+                     */
                     if (auto f = sFactory_.load ()) {
                         return f (fKeyEqualsComparer_);
                     }
@@ -67,8 +69,10 @@ namespace Stroika {
                     return Concrete::Mapping_LinkedList<KEY_TYPE, VALUE_TYPE> (keyEqualsComparer);
                 }
 
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename KEY_TYPE, typename VALUE_TYPE>
                 atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::sFactory_ (nullptr);
+#endif
                 template <typename KEY_TYPE, typename VALUE_TYPE>
                 inline Mapping<KEY_TYPE, VALUE_TYPE> Mapping_Factory<KEY_TYPE, VALUE_TYPE, void>::operator() () const
                 {

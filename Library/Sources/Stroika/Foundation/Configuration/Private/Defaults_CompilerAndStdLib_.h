@@ -591,6 +591,22 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #endif
 #endif
 
+/**
+ * 1>c:\sandbox\stroika\devroot\library\sources\stroika\foundation\execution\sharedstaticdata.h(113): fatal error C1001: An internal error has occurred in the compiler.
+1>(compiler file 'f:\dd\vctools\compiler\cxxfe\sl\p1\c\symbols.c', line 24193)
+1> To work around this problem, try simplifying or changing the program near the locations listed above.
+1>Please choose the Technical Support command on the Visual C++
+
+ */
+#ifndef qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
+#if defined(_MSC_VER)
+// assume broken in _MS_VS_2k17_15Pt7Pt3_
+#define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt3_)
+#else
+#define qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy 0
+#endif
+#endif
+
 #ifndef qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))

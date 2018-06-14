@@ -44,7 +44,11 @@ namespace Stroika {
                 template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = void>
                 class Mapping_Factory {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> sFactory_;
+#else
+                    static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) (const KEY_EQUALS_COMPARER&)> sFactory_{nullptr};
+#endif
 
                 public:
                     static_assert (Common::IsEqualsComparer<KEY_EQUALS_COMPARER> (), "Equals comparer required with Mapping_Factory");
@@ -73,7 +77,11 @@ namespace Stroika {
                 template <typename KEY_TYPE, typename VALUE_TYPE>
                 class Mapping_Factory<KEY_TYPE, VALUE_TYPE, void> {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()> sFactory_;
+#else
+                    static inline atomic<Mapping<KEY_TYPE, VALUE_TYPE> (*) ()>                    sFactory_{nullptr};
+#endif
 
                 public:
                     /**

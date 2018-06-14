@@ -26,6 +26,7 @@ namespace Stroika {
              ******************************** SharedStaticData<T> ***************************
              ********************************************************************************
              */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
             template <typename T>
             T* SharedStaticData<T>::sOnceObj_;
 
@@ -34,6 +35,7 @@ namespace Stroika {
 
             template <typename T>
             unsigned int SharedStaticData<T>::sCountUses_ = 0;
+#endif
 
             template <typename T>
             SharedStaticData<T>::SharedStaticData ()

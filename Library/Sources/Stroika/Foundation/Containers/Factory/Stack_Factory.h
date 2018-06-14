@@ -37,7 +37,11 @@ namespace Stroika {
                 template <typename T>
                 class Stack_Factory {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<Stack<T> (*) ()> sFactory_;
+#else
+                    static inline atomic<Stack<T> (*) ()> sFactory_{nullptr};
+#endif
 
                 public:
                     /**

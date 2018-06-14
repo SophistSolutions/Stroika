@@ -20,11 +20,13 @@ namespace Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************************** Stack_Factory<T> ****************************
+                 ******************************* Stack_Factory<T> *******************************
                  ********************************************************************************
                  */
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 template <typename T>
                 atomic<Stack<T> (*) ()> Stack_Factory<T>::sFactory_ (nullptr);
+#endif
                 template <typename T>
                 inline Stack<T> Stack_Factory<T>::operator() () const
                 {

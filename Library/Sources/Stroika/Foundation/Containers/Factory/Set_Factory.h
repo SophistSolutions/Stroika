@@ -41,7 +41,11 @@ namespace Stroika {
                 template <typename T, typename EQUALS_COMPARER = equal_to<T>>
                 class Set_Factory {
                 private:
+#if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                     static atomic<Set<T> (*) (const EQUALS_COMPARER&)> sFactory_;
+#else
+                    static inline atomic<Set<T> (*) (const EQUALS_COMPARER&)> sFactory_{nullptr};
+#endif
 
                 public:
                     static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_Factory");
