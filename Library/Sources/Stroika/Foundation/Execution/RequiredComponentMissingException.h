@@ -18,20 +18,12 @@ namespace Stroika {
 
             class RequiredComponentMissingException : public StringException {
             public:
-#if 0
-                                static const wchar_t kJava[];
-                static const wchar_t kPDFViewer[];
-                static const wchar_t kPDFOCXViewer[];
-                static const wchar_t kSAXFactory[];
-                static const wchar_t kIONetworkClientFactory[];
-                static const wchar_t kOpenSSL[];
-#endif
-                static constexpr wchar_t RequiredComponentMissingException::kJava[]                   = L"Java";
-                static constexpr wchar_t RequiredComponentMissingException::kPDFViewer[]              = L"PDFViewer";
-                static constexpr wchar_t RequiredComponentMissingException::kPDFOCXViewer[]           = L"PDFOCXViewer";
-                static constexpr wchar_t RequiredComponentMissingException::kSAXFactory[]             = L"SAXFactory";
-                static constexpr wchar_t RequiredComponentMissingException::kIONetworkClientFactory[] = L"kIONetworkClientFactory";
-                static constexpr wchar_t RequiredComponentMissingException::kOpenSSL[]                = L"OpenSSL";
+                static constexpr wchar_t kJava[]                   = L"Java";
+                static constexpr wchar_t kPDFViewer[]              = L"PDFViewer";
+                static constexpr wchar_t kPDFOCXViewer[]           = L"PDFOCXViewer";
+                static constexpr wchar_t kSAXFactory[]             = L"SAXFactory";
+                static constexpr wchar_t kIONetworkClientFactory[] = L"kIONetworkClientFactory";
+                static constexpr wchar_t kOpenSSL[]                = L"OpenSSL";
 
             public:
                 RequiredComponentMissingException (const wstring& component);

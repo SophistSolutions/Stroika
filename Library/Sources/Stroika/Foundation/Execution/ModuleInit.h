@@ -157,7 +157,7 @@ namespace Stroika {
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 static uint16_t sInitCnt_;
 #else
-                static uint16_t sInitCnt_{0};
+                static inline uint16_t sInitCnt_{0};
 #endif
             };
         }
