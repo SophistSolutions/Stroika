@@ -555,11 +555,11 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
  */
 #ifndef qCompiler_noSanitizeAttribute_Buggy
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 5))
 #elif defined(__GNUC__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7)
 #else
 #define qCompiler_noSanitizeAttribute_Buggy 1
 #endif
