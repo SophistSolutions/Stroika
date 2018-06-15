@@ -557,7 +557,8 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #if defined(__clang__) && defined(__APPLE__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
 #elif defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 5))
+// surprising broken in clang++6 on linux, but not xcode10 (clang10) on macos (which is based on llvm6)
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7)
 #else
@@ -603,15 +604,13 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #endif
 
 #ifndef qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#elif defined(__clang__) && !defined(__APPLE__)
+
+#if defined(__clang__) && !defined(__APPLE__)
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 5))
-#elif defined(__GNUC__)
-#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ == 8)
 #else
 #define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy 0
 #endif
+
 #endif
 
 /**
