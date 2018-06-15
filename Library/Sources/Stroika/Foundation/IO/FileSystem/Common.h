@@ -30,7 +30,7 @@
 
 // clang-format off
 #if !(__cpp_lib_filesystem >= 201603) 
-#if (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>))
+#if (__cpp_lib_experimental_filesystem >= 201406 || __has_include(<experimental/filesystem>)) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 namespace std {
     namespace filesystem {
         using namespace std::experimental::filesystem;
