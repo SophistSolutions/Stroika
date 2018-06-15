@@ -13,12 +13,12 @@ MACHINE=StroikaTestVM-Ubuntu1804-1 USE_TEST_BASENAME=Ubuntu1804_x86_64 DO_ONLY_D
     ./ScriptsLib/RunRemoteRegressionTests.sh
 ~~~
      
-     * $TEST_TARGET=MacOS_XCode9.3 
+     * $TEST_TARGET=MacOS_XCode10
      
-       PerformanceDump-MacOS_XCode9.3-$VER.txt REGRESSION-TESTS-MacOS_XCode9.3-$VER-OUT.txt
+       PerformanceDump-MacOS_XCode10-$VER.txt REGRESSION-TESTS-MacOS_XCode10-$VER-OUT.txt
      
 ~~~
-MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode9.3 \
+MACHINE=lewis-Mac USE_TEST_BASENAME=MacOS_XCode10 \
     ./ScriptsLib/RunRemoteRegressionTests.sh
 ~~~
 
