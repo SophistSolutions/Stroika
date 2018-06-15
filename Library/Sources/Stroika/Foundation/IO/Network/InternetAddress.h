@@ -321,8 +321,6 @@ namespace Stroika {
 #if qCompilerAndStdLib_constexpr_union_variants_Buggy
                     extern const InternetAddress kAddrAny; // INADDR_ANY
                     extern const InternetAddress kLocalhost;
-#elif qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
-//we cannot 'forward declare'
 #else
                     /**
                      *  Declared const, but defined constexpr
@@ -336,8 +334,6 @@ namespace Stroika {
                     extern const InternetAddress kAddrAny; // in6addr_any
                     extern const InternetAddress kLocalhost;
                     extern const InternetAddress kV4MappedLocalhost;
-#elif qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
-//we cannot 'forward declare'
 #else
                     /**
                      *  Declared const, but defined constexpr

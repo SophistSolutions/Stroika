@@ -278,23 +278,6 @@ ABORTING...
 #endif
 
 /*
-@ see https://stroika.atlassian.net/browse/STK-635
-
-@DESCRIPTION:   http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
-*/
-#ifndef qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 8) || ((__clang_major__ == 8) && (__clang_minor__ <= 1)))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 9)))
-#else
-#define qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy 0
-#endif
-
-#endif
-
-/*
  *  This ONLY affects arm-linux-gnueabihf-g++-7
  *
  ... (7z/CharacterDelimitedLines/INI/JSON/XML/Zip)  (scp ../Builds/raspberrypi-gcc-7-sanitize/Test30
@@ -459,7 +442,6 @@ http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3797.pdf
     contain an initializer.
 
 
-@see also qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy - which provides another possible workaround 
 http://stackoverflow.com/questions/24342455/nested-static-constexpr-of-incomplete-type-valid-c-or-not
 that doesn't work (duplicate definitions - works in a single file but not across multiple files)
 
