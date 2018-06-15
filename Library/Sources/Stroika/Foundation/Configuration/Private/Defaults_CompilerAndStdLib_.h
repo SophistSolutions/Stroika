@@ -866,6 +866,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 #endif
 
 /**
+ *  @see https://bugs.llvm.org/show_bug.cgi?id=37818
+ *
         condition_variable::wait_for(unique_lock<mutex>& __lk,
                                      const chrono::duration<_Rep, _Period>& __d)
         {
