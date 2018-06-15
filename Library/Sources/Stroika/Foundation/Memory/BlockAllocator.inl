@@ -203,7 +203,7 @@ namespace Stroika {
                     std::this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                     goto again;
                 }
-                // if we got here, p contains the real head
+                // if we got here, p contains the real head, and have a pseudo lock
                 if (p == nullptr) {
                     p = GetMem_Util_ (SIZE);
                 }
