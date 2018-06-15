@@ -1046,6 +1046,7 @@ NOTE:
 #ifndef qCompilerAndStdLib_quick_exit_Buggy
 
 #if defined(__clang__) && defined(__APPLE__)
+// Still broken XCode 10 - beta
 #define qCompilerAndStdLib_quick_exit_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #else
 #define qCompilerAndStdLib_quick_exit_Buggy 0
