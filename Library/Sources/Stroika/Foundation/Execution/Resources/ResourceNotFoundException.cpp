@@ -13,9 +13,11 @@ using namespace Stroika::Foundation::Execution;
 
 /*
  ********************************************************************************
- ************************ OperationNotSupportedException ************************
+ ************************** ResourceNotFoundException ***************************
  ********************************************************************************
  */
+const ResourceNotFoundException ResourceNotFoundException::kThe;
+
 ResourceNotFoundException::ResourceNotFoundException ()
     : StringException (String_Constant (L"Resource Not Found"))
 {

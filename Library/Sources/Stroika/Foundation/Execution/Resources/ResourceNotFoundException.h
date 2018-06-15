@@ -23,7 +23,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                static inline const ResourceNotFoundException kThe;
+                static const ResourceNotFoundException kThe;
             };
         }
     }
