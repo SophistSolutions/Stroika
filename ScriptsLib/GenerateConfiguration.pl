@@ -1354,6 +1354,7 @@ sub PostProcessOptions_ ()
 			if ("$^O" eq "darwin") {
 				#xcode not supporting filesystem API (so use boost)
 				#$EXTRA_SUFFIX_LINKER_ARGS .= " -lc++experimental";
+				##qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 				if ($FEATUREFLAG_boost ne $LIBFEATUREFLAG_No) {
 					push @LIB_DEPENDENCIES_ADD, "-lboost_system";
 					push @LIB_DEPENDENCIES_ADD, "-lboost_filesystem";

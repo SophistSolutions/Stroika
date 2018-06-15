@@ -9,7 +9,7 @@
 // clang-format off
 #if __has_include(<filesystem>)
 #include <filesystem>
-#elif __has_include(<experimental/filesystem>)
+#elif __has_include(<experimental/filesystem>) && !qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
 #include <experimental/filesystem>
 #elif qHasFeature_boost
 #include <boost/filesystem.hpp>

@@ -212,6 +212,19 @@ error C2719: 'end': formal parameter with requested alignment of 8 won't be alig
 #endif
 
 /*
+ *	in xcode 10 (beta) the headers for filesystem are there but I cannot find libraries, so disable for now... --LGP 2018-06-15
+ */
+#ifndef qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#else
+#define qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy 0
+#endif
+
+#endif
+
+/*
   *     Assert (::sem_init (&fSem_, kpshared, defaultValue) == 0) failed in 'Stroika::Foundation::Execution::Platform::POSIX::SemWaitableEvent::SemWaitableEvent()'; SemWaitableEvent.cpp:26
 ABORTING...
   *
