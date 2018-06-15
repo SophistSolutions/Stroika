@@ -109,7 +109,7 @@ namespace Stroika {
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
                 static Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
 #else
-                static inline Time::DurationSecondsType sThreadAbortCheckFrequency_Default;
+                static inline Time::DurationSecondsType sThreadAbortCheckFrequency_Default{2.5};
 #endif
                 Time::DurationSecondsType fThreadAbortCheckFrequency{sThreadAbortCheckFrequency_Default};
 
