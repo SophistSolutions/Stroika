@@ -9,11 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
-            }
+namespace Stroika::Foundation {
+    namespace IO {
+        namespace FileSystem {
         }
     }
 }

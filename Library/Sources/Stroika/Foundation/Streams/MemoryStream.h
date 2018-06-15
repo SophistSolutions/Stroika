@@ -29,141 +29,139 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
+namespace Stroika::Foundation {
+    namespace Streams {
 
+        /**
+         *  \brief  Simplest to use InputOutputStream; MemoryStream can be written to, and then the raw of data retrieved.
+         *
+         *  MemoryStream is Seekable.
+         *
+         *  Since MemoryStream keeps its data all in memory, it has the limitation that
+         *  attempts to seek or write more than will fit in RAM will fail (with an exception).
+         *
+         *  Data written to the memory stream can then be read from the memory stream.
+         *
+         *  \note   NB: This class COULD have been called MemoryInputOutputStream.
+         *
+         *  \note   MemoryStream is NOT suitable for synchonized reading and writing between two threads (producer / consumer pattern).
+         *          Reads return EOF instead of blocking (plus the lack of internal syncrhonization).
+         *
+         *          @see SharedMemoryStream
+         *
+         *  @see ExternallyOwnedMemoryInputStream
+         *
+         *  \par Example Usage
+         *      \code
+         *          BLOB                    blob    =   ReadRaw ();
+         *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte>::New (blob));
+         *      \endcode
+         */
+        template <typename ELEMENT_TYPE>
+        class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
+        public:
             /**
-             *  \brief  Simplest to use InputOutputStream; MemoryStream can be written to, and then the raw of data retrieved.
-             *
-             *  MemoryStream is Seekable.
-             *
-             *  Since MemoryStream keeps its data all in memory, it has the limitation that
-             *  attempts to seek or write more than will fit in RAM will fail (with an exception).
-             *
-             *  Data written to the memory stream can then be read from the memory stream.
-             *
-             *  \note   NB: This class COULD have been called MemoryInputOutputStream.
-             *
-             *  \note   MemoryStream is NOT suitable for synchonized reading and writing between two threads (producer / consumer pattern).
-             *          Reads return EOF instead of blocking (plus the lack of internal syncrhonization).
-             *
-             *          @see SharedMemoryStream
-             *
-             *  @see ExternallyOwnedMemoryInputStream
-             *
+             *  'MemoryStream' is a quasi-namespace: use Ptr or New () members.
+             */
+            MemoryStream ()                    = delete;
+            MemoryStream (const MemoryStream&) = delete;
+
+        public:
+            class Ptr;
+
+        public:
+            /**
              *  \par Example Usage
              *      \code
-             *          BLOB                    blob    =   ReadRaw ();
-             *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte>::New (blob));
+             *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
+             *          DataExchange::Variant::JSON::Writer ().Write (v, out);
+             *          string xxx = out.As<string> ();
+             *      \endcode
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized">Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized</a>
+             */
+            static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnownInternallySynchronized);
+            static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+            static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+            static Ptr New (const Memory::BLOB& blob);
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+            static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
+
+        private:
+            class Rep_;
+
+        private:
+            using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
+        };
+
+        /**
+         *  Ptr is a copyable smart pointer to a MemoryStream.
+         *
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+         */
+        template <typename ELEMENT_TYPE>
+        class MemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
+        private:
+            using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+
+        public:
+            /**
+             *  \par Example Usage
+             *      \code
+             *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
+             *          DataExchange::Variant::JSON::Writer ().Write (v, out);
+             *          string xxx = out.As<string> ();
              *      \endcode
              */
-            template <typename ELEMENT_TYPE>
-            class MemoryStream : public InputOutputStream<ELEMENT_TYPE> {
-            public:
-                /**
-                 *  'MemoryStream' is a quasi-namespace: use Ptr or New () members.
-                 */
-                MemoryStream ()                    = delete;
-                MemoryStream (const MemoryStream&) = delete;
+            Ptr () = delete; // 95% of time would be a bug - init with nullptr
+            // allow no-arg CTOR when we've converted - not bad - just bad now cuz prev sematnics
+            Ptr (nullptr_t) {}
+            Ptr (const Ptr& from) = default;
 
-            public:
-                class Ptr;
+        protected:
+            Ptr (const shared_ptr<Rep_>& from);
 
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
-                 *          DataExchange::Variant::JSON::Writer ().Write (v, out);
-                 *          string xxx = out.As<string> ();
-                 *      \endcode
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized">Rep-Inside-Ptr-Must-Be-Externally-Syncrhonized</a>
-                 */
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized = Execution::eNotKnownInternallySynchronized);
-                static Ptr New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
-                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                static Ptr New (const Memory::BLOB& blob);
-                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
+        public:
+            nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
-            private:
-                class Rep_;
-
-            private:
-                using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
-            };
-
+        public:
             /**
-             *  Ptr is a copyable smart pointer to a MemoryStream.
+             *  Convert the current contents of this MemoryStream into one of the "T" representations.
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter">C++-Standard-Thread-Safety-For-Envelope-But-Ambiguous-Thread-Safety-For-Letter/a>
+             *  Only specifically specialized variants are supported. T can be one of:
+             *      o   vector<ElementType>
+             *
+             *  And if ElementType is Memory::Byte, then T can also be one of:
+             *      o   Memory::BLOB
+             *      o   string
+             *
+             *  And if ElementType is Characters::Character, then T can also be one of:
+             *      o   String
              */
-            template <typename ELEMENT_TYPE>
-            class MemoryStream<ELEMENT_TYPE>::Ptr : public InputOutputStream<ELEMENT_TYPE>::Ptr {
-            private:
-                using inherited = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
+            template <typename T>
+            nonvirtual T As () const;
 
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          Streams::MemoryStream<Byte>::Ptr out = Streams::MemoryStream<Byte>::New ();
-                 *          DataExchange::Variant::JSON::Writer ().Write (v, out);
-                 *          string xxx = out.As<string> ();
-                 *      \endcode
-                 */
-                Ptr () = delete; // 95% of time would be a bug - init with nullptr
-                // allow no-arg CTOR when we've converted - not bad - just bad now cuz prev sematnics
-                Ptr (nullptr_t) {}
-                Ptr (const Ptr& from) = default;
+        private:
+            friend class MemoryStream;
+        };
 
-            protected:
-                Ptr (const shared_ptr<Rep_>& from);
+        template <>
+        template <>
+        Memory::BLOB MemoryStream<Memory::Byte>::Ptr::As () const;
+        template <>
+        template <>
+        string MemoryStream<Memory::Byte>::Ptr::As () const;
+        template <>
+        template <>
+        vector<Memory::Byte> MemoryStream<Memory::Byte>::Ptr::As () const;
 
-            public:
-                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-            public:
-                /**
-                 *  Convert the current contents of this MemoryStream into one of the "T" representations.
-                 *
-                 *  Only specifically specialized variants are supported. T can be one of:
-                 *      o   vector<ElementType>
-                 *
-                 *  And if ElementType is Memory::Byte, then T can also be one of:
-                 *      o   Memory::BLOB
-                 *      o   string
-                 *
-                 *  And if ElementType is Characters::Character, then T can also be one of:
-                 *      o   String
-                 */
-                template <typename T>
-                nonvirtual T As () const;
-
-            private:
-                friend class MemoryStream;
-            };
-
-            template <>
-            template <>
-            Memory::BLOB MemoryStream<Memory::Byte>::Ptr::As () const;
-            template <>
-            template <>
-            string MemoryStream<Memory::Byte>::Ptr::As () const;
-            template <>
-            template <>
-            vector<Memory::Byte> MemoryStream<Memory::Byte>::Ptr::As () const;
-
-            template <>
-            template <>
-            Characters::String MemoryStream<Characters::Character>::Ptr::As () const;
-            template <>
-            template <>
-            vector<Characters::Character> MemoryStream<Characters::Character>::Ptr::As () const;
-        }
+        template <>
+        template <>
+        Characters::String MemoryStream<Characters::Character>::Ptr::As () const;
+        template <>
+        template <>
+        vector<Characters::Character> MemoryStream<Characters::Character>::Ptr::As () const;
     }
 }
 

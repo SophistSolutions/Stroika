@@ -29,81 +29,79 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sycn form - using direct mutex
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
+namespace Stroika::Foundation {
+    namespace Streams {
 
+        /**
+         *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
+         *          This is useful if calls to the underling stream source can be expensive. This class
+         *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
+         *
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+         */
+        template <typename ELEMENT_TYPE>
+        class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
+        public:
+            BufferedInputStream ()                           = delete;
+            BufferedInputStream (const BufferedInputStream&) = delete;
+
+        public:
+            class Ptr;
+
+        public:
             /**
-             *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
-             *          This is useful if calls to the underling stream source can be expensive. This class
-             *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
+             *  \par Example Usage
+             *      \code
+             *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
+             *      \endcode
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+             *  \par Example Usage
+             *      \code
+             *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
+             *      \endcode
              */
-            template <typename ELEMENT_TYPE>
-            class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
-            public:
-                BufferedInputStream ()                           = delete;
-                BufferedInputStream (const BufferedInputStream&) = delete;
+            static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+            static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
 
-            public:
-                class Ptr;
+        private:
+            class Rep_;
 
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
-                 *      \endcode
-                 */
-                static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+        private:
+            using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
+        };
 
-            private:
-                class Rep_;
+        /**
+         *  Ptr is a copyable smart pointer to a BufferedInputStream.
+         */
+        template <typename ELEMENT_TYPE>
+        class BufferedInputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
+        private:
+            using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
 
-            private:
-                using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
-            };
-
+        public:
             /**
-             *  Ptr is a copyable smart pointer to a BufferedInputStream.
+             *  \par Example Usage
+             *      \code
+             *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
+             *      \endcode
              */
-            template <typename ELEMENT_TYPE>
-            class BufferedInputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
-            private:
-                using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
+            Ptr ()                = default;
+            Ptr (const Ptr& from) = default;
 
-            public:
-                /**
-                *  \par Example Usage
-                *      \code
-                *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
-                *      \endcode
-                *
-                *  \par Example Usage
-                *      \code
-                *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
-                *      \endcode
-                */
-                Ptr ()                = default;
-                Ptr (const Ptr& from) = default;
+        protected:
+            Ptr (const shared_ptr<Rep_>& from);
 
-            protected:
-                Ptr (const shared_ptr<Rep_>& from);
+        public:
+            nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
-            public:
-                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-            private:
-                friend class BufferedInputStream;
-            };
-        }
+        private:
+            friend class BufferedInputStream;
+        };
     }
 }
 

@@ -10,23 +10,21 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
+namespace Stroika::Foundation {
+    namespace Streams {
 
-            /*
-             ********************************************************************************
-             **************************** Streams::EOFException *****************************
-             ********************************************************************************
-             */
-            inline EOFException::EOFException ()
-                : EOFException (false)
-            {
-            }
-            inline bool EOFException::GetPartialReadCompleted () const
-            {
-                return fPartialReadCompleted_;
-            }
+        /*
+         ********************************************************************************
+         **************************** Streams::EOFException *****************************
+         ********************************************************************************
+         */
+        inline EOFException::EOFException ()
+            : EOFException (false)
+        {
+        }
+        inline bool EOFException::GetPartialReadCompleted () const
+        {
+            return fPartialReadCompleted_;
         }
     }
 }

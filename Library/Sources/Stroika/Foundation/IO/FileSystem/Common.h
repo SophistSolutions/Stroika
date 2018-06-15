@@ -46,26 +46,24 @@ namespace std {
 #endif
 // clang-format on
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation {
+    namespace IO {
+        namespace FileSystem {
 
 // clang-format off
 #if __has_include(<filesystem>) || __has_include(<experimental/filesystem>)
                 using namespace std::filesystem;
 #endif
-                // clang-format on
+            // clang-format on
 
-                using Characters::String;
-                using Memory::Byte;
-                using Time::DateTime;
+            using Characters::String;
+            using Memory::Byte;
+            using Time::DateTime;
 
-                /**
-                 *  @todo MAYBNE MAKE UNSINGED???
-                 */
-                using FileOffset_t = int64_t;
-            }
+            /**
+             *  @todo MAYBNE MAKE UNSINGED???
+             */
+            using FileOffset_t = int64_t;
         }
     }
 }
