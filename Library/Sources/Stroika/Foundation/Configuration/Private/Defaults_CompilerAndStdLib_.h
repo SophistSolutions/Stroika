@@ -603,16 +603,6 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 #endif
 #endif
 
-#ifndef qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy
-
-#if defined(__clang__) && !defined(__APPLE__)
-#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 5))
-#else
-#define qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy 0
-#endif
-
-#endif
-
 /**
 Compiling  $StroikaRoot/Library/Sources/Stroika/Foundation/Configuration/VersionDefs.cpp...
 Locale.cpp: In function ‘Stroika::Foundation::Characters::String Stroika::Foundation::Configuration::FindLocaleName(const Stroika::Foundation::Characters::String&, const Stroika::Foundation::Characters::String&)’:
