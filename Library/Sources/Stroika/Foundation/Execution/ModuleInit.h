@@ -12,8 +12,6 @@
 #include "../Memory/Common.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  * TODO
  *
  *      @todo   Consider if we should add assertion usage here. Trouble is - interdependenceis may

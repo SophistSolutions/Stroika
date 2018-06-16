@@ -15,8 +15,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  *
  *  @todo   Consider doing GetMem_Util_ code outside of the context of the lock-guard, and if
  *          we get multiple results, just patch them into the linked list. That way in case of

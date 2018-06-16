@@ -13,8 +13,6 @@
 #include "../../Streams/InputStream.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  *  TODO:
  *      @todo -- RETHINK IF RESULTS SB SAME REGARDLESS OF ENDIAN - NOT CONSISTENT!!!! --LGP 2015-08-26
  *

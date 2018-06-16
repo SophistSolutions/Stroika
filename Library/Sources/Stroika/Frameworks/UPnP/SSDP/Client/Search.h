@@ -16,8 +16,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *
  *      @todo   must re-read ssdp spec for exact format of messages!

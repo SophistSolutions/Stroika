@@ -16,8 +16,6 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  *  \note Testing Note
  *        This code was tested and used by a client as of around Stroika v2.0a204, but may not have been used since, and
  *        probably has not undergone testing since. It could have small breaks, but I dont have stuff with which to test, so

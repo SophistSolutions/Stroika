@@ -9,8 +9,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *      @todo   Did super crudy implementation: try to redo with templates...
  *
  *      @todo   Make sure not actually generating code in release builds

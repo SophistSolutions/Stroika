@@ -11,8 +11,6 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  * TODO:
  *      @todo   Very VERY primitive linguistic support, but this could easily evolve over time. Led has a bunch of
  *              lingusitic code I could move here, and I'm sure I could dig up more...

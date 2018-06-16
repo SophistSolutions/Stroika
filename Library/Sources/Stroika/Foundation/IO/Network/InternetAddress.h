@@ -24,8 +24,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *      @todo   If possible (I think  yes) have method on InternetAddress() to return Scope (like local , global etc).
  *

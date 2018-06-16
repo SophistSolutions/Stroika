@@ -14,8 +14,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *      @todo   Clearly DOCUMENT and CHECK assumption in this code that X-value is non-decreasingly a function of bucket#
  *              In debug build, could do a pre-pass to assert this (if its not otherwise easy to test/verify)
  *

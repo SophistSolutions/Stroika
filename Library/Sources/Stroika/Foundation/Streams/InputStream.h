@@ -18,8 +18,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *  TODO:
  *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
  *              and be safely atomic (atomic stuff only an lssue for 'Synchronized' stream and could probably just

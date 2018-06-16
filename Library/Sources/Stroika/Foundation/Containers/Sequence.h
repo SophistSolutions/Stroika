@@ -19,8 +19,6 @@
 #include "Common.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *
  *  TODO:
  *

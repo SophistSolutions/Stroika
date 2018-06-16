@@ -13,8 +13,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  *      @todo   FLESH OUT HIGHLY EXPERIEMNTAL AND INCOMPLETE SHARED_IMPL_COPIER (HOPEFULLY WILL BE PART OF
  *              ENVELOPE THREAD SAFETY FIX). AND DOCUMENT!!!!
  *

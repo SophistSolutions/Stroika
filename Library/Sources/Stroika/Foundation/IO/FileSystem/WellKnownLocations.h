@@ -11,8 +11,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *  TODO:
  *      @todo   Implement caching of computed well known directory locations (done add hoc in some cases)
  *

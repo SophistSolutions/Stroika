@@ -12,8 +12,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  *      @todo   Consider making DurationSecondsType = long double. Tried and worked, but didnt have time
  *              to test impact/performance, and possibly pointless without changing internal rep of Duration at the same time.
  */

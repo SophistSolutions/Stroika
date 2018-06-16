@@ -13,8 +13,6 @@
 #include "../../Streams/InputStream.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  *  TODO:
  *      @todo   Can we overload function templates? Diff # template parms? So RESULT_TYPE is second arg? We
  *              almost always want to infer the 'T' arg. But if you specify result type you dont want to

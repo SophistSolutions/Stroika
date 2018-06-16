@@ -16,11 +16,9 @@
 #include "../Advertisement.h"
 
 /**
-*  \file
-*
-*  \version    <a href="Code-Status.md#Beta">Beta</a>
-*
-* TODO:
+ *  \file
+ *
+ * TODO:
  *      @todo   Should probably add Network::NetlinkListener - to check for net up/down messages, and
  *              redo multicast (as we do for server).
  *

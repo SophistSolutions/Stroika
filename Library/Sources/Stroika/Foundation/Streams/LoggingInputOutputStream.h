@@ -10,11 +10,9 @@
 #include "InternallySyncrhonizedInputOutputStream.h"
 
 /**
-*  \file
-*
-*  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
-*
-*/
+ *  \file
+ *
+ */
 
 namespace Stroika {
     namespace Foundation {

@@ -22,8 +22,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
- *
  * TODO:
  *      @todo   Need DefaultNames<> for enums in TimeOfDay module
  *

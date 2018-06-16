@@ -16,8 +16,6 @@
 #include "WaitableEvent.h"
 
 /*
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *      @todo   Consider if RemoveHead () should throw other exception at EOF?
  *

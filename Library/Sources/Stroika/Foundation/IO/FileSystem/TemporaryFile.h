@@ -20,8 +20,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  * TODO:
  *      @todo   Very rough draft based on code used in HealthFrame. Major cleanups required.
  *

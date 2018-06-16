@@ -13,8 +13,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
- *
  * TODO:
  *      @todo   IF we ever fix Duration to use constexpr for its kMin/kMax, then we can consider doing likewise here, and
  *              losing the ModuleInit<> code (instead using static  constexpr Duration  kLowerBound;).

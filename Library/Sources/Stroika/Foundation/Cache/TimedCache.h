@@ -21,8 +21,6 @@
 /**
  *      \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  * TODO:
  *
  *      @todo   fNextAutoclearAt is HORRIBLE mechnism to figure out if we need to walk list and

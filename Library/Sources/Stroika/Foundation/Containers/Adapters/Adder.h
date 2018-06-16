@@ -17,15 +17,7 @@
 
 /*
  *  \file
- *              ****VERY ROUGH DRAFT
  *
- *  DONT like how its done - with dependencies - but very helpful.
- *  Dont want to add to Iterable (though that would make some sense) - cuz:
- *       *STL stuff doesn't work with that
- *       *Up til now - Iterable has been all about readonly operations. Could have UpdatableIterable intermediate class...
- *
- *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
  *
@@ -39,8 +31,6 @@ namespace Stroika {
                 using Configuration::ArgByValueType;
 
                 /*
-                 *  utility we might want to move someplace else
-                 *** EXPERIMENTAL - LGP 2016-07-22
                  */
                 template <typename CONTAINER_TYPE>
                 struct Adder {

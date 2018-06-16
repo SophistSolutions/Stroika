@@ -1239,9 +1239,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_SparseSortedMapping.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -1569,12 +1566,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_SparseArray.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Endian.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
@@ -1875,9 +1866,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.h">
       <Filter>Sources\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetProtocol\ICMP.h">
       <Filter>Sources\IO\Network\InternetProtocol</Filter>
     </ClInclude>
@@ -1961,9 +1949,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.h">
-      <Filter>Sources\Containers\Factory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.h">
       <Filter>Sources\Streams</Filter>
@@ -2973,9 +2958,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Makefile">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Makefile">
       <Filter>Sources\Cryptography</Filter>
     </None>
@@ -3179,9 +3161,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Versions.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.inl">
-      <Filter>Sources\Containers\Factory</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\SplitterOutputStream.inl">
       <Filter>Sources\Streams</Filter>

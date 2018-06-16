@@ -27,8 +27,6 @@ using IPPROTO = int;
 
 /**
  *  \file
- *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
 namespace Stroika {

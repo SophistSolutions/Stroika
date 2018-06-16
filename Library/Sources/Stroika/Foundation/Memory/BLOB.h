@@ -20,8 +20,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *      @todo   SHOULD add template CTOR args - but must be careful to say iterator <Byte> and
  *              only (or handle differently) random access iterators versus just plain forward iteraotrs.

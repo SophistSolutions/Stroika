@@ -23,7 +23,6 @@
 #include "Router.h"
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  */
 
 namespace Stroika {

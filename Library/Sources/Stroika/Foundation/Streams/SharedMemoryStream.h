@@ -17,8 +17,6 @@
 /*
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  *  TODO:
  *      @todo https://stroika.atlassian.net/browse/STK-584 - 
  *            provide option for SharedMemoryStream so not seekable - less memory

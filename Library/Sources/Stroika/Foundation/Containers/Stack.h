@@ -14,8 +14,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *
  *  TODO:
  *      @todo   Add AddAll()  for now - that creates a temporary stack to revserse. But then use

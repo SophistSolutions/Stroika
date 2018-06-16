@@ -16,8 +16,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *      @todo   For CPUInfo, we have socketcount, and #logical cores (what msft calls logical processors in some places)
  *              but we could use a placeholder for #physical cores, maybe. MSFT has this. Not sure its sueful. Document

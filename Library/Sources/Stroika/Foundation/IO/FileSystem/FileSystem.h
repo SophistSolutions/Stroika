@@ -18,8 +18,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  * TODO:
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-612

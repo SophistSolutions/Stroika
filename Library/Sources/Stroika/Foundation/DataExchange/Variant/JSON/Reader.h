@@ -16,8 +16,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *      @todo   Review \u style Unicode characters (such as "\uFDD0") parsing. Its mostly right, but
  *              some sloppiness about surrogates, versus 4-byte wchar_t, versus char16_, char32_t, etc.

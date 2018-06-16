@@ -15,15 +15,13 @@
 #include "../../../Memory/Common.h"
 
 /**
-*
-*  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
-*
-*
-* TODO:
-*
-*      @see https://en.wikipedia.org/w/index.php?title=IPv4
-*
-*/
+ *
+ *
+ * TODO:
+ *
+ *      @see https://en.wikipedia.org/w/index.php?title=IPv4
+ *
+ */
 
 namespace Stroika {
     namespace Foundation {

@@ -24,8 +24,6 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  * TODO:
  *
  *      @todo   Do a better job handling default/reasonable timeout time for service to start/stop/restart.

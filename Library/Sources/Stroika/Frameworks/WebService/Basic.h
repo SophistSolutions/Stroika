@@ -16,8 +16,6 @@
 /*
  * TODO:
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  */
 
 namespace Stroika {

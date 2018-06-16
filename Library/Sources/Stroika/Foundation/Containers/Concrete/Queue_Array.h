@@ -11,8 +11,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *  TODO:
  *      @todo   Add "MAX ENTRIES" feature - so throws/crashes when exceeded. Useful for a variety
  *              of queues, but I'm thinking mostly of Queue of incoming singals and need to avoid

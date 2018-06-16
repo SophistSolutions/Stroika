@@ -13,13 +13,11 @@
 #include "../../Configuration/Common.h"
 
 /**
-*  \file
-*
-*  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
-*
-* TODO:
-*
-*/
+ *  \file
+ *
+ * TODO:
+ *
+ */
 
 namespace Stroika {
     namespace Foundation {

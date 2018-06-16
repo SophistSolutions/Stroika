@@ -23,8 +23,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *  TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-621 stopped testing regularly in Stroika
  *              2.0a217 (october 2017).

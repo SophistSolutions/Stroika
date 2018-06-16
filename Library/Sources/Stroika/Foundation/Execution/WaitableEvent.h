@@ -15,8 +15,6 @@
 #include "Exceptions.h"
 
 /**
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *
  *      @todo   Consider if there is a need for timed mutexes.

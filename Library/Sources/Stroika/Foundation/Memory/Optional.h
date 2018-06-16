@@ -25,8 +25,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  *  TODO:
  *
  *      @todo   Consider if we should maintain thread unsfafe peek() method.

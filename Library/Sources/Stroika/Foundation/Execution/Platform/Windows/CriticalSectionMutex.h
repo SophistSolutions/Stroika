@@ -16,8 +16,6 @@
 
 /**
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  */
 
 namespace Stroika {

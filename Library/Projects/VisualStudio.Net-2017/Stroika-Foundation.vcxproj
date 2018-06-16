@@ -1265,13 +1265,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_ChunkedArray.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_SparseSortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_SparseArray.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.h" />
@@ -1300,7 +1297,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Queue_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Sequence_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Set_Factory.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedCollection_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMapping_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMultiSet_Factory.h" />
@@ -1320,7 +1316,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
@@ -1718,7 +1713,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Queue_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Sequence_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\Set_Factory.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedAssociation_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedCollection_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMapping_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Factory\SortedMultiSet_Factory.inl" />
@@ -1740,7 +1734,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedKeyedCollection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMultiSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />

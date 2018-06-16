@@ -15,8 +15,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *      @todo   Better document/enforce limits on range of values for version#. Note - we have some extra bits because
  *              verStage only requires 3 (so 8+8+3+8_1 used, leaving 4).

@@ -13,8 +13,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *  @see    http://www.azillionmonkeys.com/qed/hash.html
  *
  * TODO:

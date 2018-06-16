@@ -15,8 +15,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  * TODO:
  *      @todo   Use Exeuction??xx?? - caller - handler for thread interrupts..
  *

@@ -20,8 +20,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *
  *      @todo   eFailedToReadFile should be broken into failed to read, and failed to upgrade.

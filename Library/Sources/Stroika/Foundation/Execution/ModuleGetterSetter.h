@@ -11,8 +11,6 @@
 #include "../Memory/Optional.h"
 
 /**
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Late</a>
- */
 
 namespace Stroika {
     namespace Foundation {

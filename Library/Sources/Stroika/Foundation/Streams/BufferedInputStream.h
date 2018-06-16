@@ -16,8 +16,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *      @todo   BufferedInputStream::IRep_ IMPLEMENTATION NEEDED. It does no buffering!
  *
  *      @todo   Seekable! Must think out if this should mixin Seekable or not. I THINK it must be.

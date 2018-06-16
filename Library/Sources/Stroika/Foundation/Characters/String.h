@@ -24,8 +24,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * Description:
  *
  *      This family of classes using something akin to the Letter/Envelope paradigm

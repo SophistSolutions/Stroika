@@ -18,8 +18,6 @@
 /*
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  *  TODO:
  *      @todo   add optional Options filter 'Set<String> fRestrictToVolumnesContainingPaths', or a regexp to match or
  *              a functional<>.

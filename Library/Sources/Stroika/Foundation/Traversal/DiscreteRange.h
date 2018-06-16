@@ -12,8 +12,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *  TODO:
  *      @todo   Consider if clearer having DiscreteRange aggregate Elements() instead of inheriting from
  *              Iterable. Would make construction, and coipying etc cheaper (esp when that feature

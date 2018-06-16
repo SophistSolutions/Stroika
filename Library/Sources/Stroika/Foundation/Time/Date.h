@@ -23,8 +23,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md">Alpha-Late</a>
- *
  * TODO:
  *
  *      @todo   Consider losing eEmptyDayOfMonth and eEmptyMonthOfYear and using Optional instead

@@ -15,8 +15,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  *  TODO:
  *
  *      @todo   Document (in some overall design doc) - the choice of As<> versus

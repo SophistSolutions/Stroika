@@ -16,8 +16,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  * TODO:
  *
  *      @todo   Figure out why we need todo

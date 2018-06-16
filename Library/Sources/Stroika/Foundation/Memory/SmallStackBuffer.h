@@ -12,8 +12,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
  *  TODO:
  *      @todo   Minor - but we could do better than alignas(size_t) by just adjusting the offset of the size pointer in the buff, and just assure
  *              buf already large enuf (ptr + alignof(size_t) - 1) % alignof(size_t)) + ptr;

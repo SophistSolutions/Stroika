@@ -22,8 +22,6 @@
 /**
  *  \file
  *
- *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
  * TODO:
  *
  *      @todo   Probably get rid of most 'filesystem' access methods. Instead, make overloaded methods in the FILESYSTEM

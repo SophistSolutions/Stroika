@@ -23,8 +23,6 @@
  */
 
 /*
- *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
- *
  * TODO:
  *      @todo get mkRequestHandler () overloads that take ARG_TYPE_1...N working with variadic templates. Got a FAILED start at that
  *            going in the .inl file, but I still need to read more about how to use variadic templates.
