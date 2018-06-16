@@ -560,7 +560,8 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 // surprising broken in clang++6 on linux, but not xcode10 (clang10) on macos (which is based on llvm6)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
 #elif defined(__GNUC__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 7)
+// tested still generates warning with gcc8
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (__GNUC__ <= 8)
 #else
 #define qCompiler_noSanitizeAttribute_Buggy 1
 #endif
