@@ -164,7 +164,7 @@ namespace Stroika {
                     OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
 
                 public:
-                    class Ptr;
+                    using typename OutputStream<Memory::Byte>::Ptr;
 
                 public:
                     /**
@@ -180,33 +180,6 @@ namespace Stroika {
                     using BLAH_            = OpenSSLOutputStream;
                     using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, BLAH_, OpenSSLOutputStream::Rep_>;
                 };
-
-                /**
-                 *  Ptr is a copyable smart pointer to a OpenSSLOutputStream.
-                 */
-                class OpenSSLOutputStream::Ptr : public Streams::OutputStream<Memory::Byte>::Ptr {
-                private:
-                    using inherited = Streams::OutputStream<Memory::Byte>::Ptr;
-
-                public:
-                    /**
-                    *  \par Example Usage
-                    *      \code
-                    *      \endcode
-                    */
-                    Ptr ()                = default;
-                    Ptr (const Ptr& from) = default;
-
-                protected:
-                    Ptr (const shared_ptr<Rep_>& from);
-
-                public:
-                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-                private:
-                    friend class OpenSSLOutputStream;
-                };
-
 #endif
             }
         }

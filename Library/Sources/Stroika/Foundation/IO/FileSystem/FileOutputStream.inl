@@ -12,43 +12,45 @@
 
 #include "../../Streams/BufferedOutputStream.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation {
+    namespace IO {
+        namespace FileSystem {
 
-                /*
-                 ********************************************************************************
-                 ******************************* FileOutputStream *******************************
-                 ********************************************************************************
-                 */
-                inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
-                {
-                    if (bufferedFlag == eBuffered) {
-                        return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fileName, flushFlag));
-                    }
-                    else {
-                        return FileOutputStream::New (fileName, flushFlag);
-                    }
+            /*
+             ********************************************************************************
+             ******************************* FileOutputStream *******************************
+             ********************************************************************************
+             */
+            inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (const String& fileName, FlushFlag flushFlag, BufferFlag bufferedFlag)
+            {
+                if (bufferedFlag == eBuffered) {
+                    return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fileName, flushFlag));
                 }
-                inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
-                {
-                    if (bufferedFlag == eBuffered) {
-                        return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fileName, appendFlag, flushFlag));
-                    }
-                    else {
-                        return FileOutputStream::New (fileName, appendFlag, flushFlag);
-                    }
+                else {
+                    return FileOutputStream::New (fileName, flushFlag);
                 }
-                inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
-                {
-                    if (bufferedFlag == eBuffered) {
-                        return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag));
-                    }
-                    else {
-                        return FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag);
-                    }
+            }
+            inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (const String& fileName, AppendFlag appendFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
+            {
+                if (bufferedFlag == eBuffered) {
+                    return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fileName, appendFlag, flushFlag));
                 }
+                else {
+                    return FileOutputStream::New (fileName, appendFlag, flushFlag);
+                }
+            }
+            inline Streams::OutputStream<Memory::Byte>::Ptr FileOutputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekableFlag, FlushFlag flushFlag, BufferFlag bufferedFlag)
+            {
+                if (bufferedFlag == eBuffered) {
+                    return Streams::BufferedOutputStream<Memory::Byte>::New (FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag));
+                }
+                else {
+                    return FileOutputStream::New (fd, adoptFDPolicy, seekableFlag, flushFlag);
+                }
+            }
+            inline auto FileOutputStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr
+            {
+                return Ptr{s};
             }
         }
     }

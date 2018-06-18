@@ -70,7 +70,7 @@ namespace Stroika {
                     static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
                 public:
-                    using typename InputStream<Memory::Byte>::Ptr;
+                    class Ptr;
 
                 public:
                     /**
@@ -97,10 +97,43 @@ namespace Stroika {
                 private:
                     class Rep_;
 
+                protected:
+                    /**
+                 *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
+                 */
+                    static Ptr _mkPtr (const shared_ptr<Rep_>& s);
+
                 private:
                     template <typename X>
                     using BLAH_            = FileInputStream;
                     using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, BLAH_, FileInputStream::Rep_>;
+                };
+
+                /**
+                 *  Ptr is a copyable smart pointer to a FileInputStream.
+                 */
+                class FileInputStream::Ptr : public Streams::InputStream<Memory::Byte>::Ptr {
+                private:
+                    using inherited = Streams::InputStream<Memory::Byte>::Ptr;
+
+                public:
+                    /**
+                     *  \par Example Usage
+                     *      \code
+                     *          Memory::BLOB b = IO::FileSystem::FileInputStream::Ptr{ IO::FileSystem::FileInputStream (fileName) }.ReadAll ();
+                     *      \endcode
+                     */
+                    Ptr ()                = delete;
+                    Ptr (const Ptr& from) = default;
+
+                protected:
+                    Ptr (const shared_ptr<Rep_>& from);
+
+                public:
+                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+
+                private:
+                    friend class FileInputStream;
                 };
             }
         }

@@ -424,7 +424,7 @@ auto OpenSSLInputStream::New (Execution::InternallySyncrhonized internallySyncrh
  */
 auto OpenSSLOutputStream::New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut) -> Ptr
 {
-    return make_shared<Rep_> (cryptoParams, direction, realOut);
+    return _mkPtr (make_shared<Rep_> (cryptoParams, direction, realOut));
 }
 
 auto OpenSSLOutputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const OutputStream<Byte>::Ptr& realOut) -> Ptr
@@ -438,15 +438,5 @@ auto OpenSSLOutputStream::New (Execution::InternallySyncrhonized internallySyncr
             RequireNotReached ();
             return New (cryptoParams, direction, realOut);
     }
-}
-
-/*
- ********************************************************************************
- ******************** Cryptography::OpenSSLOutputStream::Ptr ********************
- ********************************************************************************
- */
-OpenSSLOutputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited (from)
-{
 }
 #endif

@@ -272,15 +272,15 @@ namespace Stroika::Foundation {
 
         public:
             /**
-                 * The new position, measured in Stream element increments, is obtained by adding offset value to the position
-                 *  specified by whence.
-                 *
-                 *  Seek () past the end of stream or before the start is legal (not assertion error) - but may result in an exception (possibly not until next read).
-                 *
-                 *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
-                 *
-                 *  \req IsSeekable ()
-                 */
+             * The new position, measured in Stream element increments, is obtained by adding offset value to the position
+             *  specified by whence.
+             *
+             *  Seek () past the end of stream or before the start is legal (not assertion error) - but may result in an exception (possibly not until next read).
+             *
+             *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
+             *
+             *  \req IsSeekable ()
+             */
             nonvirtual SeekOffsetType Seek (SeekOffsetType offset) const;
             nonvirtual SeekOffsetType Seek (Whence whence, SignedSeekOffsetType offset) const;
 
