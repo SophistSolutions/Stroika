@@ -14,6 +14,7 @@ Stroika provides
   *  DataExchange (VariantValue, rich collection of data format serializer/deserializers - like JSON, object to/from serialziation mappings, and much more)
   *  Execution pattern classes (external process runner, synchonization patterns, blockingqueue, threadpools, and much more)
   *  Networking support (high level socket wrappers, Web client fetching)
+  *  Powerful streams library, with adapters for cryptophgraph, compression, text transforms, etc
   *  Framework libraries for web server, web services, UPnP, SSDP, text editing/word proocessor, system performance monitoring, and much more
   *  and much more...
 
@@ -22,6 +23,12 @@ Versions
   *  Stroika v2.0 is very stable, nearly complete, and requires C++14 or later. Stroika v2.0 is used to power a wide variety of open source and commercial applications.
 
   *  Stroika v2.1 is more actively evolving, and requires C++17 or later.
+
+Compilers / Platforms tested
+  *  Stroika v2.0
+     <br/>Regularly tesetd on x86, arm, gcc5 thru gcc8, clang 3 thru clang 6, XCode 8 thru 9.
+  *  Stroika v2.1
+     <br/>Regularly tesetd on x86, arm, gcc7 thru gcc8, clang 6, XCode 10.
 
 For more details on individual release changes, see:
 	[Release-Notes.md](Release-Notes.md)
