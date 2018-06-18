@@ -116,9 +116,7 @@ namespace Stroika {
                     class Rep_;
 
                 private:
-                    template <typename A>
-                    using B_               = iostream::InputStreamFromStdIStream<A, TRAITS>; // B_ trick cuz InternallySyncrhonizedInputStream expects one template param
-                    using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, B_, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
+                    using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>, typename InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_>;
                 };
 
                 /**

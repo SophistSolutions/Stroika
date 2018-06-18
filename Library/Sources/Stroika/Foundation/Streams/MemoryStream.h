@@ -26,7 +26,7 @@
  *      @todo   There should be some way to generically write vector<T> As<vector<T>>::Memory...(); For now I need
  *              multiple explicit template specailizations.
  *
- *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sync form - using direct mutex
+ *      @todo   https://stroika.atlassian.net/browse/STK-608 - probably be made more efficent in sync form - using direct mutex
  */
 
 namespace Stroika::Foundation {
@@ -98,7 +98,7 @@ namespace Stroika::Foundation {
             static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
         private:
-            using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
+            using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream<ELEMENT_TYPE>, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
         };
 
         /**

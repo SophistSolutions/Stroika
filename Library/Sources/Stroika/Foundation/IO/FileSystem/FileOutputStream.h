@@ -150,9 +150,7 @@ namespace Stroika::Foundation {
                 static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
             private:
-                template <typename X>
-                using BLAH_            = FileOutputStream;
-                using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, BLAH_, FileOutputStream::Rep_>;
+                using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, FileOutputStream, FileOutputStream::Rep_>;
             };
 
             /**

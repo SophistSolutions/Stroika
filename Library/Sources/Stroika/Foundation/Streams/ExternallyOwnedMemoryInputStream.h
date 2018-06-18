@@ -89,7 +89,7 @@ namespace Stroika::Foundation {
             class Rep_;
 
         private:
-            using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream, typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
+            using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>, typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
         };
     }
 }

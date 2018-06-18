@@ -9,33 +9,31 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
+namespace Stroika::Foundation {
+    namespace Streams {
 
-            /*
-             ********************************************************************************
-             *********************************** TextWriter::Ptr ****************************
-             ********************************************************************************
-             */
-            inline TextWriter::Ptr::Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from)
-                : inherited (from)
-            {
-            }
-            inline TextWriter::Ptr::Ptr (const OutputStream<Characters::Character>::Ptr& from)
-                : inherited (from)
-            {
-            }
+        /*
+         ********************************************************************************
+         *********************************** TextWriter::Ptr ****************************
+         ********************************************************************************
+         */
+        inline TextWriter::Ptr::Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from)
+            : inherited (from)
+        {
+        }
+        inline TextWriter::Ptr::Ptr (const OutputStream<Characters::Character>::Ptr& from)
+            : inherited (from)
+        {
+        }
 
-            /*
-             ********************************************************************************
-             *********************************** TextWriter *********************************
-             ********************************************************************************
-             */
-            inline auto TextWriter::New (const OutputStream<Characters::Character>::Ptr& src) -> Ptr
-            {
-                return src;
-            }
+        /*
+         ********************************************************************************
+         *********************************** TextWriter *********************************
+         ********************************************************************************
+         */
+        inline auto TextWriter::New (const OutputStream<Characters::Character>::Ptr& src) -> Ptr
+        {
+            return src;
         }
     }
 }

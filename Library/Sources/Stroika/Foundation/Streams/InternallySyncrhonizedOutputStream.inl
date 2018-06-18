@@ -18,7 +18,7 @@ namespace Stroika::Foundation {
          * InternallySyncrhonizedOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_
          ********************************************************************************
          */
-        template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
+        template <typename ELEMENT_TYPE, typename BASE_CLASS, typename BASE_REP_TYPE>
         class InternallySyncrhonizedOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Rep_ : public BASE_REP_TYPE {
         public:
             template <typename... ARGS>
@@ -76,7 +76,7 @@ namespace Stroika::Foundation {
          * InternallySyncrhonizedOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE> **
          ********************************************************************************
          */
-        template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
+        template <typename ELEMENT_TYPE, typename BASE_CLASS, typename BASE_REP_TYPE>
         template <typename... ARGS>
         inline auto InternallySyncrhonizedOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (ARGS&&... args) -> Ptr
         {

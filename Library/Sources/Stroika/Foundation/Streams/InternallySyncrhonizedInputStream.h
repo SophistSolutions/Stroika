@@ -27,10 +27,10 @@ namespace Stroika::Foundation {
 
         /**
          */
-        template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS = InputStream, typename BASE_REP_TYPE = typename BASE_CLASS<ELEMENT_TYPE>::_IRep>
-        class InternallySyncrhonizedInputStream : public BASE_CLASS<ELEMENT_TYPE> {
+        template <typename ELEMENT_TYPE, typename BASE_CLASS = InputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>
+        class InternallySyncrhonizedInputStream : public BASE_CLASS {
         private:
-            using inherited = BASE_CLASS<ELEMENT_TYPE>;
+            using inherited = BASE_CLASS;
 
         public:
             /**

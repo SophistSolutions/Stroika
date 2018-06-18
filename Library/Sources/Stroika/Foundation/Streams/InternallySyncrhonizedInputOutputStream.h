@@ -26,11 +26,13 @@ namespace Stroika::Foundation {
     namespace Streams {
 
         /**
+         *  Helper to wrap an existing stream in synchonized wrapper - like @see Execution::Synchonized - except this wrape
+         *  the underlying pointed to stream, not the external smart-pointer wrapper.
          */
-        template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS = InputOutputStream, typename BASE_REP_TYPE = typename BASE_CLASS<ELEMENT_TYPE>::_IRep>
-        class InternallySyncrhonizedInputOutputStream : public BASE_CLASS<ELEMENT_TYPE> {
+        template <typename ELEMENT_TYPE, typename BASE_CLASS = InputOutputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>
+        class InternallySyncrhonizedInputOutputStream : public BASE_CLASS {
         private:
-            using inherited = BASE_CLASS<ELEMENT_TYPE>;
+            using inherited = BASE_CLASS;
 
         public:
             /**
@@ -47,6 +49,13 @@ namespace Stroika::Foundation {
              *  \par Example Usage
              *      \code
              *          Streams::InputOutputStream<Byte>::Ptr syncStream = Streams::InternallySyncrhonizedInputOutputStream<Byte>::New (otherInputOutputStreamToBeSharedAcrossThread);
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, SocketStream, SocketStream::Rep_>;
+             *          Ptr unsyncStream;// = ... get from someplace - maybe make_shared<Rep_> ()...;
+             *          Ptr syncStream = InternalSyncRep_::New (unsyncStream);
              *      \endcode
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a>

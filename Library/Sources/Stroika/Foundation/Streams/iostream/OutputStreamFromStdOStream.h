@@ -90,9 +90,7 @@ namespace Stroika {
                     class Rep_;
 
                 private:
-                    template <typename A>
-                    using B_               = iostream::OutputStreamFromStdOStream<A, TRAITS>; // B_ trick cuz InternallySyncrhonizedOutputStream expects one template param
-                    using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, B_, typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
+                    using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>, typename OutputStreamFromStdOStream<ELEMENT_TYPE, TRAITS>::Rep_>;
                 };
 
                 /**

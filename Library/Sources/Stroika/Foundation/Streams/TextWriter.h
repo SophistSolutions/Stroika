@@ -45,123 +45,119 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-611 - some cases of Execution::InternallySyncrhonized are AssertNotImplemented on TextReader and TextWriter
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
+namespace Stroika::Foundation {
+    namespace Streams {
 
-            /**
-             *  \brief Take some binary output stream, and make it look like an output stream of (UNICODE) characters.
-             *
-             *  Obviously todo this, there may be some character set mapping/conversion needed. The object
-             *  takes constructor arguments to decide how this will he handled.
-             *
-             *  TextWriter is Seekable iff its constructed with a OutputStream<>::Ptr which is seekable.
-             *
-             *  \note   This API was called TextOutputStreamAdapter
-             *
-             *  \note   TextWriter aggregates its owned substream, so that a Close () on TextWriter
-             *          will Close that substream.
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
-             */
-            class TextWriter : public OutputStream<Characters::Character> {
-            public:
-                TextWriter ()                  = delete;
-                TextWriter (const TextWriter&) = delete;
+        /**
+         *  \brief Take some binary output stream, and make it look like an output stream of (UNICODE) characters.
+         *
+         *  Obviously todo this, there may be some character set mapping/conversion needed. The object
+         *  takes constructor arguments to decide how this will he handled.
+         *
+         *  TextWriter is Seekable iff its constructed with a OutputStream<>::Ptr which is seekable.
+         *
+         *  \note   This API was called TextOutputStreamAdapter
+         *
+         *  \note   TextWriter aggregates its owned substream, so that a Close () on TextWriter
+         *          will Close that substream.
+         *
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+         */
+        class TextWriter : public OutputStream<Characters::Character> {
+        public:
+            TextWriter ()                  = delete;
+            TextWriter (const TextWriter&) = delete;
 
-            public:
-                enum class Format : uint8_t {
-                    eUTF8WithBOM    = 1,
-                    eUTF8WithoutBOM = 2,
-                    eUTF8           = eUTF8WithBOM,
+        public:
+            enum class Format : uint8_t {
+                eUTF8WithBOM    = 1,
+                eUTF8WithoutBOM = 2,
+                eUTF8           = eUTF8WithBOM,
 
-                    eWCharTWithBOM    = 3,
-                    eWCharTWithoutBOM = 4,
-                    eWCharT           = eWCharTWithBOM,
-                };
-
-            public:
-                class Ptr;
-
-            public:
-                /**
-                 * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
-                 * If handled an OutputStream<Character> - it just passes through characters.
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
-                 *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
-                 *          ...
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
-                 *          textOut.Write (L"Hello World\n");
-                 *      \endcode
-                 */
-                static Ptr New (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
-                static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Characters::Character>::Ptr& src);
-
-            public:
-                /**
-                 */
-                nonvirtual TextWriter& operator= (const TextWriter&) = delete;
-
-            private:
-                class Seekable_UTF8_Rep_;
-                class Seekable_WCharT_Rep_;
-                class UnSeekable_UTF8_Rep_;
-                class UnSeekable_WCharT_Rep_;
-
-            private:
-                static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<Memory::Byte>::Ptr& src, Format format);
-
-            private:
-                template <typename X>
-                using BLAH_            = TextWriter;
-                using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Characters::Character, BLAH_, OutputStream<Characters::Character>::_IRep>;
+                eWCharTWithBOM    = 3,
+                eWCharTWithoutBOM = 4,
+                eWCharT           = eWCharTWithBOM,
             };
 
+        public:
+            class Ptr;
+
+        public:
             /**
-             *  Ptr is a copyable smart pointer to a TextWriter stream.
+             * IF TextWriter given an OutStream<Bytes>, it maps the characters according to the given code page info (@todo improve so generic code page support).
+             * If handled an OutputStream<Character> - it just passes through characters.
+             *
+             *  \par Example Usage
+             *      \code
+             *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
+             *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
+             *          ...
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
+             *          textOut.Write (L"Hello World\n");
+             *      \endcode
              */
-            class TextWriter::Ptr : public OutputStream<Characters::Character>::Ptr {
-            private:
-                using inherited = typename OutputStream<Characters::Character>::Ptr;
+            static Ptr New (const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
+            static Ptr New (const OutputStream<Characters::Character>::Ptr& src);
+            static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Memory::Byte>::Ptr& src, Format format = Format::eUTF8);
+            static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Characters::Character>::Ptr& src);
 
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
-                 *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
-                 *          ...
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
-                 *          textOut.Write (L"Hello World\n");
-                 *      \endcode
-                 */
-                Ptr ()                = default;
-                Ptr (const Ptr& from) = default;
-                Ptr (const OutputStream<Characters::Character>::Ptr& from);
+        public:
+            /**
+             */
+            nonvirtual TextWriter& operator= (const TextWriter&) = delete;
 
-            protected:
-                Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from);
+        private:
+            class Seekable_UTF8_Rep_;
+            class Seekable_WCharT_Rep_;
+            class UnSeekable_UTF8_Rep_;
+            class UnSeekable_WCharT_Rep_;
 
-            public:
-                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+        private:
+            static shared_ptr<OutputStream<Characters::Character>::_IRep> mk_ (const OutputStream<Memory::Byte>::Ptr& src, Format format);
 
-            private:
-                friend class TextWriter;
-            };
-        }
+        private:
+            using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Characters::Character, TextWriter, OutputStream<Characters::Character>::_IRep>;
+        };
+
+        /**
+         *  Ptr is a copyable smart pointer to a TextWriter stream.
+         */
+        class TextWriter::Ptr : public OutputStream<Characters::Character>::Ptr {
+        private:
+            using inherited = typename OutputStream<Characters::Character>::Ptr;
+
+        public:
+            /**
+             *  \par Example Usage
+             *      \code
+             *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (out, Streams::TextWriter::Format::eUTF8WithoutBOM);
+             *          textOut.Write (Characters::Format (L"%s\r\n", headLine.c_str ()));
+             *          ...
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *          Streams::TextWriter::Ptr         textOut = Streams::TextWriter::New (binOut);
+             *          textOut.Write (L"Hello World\n");
+             *      \endcode
+             */
+            Ptr ()                = default;
+            Ptr (const Ptr& from) = default;
+            Ptr (const OutputStream<Characters::Character>::Ptr& from);
+
+        protected:
+            Ptr (const shared_ptr<OutputStream<Characters::Character>::_IRep>& from);
+
+        public:
+            nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+
+        private:
+            friend class TextWriter;
+        };
     }
 }
 

@@ -118,9 +118,7 @@ namespace Stroika {
                 class IterableAdapterStreamRep_;
 
             private:
-                template <typename X>
-                using BLAH_            = TextReader;
-                using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Character, BLAH_, InputStream<Character>::_IRep>;
+                using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Character, TextReader, InputStream<Character>::_IRep>;
             };
 
             /**

@@ -19,94 +19,90 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
+namespace Stroika::Foundation {
+    namespace IO {
+        namespace Network {
 
+            /**
+             *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
+             *
+             *  The only real conneciton is that they share a common socket, and if it is closed,
+             *  then the whole SocketStream will stop working.
+             *
+             *      \note   SocketStream aggregates its owned ConnectionOrientedStreamSocket, so that a Close () on SocketStream
+             *              will Close that socket as well.
+             *
+             *              But SocketStream is an InputOutputStream - so you can close the input and output sides separately.
+             *              If you call close on only one side of the input stream, Shutdown () will be used to shutdown
+             *              just that end of the stream.
+             */
+            class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
+            public:
+                SocketStream ()                    = delete;
+                SocketStream (const SocketStream&) = delete;
+
+            public:
+                class Ptr;
+
+            public:
                 /**
-                 *  A SocketStream wraps a a socket as a InputOutputStream - two separate but related streams.
+                 *  To copy a ExternallyOwnedMemoryInputStream, use ExternallyOwnedMemoryInputStream<T>::Ptr
                  *
-                 *  The only real conneciton is that they share a common socket, and if it is closed,
-                 *  then the whole SocketStream will stop working.
-                 *
-                 *      \note   SocketStream aggregates its owned ConnectionOrientedStreamSocket, so that a Close () on SocketStream
-                 *              will Close that socket as well.
-                 *
-                 *              But SocketStream is an InputOutputStream - so you can close the input and output sides separately.
-                 *              If you call close on only one side of the input stream, Shutdown () will be used to shutdown
-                 *              just that end of the stream.
+                 *  \par Example Usage
+                 *      \code
+                 *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
+                 *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
+                 *           InputStream<Byte>::Ptr              in  = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
+                 *           OutputStream<Byte>::Ptr             out = BufferedOutputStream<Byte>::New (socketStream); // more important so we dont write multiple packets
+                 *      \endcode
                  */
-                class SocketStream : public Streams::InputOutputStream<Memory::Byte> {
-                public:
-                    SocketStream ()                    = delete;
-                    SocketStream (const SocketStream&) = delete;
+                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedStreamSocket::Ptr& sd);
+                static Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
 
-                public:
-                    class Ptr;
+            private:
+                class Rep_;
 
-                public:
-                    /**
-                     *  To copy a ExternallyOwnedMemoryInputStream, use ExternallyOwnedMemoryInputStream<T>::Ptr
-                     *
-                     *  \par Example Usage
-                     *      \code
-                     *           ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
-                     *           SocketStream::Ptr                   socketStream = SocketStream::New (connectionSocket);
-                     *           InputStream<Byte>::Ptr              in  = BufferedInputStream<Byte>::New (socketStream);  // not important, but a good idea, to avoid excessive kernel calls
-                     *           OutputStream<Byte>::Ptr             out = BufferedOutputStream<Byte>::New (socketStream); // more important so we dont write multiple packets
-                     *      \endcode
-                     */
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ConnectionOrientedStreamSocket::Ptr& sd);
-                    static Ptr New (const ConnectionOrientedStreamSocket::Ptr& sd);
-
-                private:
-                    class Rep_;
-
-                protected:
-                    /**
+            protected:
+                /**
                  *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
                  */
-                    static Ptr _mkPtr (const shared_ptr<Rep_>& s);
+                static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
-                private:
-                    template <typename X>
-                    using BLAH_            = SocketStream;
-                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, BLAH_, SocketStream::Rep_>;
-                };
+            private:
+                using InternalSyncRep_ = Streams::InternallySyncrhonizedInputOutputStream<Memory::Byte, SocketStream, SocketStream::Rep_>;
+            };
 
+            /**
+             *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
+             *
+             *  TODO:
+             *      @todo add method to retrieve underlying socket
+             */
+            class SocketStream::Ptr : public InputOutputStream<Memory::Byte>::Ptr {
+            private:
+                using inherited = InputOutputStream<Memory::Byte>::Ptr;
+
+            public:
                 /**
-                 *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
-                 *
-                 *  TODO:
-                 *      @todo add method to retrieve underlying socket
+                 *  \par Example Usage
+                 *      \code
+                 *            ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
+                 *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
+                 *      \endcode
                  */
-                class SocketStream::Ptr : public InputOutputStream<Memory::Byte>::Ptr {
-                private:
-                    using inherited = InputOutputStream<Memory::Byte>::Ptr;
+                Ptr ()                = default;
+                Ptr (const Ptr& from) = default;
+                Ptr (nullptr_t);
 
-                public:
-                    /**
-                     *  \par Example Usage
-                     *      \code
-                     *            ConnectionOrientedStreamSocket::Ptr connectionSocket = from_somewhere;
-                     *            SocketStream::Ptr                   inOut = SocketStream::New (connectionSocket);
-                     *      \endcode
-                     */
-                    Ptr ()                = default;
-                    Ptr (const Ptr& from) = default;
-                    Ptr (nullptr_t);
+            protected:
+                Ptr (const shared_ptr<Rep_>& from);
 
-                protected:
-                    Ptr (const shared_ptr<Rep_>& from);
+            public:
+                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
-                public:
-                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-                private:
-                    friend class SocketStream;
-                };
-            }
+            private:
+                friend class SocketStream;
+            };
         }
     }
 }

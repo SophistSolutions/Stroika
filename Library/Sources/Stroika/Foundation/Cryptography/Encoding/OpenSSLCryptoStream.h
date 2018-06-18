@@ -134,9 +134,7 @@ namespace Stroika {
                     class Rep_;
 
                 private:
-                    template <typename X>
-                    using BLAH_            = OpenSSLInputStream;
-                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, BLAH_, OpenSSLInputStream::Rep_>;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
                 };
 
 #endif
@@ -176,9 +174,7 @@ namespace Stroika {
                     class Rep_;
 
                 private:
-                    template <typename X>
-                    using BLAH_            = OpenSSLOutputStream;
-                    using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, BLAH_, OpenSSLOutputStream::Rep_>;
+                    using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
                 };
 #endif
             }

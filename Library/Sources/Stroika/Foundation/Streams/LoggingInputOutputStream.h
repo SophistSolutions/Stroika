@@ -52,16 +52,7 @@ namespace Stroika {
                 class Rep_;
 
             private:
-                struct Ptr_ : InputOutputStream<ELEMENT_TYPE>::Ptr {
-                    template <typename ARG>
-                    Ptr_ (ARG arg)
-                        : Ptr (arg)
-                    {
-                    }
-                };
-
-            private:
-                using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
+                using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::LoggingInputOutputStream<ELEMENT_TYPE>, typename LoggingInputOutputStream<ELEMENT_TYPE>::Rep_>;
             };
         }
     }

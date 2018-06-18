@@ -52,7 +52,7 @@ namespace Stroika {
                 class Rep_;
 
             private:
-                using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
+                using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream<ELEMENT_TYPE>, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
             };
         }
     }
