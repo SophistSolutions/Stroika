@@ -360,7 +360,7 @@ namespace {
                 using syncofdata = Synchronized<data_, Synchronized_Traits<recursive_mutex>>;
                 using syncofint  = Synchronized<int, Synchronized_Traits<recursive_mutex>>;
 
-                Debug::TraceContextBumper traceCtx ("RegressionTest4_Synchronized_");
+                Debug::TraceContextBumper traceCtx ("Test1_");
                 {
                     syncofdata x;
                     syncofdata y = data_ ();
