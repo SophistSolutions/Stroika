@@ -50,12 +50,18 @@ namespace Stroika::Foundation {
          */
         template <typename ELEMENT_TYPE>
         class ExternallyOwnedMemoryInputStream : public InputStream<ELEMENT_TYPE> {
+
+        private:
+            using inherited = InputStream<ELEMENT_TYPE>;
+
         public:
             ExternallyOwnedMemoryInputStream ()                                        = delete;
             ExternallyOwnedMemoryInputStream (const ExternallyOwnedMemoryInputStream&) = delete;
 
         public:
-            class Ptr;
+            /**
+             */
+            using typename inherited::Ptr;
 
         public:
             /**
@@ -84,39 +90,6 @@ namespace Stroika::Foundation {
 
         private:
             using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::ExternallyOwnedMemoryInputStream, typename ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_>;
-        };
-
-        /**
-         *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
-         */
-        template <typename ELEMENT_TYPE>
-        class ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
-        private:
-            using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
-
-        public:
-            /**
-             *  \par Example Usage
-             *      \code
-             *          InputStream<Byte>::Ptr in = ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead);
-             *      \endcode
-             *
-             *  \par Example Usage
-             *      \code
-             *          CallExpectingBinaryInputStreamPtr (ExternallyOwnedMemoryInputStream<Byte> (begin (buf), begin (buf) + nBytesRead))
-             *      \endcode
-             */
-            Ptr ()                = default;
-            Ptr (const Ptr& from) = default;
-
-        protected:
-            Ptr (const shared_ptr<Rep_>& from);
-
-        public:
-            nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-        private:
-            friend class ExternallyOwnedMemoryInputStream;
         };
     }
 }

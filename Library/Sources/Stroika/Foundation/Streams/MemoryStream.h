@@ -91,6 +91,12 @@ namespace Stroika::Foundation {
         private:
             class Rep_;
 
+        protected:
+            /**
+                 *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
+                 */
+            static Ptr _mkPtr (const shared_ptr<Rep_>& s);
+
         private:
             using InternalSyncRep_ = InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, Streams::MemoryStream, typename MemoryStream<ELEMENT_TYPE>::Rep_>;
         };

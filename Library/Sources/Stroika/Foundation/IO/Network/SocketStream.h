@@ -63,6 +63,12 @@ namespace Stroika {
                 private:
                     class Rep_;
 
+                protected:
+                    /**
+                 *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
+                 */
+                    static Ptr _mkPtr (const shared_ptr<Rep_>& s);
+
                 private:
                     template <typename X>
                     using BLAH_            = SocketStream;
@@ -71,6 +77,9 @@ namespace Stroika {
 
                 /**
                  *  Ptr is a copyable smart pointer to a ExternallyOwnedMemoryInputStream.
+                 *
+                 *  TODO:
+                 *      @todo add method to retrieve underlying socket
                  */
                 class SocketStream::Ptr : public InputOutputStream<Memory::Byte>::Ptr {
                 private:

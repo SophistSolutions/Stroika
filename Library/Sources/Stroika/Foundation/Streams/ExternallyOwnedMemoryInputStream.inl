@@ -137,7 +137,7 @@ namespace Stroika::Foundation {
         template <typename ELEMENT_TYPE>
         inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
         {
-            return make_shared<Rep_> (start, end);
+            return inherited::_mkPtr (make_shared<Rep_> (start, end));
         }
         template <typename ELEMENT_TYPE>
         template <typename ELEMENT_RANDOM_ACCESS_ITERATOR>
@@ -171,17 +171,6 @@ namespace Stroika::Foundation {
                     RequireNotReached ();
                     return nullptr;
             }
-        }
-
-        /*
-         ********************************************************************************
-         *********** ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr ****************
-         ********************************************************************************
-         */
-        template <typename ELEMENT_TYPE>
-        inline ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-            : inherited (from)
-        {
         }
     }
 }

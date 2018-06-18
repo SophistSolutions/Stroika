@@ -30,6 +30,9 @@ namespace Stroika {
              */
             template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS = InputStream, typename BASE_REP_TYPE = typename BASE_CLASS<ELEMENT_TYPE>::_IRep>
             class InternallySyncrhonizedInputStream : public BASE_CLASS<ELEMENT_TYPE> {
+            private:
+                using inherited = BASE_CLASS<ELEMENT_TYPE>;
+
             public:
                 /**
                  *  'InternallySyncrhonizedInputStream' is a quasi-namespace: use Ptr or New () members.
@@ -38,7 +41,7 @@ namespace Stroika {
                 InternallySyncrhonizedInputStream (const InternallySyncrhonizedInputStream&) = delete;
 
             public:
-                class Ptr;
+                using typename InputStream<ELEMENT_TYPE>::Ptr;
 
             public:
                 /**
@@ -54,40 +57,6 @@ namespace Stroika {
 
             private:
                 class Rep_;
-            };
-
-            /**
-             *  Ptr is a copyable smart pointer to a InternallySyncrhonizedInputStream.
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
-             */
-            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
-            class InternallySyncrhonizedInputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr : public BASE_CLASS<ELEMENT_TYPE>::Ptr {
-            private:
-                using inherited = typename BASE_CLASS<ELEMENT_TYPE>::Ptr;
-
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          Streams::InputStream<Byte>::Ptr syncStream = Streams::InternallySyncrhonizedInputStream<Byte>::New (otherInputStreamToBeSharedAcrossThread);
-                 *      \endcode
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a>
-                 */
-                Ptr ()               = delete;
-                Ptr (const Ptr& src) = default;
-                Ptr (Ptr&& src)      = default;
-
-            private:
-                Ptr (const shared_ptr<Rep_>& from);
-
-            public:
-                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                nonvirtual Ptr& operator                   = (const InternallySyncrhonizedInputStream& rhs);
-
-            private:
-                friend class InternallySyncrhonizedInputStream;
             };
         }
     }

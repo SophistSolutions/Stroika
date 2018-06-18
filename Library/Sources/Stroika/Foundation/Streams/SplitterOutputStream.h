@@ -34,7 +34,10 @@ namespace Stroika {
                 SplitterOutputStream (const SplitterOutputStream&) = delete;
 
             public:
-                class Ptr;
+                /**
+                 *  There are no special methods to SplitterOutputStreamPtr, so we just re-use the baseclass Ptr smart pointer.
+                 */
+                using typename OutputStream<ELEMENT_TYPE>::Ptr;
 
             public:
                 /**
@@ -50,43 +53,6 @@ namespace Stroika {
 
             private:
                 using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
-            };
-
-            /**
-             *  Ptr is a copyable smart pointer to a SplitterOutputStream.
-             */
-            template <typename ELEMENT_TYPE>
-            class SplitterOutputStream<ELEMENT_TYPE>::Ptr : public OutputStream<ELEMENT_TYPE>::Ptr {
-                using inherited = typename OutputStream<ELEMENT_TYPE>::Ptr;
-
-            protected:
-                using _SharedIRep = typename SplitterOutputStream<ELEMENT_TYPE>::_SharedIRep;
-
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *      \endcode
-                 */
-                Ptr ()                = default;
-                Ptr (const Ptr& from) = default;
-                Ptr (Ptr&& from)      = default;
-
-            protected:
-                Ptr (const shared_ptr<Rep_>& from);
-
-            public:
-                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-                nonvirtual Ptr& operator= (Ptr&& rhs) = default;
-
-            protected:
-                /**
-                 *  \brief protected access to underlying stream smart pointer
-                 */
-                nonvirtual _SharedIRep _GetSharedRep () const;
-
-            private:
-                friend class SplitterOutputStream;
             };
         }
     }

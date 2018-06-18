@@ -108,22 +108,6 @@ namespace Stroika {
                         return nullptr;
                 }
             }
-
-            /*
-             ********************************************************************************
-             ****************** SplitterOutputStream<ELEMENT_TYPE>::Ptr *********************
-             ********************************************************************************
-             */
-            template <typename ELEMENT_TYPE>
-            inline SplitterOutputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-                : inherited (from)
-            {
-            }
-            template <typename ELEMENT_TYPE>
-            inline typename SplitterOutputStream<ELEMENT_TYPE>::_SharedIRep SplitterOutputStream<ELEMENT_TYPE>::Ptr::_GetSharedRep () const
-            {
-                return dynamic_pointer_cast<Rep_> (inherited::_GetSharedRep ());
-            }
         }
     }
 }

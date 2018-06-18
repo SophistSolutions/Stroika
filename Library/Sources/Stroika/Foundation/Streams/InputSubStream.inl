@@ -176,18 +176,7 @@ namespace Stroika::Foundation {
         template <typename ELEMENT_TYPE>
         inline auto InputSubStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const Memory::Optional<SeekOffsetType>& start, const Memory::Optional<SeekOffsetType>& end) -> Ptr
         {
-            return make_shared<Rep_> (realIn, start, end);
-        }
-
-        /*
-         ********************************************************************************
-         ********************** InputSubStream<ELEMENT_TYPE>::Ptr ***********************
-         ********************************************************************************
-         */
-        template <typename ELEMENT_TYPE>
-        inline InputSubStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-            : inherited (from)
-        {
+            return InputStream<ELEMENT_TYPE>::_mkPtr (make_shared<Rep_> (realIn, start, end));
         }
     }
 }

@@ -41,15 +41,13 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-            class Character;
-            class String;
-        }
-        namespace Memory {
-            class BLOB;
-        }
+namespace Stroika::Foundation {
+    namespace Characters {
+        class Character;
+        class String;
+    }
+    namespace Memory {
+        class BLOB;
     }
 }
 
@@ -101,6 +99,12 @@ namespace Stroika {
 
             protected:
                 using _SharedIRep = shared_ptr<_IRep>;
+
+            protected:
+                /**
+                 *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
+                 */
+                static Ptr _mkPtr (const _SharedIRep& s);
             };
 
             /**

@@ -244,12 +244,12 @@ private:
 
 auto FileInputStream::New (const String& fileName, SeekableFlag seekable) -> Ptr
 {
-    return make_shared<Rep_> (fileName, seekable);
+    return _mkPtr (make_shared<Rep_> (fileName, seekable));
 }
 
 auto FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable) -> Ptr
 {
-    return make_shared<Rep_> (fd, adoptFDPolicy, seekable);
+    return _mkPtr (make_shared<Rep_> (fd, adoptFDPolicy, seekable));
 }
 
 auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable) -> Ptr
@@ -310,14 +310,4 @@ InputStream<Byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolic
             AssertNotReached ();
             return in;
     }
-}
-
-/*
- ********************************************************************************
- ******************** IO::FileSystem::FileInputStream::Ptr **********************
- ********************************************************************************
- */
-IO::FileSystem::FileInputStream::Ptr::Ptr (const shared_ptr<Rep_>& from)
-    : inherited (from)
-{
 }

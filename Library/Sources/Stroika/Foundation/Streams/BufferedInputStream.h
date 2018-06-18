@@ -46,7 +46,7 @@ namespace Stroika::Foundation {
             BufferedInputStream (const BufferedInputStream&) = delete;
 
         public:
-            class Ptr;
+            using typename InputStream<ELEMENT_TYPE>::Ptr;
 
         public:
             /**
@@ -68,39 +68,6 @@ namespace Stroika::Foundation {
 
         private:
             using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
-        };
-
-        /**
-         *  Ptr is a copyable smart pointer to a BufferedInputStream.
-         */
-        template <typename ELEMENT_TYPE>
-        class BufferedInputStream<ELEMENT_TYPE>::Ptr : public InputStream<ELEMENT_TYPE>::Ptr {
-        private:
-            using inherited = typename InputStream<ELEMENT_TYPE>::Ptr;
-
-        public:
-            /**
-             *  \par Example Usage
-             *      \code
-             *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
-             *      \endcode
-             *
-             *  \par Example Usage
-             *      \code
-             *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
-             *      \endcode
-             */
-            Ptr ()                = default;
-            Ptr (const Ptr& from) = default;
-
-        protected:
-            Ptr (const shared_ptr<Rep_>& from);
-
-        public:
-            nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-        private:
-            friend class BufferedInputStream;
         };
     }
 }

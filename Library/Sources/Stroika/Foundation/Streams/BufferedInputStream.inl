@@ -79,31 +79,20 @@ namespace Stroika::Foundation {
         template <typename ELEMENT_TYPE>
         inline auto BufferedInputStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
         {
-            return make_shared<Rep_> (realIn);
+            return InputStream<ELEMENT_TYPE>::_mkPtr (make_shared<Rep_> (realIn));
         }
         template <typename ELEMENT_TYPE>
         inline auto BufferedInputStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn) -> Ptr
         {
             switch (internallySyncrhonized) {
                 case Execution::eInternallySynchronized:
-                    return InternalSyncRep_::New (realIn);
+                    return _mkPtr (InternalSyncRep_::New (realIn));
                 case Execution::eNotKnownInternallySynchronized:
                     return New (realIn);
                 default:
                     RequireNotReached ();
                     return nullptr;
             }
-        }
-
-        /*
-         ********************************************************************************
-         ****************** BufferedInputStream<ELEMENT_TYPE>::Ptr **********************
-         ********************************************************************************
-         */
-        template <typename ELEMENT_TYPE>
-        inline BufferedInputStream<ELEMENT_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-            : inherited (from)
-        {
         }
     }
 }

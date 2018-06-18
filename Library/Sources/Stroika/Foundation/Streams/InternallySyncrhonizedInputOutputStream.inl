@@ -115,24 +115,7 @@ namespace Stroika {
             template <typename... ARGS>
             inline auto InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::New (ARGS&&... args) -> Ptr
             {
-                return Ptr{make_shared<Rep_> (forward<ARGS> (args)...)};
-            }
-
-            /*
-             ********************************************************************************
-             * InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr
-             ********************************************************************************
-             */
-            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
-            inline InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr::Ptr (const shared_ptr<Rep_>& from)
-                : inherited (from)
-            {
-            }
-            template <typename ELEMENT_TYPE, template <typename> class BASE_CLASS, typename BASE_REP_TYPE>
-            inline typename InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr& InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>::Ptr::operator= (const InternallySyncrhonizedInputOutputStream<ELEMENT_TYPE, BASE_CLASS, BASE_REP_TYPE>& rhs)
-            {
-                inherited::Ptr::operator= (rhs);
-                return *this;
+                return inherited::_mkPtr (make_shared<Rep_> (forward<ARGS> (args)...));
             }
         }
     }

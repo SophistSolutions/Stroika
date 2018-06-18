@@ -35,6 +35,8 @@ namespace Stroika {
                 using ElementType = typename Stream<ELEMENT_TYPE>::ElementType;
 
             public:
+                /**
+                 */
                 using Ptr = typename InputOutputStream<ELEMENT_TYPE>::Ptr;
 
             public:

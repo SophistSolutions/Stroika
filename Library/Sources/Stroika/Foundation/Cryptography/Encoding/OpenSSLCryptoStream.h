@@ -122,7 +122,7 @@ namespace Stroika {
                     OpenSSLInputStream (const OpenSSLInputStream&) = delete;
 
                 public:
-                    class Ptr;
+                    using typename InputStream<Memory::Byte>::Ptr;
 
                 public:
                     /**
@@ -137,32 +137,6 @@ namespace Stroika {
                     template <typename X>
                     using BLAH_            = OpenSSLInputStream;
                     using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, BLAH_, OpenSSLInputStream::Rep_>;
-                };
-
-                /**
-                 *  Ptr is a copyable smart pointer to a OpenSSLInputStream.
-                 */
-                class OpenSSLInputStream::Ptr : public Streams::InputStream<Memory::Byte>::Ptr {
-                private:
-                    using inherited = Streams::InputStream<Memory::Byte>::Ptr;
-
-                public:
-                    /**
-                     *  \par Example Usage
-                     *      \code
-                     *      \endcode
-                     */
-                    Ptr ()                = default;
-                    Ptr (const Ptr& from) = default;
-
-                protected:
-                    Ptr (const shared_ptr<Rep_>& from);
-
-                public:
-                    nonvirtual Ptr& operator= (const Ptr& rhs) = default;
-
-                private:
-                    friend class OpenSSLInputStream;
                 };
 
 #endif
