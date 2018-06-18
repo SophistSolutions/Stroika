@@ -18,6 +18,73 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d2">v2.1d2</a><br/>2018-06-16</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d1...v2.1d2</li>
+		<li>Use new C++17 (mostly) features
+			<ul>
+				<li>use conditional_t instead of #if tests (more)</li>
+				<li>Deprecate Execution::make_unique_lock ()
+					LOSE macro MACRO_LOCK_GUARD_CONTEXT
+					All because with C++17 - you can use auto critSec = lock_guard{fCriticalSection_};
+					due to http://en.cppreference.com/w/cpp/language/class_template_argument_deduction
+					use [[maybe_unused]] auto&& critSec = lock_guard{fCritSection_};</li>
+				<li>redo most use of qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex using conditional_t<> and cleanup to SpinLock</li>
+				<li>replaced macro qStroika_Foundation_Execution_SpinLock_IsFasterThan_mutex with constexpr Execution::kSpinLock_IsFasterThan_mutex (less configurable, but more compatible with modules? - sigh - not sure how best to handle such tradeoffs)</li>
+				<li>use qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy as needed to workaround bug with it in msvc2k17</li>
+				<li>Lose obsolete qCompilerAndStdLib_constexpr_const_then_constexpr_Buggy bug define</li>
+				<li>lose remaining checks for if __cplusplus >= kStrokia_Foundation_Configuration_cplusplus_14</li>
+				<li>renamed macro qStroika_Foundation_Memory_SharedPtr_IsFasterThan_shared_ptr to constexpr bool Memory::kSharedPtr_IsFasterThan_shared_ptr</li>
+				<li>replaced #define qStroika_Foundation_Traveral_IterableUsesStroikaSharedPtr with constexpr bool Traversal::kIterableUsesStroikaSharedPtr</li>
+				<li>new template UseBlockAllocationIfAppropriate  - experimental - maybe will replace DECLARE_USE_BLOCK_ALLOCATION</li>
+				<li>new helper class Configuration::Empty</li>
+				<li>replace qStroika_Foundation_Traveral_IteratorUsesStroikaSharedPtr with constexpr kIteratorUsesStroikaSharedPtr</li>
+				<li>Replace macro qStroika_Foundation_Memory_BLOBUsesStroikaSharedPtr_ with Memory::kBLOBUsesStroikaSharedPtr constexpr (using C++17 features - so we can lose macros and get closer to supporting modules)</li>
+				<li>namespace Stroika::Foundation { cosmetic cleanups</li>
+			</ul>
+		</li>
+		<li>Updated README.md (much better IMHO).</li>
+		<li>Compiler bug define warnings
+			<ul>
+				<li>Lose qNoSTRNICMP define (very obsolete)</li>
+				<li>Lose obsolete qCompiler_noSanitizeAttributeMustUseOldStyleAttr_Buggy bug define</li>
+			</ul>
+		</li>
+		<li>Replace calls to Led_NormalizeTextToNL with Characters::NormalizeTextToNL<Led_tChar>; Replace calls to Led_NativeToNL () with Characters::NativeToNL<Led_tChar>; Replace calls to Led_NLToNative with Characters::NLToNative<Led_tChar>; And remove the 'replaced' functions; Added misisng Linending Characters::NativeToNL</li>
+		<li>cleanup Level4 MSVC2k17 warnings</li>
+		<li>fixed va_start warning</li>
+		<li>renamed Led_BufToULONG to BufToSizeT/BufToUInt32; Led_BufToUSHORT to BufToUInt16 etc - to cleanup code and silence warnings (size_t part handked warnings)</li>
+		<li>Redo String_BufferedArray_Rep_ using conditional_t and Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_> isntead of DECLARE_USE_BLOCK_ALLOCATION</li>
+		<li>fix regressiontest script to count errors from visual studio properly</li>
+		<li>fix for NetworkMonitor/Ping for race condition (std::uniform_int_distribution cannot be used const on gcc)</li>
+		<li>tweak qCompilerAndStdLib_stdfilesystemAppearsPresentButDoesntWork_Buggy for XCode 10</li>
+		<li>qCompilerAndStdLib_conditionvariable_waitfor_nounlock_Buggy bug define and workaround (clang6 lib)</li>
+		<li>use static inline c++17 feature </li>
+		<li>fixed serious threading regression due ot use of static inline for sThreadAbortCheckFrequency_Default - bad default - now fixed</li>
+		<li>Depend on XCode 10 not XCode 9 for MacOS</li>
+		<li>SQLite 3.24</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.1d2.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.1d2-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 10</li>
+				<li>gcc 7</li>
+				<li>gcc 8</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc7, gcc8</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
 
 
 
