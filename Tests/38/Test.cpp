@@ -407,8 +407,8 @@ namespace {
             {
                 Debug::TraceContextBumper                  ctx{"Test2_LongWritesBlock_"};
                 static constexpr int                       kBaseRepititionCount_ = 500;
-                static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.02;
-                Synchronized<int>                        syncData{0};
+                static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.002;
+                Synchronized<int>                          syncData{0};
                 Thread::Ptr                                readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
@@ -945,12 +945,41 @@ namespace {
                 }
                 DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double(countWhereTwoHoldingRead.load ()) / kRepeatCount_);
             }
+            void Test2_LongWritesBlock_ ()
+            {
+                Debug::TraceContextBumper                  ctx{"Test2_LongWritesBlock_"};
+                static constexpr int                       kBaseRepititionCount_ = 500;
+                static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
+                RWSynchronized<int>                        syncData{0};
+                Thread::Ptr                                readerThread = Thread::New ([&]() {
+                    Debug::TraceContextBumper ctx{"readerThread"};
+                    // Do 10x more reads than writer loop, but sleep 1/10th as long
+                    for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
+                        VerifyTestResult (syncData.cget ().load () % 2 == 0);
+                        Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
+                    }
+                });
+                Thread::Ptr                                writerThread = Thread::New ([&]() {
+                    Debug::TraceContextBumper ctx{"writerThread"};
+                    for (int i = 0; i < kBaseRepititionCount_; ++i) {
+                        auto rwLock = syncData.rwget ();
+                        rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
+                        Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
+                        VerifyTestResult (rwLock.load () % 2 == 1);
+                        rwLock.store (rwLock.load () + 1); // set to a safe value
+                    }
+                    VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
+                });
+                Thread::Start ({readerThread, writerThread});
+                Thread::WaitForDone ({readerThread, writerThread});
+            }
         }
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
             Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false);
             Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true);
+            Private_::Test2_LongWritesBlock_ ();
         }
     }
 }
@@ -1129,7 +1158,7 @@ namespace {
             };
             Thread::Ptr t2 = Thread::New (fun, Thread::eAutoStart);
             Thread::Ptr t3 = Thread::New (fun, Thread::eAutoStart);
-            Execution::Sleep (5);
+            Execution::Sleep (2);
             Thread::AbortAndWaitForDone ({t1, t2, t3});
         }
     }
