@@ -63,7 +63,7 @@ namespace Stroika {
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline T Synchronized<T, TRAITS>::load () const
             {
-                shared_lock<const Synchronized<T, TRAITS>> fromCritSec{*this}; // use shared_lock if possible
+                ReadLockType_ fromCritSec{fLock_};
                 return fProtectedValue_;
             }
             template <typename T, typename TRAITS>
@@ -96,6 +96,7 @@ namespace Stroika {
                 return ReadableReference (&fProtectedValue_, &fLock_);
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void Synchronized<T, TRAITS>::lock_shared () const
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -109,6 +110,7 @@ namespace Stroika {
                 }
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void Synchronized<T, TRAITS>::unlock_shared () const
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -122,6 +124,7 @@ namespace Stroika {
                 }
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void Synchronized<T, TRAITS>::lock () const
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -130,6 +133,7 @@ namespace Stroika {
                 fLock_.lock ();
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void Synchronized<T, TRAITS>::unlock () const
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_

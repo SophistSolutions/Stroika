@@ -303,22 +303,26 @@ namespace Stroika {
                 /**
                  *  If TRAITS::kSupportsSharedLocks - does shared_lock<>::lock_shared, and otherwise just lock ()
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive and TRAITS::kSupportsSharedLocks>>
                 nonvirtual void lock_shared () const;
 
             public:
                 /**
                  *  If TRAITS::kSupportsSharedLocks - does shared_lock<>::unlock_shared, and otherwise just unlock ()
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive and TRAITS::kSupportsSharedLocks>>
                 nonvirtual void unlock_shared () const;
 
             public:
                 /**
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive >>
                 nonvirtual void lock () const;
 
             public:
                 /**
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
                 nonvirtual void unlock () const;
 
             public:
@@ -361,6 +365,12 @@ namespace Stroika {
                     return WritableReference (&fProtectedValue_, &fLock_);
                 }
 #endif
+
+            private:
+                using ReadLockType_ = typename TRAITS::ReadLockType;
+
+            private:
+                using WriteLockType_ = typename TRAITS::WriteLockType;
 
             private:
                 T                 fProtectedValue_;
