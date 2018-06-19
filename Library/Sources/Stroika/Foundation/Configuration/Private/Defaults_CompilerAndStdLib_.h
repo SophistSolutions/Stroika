@@ -561,7 +561,7 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
  */
 #ifndef qCompiler_noSanitizeAttribute_Buggy
 #if defined(__clang__) && defined(__APPLE__)
-#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 9))
+#define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
 #elif defined(__clang__) && !defined(__APPLE__)
 // surprising broken in clang++6 on linux, but not xcode10 (clang10) on macos (which is based on llvm6)
 #define qCompiler_noSanitizeAttribute_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
