@@ -132,14 +132,14 @@ namespace Stroika::Foundation {
         }
         template <typename T, typename TRAITS>
         template <typename TEST_TYPE, typename ENABLE_IF_TEST>
-        void Synchronized<T, TRAITS>::UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock)
+        void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock)
         {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::Experimental_UpgradeLock2", L"&fLock_=%p", &fLock_};
 #endif
-            // AssertNotNull (readReference);
-            // Assert (readReference->fSharedLock_ == &fLock_);
-            //Require (fLock_.owns_shared_lock ());
+            RequireNotNull (lockBeingUpgraded);
+            //Require (lockBeingUpgraded->fSharedLock_ == &fLock_);
+            //Require (lockBeingUpgraded->fSharedLock_.owns_lock ());
             fLock_.unlock_shared ();
             // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
             [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
