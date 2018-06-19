@@ -408,12 +408,12 @@ namespace {
                 Debug::TraceContextBumper                  ctx{"Test2_LongWritesBlock_"};
                 static constexpr int                       kBaseRepititionCount_ = 500;
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.02;
-                Synchronized<int>                          syncData{0};
+                Synchronized<int>                        syncData{0};
                 Thread::Ptr                                readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
-                        VerifyTestResult (syncData.load () % 2 == 0);
+                        VerifyTestResult (syncData.cget ().load () % 2 == 0);
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
                     }
                 });
@@ -423,10 +423,10 @@ namespace {
                         auto rwLock = syncData.rwget ();
                         rwLock.store (rwLock.load () + 1);  // set to a value that will cause reader thread to fail
                         Execution::Sleep (kBaseSleepTime_); // hold the lock kBaseSleepTime_
-                        VerifyTestResult (syncData.load () % 2 == 1);
+                        VerifyTestResult (rwLock.load () % 2 == 1);
                         rwLock.store (rwLock.load () + 1); // set to a safe value
                     }
-                    VerifyTestResult (syncData.load () == kBaseRepititionCount_ * 2);
+                    VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
                 });
                 Thread::Start ({readerThread, writerThread});
                 Thread::WaitForDone ({readerThread, writerThread});
@@ -1115,13 +1115,13 @@ namespace {
                     Execution::CheckForThreadInterruption ();
                     auto rLock = isEven.cget ();
                     if (rLock.load ()) {
-                        isEven.Experimental_UpgradeLock2 ([&](RWSynchronized<bool>::WritableReference&& writeLock) {
-                            // MUST RECHECK writeLock.load () for now because Experimental_UpgradeLock2 () unlocks first and lets others get a crack
+                        isEven.UpgradeLockNonAtomically (&rLock, [&](RWSynchronized<bool>::WritableReference&& writeLock) {
+                            // MUST RECHECK writeLock.load () for now because UpgradeLockNonAtomically () unlocks first and lets others get a crack
                             if (writeLock.load ()) {
                                 writeLock.store (false);
                             }
                         });
-                        // WE CANNOT test this - because Experimental_UpgradeLock2 () releases lock before re-acuqitring readlock - but should fix that soon
+                        // WE CANNOT test this - because UpgradeLockNonAtomically () releases lock before re-acuqitring readlock - but should fix that soon
                         // so we can test this!!!
                         //VerifyTestResult (not isEven.cget ());
                     }
