@@ -72,6 +72,11 @@ namespace Stroika {
              *
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
              *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
+			 *
+			 *	\note Use of SUPPORTS_SHARED_LOCKS has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
+			 *		  read locks held for a long time (and multiple threads doing so).
+			 *
+			 *		  @see http://joeduffyblog.com/2009/02/11/readerwriter-locks-and-their-lack-of-applicability-to-finegrained-synchronization/
              */
             template <typename MUTEX             = recursive_mutex,
                       bool IS_RECURSIVE          = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
@@ -81,7 +86,6 @@ namespace Stroika {
             struct Synchronized_Traits {
                 using MutexType = MUTEX;
 
-                /// PROTOTYPE - TO REPLACE LOCK_SHARED_UNLOCK_SHARED
                 using ReadLockType  = READ_LOCK_TYPE;
                 using WriteLockType = WRITE_LOCK_TYPE;
 
@@ -284,13 +288,13 @@ namespace Stroika {
 
             public:
                 /**
-                 *  If shared lock syncronization - does shared_lock<>::lock_shared, and otherwise just lock ()
+                 *  If TRAITS::kSupportsSharedLocks - does shared_lock<>::lock_shared, and otherwise just lock ()
                  */
                 nonvirtual void lock_shared () const;
 
             public:
                 /**
-                 *  If shared lock syncronization - does shared_lock<>::unlock_shared, and otherwise just unlock ()
+                 *  If TRAITS::kSupportsSharedLocks - does shared_lock<>::unlock_shared, and otherwise just unlock ()
                  */
                 nonvirtual void unlock_shared () const;
 
@@ -554,7 +558,11 @@ namespace Stroika {
             using QuickSynchronized = conditional_t<kSpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
 
             /**
-             * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer. Typically, using shared_mutex (or shared_timed_mutex).
+             * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer.
+			 * Typically, using shared_mutex (or shared_timed_mutex).
+			 *
+			 *	\note Use of RWSynchronized has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
+			 *		  read locks held for a long time (and multiple threads doing so)
              */
             template <typename T>
             using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_mutex>>;
