@@ -102,12 +102,7 @@ namespace Stroika {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::lock_shared", L"&m=%p", &m};
 #endif
-                if constexpr (TRAITS::kSupportsSharedLocks) {
-                    fLock_.lock_shared ();
-                }
-                else {
-                    fLock_.lock ();
-                }
+                fLock_.lock_shared ();
             }
             template <typename T, typename TRAITS>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
@@ -116,12 +111,7 @@ namespace Stroika {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::unlock_shared", L"&m=%p", &m};
 #endif
-                if constexpr (TRAITS::kSupportsSharedLocks) {
-                    fLock_.unlock_shared ();
-                }
-                else {
-                    fLock_.unlock ();
-                }
+                fLock_.unlock_shared ();
             }
             template <typename T, typename TRAITS>
             template <typename TEST_TYPE, typename ENABLE_IF_TEST>
@@ -142,6 +132,7 @@ namespace Stroika {
                 fLock_.unlock ();
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             auto Synchronized<T, TRAITS>::Experimental_UnlockUpgradeLock (ReadableReference* readReference) -> WritableReference
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -156,6 +147,7 @@ namespace Stroika {
                 return WritableReference (&fProtectedValue_, &fLock_);
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             void Synchronized<T, TRAITS>::Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_

@@ -301,26 +301,32 @@ namespace Stroika {
 
             public:
                 /**
-                 *  If TRAITS::kSupportsSharedLocks - does shared_lock<>::lock_shared, and otherwise just lock ()
+				 *	\note	lock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
+				 *		    feature (say with RWSynchonized) - use rwget () or cget ();
                  */
                 template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive and TRAITS::kSupportsSharedLocks>>
                 nonvirtual void lock_shared () const;
 
             public:
                 /**
-                 *  If TRAITS::kSupportsSharedLocks - does shared_lock<>::unlock_shared, and otherwise just unlock ()
+				 *	\note	unlock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
+				 *		    feature (say with RWSynchonized) - use rwget () or cget ();
                  */
                 template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive and TRAITS::kSupportsSharedLocks>>
                 nonvirtual void unlock_shared () const;
 
             public:
                 /**
+				 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
+				 *		    feature (e.g. with RWSynchonized<T>) - use cget (), or rwget ().
                  */
-                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive >>
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
                 nonvirtual void lock () const;
 
             public:
                 /**
+				 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
+				 *		    feature (e.g. with RWSynchonized<T>) - use cget (), or rwget ().
                  */
                 template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
                 nonvirtual void unlock () const;
@@ -329,6 +335,7 @@ namespace Stroika {
                 // @todo - DOCUMENT that this RELEASES the read lock, so whatever values you checked need to be RECHECEKD.
                 // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesn't yet)
                 // RE-LCOK the shared_lock
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kSupportsSharedLocks>>
                 nonvirtual WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference);
 
             public:
@@ -353,6 +360,7 @@ namespace Stroika {
                  *              });
                  *          }
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kSupportsSharedLocks>>
                 nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock);
 
 #if 0
