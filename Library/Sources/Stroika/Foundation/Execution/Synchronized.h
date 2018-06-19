@@ -335,7 +335,16 @@ namespace Stroika::Foundation {
             // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesn't yet)
             // RE-LCOK the shared_lock
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
-            nonvirtual WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference);
+            [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference)
+            {
+                AssertNotNull (readReference);
+                AssertNotNull (readReference->fSharedLock_);
+                if (readReference->fSharedLock_->owns_lock ()) {
+                    readReference->fSharedLock_->unlock ();
+                }
+                // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
+                return WritableReference (&fProtectedValue_, &fLock_);
+            }
 
         public:
             /**
@@ -346,7 +355,7 @@ namespace Stroika::Foundation {
              *
              *  NOTE - this guarantees readreference remains locked after the call (though due to defects in impl for now - maybe with unlock/relock)
              *
-             *  @todo - MAYBE add 'ReadableReference* readReference' arg, but maybe not
+             *  \note - the 'readableReferennce' must be shared_locked coming in, and will be identically shared_locked on return.
              *
              *  \par Example Usage
              *      \code
@@ -354,13 +363,22 @@ namespace Stroika::Foundation {
              *          auto lockedStatus = fStatus_.cget ();
              *          // do a bunch of code that only needs read access
              *          if (some rare event) {
-             *              fStatus_.Experimental_UpgradeLock2 ([=](auto&& writeLock) {
+             *              fStatus_.UpgradeLockNonAtomically ([=](auto&& writeLock) {
              *                  writeLock.rwref ().fCompletedScans.Add (scan);
              *              });
              *          }
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
-            nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock);
+            nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock);
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
+            [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
+            {
+                fLock_.unlock_shared ();
+                // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
+                [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
+                    fLock_.lock_shared ();
+                });
+            }
 
 #if 0
             public:

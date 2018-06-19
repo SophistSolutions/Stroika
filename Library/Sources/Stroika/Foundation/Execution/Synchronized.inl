@@ -132,22 +132,7 @@ namespace Stroika::Foundation {
         }
         template <typename T, typename TRAITS>
         template <typename TEST_TYPE, typename ENABLE_IF_TEST>
-        auto Synchronized<T, TRAITS>::Experimental_UnlockUpgradeLock (ReadableReference* readReference) -> WritableReference
-        {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::Experimental_UnlockUpgradeLock", L"&fLock_=%p", &fLock_};
-#endif
-            AssertNotNull (readReference);
-            AssertNotNull (readReference->fSharedLock_);
-            if (readReference->fSharedLock_->owns_lock ()) {
-                readReference->fSharedLock_->unlock ();
-            }
-            // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-            return WritableReference (&fProtectedValue_, &fLock_);
-        }
-        template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
-        void Synchronized<T, TRAITS>::Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
+        void Synchronized<T, TRAITS>::UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock)
         {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::Experimental_UpgradeLock2", L"&fLock_=%p", &fLock_};
