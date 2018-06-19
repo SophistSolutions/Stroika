@@ -212,7 +212,11 @@ namespace Stroika {
                  *              Synchronized<T> sX_;
                  *              T Accessor ()  { return sX_; }
                  *          and so far has caused no obvious problems.
+				 *
+				 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
+				 *		    feature (say with RWSynchonized) - use cget ().load ();
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
                 nonvirtual operator T () const;
 
             public:
@@ -229,7 +233,11 @@ namespace Stroika {
                  *      sharedData.load ().AbortAndWaitTilDone ();  // copies thread and doesn't maintain lock during wait
                  *      sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
                  *      \endcode
+				 *
+				 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
+				 *		    feature (e.g. with RWSynchonized<T>) - use cget ().load (), or existingLock.load ();
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
                 nonvirtual T load () const;
 
             public:
@@ -237,8 +245,13 @@ namespace Stroika {
                  * @see load ()
                  *
                  *  Save the given value into this synchronized object, acquiring the needed write lock first.
+				 *
+				 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
+				 *		    feature (say with RWSynchonized) - use rwget ().store ();
                  */
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
                 nonvirtual void store (const T& v);
+                template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
                 nonvirtual void store (T&& v);
 
             public:

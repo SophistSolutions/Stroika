@@ -54,23 +54,27 @@ namespace Stroika {
                 return *this;
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline Synchronized<T, TRAITS>::operator T () const
             {
                 return load ();
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline T Synchronized<T, TRAITS>::load () const
             {
                 shared_lock<const Synchronized<T, TRAITS>> fromCritSec{*this}; // use shared_lock if possible
                 return fProtectedValue_;
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void Synchronized<T, TRAITS>::store (const T& v)
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
                 fProtectedValue_                = v;
             }
             template <typename T, typename TRAITS>
+            template <typename TEST_TYPE, typename ENABLE_IF_TEST>
             inline void Synchronized<T, TRAITS>::store (T&& v)
             {
                 [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
