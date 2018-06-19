@@ -281,7 +281,7 @@ void ConnectionManager::AbortConnection (const shared_ptr<Connection>& /*conn*/)
 
 Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
 {
-    return Collection<shared_ptr<Connection>>{fInactiveOpenConnections_.cget ().cref ().Preimage ()} + fActiveConnections_.load ();
+    return Collection<shared_ptr<Connection>>{fInactiveOpenConnections_.cget ().cref ().Preimage ()} + fActiveConnections_.cget ().load ();
 }
 
 void ConnectionManager::SetServerHeader (Optional<String> server)

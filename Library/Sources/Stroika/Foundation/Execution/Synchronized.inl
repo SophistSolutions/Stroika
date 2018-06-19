@@ -32,14 +32,14 @@ namespace Stroika::Foundation {
         }
         template <typename T, typename TRAITS>
         inline Synchronized<T, TRAITS>::Synchronized (const Synchronized& src)
-            : fProtectedValue_ (src.load ())
+            : fProtectedValue_ (src.cget ().load ())
         {
         }
         template <typename T, typename TRAITS>
         inline auto Synchronized<T, TRAITS>::operator= (const Synchronized& rhs) -> Synchronized&
         {
             if (&rhs != this) {
-                auto                    value   = rhs.load (); // load outside the lock to avoid possible deadlock
+                auto                    value   = rhs.cget ().load (); // load outside the lock to avoid possible deadlock
                 [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
                 fProtectedValue_                = value;
             }
@@ -155,17 +155,12 @@ namespace Stroika::Foundation {
             // AssertNotNull (readReference);
             // Assert (readReference->fSharedLock_ == &fLock_);
             //Require (fLock_.owns_shared_lock ());
-            if constexpr (TRAITS::kSupportsSharedLocks) {
-                fLock_.unlock_shared ();
-                // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-                [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
-                    fLock_.lock_shared ();
-                });
-                doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
-            }
-            else {
-                doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
-            }
+            fLock_.unlock_shared ();
+            // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
+            [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
+                fLock_.lock_shared ();
+            });
+            doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
         }
 
         /*
@@ -189,7 +184,7 @@ namespace Stroika::Foundation {
         {
             RequireNotNull (t);
             RequireNotNull (m);
-            if constexpr (TRAITS::kSupportsSharedLocks) {
+            if constexpr (TRAITS::kSupportSharedLocks) {
                 m->lock_shared ();
             }
             else {
@@ -214,7 +209,7 @@ namespace Stroika::Foundation {
             DbgTrace (L"ReadableReference::DTOR -- locks (fSharedLock_ mutex_=%p)", fSharedLock_);
 #endif
             if (fSharedLock_ != nullptr) {
-                if constexpr (TRAITS::kSupportsSharedLocks) {
+                if constexpr (TRAITS::kSupportSharedLocks) {
                     fSharedLock_->unlock_shared ();
                 }
                 else {
@@ -320,7 +315,10 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         inline bool operator< (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
         {
-            return lhs.load () < rhs.load ();
+            // preload to avoid possible deadlock
+            auto l = lhs.load ();
+            auto r = rhs.load ();
+            return l < r;
         }
 
         /*

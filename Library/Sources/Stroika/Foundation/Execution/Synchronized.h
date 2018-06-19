@@ -63,10 +63,10 @@ namespace Stroika::Foundation {
          *      If recursion is not necessary, and for highest performance, SpinLock will often work best.
          *
          *  \par Example Usage
-         *       \code
-         *      Synchronized<String> n;                                                 // SAME
-         *      Synchronized<String,Synchronized_Traits<>> n;                           // SAME
-         *      Synchronized<String,Synchronized_Traits<recursive_mutex>>   n;          // SAME
+         *		\code
+         *			Synchronized<String> n;                                                 // SAME
+         *			Synchronized<String,Synchronized_Traits<>> n;                           // SAME
+         *			Synchronized<String,Synchronized_Traits<recursive_mutex>>   n;          // SAME
          *      \endcode
          *
          *  or slightly faster, but possibly slower or less safe (depnding on usage)
@@ -89,9 +89,9 @@ namespace Stroika::Foundation {
             using WriteLockType = WRITE_LOCK_TYPE;
 
             // Used internally for assertions that the synchonized object is used safely. If you mean to use differntly, specailize
-            static constexpr bool kAllowRecursive = IS_RECURSIVE;
+            static constexpr bool kIsRecursiveMutex = IS_RECURSIVE;
 
-            static constexpr bool kSupportsSharedLocks = SUPPORTS_SHARED_LOCKS;
+            static constexpr bool kSupportSharedLocks = SUPPORTS_SHARED_LOCKS;
         };
 
         /**
@@ -215,7 +215,7 @@ namespace Stroika::Foundation {
 			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
 			 *		    feature (say with RWSynchonized) - use cget ().load ();
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual operator T () const;
 
         public:
@@ -236,7 +236,7 @@ namespace Stroika::Foundation {
 			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
 			 *		    feature (e.g. with RWSynchonized<T>) - use cget ().load (), or existingLock.load ();
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual T load () const;
 
         public:
@@ -248,9 +248,9 @@ namespace Stroika::Foundation {
 			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
 			 *		    feature (say with RWSynchonized) - use rwget ().store ();
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual void store (const T& v);
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual void store (T&& v);
 
         public:
@@ -303,7 +303,7 @@ namespace Stroika::Foundation {
 			 *	\note	lock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
 			 *		    feature (say with RWSynchonized) - use rwget () or cget ();
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive and TRAITS::kSupportsSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>>
             nonvirtual void lock_shared () const;
 
         public:
@@ -311,7 +311,7 @@ namespace Stroika::Foundation {
 		 	 *	\note	unlock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
 			 *		    feature (say with RWSynchonized) - use rwget () or cget ();
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive and TRAITS::kSupportsSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>>
             nonvirtual void unlock_shared () const;
 
         public:
@@ -319,7 +319,7 @@ namespace Stroika::Foundation {
 			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
 			 *		    feature (e.g. with RWSynchonized<T>) - use cget (), or rwget ().
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual void lock () const;
 
         public:
@@ -327,14 +327,14 @@ namespace Stroika::Foundation {
 			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
 			 *		    feature (e.g. with RWSynchonized<T>) - use cget (), or rwget ().
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kAllowRecursive>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual void unlock () const;
 
         public:
             // @todo - DOCUMENT that this RELEASES the read lock, so whatever values you checked need to be RECHECEKD.
             // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesn't yet)
             // RE-LCOK the shared_lock
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kSupportsSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
             nonvirtual WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference);
 
         public:
@@ -359,7 +359,7 @@ namespace Stroika::Foundation {
              *              });
              *          }
              */
-            template <typename TEST_TYPE = T, typename ENABLE_IF_TEST = enable_if_t<TRAITS::kSupportsSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
             nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock);
 
 #if 0
