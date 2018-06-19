@@ -80,7 +80,7 @@ namespace Stroika {
                      *              delegates, so calls CAN be made the the underlying ostream - so long as not
                      *              concurrently.
                      *
-                     *              If you pass in eInternallySynchronized, the internal rep is internally synchonized, but you still must assure
+                     *              If you pass in eInternallySynchronized, the internal rep is internally synchronized, but you still must assure
                      *              no other threads access the OStreamType object.
                      */
                     static Ptr New (OStreamType& originalStream);

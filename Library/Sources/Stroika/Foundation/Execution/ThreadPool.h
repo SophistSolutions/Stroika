@@ -270,7 +270,7 @@ namespace Stroika {
 
             private:
                 /*
-                 *  @todo - make clear what fCriticalSection_ protects, and maybe redo using synchonized.
+                 *  @todo - make clear what fCriticalSection_ protects, and maybe redo using synchronized.
                  */
                 mutable recursive_mutex              fCriticalSection_;
                 atomic<bool>                         fAborted_{false};

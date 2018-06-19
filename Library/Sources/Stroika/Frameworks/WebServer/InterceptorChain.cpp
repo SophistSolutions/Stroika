@@ -10,7 +10,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::WebServer;
 
-// This class MUST be re-entrant (internally synchonized)- and is STATELESS - so no syncro needed
+// This class MUST be re-entrant (internally synchronized)- and is STATELESS - so no syncro needed
 struct InterceptorChain::Rep_ : InterceptorChain::_IRep {
     Rep_ (const Sequence<Interceptor>& interceptors)
         : fInterceptors_ (interceptors)

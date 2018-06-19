@@ -104,10 +104,10 @@ namespace Stroika {
 
             public:
                 /**
-                 *  \brief Call this with a lambda that will update the associated value (INSIDE a lock (synchonized))
+                 *  \brief Call this with a lambda that will update the associated value (INSIDE a lock (synchronized))
                  *
                  *  Call this with a lambda that will update the associated value. The update will happen INSIDE
-                 *  a lock (synchonized). 
+                 *  a lock (synchronized). 
                  *
                  *  updaterFunction should return nullopt if no change, or the new value if changed.
                  *

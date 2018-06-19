@@ -523,7 +523,7 @@ namespace Stroika {
 
             /**
              *  \note   These CAN be accessed from multiple threads, and each subclass respecting this API
-             *          must be internally synchonized.
+             *          must be internally synchronized.
              */
             class Main::IServiceIntegrationRep {
             public:

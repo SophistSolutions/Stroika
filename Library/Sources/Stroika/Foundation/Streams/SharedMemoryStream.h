@@ -36,7 +36,7 @@ namespace Stroika {
              *  Since SharedMemoryStream keeps its data all in memory, it has the limitation that
              *  attempts to seek or write more than will fit in RAM will fail (with an exception).
              *
-             *  \note   SharedMemoryStream is suitable for synchonized reading and writing between two threads (producer / consumer pattern).
+             *  \note   SharedMemoryStream is suitable for synchronized reading and writing between two threads (producer / consumer pattern).
              *          Reads will block at the end of the stream until some thread calls SharedMemoryStream><>::CloseWrite ()
              *
              *          @see MemoryStream

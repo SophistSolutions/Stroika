@@ -14,11 +14,11 @@
    > than the current thread unless the objects are accessed directly or indirectly via the function's non-const arguments, including this.
 
    So basically this means you can call multiple read operations on the object without concern (threadsafe), but mixing read and write
-   must be somehow externally synchonized (suggestion - see Execution::Synchronized&lt;&gt;)
+   must be somehow externally synchronized (suggestion - see Execution::Synchronized&lt;&gt;)
 
    *Most* Stroika code follows this principle.
 
-   *Most* such Stroika classes also protect their internal representation integrity with Debug::AssertExternallySynchonized in Debug builds
+   *Most* such Stroika classes also protect their internal representation integrity with Debug::AssertExternallySynchronized in Debug builds
 
 ---
 
@@ -75,7 +75,7 @@
 	</p>
 	<p>
 	To manage access to the letter (rep), you may be in the case of <a href='C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter'>C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
-	or <a href='C++-Standard-Thread-Safety-Letter-Internally-Synchonized'>C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a>, depending on the ultimate origin of the underlying stream rep.
+	or <a href='C++-Standard-Thread-Safety-Letter-Internally-Synchronized'>C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>, depending on the ultimate origin of the underlying stream rep.
 	</p>
 
 ---
@@ -96,7 +96,7 @@
 
 ---
 
-<h3><a name='C++-Standard-Thread-Safety-Letter-Internally-Synchonized'>C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a></h3>
+<h3><a name='C++-Standard-Thread-Safety-Letter-Internally-Synchronized'>C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a></h3>
 	<p>
 	This has all the constraints of <a href='C++-Standard-Thread-Safety'>C++-Standard-Thread-Safety</a> for the Ptr object.
 	</p>
@@ -116,12 +116,12 @@ OLD/OBSOLETE
   This is a very weak form of thread safety promise. It means that two separate instances can be safely used from two differnt threads.
 
  Execpt if you copy one to another. This is for envelope/letter classes that act as smart pointers, and where the underlying internal
- object is not synchonized.
+ object is not synchronized.
 
  For example, a Stream object, or a DirectoryIterator, for example.
 
  What you create and copy around within one thread and destroy is perfectly safe, but allowing one of these objects to be copied can lead to bugs.
 
- These will generally be protoected internally with Debug::AssertExternallySynchonized on their internal 'shared reps' so that any mis-use will generally be detected in debug builds.
+ These will generally be protoected internally with Debug::AssertExternallySynchronized on their internal 'shared reps' so that any mis-use will generally be detected in debug builds.
 
    *Example* Streams::BufferedInputStream

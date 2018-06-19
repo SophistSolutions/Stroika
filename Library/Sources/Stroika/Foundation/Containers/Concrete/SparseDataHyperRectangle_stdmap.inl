@@ -187,7 +187,7 @@ namespace Stroika {
                         {
                             RequireNotNull (result);
                             // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
-                            // iterator, and that must be in the thread (so externally synchonized) of the modifier
+                            // iterator, and that must be in the thread (so externally synchronized) of the modifier
                             std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
                             More_SFINAE_ (result, advance);
                         }

@@ -53,7 +53,7 @@ namespace Stroika::Foundation {
 #endif
 
         /**
-         *  \brief  Thread is a (unsynchronized) smart pointer referencing an internally synchonized std::thread object (rep), with special feautres, including cancelation
+         *  \brief  Thread is a (unsynchronized) smart pointer referencing an internally synchronized std::thread object (rep), with special feautres, including cancelation
          *
          *      Stroika Threads are built on std::thread, so can be used mostly interoperably. However,
          *  Stroika threads add a number of very useful features to std::threads:
@@ -489,7 +489,7 @@ namespace Stroika::Foundation {
          *
          *  \see    Thread::CleanupPtr
          *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized/a>
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized/a>
          */
         class Thread::Ptr : private Debug::AssertExternallySynchronizedLock {
         public:

@@ -69,7 +69,7 @@ namespace Stroika {
              *       @todo NEED to support NESTED Routes (or aggregated).
              *               Key is need stuff like 'default error handling' - and just to somehow inherit/copy that.
              *
-             * \note - this must be EXTERNALLY synchonized - except that all read only methods are safe from any thread,
+             * \note - this must be EXTERNALLY synchronized - except that all read only methods are safe from any thread,
              *         because these are usually stored in a strucutre where they wont be updated.
              *         Just be sure the HANLDER argument is safe when called from multiple threads at the same time!
              */
@@ -93,7 +93,7 @@ namespace Stroika {
             };
 
             /**
-             *  THREAD: must be externally synchonized, but all const methods are safe from any thread.
+             *  THREAD: must be externally synchronized, but all const methods are safe from any thread.
              */
             class Router : public Interceptor {
             private:

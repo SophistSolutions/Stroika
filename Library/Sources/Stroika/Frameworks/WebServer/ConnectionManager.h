@@ -251,7 +251,7 @@ namespace Stroika {
                 Execution::Synchronized<Optional<int>>                       fLinger_;
                 Execution::Synchronized<Optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
                 Router                                                       fRouter_;
-                InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchonized
+                InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchronized
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?

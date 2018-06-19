@@ -26,7 +26,7 @@
  *      @todo   May need (want) to add try_lock etc (Lockable versus BasicLockable)
  *
  *      @todo   Initial implementation is inefficent (using timed_mutex). COULD do #ifdef based
- *              more efficient impls, directly using pthread_mutext (since it returns on EINTR) I think.
+ *              more efficient impls, directly using pthread_mutex (since it returns on EINTR) I think.
  *
  *              Not SURE how todo better with MSFT - but I'm sure they have some alertable API that
  *              comes down to a mutex (or close)

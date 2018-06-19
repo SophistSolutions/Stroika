@@ -26,7 +26,7 @@ namespace Stroika::Foundation {
     namespace Streams {
 
         /**
-         *  Helper to wrap an existing stream in synchonized wrapper - like @see Execution::Synchonized - except this wrape
+         *  Helper to wrap an existing stream in synchronized wrapper - like @see Execution::Synchronized - except this wrape
          *  the underlying pointed to stream, not the external smart-pointer wrapper.
          */
         template <typename ELEMENT_TYPE, typename BASE_CLASS = InputOutputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>

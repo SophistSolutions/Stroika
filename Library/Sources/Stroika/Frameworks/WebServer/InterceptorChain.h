@@ -38,8 +38,8 @@ namespace Stroika {
              *
              *  Note - exceptions are handled in the reverse order - passed backwards through the chain.
              *
-             *  The InterceptorChain is internally synchonized. But - it assumes each Interceptor its given
-             *  is itself internally synchonized.
+             *  The InterceptorChain is internally synchronized. But - it assumes each Interceptor its given
+             *  is itself internally synchronized.
              *
              *  So we can copy an Interceptor chain quickly and cheaply without (external) locks. Updating it
              *  maybe slower, but also can be done freely without locks.

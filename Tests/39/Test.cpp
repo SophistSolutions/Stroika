@@ -424,7 +424,7 @@ namespace {
                 }
                 DoInterlocktest_<Synchronized<intish_object1>> ([](Synchronized<intish_object1>* i) { (i->rwget ()->fVal)++; }, [](Synchronized<intish_object1>* i) { (i->rwget ()->fVal)--; });
             }
-            void TestSynchonizedNotCopyable_ ()
+            void TestSynchronizedNotCopyable_ ()
             {
                 {
                     Synchronized<NotCopyable> x;
@@ -463,7 +463,7 @@ namespace {
             Debug::TraceContextBumper traceCtx ("{}::Test7_Synchronized_::DoIt ()");
             Private_::TestBasics_ ();
             Private_::DoThreadTest_ ();
-            Private_::TestSynchonizedNotCopyable_ ();
+            Private_::TestSynchronizedNotCopyable_ ();
         }
     }
 }
@@ -493,7 +493,7 @@ namespace {
 }
 
 namespace {
-    namespace Test9_MutlipleThreadsReadingUnsynchonizedContainer_ {
+    namespace Test9_MutlipleThreadsReadingUnsynchronizedContainer_ {
         namespace Private_ {
             void TestBasics_ ()
             {
@@ -531,14 +531,14 @@ namespace {
         }
         void DoIt ()
         {
-            Debug::TraceContextBumper traceCtx ("{}::Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ()");
+            Debug::TraceContextBumper traceCtx ("{}::Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ()");
             Private_::TestBasics_ ();
         }
     }
 }
 
 namespace {
-    namespace Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_ {
+    namespace Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_ {
         namespace Private_ {
             template <typename CONTAINER, typename ADD_FUNCTION, typename REMOVE_FUNCTION, typename EXAMINE_FUNCTION, typename ITER_FUNCTION>
             void TestBasics_ (ADD_FUNCTION addF, REMOVE_FUNCTION remF, EXAMINE_FUNCTION examineF, ITER_FUNCTION iterF)
@@ -695,7 +695,7 @@ namespace {
             //Test to capture regression caused by incomplete fix in
             //      https://stroika.atlassian.net/browse/STK-525 -- qContainersPrivateSyncrhonizationPolicy_
             //
-            Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ()");
+            Debug::TraceContextBumper traceCtx ("{}::Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ()");
             int64_t                   cnt{};
             Private_::TestBasics_<Sequence<int>> (
                 [](Sequence<int>* c, int i) { c->Append (i); },
@@ -737,8 +737,8 @@ namespace {
         Test6_OverloadsWithSyncMethods_::DoIt ();
         Test7_Synchronized_::DoIt ();
         Test8_AssertExternallySynchronized_::DoIt ();
-        Test9_MutlipleThreadsReadingUnsynchonizedContainer_::DoIt ();
-        Test10_MutlipleThreadsReadingOneUpdateUsingSynchonizedContainer_::DoIt ();
+        Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ();
+        Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ();
     }
 }
 
