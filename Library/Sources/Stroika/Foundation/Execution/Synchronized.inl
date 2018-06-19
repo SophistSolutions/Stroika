@@ -94,8 +94,9 @@ namespace Stroika {
             inline auto Synchronized<T, TRAITS>::operator= (const Synchronized& rhs) -> Synchronized&
             {
                 if (&rhs != this) {
+                    auto                    value   = rhs.load ();	// load outside the lock to avoid possible deadlock
                     [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
-                    fProtectedValue_                = rhs.load ();
+                    fProtectedValue_                = value;
                 }
                 return *this;
             }
@@ -334,7 +335,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline bool operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
             {
-                return lhs.load () <= rhs.load ();
+				// preload to avoid possible deadlock
+                auto l = lhs.load ();
+                auto r = rhs.load ();
+                return l <= r;
             }
 
             /*
@@ -355,7 +359,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline bool operator== (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
             {
-                return lhs.load () == rhs.load ();
+                // preload to avoid possible deadlock
+                auto l = lhs.load ();
+                auto r = rhs.load ();
+                return l == r;
             }
 
             /*
@@ -376,7 +383,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline bool operator!= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
             {
-                return lhs.load () != rhs.load ();
+                // preload to avoid possible deadlock
+                auto l = lhs.load ();
+                auto r = rhs.load ();
+                return l != r;
             }
 
             /*
@@ -419,7 +429,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline auto operator^ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} ^ T{})
             {
-                return lhs.load () ^ rhs.load ();
+                // preload to avoid possible deadlock
+                auto l = lhs.load ();
+                auto r = rhs.load ();
+                return l ^ r;
             }
 
             /*
@@ -440,7 +453,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline auto operator* (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} * T{})
             {
-                return lhs.load () * rhs.load ();
+                // preload to avoid possible deadlock
+                auto l = lhs.load ();
+                auto r = rhs.load ();
+                return l * r;
             }
 
             /*
@@ -461,7 +477,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline auto operator+ (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} + T{})
             {
-                return lhs.load () + rhs.load ();
+                // preload to avoid possible deadlock
+                auto l = lhs.load ();
+                auto r = rhs.load ();
+                return l + r;
             }
 
             /*
@@ -504,7 +523,10 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline auto operator- (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs) -> decltype (T{} - T{})
             {
-                return lhs.load () - rhs.load ();
+                // preload to avoid possible deadlock
+                auto l = lhs.load ();
+                auto r = rhs.load ();
+                return l - r;
             }
         }
     }
