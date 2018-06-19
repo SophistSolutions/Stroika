@@ -75,13 +75,7 @@ namespace Stroika {
              */
             template <typename MUTEX          = recursive_mutex,
                       bool IS_RECURSIVE       = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
-                      typename READ_LOCK_TYPE = conditional_t<
-                          is_same<MUTEX, shared_timed_mutex>::value
-#if __cpp_lib_shared_mutex >= 201505
-                              or is_same<MUTEX, shared_mutex>::value
-#endif
-                          ,
-                          shared_lock<MUTEX>, unique_lock<MUTEX>>,
+                      typename READ_LOCK_TYPE = conditional_t<is_same<MUTEX, shared_timed_mutex>::value or is_same<MUTEX, shared_mutex>::value, shared_lock<MUTEX>, unique_lock<MUTEX>>,
                       typename WRITE_LOCK_TYPE = unique_lock<MUTEX>>
             struct Synchronized_Traits {
                 using MutexType = MUTEX;
@@ -577,11 +571,10 @@ namespace Stroika {
             using QuickSynchronized = conditional_t<kSpinLock_IsFasterThan_mutex, Synchronized<T, Synchronized_Traits<SpinLock>>, Synchronized<T, Synchronized_Traits<mutex>>>;
 
             /**
-             * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer. Typically, using shared_timed_mutex,
-             * but possibly shared_mutex if available (and more efficeint).
+             * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer. Typically, using shared_mutex (or shared_timed_mutex).
              */
             template <typename T>
-            using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_timed_mutex>>;
+            using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_mutex>>;
         }
     }
 }

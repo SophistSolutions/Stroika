@@ -42,6 +42,22 @@ namespace Stroika {
                 m.unlock ();
             }
             template <>
+            inline void Synchronized_Traits<shared_mutex, false, shared_lock<shared_mutex>>::LOCK_SHARED (shared_mutex& m)
+            {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_mutex>::LOCK_SHARED", L"&m=%p", &m};
+#endif
+                m.lock_shared ();
+            }
+            template <>
+            inline void Synchronized_Traits<shared_mutex, false, shared_lock<shared_mutex>>::UNLOCK_SHARED (shared_mutex& m)
+            {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_mutex>::UNLOCK_SHARED", L"&m=%p", &m};
+#endif
+                m.unlock_shared ();
+            }
+            template <>
             inline void Synchronized_Traits<shared_timed_mutex, false, shared_lock<shared_timed_mutex>>::LOCK_SHARED (shared_timed_mutex& m)
             {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
