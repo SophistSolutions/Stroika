@@ -73,15 +73,13 @@ namespace Stroika {
              *  or slightly faster, but possibly slower or less safe (depnding on usage)
              *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
              */
-            template <typename MUTEX           = recursive_mutex,
-                      bool IS_RECURSIVE        = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
-                      typename READ_LOCK_TYPE  = conditional_t<is_same<MUTEX, shared_timed_mutex>::value or is_same<MUTEX, shared_mutex>::value, shared_lock<MUTEX>, unique_lock<MUTEX>>,
-                      typename WRITE_LOCK_TYPE = unique_lock<MUTEX>>
+            template <typename MUTEX             = recursive_mutex,
+                      bool IS_RECURSIVE          = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
+                      bool SUPPORTS_SHARED_LOCKS = std::is_same<MUTEX, shared_timed_mutex>::value or std::is_same<MUTEX, shared_mutex>::value,
+                      typename READ_LOCK_TYPE    = conditional_t<is_same<MUTEX, shared_timed_mutex>::value or is_same<MUTEX, shared_mutex>::value, shared_lock<MUTEX>, unique_lock<MUTEX>>,
+                      typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>>
             struct Synchronized_Traits {
                 using MutexType = MUTEX;
-
-                static void LOCK_SHARED (MutexType& m);
-                static void UNLOCK_SHARED (MutexType& m);
 
                 /// PROTOTYPE - TO REPLACE LOCK_SHARED_UNLOCK_SHARED
                 using ReadLockType  = READ_LOCK_TYPE;
@@ -89,6 +87,8 @@ namespace Stroika {
 
                 // Used internally for assertions that the synchonized object is used safely. If you mean to use differntly, specailize
                 static constexpr bool kAllowRecursive = IS_RECURSIVE;
+
+                static constexpr bool kSupportsSharedLocks = SUPPORTS_SHARED_LOCKS;
             };
 
             /**
@@ -308,16 +308,7 @@ namespace Stroika {
                 // @todo - DOCUMENT that this RELEASES the read lock, so whatever values you checked need to be RECHECEKD.
                 // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesn't yet)
                 // RE-LCOK the shared_lock
-                nonvirtual WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference)
-                {
-                    AssertNotNull (readReference);
-                    AssertNotNull (readReference->fSharedLock_);
-                    if (readReference->fSharedLock_->owns_lock ()) {
-                        readReference->fSharedLock_->unlock ();
-                    }
-                    // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-                    return WritableReference (&fProtectedValue_, &fLock_);
-                }
+                nonvirtual WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference);
 
             public:
                 /**
@@ -341,16 +332,8 @@ namespace Stroika {
                  *              });
                  *          }
                  */
-                nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
-                {
-                    // AssertNotNull (readReference);
-                    // Assert (readReference->fSharedLock_ == &fLock_);
-                    //Require (fLock_.owns_shared_lock ());
-                    TRAITS::UNLOCK_SHARED (fLock_);
-                    // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
-                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() { TRAITS::LOCK_SHARED (fLock_); });
-                    doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
-                }
+                nonvirtual void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock);
+
 #if 0
             public:
                 // @todo - this will try to keep the readlock in place, but doing that is not legal with C++ std stuff, so must use

@@ -22,60 +22,6 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ******************************** Synchronized_Traits ***************************
-             ********************************************************************************
-             */
-            template <typename MUTEX, bool IS_RECURSIVE, typename READ_LOCK_TYPE, typename WRITE_LOCK_TYPE>
-            inline void Synchronized_Traits<MUTEX, IS_RECURSIVE, READ_LOCK_TYPE, WRITE_LOCK_TYPE>::LOCK_SHARED (MutexType& m)
-            {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::LOCK_SHARED", L"&m=%p", &m};
-#endif
-                m.lock ();
-            }
-            template <typename MUTEX, bool IS_RECURSIVE, typename READ_LOCK_TYPE, typename WRITE_LOCK_TYPE>
-            inline void Synchronized_Traits<MUTEX, IS_RECURSIVE, READ_LOCK_TYPE, WRITE_LOCK_TYPE>::UNLOCK_SHARED (MutexType& m)
-            {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::UNLOCK_SHARED", L"&m=%p", &m};
-#endif
-                m.unlock ();
-            }
-            template <>
-            inline void Synchronized_Traits<shared_mutex, false, shared_lock<shared_mutex>>::LOCK_SHARED (shared_mutex& m)
-            {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_mutex>::LOCK_SHARED", L"&m=%p", &m};
-#endif
-                m.lock_shared ();
-            }
-            template <>
-            inline void Synchronized_Traits<shared_mutex, false, shared_lock<shared_mutex>>::UNLOCK_SHARED (shared_mutex& m)
-            {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_mutex>::UNLOCK_SHARED", L"&m=%p", &m};
-#endif
-                m.unlock_shared ();
-            }
-            template <>
-            inline void Synchronized_Traits<shared_timed_mutex, false, shared_lock<shared_timed_mutex>>::LOCK_SHARED (shared_timed_mutex& m)
-            {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::LOCK_SHARED", L"&m=%p", &m};
-#endif
-                m.lock_shared ();
-            }
-            template <>
-            inline void Synchronized_Traits<shared_timed_mutex, false, shared_lock<shared_timed_mutex>>::UNLOCK_SHARED (shared_timed_mutex& m)
-            {
-#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
-                Debug::TraceContextBumper ctx{L"Synchronized_Traits<shared_timed_mutex>::UNLOCK_SHARED", L"&m=%p", &m};
-#endif
-                m.unlock_shared ();
-            }
-
-            /*
-             ********************************************************************************
              **************************** Synchronized<T, TRAITS> ***************************
              ********************************************************************************
              */
@@ -94,7 +40,7 @@ namespace Stroika {
             inline auto Synchronized<T, TRAITS>::operator= (const Synchronized& rhs) -> Synchronized&
             {
                 if (&rhs != this) {
-                    auto                    value   = rhs.load ();	// load outside the lock to avoid possible deadlock
+                    auto                    value   = rhs.load (); // load outside the lock to avoid possible deadlock
                     [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
                     fProtectedValue_                = value;
                 }
@@ -148,12 +94,28 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::lock_shared () const
             {
-                TRAITS::LOCK_SHARED (fLock_);
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::lock_shared", L"&m=%p", &m};
+#endif
+                if constexpr (TRAITS::kSupportsSharedLocks) {
+                    fLock_.lock_shared ();
+                }
+                else {
+                    fLock_.lock ();
+                }
             }
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::unlock_shared () const
             {
-                TRAITS::UNLOCK_SHARED (fLock_);
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{L"Synchronized_Traits<MUTEX>::unlock_shared", L"&m=%p", &m};
+#endif
+                if constexpr (TRAITS::kSupportsSharedLocks) {
+                    fLock_.unlock_shared ();
+                }
+                else {
+                    fLock_.unlock ();
+                }
             }
             template <typename T, typename TRAITS>
             inline void Synchronized<T, TRAITS>::lock () const
@@ -170,6 +132,41 @@ namespace Stroika {
                 Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::unlock", L"&fLock_=%p", &fLock_};
 #endif
                 fLock_.unlock ();
+            }
+            template <typename T, typename TRAITS>
+            auto Synchronized<T, TRAITS>::Experimental_UnlockUpgradeLock (ReadableReference* readReference) -> WritableReference
+            {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::Experimental_UnlockUpgradeLock", L"&fLock_=%p", &fLock_};
+#endif
+                AssertNotNull (readReference);
+                AssertNotNull (readReference->fSharedLock_);
+                if (readReference->fSharedLock_->owns_lock ()) {
+                    readReference->fSharedLock_->unlock ();
+                }
+                // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
+                return WritableReference (&fProtectedValue_, &fLock_);
+            }
+            template <typename T, typename TRAITS>
+            void Synchronized<T, TRAITS>::Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
+            {
+#if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
+                Debug::TraceContextBumper ctx{L"Synchronized<T, TRAITS>::Experimental_UpgradeLock2", L"&fLock_=%p", &fLock_};
+#endif
+                // AssertNotNull (readReference);
+                // Assert (readReference->fSharedLock_ == &fLock_);
+                //Require (fLock_.owns_shared_lock ());
+                if constexpr (TRAITS::kSupportsSharedLocks) {
+                    fLock_.unlock_shared ();
+                    // @todo maybe need todo try_lock here?? Or maybe this is OK - as is - so long as we release lock first
+                    [[maybe_unused]] auto&& cleanup = Execution::Finally ([this]() {
+                        fLock_.lock_shared ();
+                    });
+                    doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
+                }
+                else {
+                    doWithWriteLock (WritableReference (&fProtectedValue_, &fLock_));
+                }
             }
 
             /*
@@ -193,7 +190,12 @@ namespace Stroika {
             {
                 RequireNotNull (t);
                 RequireNotNull (m);
-                TRAITS::LOCK_SHARED (*m);
+                if constexpr (TRAITS::kSupportsSharedLocks) {
+                    m->lock_shared ();
+                }
+                else {
+                    m->lock ();
+                }
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"ReadableReference::CTOR -- locks (fSharedLock_ mutex_=%p)", m);
 #endif
@@ -213,7 +215,12 @@ namespace Stroika {
                 DbgTrace (L"ReadableReference::DTOR -- locks (fSharedLock_ mutex_=%p)", fSharedLock_);
 #endif
                 if (fSharedLock_ != nullptr) {
-                    TRAITS::UNLOCK_SHARED (*fSharedLock_);
+                    if constexpr (TRAITS::kSupportsSharedLocks) {
+                        fSharedLock_->unlock_shared ();
+                    }
+                    else {
+                        fSharedLock_->unlock ();
+                    }
                 }
             }
             template <typename T, typename TRAITS>
@@ -335,7 +342,7 @@ namespace Stroika {
             template <typename T, typename TRAITS>
             inline bool operator<= (const Synchronized<T, TRAITS>& lhs, const Synchronized<T, TRAITS>& rhs)
             {
-				// preload to avoid possible deadlock
+                // preload to avoid possible deadlock
                 auto l = lhs.load ();
                 auto r = rhs.load ();
                 return l <= r;
