@@ -178,7 +178,7 @@ sub	DoHelp_
         print("	    --apply-default-debug-flags                     /*  */\n");
         print("	    --apply-default-release-flags                   /*  */\n");
         print("	    --only-if-has-compiler                          /* Only generate this configuration if the compiler appears to exist (test run)*/\n");
-        print("	    --debug-symbols {true|false}                    /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
+        print("	    --debug-symbols {true|false}                    /* --debug-symbols-lib AND --debug-symbols-exe at the same time */\n");
         print("	    --debug-symbols-lib {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
         print("	    --debug-symbols-exe {true|false}                /* defaults to true, but can be disabled if makes compile/link/etc too big/slow */\n");
         print("	    --malloc-guard {true|false}                     /* defaults to false (for now experimental and only works with GCC) */\n");
