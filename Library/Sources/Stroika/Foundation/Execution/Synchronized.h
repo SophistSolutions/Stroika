@@ -32,17 +32,17 @@
  *
  *      @todo   consider/doc choice on explicit operator T ()
  *
- *		@todo	Consider an UpgradeLock API like:
- *				nonvirtual Memory::Optional<WritableReference> Experimental_UpgradeLock (ReadableReference* readReference)
+ *      @todo   Consider an UpgradeLock API like:
+ *              nonvirtual Memory::Optional<WritableReference> Experimental_UpgradeLock (ReadableReference* readReference)
  *              {
- *					AssertNotImplemented ();
- *					return WritableReference (&fProtectedValue_, &fLock_);
+ *                  AssertNotImplemented ();
+ *                  return WritableReference (&fProtectedValue_, &fLock_);
  *              }
  *              // But tricky because as of C++17, shared_mutex and shared_timed_mutex dont allow you to BOTH have a shared_lock and lock()
- *				// at the same time, with the same mutex.
- *				//
+ *              // at the same time, with the same mutex.
+ *              //
  *              // boost upgrade-lock?
- *				//
+ *              //
  *
  */
 
@@ -75,19 +75,19 @@ namespace Stroika::Foundation {
          *      If recursion is not necessary, and for highest performance, SpinLock will often work best.
          *
          *  \par Example Usage
-         *		\code
-         *			Synchronized<String> n;                                                 // SAME
-         *			Synchronized<String,Synchronized_Traits<>> n;                           // SAME
-         *			Synchronized<String,Synchronized_Traits<recursive_mutex>>   n;          // SAME
+         *      \code
+         *          Synchronized<String> n;                                                 // SAME
+         *          Synchronized<String,Synchronized_Traits<>> n;                           // SAME
+         *          Synchronized<String,Synchronized_Traits<recursive_mutex>>   n;          // SAME
          *      \endcode
          *
          *  or slightly faster, but possibly slower or less safe (depnding on usage)
          *      Synchronized<String,Synchronized_Traits<SpinLock>>   n;
-		 *
- 		 *	\note Use of SUPPORTS_SHARED_LOCKS has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
- 		 * 		  read locks held for a long time (and multiple threads doing so).
- 		 *
-		 *		  @see http://joeduffyblog.com/2009/02/11/readerwriter-locks-and-their-lack-of-applicability-to-finegrained-synchronization/
+         *
+         *  \note Use of SUPPORTS_SHARED_LOCKS has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
+         *        read locks held for a long time (and multiple threads doing so).
+         *
+         *        @see http://joeduffyblog.com/2009/02/11/readerwriter-locks-and-their-lack-of-applicability-to-finegrained-synchronization/
          */
         template <typename MUTEX             = recursive_mutex,
                   bool IS_RECURSIVE          = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
@@ -223,11 +223,11 @@ namespace Stroika::Foundation {
              *              Synchronized<T> sX_;
              *              T Accessor ()  { return sX_; }
              *          and so far has caused no obvious problems.
-			 *
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
-			 *		    feature (say with RWSynchronized) - use cget ().load ();
-			 *			The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
-			 *			already has a lock (e.g. called rwget ()).
+             *
+             *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+             *          feature (say with RWSynchronized) - use cget ().load ();
+             *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
+             *          already has a lock (e.g. called rwget ()).
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual operator T () const;
@@ -242,15 +242,15 @@ namespace Stroika::Foundation {
              *
              *  \par Example Usage
              *      \code
-             *			Synchronized<Thread::Ptr> sharedData;
-             *			sharedData.load ().AbortAndWaitTilDone ();  // copies thread and doesn't maintain lock during wait
-             *			sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
+             *          Synchronized<Thread::Ptr> sharedData;
+             *          sharedData.load ().AbortAndWaitTilDone ();  // copies thread and doesn't maintain lock during wait
+             *          sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
              *      \endcode
-			 *
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
-			 *		    feature (e.g. with RWSynchronized<T>) - use cget ().load (), or existingLock.load ();
-			 *			The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
-			 *			already has a lock (e.g. called rwget ()).
+             *
+             *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+             *          feature (e.g. with RWSynchronized<T>) - use cget ().load (), or existingLock.load ();
+             *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
+             *          already has a lock (e.g. called rwget ()).
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual T load () const;
@@ -260,11 +260,11 @@ namespace Stroika::Foundation {
              * @see load ()
              *
              *  Save the given value into this synchronized object, acquiring the needed write lock first.
-			 *
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
-			 *		    feature (say with RWSynchronized) - use rwget ().store ();
-			 *			The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
-			 *			already has a lock (e.g. called rwget ()).
+             *
+             *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+             *          feature (say with RWSynchronized) - use rwget ().store ();
+             *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
+             *          already has a lock (e.g. called rwget ()).
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual void store (const T& v);
@@ -290,8 +290,8 @@ namespace Stroika::Foundation {
              *
              *  Except that this works whether using a shared_mutex or regular mutex. Also - this provides only read-only access
              *  (use rwget for read-write access).
-			 *
-			 *	\note - this creates a lock, so be sure TRAITS::kIsRecursiveMutex if using this in a place where the same thread may have a lock.
+             *
+             *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveMutex if using this in a place where the same thread may have a lock.
              */
             nonvirtual ReadableReference cget () const;
 
@@ -299,8 +299,8 @@ namespace Stroika::Foundation {
             /**
              *  \brief  get a read-rwite smart pointer to the underlying Synchronized<> object, holding the full lock the whole
              *          time the (often temporary) WritableReference exists.
-			 *
-			 *	\note - this creates a lock, so be sure TRAITS::kIsRecursiveMutex if using this in a place where the same thread may have a lock.
+             *
+             *  \note - this creates a lock, so be sure TRAITS::kIsRecursiveMutex if using this in a place where the same thread may have a lock.
              */
             nonvirtual WritableReference rwget ();
 
@@ -322,44 +322,44 @@ namespace Stroika::Foundation {
 
         public:
             /**
-			 *	\note	lock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
-			 *		    feature (say with RWSynchronized) - use rwget () or cget ();
-			 *
-			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
-			 *		    otherwise.
+             *  \note   lock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
+             *          feature (say with RWSynchronized) - use rwget () or cget ();
+             *
+             *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+             *          otherwise.
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>>
             nonvirtual void lock_shared () const;
 
         public:
             /**
-		 	 *	\note	unlock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
-			 *		    feature (say with RWSynchronized) - use rwget () or cget ();
-			 *
-			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
-			 *		    otherwise.
+             *  \note   unlock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
+             *          feature (say with RWSynchronized) - use rwget () or cget ();
+             *
+             *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+             *          otherwise.
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>>
             nonvirtual void unlock_shared () const;
 
         public:
             /**
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
-			 *		    feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
-			 *
-			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
-			 *		    otherwise.
+             *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+             *          feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
+             *
+             *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+             *          otherwise.
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual void lock () const;
 
         public:
             /**
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
-			 *		    feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
-			 *
-			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
-			 *		    otherwise.
+             *  \note   This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+             *          feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
+             *
+             *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
+             *          otherwise.
              */
             template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
             nonvirtual void unlock () const;
@@ -474,7 +474,7 @@ namespace Stroika::Foundation {
         public:
             /**
              *  \brief  more or less identical to cref () - except return value is value, not reference.
-             */ 
+             */
             nonvirtual T load () const;
 
         protected:
@@ -630,10 +630,10 @@ namespace Stroika::Foundation {
 
         /**
          * RWSynchronized will always use some sort of mutex which supports multiple readers, and a single writer.
-		 * Typically, using shared_mutex (or shared_timed_mutex).
-		 *
-		 *	\note Use of RWSynchronized has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
-		 *		  read locks held for a long time (and multiple threads doing so)
+         * Typically, using shared_mutex (or shared_timed_mutex).
+         *
+         *  \note Use of RWSynchronized has HIGH PERFORMANCE OVERHEAD, and only makes sense when you have
+         *        read locks held for a long time (and multiple threads doing so)
          */
         template <typename T>
         using RWSynchronized = Synchronized<T, Synchronized_Traits<shared_mutex>>;

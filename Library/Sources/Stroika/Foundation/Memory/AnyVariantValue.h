@@ -88,7 +88,8 @@ namespace Stroika::Foundation {
          *
          *  @see VariantValue
          */
-        class [[deprecated ("This class is essentially the same as std::any; there are a few things it does better (e.g. IfAs) - but not worth the extra class - deprecate as of Stroika v2.1d1")]] AnyVariantValue {
+        class [[deprecated ("This class is essentially the same as std::any; there are a few things it does better (e.g. IfAs) - but not worth the extra class - deprecate as of Stroika v2.1d1")]] AnyVariantValue
+        {
         public:
             /**
              *  Note that its is important that the AnyVariantValue (T) CTOR is explicit, because otherwise its too easy to
