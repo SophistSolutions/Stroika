@@ -138,7 +138,7 @@ if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
 	if [ $ARMTESTMACHINEAVAIL -eq 0 ]; then
 		STAGE_STARTAT_INT=$(date +%s)
 		RASPBERRYPICONFIGS=`./ScriptsLib/GetConfigurations.sh | grep -oh "raspberrypi-.*\w"`
-		for i in $X; do 
+		for i in $RASPBERRYPICONFIGS; do 
 			make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 		done; 
 		#make run-tests CONFIGURATION=raspberrypi-g++-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
