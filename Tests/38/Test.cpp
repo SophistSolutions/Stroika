@@ -986,10 +986,11 @@ namespace {
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
             static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            // if using RWSynchonized, we must get overlap, and if using Synchonized<> (no shared lock) - we must not get overlap (first arg to test function)
             Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
             Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);
             Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 100u : 1000u, 0.001);
-            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 100u : 500u, 0.001);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 100u : 250u, 0.001);
             Private_::Test2_LongWritesBlock_ ();
         }
     }
