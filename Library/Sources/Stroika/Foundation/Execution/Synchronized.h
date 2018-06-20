@@ -107,7 +107,7 @@ namespace Stroika::Foundation {
         };
 
         /**
-         *  \brief  Wrap any object with Synchonized<> and it can be used similarly to the base type,
+         *  \brief  Wrap any object with Synchronized<> and it can be used similarly to the base type,
          *          but safely in a thread safe manner, from multiple threads. This is similar to std::atomic.
          *
          *  The idea behind any of these synchronized classes is that they can be used freely from
@@ -131,7 +131,7 @@ namespace Stroika::Foundation {
          *          you only use Synchronized<> (or some other more performant mechanism) in the few places
          *          you need it.
          *
-         *  \note   Synchonized<> is similar to std::atomic, except that
+         *  \note   Synchronized<> is similar to std::atomic, except that
          *          *   You can use it as a mutex with lock_guard and lock for an extended period of time.
          *          *   This supports read/write locks.
          *          *   This supports locking objects and updated bits of them - not just replacing all at one go
@@ -180,7 +180,7 @@ namespace Stroika::Foundation {
          *          }
          *      \endcode
          *
-         *  \note   We consider supporting operator-> for Synchonized<> - and overloading on const to see if we use a Read Lock or a Write lock.
+         *  \note   We consider supporting operator-> for Synchronized<> - and overloading on const to see if we use a Read Lock or a Write lock.
          *          The problem is - that IF its called through a non-const object, it will select the non-const (write lock) even though all that
          *          was needed was the read lock! So this paradigm - though more terse and clear - just encourages inefficient coding (so we
          *          have no read locks - all locks write locks).
@@ -224,8 +224,8 @@ namespace Stroika::Foundation {
              *              T Accessor ()  { return sX_; }
              *          and so far has caused no obvious problems.
 			 *
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
-			 *		    feature (say with RWSynchonized) - use cget ().load ();
+			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+			 *		    feature (say with RWSynchronized) - use cget ().load ();
 			 *			The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
 			 *			already has a lock (e.g. called rwget ()).
              */
@@ -247,8 +247,8 @@ namespace Stroika::Foundation {
              *			sharedData->AbortAndWaitTilDone ();         // works off internal copy of thread object, and maintains the lock while accessing
              *      \endcode
 			 *
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
-			 *		    feature (e.g. with RWSynchonized<T>) - use cget ().load (), or existingLock.load ();
+			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+			 *		    feature (e.g. with RWSynchronized<T>) - use cget ().load (), or existingLock.load ();
 			 *			The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
 			 *			already has a lock (e.g. called rwget ()).
              */
@@ -261,8 +261,8 @@ namespace Stroika::Foundation {
              *
              *  Save the given value into this synchronized object, acquiring the needed write lock first.
 			 *
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
-			 *		    feature (say with RWSynchonized) - use rwget ().store ();
+			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+			 *		    feature (say with RWSynchronized) - use rwget ().store ();
 			 *			The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
 			 *			already has a lock (e.g. called rwget ()).
              */
@@ -323,7 +323,7 @@ namespace Stroika::Foundation {
         public:
             /**
 			 *	\note	lock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
-			 *		    feature (say with RWSynchonized) - use rwget () or cget ();
+			 *		    feature (say with RWSynchronized) - use rwget () or cget ();
 			 *
 			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
 			 *		    otherwise.
@@ -334,7 +334,7 @@ namespace Stroika::Foundation {
         public:
             /**
 		 	 *	\note	unlock_shared () only works for 'recursive' mutexes which supported 'shared lock'. To avoid the absence of this
-			 *		    feature (say with RWSynchonized) - use rwget () or cget ();
+			 *		    feature (say with RWSynchronized) - use rwget () or cget ();
 			 *
 			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
 			 *		    otherwise.
@@ -344,8 +344,8 @@ namespace Stroika::Foundation {
 
         public:
             /**
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
-			 *		    feature (e.g. with RWSynchonized<T>) - use cget (), or rwget ().
+			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+			 *		    feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
 			 *
 			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
 			 *		    otherwise.
@@ -355,8 +355,8 @@ namespace Stroika::Foundation {
 
         public:
             /**
-			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchonized). To avoid the absence of this
-			 *		    feature (e.g. with RWSynchonized<T>) - use cget (), or rwget ().
+			 *	\note	This works only for 'recursive' mutexes (the default, except for RWSynchronized). To avoid the absence of this
+			 *		    feature (e.g. with RWSynchronized<T>) - use cget (), or rwget ().
 			 *
 			 *	\note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
 			 *		    otherwise.
@@ -427,7 +427,7 @@ namespace Stroika::Foundation {
 
         /**
          *  Anything that constructs a ReadableReference - for example - Synchronized<T, TRAITS>::cget () - is suitable for multiple readers at the same time,
-         *  so long as using Synchonized<> of a type that supports shared locks (@see RWSynchronized<>)
+         *  so long as using Synchronized<> of a type that supports shared locks (@see RWSynchronized<>)
          */
         template <typename T, typename TRAITS>
         class Synchronized<T, TRAITS>::ReadableReference {

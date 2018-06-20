@@ -84,6 +84,8 @@ namespace Stroika::Frameworks {
             };
 
             /**
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              */
             class Pinger {
             public:
@@ -110,7 +112,7 @@ namespace Stroika::Frameworks {
 
             private:
                 std::uniform_int_distribution<std::mt19937::result_type> fAllUInt16Distribution_{0, numeric_limits<uint16_t>::max ()};
-                std::mt19937                                             fRng_{std::random_device () ()}; // not sure if this needs to be synchonized?
+                std::mt19937                                             fRng_{std::random_device () ()};
                 InternetAddress                                          fDestination_;
                 Options                                                  fOptions_;
                 size_t                                                   fICMPPacketSize_;

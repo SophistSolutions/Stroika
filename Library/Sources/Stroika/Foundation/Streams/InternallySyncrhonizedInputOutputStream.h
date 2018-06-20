@@ -58,7 +58,7 @@ namespace Stroika::Foundation {
              *          Ptr syncStream = InternalSyncRep_::New (unsyncStream);
              *      \endcode
              *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchonized">C++-Standard-Thread-Safety-Letter-Internally-Synchonized</a>
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
              */
             template <typename... ARGS>
             static Ptr New (ARGS&&... args);
