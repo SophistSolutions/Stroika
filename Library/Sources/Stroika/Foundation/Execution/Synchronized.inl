@@ -165,7 +165,7 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const T* t, MutexType* m)
             : fT (t)
-            , fSharedLock_ ((RequireNotNull (m),*m))
+            , fSharedLock_ ((RequireNotNull (m), *m))
         {
             RequireNotNull (t);
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
