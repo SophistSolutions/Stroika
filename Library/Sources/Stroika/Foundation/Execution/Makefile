@@ -23,7 +23,6 @@ Objs	=	\
 	$(ObjDir)Exceptions.o\
 	$(ObjDir)ErrNoException.o\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\
-	$(ObjDir)Finally.o\
 	$(ObjDir)Logger.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)OperationNotSupportedException.o\

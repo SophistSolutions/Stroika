@@ -447,9 +447,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\String_stdwstring.cpp">
       <Filter>Sources\Characters\Concrete</Filter>
     </ClCompile>
