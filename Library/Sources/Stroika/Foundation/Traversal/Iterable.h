@@ -81,7 +81,7 @@ namespace Stroika {
              *  EXPERIMENTAL AS OF v2.0a22x
              *
              *  @todo - TEST. I dont think this is important one way or the other, but I think it may aid performance,
-             *          especailly if NOT using kIterableUsesStroikaSharedPtr, because of the single
+             *          especially if NOT using kIterableUsesStroikaSharedPtr, because of the single
              *          memory allocation (like make_shared<>?).
              */
 #ifndef qStroika_Foundation_Traveral_IterableUsesSharedFromThis_

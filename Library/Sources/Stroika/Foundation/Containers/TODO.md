@@ -84,7 +84,7 @@ TODO (Foundation::Containers)
 	(o)		Consider using optimistic looking implementations - perhaps using an STM library or 
 			somehow the ideas of STM (see http://en.wikipedia.org/wiki/Software_transactional_memory).
 
-			This is especailly important here, but also useful to explore through the rest of Stroika
+			This is especially important here, but also useful to explore through the rest of Stroika
 
 	(o)		Maybe implement Treaps for Set<>, Mapping<>, Dictionary<>, Sorting<>?? using Treaps:
 			http://www.cs.cornell.edu/Courses/cs312/2003sp/lectures/lec26.html

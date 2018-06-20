@@ -24,7 +24,7 @@
  *              class (when I implement it) based on Led chunked arrays).
  *
  *      @todo   There should be some way to generically write vector<T> As<vector<T>>::Memory...(); For now I need
- *              multiple explicit template specailizations.
+ *              multiple explicit template specializations.
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-608 - probably be made more efficent in sync form - using direct mutex
  */

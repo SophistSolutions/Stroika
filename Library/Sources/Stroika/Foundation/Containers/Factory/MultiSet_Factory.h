@@ -30,7 +30,7 @@ namespace Stroika {
                 *  \brief   Singleton factory object - Used to create the default backend implementation of a MultiSet<> container
                 *
                 *  Note - you can override the underlying factory dynamically by calling MultiSet_Factory<T,TRAITS>::Register (), or
-                *  replace it statically by template-specailizing MultiSet_Factory<T,TRAITS>::New () - though the later is trickier.
+                *  replace it statically by template-specializing MultiSet_Factory<T,TRAITS>::New () - though the later is trickier.
                 *
                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                 */

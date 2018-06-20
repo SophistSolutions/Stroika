@@ -648,7 +648,7 @@ vector<pair<size_t, size_t>> String::FindEach (const RegularExpression& regEx) c
     size_t nMatches = res.size ();
     result.reserve (nMatches);
     for (size_t mi = 0; mi < nMatches; ++mi) {
-        size_t matchLen = res.length (mi); // avoid populating with lots of empty matches - specail case of empty search
+        size_t matchLen = res.length (mi); // avoid populating with lots of empty matches - special case of empty search
         if (matchLen != 0) {
             result.push_back (pair<size_t, size_t> (res.position (mi), matchLen));
         }

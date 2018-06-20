@@ -32,7 +32,7 @@ namespace Stroika {
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container
                  *
                  *  Note - you can override the underlying factory dynamically by calling Collection_Factory<T>::Register (), or
-                 *  replace it statically by template-specailizing Collection_Factory<T>::New () - though the later is trickier.
+                 *  replace it statically by template-specializing Collection_Factory<T>::New () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */

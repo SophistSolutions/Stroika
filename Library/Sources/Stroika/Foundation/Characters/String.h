@@ -119,7 +119,7 @@
  *              objects!
  *
  *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
- *              Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
+ *              Maybe not needed. Or maybe can avoid the #include and just do template specializaiton?
  *
  *      @todo   WHEN we have String_stdwstring implemented  - we can do String (wstring&& ctor that
  *              does std::move of wstring - and builds String_stdwstring rep! That could be notably

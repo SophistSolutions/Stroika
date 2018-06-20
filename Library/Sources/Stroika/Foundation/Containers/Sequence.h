@@ -26,7 +26,7 @@
  *                  concepts and that it USES that for the appropriate overloaded constructors.
  *
  *      @todo       Stroika v1 had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
- *                  NOTE - this is NOT a specail TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
+ *                  NOTE - this is NOT a special TYPE of itearator (unlike STL). Its just iterator returned from rbegin(), rend().
  *
  *      @todo       Sequence<> must support RandomAccessIterator<>
  *

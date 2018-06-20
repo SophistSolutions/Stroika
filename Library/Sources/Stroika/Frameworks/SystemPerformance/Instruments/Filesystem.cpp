@@ -515,7 +515,7 @@ namespace {
                 }
                 result.Add (l[5].Trim (), v);
             }
-            // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
+            // Sometimes (with busy box df especially) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
                 Execution::ReThrow (runException);
             }
@@ -568,7 +568,7 @@ namespace {
                 v.fAvailableSizeInBytes = *v.fSizeInBytes - *v.fUsedSizeInBytes;
                 result.Add (l[includeFSTypes ? 6 : 5].Trim (), v);
             }
-            // Sometimes (with busy box df especailly) we get bogus error return. So only rethrow if we found no good data
+            // Sometimes (with busy box df especially) we get bogus error return. So only rethrow if we found no good data
             if (runException and result.empty ()) {
                 Execution::ReThrow (runException);
             }

@@ -35,14 +35,14 @@ namespace Stroika {
 #endif
 
             /**
-             * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
+             * Even when the platform sdk uses wide strings (but more especially when it does not) it will typically have
              * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). WideStringToNarrowSDKString will
              * perform that mapping.
              */
             string WideStringToNarrowSDKString (const wstring& ws);
 
             /**
-             * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
+             * Even when the platform sdk uses wide strings (but more especially when it does not) it will typically have
              * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). NarrowSDKStringToWide will
              * perform that mapping.
              */

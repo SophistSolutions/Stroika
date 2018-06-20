@@ -22,10 +22,6 @@
  *      @todo   Consider if there is a need for timed mutexes.
  *              Reviewed 2014-02-09, and I'm pretty sure not needed.
  *
- *      @todo   SEE IF fThreadAbortCheckFrequency can be replaced with use of WaitForAny() – I THINK SO –
- *              which is GOOD – cuz eliminates pointless wakeups portably…but probably require adding
- *              NON-AUTO-RESET waitable events
- *
  *      @todo   Consider doing an #if qPlatform_Windows implemeantion using Windows 'CreateEvent'. I had this in Stroika
  *              circa 2013-06-01, and could just grab that implementation (really pretty simple).
  *
@@ -37,7 +33,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
 
-/*
+            /*
              *  UNSURE IF/HOW LONG WE WANT TO SUPPORT THIS API. EXPERIMENTAL!
              *  (introduced in Stroika 2.0a20 - 2014-02-08)
              */
@@ -296,21 +292,6 @@ namespace Stroika {
                 template <typename ITERATOR_OF_WAITABLE_EVENTS>
                 static void WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt);
 #endif
-
-            public:
-                /**
-                 *  This API shouldnt be needed - if we had a better underlying implementation, and beware, the API could go away
-                 *  if we find a better way. But callers may find it advisible to control this timeout to tune performance.
-                 *
-                 *  The WaitableEvent class internally uses condition_variable::wait_for () - and this doesn't advertise support for
-                 *  EINTR or using Windows SDK 'alertable states' - so its not clear how often it returns to allow checking
-                 *  for aborts. This 'feature' allows us to periodically check. You dont want to check too often, or you
-                 *  effecitvely busy wait, and this checking is ONLY needed for the specail, rare case of thread abort.
-                 *
-                 *  \note - As of Stroika v2.0a218 - this appears to have never been implemented, so CAN be removed safely.
-                 *          or reworked if desired...
-                 */
-                nonvirtual void SetThreadAbortCheckFrequency (Time::DurationSecondsType frequency);
 
             private:
                 struct WE_ {

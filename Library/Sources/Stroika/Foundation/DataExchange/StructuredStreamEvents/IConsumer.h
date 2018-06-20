@@ -39,7 +39,7 @@ namespace Stroika {
                  *  \note   It MAYBE pointless and hopeless to unify SAX/JSON here... they are very differnt - but try and review these others
                  *
                  *  \note   What we call here an "Element" really corresponds more closely to a "Node" in XML. We essentuially include attributes
-                 *          (and may soon include processing instructions or other ignored thigns) as specail type elements).
+                 *          (and may soon include processing instructions or other ignored thigns) as special type elements).
                  *
                  *          @todo then when you configure the SAX parser, tell it (consmer interface returning a set of types of things it wants)
                  *          to optimize so just the right types of elements sent.

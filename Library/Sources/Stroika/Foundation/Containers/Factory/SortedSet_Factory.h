@@ -26,7 +26,7 @@ namespace Stroika {
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedSet<> container
                  *
                  *  Note - you can override the underlying factory dynamically by calling SortedSet_Factory<T,INORDER_COMPARER>::Register (), or
-                 *  replace it statically by template-specailizing SortedSet_Factory<T,TRAITS>::operator() () - though the later is trickier.
+                 *  replace it statically by template-specializing SortedSet_Factory<T,TRAITS>::operator() () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
                  */

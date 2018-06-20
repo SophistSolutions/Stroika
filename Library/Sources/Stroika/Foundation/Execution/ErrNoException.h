@@ -87,7 +87,7 @@ namespace Stroika {
             template <typename CALL>
             auto Handle_ErrNoResultInterruption (CALL call) -> decltype (call ());
 
-            // Just pre-declare Throw><> template here so we can specailize
+            // Just pre-declare Throw><> template here so we can specialize
             template <typename T>
             [[noreturn]] void Throw (const T& e2Throw);
             template <>

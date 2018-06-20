@@ -90,7 +90,7 @@ namespace Stroika::Foundation {
          *             o   Stroika Streams are much easier to use and understand, with better internal error checking,
          *                 (like thread safety), and simpler, more consistent naming for offets/seeking, and seekability.
          *
-         *             o   Stroika supports non-seekable streams (needed for things like sockets, and certain specail files, like
+         *             o   Stroika supports non-seekable streams (needed for things like sockets, and certain special files, like
          *                 Linux procfs files).
          *
          *             o   Due to more orthoganal API, easier to provide intuitive simple adapters mapping one kind of stream

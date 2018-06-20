@@ -880,16 +880,16 @@ namespace {
         // characters looked up fall in the 0..256 range. So - just handle that specially.
         //
 
-        const wchar_t kBoundaryForSpecailLoop1 = 255;
-        const wchar_t kBoundaryForSpecailLoop2 = 5000;
+        const wchar_t kBoundaryForSpecialLoop1 = 255;
+        const wchar_t kBoundaryForSpecialLoop2 = 5000;
 
         for (int j = 0; j <= 2; ++j) {
 
             if (j == 0) {
-                outStream << "\tif (c < " << int(kBoundaryForSpecailLoop1) << ") {\n";
+                outStream << "\tif (c < " << int(kBoundaryForSpecialLoop1) << ") {\n";
             }
             else if (j == 1) {
-                outStream << "\telse if (c < " << int(kBoundaryForSpecailLoop2) << ") {\n";
+                outStream << "\telse if (c < " << int(kBoundaryForSpecialLoop2) << ") {\n";
             }
             else {
                 outStream << "\telse {\n";
@@ -902,14 +902,14 @@ namespace {
             size_t startLoop         = 0;
             size_t endLoop           = 0;
             if (j == 0) {
-                endLoop = kBoundaryForSpecailLoop1;
+                endLoop = kBoundaryForSpecialLoop1;
             }
             else if (j == 1) {
-                startLoop = kBoundaryForSpecailLoop1;
-                endLoop   = kBoundaryForSpecailLoop2;
+                startLoop = kBoundaryForSpecialLoop1;
+                endLoop   = kBoundaryForSpecialLoop2;
             }
             else {
-                startLoop = kBoundaryForSpecailLoop2;
+                startLoop = kBoundaryForSpecialLoop2;
                 endLoop   = 256 * 256;
             }
             for (size_t i = startLoop; i < endLoop; ++i) {
