@@ -26,7 +26,6 @@ Objs	=	\
 	$(ObjDir)Finally.o\
 	$(ObjDir)Logger.o\
 	$(ObjDir)Module.o\
-	$(ObjDir)ModuleInit.o\
 	$(ObjDir)OperationNotSupportedException.o\
 	$(ObjDir)Process.o\
 	$(ObjDir)ProcessRunner.o\

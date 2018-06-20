@@ -222,9 +222,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>

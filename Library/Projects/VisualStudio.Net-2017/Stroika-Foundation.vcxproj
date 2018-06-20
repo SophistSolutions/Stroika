@@ -774,7 +774,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\OperationNotSupportedException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SemWaitableEvent.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">true</ExcludedFromBuild>
