@@ -609,9 +609,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Interface.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Synchronized.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
@@ -828,6 +825,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

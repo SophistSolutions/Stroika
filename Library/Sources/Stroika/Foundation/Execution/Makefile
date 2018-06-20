@@ -39,7 +39,6 @@ Objs	=	\
 	$(ObjDir)SignalHandlers.o\
 	$(ObjDir)Sleep.o\
 	$(ObjDir)SpinLock.o\
-	$(ObjDir)Synchronized.o\
 	$(ObjDir)Thread.o\
 	$(ObjDir)ThreadPool.o\
 	$(ObjDir)TimeOutException.o\
