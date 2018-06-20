@@ -165,16 +165,9 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         inline Synchronized<T, TRAITS>::ReadableReference::ReadableReference (const T* t, MutexType* m)
             : fT (t)
-            , fSharedLock_ (m)
+            , fSharedLock_ ((RequireNotNull (m),*m))
         {
             RequireNotNull (t);
-            RequireNotNull (m);
-            if constexpr (TRAITS::kSupportSharedLocks) {
-                m->lock_shared ();
-            }
-            else {
-                m->lock ();
-            }
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"ReadableReference::CTOR -- locks (fSharedLock_ mutex_=%p)", m);
 #endif
@@ -193,14 +186,6 @@ namespace Stroika::Foundation {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"ReadableReference::DTOR -- locks (fSharedLock_ mutex_=%p)", fSharedLock_);
 #endif
-            if (fSharedLock_ != nullptr) {
-                if constexpr (TRAITS::kSupportSharedLocks) {
-                    fSharedLock_->unlock_shared ();
-                }
-                else {
-                    fSharedLock_->unlock ();
-                }
-            }
         }
         template <typename T, typename TRAITS>
         inline const T* Synchronized<T, TRAITS>::ReadableReference::operator-> () const

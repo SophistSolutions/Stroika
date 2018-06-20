@@ -481,7 +481,7 @@ namespace Stroika::Foundation {
             const T* fT;
 
         private:
-            MutexType* fSharedLock_{}; // cannot use shared_lock<> because must call TRAITS::LOCK_SHARED/UNLOCK_SHARED - this must work with shared_mutex or non-shared mutex
+            ReadLockType_ fSharedLock_{};
         };
 
         /**
