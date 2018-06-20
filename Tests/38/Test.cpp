@@ -406,15 +406,20 @@ namespace {
             void Test2_LongWritesBlock_ ()
             {
                 Debug::TraceContextBumper                  ctx{"Test2_LongWritesBlock_"};
-                static constexpr int                       kBaseRepititionCount_ = 500;
-                static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.002;
+                static constexpr int                       kBaseRepititionCount_ = 100;
+                static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
                 Synchronized<int>                          syncData{0};
+                bool                                       writerDone{false};
+                unsigned int                               readsDoneAfterWriterDone{0};
                 Thread::Ptr                                readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
+                        if (writerDone) {
+                            readsDoneAfterWriterDone++;
+                        }
                         VerifyTestResult (syncData.cget ().load () % 2 == 0);
-                        Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
+                        Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0 (note - on ubuntu 1804 and fast host, inside vm, median sleep time here is really about 2ms despite division - LGP 2018-06-20)
                     }
                 });
                 Thread::Ptr                                writerThread = Thread::New ([&]() {
@@ -427,9 +432,11 @@ namespace {
                         rwLock.store (rwLock.load () + 1); // set to a safe value
                     }
                     VerifyTestResult (syncData.cget ().load () == kBaseRepititionCount_ * 2);
+                    writerDone = true;
                 });
                 Thread::Start ({readerThread, writerThread});
                 Thread::WaitForDone ({readerThread, writerThread});
+                DbgTrace ("readsDoneAfterWriterDone = %d", readsDoneAfterWriterDone); // make sure we do some reads during writes - scheduling doesn't guarnatee
             }
         }
         void DoIt ()
@@ -579,9 +586,9 @@ namespace {
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
         auto doIt = [](int* argP) {
             for (int i = 0; i < 10; i++) {
-                lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
-                int                         tmp = *argP;
-                Execution::Sleep (.01);
+                auto&& critSect = lock_guard (sharedCriticalSection_);
+                int    tmp      = *argP;
+                Execution::Sleep (.002);
                 //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                 *argP = tmp + 1;
             }
@@ -907,25 +914,23 @@ namespace {
     namespace RegressionTest18_RWSynchronized_ {
         namespace Private_ {
             template <typename SYNCRHONIZED_INT>
-            void Test1_MultipleConcurrentReaders (bool mustBeEqualToZero)
+            void Test1_MultipleConcurrentReaders (bool mustBeEqualToZero, unsigned int repeatCount, double sleepTime)
             {
                 Debug::TraceContextBumper ctx{"...Test1_MultipleConcurrentReaders"};
                 /**
                  *  Verify that both threads are maintaining the lock at the same time.
                  */
-                static const bool kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
                 // NOTE - CRITICALLY - IF YOU CHANGE RWSynchronized to Synchronized the VerifyTestResult about countWhereTwoHoldingRead below will fail!
-                SYNCRHONIZED_INT          sharedData{0};
-                atomic<unsigned int>      countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
-                atomic<unsigned int>      countWhereTwoHoldingRead{0};
-                atomic<unsigned int>      sum1{};
-                static const unsigned int kRepeatCount_{kRunningValgrind_ ? 1000u : 10000u};
-                mutex                     forceDeadlockOccasionallyIfNotUsingMultipleReaderLock;
-                auto                      lambda = [&]() {
-                    for (unsigned int i = 0; i < kRepeatCount_; i++) {
+                SYNCRHONIZED_INT     sharedData{0};
+                atomic<unsigned int> countMaybeHoldingReadLock{0}; // if >0, definitely holding lock, if 0, maybe holding lock (cuz we decremenent before losing lock)
+                atomic<unsigned int> countWhereTwoHoldingRead{0};
+                atomic<unsigned int> sum1{};
+                auto                 lambda = [&]() {
+                    Debug::TraceContextBumper ctx{"...lambda"};
+                    for (unsigned int i = 0; i < repeatCount; i++) {
                         auto holdReadOnlyLock = sharedData.cget ();
                         countMaybeHoldingReadLock++;
-                        Execution::Sleep (0.0001);
+                        Execution::Sleep (sleepTime);
                         sum1 += holdReadOnlyLock.load ();
                         if (countMaybeHoldingReadLock >= 2) {
                             countWhereTwoHoldingRead++;
@@ -941,9 +946,9 @@ namespace {
                     VerifyTestResult (countWhereTwoHoldingRead == 0);
                 }
                 else {
-                    VerifyTestResult (countWhereTwoHoldingRead >= 1); // not logically true, but a good test..
+                    VerifyTestResult (countWhereTwoHoldingRead >= 1 or sleepTime <= 0); // not logically true, but a good test.. (if sleepTime == 0, this is less likely to be true - so dont fail test because of it)
                 }
-                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double(countWhereTwoHoldingRead.load ()) / kRepeatCount_);
+                DbgTrace (L"countWhereTwoHoldingRead=%u (percent=%f)", countWhereTwoHoldingRead.load (), 100.0 * double(countWhereTwoHoldingRead.load ()) / (2 * repeatCount));
             }
             void Test2_LongWritesBlock_ ()
             {
@@ -956,7 +961,10 @@ namespace {
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
                         VerifyTestResult (syncData.cget ().load () % 2 == 0);
-                        Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
+                        // occasional sleep so the reader doesn't get ahead of writer, but rarely cuz this is very slow on linux (ubuntu 1804) - often taking > 2ms, even for sleep of 100us) -- LGP 2018-06-20
+                        if (i % 100 == 0) {
+                            Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0
+                        }
                     }
                 });
                 Thread::Ptr                                writerThread = Thread::New ([&]() {
@@ -977,8 +985,11 @@ namespace {
         void DoIt ()
         {
             Debug::TraceContextBumper ctx{"RegressionTest18_RWSynchronized_"};
-            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false);
-            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true);
+            static const bool         kRunningValgrind_ = Debug::IsRunningUnderValgrind ();
+            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 1000u : 10000u, 0.0);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 1000u : 10000u, 0.0);
+            Private_::Test1_MultipleConcurrentReaders<RWSynchronized<int>> (false, kRunningValgrind_ ? 100u : 1000u, 0.001);
+            Private_::Test1_MultipleConcurrentReaders<Synchronized<int>> (true, kRunningValgrind_ ? 100u : 500u, 0.001);
             Private_::Test2_LongWritesBlock_ ();
         }
     }
