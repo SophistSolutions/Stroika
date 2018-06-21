@@ -5,7 +5,7 @@ trap '[ "$?" -ne 77 ] || exit 77' ERR
 
 
 ### until we really support makefiles better - instead of using project files to parallelize
-if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
+if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
 	if [ -z ${PARALELLMAKEFLAG} ] ; then : ${PARALELLMAKEFLAG:=-j1}; fi
 fi
 
