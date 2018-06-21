@@ -409,7 +409,7 @@ namespace {
                 static constexpr int                       kBaseRepititionCount_ = 100;
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
                 Synchronized<int>                          syncData{0};
-                bool                                       writerDone{false};
+                atomic<bool>                               writerDone{false};
                 unsigned int                               readsDoneAfterWriterDone{0};
                 Thread::Ptr                                readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
