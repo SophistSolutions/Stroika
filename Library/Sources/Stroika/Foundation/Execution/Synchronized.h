@@ -26,6 +26,8 @@
  * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-613 - Synchronized<>::ReadableReference and WriteableReference could be more efficent if not subclassing each other
  *
+ *      @todo   https://stroika.atlassian.net/browse/STK-657 - experiment with some sort of shared_recursive_mutex - not sure good idea in general, but maybe a limited form can be used in syncrhonized
+ *
  *      @todo   More operator<, and other operator overloads
  *
  *      @todo   Tons of cleanups, orthoganiality, docs, etc.
