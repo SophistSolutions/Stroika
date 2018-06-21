@@ -141,12 +141,6 @@ if [ $DO_ONLY_DEFAULT_CONFIGURATIONS -eq 0 ] ; then
 		for i in $RASPBERRYPICONFIGS; do 
 			make run-tests CONFIGURATION=$i REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
 		done; 
-		#make run-tests CONFIGURATION=raspberrypi-g++-7 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		#make run-tests CONFIGURATION=raspberrypi_valgrind_g++-7_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		#make run-tests CONFIGURATION=raspberrypi-g++-7-address-sanitize REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
-		#make run-tests CONFIGURATION=raspberrypi-g++-8 REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		#make run-tests CONFIGURATION=raspberrypi_valgrind_g++-8_NoBlockAlloc REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN >>$TEST_OUT_FILE 2>&1
-		#make run-tests CONFIGURATION=raspberrypi-g++-8-sanitize-undefined REMOTE=$RASPBERRYPI_REMOTE_WITH_LOGIN  >>$TEST_OUT_FILE 2>&1
 		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
