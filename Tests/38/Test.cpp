@@ -586,8 +586,8 @@ namespace {
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
         auto doIt = [](int* argP) {
             for (int i = 0; i < 10; i++) {
-                auto&& critSect = lock_guard (sharedCriticalSection_);
-                int    tmp      = *argP;
+                [[maybe_unused]] auto&& critSect = lock_guard (sharedCriticalSection_);
+                int                     tmp      = *argP;
                 Execution::Sleep (.002);
                 //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                 *argP = tmp + 1;
