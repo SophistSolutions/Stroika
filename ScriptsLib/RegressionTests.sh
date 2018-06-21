@@ -31,7 +31,7 @@ if [ "$(uname -s)" == "Darwin" ] ; then
     echo "USING MacOS($USE_TEST_BASENAME)..."
     DO_ONLY_DEFAULT_CONFIGURATIONS=1
 fi
-if [ "$(expr substr $(uname -s) 1 6)" == "CYGWIN" ] ; then
+if [ `uname -s | cut -b 1-6` == "CYGWIN" ] ; then
 	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="Windows_VS2k17"; fi
     echo "USING VS2k17 ($USE_TEST_BASENAME)..."
     #@todo maybe augment to pass on make default-configurations call:  DEFAULT_CONFIGURATION_ARGS="--platform VisualStudio.Net-2017"
