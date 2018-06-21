@@ -16,19 +16,17 @@
  *              Maybe thats better? Dunno.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Debug {
+namespace Stroika::Foundation {
+    namespace Debug {
 
-            /**
-             *  set_unexpected () and set_terminate () to handlers which will abort the applicaiton and
-             *  print to the tracelog.
-             *
-             *  If called with no argument, it installs its OWN handler. To replace with your own, either call
-             *  with an explicit handler here or call the underlying C++ APIs.
-             */
-            void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) = nullptr);
-        }
+        /**
+         *  set_unexpected () and set_terminate () to handlers which will abort the applicaiton and
+         *  print to the tracelog.
+         *
+         *  If called with no argument, it installs its OWN handler. To replace with your own, either call
+         *  with an explicit handler here or call the underlying C++ APIs.
+         */
+        void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) = nullptr);
     }
 }
 #endif /*_Stroika_Foundation_Debug_Fatal_h_*/
