@@ -438,7 +438,7 @@ namespace {
                 });
                 Thread::Start ({readerThread, writerThread});
                 Thread::WaitForDone ({readerThread, writerThread});
-                DbgTrace ("readsDoneAfterWriterDone = %d", readsDoneAfterWriterDone); // make sure we do some reads during writes - scheduling doesn't guarnatee
+                DbgTrace ("readsDoneAfterWriterDone = %d", readsDoneAfterWriterDone.load ()); // make sure we do some reads during writes - scheduling doesn't guarnatee
             }
         }
         void DoIt ()
