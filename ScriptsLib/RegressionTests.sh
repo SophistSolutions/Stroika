@@ -169,7 +169,7 @@ if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
 	echo -n 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests ...'
 	echo "$PREFIX_OUT_LABEL" 'VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests ...' >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
-	VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-VALGRIND-debug-SSLPurify VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
+	VALGRIND_SUPPRESSIONS="Valgrind-MemCheck-Common.supp Valgrind-MemCheck-BlockAllocation.supp" make CONFIGURATION=g++-valgrind-debug-SSLPurify VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
 	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
