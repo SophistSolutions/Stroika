@@ -29,12 +29,25 @@ namespace Stroika::Foundation {
         inline Synchronized<T, TRAITS>::Synchronized (ARGUMENT_TYPES&&... args)
             : fProtectedValue_ (std::forward<ARGUMENT_TYPES> (args)...)
         {
+#if qStroika_FeatureSupported_Valgrind
+            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, 0);
+#endif
         }
         template <typename T, typename TRAITS>
         inline Synchronized<T, TRAITS>::Synchronized (const Synchronized& src)
             : fProtectedValue_ (src.cget ().load ())
         {
+#if qStroika_FeatureSupported_Valgrind
+            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, 0);
+#endif
         }
+#if qStroika_FeatureSupported_Valgrind
+        template <typename T, typename TRAITS>
+        inline Synchronized<T, TRAITS>::~Synchronized ()
+        {
+            VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
+        }
+#endif
         template <typename T, typename TRAITS>
         inline auto Synchronized<T, TRAITS>::operator= (const Synchronized& rhs) -> Synchronized&
         {
