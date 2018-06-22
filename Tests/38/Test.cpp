@@ -410,6 +410,7 @@ namespace {
                 static constexpr Time::DurationSecondsType kBaseSleepTime_       = 0.001;
                 Synchronized<int>                          syncData{0};
                 atomic<bool>                               writerDone{false};
+                Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (writerDone);
                 unsigned int                               readsDoneAfterWriterDone{0};
                 Thread::Ptr                                readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
