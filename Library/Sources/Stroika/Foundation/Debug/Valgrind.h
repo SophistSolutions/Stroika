@@ -77,6 +77,15 @@ bool IsRunningUnderValgrind ();
 #endif
 
 /**
+ *  See https://bugs.kde.org/show_bug.cgi?id=379630
+ *  for info on            
+ *       VALGRIND_HG_MUTEX_INIT_POST (&fLock_, true);
+ *
+ *  It appears valgrind doesn't notice when a lock goes out of scope (destroyed). Failing with the wrappers for gnu/stl for valgrind.
+ *  Still broken as of Ubuntu 1804
+ */
+
+/**
  *  Use Macro Stroika_Foundation_Debug_ValgrindDisableHelgrind_START/Stroika_Foundation_Debug_ValgrindDisableHelgrind_END
  *  to ignore a particular variable in a range of code.
  *
