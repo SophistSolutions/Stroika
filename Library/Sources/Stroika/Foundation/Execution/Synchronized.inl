@@ -30,7 +30,12 @@ namespace Stroika::Foundation {
             : fProtectedValue_ (std::forward<ARGUMENT_TYPES> (args)...)
         {
 #if qStroika_FeatureSupported_Valgrind
-            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+            if (TRAITS::kSupportSharedLocks) {
+                ANNOTATE_RWLOCK_CREATE (&fLock_);
+            }
+            else {
+                VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+            }
 #endif
         }
         template <typename T, typename TRAITS>
@@ -38,14 +43,24 @@ namespace Stroika::Foundation {
             : fProtectedValue_ (src.cget ().load ())
         {
 #if qStroika_FeatureSupported_Valgrind
-            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+            if (TRAITS::kSupportSharedLocks) {
+                ANNOTATE_RWLOCK_CREATE (&fLock_);
+            }
+            else {
+                VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+            }
 #endif
         }
 #if qStroika_FeatureSupported_Valgrind
         template <typename T, typename TRAITS>
         inline Synchronized<T, TRAITS>::~Synchronized ()
         {
-            VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
+            if (TRAITS::kSupportSharedLocks) {
+                ANNOTATE_RWLOCK_DESTROY (&fLock_);
+            }
+            else {
+                VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
+            }
         }
 #endif
         template <typename T, typename TRAITS>
