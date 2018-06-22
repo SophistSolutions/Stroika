@@ -156,8 +156,8 @@ fi
 ############## VALGRIND TESTS ################
 #MEMCHECK: release, no block allocation
 if [ "$INCLUDE_VALGRIND_MEMCHECK_TESTS" -ne 0 ] ; then
-	echo -n "make CONFIGURATION=g++-VALGRIND-release-SSLPurify-NoBlockAlloc  VALGRIND=memcheck run-tests ..."
-	echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-VALGRIND-release-SSLPurify-NoBlockAlloc  VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
+	echo -n "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc  VALGRIND=memcheck run-tests ..."
+	echo "$PREFIX_OUT_LABEL" "make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests ..." >>$TEST_OUT_FILE 2>&1
 	STAGE_STARTAT_INT=$(date +%s)
 	make CONFIGURATION=g++-valgrind-release-SSLPurify-NoBlockAlloc VALGRIND=memcheck run-tests >>$TEST_OUT_FILE 2>&1 
 	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
