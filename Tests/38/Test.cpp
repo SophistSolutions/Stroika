@@ -411,8 +411,8 @@ namespace {
                 Synchronized<int>                          syncData{0};
                 atomic<bool>                               writerDone{false};
                 Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic (writerDone);
-                unsigned int                               readsDoneAfterWriterDone{0};
-                Thread::Ptr                                readerThread = Thread::New ([&]() {
+                unsigned int readsDoneAfterWriterDone{0};
+                Thread::Ptr  readerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"readerThread"};
                     // Do 10x more reads than writer loop, but sleep 1/10th as long
                     for (int i = 0; i < kBaseRepititionCount_ * 10; ++i) {
@@ -423,7 +423,7 @@ namespace {
                         Execution::Sleep (kBaseSleepTime_ / 10.0); // hold the lock kBaseSleepTime_ / 10.0 (note - on ubuntu 1804 and fast host, inside vm, median sleep time here is really about 2ms despite division - LGP 2018-06-20)
                     }
                 });
-                Thread::Ptr                                writerThread = Thread::New ([&]() {
+                Thread::Ptr  writerThread = Thread::New ([&]() {
                     Debug::TraceContextBumper ctx{"writerThread"};
                     for (int i = 0; i < kBaseRepititionCount_; ++i) {
                         auto rwLock = syncData.rwget ();
