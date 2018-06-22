@@ -30,7 +30,7 @@ namespace Stroika::Foundation {
             : fProtectedValue_ (std::forward<ARGUMENT_TYPES> (args)...)
         {
 #if qStroika_FeatureSupported_Valgrind
-            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, 0);
+            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
 #endif
         }
         template <typename T, typename TRAITS>
@@ -38,7 +38,7 @@ namespace Stroika::Foundation {
             : fProtectedValue_ (src.cget ().load ())
         {
 #if qStroika_FeatureSupported_Valgrind
-            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, 0);
+            VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
 #endif
         }
 #if qStroika_FeatureSupported_Valgrind
