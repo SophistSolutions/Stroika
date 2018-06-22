@@ -101,6 +101,8 @@ bool IsRunningUnderValgrind ();
 
 /**
  *  If the current implementation of helgrind doesn't recognize std::atomic being atomic, disable warnings about those variables
+ *  
+ *  \note this still appears broken in valigrind on Ubuntu 1804/gcc
  */
 #define Stroika_Foundation_Debug_ValgrindDisableCheck_stdatomic(X) \
     Stroika_Foundation_Debug_ValgrindDisableHelgrind (X)
