@@ -14,8 +14,8 @@ Stroika provides
   *  DataExchange (VariantValue, rich collection of data format serializer/deserializers - like JSON, object to/from serialziation mappings, and much more)
   *  Execution pattern classes (external process runner, synchonization patterns, blockingqueue, threadpools, and much more)
   *  Networking support (high level socket wrappers, Web client fetching)
-  *  Powerful streams library, with adapters for cryptophgraph, compression, text transforms, etc
-  *  Framework libraries for web server, web services, UPnP, SSDP, text editing/word proocessor, system performance monitoring, and much more
+  *  Simple, elegant streams library, with adapters for cryptophgraph, compression, text transforms, etc
+  *  Framework libraries for web server, web services, UPnP, SSDP, text editing/word processor, system performance monitoring, and much more
   *  and much more...
 
 
