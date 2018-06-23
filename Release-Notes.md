@@ -17,6 +17,63 @@ History
 
 
 
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d3">v2.1d3</a><br/>2018-06-23</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d2...v2.1d3</li>
+		<li>Documentation cleanups</li>
+		<li>Support Visual Studio.net 2k17 15.7.4</li>
+		<li>Streams
+			<ul>
+				<li>Simplified (***not backward compatible***) - second argument to InternallySyncrhonized {input,output,inputoutput} stream helper - so now class not template</li>
+				<li>Simplify 'Ptr' implementation with Streams classes - deleting most of them and just using base-class Ptr implementation</li>
+			</ul>
+		</li>
+		<li>Synchonized
+			<ul>
+				<li>Quiet a few small safety cleanups</li>
+				<li>Synchonized<> now supports either shared_timed_mutex or shared_mutex, but default to shared_mutex for RWSynchonized</li>
+				<li>Synchonized: break lhs.load () OP rhs.load () into 3 lines so no possability of deadlock.</li>
+				<li>new Synchonized_Traits field kSupportsSharedLocks, and use that to obsolete LOCK_SHARD/UNLOCK_SHARED  for that traits, and just use ifconstexpr instead</li>
+				<li>Synchronized<>::store/load/operator() now only defined if TRAITS::kAllowRecursive - and documentation relating to this</li>
+				<li>Synchronized<>::lock/unlock/shared_lock/shared_unlock - now enable_if - so not defined when inapproprite for underlying mutex type</li>
+				<li>Synchronized - more minor cleanups to enable_if (Experimental_UpgradeLock2</li>
+				<li>renamed Synchronized<>::*UpgradeLock* to Syncrhonized<>::UpgradeLockNonAtomically () - deprecating older verisons/names</li>
+				<li>more small cleanups to Synchonized (use ReadLockType_ in ReadableReference object)</li>
+				<li>Synchonized<> - use lock_guard for _WriteLockType since we dont need to unlock or empty create those (at least for now)</li>
+			</ul>
+		</li>
+		<li>Regression tests
+			<ul>
+				<li>Added to threadtest a copy of Test2_LongWritesBlock_ using RWSynchronized; and updated both tests to use smaller sleep constants so tests run faster; and lowered one sleep count in a test from 5 to 2 seconds - also to make regtests run faster</li>
+				<li>more speed tweaks on thead (#38) regression tests</li>
+				<li>slightly normalize regression test config names</li>
+				<li>modularize Regression test slightly - by capturing regexp var with rasperripi configs, and script running of each remotely</li>
+			</ul>
+		</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.1d3.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.1d3-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 10</li>
+				<li>gcc 7</li>
+				<li>gcc 8</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc7, gcc8</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
 
 <tr>
 <td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d2">v2.1d2</a><br/>2018-06-16</td>
