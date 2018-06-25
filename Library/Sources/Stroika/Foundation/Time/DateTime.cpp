@@ -442,9 +442,9 @@ String DateTime::Format (PrintFormat pf) const
         }
         case PrintFormat::eISO8601:
         case PrintFormat::eXML: {
-            String r       = fDate_.Format ((pf == PrintFormat::eISO8601) ? Date::PrintFormat::eISO8601 : Date::PrintFormat::eXML);
-            String timeStr = fTimeOfDay_.Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
-            if (not timeStr.empty ()) {
+            String r = fDate_.Format ((pf == PrintFormat::eISO8601) ? Date::PrintFormat::eISO8601 : Date::PrintFormat::eXML);
+            if (not fTimeOfDay_.empty ()) {
+                String timeStr = fTimeOfDay_.Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
                 r += Characters::String_Constant (L"T") + timeStr;
                 if (fTimezone_) {
                     if (fTimezone_ == Timezone::UTC ()) {

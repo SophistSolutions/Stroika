@@ -361,7 +361,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, LCID lcid)
 String TimeOfDay::Format (PrintFormat pf) const
 {
     if (empty ()) {
-        return String ();
+        return String{};
     }
     switch (pf) {
         case PrintFormat::eCurrentLocale: {
@@ -370,12 +370,12 @@ String TimeOfDay::Format (PrintFormat pf) const
         case PrintFormat::eCurrentLocale_WithZerosStripped: {
             String tmp = Format (locale ());
             /*
-                 * This logic probably needs to be locale-specific, but this is good enuf for now...
-                 *
-                 *  This code also uses wstring stuff instead of String becuase my STRING API SUCKS!!!
-                 *  Adjust String API so this code can be made clear!
-                 *          -- LGP 2013-03-02
-                 */
+             * This logic probably needs to be locale-specific, but this is good enuf for now...
+             *
+             *  This code also uses wstring stuff instead of String becuase my STRING API SUCKS!!!
+             *  Adjust String API so this code can be made clear!
+             *          -- LGP 2013-03-02
+             */
             Memory::Optional<size_t> i;
             while ((i = tmp.RFind (L":00"))) {
                 // if its a TRAILING :00 - lose it...
