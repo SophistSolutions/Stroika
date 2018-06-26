@@ -277,6 +277,7 @@ shared_ptr<IElementConsumer> ReadDownToReader::HandleChildStart (const Name& nam
  ****** StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt *********
  ********************************************************************************
  */
-[[noreturn]] void StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name) {
+[[noreturn]] void StructuredStreamEvents::ObjectReader::ThrowUnRecognizedStartElt (const StructuredStreamEvents::Name& name)
+{
     Execution::Throw (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", name.fLocalName.c_str ())));
 }

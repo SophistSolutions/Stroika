@@ -24,7 +24,7 @@ namespace Stroika {
             /**
              *  SharedStaticData<T> is used to safely create a copy of static data shared among various users
              *  in a thread safe way, and where the shared data goes away when the last reference does, and where
-			 *	the shared data is lazy constructed.
+             *  the shared data is lazy constructed.
              *
              *  This is very similar to have a single static variable of type T, except that instead of
              *  having T constructed at global execution time, and destroyed at global object destruction time,
@@ -35,14 +35,14 @@ namespace Stroika {
              *
              *  This is also similar to the @see ModuleInit<> template, except that this is intended to give the
              *  user tighter control over lifetime of the shared data.
-			 *
-			 *	\note	Why use this instead of member function returning reference to local static object?
-			 *			Only real difference here is that this 'shared static' object will be auto-deleted
-			 *			when the last reference to it is destroyed (as opposed to after we start exiting main for static
-			 *			data member)
-			 *
-			 *			This can be important, if, for example, the shared object contains Thread objects.
-			 *
+             *
+             *  \note   Why use this instead of member function returning reference to local static object?
+             *          Only real difference here is that this 'shared static' object will be auto-deleted
+             *          when the last reference to it is destroyed (as opposed to after we start exiting main for static
+             *          data member)
+             *
+             *          This can be important, if, for example, the shared object contains Thread objects.
+             *
              *
              *  \par Example Usage (from HealthFrameWorksServer)
              *      \code
@@ -110,7 +110,6 @@ namespace Stroika {
                 static unsigned int sCountUses_;
                 static T*           sOnceObj_;
             };
-
 
         }
     }

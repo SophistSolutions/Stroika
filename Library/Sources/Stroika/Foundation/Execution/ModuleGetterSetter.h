@@ -11,6 +11,7 @@
 #include "../Memory/Optional.h"
 
 /**
+ */
 
 namespace Stroika {
     namespace Foundation {

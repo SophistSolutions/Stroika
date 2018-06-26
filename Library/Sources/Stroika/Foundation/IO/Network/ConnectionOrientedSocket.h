@@ -12,7 +12,7 @@ namespace Stroika {
     namespace Foundation {
         namespace IO {
             namespace Network {
-                typedef ConnectionOrientedStreamSocket ConnectionOrientedSocket[[deprecated ("use ConnectionOrientedStreamSocket in version 2.0a234")]];
+                typedef ConnectionOrientedStreamSocket ConnectionOrientedSocket [[deprecated ("use ConnectionOrientedStreamSocket in version 2.0a234")]];
             }
         }
     }
