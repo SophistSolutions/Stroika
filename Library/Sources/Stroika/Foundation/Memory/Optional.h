@@ -7,13 +7,8 @@
 #include "../StroikaPreComp.h"
 
 #include <mutex>
-#include <shared_mutex>
-
-#if qCompilerAndStdLib_Supports_stdoptional
 #include <optional>
-#elif qCompilerAndStdLib_Supports_stdexperimentaloptional
-#include <experimental/optional>
-#endif
+#include <shared_mutex>
 
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
@@ -212,26 +207,12 @@ namespace Stroika {
             /**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
              */
-#if qCompilerAndStdLib_Supports_stdoptional
             using std::nullopt_t;
-#elif qCompilerAndStdLib_Supports_stdexperimentaloptional
-            using std::experimental::nullopt_t;
-#else
-            struct nullopt_t {
-                constexpr explicit nullopt_t (int) {}
-            };
-#endif
 
             /**
              *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt
              */
-#if qCompilerAndStdLib_Supports_stdoptional
             constexpr nullopt_t nullopt{std::nullopt};
-#elif qCompilerAndStdLib_Supports_stdexperimentaloptional
-            constexpr nullopt_t nullopt{std::experimental::nullopt};
-#else
-            constexpr nullopt_t nullopt{1};
-#endif
 
             template <typename T, typename TRAITS>
             class Optional;
@@ -373,6 +354,11 @@ namespace Stroika {
                  */
                 constexpr Optional () = default;
                 constexpr Optional (nullopt_t);
+                template <typename T1>
+                constexpr Optional (const optional<T1>& src)
+                    : Optional (src.has_value () ? *src : nullopt)
+                {
+                }
                 constexpr Optional (const Optional& from);
                 constexpr Optional (Optional&& from);
                 /*
@@ -480,6 +466,13 @@ namespace Stroika {
                  */
                 template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type>
                 static Optional<T, TRAITS> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
+
+            public:
+                template <typename T1>
+                explicit operator optional<T1> () const
+                {
+                    return has_value () ? value () : std::nullopt;
+                }
 
             public:
                 /**

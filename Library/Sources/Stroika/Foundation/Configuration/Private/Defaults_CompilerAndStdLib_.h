@@ -986,22 +986,6 @@ NOTE:
 #endif
 #endif
 
-/**
-*/
-#if !defined(qCompilerAndStdLib_Supports_stdoptional)
-#define qCompilerAndStdLib_Supports_stdoptional ((__cplusplus >= kStrokia_Foundation_Configuration_cplusplus_17) && __has_include (<optional>))
-#endif
-
-/**
-*/
-#if !defined(qCompilerAndStdLib_Supports_stdexperimentaloptional)
-#if qCompilerAndStdLib_Supports_stdoptional
-#define qCompilerAndStdLib_Supports_stdexperimentaloptional 0
-#else
-#define qCompilerAndStdLib_Supports_stdexperimentaloptional (__has_include (<experimental / optional>))
-#endif
-#endif
-
 #if !defined(qCompilerAndStdLib_insert_or_assign_Buggy)
 #define qCompilerAndStdLib_insert_or_assign_Buggy (__cplusplus < kStrokia_Foundation_Configuration_cplusplus_17)
 #endif
