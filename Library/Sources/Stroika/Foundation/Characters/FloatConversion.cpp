@@ -84,7 +84,7 @@ namespace {
         stringstream s;
 
         static const locale kCLocale_ = locale::classic ();
-        s.imbue (options.GetUseLocale ().Value (kCLocale_));
+        s.imbue (options.GetUseLocale ().value_or (kCLocale_));
 
         if (options.GetIOSFmtFlags ()) {
             s << setiosflags (*options.GetIOSFmtFlags ());
@@ -96,7 +96,7 @@ namespace {
             s << setprecision (usePrecision);
         }
 
-        switch (options.GetFloatFormat ().Value (Float2StringOptions::FloatFormatType::eDEFAULT)) {
+        switch (options.GetFloatFormat ().value_or (Float2StringOptions::FloatFormatType::eDEFAULT)) {
             case Float2StringOptions::FloatFormatType::eScientific:
                 s.setf (std::ios_base::scientific, std::ios_base::floatfield);
                 break;
@@ -124,7 +124,7 @@ namespace {
 
         String tmp = options.GetUseLocale () ? String::FromNarrowString (s.str (), *options.GetUseLocale ()) : String::FromASCII (s.str ());
 
-        bool useTrimTrailingZeros = options.GetTrimTrailingZeros ().Value (true);
+        bool useTrimTrailingZeros = options.GetTrimTrailingZeros ().value_or (true);
         if (useTrimTrailingZeros) {
             // strip trailing zeros - except for the last first one after the decimal point.
             // And don't do if ends with exponential notation e+40 shouldnt get shortned to e+4!

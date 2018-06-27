@@ -65,23 +65,23 @@ namespace Stroika {
                 : Float2StringOptions (Float2StringOptions{b1, b2}, forward<ARGS> (args)...)
             {
             }
-            inline Memory::Optional<unsigned int> Float2StringOptions::GetPrecision () const
+            inline optional<unsigned int> Float2StringOptions::GetPrecision () const
             {
                 return fPrecision_;
             }
-            inline Memory::Optional<bool> Float2StringOptions::GetTrimTrailingZeros () const
+            inline optional<bool> Float2StringOptions::GetTrimTrailingZeros () const
             {
                 return fTrimTrailingZeros_;
             }
-            inline Memory::Optional<std::locale> Float2StringOptions::GetUseLocale () const
+            inline optional<std::locale> Float2StringOptions::GetUseLocale () const
             {
                 return fUseLocale_;
             }
-            inline Memory::Optional<Float2StringOptions::FloatFormatType> Float2StringOptions::GetFloatFormat () const
+            inline optional<Float2StringOptions::FloatFormatType> Float2StringOptions::GetFloatFormat () const
             {
                 return fFloatFormat_;
             }
-            inline Memory::Optional<std::ios_base::fmtflags> Float2StringOptions::GetIOSFmtFlags () const
+            inline optional<std::ios_base::fmtflags> Float2StringOptions::GetIOSFmtFlags () const
             {
                 return fFmtFlags_;
             }

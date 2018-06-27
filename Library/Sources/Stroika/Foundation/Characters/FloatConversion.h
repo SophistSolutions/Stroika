@@ -116,19 +116,19 @@ namespace Stroika {
                 Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args);
 
             public:
-                nonvirtual Memory::Optional<unsigned int> GetPrecision () const;
+                nonvirtual optional<unsigned int> GetPrecision () const;
 
             public:
-                nonvirtual Memory::Optional<bool> GetTrimTrailingZeros () const;
+                nonvirtual optional<bool> GetTrimTrailingZeros () const;
 
             public:
-                nonvirtual Memory::Optional<std::locale> GetUseLocale () const;
+                nonvirtual optional<std::locale> GetUseLocale () const;
 
             public:
-                nonvirtual Memory::Optional<FloatFormatType> GetFloatFormat () const;
+                nonvirtual optional<FloatFormatType> GetFloatFormat () const;
 
             public:
-                nonvirtual Memory::Optional<std::ios_base::fmtflags> GetIOSFmtFlags () const;
+                nonvirtual optional<std::ios_base::fmtflags> GetIOSFmtFlags () const;
 
             public:
                 /**
