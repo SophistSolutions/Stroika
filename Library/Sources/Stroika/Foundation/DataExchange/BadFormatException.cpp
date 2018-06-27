@@ -28,7 +28,7 @@ using Memory::Optional;
  ********************************************************************************
  */
 namespace {
-    String mkMessage_OffsetInfo_ (const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
+    String mkMessage_OffsetInfo_ (const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
     {
         String result;
         if (lineNumber.has_value ()) {
@@ -53,7 +53,7 @@ namespace {
     {
         return details.empty () ? mkMessage_ () : details;
     }
-    String mkMessage_ (const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, Optional<uint64_t> fileOffset)
+    String mkMessage_ (const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, optional<uint64_t> fileOffset)
     {
         String msg           = mkMessage_ ();
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
@@ -62,7 +62,7 @@ namespace {
         }
         return msg;
     }
-    String mkMessage_ (const String& details, const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
+    String mkMessage_ (const String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
     {
         String msg           = mkMessage_ (details);
         String lineInfoExtra = mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
@@ -90,7 +90,7 @@ DataExchange::BadFormatException::BadFormatException (const String& details)
 {
 }
 
-DataExchange::BadFormatException::BadFormatException (const String& details, const Optional<unsigned int>& lineNumber, const Optional<unsigned int>& columnNumber, const Optional<uint64_t>& fileOffset)
+DataExchange::BadFormatException::BadFormatException (const String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset)
     : inherited (mkMessage_ (details, lineNumber, columnNumber, fileOffset))
     , fLineNumber_ (lineNumber)
     , fColumnNumber_ (columnNumber)

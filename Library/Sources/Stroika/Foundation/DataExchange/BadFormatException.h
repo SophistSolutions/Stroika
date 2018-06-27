@@ -23,7 +23,7 @@ namespace Stroika {
             public:
                 BadFormatException ();
                 BadFormatException (const Characters::String& details);
-                BadFormatException (const Characters::String& details, const Memory::Optional<unsigned int>& lineNumber, const Memory::Optional<unsigned int>& columnNumber, const Memory::Optional<uint64_t>& fileOffset);
+                BadFormatException (const Characters::String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset);
 
             public:
                 nonvirtual Characters::String GetDetails () const;
