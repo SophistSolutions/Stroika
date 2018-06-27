@@ -25,6 +25,11 @@
  *
  *  TODO:
  *
+ *      @todo   BIG ITEM - MOSTLY get rid of this. Maybe not totally. But std::optional is pretty good, and sensible
+ *              to use in Stroika. If I can find a way to extend it compatibly (say by subclassing and object slicing)
+ *              then perhaps keep using this class, but change all my API calls to reference std::optional.
+ *
+ *
  *      @todo   Consider if we should maintain thread unsfafe peek() method.
  *
  *      @todo   https://stroika.atlassian.net/browse/STK-456 opertor= cleanups (typename U U&&;
@@ -196,15 +201,17 @@ namespace Stroika::Foundation {
         template <typename T>
         using Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
 
+#if 0
         /**
          *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
          */
         using std::nullopt_t;
+#endif
 
         /**
          *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt
          */
-        constexpr nullopt_t nullopt{std::nullopt};
+        [[deprecated ("use std::nullopt directly - since Stroika v2.1d4")]] constexpr nullopt_t nullopt{std::nullopt};
 
         template <typename T, typename TRAITS>
         class Optional;
