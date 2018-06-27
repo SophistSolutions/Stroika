@@ -665,8 +665,8 @@ namespace Stroika::Foundation {
 
             public:
                 /**
-                     *  @see Characters::ToString ();
-                     */
+                 *  @see Characters::ToString ();
+                 */
                 nonvirtual String ToString () const;
 
             private:
