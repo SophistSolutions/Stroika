@@ -467,8 +467,10 @@ namespace Stroika::Foundation {
             static Optional<T, TRAITS> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
         public:
+            // see if we can do this without getting in troublke with ambiguity - it will help make transiation to using std::optional in
+            // Stroika APIs easier.
             template <typename T1>
-            explicit operator optional<T1> () const
+            /*explicit*/ operator optional<T1> () const
             {
                 return has_value () ? value () : std::nullopt;
             }
