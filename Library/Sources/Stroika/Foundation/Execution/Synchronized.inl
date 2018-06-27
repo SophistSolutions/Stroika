@@ -31,10 +31,12 @@ namespace Stroika::Foundation {
         {
 #if qStroika_FeatureSupported_Valgrind
             if (TRAITS::kSupportSharedLocks) {
+                // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
+                // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
                 ANNOTATE_RWLOCK_CREATE (&fLock_);
             }
             else {
-                VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+                //VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
             }
 #endif
         }
@@ -44,10 +46,12 @@ namespace Stroika::Foundation {
         {
 #if qStroika_FeatureSupported_Valgrind
             if (TRAITS::kSupportSharedLocks) {
+                // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
+                // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
                 ANNOTATE_RWLOCK_CREATE (&fLock_);
             }
             else {
-                VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
+                //VALGRIND_HG_MUTEX_INIT_POST (&fLock_, TRAITS::kIsRecursiveMutex);
             }
 #endif
         }
@@ -56,10 +60,12 @@ namespace Stroika::Foundation {
         inline Synchronized<T, TRAITS>::~Synchronized ()
         {
             if (TRAITS::kSupportSharedLocks) {
+                // This appears to not be supported default valgrind rules/gcc8 (and eariler) libraries/ubuntu1804,
+                // though VALGRIND_HG_MUTEX_INIT_POST() is --LGP 2018-06-27
                 ANNOTATE_RWLOCK_DESTROY (&fLock_);
             }
             else {
-                VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
+                //VALGRIND_HG_MUTEX_DESTROY_PRE (&fLock_);
             }
         }
 #endif
