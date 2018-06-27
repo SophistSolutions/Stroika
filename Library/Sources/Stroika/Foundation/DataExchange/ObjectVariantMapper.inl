@@ -339,6 +339,29 @@ namespace Stroika::Foundation {
             };
             return TypeMappingDetails{typeid (Optional<T, TRAITS>), fromObjectMapper, toObjectMapper};
         }
+        template <typename T>
+        ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const optional<T>*)
+        {
+            FromObjectMapperType<optional<T>> fromObjectMapper = [](const ObjectVariantMapper& mapper, const optional<T>* fromObjOfTypeT) -> VariantValue {
+                RequireNotNull (fromObjOfTypeT);
+                if (fromObjOfTypeT->has_value ()) {
+                    return mapper.FromObject<T> (**fromObjOfTypeT);
+                }
+                else {
+                    return VariantValue ();
+                }
+            };
+            ToObjectMapperType<optional<T>> toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, optional<T>* intoObjOfTypeT) -> void {
+                RequireNotNull (intoObjOfTypeT);
+                if (d.GetType () == VariantValue::eNull) {
+                    *intoObjOfTypeT = nullopt;
+                }
+                else {
+                    *intoObjOfTypeT = mapper.ToObject<T> (d);
+                }
+            };
+            return TypeMappingDetails{typeid (optional<T>), fromObjectMapper, toObjectMapper};
+        }
         template <typename T, typename TRAITS>
         ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const Execution::Synchronized<T, TRAITS>*)
         {

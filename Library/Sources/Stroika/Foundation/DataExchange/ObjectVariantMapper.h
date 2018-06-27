@@ -498,6 +498,7 @@ namespace Stroika::Foundation {
              *      o   Collection<T>
              *      o   Traversal::DiscreteRange<T, TRAITS>
              *      o   Mapping<Key,Value>
+             *      o   optional<T>
              *      o   Optional<T>
              *      o   Range<T,TRAITS>
              *      o   Sequence<T>
@@ -604,6 +605,8 @@ namespace Stroika::Foundation {
             static TypeMappingDetails MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE>*);
             template <typename T, typename TRAITS>
             static TypeMappingDetails MakeCommonSerializer_ (const Memory::Optional<T, TRAITS>*);
+            template <typename T>
+            static TypeMappingDetails MakeCommonSerializer_ (const optional<T>*);
             template <typename T, typename TRAITS>
             static TypeMappingDetails MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>*);
             template <typename T>
@@ -645,7 +648,7 @@ namespace Stroika::Foundation {
 
         public:
             /**
-                 */
+             */
             struct TypesRegistry {
             public:
                 TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src);
