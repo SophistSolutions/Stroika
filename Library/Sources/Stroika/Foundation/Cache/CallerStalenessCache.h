@@ -55,6 +55,12 @@ namespace Stroika {
              *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
              *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
              *
+             *  \par Example usage:
+             *      Hardware connected via a (slow) serial bus with a bunch of 'registers' that can be read. Sometimes
+             *      the caller really needs an up to date value (say for a PID loop), and sometimes the caller can accept older data 
+             *      (say to power a remote UI). This lets the caller share the latest values, and only force a call across the bus (slow load)
+             *      when the caller needs
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
              *
              *  @see TimedCache
