@@ -218,6 +218,7 @@ namespace Stroika {
              *
              *  @see CallerStatenessCache
              *  @see LRUCache
+             *  @see SyncrhonizedTimedCache
              */
             template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
             class TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
