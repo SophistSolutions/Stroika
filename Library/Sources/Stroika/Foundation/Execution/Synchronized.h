@@ -95,7 +95,7 @@ namespace Stroika::Foundation {
                   bool IS_RECURSIVE          = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
                   bool SUPPORTS_SHARED_LOCKS = std::is_same<MUTEX, shared_timed_mutex>::value or std::is_same<MUTEX, shared_mutex>::value,
                   typename READ_LOCK_TYPE    = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
-                  typename WRITE_LOCK_TYPE   = lock_guard<MUTEX>>
+                  typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>>
         struct Synchronized_Traits {
             using MutexType = MUTEX;
 
@@ -532,7 +532,7 @@ namespace Stroika::Foundation {
             nonvirtual void store (T&& v);
 
         private:
-            unique_lock<MutexType> fUniqueLock_;
+            WriteLockType_ fWriteLock_;
         };
 
         /**

@@ -248,13 +248,13 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         inline Synchronized<T, TRAITS>::WritableReference::WritableReference (T* t, MutexType* m)
             : ReadableReference (t, nullptr)
-            , fUniqueLock_ (*m)
+            , fWriteLock_ (*m)
         {
         }
         template <typename T, typename TRAITS>
         inline Synchronized<T, TRAITS>::WritableReference::WritableReference (WritableReference&& src)
             : ReadableReference (move (src))
-            , fUniqueLock_ (move (src.fUniqueLock_))
+            , fWriteLock_ (move (src.fWriteLock_))
         {
         }
         template <typename T, typename TRAITS>
