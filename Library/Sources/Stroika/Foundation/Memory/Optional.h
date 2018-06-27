@@ -355,7 +355,7 @@ namespace Stroika::Foundation {
             constexpr Optional (nullopt_t);
             template <typename T1>
             constexpr Optional (const optional<T1>& src)
-                : Optional (src.has_value () ? *src : nullopt)
+                : Optional (src.has_value () ? Optional<T>{*src} : Optional<T>{})
             {
             }
             constexpr Optional (const Optional& from);
@@ -472,7 +472,7 @@ namespace Stroika::Foundation {
             template <typename T1>
             /*explicit*/ operator optional<T1> () const
             {
-                return has_value () ? value () : std::nullopt;
+                return has_value () ? value () : optional<T1>{};
             }
 
         public:
@@ -542,6 +542,10 @@ namespace Stroika::Foundation {
              *  Notably differnt from @see http://en.cppreference.com/w/cpp/utility/optional/value - see CheckedValue () for optional::value() equivilent
              */
             nonvirtual T Value (T defaultValue = T{}) const;
+
+        public:
+            // mimic stdc++ API
+            nonvirtual T value_or (T defaultValue = T{}) const { return Value (defaultValue); }
 
         public:
             /**
