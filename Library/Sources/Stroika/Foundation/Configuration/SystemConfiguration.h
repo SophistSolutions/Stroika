@@ -8,7 +8,6 @@
 
 #include "../Characters/String.h"
 #include "../Containers/Sequence.h"
-#include "../Memory/Optional.h"
 #include "../Time/DateTime.h"
 
 #include "Common.h"
@@ -202,7 +201,7 @@ namespace Stroika {
                      *  Windows uses MSI.
                      *  But there are a wide variety of other choices (portage, ports, etc).
                      */
-                    Foundation::Memory::Optional<InstallerTechnology> fPreferedInstallerTechnology;
+                    optional<InstallerTechnology> fPreferedInstallerTechnology;
 
                     /**
                      *  @see Characters::ToString ();

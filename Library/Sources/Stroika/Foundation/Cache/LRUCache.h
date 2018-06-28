@@ -97,9 +97,6 @@ namespace Stroika::Foundation {
                 using StatsType = LRUCacheSupport::StatsType_DEFAULT;
 
                 /**
-                 *      \note   Replace OptionalValueType value with Memory::Optional<VALUE, Memory::Optional_Traits_Blockallocated_Indirect_Storage<VALUE>>
-                 *              in your traits subclass if you have compiler errors becacuse you define or LRUCache before the type you
-                 *              are caching.
                  */
                 using OptionalValueType = optional<VALUE>;
             };
@@ -165,7 +162,7 @@ namespace Stroika::Foundation {
 
         public:
             /**
-             *  The value associated with KEY may not be present, so an Optional is returned.
+             *  The value associated with KEY may not be present, so an missing optional value is returned.
              *
              *  @see LookupValue ()
              */
