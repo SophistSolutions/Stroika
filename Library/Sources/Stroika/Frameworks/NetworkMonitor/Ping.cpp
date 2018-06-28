@@ -84,25 +84,24 @@ String Pinger::ResultType::ToString () const
 Pinger::Pinger (const InternetAddress& addr, const Options& options)
     : fDestination_ (addr)
     , fOptions_ (options)
-    , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.Value (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader)}
+    , fICMPPacketSize_{Options::kAllowedICMPPayloadSizeRange.Pin (options.fPacketPayloadSize.value_or (Options::kDefaultPayloadSize)) + sizeof (ICMP::V4::PacketHeader)}
     , fSendPacket_{fICMPPacketSize_}
     , fSocket_{IO::Network::ConnectionlessSocket::New (SocketAddress::INET, Socket::RAW, IPPROTO_ICMP)}
     , fNextSequenceNumber_{static_cast<uint16_t> (fAllUInt16Distribution_ (fRng_))}
-    , fPingTimeout_{options.fTimeout.Value (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
+    , fPingTimeout_{options.fTimeout.value_or (Options::kDefaultTimeout).As<Time::DurationSecondsType> ()}
 {
-    Assert (false);
     DbgTrace (L"Frameworks::NetworkMonitor::Ping::Pinger::CTOR", L"addr=%s, options=%s", Characters::ToString (fDestination_).c_str (), Characters::ToString (fOptions_).c_str ());
     // use random data as a payload
     for (Byte* p = (Byte*)fSendPacket_.begin () + sizeof (ICMP::V4::PacketHeader); p < fSendPacket_.end (); ++p) {
-        static std::uniform_int_distribution<std::mt19937::result_type> sAnyByteDistribution_ (0, numeric_limits<Byte>::max ());
-        *p = static_cast<Byte> (sAnyByteDistribution_ (fRng_));
+        uniform_int_distribution<mt19937::result_type> anyByteDistribution (0, numeric_limits<Byte>::max ());
+        *p = static_cast<Byte> (anyByteDistribution (fRng_));
     }
 }
 
-Pinger::ResultType Pinger::RunOnce (const Optional<unsigned int>& ttl)
+Pinger::ResultType Pinger::RunOnce (const optional<unsigned int>& ttl)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Ping::Pinger::RunOnce", L"ttl=%s", Characters::ToString (ttl).c_str ())};
-    return RunOnce_ICMP_ (ttl.Value (fOptions_.fMaxHops.Value (Options::kDefaultMaxHops)));
+    return RunOnce_ICMP_ (ttl.value_or (fOptions_.fMaxHops.value_or (Options::kDefaultMaxHops)));
 }
 
 Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
@@ -147,7 +146,7 @@ Pinger::ResultType Pinger::RunOnce_ICMP_ (unsigned int ttl)
         /*
          * If we got a response id, compare it with the request we sent to make sure we're reading a resposne to the request we sent
          */
-        Optional<uint16_t> echoedID;
+        optional<uint16_t> echoedID;
         switch (replyICMPHeader->type) {
             case ICMP::V4::ICMP_ECHO_REPLY: {
                 echoedID = replyICMPHeader->id;

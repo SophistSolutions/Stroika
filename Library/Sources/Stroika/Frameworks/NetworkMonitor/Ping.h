@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <limits>
+#include <optional>
 #include <random>
 
 #include "../../Foundation/Characters/String.h"
@@ -14,7 +15,6 @@
 #include "../../Foundation/IO/Network/InternetAddress.h"
 #include "../../Foundation/IO/Network/InternetProtocol/ICMP.h"
 #include "../../Foundation/IO/Network/InternetProtocol/IP.h"
-#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 #include "../../Foundation/Time/Duration.h"
 #include "../../Foundation/Traversal/Range.h"
@@ -34,7 +34,6 @@ namespace Stroika::Frameworks {
             using namespace Stroika::Foundation;
 
             using IO::Network::InternetAddress;
-            using Memory::Optional;
             using Time::Duration;
             using Time::DurationSecondsType;
 
@@ -47,7 +46,7 @@ namespace Stroika::Frameworks {
 
                 /**
                  */
-                Optional<unsigned int> fMaxHops;
+                optional<unsigned int> fMaxHops;
 
                 /**
                  */
@@ -56,7 +55,7 @@ namespace Stroika::Frameworks {
                 /**
                  *  time after a single ping is sent before we treat the ping as having timed out (so not total time if multiple samples taken).
                  */
-                Optional<Duration> fTimeout;
+                optional<Duration> fTimeout;
 
                 /*
                  * No standard for this, but just what this library does.
@@ -75,7 +74,7 @@ namespace Stroika::Frameworks {
                 /**
                  *  \not including ICMP nor IP header overhead.
                  */
-                Optional<size_t> fPacketPayloadSize;
+                optional<size_t> fPacketPayloadSize;
 
                 /**
                  *  @see Characters::ToString ();
@@ -105,7 +104,7 @@ namespace Stroika::Frameworks {
                  *      InternetProtocol::ICMP::TTLExpiredException
                  *      others...
                  */
-                nonvirtual ResultType RunOnce (const Optional<unsigned int>& ttl = {});
+                nonvirtual ResultType RunOnce (const optional<unsigned int>& ttl = {});
 
             private:
                 nonvirtual ResultType RunOnce_ICMP_ (unsigned int ttl);
@@ -126,7 +125,7 @@ namespace Stroika::Frameworks {
              */
             struct Pinger::ResultType {
                 Duration     fPingTime;
-                unsigned int fHopCount;
+                unsigned int fHopCount{};
 
                 /**
                  *  @see Characters::ToString ();
@@ -138,7 +137,7 @@ namespace Stroika::Frameworks {
              */
             struct SampleOptions {
                 Duration     fInterval;
-                unsigned int fSampleCount;
+                unsigned int fSampleCount{};
 
                 /**
                  *  @see Characters::ToString ();
@@ -149,9 +148,9 @@ namespace Stroika::Frameworks {
             /**
              */
             struct SampleResults {
-                Optional<Duration>     fMedianPingTime; // excludes timeouts
-                Optional<unsigned int> fMedianHopCount;
-                unsigned int           fExceptionCount;
+                optional<Duration>     fMedianPingTime; // excludes timeouts
+                optional<unsigned int> fMedianHopCount;
+                unsigned int           fExceptionCount{};
 
                 /**
                  *  @see Characters::ToString ();

@@ -10,11 +10,9 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace NetworkMonitor {
-            namespace Traceroute {
-            }
+namespace Stroika::Frameworks {
+    namespace NetworkMonitor {
+        namespace Traceroute {
         }
     }
 }

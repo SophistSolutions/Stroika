@@ -55,10 +55,6 @@ Characters::String Traceroute::Options::SampleInfo::ToString () const
  ***************** NetworkMonitor::Traceroute::Options **************************
  ********************************************************************************
  */
-constexpr Traversal::Range<size_t> Traceroute::Options::kAllowedICMPPayloadSizeRange;
-
-const Duration Traceroute::Options::kDefaultTimeout{1.0};
-
 String Traceroute::Options::ToString () const
 {
     StringBuilder sb;
@@ -103,7 +99,7 @@ Sequence<Hop> NetworkMonitor::Traceroute::Run (const InternetAddress& addr, cons
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Frameworks::NetworkMonitor::Traceroute::Run", L"addr=%s, options=%s", Characters::ToString (addr).c_str (), Characters::ToString (options).c_str ())};
     Sequence<Hop>             results;
-    unsigned int              maxTTL = options.fMaxHops.Value (Options::kDefaultMaxHops);
+    unsigned int              maxTTL = options.fMaxHops.value_or (Options::kDefaultMaxHops);
 
     Ping::Options pingOptions{};
     pingOptions.fPacketPayloadSize = options.fPacketPayloadSize;
