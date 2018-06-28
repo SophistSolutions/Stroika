@@ -95,7 +95,7 @@ namespace Stroika::Foundation {
                 using KeyType    = KEY;
                 using ResultType = VALUE;
 
-                using conditional_t<qDebug, Stats_Basic, Stats_Null>;
+                using StatsType = conditional_t<qDebug, Stats_Basic, Stats_Null>;
 
                 static constexpr bool kTrackReadAccess = TRACK_READ_ACCESS;
 
