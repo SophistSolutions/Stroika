@@ -540,6 +540,8 @@ namespace Stroika::Foundation {
              *  @see OptionalValue ()
              *
              *  Notably differnt from @see http://en.cppreference.com/w/cpp/utility/optional/value - see CheckedValue () for optional::value() equivilent
+             *
+             *  \note 1-arg version of this is equivilent to optional<>::value_or (defaultValue);
              */
             nonvirtual T Value (T defaultValue = T{}) const;
 
