@@ -221,15 +221,19 @@ fi
 
 #HELGRIND ON SYSPERFORM (experimental - must find better way)
 if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
-	echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-VALGRIND-release-SSLPurify-NoBlockAlloc /Samples_SystemPerformanceClient ..."
-	echo "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-VALGRIND-release-SSLPurify-NoBlockAlloc /Samples_SystemPerformanceClient..." >>$TEST_OUT_FILE 2>&1
-	STAGE_STARTAT_INT=$(date +%s)
-	valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-VALGRIND-release-SSLPurify-NoBlockAlloc /Samples_SystemPerformanceClient 2>&1 > /dev/null
-	cat valgrind-log.tmp >> $TEST_OUT_FILE
-	rm -f valgrind-log.tmp 
-	STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
-	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
-	echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+
+	for app in "Samples-SystemPerformanceClient/SystemPerformanceClient" "Builds/Debug/Samples-Traceroute/Traceroute www.sophists.com" ; do 
+		echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app ..."
+		echo "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app..." >>$TEST_OUT_FILE 2>&1
+		STAGE_STARTAT_INT=$(date +%s)
+		valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app 2>&1 > /dev/null
+		cat valgrind-log.tmp >> $TEST_OUT_FILE
+		rm -f valgrind-log.tmp 
+		STAGE_TOTAL_MINUTES_SPENT=$(($(( $(date +%s) - $STAGE_STARTAT_INT )) / 60))
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)"
+		echo "done (in $STAGE_TOTAL_MINUTES_SPENT minutes)">>$TEST_OUT_FILE 2>&1
+	done; 
+
 else
 	echo "Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS"
 	echo "$PREFIX_OUT_LABEL" "Skipping helgrind Samples_SystemPerformanceClient because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
