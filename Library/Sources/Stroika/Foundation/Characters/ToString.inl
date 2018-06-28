@@ -112,7 +112,7 @@ namespace Stroika {
                     return Configuration::DefaultNames<T>::k.GetName (t);
                 }
                 template <typename T, size_t SZ>
-                inline String ToString_array_ (const T (&arr)[SZ])
+                String ToString_array_ (const T (&arr)[SZ])
                 {
                     StringBuilder sb;
                     sb << L"[";
@@ -142,6 +142,11 @@ namespace Stroika {
                 inline String ToString_ (const shared_ptr<T>& pt)
                 {
                     return (pt == nullptr) ? L"nullptr" : ToString (*pt);
+                }
+                template <typename T>
+                inline String ToString_ (const optional<T>& o)
+                {
+                    return o.has_value () ? Characters::ToString (*o) : L"[missing]";
                 }
             }
 

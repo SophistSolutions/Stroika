@@ -48,6 +48,7 @@ namespace Stroika {
              *      o   is_enum<T>
              *      o   std::exception
              *      o   std::pair
+             *      o   std::optional
              *      o   exception_ptr
              *      o   POD types (int, bool, double, etc)
              *      o   anything with .begin (), .end () - so any contrainer/iterable
