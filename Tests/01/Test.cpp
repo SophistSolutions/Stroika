@@ -27,12 +27,12 @@ namespace {
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
                 tmp.Add ("d", "4");
-                VerifyTestResult (tmp.Lookup ("a").IsMissing ());
+                VerifyTestResult (not tmp.Lookup ("a").has_value ());
                 VerifyTestResult (tmp.Lookup ("b") == "2");
                 VerifyTestResult (tmp.Lookup ("d") == "4");
 
                 LRUCache<string, string> tmp2 = tmp;
-                VerifyTestResult (tmp2.Lookup ("a").IsMissing ());
+                VerifyTestResult (not tmp2.Lookup ("a").has_value ());
                 VerifyTestResult (tmp2.Lookup ("b") == "2");
                 VerifyTestResult (tmp2.Lookup ("d") == "4");
             }
@@ -44,12 +44,12 @@ namespace {
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
                 tmp.Add ("d", "4");
-                VerifyTestResult (tmp.Lookup ("a").IsMissing () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
+                VerifyTestResult (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
                 VerifyTestResult (tmp.Lookup ("b") == "2");
                 VerifyTestResult (tmp.Lookup ("d") == "4");
 
                 CACHE tmp2 = tmp;
-                VerifyTestResult (tmp2.Lookup ("a").IsMissing () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
+                VerifyTestResult (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
                 VerifyTestResult (tmp2.Lookup ("b") == "2");
                 VerifyTestResult (tmp2.Lookup ("d") == "4");
             }
