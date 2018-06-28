@@ -6,12 +6,13 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Containers/Sequence.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../Memory/BLOB.h"
-#include "../Memory/Optional.h"
 #include "../Streams/InputStream.h"
 #include "../Streams/OutputStream.h"
 
@@ -166,8 +167,8 @@ namespace Stroika {
                 /**
                  * defaults to 'missing'. If missing, then the OS default for new directory is used on created process (usually same as parent process)
                  */
-                nonvirtual Memory::Optional<String> GetWorkingDirectory ();
-                nonvirtual void                     SetWorkingDirectory (const Memory::Optional<String>& d);
+                nonvirtual optional<String> GetWorkingDirectory ();
+                nonvirtual void             SetWorkingDirectory (const optional<String>& d);
 
             public:
                 /**
@@ -196,13 +197,13 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Zero means success. Run() returns Optional<ProcessResultType> by reference, and that
+                 *  Zero means success. Run() returns optional<ProcessResultType> by reference, and that
                  *  value is only provided if the child process exited. If exited, we return the exit
                  *  status and signal number (if any) - see waitpid - http://pubs.opengroup.org/onlinepubs/9699919799/functions/wait.html
                  */
                 struct ProcessResultType {
-                    Memory::Optional<int> fExitStatus;
-                    Memory::Optional<int> fSignalNumber;
+                    optional<int> fExitStatus;
+                    optional<int> fSignalNumber;
                 };
 
             public:
@@ -228,8 +229,8 @@ namespace Stroika {
                  *
                  *  @see RunInBackground
                  */
-                nonvirtual void Run (Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
-                nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual void Run (optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual Characters::String Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult = nullptr, ProgressMonitor::Updater progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 class BackgroundProcess;
@@ -252,16 +253,16 @@ namespace Stroika {
                  *
                  *      \note not sure why this was ever public - so switched to private 2016-02-03 - Stk v2.0a126
                  */
-                nonvirtual function<void()> CreateRunnable_ (Synchronized<Memory::Optional<ProcessResultType>>* processResult, Synchronized<Memory::Optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
+                nonvirtual function<void()> CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress);
 
             private:
                 nonvirtual String GetEffectiveCmdLine_ () const;
 
             private:
-                Memory::Optional<String>         fCommandLine_;
-                Memory::Optional<String>         fExecutable_;
+                optional<String>                 fCommandLine_;
+                optional<String>                 fExecutable_;
                 Containers::Sequence<String>     fArgs_; // ignored if fExecutable empty
-                Memory::Optional<String>         fWorkingDirectory_;
+                optional<String>                 fWorkingDirectory_;
                 Streams::InputStream<Byte>::Ptr  fStdIn_;
                 Streams::OutputStream<Byte>::Ptr fStdOut_;
                 Streams::OutputStream<Byte>::Ptr fStdErr_;
@@ -277,25 +278,25 @@ namespace Stroika {
                 /**
                  */
 #if qPlatform_POSIX
-                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset = {}, const Memory::Optional<uint8_t>& wExitStatus = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wTermSig = Memory::Optional<uint8_t>{}, const Memory::Optional<uint8_t>& wStopSig = Memory::Optional<uint8_t>{});
+                Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {}, const optional<uint8_t>& wExitStatus = optional<uint8_t>{}, const optional<uint8_t>& wTermSig = optional<uint8_t>{}, const optional<uint8_t>& wStopSig = optional<uint8_t>{});
 #elif qPlatform_Windows
-                Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset = {}, const Memory::Optional<DWORD>& err = Memory::Optional<DWORD>{});
+                Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset = {}, const optional<DWORD>& err = optional<DWORD>{});
 #endif
             private:
 #if qPlatform_POSIX
-                static String mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig);
+                static String mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig);
 #elif qPlatform_Windows
-                static String           mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<DWORD>& err);
+                static String   mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err);
 #endif
             private:
                 String fCmdLine_;
                 String fErrorMessage_;
 #if qPlatform_POSIX
-                Memory::Optional<uint8_t> fWExitStatus_;
-                Memory::Optional<uint8_t> fWTermSig_;
-                Memory::Optional<uint8_t> fWStopSig_;
+                optional<uint8_t> fWExitStatus_;
+                optional<uint8_t> fWTermSig_;
+                optional<uint8_t> fWStopSig_;
 #elif qPlatform_Windows
-                Memory::Optional<DWORD> fErr_;
+                optional<DWORD> fErr_;
 #endif
             };
 
@@ -313,7 +314,7 @@ namespace Stroika {
                 /**
                  * Return missing if process still running, and if completed, return the results.
                  */
-                nonvirtual Memory::Optional<ProcessResultType> GetProcessResult () const;
+                nonvirtual optional<ProcessResultType> GetProcessResult () const;
 
             public:
                 /**
@@ -340,9 +341,9 @@ namespace Stroika {
             private:
                 struct Rep_ {
                     virtual ~Rep_ () = default;
-                    Thread::CleanupPtr                                fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
-                    Synchronized<Memory::Optional<pid_t>>             fPID{};
-                    Synchronized<Memory::Optional<ProcessResultType>> fResult{};
+                    Thread::CleanupPtr                        fProcessRunner{Thread::CleanupPtr::eAbortBeforeWaiting};
+                    Synchronized<optional<pid_t>>             fPID{};
+                    Synchronized<optional<ProcessResultType>> fResult{};
                 };
                 shared_ptr<Rep_> fRep_;
 

@@ -205,7 +205,7 @@ namespace {
  ********************************************************************************
  */
 #if qPlatform_POSIX
-ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
+ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
     : inherited (mkMsg_ (cmdLine, errorMessage, stderrSubset, wExitStatus, wTermSig, wStopSig))
     , fCmdLine_ (cmdLine)
     , fErrorMessage_ (errorMessage)
@@ -215,7 +215,7 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
 {
 }
 #elif qPlatform_Windows
-ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<DWORD>& err)
+ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err)
     : inherited (mkMsg_ (cmdLine, errorMessage, stderrSubset, err))
     , fCmdLine_ (cmdLine)
     , fErrorMessage_ (errorMessage)
@@ -224,7 +224,7 @@ ProcessRunner::Exception::Exception (const String& cmdLine, const String& errorM
 }
 #endif
 #if qPlatform_POSIX
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<uint8_t>& wExitStatus, const Memory::Optional<uint8_t>& wTermSig, const Memory::Optional<uint8_t>& wStopSig)
+String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<uint8_t>& wExitStatus, const optional<uint8_t>& wTermSig, const optional<uint8_t>& wStopSig)
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
@@ -256,7 +256,7 @@ String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& er
     return sb.str ();
 }
 #elif qPlatform_Windows
-String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const Memory::Optional<String>& stderrSubset, const Memory::Optional<DWORD>& err)
+String ProcessRunner::Exception::mkMsg_ (const String& cmdLine, const String& errorMessage, const optional<String>& stderrSubset, const optional<DWORD>& err)
 {
     Characters::StringBuilder sb;
     sb += errorMessage;
@@ -287,7 +287,7 @@ ProcessRunner::BackgroundProcess::BackgroundProcess ()
 {
 }
 
-Memory::Optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
+optional<ProcessRunner::ProcessResultType> ProcessRunner::BackgroundProcess::GetProcessResult () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fRep_->fResult;
@@ -326,7 +326,7 @@ void ProcessRunner::BackgroundProcess::Terminate ()
     //
     // @todo - Note - UNTESTED, and probably not 100% right (esp error checking!!!
     //
-    if (Memory::Optional<pid_t> o = fRep_->fPID) {
+    if (optional<pid_t> o = fRep_->fPID) {
 #if qPlatform_Posix
         ::kill (SIGTERM, *o);
 #elif qPlatform_Windows
@@ -377,20 +377,23 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
         return *fCommandLine_;
     }
     Characters::StringBuilder sb;
-    sb += fExecutable_.Value ();
+    if (not fExecutable_.has_value ()) {
+        Execution::Throw (Execution::StringException (L"need command-line or executable path to run a process"));
+	}
+    sb += *fExecutable_;
     for (String i : fArgs_) {
         sb += +L" " + i;
     }
     return sb.str ();
 }
 
-Memory::Optional<String> ProcessRunner::GetWorkingDirectory ()
+optional<String> ProcessRunner::GetWorkingDirectory ()
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     return fWorkingDirectory_;
 }
 
-void ProcessRunner::SetWorkingDirectory (const Memory::Optional<String>& d)
+void ProcessRunner::SetWorkingDirectory (const optional<String>& d)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     fWorkingDirectory_ = d;
@@ -438,7 +441,7 @@ void ProcessRunner::SetStdErr (const Streams::OutputStream<Byte>::Ptr& err)
     fStdErr_ = err;
 }
 
-void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
+void ProcessRunner::Run (optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     TraceContextBumper ctx{"ProcessRunner::Run"};
     if (timeout == Time::kInfinite) {
@@ -446,8 +449,8 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
             CreateRunnable_ (nullptr, nullptr, progress) ();
         }
         else {
-            Synchronized<Memory::Optional<ProcessResultType>> pr;
-            [[maybe_unused]] auto&&                           cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            Synchronized<optional<ProcessResultType>> pr;
+            [[maybe_unused]] auto&&                   cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
             CreateRunnable_ (&pr, nullptr, progress) ();
         }
     }
@@ -459,16 +462,16 @@ void ProcessRunner::Run (Memory::Optional<ProcessResultType>* processResult, Pro
             t.ThrowIfDoneWithException ();
         }
         else {
-            Synchronized<Memory::Optional<ProcessResultType>> pr;
-            [[maybe_unused]] auto&&                           cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
-            Thread::Ptr                                       t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
+            Synchronized<optional<ProcessResultType>> pr;
+            [[maybe_unused]] auto&&                   cleanup = Finally ([&]() noexcept { *processResult = pr.load (); });
+            Thread::Ptr                               t       = Thread::New (CreateRunnable_ (&pr, nullptr, progress), Thread::eAutoStart, L"ProcessRunner thread");
             t.WaitForDone (timeout);
             t.ThrowIfDoneWithException ();
         }
     }
 }
 
-Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, Memory::Optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
+Characters::String ProcessRunner::Run (const Characters::String& cmdStdInValue, optional<ProcessResultType>* processResult, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     Streams::InputStream<Byte>::Ptr                    oldStdIn  = GetStdIn ();
@@ -515,15 +518,15 @@ ProcessRunner::BackgroundProcess ProcessRunner::RunInBackground (ProgressMonitor
 #if qPlatform_POSIX
 namespace {
     void Process_Runner_POSIX_ (
-        Synchronized<Memory::Optional<ProcessRunner::ProcessResultType>>* processResult,
-        Synchronized<Memory::Optional<pid_t>>*                            runningPID,
-        ProgressMonitor::Updater                                          progress,
-        const String&                                                     cmdLine,
-        const SDKChar*                                                    currentDir,
-        const Streams::InputStream<Byte>::Ptr&                            in,
-        const Streams::OutputStream<Byte>::Ptr&                           out,
-        const Streams::OutputStream<Byte>::Ptr&                           err,
-        const String&                                                     effectiveCmdLine)
+        Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
+        Synchronized<optional<pid_t>>*                            runningPID,
+        ProgressMonitor::Updater                                  progress,
+        const String&                                             cmdLine,
+        const SDKChar*                                            currentDir,
+        const Streams::InputStream<Byte>::Ptr&                    in,
+        const Streams::OutputStream<Byte>::Ptr&                   out,
+        const Streams::OutputStream<Byte>::Ptr&                   err,
+        const String&                                             effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_POSIX_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
@@ -854,7 +857,7 @@ namespace {
             // throw / warn if result other than child exited normally
             if (processResult != nullptr) {
                 // not sure what it means if result != childPID??? - I think cannot happen cuz we pass in childPID, less result=-1
-                processResult->store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : Memory::Optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : Memory::Optional<int> ()});
+                processResult->store (ProcessRunner::ProcessResultType{WIFEXITED (status) ? WEXITSTATUS (status) : optional<int> (), WIFSIGNALED (status) ? WTERMSIG (status) : optional<int> ()});
             }
             if (result != childPID or not WIFEXITED (status) or WEXITSTATUS (status) != 0) {
                 // @todo fix this message
@@ -883,15 +886,15 @@ namespace {
 #if qPlatform_Windows
 namespace {
     void Process_Runner_Windows_ (
-        Synchronized<Memory::Optional<ProcessRunner::ProcessResultType>>* processResult,
-        Synchronized<Memory::Optional<pid_t>>*                            runningPID,
-        ProgressMonitor::Updater                                          progress,
-        const String&                                                     cmdLine,
-        const SDKChar*                                                    currentDir,
-        const Streams::InputStream<Byte>::Ptr&                            in,
-        const Streams::OutputStream<Byte>::Ptr&                           out,
-        const Streams::OutputStream<Byte>::Ptr&                           err,
-        const String&                                                     effectiveCmdLine)
+        Synchronized<optional<ProcessRunner::ProcessResultType>>* processResult,
+        Synchronized<optional<pid_t>>*                            runningPID,
+        ProgressMonitor::Updater                                  progress,
+        const String&                                             cmdLine,
+        const SDKChar*                                            currentDir,
+        const Streams::InputStream<Byte>::Ptr&                    in,
+        const Streams::OutputStream<Byte>::Ptr&                   out,
+        const Streams::OutputStream<Byte>::Ptr&                   err,
+        const String&                                             effectiveCmdLine)
     {
         TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"{}::Process_Runner_Windows_", L"...,cmdLine='%s',currentDir=%s,...", cmdLine.c_str (), currentDir == nullptr ? L"nullptr" : String::FromSDKString (currentDir).LimitLength (50, false).c_str ())};
 
@@ -1153,14 +1156,14 @@ namespace {
 }
 #endif
 
-function<void()> ProcessRunner::CreateRunnable_ (Synchronized<Memory::Optional<ProcessResultType>>* processResult, Synchronized<Memory::Optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
+function<void()> ProcessRunner::CreateRunnable_ (Synchronized<optional<ProcessResultType>>* processResult, Synchronized<optional<pid_t>>* runningPID, ProgressMonitor::Updater progress)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"ProcessRunner::CreateRunnable_")};
 #endif
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-    String                                              cmdLine          = fCommandLine_.Value ();
-    Memory::Optional<String>                            workingDir       = GetWorkingDirectory ();
+    String                                              cmdLine          = fCommandLine_.value_or (String{});
+    optional<String>                                    workingDir       = GetWorkingDirectory ();
     Streams::InputStream<Byte>::Ptr                     in               = GetStdIn ();
     Streams::OutputStream<Byte>::Ptr                    out              = GetStdOut ();
     Streams::OutputStream<Byte>::Ptr                    err              = GetStdErr ();

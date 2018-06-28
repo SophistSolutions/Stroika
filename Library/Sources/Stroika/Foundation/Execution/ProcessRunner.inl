@@ -9,10 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-        }
+namespace Stroika::Foundation {
+    namespace Execution {
     }
 }
 #endif /*_Stroia_Foundation_Execution_ProcessRunner_inl_*/
