@@ -9,19 +9,19 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
+namespace Stroika::Foundation {
+    namespace DataExchange {
 
         /*
          ********************************************************************************
          ******************** DataExchange::BadFormatException **************************
          ********************************************************************************
          */
-        inline Characters::String DataExchange::BadFormatException::GetDetails () const
+        inline Characters::String BadFormatException::GetDetails () const
         {
             return fDetails_;
         }
-        inline void DataExchange::BadFormatException::GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const
+        inline void BadFormatException::GetPositionInfo (optional<unsigned int>* lineNum, optional<unsigned int>* colNumber, optional<uint64_t>* fileOffset) const
         {
             if (lineNum != nullptr) {
                 *lineNum = fLineNumber_;

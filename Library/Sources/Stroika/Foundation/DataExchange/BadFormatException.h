@@ -6,45 +6,50 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../Execution/StringException.h"
-#include "../Memory/Optional.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
+namespace Stroika::Foundation {
+    namespace DataExchange {
 
+        /**
+         * Use when reading from a structured stream the data is ill-formed
+         */
+        class BadFormatException : public Execution::StringException {
+        private:
+            using inherited = Execution::StringException;
+
+        public:
             /**
-             * Use when reading from a structured stream the data is ill-formed
              */
-            class BadFormatException : public Execution::StringException {
-            private:
-                using inherited = Execution::StringException;
+            BadFormatException ();
+            BadFormatException (const Characters::String& details);
+            BadFormatException (const Characters::String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset);
 
-            public:
-                BadFormatException ();
-                BadFormatException (const Characters::String& details);
-                BadFormatException (const Characters::String& details, const optional<unsigned int>& lineNumber, const optional<unsigned int>& columnNumber, const optional<uint64_t>& fileOffset);
+        public:
+            /**
+             */
+            nonvirtual Characters::String GetDetails () const;
 
-            public:
-                nonvirtual Characters::String GetDetails () const;
+        public:
+            /**
+             */
+            nonvirtual void GetPositionInfo (optional<unsigned int>* lineNum, optional<unsigned int>* colNumber, optional<uint64_t>* fileOffset) const;
 
-            public:
-                nonvirtual void GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const;
+        public:
+            /**
+             */
+            static const BadFormatException kThe;
 
-            public:
-                /**
-                 */
-                static const BadFormatException kThe;
+        private:
+            optional<unsigned int> fLineNumber_;
+            optional<unsigned int> fColumnNumber_;
+            optional<uint64_t>     fFileOffset_;
 
-            private:
-                Memory::Optional<unsigned int> fLineNumber_;
-                Memory::Optional<unsigned int> fColumnNumber_;
-                Memory::Optional<uint64_t>     fFileOffset_;
-
-            private:
-                Characters::String fDetails_;
-            };
-        }
+        private:
+            Characters::String fDetails_;
+        };
     }
 }
 

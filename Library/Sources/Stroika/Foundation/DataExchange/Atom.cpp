@@ -19,6 +19,9 @@ using namespace Stroika::Foundation::DataExchange;
 
 namespace {
     // VERY CRUDDY (but close to what we use in HF) impl - to get started...
+    /*
+     * Use SpinLock since locks very short lived. COULD use shared_mutex because much more reads than writes. But since locks so short, little point.
+     */
     Execution::SpinLock                                     sCritSec_; // lock needed here to keep map and sequence in sync
     Mapping<String, AtomManager_Default::AtomInternalType>* sMap_;
     Sequence<String>*                                       sSeq_;
