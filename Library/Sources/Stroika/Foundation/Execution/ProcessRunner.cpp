@@ -379,7 +379,7 @@ String ProcessRunner::GetEffectiveCmdLine_ () const
     Characters::StringBuilder sb;
     if (not fExecutable_.has_value ()) {
         Execution::Throw (Execution::StringException (L"need command-line or executable path to run a process"));
-	}
+    }
     sb += *fExecutable_;
     for (String i : fArgs_) {
         sb += +L" " + i;
