@@ -218,7 +218,7 @@ else
 fi
 
 
-SAMPLE_APPS_2_VALGRIND="Samples-SystemPerformanceClient/SystemPerformanceClient" "Samples-Traceroute/Traceroute www.sophists.com" "Samples-WebServer/WebServer --quit-after 10" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-3240000.zip" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z"
+SAMPLE_APPS_2_VALGRIND="Samples-SystemPerformanceClient/SystemPerformanceClient" "Samples-Traceroute/Traceroute www.sophists.com" "Samples-WebServer/WebServer --quit-after 10" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z"
 
 #HELGRIND ON SYSPERFORM (experimental - must find better way)
 if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
