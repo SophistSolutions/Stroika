@@ -873,9 +873,9 @@ namespace {
                         effectiveCmdLine,
                         L"Spawned program",
                         stderrMsg.str (),
-                        WIFEXITED (status) ? WEXITSTATUS (status) : Optional<uint8_t>{},
-                        WIFSIGNALED (status) ? WTERMSIG (status) : Optional<uint8_t>{},
-                        WIFSTOPPED (status) ? WSTOPSIG (status) : Optional<uint8_t>{}));
+                        WIFEXITED (status) ? WEXITSTATUS (status) : optional<uint8_t>{},
+                        WIFSIGNALED (status) ? WTERMSIG (status) : optional<uint8_t>{},
+                        WIFSTOPPED (status) ? WSTOPSIG (status) : optional<uint8_t>{}));
                 }
             }
         }

@@ -277,8 +277,8 @@ Response Connection_LibCurl::Rep_::Send (const Request& request)
     {
         constexpr bool kDefault_FailConnectionIfSSLCertificateInvalid{false};
         // ignore error if compiled without ssl
-        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYPEER, fOptions_.fFailConnectionIfSSLCertificateInvalid.Value (kDefault_FailConnectionIfSSLCertificateInvalid) ? 1L : 0L);
-        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST, fOptions_.fFailConnectionIfSSLCertificateInvalid.Value (kDefault_FailConnectionIfSSLCertificateInvalid) ? 2L : 0L);
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYPEER, fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) ? 1L : 0L);
+        (void)::curl_easy_setopt (fCurlHandle_, CURLOPT_SSL_VERIFYHOST, fOptions_.fFailConnectionIfSSLCertificateInvalid.value_or (kDefault_FailConnectionIfSSLCertificateInvalid) ? 2L : 0L);
     }
 
     if (request.fMethod == HTTP::Methods::kGet) {
