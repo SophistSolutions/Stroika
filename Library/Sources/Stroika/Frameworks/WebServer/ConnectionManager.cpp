@@ -128,31 +128,31 @@ namespace {
     {
         using Options = ConnectionManager::Options;
         constexpr unsigned int kMinThreadCnt_{1u}; // one enough now that we support separate thread doing epoll/select and one read when data avail
-        return Math::AtLeast (kMinThreadCnt_, options.fMaxConnections.Value (Options::kDefault_MaxConnections) / 10);
+        return Math::AtLeast (kMinThreadCnt_, options.fMaxConnections.value_or (Options::kDefault_MaxConnections) / 10);
     }
     inline unsigned int ComputeConnectionBacklog_ (const ConnectionManager::Options& options)
     {
         using Options = ConnectionManager::Options;
         constexpr unsigned int kMinDefaultTCPBacklog_{3u};
-        return options.fTCPBacklog.Value (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections.Value (Options::kDefault_MaxConnections) * 3 / 4));
+        return options.fTCPBacklog.value_or (Math::AtLeast (kMinDefaultTCPBacklog_, options.fMaxConnections.value_or (Options::kDefault_MaxConnections) * 3 / 4));
     }
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
     : fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
-    , fCORSModeSupport_ (options.fCORSModeSupport.Value (Options::kDefault_CORSModeSupport))
+    , fCORSModeSupport_ (options.fCORSModeSupport.value_or (Options::kDefault_CORSModeSupport))
     , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{fServerHeader_, fCORSModeSupport_}}
     , fDefaultErrorHandler_ (DefaultFaultInterceptor{})
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
     , fLinger_ (options.fLinger.OptionalValue (Options::kDefault_Linger))
-    , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.Value (Options::kDefault_AutomaticTCPDisconnectOnClose))
+    , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.value_or (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
     , fActiveConnectionThreads_{ComputeThreadPoolSize_ (options), options.fThreadPoolName} // implementation detail - due to EXPENSIVE blcoking read strategy - see https://stroika.atlassian.net/browse/STK-638
     , fListener_{bindAddresses,
-                 options.fBindFlags.Value (Options::kDefault_BindFlags),
+                 options.fBindFlags.value_or (Options::kDefault_BindFlags),
                  [this](const ConnectionOrientedStreamSocket::Ptr& s) { onConnect_ (s); },
                  ComputeConnectionBacklog_ (options)}
     , fWaitForReadyConnectionThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting, Thread::New ([=]() { WaitForReadyConnectionLoop_ (); }, Thread::eAutoStart, L"ConnectionMgr-Wait4IOReady")}

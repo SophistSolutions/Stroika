@@ -144,7 +144,7 @@ namespace {
         // ACCUMULATE STRING, and then call builtin number parsing functions...
         // This accumulation is NOT as restrictive as it could be - but should accept all valid numbers
         StringBuilder tmp;
-        for (wchar_t c = initialChar; c != '\0'; c = in.Read ().Value ('\0').As<wchar_t> ()) {
+        for (wchar_t c = initialChar; c != '\0'; c = in.Read ().value_or ('\0').As<wchar_t> ()) {
             if (iswdigit (c) or c == '.' or c == 'e' or c == 'E' or c == '+' or c == '-') {
                 tmp += c;
                 if (c == '.') {

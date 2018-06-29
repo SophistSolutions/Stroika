@@ -415,7 +415,7 @@ Execution::Thread::Ptr Modbus::MakeModbusTCPServerThread (const shared_ptr<IModb
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             TraceContextBumper ctx ("Modbus-Listener");
 #endif
-            uint16_t usingPortNumber = options.fListenPort.Value (502);
+            uint16_t usingPortNumber = options.fListenPort.value_or (502);
             if (options.fLogger) {
                 options.fLogger.value ()->Log (Logger::Priority::eInfo, L"Listening for ModbusTCP requests on port %d", usingPortNumber);
             }

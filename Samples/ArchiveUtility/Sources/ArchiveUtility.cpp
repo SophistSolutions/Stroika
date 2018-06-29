@@ -163,7 +163,7 @@ int main (int argc, const char* argv[])
                     ListArchive_ (o->fArchiveFileName);
                     break;
                 case Options_::Operation::eExtract:
-                    ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.Value (L"."));
+                    ExtractArchive_ (o->fArchiveFileName, o->fOutputDirectory.value_or (L"."));
                     break;
                 default:
                     cerr << "that option NYI" << endl;

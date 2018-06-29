@@ -136,8 +136,8 @@ namespace {
         }
         void DoIt ()
         {
-            VerifyTestResult (Private_::LookupDiskStats (L"xx").Value ().size == 33);
-            VerifyTestResult (Private_::LookupDiskStats (L"xx").Value ().size == 33);
+            VerifyTestResult (ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
+            VerifyTestResult (ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
         }
     }
 }

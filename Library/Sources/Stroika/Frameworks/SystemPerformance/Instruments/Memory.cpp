@@ -424,7 +424,7 @@ namespace {
 #else
             Info result;
 #endif
-            Ensure (result.fPhysicalMemory.fActive.Value () + result.fPhysicalMemory.fInactive.Value () + result.fPhysicalMemory.fFree.Value () + result.fPhysicalMemory.fOSReserved.Value () == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
+            Ensure (ValueOrDefault (result.fPhysicalMemory.fActive) + ValueOrDefault (result.fPhysicalMemory.fInactive) + ValueOrDefault (result.fPhysicalMemory.fFree) + ValueOrDefault (result.fPhysicalMemory.fOSReserved) == GetSystemConfiguration_Memory ().fTotalPhysicalRAM);
             return result;
         }
     };

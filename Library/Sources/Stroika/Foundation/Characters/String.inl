@@ -507,11 +507,11 @@ namespace Stroika {
             }
             inline size_t String::find (wchar_t c, size_t startAt) const
             {
-                return Find (c, startAt, CompareOptions::eWithCase).Value (npos);
+                return Find (c, startAt, CompareOptions::eWithCase).value_or (npos);
             }
             inline size_t String::rfind (wchar_t c) const
             {
-                return RFind (c).Value (npos);
+                return RFind (c).value_or (npos);
             }
             inline void String::push_back (wchar_t c)
             {

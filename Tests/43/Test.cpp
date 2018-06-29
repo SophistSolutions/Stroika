@@ -149,9 +149,9 @@ namespace {
                     for (auto i : vv) {
                         DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
-                    String dataValueString = vv.Lookup (L"data").Value ().As<String> ();
+                    String dataValueString = ValueOrDefault (vv.Lookup (L"data")).As<String> ();
                     {
-                        size_t i = dataValueString.Find (',').Value (String::npos);
+                        size_t i = dataValueString.Find (',').value_or (String::npos);
                         if (i != -1) {
                             dataValueString = dataValueString.SubString (i + 1);
                         }
@@ -184,9 +184,9 @@ namespace {
                     for (auto i : vv) {
                         DbgTrace (L"%s : %s", i.fKey.c_str (), i.fValue.As<String> ().c_str ());
                     }
-                    String dataValueString = vv.Lookup (L"data").Value ().As<String> ();
+                    String dataValueString = ValueOrDefault (vv.Lookup (L"data")).As<String> ();
                     {
-                        size_t i = dataValueString.Find (',').Value (String::npos);
+                        size_t i = dataValueString.Find (',').value_or (String::npos);
                         if (i != -1) {
                             dataValueString = dataValueString.SubString (i + 1);
                         }

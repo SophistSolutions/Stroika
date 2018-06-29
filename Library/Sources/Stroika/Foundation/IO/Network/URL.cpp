@@ -152,7 +152,7 @@ URL URL::Parse (const String& w, ParseOptions po)
 
     size_t hostNameStart = 0; // default with hostname at start of URL, unless there is a PROTOCOL: in front
     {
-        size_t slashshash = w.Find (L"//").Value (String::npos); // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
+        size_t slashshash = w.Find (L"//").value_or (String::npos); // if we have //fooo:304 as ou rurl, treat as hostname fooo, and port 304, and scheme http:
         size_t e          = w.find (':');
         if (e != String::npos and (slashshash == String::npos or e < slashshash)) {
             result.fScheme_ = NormalizeScheme_ (w.SubString (0, e));
@@ -419,7 +419,7 @@ bool URL::IsSecure () const
 URL::SchemeType URL::GetSchemeValue () const
 {
     static const String_Constant kHTTPScheme_{L"http"};
-    return fScheme_.Value (kHTTPScheme_);
+    return fScheme_.value_or (kHTTPScheme_);
 }
 
 String URL::GetFullURL () const

@@ -669,7 +669,7 @@ namespace Stroika {
             template <typename RESULT_TYPE>
             inline RESULT_TYPE Iterable<T>::MeanValue (ArgByValueType<RESULT_TYPE> defaultValue) const
             {
-                return Mean ().Value (defaultValue);
+                return Mean ().value_or (defaultValue);
             }
             template <typename T>
             template <typename RESULT_TYPE>

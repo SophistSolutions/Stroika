@@ -456,7 +456,7 @@ ThreadPool::TPInfo_ ThreadPool::mkThread_ ()
 {
     shared_ptr<MyRunnable_> r{make_shared<ThreadPool::MyRunnable_> (*this)};
     String                  entryName = Characters::Format (L"TPE #%d", fNextThreadEntryNumber_++); // make name so short cuz unix only shows first 15 chars - http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
-    entryName += L" {" + fThreadPoolName_.Value (L"anonymous-thread-pool") + L"}";
+    entryName += L" {" + fThreadPoolName_.value_or (L"anonymous-thread-pool") + L"}";
     Thread::Ptr t = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, entryName); // race condition for updating this number, but who cares - its purely cosmetic...
     return TPInfo_{t, r};
 }

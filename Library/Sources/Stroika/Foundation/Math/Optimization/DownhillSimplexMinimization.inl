@@ -208,9 +208,9 @@ namespace Stroika {
 #endif
                         Results<FLOAT_TYPE> results{};
                         FLOAT_TYPE          step            = 0.1;
-                        FLOAT_TYPE          no_improve_thr  = options.fNoImprovementThreshold.Value (10e-6);
+                        FLOAT_TYPE          no_improve_thr  = options.fNoImprovementThreshold.value_or (10e-6);
                         unsigned int        no_improv_break = 10;
-                        unsigned int        max_iter        = options.fMaxIterations.Value (0);
+                        unsigned int        max_iter        = options.fMaxIterations.value_or (0);
                         results                             = PRIVATE_::nelder_mead_by_fchollet<FLOAT_TYPE> (function2Minimize, initialValues, step, no_improve_thr, no_improv_break, max_iter);
 #if Stroika_Foundation_Math_Optimization_DownhillSimplexMinimization_USE_NOISY_TRACE_IN_THIS_MODULE_
                         DbgTrace (L"returns: %s", Characters::ToString (results).c_str ());

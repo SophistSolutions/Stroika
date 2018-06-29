@@ -245,7 +245,7 @@ namespace {
             // Could truncate and fill to adapt to differnt sized salt...
             Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
         }
-        int i = ::EVP_BytesToKey (FakeCryptoAlgo_ (keyLen, ivLen), Convert2OpenSSL (digestAlgorithm), salt ? salt.Value ().begin () : nullptr, passwd.begin (), static_cast<int> (passwd.size ()), nRounds, useKey.begin (), useIV.begin ());
+        int i = ::EVP_BytesToKey (FakeCryptoAlgo_ (keyLen, ivLen), Convert2OpenSSL (digestAlgorithm), salt ? ValueOrDefault (salt).begin () : nullptr, passwd.begin (), static_cast<int> (passwd.size ()), nRounds, useKey.begin (), useIV.begin ());
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }

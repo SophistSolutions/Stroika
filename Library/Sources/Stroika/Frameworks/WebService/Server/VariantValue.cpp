@@ -68,7 +68,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
 Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
 {
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
-    if (bodyContentType.Value (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
+    if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
         Mapping<String, DataExchange::VariantValue> tmp = Variant::JSON::Reader ().Read (body).As<Mapping<String, DataExchange::VariantValue>> ();
         if (namedParameters) {
             tmp.RetainAll (*namedParameters);

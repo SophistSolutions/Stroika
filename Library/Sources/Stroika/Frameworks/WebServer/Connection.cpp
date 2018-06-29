@@ -244,13 +244,13 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
                         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Keep-Alive
                         if (kvp[0] == L"timeout") {
                             Time::DurationSecondsType toAt = Characters::String2Float<> (kvp[1]);
-                            Remaining                 r    = GetRemainingConnectionLimits ().Value ();
+                            Remaining                 r    = ValueOrDefault (GetRemainingConnectionLimits ());
                             r.fTimeoutAt                   = Time::GetTickCount () + toAt;
                             this->SetRemainingConnectionMessages (r);
                         }
                         else if (kvp[0] == L"max") {
                             unsigned int maxMsg = Characters::String2Int<unsigned int> (kvp[1]);
-                            Remaining    r      = GetRemainingConnectionLimits ().Value ();
+                            Remaining    r      = ValueOrDefault (GetRemainingConnectionLimits ());
                             r.fMessages         = maxMsg;
                             this->SetRemainingConnectionMessages (r);
                         }

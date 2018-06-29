@@ -131,7 +131,7 @@ namespace Stroika::Foundation {
                     Configuration::Empty fEmpty_;
 
 #if qCompilerAndStdLib_alignas_Sometimes_Mysteriously_Buggy
-// VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
+                    // VERY weirdly - alignas(alignment_of<T>)   - though WRONG (needs ::value - and that uses alignas) works
 #else
                     alignas (T)
 #endif
@@ -432,7 +432,7 @@ namespace Stroika::Foundation {
 
         public:
             /**
-             *  \req &rhs != this (see https://stroika.atlassian.net/browse/STK-556 and 
+             *  \req &rhs != this (see https://stroika.atlassian.net/browse/STK-556 and
              *      from 17.6.4.9 - http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2013/n3690.pdf
              *          — If a function argument binds to an rvalue reference parameter, the implementation may assume that
              *          this parameter is a unique reference to this argument.
@@ -549,11 +549,11 @@ namespace Stroika::Foundation {
              *
              *  \note 1-arg version of this is equivilent to optional<>::value_or (defaultValue);
              */
-            nonvirtual T Value (T defaultValue = T{}) const;
+            [[deprecated ("use member value_or () or non-member ValueOrDefault - since Stroika v2.1d4")]] nonvirtual T Value (T defaultValue = T{}) const;
 
         public:
             // mimic stdc++ API
-            nonvirtual T value_or (T defaultValue = T{}) const { return Value (defaultValue); }
+            nonvirtual T value_or (T defaultValue = T{}) const;
 
         public:
             /**
@@ -761,6 +761,48 @@ namespace Stroika::Foundation {
             template <typename T2, typename TRAITS2>
             friend class Optional;
         };
+
+        /**
+         *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from left to right.
+         *
+         *  The point of this to to faciltate a common idiom, where you want to maintain an existing value unless you
+         *  get an update. This function is ANALAGOUS to
+         *      if (o.has_value()) {
+         *          destArgVal = *o;
+         *      }
+         *
+         *  but can be done in a single line.
+         *
+         *  \par Example Usage
+         *      \code
+         *      int curValue = 3;
+         *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
+         *      oVal.CopyToIf (&curValue);
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *      Optional<int> curValue;
+         *      Optional<long>  oVal = someMap.Lookup (KEY_VALUE);
+         *      oVal.CopyToIf (&curValue);      // curValue retains its value from before CopyToIf if oVal was missing
+         *      \endcode
+         *
+         *  @see Value
+         */
+        template <typename T, typename CONVERTABLE_TO_TYPE = T>
+        void CopyToIf (const optional<T>& lhs, CONVERTABLE_TO_TYPE* to);
+        template <typename T, typename CONVERTABLE_TO_TYPE = T>
+        void CopyToIf (const Optional<T>& lhs, CONVERTABLE_TO_TYPE* to);
+
+        /**
+         *  Always safe to call. If has_value returns it, else returns argument 'default'. Like value_or () but has default value for default value.
+         *
+         *  \note This is handy because there is no default argument for std::optional<>::value_or () - there should be (like this).
+         */
+        template <typename T>
+        T ValueOrDefault (const optional<T>& o, T defaultValue = T{});
+        template <typename T>
+        T ValueOrDefault (const Optional<T>& o, T defaultValue = T{});
 
         /**
          *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)

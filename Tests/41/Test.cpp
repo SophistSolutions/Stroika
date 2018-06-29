@@ -67,10 +67,10 @@ namespace {
         // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
             String matchStr    = *protocol + String_Constant (L"://") + *host;
-            size_t startOfPath = canonical.Find (matchStr).Value (String::npos);
+            size_t startOfPath = canonical.Find (matchStr).value_or (String::npos);
             if (startOfPath == String::npos) {
                 matchStr    = *protocol + String_Constant (L":");
-                startOfPath = canonical.Find (matchStr).Value (String::npos);
+                startOfPath = canonical.Find (matchStr).value_or (String::npos);
             }
             if (startOfPath == String::npos) {
                 startOfPath = canonical.length ();
@@ -392,7 +392,7 @@ namespace {
             }
             {
                 Memory::Optional<String> aaa = DNS::Default ().ReverseLookup (InternetAddress (23, 56, 90, 167));
-                DbgTrace (L"reverselookup %s", aaa.Value ().c_str ());
+                DbgTrace (L"reverselookup %s", ValueOrDefault (aaa).c_str ());
             }
         }
     }

@@ -27,7 +27,7 @@ namespace Stroika {
                 }
                 inline String URLQuery::operator() (const String& idx) const
                 {
-                    return fMap_.Lookup (idx).Value ();
+                    return Memory::ValueOrDefault (fMap_.Lookup (idx));
                 }
                 inline String URLQuery::operator() (const string& idx) const
                 {
@@ -61,7 +61,7 @@ namespace Stroika {
                         return *fPort_;
                     }
                     else {
-                        return GetDefaultPortForScheme (GetSchemeValue ()).Value (defaultValue);
+                        return GetDefaultPortForScheme (GetSchemeValue ()).value_or (defaultValue);
                     }
                 }
                 inline Memory::Optional<URL::PortType> URL::GetPortNumber () const

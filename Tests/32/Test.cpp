@@ -120,11 +120,11 @@ namespace {
             virtual void StartElement (const StructuredStreamEvents::Name& name) override
             {
                 fEltDepthCount++;
-                fEltStack.push_back (name.fNamespaceURI.Value () + L"/" + name.fLocalName);
+                fEltStack.push_back (ValueOrDefault (name.fNamespaceURI) + L"/" + name.fLocalName);
             }
             virtual void EndElement (const StructuredStreamEvents::Name& name) override
             {
-                VerifyTestResult (fEltStack.back () == name.fNamespaceURI.Value () + L"/" + name.fLocalName);
+                VerifyTestResult (fEltStack.back () == ValueOrDefault (name.fNamespaceURI) + L"/" + name.fLocalName);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }

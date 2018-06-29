@@ -27,7 +27,7 @@ namespace Stroika::Foundation {
             Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const Memory::Optional<SeekOffsetType>& start, const Memory::Optional<SeekOffsetType>& end)
                 : InputStream<ELEMENT_TYPE>::_IRep ()
                 , fRealIn_ (realIn)
-                , fOffsetMine2Real_ (start.Value (realIn.GetOffset ()))
+                , fOffsetMine2Real_ (start.value_or (realIn.GetOffset ()))
                 , fForcedEndInReal_ (end)
             {
                 if (start) {

@@ -603,6 +603,12 @@ namespace Stroika::Foundation {
             return has_value () ? *this->fStorage_.peek () : defaultValue;
         }
         template <typename T, typename TRAITS>
+        inline T Optional<T, TRAITS>::value_or (T defaultValue) const
+        {
+            shared_lock<const MutexBase_> critSec{*this};
+            return has_value () ? *this->fStorage_.peek () : defaultValue;
+        }
+        template <typename T, typename TRAITS>
         inline Optional<T, TRAITS> Optional<T, TRAITS>::OptionalValue (const Optional<T, TRAITS>& defaultValue) const
         {
             shared_lock<const MutexBase_> critSec{*this};
@@ -761,6 +767,42 @@ namespace Stroika::Foundation {
         inline T Optional<T, TRAITS>::value () const
         {
             return CheckedValue (domain_error ("std::bad_optional_access"));
+        }
+
+        /*
+         ********************************************************************************
+         ************************************ CopyToIf **********************************
+         ********************************************************************************
+         */
+        template <typename T, typename CONVERTABLE_TO_TYPE>
+        inline void CopyToIf (const optional<T>& lhs, CONVERTABLE_TO_TYPE* to)
+        {
+            if (lhs) {
+                *to = *lhs;
+            }
+        }
+        template <typename T, typename CONVERTABLE_TO_TYPE>
+        inline void CopyToIf (const Optional<T>& lhs, CONVERTABLE_TO_TYPE* to)
+        {
+            if (lhs) {
+                *to = *lhs;
+            }
+        }
+
+        /*
+         ********************************************************************************
+         ******************************* ValueOrDefault *********************************
+         ********************************************************************************
+         */
+        template <typename T>
+        inline T ValueOrDefault (const optional<T>& o, T defaultValue)
+        {
+            return o.has_value () ? *o : defaultValue;
+        }
+        template <typename T>
+        inline T ValueOrDefault (const Optional<T>& o, T defaultValue)
+        {
+            return o.has_value () ? *o : defaultValue;
         }
 
         /*

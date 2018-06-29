@@ -41,14 +41,14 @@ namespace Stroika {
                 nonvirtual Memory::Optional<FileAccessMode> GetFileAccessMode () const;
 
             public:
-                nonvirtual FileAccessMode GetFileAccessModeValue (FileAccessMode defaultVal = FileAccessMode::eReadWrite) const { return fFileAccessMode_.Value (defaultVal); }
+                nonvirtual FileAccessMode GetFileAccessModeValue (FileAccessMode defaultVal = FileAccessMode::eReadWrite) const { return fFileAccessMode_.value_or (defaultVal); }
 
             private:
                 Memory::Optional<String>         fFileName_;
                 Memory::Optional<FileAccessMode> fFileAccessMode_;
             };
 
-/**
+            /**
              *  It often happens that you know a filename in one context, but call something that throws
              *  a file access exception. This helpful macro can rebild the filename, so its captured in the
              *  exception.

@@ -133,7 +133,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
             }
         }
 
-        Time::DurationSecondsType    suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->Value (0);
+        Time::DurationSecondsType    suppressDuplicatesThreshold = fSuppressDuplicatesThreshold_.cget ()->value_or (0);
         bool                         suppressDuplicates          = suppressDuplicatesThreshold > 0;
         static const String_Constant kThreadName_{L"Logger Bookkeeping"};
         if (suppressDuplicates or fBufferingEnabled_) {
@@ -304,7 +304,7 @@ Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () con
 
 void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
-    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.Value (-1))};
+    Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.value_or (-1))};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0);
     RequireNotNull (fRep_); // not destroyed
     [[maybe_unused]] auto&& critSec = lock_guard{fRep_->fSuppressDuplicatesThreshold_};

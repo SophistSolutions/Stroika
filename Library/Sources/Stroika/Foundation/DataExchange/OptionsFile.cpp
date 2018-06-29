@@ -45,23 +45,23 @@ String OptionsFile::LoggerMessage::FormatMessage () const
 {
     switch (fMsg) {
         case Msg::eFailedToWriteFile:
-            return Characters::Format (L"Failed to write file: %s", fFileName.Value ().c_str ());
+            return Characters::Format (L"Failed to write file: %s", ValueOrDefault (fFileName).c_str ());
         case Msg::eFailedToReadFile:
-            return Characters::Format (L"Failed to read file: %s", fFileName.Value ().c_str ());
+            return Characters::Format (L"Failed to read file: %s", ValueOrDefault (fFileName).c_str ());
         case Msg::eFailedToParseReadFile:
-            return Characters::Format (L"Error analyzing configuration file '%s' - using defaults.", fFileName.Value ().c_str ());
+            return Characters::Format (L"Error analyzing configuration file '%s' - using defaults.", ValueOrDefault (fFileName).c_str ());
         case Msg::eFailedToParseReadFileBadFormat:
-            return Characters::Format (L"Error analyzing configuration file (because bad format) '%s' - using defaults.", fFileName.Value ().c_str ());
+            return Characters::Format (L"Error analyzing configuration file (because bad format) '%s' - using defaults.", ValueOrDefault (fFileName).c_str ());
         case Msg::eFailedToCompareReadFile:
-            return Characters::Format (L"Failed to compare configuration file: %s", fFileName.Value ().c_str ());
+            return Characters::Format (L"Failed to compare configuration file: %s", ValueOrDefault (fFileName).c_str ());
         case Msg::eWritingConfigFile_SoDefaultsEditable:
-            return Characters::Format (L"Writing configuration file '%s' because not found (and so defaults are more easily seen and editable).", fFileName.Value ().c_str ());
+            return Characters::Format (L"Writing configuration file '%s' because not found (and so defaults are more easily seen and editable).", ValueOrDefault (fFileName).c_str ());
         case Msg::eWritingConfigFile_BecauseUpgraded:
-            return Characters::Format (L"Writing configuration file '%s' in a new location because the software has been upgraded.", fFileName.Value ().c_str ());
+            return Characters::Format (L"Writing configuration file '%s' in a new location because the software has been upgraded.", ValueOrDefault (fFileName).c_str ());
         case Msg::eWritingConfigFile_BecauseSomethingChanged:
-            return Characters::Format (L"Writing configuration file '%s' because something changed (e.g. a default, or field added/removed).", fFileName.Value ().c_str ());
+            return Characters::Format (L"Writing configuration file '%s' because something changed (e.g. a default, or field added/removed).", ValueOrDefault (fFileName).c_str ());
         case Msg::eFailedToWriteInUseValues:
-            return Characters::Format (L"Failed to write default (in use) values to file: %s", fFileName.Value ().c_str ());
+            return Characters::Format (L"Failed to write default (in use) values to file: %s", ValueOrDefault (fFileName).c_str ());
         default:
             RequireNotReached ();
             return String ();
