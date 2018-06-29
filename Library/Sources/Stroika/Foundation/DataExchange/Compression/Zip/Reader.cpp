@@ -144,7 +144,7 @@ namespace {
                 _fSeekOffset += pulledOut;
                 return pulledOut;
             }
-            virtual Memory::Optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
+            virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
             {
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
                 Require (IsOpenRead ());
@@ -199,7 +199,7 @@ namespace {
                 //  >> need output buffer for this API, since could pass in no argument buffer (OK to be one byte in that case)
                 while (fZStream_.avail_out == 0) {
                     if (fZStream_.avail_in == 0) {
-                        if (Memory::Optional<size_t> tmpAvail = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
+                        if (optional<size_t> tmpAvail = fInStream_.ReadNonBlocking (begin (fInBuf_), end (fInBuf_))) {
                         }
                         else {
                             return {};
@@ -253,7 +253,7 @@ namespace {
                 _fSeekOffset += pulledOut;
                 return pulledOut;
             }
-            virtual Memory::Optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
+            virtual optional<size_t> ReadNonBlocking ([[maybe_unused]] ElementType* intoStart, [[maybe_unused]] ElementType* intoEnd) override
             {
                 // https://stroika.atlassian.net/browse/STK-567 EXPERIMENTAL DRAFT API - incomplete IMPL
                 Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);

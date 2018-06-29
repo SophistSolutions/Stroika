@@ -390,8 +390,8 @@ namespace Stroika::Foundation {
              *  @see Read ()
              *  @see ReadAll ()
              */
-            nonvirtual Memory::Optional<size_t> ReadNonBlocking () const;
-            nonvirtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
+            nonvirtual optional<size_t> ReadNonBlocking () const;
+            nonvirtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const;
 
         public:
             /**
@@ -601,7 +601,7 @@ namespace Stroika::Foundation {
              *
              *  \note similar to basic_istream::readsome - http://en.cppreference.com/w/cpp/io/basic_istream/readsome
              */
-            virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) = 0;
+            virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) = 0;
 
         protected:
             /**
@@ -611,7 +611,7 @@ namespace Stroika::Foundation {
              *  The only 'hitch' is that the _IRep subtype using this must know the number of elements available, and pass that in.
              *  All that really matters is if this is 0 or 1, but best if you can pass in the actual value.
              */
-            nonvirtual Memory::Optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining);
+            nonvirtual optional<size_t> _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining);
         };
     }
 }

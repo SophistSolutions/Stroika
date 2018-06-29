@@ -182,7 +182,7 @@ namespace Stroika {
                      *
                      *  \note if intoStart == nullptr, then dont actually read, but return the number of bytes available.
                      */
-                    nonvirtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const;
+                    nonvirtual optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const;
 
                 public:
                     /**
@@ -279,7 +279,7 @@ namespace Stroika {
                     virtual ~_IRep ()                                                                                                                  = default;
                     virtual void                                 Connect (const SocketAddress& sockAddr) const                                         = 0;
                     virtual size_t                               Read (Byte* intoStart, Byte* intoEnd) const                                           = 0;
-                    virtual Memory::Optional<size_t>             ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const                                = 0;
+                    virtual optional<size_t>                     ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const                                = 0;
                     virtual void                                 Write (const Byte* start, const Byte* end) const                                      = 0;
                     virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const                                                               = 0;
                     virtual Optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                             = 0;

@@ -59,7 +59,7 @@ namespace Stroika::Foundation {
                 Require (IsOpenRead ());
                 return fRealIn_.Read (intoStart, intoEnd);
             }
-            virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 // easy todo while no real buffer implementation ;-)
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};

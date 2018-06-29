@@ -6,9 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Characters/String.h"
 #include "../../Characters/String_Constant.h"
-#include "../../Memory/Optional.h"
 #include "../../Time/Date.h"
 #include "../../Time/DateTime.h"
 #include "../../Time/Duration.h"
@@ -23,7 +24,7 @@
 *
 *       @todo   Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
 *               Maybe add optional params for some types (control enums).
-*               Support dates, and VariantValue, and Memory::Optional, etc...
+*               Support dates, and VariantValue, and optional, etc...
 */
 
 namespace Stroika {
@@ -38,7 +39,7 @@ namespace Stroika {
                 string QuoteForXMLAttribute (const string& s);
                 string QuoteForXMLAttribute (const wstring& s); // encode non-ascii characters as entity-references
                 string QuoteForXMLAttribute (const String& s);
-                string QuoteForXMLAttribute (const Memory::Optional<String>& s);
+                string QuoteForXMLAttribute (const optional<String>& s);
 
                 /*
                  */
@@ -51,7 +52,7 @@ namespace Stroika {
                 string QuoteForXML (const string& s);
                 string QuoteForXML (const wstring& s); // encode non-ascii characters as entity-references
                 string QuoteForXML (const String& s);
-                string QuoteForXML (const Memory::Optional<String>& s);
+                string QuoteForXML (const optional<String>& s);
 
                 /*
                  */

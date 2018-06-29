@@ -27,10 +27,10 @@ namespace {
     // Just like Writer::Options but without opionals... fill those in
     struct Options_ {
         Options_ (const Variant::JSON::Writer::Options& o)
-            : fFloatOptions{o.fFloatOptions.Value ()}
-            , fJSONPrettyPrint (o.fJSONPrettyPrint.Value (true))
-            , fSpacesPerIndent{o.fSpacesPerIndent.Value (4)}
-            , fAllowNANInf{o.fAllowNANInf.Value (true)}
+            : fFloatOptions{o.fFloatOptions.value_or (Characters::Float2StringOptions{})}
+            , fJSONPrettyPrint (o.fJSONPrettyPrint.value_or (true))
+            , fSpacesPerIndent{o.fSpacesPerIndent.value_or (4)}
+            , fAllowNANInf{o.fAllowNANInf.value_or (true)}
         {
             if (not fJSONPrettyPrint) {
                 fSpacesPerIndent = 0;

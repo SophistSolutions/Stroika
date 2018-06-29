@@ -801,7 +801,7 @@ namespace {
                 // read to 'in' til it reaches EOF (returns 0). But dont fully block, cuz we want to at least trickle in the stdout/stderr data
                 // even if no input is ready to send to child.
                 while (true) {
-                    if (Optional<size_t> oNBytes = in.ReadNonBlocking (begin (stdinBuf), end (stdinBuf))) {
+                    if (optional<size_t> oNBytes = in.ReadNonBlocking (begin (stdinBuf), end (stdinBuf))) {
                         Assert (*oNBytes <= NEltsOf (stdinBuf));
                         const Byte* p = begin (stdinBuf);
                         const Byte* e = p + *oNBytes;

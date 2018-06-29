@@ -25,6 +25,12 @@
  *
  *  TODO:
  *
+ *      NOTE TO SUGGEST TO C++ standards - 
+ *          Things I miss most about my Optional versus std::optional
+ *              >   Value () - what they call value_or - should take T{} as default argument. About 25% of teh time
+ *                  thats what I want, and its much more clear/terse.
+ *
+ *
  *      @todo   BIG ITEM - MOSTLY get rid of this. Maybe not totally. But std::optional is pretty good, and sensible
  *              to use in Stroika. If I can find a way to extend it compatibly (say by subclassing and object slicing)
  *              then perhaps keep using this class, but change all my API calls to reference std::optional.

@@ -94,7 +94,7 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual Memory::Optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const override
+            virtual optional<size_t> ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 Assert (fCurrentPendingReadsCount++ == 0);

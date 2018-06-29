@@ -65,7 +65,7 @@ namespace Stroika {
                     fLogInput_.Write (intoStart, intoStart + result);
                     return result;
                 }
-                virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+                virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
                 {
                     // note - in rep, intoStart==nullptr allowed, but not allowed in call to smart ptr public API
                     Require (((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1));
@@ -73,7 +73,7 @@ namespace Stroika {
                         return fRealStream_.ReadNonBlocking ();
                     }
                     else {
-                        if (Memory::Optional<size_t> result = fRealStream_.ReadNonBlocking (intoStart, intoEnd)) {
+                        if (optional<size_t> result = fRealStream_.ReadNonBlocking (intoStart, intoEnd)) {
                             fLogInput_.Write (intoStart, intoStart + *result);
                             return result;
                         }

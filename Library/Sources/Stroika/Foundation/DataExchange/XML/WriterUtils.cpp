@@ -92,7 +92,7 @@ string XML::QuoteForXMLAttribute (const String& s)
     return QuoteForXMLAttribute (s.As<wstring> ());
 }
 
-string XML::QuoteForXMLAttribute (const Memory::Optional<String>& s)
+string XML::QuoteForXMLAttribute (const optional<String>& s)
 {
     if (not s.has_value ()) {
         return string ();
@@ -204,7 +204,7 @@ string XML::QuoteForXML (const String& s)
     return QuoteForXML (s.As<wstring> ());
 }
 
-string XML::QuoteForXML (const Memory::Optional<String>& s)
+string XML::QuoteForXML (const optional<String>& s)
 {
     if (not s.has_value ()) {
         return string ();

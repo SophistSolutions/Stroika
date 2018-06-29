@@ -259,7 +259,7 @@ namespace {
                 for (auto i : r.GetHeaders ()) {
                     DbgTrace (L"%s=%s", i.fKey.c_str (), i.fValue.c_str ());
                 }
-                InternetMediaType contentType  = r.GetContentType ().Value ();
+                InternetMediaType contentType  = r.GetContentType ().value_or (InternetMediaType{});
                 String            responseText = r.GetDataTextInputStream ().ReadAll ();
                 DbgTrace (L"responseText = %s", responseText.c_str ());
                 VerifyTestResult (responseText.Contains (L"google", Characters::CompareOptions::eCaseInsensitive));

@@ -46,7 +46,7 @@ namespace Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().Read (intoStart, intoEnd);
                 }
-                inline Memory::Optional<size_t> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const
+                inline optional<size_t> ConnectionOrientedStreamSocket::Ptr::ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _ref ().ReadNonBlocking (intoStart, intoEnd);

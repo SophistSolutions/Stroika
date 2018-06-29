@@ -138,17 +138,16 @@ namespace Stroika {
                     {
 #if qDebug
                         using namespace Traversal;
-                        using Memory::Optional;
                         using BucketIndexType = typename DATA_DESCRIPTOR_TYPE::BucketIndexType;
                         using XType           = typename DATA_DESCRIPTOR_TYPE::XType;
                         auto myContext        = make_shared<BucketIndexType> (0);
                         auto bucketCount      = d.GetBucketCount ();
-                        auto getNext          = [myContext, bucketCount, d]() -> Optional<Range<XType>> {
+                        auto getNext          = [myContext, bucketCount, d]() -> optional<Range<XType>> {
                             /*
                              * Intentionally skip empty range elements, as legal in ReBin () - but which make
                              * the set not technically a partition.
                              */
-                            Optional<Range<XType>> result;
+                            optional<Range<XType>> result;
                             while (not result.has_value () and *myContext < bucketCount) {
                                 Range<XType> tmp{d.GetBucketRange (*myContext)};
                                 if (not tmp.empty ()) {

@@ -35,7 +35,7 @@
  *      @todo   consider/doc choice on explicit operator T ()
  *
  *      @todo   Consider an UpgradeLock API like:
- *              nonvirtual Memory::Optional<WritableReference> Experimental_UpgradeLock (ReadableReference* readReference)
+ *              nonvirtual optional<WritableReference> Experimental_UpgradeLock (ReadableReference* readReference)
  *              {
  *                  AssertNotImplemented ();
  *                  return WritableReference (&fProtectedValue_, &fLock_);

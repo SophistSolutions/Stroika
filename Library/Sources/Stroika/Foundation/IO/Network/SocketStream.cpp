@@ -84,11 +84,11 @@ public:
         fReadSeekOffset_ += n;
         return n;
     }
-    virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require (IsOpenRead ());
         Require (IsOpenWrite ());
-        Memory::Optional<size_t> result = fSD_.ReadNonBlocking (intoStart, intoEnd);
+        optional<size_t> result = fSD_.ReadNonBlocking (intoStart, intoEnd);
         if (result and intoStart != nullptr) {
             fReadSeekOffset_ += *result;
         }

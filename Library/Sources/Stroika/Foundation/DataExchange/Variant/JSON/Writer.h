@@ -6,6 +6,8 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../../Characters/FloatConversion.h"
 #include "../../../Configuration/Common.h"
 #include "../../../Streams/OutputStream.h"
@@ -80,16 +82,16 @@ namespace Stroika {
                              *
                              *  If false, more compact, and no leading/trailing spaces.
                              */
-                            Memory::Optional<bool> fJSONPrettyPrint;
+                            optional<bool> fJSONPrettyPrint;
 
                             /**
                              */
-                            Memory::Optional<Characters::Float2StringOptions> fFloatOptions;
+                            optional<Characters::Float2StringOptions> fFloatOptions;
 
                             /**
                              *  This defaults to 4. If fJSONPrettyPrint evaluates false, then this is ignored.
                              */
-                            Memory::Optional<unsigned int> fSpacesPerIndent;
+                            optional<unsigned int> fSpacesPerIndent;
 
                             /**
                              *  This defaults to true.
@@ -106,7 +108,7 @@ namespace Stroika {
                              *          re-read the JSON, it will be read as a string. But when you coerce that string to a floating point type, the 'INF' or whever,
                              *          will be coereced to the proper IEEE floating point type.
                              */
-                            Memory::Optional<bool> fAllowNANInf;
+                            optional<bool> fAllowNANInf;
                         };
 
                     public:

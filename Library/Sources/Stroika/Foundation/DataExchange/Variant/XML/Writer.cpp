@@ -144,7 +144,7 @@ public:
 public:
     Rep_ (const SerializationConfiguration& config)
         : fSerializationConfiguration_ (config)
-        , fDocumentElementName_ (config.GetDocumentElementName ().Value ())
+        , fDocumentElementName_ (config.GetDocumentElementName ().value_or (String{}))
     {
     }
     virtual _SharedPtrIRep Clone () const override
@@ -186,7 +186,7 @@ public:
     nonvirtual void SetConfiguration (const SerializationConfiguration& config)
     {
         fSerializationConfiguration_ = config;
-        fDocumentElementName_        = config.GetDocumentElementName ().Value ();
+        fDocumentElementName_        = config.GetDocumentElementName ().value_or (String{});
     }
 
 private:

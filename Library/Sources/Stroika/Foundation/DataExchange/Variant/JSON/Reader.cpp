@@ -3,6 +3,8 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../../Characters/FloatConversion.h"
 #include "../../../Characters/Format.h"
 #include "../../../Characters/String2Int.h"
@@ -20,7 +22,6 @@ using Characters::Character;
 using Characters::String_Constant;
 using Characters::StringBuilder;
 using Memory::Byte;
-using Memory::Optional;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -181,9 +182,9 @@ namespace {
                           eComma };
         LookingFor lf = eName;
 
-        Optional<String> curName;
+        optional<String> curName;
         while (true) {
-            Optional<Character> oNextChar = in.Read ();
+            optional<Character> oNextChar = in.Read ();
             if (not oNextChar.has_value ()) {
                 in.Seek (Streams::Whence::eFromCurrent, -1);
                 Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected EOF reading string (looking for '}')"}));
@@ -231,8 +232,8 @@ namespace {
                 else if (lf == eValue) {
                     Assert (curName.has_value ());
                     result.Add (*curName, Reader_value_ (in));
-                    curName.clear ();
-                    lf = eComma;
+                    curName = nullopt;
+                    lf      = eComma;
                 }
                 else {
                     Execution::Throw (BadFormatException (String_Constant{L"JSON: Unexpected character looking for colon or comma reading object"}));
@@ -334,7 +335,7 @@ namespace {
         //      true
         //      false
         //      null
-        for (Optional<Character> oc = in.Read (); oc; oc = in.Read ()) {
+        for (optional<Character> oc = in.Read (); oc; oc = in.Read ()) {
             switch (oc->As<wchar_t> ()) {
                 case '\"':
                     in.Seek (Streams::Whence::eFromCurrent, -1);

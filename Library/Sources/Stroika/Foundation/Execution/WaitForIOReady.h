@@ -218,7 +218,7 @@ namespace Stroika {
                  *  @see WaitUntil
                  *  @see WaitQuietlyUntil
                  */
-                nonvirtual Memory::Optional<Containers::Set<FileDescriptorType>> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
+                nonvirtual optional<Containers::Set<FileDescriptorType>> WaitQuietly (Time::DurationSecondsType waitFor = Time::kInfinite);
 
             public:
                 /*

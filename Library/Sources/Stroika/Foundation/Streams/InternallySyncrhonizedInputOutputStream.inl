@@ -60,7 +60,7 @@ namespace Stroika::Foundation {
                 Require (IsOpenRead ());
                 return BASE_REP_TYPE::Read (intoStart, intoEnd);
             }
-            virtual Memory::Optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
+            virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
             {
                 lock_guard<mutex> critSec{fCriticalSection_};
                 Require (IsOpenRead ());

@@ -24,7 +24,7 @@ namespace Stroika::Foundation {
          ********************************************************************************
          */
         template <typename ELEMENT_TYPE>
-        Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::_IRep::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining)
+        optional<size_t> InputStream<ELEMENT_TYPE>::_IRep::_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (ElementType* intoStart, ElementType* intoEnd, size_t elementsRemaining)
         {
             Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
             if (intoStart == nullptr) {
@@ -173,14 +173,14 @@ namespace Stroika::Foundation {
             return not Peek ().has_value ();
         }
         template <typename ELEMENT_TYPE>
-        inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking () const
+        inline optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking () const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             Require (IsOpen ());
             return _GetRepRWRef ().ReadNonBlocking (nullptr, nullptr);
         }
         template <typename ELEMENT_TYPE>
-        inline Memory::Optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
+        inline optional<size_t> InputStream<ELEMENT_TYPE>::Ptr::ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             RequireNotNull (intoStart);

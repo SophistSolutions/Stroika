@@ -140,7 +140,7 @@ public:
         }
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER (fFileName_, FileAccessMode::eRead);
     }
-    virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
 #if qPlatform_Windows

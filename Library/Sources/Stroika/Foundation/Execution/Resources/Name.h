@@ -6,9 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
-#include "../../Memory/Optional.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -18,7 +19,7 @@ namespace Stroika {
                 using namespace Stroika::Foundation::Characters;
                 using namespace Stroika::Foundation::Configuration;
 
-/**
+                /**
                  */
 #if qPlatform_Windows
                 // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
@@ -59,7 +60,7 @@ namespace Stroika {
                 private:
                     SDKString fName_;
 #if qPlatform_Windows
-                    Memory::Optional<int> fIntName_;
+                    optional<int> fIntName_;
 #endif
                     ResourceType fType_;
                 };

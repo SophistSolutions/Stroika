@@ -55,7 +55,7 @@ public:
             gotNOTHING,
         };
         state s = gotNOTHING;
-        while (Memory::Optional<size_t> o = ReadNonBlocking (&c, &c + 1)) {
+        while (optional<size_t> o = ReadNonBlocking (&c, &c + 1)) {
             if (*o == 0) {
                 return true; // tricky corner case - EOF in header - treat as available so we process whole header
             }
@@ -200,7 +200,7 @@ protected:
         Ensure (outN <= static_cast<size_t> (intoEnd - intoStart));
         return outN;
     }
-    virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         Require (IsOpenRead ());
@@ -209,7 +209,7 @@ protected:
         if (fOffset_ < fBufferFilledUpValidBytes_) {
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, fBufferFilledUpValidBytes_ - fOffset_);
         }
-        if (Memory::Optional<size_t> n = fSource_.ReadNonBlocking ()) {
+        if (optional<size_t> n = fSource_.ReadNonBlocking ()) {
             return _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, *n);
         }
         return {};

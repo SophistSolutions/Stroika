@@ -76,7 +76,7 @@ namespace Stroika {
              *              you must call t->m();
              *
              *  \note   C++ also only allows one level of automatic operator conversions, so things like comparing
-             *          Optional<T> {} == VirtualConstant<T,...> {} won't work. To workaround, simply
+             *          optional<T> {} == VirtualConstant<T,...> {} won't work. To workaround, simply
              *          apply () after the VirtualConstant<> instance.
              *
              *  \note   It's suggested you always declare VirtualConstants as constexpr to help assure they take up no

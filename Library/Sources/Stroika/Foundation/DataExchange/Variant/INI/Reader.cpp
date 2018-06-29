@@ -50,7 +50,7 @@ public:
         Debug::TraceContextBumper ctx ("DataExchange::INI::Reader::Rep_::Read");
 #endif
         Profile          p;
-        Optional<String> readingSection;
+        optional<String> readingSection;
         Section          currentSection;
         for (String line : in.ReadLines ()) {
             line = line.Trim ();

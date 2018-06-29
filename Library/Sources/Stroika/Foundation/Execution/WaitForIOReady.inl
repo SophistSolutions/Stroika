@@ -45,7 +45,7 @@ namespace Stroika {
             {
                 return WaitUntil (waitFor + Time::GetTickCount ());
             }
-            inline auto WaitForIOReady::WaitQuietly (Time::DurationSecondsType waitFor) -> Memory::Optional<Containers::Set<FileDescriptorType>>
+            inline auto WaitForIOReady::WaitQuietly (Time::DurationSecondsType waitFor) -> optional<Containers::Set<FileDescriptorType>>
             {
                 return WaitQuietlyUntil (waitFor + Time::GetTickCount ());
             }

@@ -10,7 +10,6 @@
 #include "../../../Configuration/Common.h"
 #include "../../../Containers/Collection.h"
 #include "../../../Containers/Mapping.h"
-#include "../../../Memory/Optional.h"
 
 #include "../../VariantValue.h"
 
@@ -28,7 +27,6 @@ namespace Stroika {
 
                     using Containers::Collection;
                     using Containers::Mapping;
-                    using Memory::Optional;
 
                     /**
                      */

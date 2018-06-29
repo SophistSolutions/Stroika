@@ -127,7 +127,7 @@ protected:
         return n;
     }
 
-    virtual Optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
+    virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
@@ -138,7 +138,7 @@ protected:
         //      o   decode and see if at least one character
         //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
         Memory::SmallStackBuffer<Byte> inBuf{10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
-        Optional<size_t>               inBytes = fSource_.ReadNonBlocking (begin (inBuf), end (inBuf));
+        optional<size_t>               inBytes = fSource_.ReadNonBlocking (begin (inBuf), end (inBuf));
         if (inBytes) {
             if (*inBytes == 0) {
                 return 0; // EOF - other than zero read bytes COULD mean unknown if EOF or not
@@ -362,7 +362,7 @@ protected:
         }
         return outI - intoStart;
     }
-    virtual Optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
+    virtual optional<size_t> ReadNonBlocking (Character* intoStart, Character* intoEnd) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);

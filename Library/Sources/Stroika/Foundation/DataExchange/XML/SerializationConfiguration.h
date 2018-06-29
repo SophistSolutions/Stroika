@@ -6,9 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
-#include "../../Memory/Optional.h"
 
 #include "Common.h"
 
@@ -28,7 +29,6 @@ namespace Stroika {
             namespace XML {
 
                 using Characters::String;
-                using Memory::Optional;
 
                 /**
                  *  @see XML::Reader, and @see XML::Writer
@@ -43,8 +43,8 @@ namespace Stroika {
                     //              Require (v.GetType () == VariantValue::eMap);
                     //
                     // If provided - must be a valid xml element name (ncname?)
-                    nonvirtual Optional<String> GetDocumentElementName () const;
-                    nonvirtual void             SetDocumentElementName (const Optional<String>& n);
+                    nonvirtual optional<String> GetDocumentElementName () const;
+                    nonvirtual void             SetDocumentElementName (const optional<String>& n);
 
                 public:
                     // NOTE - defaults to "Array"
@@ -55,8 +55,8 @@ namespace Stroika {
                     // between a single element and an array. Need some way to tell. Perhaps in the
                     // the future this can be better handled infering data from the schema.
                     // but for now - with the current implementation - this is needed.
-                    nonvirtual Optional<String> GetArrayElementName () const;
-                    nonvirtual void             SetArrayElementName (const Optional<String>& n);
+                    nonvirtual optional<String> GetArrayElementName () const;
+                    nonvirtual void             SetArrayElementName (const optional<String>& n);
 
                 private:
                     String fDocumentElementName_; // internally empty string for missing

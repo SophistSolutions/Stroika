@@ -186,7 +186,7 @@ public:
         }
         return 0; // EOF
     }
-    virtual Memory::Optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
+    virtual optional<size_t> ReadNonBlocking (ElementType* intoStart, ElementType* intoEnd) override
     {
         Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
         [[maybe_unused]] auto&& critSec = lock_guard{fCriticalSection_};
@@ -195,7 +195,7 @@ public:
         if (fOutBufStart_ == fOutBufEnd_) {
             Byte toDecryptBuf[kInBufSize_];
         Again:
-            Optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
+            optional<size_t> n2Decrypt = fRealIn_.ReadNonBlocking (begin (toDecryptBuf), end (toDecryptBuf));
             if (not n2Decrypt.has_value ()) {
                 // if no known data upstream, we cannot say if this is EOF
                 return {};
