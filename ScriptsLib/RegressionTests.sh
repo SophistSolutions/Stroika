@@ -218,11 +218,12 @@ else
 fi
 
 
+SAMPLE_APPS_2_VALGRIND="Samples-SystemPerformanceClient/SystemPerformanceClient" "Samples-Traceroute/Traceroute www.sophists.com" "Samples-WebServer/WebServer --quit-after 10" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-3240000.zip" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z"
 
 #HELGRIND ON SYSPERFORM (experimental - must find better way)
 if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
 
-	for app in "Samples-SystemPerformanceClient/SystemPerformanceClient" "Builds/Debug/Samples-Traceroute/Traceroute www.sophists.com" ; do 
+	for app in $SAMPLE_APPS_2_VALGRIND ; do 
 		echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app ..."
 		echo "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app..." >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
