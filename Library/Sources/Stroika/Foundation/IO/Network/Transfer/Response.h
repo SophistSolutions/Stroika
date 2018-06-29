@@ -109,7 +109,7 @@ namespace Stroika::Foundation {
                 public:
                     /**
                      */
-					Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo> ());
+                    Response (const BLOB& data, HTTP::Status status, const Mapping<String, String>& headers, const optional<SSLResultInfo>& sslInfo = optional<SSLResultInfo> ());
                     Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers);
                     Response (BLOB&& data, HTTP::Status status, Mapping<String, String>&& headers, const optional<SSLResultInfo>&& sslInfo);
 
@@ -130,8 +130,8 @@ namespace Stroika::Foundation {
                      *
                      *  \par Example Usage
                      *      \code
-                     *			Response r = clientConn.GET ();
-                     *			VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
+                     *          Response r = clientConn.GET ();
+                     *          VariantValue v = JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                      *      \endcode
                      */
                     nonvirtual InputStream<Byte>::Ptr GetDataBinaryInputStream () const;
@@ -145,8 +145,8 @@ namespace Stroika::Foundation {
                          *
                          *  \par Example Usage
                          *      \code
-                         *			Response r = clientConn.GET ();
-                         *			String answer = r.GetDataTextInputStream ().ReadAll ();
+                         *          Response r = clientConn.GET ();
+                         *          String answer = r.GetDataTextInputStream ().ReadAll ();
                          *      \endcode
                          */
                     nonvirtual InputStream<Characters::Character>::Ptr GetDataTextInputStream () const;
