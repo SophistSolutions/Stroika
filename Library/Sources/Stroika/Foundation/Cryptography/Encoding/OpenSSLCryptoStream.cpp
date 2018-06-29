@@ -200,7 +200,7 @@ public:
                 // if no known data upstream, we cannot say if this is EOF
                 return {};
             }
-            else if (n2Decrypt == 0) {
+            else if (n2Decrypt == 0u) {
                 size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
                 Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                 fOutBufStart_ = fOutBuf_.begin ();

@@ -236,7 +236,7 @@ WinCryptDeriveKey::WinCryptDeriveKey (Provider provider, CipherAlgorithm cipherA
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB> mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
         SmallStackBuffer<Byte> useKey{keyLen};
@@ -254,7 +254,7 @@ namespace {
     }
 }
 template <>
-EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     : DerivedKey (mkEVP_BytesToKey_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
 {
 }
@@ -265,7 +265,7 @@ EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm dig
  ********************************************************************************
  */
 namespace {
-    pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+    pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
         SmallStackBuffer<Byte> outBuf{keyLen + ivLen};
         Assert (keyLen + ivLen < size_t (numeric_limits<int>::max ())); // for static cast below
@@ -286,7 +286,7 @@ namespace {
     }
 }
 template <>
-PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const Optional<BLOB>& salt)
+PKCS5_PBKDF2_HMAC::PKCS5_PBKDF2_HMAC (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     : DerivedKey (mkPKCS5_PBKDF2_HMAC_ (keyLen, ivLen, digestAlgorithm, passwd, nRounds, salt))
 {
 }
