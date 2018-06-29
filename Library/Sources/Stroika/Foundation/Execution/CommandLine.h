@@ -11,7 +11,6 @@
 #include "../Configuration/Common.h"
 #include "../Containers/Sequence.h"
 #include "../Execution/StringException.h"
-#include "../Memory/Optional.h"
 
 namespace Stroika {
     namespace Foundation {
@@ -20,7 +19,6 @@ namespace Stroika {
             using Characters::String;
             using Containers::Iterable;
             using Containers::Sequence;
-            using Memory::Optional;
 
             /**
              */
@@ -52,7 +50,7 @@ namespace Stroika {
             /**
              *  \par Example Usage
              *      \code
-             *          Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
+             *          optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
              *          if (arg.has_value ()) {
              *              sTimeMultiplier_ = String2Float<double> (*arg);
              *          }
@@ -61,8 +59,8 @@ namespace Stroika {
              *      MyProgram.exe --x 3
              *
              */
-            Optional<String> MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern);
-            Optional<String> MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern);
+            optional<String> MatchesCommandLineArgumentWithValue (const String& actualArg, const String& matchesArgPattern);
+            optional<String> MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern);
 
             /**
              *  TODO - REFACTOR/CLEANUP/BETTER ORGNAIZE EXCEPTIONS!!!!

@@ -37,7 +37,7 @@ namespace Stroika {
             {
                 return Timezone{TZ_::eLocalTime};
             }
-            inline constexpr Memory::Optional<Timezone> Timezone::Unknown ()
+            inline constexpr optional<Timezone> Timezone::Unknown ()
             {
                 return {};
             }

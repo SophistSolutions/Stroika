@@ -95,7 +95,7 @@ Connection::Statement::Statement (Connection* db, const wchar_t* formatQuery, ..
     }
 }
 
-auto Connection::Statement::GetNextRow () -> Optional<RowType>
+auto Connection::Statement::GetNextRow () -> optional<RowType>
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     TraceContextBumper ctx ("SQLite::DB::Statement::GetNextRow");
@@ -136,7 +136,7 @@ auto Connection::Statement::GetNextRow () -> Optional<RowType>
         }
         return row;
     }
-    return Optional<RowType> ();
+    return nullopt;
 }
 
 Connection::Statement::~Statement ()

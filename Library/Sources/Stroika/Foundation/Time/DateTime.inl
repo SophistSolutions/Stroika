@@ -45,7 +45,7 @@ namespace Stroika {
                 , fTimeOfDay_ (updateTOD)
             {
             }
-            inline constexpr DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz) noexcept
+            inline constexpr DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz) noexcept
                 : fTimezone_{tz}
                 , fDate_{date}
                 , fTimeOfDay_{timeOfDay}
@@ -80,7 +80,7 @@ namespace Stroika {
             {
                 return Now ().GetDate ();
             }
-            inline constexpr Memory::Optional<Timezone> DateTime::GetTimezone () const noexcept
+            inline constexpr optional<Timezone> DateTime::GetTimezone () const noexcept
             {
                 return fTimezone_;
             }

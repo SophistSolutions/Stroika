@@ -9,12 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/ModuleInit.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Time {
-        }
+namespace Stroika::Foundation {
+    namespace Time {
     }
 }
 #endif /*_Stroika_Foundation_Time_DateRange_inl_*/

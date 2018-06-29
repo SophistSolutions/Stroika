@@ -8,7 +8,6 @@
 
 #include "../Configuration/Common.h"
 #include "../Containers/Queue.h"
-#include "../Memory/Optional.h"
 
 #include "ConditionVariable.h"
 #include "Exceptions.h"
@@ -186,7 +185,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Like RemoveHead() except that on timeout, returns empty Optional<T> instead
+                 *  Like RemoveHead() except that on timeout, returns empty optional<T> instead
                  *  of throwing.
                  *
                  *  If there is an entry at the head of the Q, return it immediately. Wait up til
@@ -196,7 +195,7 @@ namespace Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::poll () method.
                  */
-                nonvirtual Memory::Optional<T> RemoveHeadIfPossible (Time::DurationSecondsType timeout = 0);
+                nonvirtual optional<T> RemoveHeadIfPossible (Time::DurationSecondsType timeout = 0);
 
             public:
                 /**
@@ -205,7 +204,7 @@ namespace Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::peek() method.
                  */
-                nonvirtual Memory::Optional<T> PeekHead () const;
+                nonvirtual optional<T> PeekHead () const;
 
             public:
                 /**

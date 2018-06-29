@@ -526,7 +526,7 @@ namespace {
                          */
                         processDetails.fKernelProcess = not processDetails.fEXEPath.has_value ();
                         // Note - many kernel processes have commandline, so dont filter here based on that
-                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
+                        if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
                             processDetails.fCommandLine = ReadCmdLineString_ (processDirPath + kCmdLineFilename_);
                         }
                         // kernel process cannot chroot (as far as I know) --LGP 2015-05-21
@@ -597,7 +597,7 @@ namespace {
                         processDetails.fPrivateBytes = ReadPrivateBytes_ (processDirPath + L"smaps");
 
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-                        DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", processDetails.fProcessStartedAt.Value ().Format ().c_str (), stats.start_time);
+                        DbgTrace (L"loaded processDetails.fProcessStartedAt=%s wuit stats.start_time = %lld", ValueOrDefault (processDetails.fProcessStartedAt).Format ().c_str (), stats.start_time);
                         DbgTrace (L"loaded processDetails.fTotalCPUTimeEverUsed=%f wuit stats.utime = %lld, stats.stime = %lld", (*processDetails.fTotalCPUTimeEverUsed), stats.utime, stats.stime);
 #endif
                     }
@@ -1238,7 +1238,7 @@ namespace {
                         processDetails.fEXEPath = t[0];
                     }
                 }
-                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, processDetails.fEXEPath.Value ())) {
+                if (fOptions_.fCaptureCommandLine and fOptions_.fCaptureCommandLine (pid, ValueOrDefault (processDetails.fEXEPath))) {
                     processDetails.fCommandLine = cmdLine;
                 }
                 result.Add (pid, processDetails);
@@ -1652,7 +1652,7 @@ namespace {
                 }
             }
             if (cmdLine != nullptr) {
-                if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, processEXEPath->Value ())) {
+                if (fOptions_.fCaptureCommandLine == nullptr or not fOptions_.fCaptureCommandLine (pid, ValueOrDefault (*processEXEPath))) {
                     cmdLine = nullptr;
                 }
             }

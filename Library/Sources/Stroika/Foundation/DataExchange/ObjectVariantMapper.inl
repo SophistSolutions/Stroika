@@ -30,7 +30,7 @@ namespace Stroika::Foundation {
          ********************** ObjectVariantMapper::StructFieldInfo ********************
          ********************************************************************************
          */
-        inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
+        inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
             : fFieldMetaInfo (fieldMetaInfo)
             , fSerializedFieldName (serializedFieldName)
             , fOverrideTypeMapper (overrideTypeMapper)
@@ -47,7 +47,7 @@ namespace Stroika::Foundation {
         {
         }
         template <int SZ>
-        inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
+        inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
             : StructFieldInfo (Characters::String_Constant{serializedFieldName}, fieldMetaInfo, overrideTypeMapper, nullFields)
         {
         }
@@ -115,7 +115,7 @@ namespace Stroika::Foundation {
         {
             src.Apply ([this](const TypeMappingDetails& t) { fSerializers.Add (t.fForType, t); });
         }
-        inline Memory::Optional<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::Lookup (type_index t) const
+        inline optional<ObjectVariantMapper::TypeMappingDetails> ObjectVariantMapper::TypesRegistry::Lookup (type_index t) const
         {
             return fSerializers.Lookup (t);
         }
@@ -724,7 +724,7 @@ namespace Stroika::Foundation {
                 }
                 Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
                 for (auto i : fields) {
-                    Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
+                    optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.has_value ());
 #endif
@@ -738,7 +738,7 @@ namespace Stroika::Foundation {
             return TypeMappingDetails{forTypeInfo, fromObjectMapper, toObjectMapper};
         }
         template <typename CLASS, typename BASE_CLASS>
-        ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const
+        ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, [[maybe_unused]] size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo) const
         {
 #if qDebug
             for (auto i : fields) {
@@ -805,7 +805,7 @@ namespace Stroika::Foundation {
                 }
                 Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
                 for (auto i : fields) {
-                    Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
+                    optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.has_value ());
 #endif

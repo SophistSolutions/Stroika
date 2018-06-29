@@ -143,15 +143,15 @@ bool Execution::MatchesCommandLineArgument (const Iterable<String>& argList, con
     return static_cast<bool> (argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); }));
 }
 
-Optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]] const String& actualArg, [[maybe_unused]] const String& matchesArgPattern)
+optional<String> Execution::MatchesCommandLineArgumentWithValue ([[maybe_unused]] const String& actualArg, [[maybe_unused]] const String& matchesArgPattern)
 {
     Require (matchesArgPattern.GetLength () > 0 and matchesArgPattern[matchesArgPattern.GetLength () - 1] == '=');
     AssertNotImplemented ();
     // must first strip everything after the '=' in the actualarg, and then similar to first overload...
-    return Optional<String> ();
+    return nullopt;
 }
 
-Optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
+optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<String>& argList, const String& matchesArgPattern)
 {
     auto i = argList.FindFirstThat ([matchesArgPattern](String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
     if (i != argList.end ()) {
@@ -160,8 +160,8 @@ Optional<String> Execution::MatchesCommandLineArgumentWithValue (const Iterable<
             Execution::Throw (InvalidCommandLineArgument ());
         }
         else {
-            return Optional<String> (*i);
+            return optional<String> (*i);
         }
     }
-    return Optional<String> ();
+    return nullopt;
 }

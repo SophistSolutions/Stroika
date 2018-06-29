@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #if qHasFeature_sqlite
 #include <sqlite/sqlite3.h>
 #endif
@@ -16,7 +18,6 @@
 #include "../DataExchange/VariantValue.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 #include "../IO/Network/URL.h"
-#include "../Memory/Optional.h"
 
 /**
  *  \file
@@ -41,7 +42,6 @@ namespace Stroika {
                 using Containers::Sequence;
                 using DataExchange::VariantValue;
                 using IO::Network::URL;
-                using Memory::Optional;
 
                 /**
                  *  @todo - probably move to common area - for all DB stuff - not specific to SQLite (maybe have folder for "SQL")
@@ -137,7 +137,7 @@ namespace Stroika {
                     /**
                      * returns 'missing' on EOF, exception on error
                      */
-                    nonvirtual Optional<RowType> GetNextRow ();
+                    nonvirtual optional<RowType> GetNextRow ();
 
                 private:
                     lock_guard<const AssertExternallySynchronizedLock> fConnectionCritSec_;

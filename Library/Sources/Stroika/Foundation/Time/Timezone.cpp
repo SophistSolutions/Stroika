@@ -74,11 +74,11 @@ namespace {
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 const Timezone                   Timezone::kLocalTime{Timezone::LocalTime ()};
 const Timezone                   Timezone::kUTC{Timezone::UTC ()};
-const Memory::Optional<Timezone> Timezone::kUnknown{Timezone::Unknown ()};
+const optional<Timezone>         Timezone::kUnknown{Timezone::Unknown ()};
 #else
 constexpr Timezone                   Timezone::kLocalTime;
 constexpr Timezone                   Timezone::kUTC;
-constexpr Memory::Optional<Timezone> Timezone::kUnknown;
+constexpr optional<Timezone>         Timezone::kUnknown;
 #endif
 
 Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
@@ -96,7 +96,7 @@ Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const 
     }
 }
 
-Memory::Optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
+optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
 {
     // @todo - fix for other (not fixed) timezones - like America/NewYork
     if (fTZ_ == TZ_::eLocalTime) {

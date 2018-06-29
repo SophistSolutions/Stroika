@@ -641,7 +641,7 @@ namespace Stroika::Foundation {
             template <typename CLASS>
             nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject) const;
             template <typename CLASS, typename BASE_CLASS>
-            nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const Memory::Optional<type_index>& baseClassTypeInfo) const;
+            nonvirtual TypeMappingDetails MakeCommonSerializer_ForClassObject_ (const type_index& forTypeInfo, size_t n, const Traversal::Iterable<StructFieldInfo>& fields, const function<void(VariantValue*)>& preflightBeforeToObject, const optional<type_index>& baseClassTypeInfo) const;
 
         private:
             nonvirtual TypeMappingDetails Lookup_ (const type_index& forTypeInfo) const;
@@ -655,7 +655,7 @@ namespace Stroika::Foundation {
                 TypesRegistry (const Set<TypeMappingDetails>& src);
 
             public:
-                nonvirtual Memory::Optional<TypeMappingDetails> Lookup (type_index t) const;
+                nonvirtual optional<TypeMappingDetails> Lookup (type_index t) const;
 
             public:
                 nonvirtual void Add (const TypeMappingDetails& typeMapDetails);
@@ -719,12 +719,12 @@ namespace Stroika::Foundation {
              *  \note   - the serializedFieldName parameter to the template (const wchar_t) overload of StructFieldInfo must be an array
              *          with application lifetime (that is static C++ constant). This is to make the common case slightly more efficient.
              */
-            StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+            StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
             StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
             template <int SZ>
             StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, NullFieldHandling nullFields);
             template <int SZ>
-            StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
+            StructFieldInfo (const wchar_t (&serializedFieldName)[SZ], const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper = {}, NullFieldHandling nullFields = NullFieldHandling::eInclude);
         };
 
         template <>

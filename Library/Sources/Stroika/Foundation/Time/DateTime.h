@@ -126,7 +126,7 @@ namespace Stroika {
                  *  explicit DateTime (time_t unixEpochTime) noexcept
                  *      Creates a DateTime object in UTC, using UNIX Epoch time.
                  *
-                 *  explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::UTC ()) noexcept;
+                 *  explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::UTC ()) noexcept;
                  *      Most windows APIs return filetimes in UTC (or so it appears). Because of this,
                  *      our default interpretation of a FILETIME structure as as UTC.
                  *      Call DateTime (ft).AsLocalTime () to get the value returned in local time.
@@ -141,15 +141,15 @@ namespace Stroika {
                 constexpr DateTime (const Date& d) noexcept;
                 constexpr DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 constexpr DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
-                constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+                constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
                 explicit DateTime (time_t unixEpochTime) noexcept;
-                explicit DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+                explicit DateTime (const tm& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
 #if qPlatform_POSIX
-                explicit DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
-                explicit DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+                explicit DateTime (const timeval& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
+                explicit DateTime (const timespec& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
 #elif qPlatform_Windows
-                explicit DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz = Timezone::LocalTime ()) noexcept;
-                explicit DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz = Timezone::UTC ()) noexcept;
+                explicit DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz = Timezone::LocalTime ()) noexcept;
+                explicit DateTime (const FILETIME& fileTime, const optional<Timezone>& tz = Timezone::UTC ()) noexcept;
 #endif
 
             public:
@@ -252,7 +252,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual constexpr Memory::Optional<Timezone> GetTimezone () const noexcept;
+                nonvirtual constexpr optional<Timezone> GetTimezone () const noexcept;
 
             public:
                 /** 
@@ -301,7 +301,7 @@ namespace Stroika {
                 /**
                  *  return true if known true, and false if known false, and {} otherwise.
                  */
-                nonvirtual Memory::Optional<bool> IsDaylightSavingsTime () const;
+                nonvirtual optional<bool> IsDaylightSavingsTime () const;
 
             public:
                 /**
@@ -445,7 +445,7 @@ namespace Stroika {
                 nonvirtual int Compare (const DateTime& rhs) const;
 
             private:
-                Memory::Optional<Timezone> fTimezone_;
+                optional<Timezone>         fTimezone_;
                 Date                       fDate_;
                 TimeOfDay                  fTimeOfDay_;
             };

@@ -11,7 +11,6 @@
 #include <locale>
 
 #include "../Configuration/Common.h"
-#include "../Memory/Optional.h"
 
 #include "String.h"
 

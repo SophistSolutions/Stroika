@@ -57,9 +57,9 @@ namespace Stroika {
              */
             struct TimeZoneInformationType {
                 struct Details {
-                    Memory::Optional<String> fName;
-                    Memory::Optional<String> fAbbreviation;
-                    Memory::Optional<int>    fBiasInMinutesFromUTC; // UTC + bias => local time, so for example, EDT this is -300 (aka -5 hrs)
+                    optional<String>         fName;
+                    optional<String>      fAbbreviation;
+                    optional<int>            fBiasInMinutesFromUTC; // UTC + bias => local time, so for example, EDT this is -300 (aka -5 hrs)
                 };
                 Details fStandardTime;
                 Details fDaylightSavingsTime;
@@ -69,7 +69,7 @@ namespace Stroika {
                  *
                  *  It is OFTEN not available (on older OSes).
                  */
-                Memory::Optional<String> fID;
+                optional<String> fID;
             };
 
             /**
@@ -136,7 +136,7 @@ namespace Stroika {
                  *
                  *  \note see https://stroika.atlassian.net/browse/STK-635 for static constexpr data member kMin/kMax issue
                  */
-                static constexpr Memory::Optional<Timezone> Unknown ();
+                static constexpr optional<Timezone> Unknown ();
 
             public:
                 /**
@@ -170,7 +170,7 @@ namespace Stroika {
                  *        BUT - this is trickier than the others cuz its not even Timezone but a type derived from it. Could be nice if it
                  *        worked!
                  */
-                static const Memory::Optional<Timezone> kUnknown;
+                static const optional<Timezone> kUnknown;
 
             public:
                 /**
@@ -192,7 +192,7 @@ namespace Stroika {
                 /**
                  *  For some kinds of timezones, there is no way to know (e.g. +4:00), but return true if known true, and false if known false.
                  */
-                nonvirtual Memory::Optional<bool> IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
+                nonvirtual optional<bool> IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
 
             public:
                 /**

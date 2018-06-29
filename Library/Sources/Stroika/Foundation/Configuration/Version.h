@@ -117,7 +117,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Optional<T, TRAITS>& rhs)
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Version& rhs)
                  */
                 nonvirtual constexpr bool operator< (const Version& rhs) const;
                 nonvirtual constexpr bool operator<= (const Version& rhs) const;

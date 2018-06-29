@@ -175,7 +175,7 @@ DateTime::DateTime (time_t unixEpochTime) noexcept
     fTimeOfDay_ = TimeOfDay (tmTime.tm_sec + (tmTime.tm_min * 60) + (tmTime.tm_hour * 60 * 60));
 }
 
-DateTime::DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz) noexcept
+DateTime::DateTime (const tm& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
     , fDate_ (Year (tmTime.tm_year + 1900), MonthOfYear (tmTime.tm_mon + 1), DayOfMonth (tmTime.tm_mday))
     , fTimeOfDay_ ((tmTime.tm_hour * 60 + tmTime.tm_min) * 60 + tmTime.tm_sec)
@@ -183,7 +183,7 @@ DateTime::DateTime (const tm& tmTime, const Memory::Optional<Timezone>& tz) noex
 }
 
 #if qPlatform_POSIX
-DateTime::DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz) noexcept
+DateTime::DateTime (const timeval& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
     , fDate_ ()
     , fTimeOfDay_ ()
@@ -196,7 +196,7 @@ DateTime::DateTime (const timeval& tmTime, const Memory::Optional<Timezone>& tz)
     fTimeOfDay_ = TimeOfDay (tmTimeData.tm_sec + (tmTimeData.tm_min * 60) + (tmTimeData.tm_hour * 60 * 60));
 }
 
-DateTime::DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz) noexcept
+DateTime::DateTime (const timespec& tmTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
     , fDate_ ()
     , fTimeOfDay_ ()
@@ -210,14 +210,14 @@ DateTime::DateTime (const timespec& tmTime, const Memory::Optional<Timezone>& tz
 }
 #endif
 #if qPlatform_Windows
-DateTime::DateTime (const SYSTEMTIME& sysTime, const Memory::Optional<Timezone>& tz) noexcept
+DateTime::DateTime (const SYSTEMTIME& sysTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
     , fDate_ (mkDate_ (sysTime))
     , fTimeOfDay_ (mkTimeOfDay_ (sysTime))
 {
 }
 
-DateTime::DateTime (const FILETIME& fileTime, const Memory::Optional<Timezone>& tz) noexcept
+DateTime::DateTime (const FILETIME& fileTime, const optional<Timezone>& tz) noexcept
     : fTimezone_ (tz)
     , fDate_ ()
     , fTimeOfDay_ ()
@@ -412,7 +412,7 @@ DateTime DateTime::FromTickCount (DurationSecondsType tickCount)
     return GetTimeZeroOffset_ ().AddSeconds (Math::Round<int64_t> (tickCount));
 }
 
-Memory::Optional<bool> DateTime::IsDaylightSavingsTime () const
+optional<bool> DateTime::IsDaylightSavingsTime () const
 {
     if (Optional<Timezone> otz = GetTimezone ()) {
         return otz->IsDaylightSavingsTime (GetDate (), GetTimeOfDay ());

@@ -123,7 +123,7 @@ namespace Stroika::Foundation {
          *
          *      DiskSpaceUsageType LookupDiskStats (String diskName)
          *      {
-         *          Optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
+         *          optional<DiskSpaceUsageType>    o   =   sDiskUsageCache_.Lookup (diskName);
          *          if (not o.has_value ()) {
          *              o = LookupDiskStats_ ();
          *              sDiskUsageCache_.Add (diskName, *o);
@@ -189,7 +189,7 @@ namespace Stroika::Foundation {
          *      shared_ptr<FolderDetails_> AccessFolder_ (const ScanFolderKey_& folder) const
          *      {
          *           auto lockedCache = sCachedScanFoldersDetails_.rwget ();
-         *           if (Optional<FolderDetails_> o  = lockedCache->Lookup (folder)) {
+         *           if (optional<FolderDetails_> o  = lockedCache->Lookup (folder)) {
          *                  return *o;
          *           }
          *           else {

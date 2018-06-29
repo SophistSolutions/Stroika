@@ -61,7 +61,7 @@ namespace Stroika {
                 Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
                 while (true) {
                     typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex};
-                    if (Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ()) {
+                    if (optional<T> tmp = fQueue_.RemoveHeadIf ()) {
                         // Only notify_all() on additions
                         return *tmp;
                     }
@@ -73,12 +73,12 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            Memory::Optional<T> BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
+            optional<T> BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
             {
                 Time::DurationSecondsType waitTil = Time::GetTickCount () + timeout;
                 while (true) {
                     typename ConditionVariable<>::LockType waitableLock{fCondtionVariable_.fMutex};
-                    if (Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ()) {
+                    if (optional<T> tmp = fQueue_.RemoveHeadIf ()) {
                         return tmp;
                     }
                     if (fEndOfInput_) {
@@ -91,7 +91,7 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            inline Memory::Optional<T> BlockingQueue<T>::PeekHead () const
+            inline optional<T> BlockingQueue<T>::PeekHead () const
             {
                 typename ConditionVariable<>::QuickLockType critSection{fCondtionVariable_.fMutex};
                 return fQueue_.HeadIf ();
