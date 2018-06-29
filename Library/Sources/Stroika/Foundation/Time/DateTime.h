@@ -445,9 +445,9 @@ namespace Stroika {
                 nonvirtual int Compare (const DateTime& rhs) const;
 
             private:
-                optional<Timezone>         fTimezone_;
-                Date                       fDate_;
-                TimeOfDay                  fTimeOfDay_;
+                optional<Timezone> fTimezone_;
+                Date               fDate_;
+                TimeOfDay          fTimeOfDay_;
             };
             template <>
             time_t DateTime::As () const;

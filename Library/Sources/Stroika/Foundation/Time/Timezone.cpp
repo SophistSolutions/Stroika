@@ -72,13 +72,13 @@ namespace {
  ********************************************************************************
  */
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
-const Timezone                   Timezone::kLocalTime{Timezone::LocalTime ()};
-const Timezone                   Timezone::kUTC{Timezone::UTC ()};
-const optional<Timezone>         Timezone::kUnknown{Timezone::Unknown ()};
+const Timezone           Timezone::kLocalTime{Timezone::LocalTime ()};
+const Timezone           Timezone::kUTC{Timezone::UTC ()};
+const optional<Timezone> Timezone::kUnknown{Timezone::Unknown ()};
 #else
-constexpr Timezone                   Timezone::kLocalTime;
-constexpr Timezone                   Timezone::kUTC;
-constexpr optional<Timezone>         Timezone::kUnknown;
+constexpr Timezone           Timezone::kLocalTime;
+constexpr Timezone           Timezone::kUTC;
+constexpr optional<Timezone> Timezone::kUnknown;
 #endif
 
 Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const Date& date, const TimeOfDay& tod) const
