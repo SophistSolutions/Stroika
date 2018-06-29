@@ -9,21 +9,17 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/ModuleInit.h"
+namespace Stroika::Foundation {
+    namespace DataExchange {
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-
-            /*
-             ********************************************************************************
-             ************************** InternetMediaTypeRegistry ***************************
-             ********************************************************************************
-             */
-            inline const InternetMediaTypeRegistry InternetMediaTypeRegistry::Default ()
-            {
-                return InternetMediaTypeRegistry{};
-            }
+        /*
+         ********************************************************************************
+         ************************** InternetMediaTypeRegistry ***************************
+         ********************************************************************************
+         */
+        inline const InternetMediaTypeRegistry InternetMediaTypeRegistry::Default ()
+        {
+            return InternetMediaTypeRegistry{};
         }
     }
 }

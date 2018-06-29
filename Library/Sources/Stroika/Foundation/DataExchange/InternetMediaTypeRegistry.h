@@ -6,74 +6,72 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../Characters/String.h"
 
 #include "InternetMediaType.h"
 
 /**
- * TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
+namespace Stroika::Foundation {
+    namespace DataExchange {
 
-            using Characters::String;
-            using Containers::Sequence;
-            using Memory::Optional;
+        using Characters::String;
+        using Containers::Sequence;
 
-            /**
-             *  This leverages the os-dependent mime/databases
+        /**
+         *  This leverages the os-dependent mime/databases
+         *
+         *  @todo maybe virtualize interface and provide other implementations (which is why we have Default () API).
+         *        and much more - see https://stroika.atlassian.net/browse/STK-576
+         *
+         */
+        class InternetMediaTypeRegistry {
+        private:
+            InternetMediaTypeRegistry () = default;
+
+        public:
+            /*
+             *  Return the default, OS-provided MIME InternetMediaType registry.
              *
-             *  @todo maybe virtualize interface and provide other implementations (which is why we have Default () API).
-             *        and much more - see https://stroika.atlassian.net/browse/STK-576
+             *  On Windows, this uses:
+             *      HKEY_CLASSES_ROOT\MIME\Database\Content Type
+             *
+             *  On Linux, this uses:
+             *      /usr/share/mime files
              *
              */
-            class InternetMediaTypeRegistry {
-            private:
-                InternetMediaTypeRegistry () = default;
+            static const InternetMediaTypeRegistry Default ();
 
-            public:
-                /*
-                 *  Return the default, OS-provided MIME InternetMediaType registry.
-                 *
-                 *  On Windows, this uses:
-                 *      HKEY_CLASSES_ROOT\MIME\Database\Content Type
-                 *
-                 *  On Linux, this uses:
-                 *      /usr/share/mime files
-                 *
-                 */
-                static const InternetMediaTypeRegistry Default ();
+        public:
+            /**
+             *  file suffix includes the dot
+             */
+            using FileSuffixType = String;
 
-            public:
-                /**
-                 *  file suffix includes the dot
+        public:
+            /**
                  */
-                using FileSuffixType = String;
+            nonvirtual optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const;
 
-            public:
-                /**
-                 */
-                nonvirtual Optional<FileSuffixType> GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const;
+        public:
+            /**
+             */
+            nonvirtual Sequence<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct, bool includeMoreGeneralTypes = true) const;
 
-            public:
-                /**
-                 */
-                nonvirtual Sequence<FileSuffixType> GetAssociatedFileSuffixes (const InternetMediaType& ct, bool includeMoreGeneralTypes = true) const;
+        public:
+            /**
+             */
+            nonvirtual optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const;
 
-            public:
-                /**
-                 */
-                nonvirtual Optional<String> GetAssociatedPrettyName (const InternetMediaType& ct) const;
-
-            public:
-                /**
-                 * return empty string if not found
-                 */
-                nonvirtual Optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const;
-            };
-        }
+        public:
+            /**
+             * return empty string if not found
+             */
+            nonvirtual optional<InternetMediaType> GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const;
+        };
     }
 }
 

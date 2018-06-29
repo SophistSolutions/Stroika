@@ -25,19 +25,19 @@ using namespace Stroika::Foundation::Memory;
  ******************************* Transfer::Response *****************************
  ********************************************************************************
  */
-Optional<InternetMediaType> Response::GetContentType () const
+optional<InternetMediaType> Response::GetContentType () const
 {
-    if (Optional<String> i = fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType))) {
+    if (optional<String> i = fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType))) {
         return InternetMediaType{*i};
     }
     return {};
 }
 
-Optional<String> Response::GetCharset () const
+optional<String> Response::GetCharset () const
 {
-    if (Optional<String> hi = fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType))) {
+    if (optional<String> hi = fHeaders_.Lookup (String_Constant (HTTP::HeaderName::kContentType))) {
         static const String_Constant kLBL_{L"; charset="};
-        if (Optional<size_t> oi = hi->Find (kLBL_)) {
+        if (optional<size_t> oi = hi->Find (kLBL_)) {
             return hi->SubString (*oi + kLBL_.size ());
         }
     }

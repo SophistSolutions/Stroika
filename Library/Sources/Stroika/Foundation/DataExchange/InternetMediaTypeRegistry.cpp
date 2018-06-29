@@ -192,7 +192,7 @@ namespace {
     private:
         HKEY fKey;
     };
-    Optional<String> GrabRegistryStringValue_ (HKEY parentKey, const String& path)
+    optional<String> GrabRegistryStringValue_ (HKEY parentKey, const String& path)
     {
         try {
             String eltPath = path;
@@ -223,7 +223,7 @@ namespace {
  ********************************************************************************
  */
 
-Optional<FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
+optional<FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
 {
 #if qPlatform_Windows
     return GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"MIME\\Database\\Content Type\\%s\\Extension", ct.As<String> ().c_str ()));
@@ -248,11 +248,11 @@ Sequence<String> InternetMediaTypeRegistry::GetAssociatedFileSuffixes (const Int
 #endif
 }
 
-Optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const InternetMediaType& ct) const
+optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const InternetMediaType& ct) const
 {
 #if qPlatform_Windows
-    if (Optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
-        if (Optional<String> fileTypeID = GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, *fileSuffix)) {
+    if (optional<FileSuffixType> fileSuffix = GetPreferredAssociatedFileSuffix (ct)) {
+        if (optional<String> fileTypeID = GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, *fileSuffix)) {
             return GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, *fileTypeID);
         }
     }
@@ -262,13 +262,13 @@ Optional<String> InternetMediaTypeRegistry::GetAssociatedPrettyName (const Inter
     return {};
 }
 
-Optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const
+optional<InternetMediaType> InternetMediaTypeRegistry::GetAssociatedContentType (const FileSuffixType& fileNameOrSuffix) const
 {
     FileSuffixType suffix = IO::FileSystem::GetFileSuffix (fileNameOrSuffix);
 #if qPlatform_Linux
     return GetGlobsFile_ ().Lookup (suffix);
 #elif qPlatform_Windows
-    if (Optional<String> oct = GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"%s\\Content Type", suffix.c_str ()))) {
+    if (optional<String> oct = GrabRegistryStringValue_ (HKEY_CLASSES_ROOT, Characters::Format (L"%s\\Content Type", suffix.c_str ()))) {
         return InternetMediaType{*oct};
     }
 #else
