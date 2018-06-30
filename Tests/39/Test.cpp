@@ -251,7 +251,7 @@ namespace {
                                 }
                             }
                             else {
-                                prevValue.clear ();
+                                prevValue = nullopt;
                             }
                         }
                     }
