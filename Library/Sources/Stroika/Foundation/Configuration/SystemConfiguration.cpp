@@ -397,9 +397,9 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
 
                 // ends each socket
                 if (currentProcessorID) {
-                    String useModelName = foundProcessor.Value ();
+                    String useModelName = ValueOrDefault (foundProcessor);
                     currentModelName.CopyToIf (&useModelName); // currentModelName takes precedence but I doubt both present
-                    result.fCores.Append (CPU::CoreDetails{currentSocketID.Value (), useModelName});
+                    result.fCores.Append (CPU::CoreDetails{ValueOrDefault (currentSocketID), useModelName});
                 }
                 // intentionally dont clear foundProcessor cuz occurs once it appears
                 currentProcessorID = nullopt;
@@ -408,9 +408,9 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
             }
         }
         if (currentProcessorID) {
-            String useModelName = foundProcessor.Value ();
+            String useModelName = ValueOrDefault (foundProcessor);
             Memory::CopyToIf (currentModelName, &useModelName);     // currentModelName takes precedence but I doubt both present
-            result.fCores.Append (CPU::CoreDetails{currentSocketID.Value (), useModelName});
+            result.fCores.Append (CPU::CoreDetails{ValueOrDefault (currentSocketID), useModelName});
         }
     }
 #elif qPlatform_Windows
