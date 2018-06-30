@@ -175,7 +175,7 @@ namespace {
             Optional<Color> lastItemHit;
             DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit](Color i) {
                 nItemsHit++;
-                VerifyTestResult not lastItemHit.has_value () or *lastItemHit < i);
+                VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
             });
             VerifyTestResult (nItemsHit == 3);
