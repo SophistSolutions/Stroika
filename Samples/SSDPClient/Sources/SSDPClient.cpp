@@ -60,7 +60,7 @@ namespace {
             lock_guard<mutex> critSection (kStdOutMutex_);
             cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
-            if (d.fAlive.IsPresent ()) {
+            if (d.fAlive.has_value ()) {
                 cout << "\t\tAlive:    " << (*d.fAlive ? "true" : "false") << endl;
             }
             cout << "\t\tST:       " << d.fTarget.AsUTF8 () << endl;
@@ -119,7 +119,7 @@ int main (int argc, const char* argv[])
             }
         }
     }
-    if (not listen and searchFor.IsMissing ()) {
+    if (not listen and not searchFor.has_value ()) {
         cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
         cerr << "   e.g. SSDPClient -l" << endl;
         cerr << "   e.g. SSDPClient -s \"upnp:rootdevice\"" << endl;
@@ -132,11 +132,11 @@ int main (int argc, const char* argv[])
             DoListening_ (&l);
         }
         Search s;
-        if (searchFor.IsPresent ()) {
+        if (searchFor.has_value ()) {
             DoSearching_ (&s, *searchFor);
         }
 
-        if (listen or searchFor.IsPresent ()) {
+        if (listen or searchFor.has_value ()) {
             Execution::WaitableEvent{}.Wait (); // wait forever - til user hits ctrl-c
         }
         else {

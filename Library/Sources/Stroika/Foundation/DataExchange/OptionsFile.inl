@@ -22,9 +22,9 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            Optional<T> OptionsFile::Read ()
+            optional<T> OptionsFile::Read ()
             {
-                Optional<VariantValue> tmp = Read<VariantValue> ();
+                optional<VariantValue> tmp = Read<VariantValue> ();
                 if (not tmp.has_value ()) {
                     return {};
                 }
@@ -33,20 +33,20 @@ namespace Stroika {
                 }
                 catch (const BadFormatException& /*bf*/) {
                     fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToParseReadFileBadFormat, GetReadFilePath_ ()));
-                    return Optional<T> ();
+                    return nullopt;
                 }
                 catch (...) {
                     // if this fails, its probably because somehow the data in the config file was bad.
                     // So at least log that, and continue without reading anything (as if empty file)
                     fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToParseReadFile, GetReadFilePath_ ()));
-                    return Optional<T> ();
+                    return nullopt;
                 }
             }
             template <typename T>
             T OptionsFile::Read (const T& defaultObj, ReadFlags readFlags)
             {
-                Optional<T> eltRead = Read<T> ();
-                Optional<T> elt2Write; // only if needed
+                optional<T> eltRead = Read<T> ();
+                optional<T> elt2Write; // only if needed
 
                 LoggerMessage::Msg msgAugment = LoggerMessage::Msg::eWritingConfigFile_SoDefaultsEditable;
                 if (not eltRead.has_value ()) {
@@ -88,7 +88,7 @@ namespace Stroika {
                         }
                     }
                 }
-                if (elt2Write.IsPresent ()) {
+                if (elt2Write.has_value ()) {
                     fLogger_ (LoggerMessage (msgAugment, GetWriteFilePath_ ()));
                     try {
                         Write (*elt2Write);
@@ -98,7 +98,7 @@ namespace Stroika {
                     }
                     return *elt2Write;
                 }
-                else if (eltRead.IsPresent ()) {
+                else if (eltRead.has_value ()) {
                     return *eltRead;
                 }
                 else {

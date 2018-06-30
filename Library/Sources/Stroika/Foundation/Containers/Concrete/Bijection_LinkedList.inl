@@ -172,7 +172,7 @@ namespace Stroika {
                             }
                         }
                         if (item != nullptr) {
-                            item->clear ();
+                            *item = nullopt;
                         }
                         return false;
                     }
@@ -188,7 +188,7 @@ namespace Stroika {
                             }
                         }
                         if (item != nullptr) {
-                            item->clear ();
+                            *item = nullopt;
                         }
                         return false;
                     }

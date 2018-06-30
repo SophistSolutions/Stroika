@@ -6,10 +6,11 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Collection.h"
-#include "../../Memory/Optional.h"
 
 /**
  *  \file
@@ -25,88 +26,85 @@
  *              iterate_block_devices
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation {
+    namespace IO {
+        namespace FileSystem {
 
-                using Characters::String;
-                using Memory::Optional;
+            using Characters::String;
+
+            /**
+             *  \note   Configuration::DefaultNames<> supported
+             *  \note   These print names are mostly for display and debugging purposes, and they are not guaranteed to be safe for
+             *          persistence (so be sure to version).
+             */
+            enum BlockDeviceKind {
+                /**
+                 *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
+                 *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOVABLE
+                 */
+                eRemovableDisk,
 
                 /**
-                 *  \note   Configuration::DefaultNames<> supported
-                 *  \note   These print names are mostly for display and debugging purposes, and they are not guaranteed to be safe for
-                 *          persistence (so be sure to version).
+                 *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Local Disk" or
+                 *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_FIXED
                  */
-                enum BlockDeviceKind {
-                    /**
-                     *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Removable Disk" or
-                     *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOVABLE
-                     */
-                    eRemovableDisk,
-
-                    /**
-                     *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Local Disk" or
-                     *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_FIXED
-                     */
-                    eLocalDisk,
-
-                    /**
-                     *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Network Drive" or
-                     *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOTE
-                     */
-                    eNetworkDrive,
-
-                    /**
-                     *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "RAM Disk" or
-                     *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_RAMDISK
-                     *  On Linux, this is tmpfs
-                     */
-                    eTemporaryFiles,
-
-                    /**
-                     *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Compact Disc" or
-                     *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_CDROM
-                     */
-                    eReadOnlyEjectable,
-
-                    /**
-                     *  e.g. Linux procfs
-                     */
-                    eSystemInformation,
-
-                    Stroika_Define_Enum_Bounds (eRemovableDisk, eSystemInformation)
-                };
+                eLocalDisk,
 
                 /**
-                 *  Information for a physical disk (not for a partition).
+                 *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Network Drive" or
+                 *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_REMOTE
                  */
-                struct DiskInfoType {
-                    String fDeviceName;
-
-                    /*
-                     *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,
-                     */
-                    Optional<BlockDeviceKind> fDeviceKind;
-
-                    /*
-                     *  This is the size of the physical block device. All the filesystems must fit in it.
-                     */
-                    Optional<uint64_t> fSizeInBytes;
-
-                    /**
-                     *  @see Characters::ToString ();
-                     */
-                    nonvirtual String ToString () const;
-                };
+                eNetworkDrive,
 
                 /**
-                 *  Fetch all th...
-                 *
-                 *  @todo redo with KeyedCollection - once thats implemented
+                 *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "RAM Disk" or
+                 *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_RAMDISK
+                 *  On Linux, this is tmpfs
                  */
-                Containers::Collection<DiskInfoType> GetAvailableDisks ();
-            }
+                eTemporaryFiles,
+
+                /**
+                 *  On Windoze, corresponds to https://msdn.microsoft.com/en-us/library/aa394173%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396 "Compact Disc" or
+                 *  https://msdn.microsoft.com/en-us/library/windows/desktop/aa364939%28v=vs.85%29.aspx DRIVE_CDROM
+                 */
+                eReadOnlyEjectable,
+
+                /**
+                 *  e.g. Linux procfs
+                 */
+                eSystemInformation,
+
+                Stroika_Define_Enum_Bounds (eRemovableDisk, eSystemInformation)
+            };
+
+            /**
+             *  Information for a physical disk (not for a partition).
+             */
+            struct DiskInfoType {
+                String fDeviceName;
+
+                /*
+                 *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,
+                 */
+                optional<BlockDeviceKind> fDeviceKind;
+
+                /*
+                 *  This is the size of the physical block device. All the filesystems must fit in it.
+                 */
+                optional<uint64_t> fSizeInBytes;
+
+                /**
+                 *  @see Characters::ToString ();
+                 */
+                nonvirtual String ToString () const;
+            };
+
+            /**
+             *  Fetch all th...
+             *
+             *  @todo redo with KeyedCollection - once thats implemented
+             */
+            Containers::Collection<DiskInfoType> GetAvailableDisks ();
         }
     }
 }

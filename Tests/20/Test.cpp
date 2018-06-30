@@ -237,7 +237,7 @@ namespace {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (21 + i);
             }
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (5).IsMissing ());
+            VerifyTestResult (not s.template IndexOf<EQUALS_COMPARER> (5).has_value ());
             VerifyTestResult (not s.empty ());
 
             s.RemoveAll ();
@@ -257,7 +257,7 @@ namespace {
             Sequence<T> s3;
             s3.Append (3);
             s3.Append (4);
-            VerifyTestResult (s3.template IndexOf<EQUALS_COMPARER> (s).IsMissing ());
+            VerifyTestResult (not s3.template IndexOf<EQUALS_COMPARER> (s).has_value ());
             VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s3) == 3);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());

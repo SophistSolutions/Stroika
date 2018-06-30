@@ -184,7 +184,7 @@ namespace {
             }
             {
                 URL url{URL::Parse (L"localhost", URL::eFlexiblyAsUI)};
-                VerifyTestResult (url.GetScheme ().IsMissing ());
+                VerifyTestResult (not url.GetScheme ().has_value ());
                 VerifyTestResult (url.GetSchemeValue () == L"http");
                 VerifyTestResult (url.GetHost () == L"localhost");
                 VerifyTestResult (url.GetPortValue () == 80);
@@ -210,7 +210,7 @@ namespace {
         }
         {
             URL url{URL::Parse (L"//www.cwi.nl:80/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-            VerifyTestResult (url.GetScheme ().IsMissing ());
+            VerifyTestResult (not url.GetScheme ().has_value ());
             VerifyTestResult (url.GetSchemeValue () == L"http");
             VerifyTestResult (url.GetHost () == L"www.cwi.nl");
             VerifyTestResult (url.GetPortValue () == 80);
@@ -222,7 +222,7 @@ namespace {
     }
     {
         URL url{URL::Parse (L"//www.cwi.nl:8080/%7Eguido/Python.html", URL::eFlexiblyAsUI)};
-        VerifyTestResult (url.GetScheme ().IsMissing ());
+        VerifyTestResult (not url.GetScheme ().has_value ());
         VerifyTestResult (url.GetSchemeValue () == L"http");
         VerifyTestResult (url.GetHost () == L"www.cwi.nl");
         VerifyTestResult (url.GetPortValue () == 8080);
@@ -355,16 +355,16 @@ namespace {
             DbgTrace (L"InterfaceName: %s", iFace.GetInterfaceName ().c_str ());
 #endif
             DbgTrace (L"Friendly-name: %s", iFace.fFriendlyName.c_str ());
-            if (iFace.fDescription.IsPresent ()) {
+            if (iFace.fDescription.has_value ()) {
                 DbgTrace (L"description: %s", iFace.fDescription->c_str ());
             }
-            if (iFace.fType.IsPresent ()) {
+            if (iFace.fType.has_value ()) {
                 DbgTrace (L"type: %s", Configuration::DefaultNames<Interface::Type>::k.GetName (*iFace.fType));
             }
             for (InternetAddress ipAddr : iFace.fBindings) {
                 DbgTrace (L"addr: %s", ipAddr.As<String> ().c_str ());
             }
-            if (iFace.fStatus.IsPresent ()) {
+            if (iFace.fStatus.has_value ()) {
                 for (Interface::Status s : *iFace.fStatus) {
                     DbgTrace (L"status: %s", Configuration::DefaultNames<Interface::Status>::k.GetName (s));
                 }

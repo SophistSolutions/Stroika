@@ -94,7 +94,7 @@ namespace {
                 DbgTrace (L"sending search responder advertisements...");
 #endif
                 for (auto a : advertisements) {
-                    a.fAlive.clear (); // in responder we dont set alive flag
+                    a.fAlive = nullopt; // in responder we dont set alive flag
 
                     bool includeThisAdvertisement = false;
                     if (da.fTarget.Equals (kTarget_SSDPAll, Characters::CompareOptions::eCaseInsensitive)) {

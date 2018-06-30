@@ -527,7 +527,7 @@ namespace {
                 VerifyTestResult (data.people[0].gender == GenderType_::Male);
                 VerifyTestResult (data.people[1].firstName == L"Fred");
                 VerifyTestResult (data.people[1].lastName == L"Down");
-                VerifyTestResult (data.people[1].gender.IsMissing ());
+                VerifyTestResult (not data.people[1].gender.has_value ());
                 VerifyTestResult (data.addresses.size () == 3);
                 VerifyTestResult (data.addresses[0].city == L"Boston");
                 VerifyTestResult (data.addresses[0].state == L"MA");
@@ -677,7 +677,7 @@ namespace {
                 DbgTrace (L"MirrorTemperature=%s", Characters::ToString (data.MirrorTemperatures).c_str ());
                 DbgTrace (L"LaserCurrents=%s", Characters::ToString (data.LaserCurrents).c_str ());
                 DbgTrace (L"TECPowerConsumptionStats=%s", Characters::ToString (data.TECPowerConsumptionStats->TunerTECCurrent).c_str ());
-                VerifyTestResult (data.ActiveLaser.IsMissing ());
+                VerifyTestResult (not data.ActiveLaser.has_value ());
                 VerifyTestResult (Math::NearlyEquals (*data.DetectorTemperature, 13.1));
                 VerifyTestResult (Math::NearlyEquals (*data.OpticsTemperature, 0.86115019791435543));
                 VerifyTestResult ((data.LaserTemperatures.Keys () == Set<TunerNumberType_>{TunerNumberType_::eT1}));
@@ -925,7 +925,7 @@ namespace {
                 VerifyTestResult (data.ScanID == 8320);
                 VerifyTestResult (data.ScanStart == DateTime::Parse (L"2016-07-28T20:14:30Z", DateTime::ParseFormat::eISO8601));
                 VerifyTestResult (data.ScanEnd == DateTime::Parse (L"2016-07-28T20:14:44Z", DateTime::ParseFormat::eISO8601));
-                VerifyTestResult (data.ScanLabel.IsMissing ());
+                VerifyTestResult (not data.ScanLabel.has_value ());
                 VerifyTestResult ((data.RawSpectrum == Mapping<WaveNumberType_, IntensityType_>{pair<WaveNumberType_, IntensityType_>{901.5, 0}, pair<WaveNumberType_, IntensityType_>{902.5, 1}}));
                 VerifyTestResult ((data.AuxData == Mapping<String, String>{pair<String, String>{L"Cell-Pressure", L"1000"}, pair<String, String>{L"Cell-Temperature", L"0"}, pair<String, String>{L"EngineId", L"B1E56F82-B217-40D3-A24D-FAC491EDCDE8"}}));
             }

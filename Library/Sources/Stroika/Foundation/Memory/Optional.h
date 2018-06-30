@@ -495,13 +495,13 @@ namespace Stroika::Foundation {
              *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
              *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
              */
-            nonvirtual constexpr bool IsMissing () const noexcept; // means no value (it is optional!)
+            [[deprecated ("use not has_value() to match std::optional since Stroika v2.1d4")]] nonvirtual constexpr bool IsMissing () const noexcept; // means no value (it is optional!)
 
         public:
             /**
              *  Returns true iff the Optional<T> has a valid value (not IsMissing ());
              */
-            nonvirtual constexpr bool IsPresent () const noexcept;
+            [[deprecated ("use has_value() to match std::optional since Stroika v2.1d4")]] nonvirtual constexpr bool IsPresent () const noexcept;
 
         public:
             /**

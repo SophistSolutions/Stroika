@@ -56,7 +56,7 @@ namespace {
         cerr << "    --update adds to the argument ARHCIVE and adds the argument FILES to it" << endl;
         cerr << "    ARCHIVENAME can be the single character - to designate stdin" << endl; // NYI
     }
-    // Emits errors to stderr, and Usage, etc, if needed, and Optional<> IsMissing()
+    // Emits errors to stderr, and Usage, etc, if needed, and not Optional<> has_value()
     Optional<Options_> ParseOptions_ (int argc, const char* argv[])
     {
         Options_                      result{};
@@ -83,7 +83,7 @@ namespace {
             else if (Execution::MatchesCommandLineArgument (*argi, L"update")) {
                 operation = Options_::Operation::eUpdate;
             }
-            else if (archiveName.IsMissing ()) {
+            else if (not archiveName.has_value ()) {
                 archiveName = *argi;
             }
             // else more cases todo

@@ -23,6 +23,7 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
+using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
 using Memory::BLOB;
@@ -73,7 +74,7 @@ String OptionsFile::LoggerMessage::FormatMessage () const
  ************************** DataExchange::OptionsFile ***************************
  ********************************************************************************
  */
-const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [](const Memory::Optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue {
+const OptionsFile::ModuleDataUpgraderType OptionsFile::kDefaultUpgrader = [](const optional<Configuration::Version>& /*version*/, const VariantValue& rawVariantValue) -> VariantValue {
     return rawVariantValue;
 };
 
@@ -109,8 +110,8 @@ OptionsFile::ModuleNameToFileNameMapperType OptionsFile::mkFilenameMapper (const
         };
 }
 
-const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = []([[maybe_unused]] const String & /*moduleName*/) -> Optional<Configuration::Version> {
-    return Optional<Configuration::Version> (); // default to dont know
+const OptionsFile::ModuleNameToFileVersionMapperType OptionsFile::kDefaultModuleNameToFileVersionMapper = []([[maybe_unused]] const String & /*moduleName*/) -> optional<Configuration::Version> {
+    return optional<Configuration::Version> (); // default to dont know
 };
 
 // Consider using XML by default when more mature
@@ -200,11 +201,11 @@ void OptionsFile::WriteRaw (const BLOB& blob)
 }
 
 template <>
-Optional<VariantValue> OptionsFile::Read ()
+optional<VariantValue> OptionsFile::Read ()
 {
     Debug::TraceContextBumper ctx ("OptionsFile::Read");
     try {
-        Optional<VariantValue> r = fReader_.Read (MemoryStream<Byte>::New (ReadRaw ()));
+        optional<VariantValue> r = fReader_.Read (MemoryStream<Byte>::New (ReadRaw ()));
         if (r.has_value ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"present: upgrading module %s", fModuleName_.c_str ());
@@ -219,7 +220,7 @@ Optional<VariantValue> OptionsFile::Read ()
 #endif
         // @todo - check different exception cases and for some - like file not found - just no warning...
         fLogger_ (LoggerMessage (LoggerMessage::Msg::eFailedToReadFile, GetReadFilePath_ ()));
-        return Optional<VariantValue> ();
+        return nullopt;
     }
 }
 

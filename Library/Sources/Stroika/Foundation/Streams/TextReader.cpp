@@ -345,8 +345,8 @@ protected:
         Require (IsOpenRead ());
         Character* outI = intoStart;
         if (fPutBack_) {
-            *outI = *fPutBack_;
-            fPutBack_.clear ();
+            *outI     = *fPutBack_;
+            fPutBack_ = nullopt;
             outI++;
             // fOffset_ doesn't take into account putback
         }
@@ -358,7 +358,7 @@ protected:
             fPrevCharCached_ = *(outI - 1);
         }
         else {
-            fPrevCharCached_.clear ();
+            fPrevCharCached_ = nullopt;
         }
         return outI - intoStart;
     }
@@ -431,8 +431,8 @@ protected:
         }
 
         if (newOffset == fOffset_ - 1 and fPrevCharCached_) {
-            fPutBack_ = fPrevCharCached_;
-            fPrevCharCached_.clear ();
+            fPutBack_        = fPrevCharCached_;
+            fPrevCharCached_ = nullopt;
             return GetReadOffset ();
         }
         else if (newOffset < fOffset_) {

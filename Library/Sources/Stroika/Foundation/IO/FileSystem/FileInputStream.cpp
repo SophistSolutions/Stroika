@@ -236,10 +236,10 @@ public:
     }
 
 private:
-    int                      fFD_;
-    SeekableFlag             fSeekable_;
-    AdoptFDPolicy            fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    Memory::Optional<String> fFileName_;
+    int              fFD_;
+    SeekableFlag     fSeekable_;
+    AdoptFDPolicy    fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    optional<String> fFileName_;
 };
 
 auto FileInputStream::New (const String& fileName, SeekableFlag seekable) -> Ptr

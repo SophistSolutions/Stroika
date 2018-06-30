@@ -619,11 +619,11 @@ namespace Stroika::Foundation {
         inline T Optional<T, TRAITS>::CheckedValue (const THROW_IF_MISSING_TYPE& exception2ThrowIfMissing) const
         {
             shared_lock<const MutexBase_> critSec{*this};
-            if (IsMissing ()) {
-                Execution::Throw (exception2ThrowIfMissing);
+            if (has_value ()) {
+                return *this->fStorage_.peek ();
             }
             else {
-                return *this->fStorage_.peek ();
+                Execution::Throw (exception2ThrowIfMissing);
             }
         }
         template <typename T, typename TRAITS>

@@ -130,14 +130,14 @@ void IO::FileSystem::Ptr::CheckAccess (const String& fileFullPath, bool checkCan
     }
 }
 
-Memory::Optional<String> IO::FileSystem::Ptr::FindExecutableInPath (const String& /*filename*/) const
+optional<String> IO::FileSystem::Ptr::FindExecutableInPath (const String& /*filename*/) const
 {
     // @TODO A
     //   const char* pPath = ::getenv ("PATH");
     // @todo windows https://msdn.microsoft.com/en-us/library/windows/desktop/aa365527(v=vs.85).aspx
     // on unix - get env path and just prepend and run access (EEXEC PERM)
     AssertNotImplemented ();
-    return Memory::Optional<String>{};
+    return nullopt;
 }
 
 String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)

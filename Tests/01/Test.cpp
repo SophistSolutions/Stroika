@@ -125,7 +125,7 @@ namespace {
             Optional<DiskSpaceUsageType>                  LookupDiskStats (String diskName)
             {
                 Optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
-                if (o.IsMissing ()) {
+                if (not o.has_value ()) {
                     o = LookupDiskStats_ (diskName);
                     if (o) {
                         sDiskUsageCache_.Add (diskName, *o);

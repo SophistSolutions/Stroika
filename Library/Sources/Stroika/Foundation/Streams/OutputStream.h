@@ -10,7 +10,6 @@
 
 #include "../Configuration/Common.h"
 #include "../Memory/Common.h"
-#include "../Memory/Optional.h"
 
 #include "Stream.h"
 

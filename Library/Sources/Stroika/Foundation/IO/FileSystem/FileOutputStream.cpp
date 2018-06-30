@@ -195,11 +195,11 @@ public:
     }
 
 private:
-    int                      fFD_;
-    FlushFlag                fFlushFlag;
-    AdoptFDPolicy            fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
-    bool                     fSeekable_{true};
-    Memory::Optional<String> fFileName_;
+    int              fFD_;
+    FlushFlag        fFlushFlag;
+    AdoptFDPolicy    fAdoptFDPolicy_{AdoptFDPolicy::eCloseOnDestruction};
+    bool             fSeekable_{true};
+    optional<String> fFileName_;
 };
 
 auto FileOutputStream::New (const String& fileName, FlushFlag flushFlag) -> Ptr

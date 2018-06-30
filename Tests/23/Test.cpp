@@ -35,7 +35,7 @@ namespace {
             // verify in sorted order
             Memory::Optional<T> last;
             for (T i : s) {
-                if (last.IsPresent ()) {
+                if (last.has_value ()) {
                     VerifyTestResult (inorderComparer (*last, i));
                 }
                 last = i;

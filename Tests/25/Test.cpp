@@ -28,10 +28,10 @@ namespace {
         {
             using MultiSetOfElementType = typename CONCRETE_CONTAINER::MultiSetOfElementType;
             // verify in sorted order
-            Memory::Optional<MultiSetOfElementType> last;
+            optional<MultiSetOfElementType> last;
             using COMPARER_TYPE = less<MultiSetOfElementType>;
             for (CountedValue<MultiSetOfElementType> i : t) {
-                if (last.IsPresent ()) {
+                if (last.has_value ()) {
                     VerifyTestResult (COMPARER_TYPE () (*last, i.fValue));
                 }
                 last = i.fValue;

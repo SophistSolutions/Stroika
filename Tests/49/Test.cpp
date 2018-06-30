@@ -142,7 +142,7 @@ namespace {
             Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or *lastItemHit < i);
+                VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
             }
             VerifyTestResult (nItemsHit == 3);
@@ -153,7 +153,7 @@ namespace {
             Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ().Elements ()) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or *lastItemHit < i);
+                VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
             }
             VerifyTestResult (nItemsHit == 3);
@@ -164,7 +164,7 @@ namespace {
             Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ()) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or *lastItemHit < i);
+                VerifyTestResult (not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
             }
             VerifyTestResult (nItemsHit == 3);
@@ -175,7 +175,7 @@ namespace {
             Optional<Color> lastItemHit;
             DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ().Apply ([&nItemsHit, &lastItemHit](Color i) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.IsMissing () or *lastItemHit < i);
+                VerifyTestResult not lastItemHit.has_value () or *lastItemHit < i);
                 lastItemHit = i;
             });
             VerifyTestResult (nItemsHit == 3);
@@ -254,7 +254,7 @@ namespace {
             {
                 Memory::Optional<int> answer =
                     FunctionalApplicationContext<int> (s).Filter<int> ([](int i) -> bool { return (i & 1); }).Find<int> ([](int i) -> bool { return i == 8; });
-                VerifyTestResult (answer.IsMissing ());
+                VerifyTestResult (not answer.has_value ());
             }
         }
 
@@ -526,8 +526,8 @@ namespace {
             VerifyTestResult (dr.GetNext (2) == 3);
             VerifyTestResult (dr.GetNext (3) == 5);
             VerifyTestResult (dr.GetNext (4) == 5);
-            VerifyTestResult (dr.GetNext (5).IsMissing ());
-            VerifyTestResult (dr.GetPrevious (1).IsMissing ());
+            VerifyTestResult (not dr.GetNext (5).has_value ());
+            VerifyTestResult (not dr.GetPrevious (1).has_value ());
             VerifyTestResult (dr.GetPrevious (2) == 1);
             VerifyTestResult (dr.GetPrevious (3) == 1);
             VerifyTestResult (dr.GetPrevious (4) == 3);
@@ -550,9 +550,9 @@ namespace {
             VerifyTestResult (dr.GetNext (5) == 7);
             VerifyTestResult (dr.GetNext (6) == 7);
             VerifyTestResult (dr.GetNext (7) == 8);
-            VerifyTestResult (dr.GetNext (8).IsMissing ());
-            VerifyTestResult (dr.GetNext (99).IsMissing ());
-            VerifyTestResult (dr.GetPrevious (1).IsMissing ());
+            VerifyTestResult (not dr.GetNext (8).has_value ());
+            VerifyTestResult (not dr.GetNext (99).has_value ());
+            VerifyTestResult (not dr.GetPrevious (1).has_value ());
             VerifyTestResult (dr.GetPrevious (2) == 1);
             VerifyTestResult (dr.GetPrevious (3) == 2);
             VerifyTestResult (dr.GetPrevious (4) == 2);

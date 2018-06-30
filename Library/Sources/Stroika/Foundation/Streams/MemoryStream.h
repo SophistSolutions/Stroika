@@ -54,7 +54,7 @@ namespace Stroika::Foundation {
          *  \par Example Usage
          *      \code
          *          BLOB                    blob    =   ReadRaw ();
-         *          Optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte>::New (blob));
+         *          optional<VariantValue>  r       =   reader.Read (MemoryStream<Byte>::New (blob));
          *      \endcode
          */
         template <typename ELEMENT_TYPE>

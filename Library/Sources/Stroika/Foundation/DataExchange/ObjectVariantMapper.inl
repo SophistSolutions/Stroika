@@ -331,7 +331,7 @@ namespace Stroika::Foundation {
                 RequireNotNull (intoObjOfTypeT);
                 // NOTE - until v2.0a100, this read if (d.empty ()) - but thats wrong beacuse it maps empty strings to null (missing) values
                 if (d.GetType () == VariantValue::eNull) {
-                    intoObjOfTypeT->clear ();
+                    *intoObjOfTypeT = nullopt;
                 }
                 else {
                     *intoObjOfTypeT = mapper.ToObject<T> (d);

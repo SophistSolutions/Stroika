@@ -269,7 +269,7 @@ Collection<DiskInfoType> FileSystem::GetAvailableDisks ()
         /*
          *  Is the 'disk' a 'remote' device (network),  CD-ROM, direct-attached hard disk (e.g. internal) or removable drive,
          */
-        Optional<BlockDeviceKind> deviceKind;
+        optional<BlockDeviceKind> deviceKind;
         switch (driveInfo.MediaType) {
             case FixedMedia:
                 deviceKind = BlockDeviceKind::eLocalDisk;

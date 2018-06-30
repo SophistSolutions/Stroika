@@ -86,10 +86,12 @@ public:
         });
 #endif
     }
+#if 0
     ~Rep_ ()
     {
-        fLinkMonitor_.clear ();
+        fLinkMonitor_ = nullopt;
     }
+#endif
     Sequence<Advertisement> GetAdjustedAdvertisements_ () const
     {
         if (fLocation.GetHost ().empty ()) {

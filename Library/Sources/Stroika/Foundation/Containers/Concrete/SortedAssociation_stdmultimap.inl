@@ -128,7 +128,7 @@ namespace Stroika {
                         auto                                                            i = fData_.find (key);
                         if (i == fData_.end ()) {
                             if (item != nullptr) {
-                                item->clear ();
+                                *item = nullopt;
                             }
                             return false;
                         }

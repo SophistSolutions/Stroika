@@ -38,10 +38,9 @@ namespace {
         }
         {
             Optional<int> x;
-            VerifyTestResult (x.IsMissing ());
+            VerifyTestResult (not x.has_value ());
             x = 1;
-            VerifyTestResult (not x.IsMissing ());
-            VerifyTestResult (x.IsPresent ());
+            VerifyTestResult (x.has_value ());
             VerifyTestResult (*x == 1);
         }
         {
@@ -54,9 +53,9 @@ namespace {
         auto testOptionalOfThingNotCopyable = []() {
             {
                 Optional<NotCopyable> n1;
-                VerifyTestResult (n1.IsMissing ());
+                VerifyTestResult (not n1.has_value ());
                 Optional<NotCopyable> n2{NotCopyable ()}; // use r-value reference to move
-                VerifyTestResult (n2.IsPresent ());
+                VerifyTestResult (n2.has_value ());
             }
             {
                 Optional<NotCopyable> a;
@@ -89,8 +88,8 @@ namespace {
         {
             float*  d1 = nullptr;
             double* d2 = nullptr;
-            VerifyTestResult (Optional<double>::OptionalFromNullable (d1).IsMissing ());
-            VerifyTestResult (Optional<double>::OptionalFromNullable (d2).IsMissing ());
+            VerifyTestResult (not Optional<double>::OptionalFromNullable (d1).has_value ());
+            VerifyTestResult (not Optional<double>::OptionalFromNullable (d2).has_value ());
         }
         {
             constexpr Optional<int> x{1};
@@ -134,7 +133,7 @@ namespace {
         ml1 = ml2;
 
         Optional<Mapping<int, float>> ol1, ol2;
-        if (ol2.IsPresent ()) {
+        if (ol2.has_value ()) {
             ml1 = *ol2;
         }
         ol1 = ml1;
@@ -326,7 +325,7 @@ namespace {
             }
             {
                 OPTIONALOFT o1{typename OPTIONALOFT::value_type ()};
-                VerifyTestResult (o1.IsPresent ());
+                VerifyTestResult (o1.has_value ());
                 OPTIONALOFT o2 = move (o1);
                 VerifyTestResult (o2 == typename OPTIONALOFT::value_type ());
             }

@@ -79,7 +79,7 @@ namespace Stroika::Foundation {
          *          }
          *          void TestUse3_ ()
          *          {
-         *              if (sModuleConfiguration_.Update ([](const MyData_& data) -> Optional<MyData_> {  if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
+         *              if (sModuleConfiguration_.Update ([](const MyData_& data) -> optional<MyData_> {  if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result; } return {}; })) {
          *                  sWaitableEvent.Set ();  // e.g. trigger someone to wakeup and used changes? - no global lock held here...
          *              }
          *          }
@@ -122,7 +122,7 @@ namespace Stroika::Foundation {
              *
              *  \par Example Usage
              *      \code
-             *          if (sModuleConfiguration_.Update ([] (const MyData_& data) -> Optional<MyData_> { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result;} return {};  })) {
+             *          if (sModuleConfiguration_.Update ([] (const MyData_& data) -> optional<MyData_> { if (data.fLastSynchronizedAt + kMinTime_ > DateTime::Now ()) { MyData_ result = data; result.fLastSynchronizedAt = DateTime::Now (); return result;} return {};  })) {
              *              sWaitableEvent.Set ();  // e.g. trigger someone to wakeup and used changes? - no global lock held here...
              *          }
              *      \endcode

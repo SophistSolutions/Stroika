@@ -228,7 +228,7 @@ namespace {
             if (not updateResult->fPhysicalMemory.fAvailable.has_value () and updateResult->fPhysicalMemory.fFree and updateResult->fPhysicalMemory.fInactive) {
                 if (not slabReclaimable.has_value ()) {
                     // wag
-                    slabReclaimable = slab.Value () / 2;
+                    slabReclaimable = ValueOrDefault (slab) / 2;
                 }
                 updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + ValueOrDefault (slabReclaimable);
             }
@@ -377,7 +377,7 @@ namespace {
                     updateResult->fPhysicalMemory.fInactive = totalRAM - *updateResult->fPhysicalMemory.fActive - static_cast<uint64_t> (*freeMem);
                 }
             }
-            updateResult->fPhysicalMemory.fOSReserved.clear ();
+            updateResult->fPhysicalMemory.fOSReserved = nullopt;
             updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (Optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_)));
             updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (Optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_)));
             // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...

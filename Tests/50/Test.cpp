@@ -1484,7 +1484,7 @@ int main ([[maybe_unused]] int argc, [[maybe_unused]] const char* argv[])
 
         {
             Optional<String> arg = MatchesCommandLineArgumentWithValue (cmdLine, L"x");
-            if (arg.IsPresent ()) {
+            if (arg.has_value ()) {
                 sTimeMultiplier_ = String2Float<double> (*arg);
             }
         }

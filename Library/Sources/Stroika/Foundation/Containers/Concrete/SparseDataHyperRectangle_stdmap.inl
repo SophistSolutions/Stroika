@@ -224,7 +224,7 @@ namespace Stroika {
                                 *result = tuple_cat (tuple<T>{tmp->second}, tmp->first);
                             }
                             else {
-                                result->clear ();
+                                *result = nullopt;
                             }
                         }
 

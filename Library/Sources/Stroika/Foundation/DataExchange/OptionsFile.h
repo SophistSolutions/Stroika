@@ -6,10 +6,11 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../Characters/String.h"
 #include "../Configuration/Version.h"
 #include "../Memory/BLOB.h"
-#include "../Memory/Optional.h"
 
 #include "Variant/Reader.h"
 #include "Variant/Writer.h"
@@ -43,7 +44,6 @@ namespace Stroika {
 
             using Characters::String;
             using Memory::BLOB;
-            using Memory::Optional;
 
             /**
              *  Simple wrapper on ObjectVariantMapper code, and code to serialize to/from JSON/XML etc, to wrap
@@ -110,7 +110,7 @@ namespace Stroika {
                  *  Optionally provide (based on filenames/locations) information about the incoming file(read file)
                  *  version.
                  */
-                using ModuleNameToFileVersionMapperType = function<Optional<Configuration::Version> (const String& moduleName)>;
+                using ModuleNameToFileVersionMapperType = function<optional<Configuration::Version> (const String& moduleName)>;
 
             public:
                 /**
@@ -123,7 +123,7 @@ namespace Stroika {
                  *  change. The version may not be known, in which case the function is still called, but with the verison information
                  *  missing.
                  */
-                using ModuleDataUpgraderType = function<VariantValue (const Memory::Optional<Configuration::Version>& version, const VariantValue& rawVariantValue)>;
+                using ModuleDataUpgraderType = function<VariantValue (const optional<Configuration::Version>& version, const VariantValue& rawVariantValue)>;
 
             public:
                 /**
@@ -215,7 +215,7 @@ namespace Stroika {
                  *  read data is corrupted. To avoid this behavior, use ReadRaw() directly.
                  */
                 template <typename T>
-                nonvirtual Optional<T> Read ();
+                nonvirtual optional<T> Read ();
                 template <typename T>
                 nonvirtual T Read (const T& defaultObj, ReadFlags readFlags = ReadFlags::eWriteIfChanged);
 
@@ -263,14 +263,14 @@ namespace Stroika {
                     eFailedToWriteInUseValues,
                 };
                 Msg              fMsg;
-                Optional<String> fFileName;
+                optional<String> fFileName;
 
                 LoggerMessage (Msg msg, String fn);
                 nonvirtual String FormatMessage () const;
             };
 
             template <>
-            Optional<VariantValue> OptionsFile::Read ();
+            optional<VariantValue> OptionsFile::Read ();
             template <>
             void OptionsFile::Write (const VariantValue& optionsObject);
         }
