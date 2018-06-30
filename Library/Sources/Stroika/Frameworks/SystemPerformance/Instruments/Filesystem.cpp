@@ -942,7 +942,7 @@ namespace {
                     bool        computeTotalXFers = not cumStats.fTotalTransfers.has_value ();
 
                     for (DynamicDiskIDType di : disksForFS) {
-                        IOStatsType diskIOStats = ValueOrDefault (disks.LookupValue (di).fCombinedIOStat);
+                        IOStatsType diskIOStats = ValueOrDefault (disks.LookupValue (di).fCombinedIOStats);
                         if (weightForFS > 0) {
                             double scaleFactor = weightForFS / totalWeights.LookupValue (di);
                             //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);
