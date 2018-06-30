@@ -637,7 +637,7 @@ namespace {
                         PerfStats_{
                             String2Float (sectorsRead), String2Float (timeSpentReadingMS) / 1000, String2Float (readsCompleted),
                             String2Float (sectorsWritten), String2Float (timeSpentWritingMS) / 1000, String2Float (writesCompleted),
-                            weightedTimeInQSeconds.Value ()});
+                            ValueOrDefault (weightedTimeInQSeconds)});
                 }
             }
             return result;
@@ -901,9 +901,9 @@ namespace {
         using WeightingStat2UseType = double;
         Mapping<DynamicDiskIDType, WeightingStat2UseType> totalWeights;
         for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
-            Set<DynamicDiskIDType> disksForFS = i.fValue.fOnPhysicalDrive.Value ();
+            Set<DynamicDiskIDType> disksForFS = ValueOrDefault (i.fValue.fOnPhysicalDrive);
             if (disksForFS.size () > 0) {
-                WeightingStat2UseType weightForFS = i.fValue.fCombinedIOStats.Value ().fBytesTransfered.Value ();
+                WeightingStat2UseType weightForFS = ValueOrDefault (ValueOrDefault (i.fValue.fCombinedIOStats).fBytesTransfered);
                 weightForFS /= disksForFS.size ();
                 for (DynamicDiskIDType di : disksForFS) {
                     totalWeights.Add (di, totalWeights.LookupValue (di) + weightForFS); // accumulate relative application to each disk
@@ -932,17 +932,17 @@ namespace {
         if (totalWeights.size () >= 1) {
             for (KeyValuePair<MountedFilesystemNameType, MountedFilesystemInfoType> i : fileSystems) {
                 MountedFilesystemInfoType mfi        = i.fValue;
-                Set<DynamicDiskIDType>    disksForFS = mfi.fOnPhysicalDrive.Value ();
+                Set<DynamicDiskIDType>    disksForFS = ValueOrDefault (mfi.fOnPhysicalDrive);
                 if (disksForFS.size () > 0) {
-                    WeightingStat2UseType weightForFS = i.fValue.fCombinedIOStats.Value ().fBytesTransfered.Value ();
+                    WeightingStat2UseType weightForFS = ValueOrDefault (ValueOrDefault (i.fValue.fCombinedIOStats).fBytesTransfered);
                     weightForFS /= disksForFS.size ();
-                    IOStatsType cumStats          = mfi.fCombinedIOStats.Value ();
+                    IOStatsType cumStats          = ValueOrDefault (mfi.fCombinedIOStats);
                     bool        computeInuse      = not cumStats.fInUsePercent.has_value ();
                     bool        computeQLen       = not cumStats.fQLength.has_value ();
                     bool        computeTotalXFers = not cumStats.fTotalTransfers.has_value ();
 
                     for (DynamicDiskIDType di : disksForFS) {
-                        IOStatsType diskIOStats = disks.LookupValue (di).fCombinedIOStats.Value ();
+                        IOStatsType diskIOStats = ValueOrDefault (disks.LookupValue (di).fCombinedIOStat);
                         if (weightForFS > 0) {
                             double scaleFactor = weightForFS / totalWeights.LookupValue (di);
                             //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);
@@ -960,10 +960,10 @@ namespace {
                     }
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     if (computeInuse) {
-                        DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), cumStats.fInUsePercent.Value ());
+                        DbgTrace (L"Adjusted fInUsePCT for filesystem '%s' is %f", i.fKey.c_str (), ValueOrDefault (cumStats.fInUsePercent));
                     }
                     if (computeQLen) {
-                        DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), cumStats.fQLength.Value ());
+                        DbgTrace (L"Adjusted fQLength for filesystem '%s' is %f", i.fKey.c_str (), ValueOrDefault (cumStats.fQLength));
                     }
 #endif
                     mfi.fCombinedIOStats = cumStats;

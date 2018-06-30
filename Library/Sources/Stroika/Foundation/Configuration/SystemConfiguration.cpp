@@ -403,13 +403,13 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                 }
                 // intentionally dont clear foundProcessor cuz occurs once it appears
                 currentProcessorID = nullopt;
-                currentModelName = nullopt;
-                currentSocketID = nullopt;
+                currentModelName   = nullopt;
+                currentSocketID    = nullopt;
             }
         }
         if (currentProcessorID) {
             String useModelName = Memory::ValueOrDefault (foundProcessor);
-            Memory::CopyToIf (currentModelName, &useModelName);     // currentModelName takes precedence but I doubt both present
+            Memory::CopyToIf (currentModelName, &useModelName); // currentModelName takes precedence but I doubt both present
             result.fCores.Append (CPU::CoreDetails{Memory::ValueOrDefault (currentSocketID), useModelName});
         }
     }
