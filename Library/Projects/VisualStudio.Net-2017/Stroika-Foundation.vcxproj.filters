@@ -768,9 +768,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\LinearAlgebra\Tensor.cpp">
       <Filter>Sources\Math\LinearAlgebra</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Math\Optimization\DownhillSimplexMinimization.cpp">
-      <Filter>Sources\Math\Optimization</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Disk.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
