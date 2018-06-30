@@ -402,14 +402,14 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
                     result.fCores.Append (CPU::CoreDetails{currentSocketID.Value (), useModelName});
                 }
                 // intentionally dont clear foundProcessor cuz occurs once it appears
-                currentProcessorID.clear ();
-                currentModelName.clear ();
-                currentSocketID.clear ();
+                currentProcessorID = nullopt;
+                currentModelName = nullopt;
+                currentSocketID = nullopt;
             }
         }
         if (currentProcessorID) {
             String useModelName = foundProcessor.Value ();
-            currentModelName.CopyToIf (&useModelName); // currentModelName takes precedence but I doubt both present
+            Memory::CopyToIf (currentModelName, &useModelName);     // currentModelName takes precedence but I doubt both present
             result.fCores.Append (CPU::CoreDetails{currentSocketID.Value (), useModelName});
         }
     }
