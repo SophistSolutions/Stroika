@@ -6,6 +6,7 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
 #include <type_traits>
 #include <typeindex>
 
@@ -164,7 +165,7 @@ namespace Stroika {
 
                         /**
                          */
-                        StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<ReaderFromVoidStarFactory>& typeMapper = {});
+                        StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<ReaderFromVoidStarFactory>& typeMapper = nullopt);
                     };
 
                     /**
@@ -237,7 +238,7 @@ namespace Stroika {
                         nonvirtual void AddCommonType (ARGS&&... args);
 
                     public:
-                        nonvirtual Memory::Optional<ReaderFromVoidStarFactory> Lookup (type_index t) const;
+                        nonvirtual optional<ReaderFromVoidStarFactory> Lookup (type_index t) const;
 
                     public:
                         /**
@@ -328,6 +329,8 @@ namespace Stroika {
                         class SimpleReader_;
                         template <typename T>
                         class OptionalTypesReader_;
+                        template <typename T>
+                        class OldOptionalTypesReader_;
 
                     private:
                         template <typename T>
@@ -345,6 +348,8 @@ namespace Stroika {
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, typename std::enable_if<std::is_enum<T>::value>::type* = 0);
                         template <typename T>
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, typename std::enable_if<std::is_pod<T>::value and !std::is_enum<T>::value>::type* = 0);
+                        template <typename T>
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);
                         template <typename T, typename TRAITS>
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const Memory::Optional<T, TRAITS>*);
                         template <typename T>
@@ -544,13 +549,13 @@ namespace Stroika {
                         nonvirtual ReaderFromVoidStarFactory LookupFactoryForName_ (const Name& name) const;
 
                     private:
-                        Traversal::Iterable<StructFieldInfo>  fFieldDescriptions_;
-                        Context*                              fActiveContext_{};
-                        T*                                    fValuePtr_{};
-                        Mapping<Name, StructFieldMetaInfo>    fFieldNameToTypeMap_;
-                        Memory::Optional<StructFieldMetaInfo> fValueFieldMetaInfo_;
-                        shared_ptr<IElementConsumer>          fValueFieldConsumer_;
-                        bool                                  fThrowOnUnrecongizedelts_{false}; // else ignore
+                        Traversal::Iterable<StructFieldInfo> fFieldDescriptions_;
+                        Context*                             fActiveContext_{};
+                        T*                                   fValuePtr_{};
+                        Mapping<Name, StructFieldMetaInfo>   fFieldNameToTypeMap_;
+                        optional<StructFieldMetaInfo>        fValueFieldMetaInfo_;
+                        shared_ptr<IElementConsumer>         fValueFieldConsumer_;
+                        bool                                 fThrowOnUnrecongizedelts_{false}; // else ignore
                     };
 
                     /**
@@ -581,7 +586,7 @@ namespace Stroika {
 
                     private:
                         shared_ptr<IElementConsumer> fReader2Delegate2_;
-                        Memory::Optional<Name>       fTagToHandOff_;
+                        optional<Name>               fTagToHandOff_;
                     };
 
                     /**
@@ -625,10 +630,10 @@ namespace Stroika {
                         static ReaderFromVoidStarFactory AsFactory (const Name& memberElementName);
 
                     private:
-                        CONTAINER_OF_T*        fValuePtr_{};
-                        Context*               fActiveContext_{};
-                        Memory::Optional<Name> fMemberElementName_;
-                        bool                   fThrowOnUnrecongizedelts_{false};
+                        CONTAINER_OF_T* fValuePtr_{};
+                        Context*        fActiveContext_{};
+                        optional<Name>  fMemberElementName_;
+                        bool            fThrowOnUnrecongizedelts_{false};
                     };
 
                     /**
@@ -823,11 +828,11 @@ namespace Stroika {
                         static ReaderFromVoidStarFactory AsFactory (const Name& readonlyThisName);
 
                     private:
-                        ContainerType*                              fValuePtr_{};
-                        Memory::Optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
-                        function<bool(Name)>                        fReadThisName_{[]([[maybe_unused]] const Name& n) { Lambda_Arg_Unused_BWA (n); return true; }};
-                        ElementType                                 fProxyValue_{};
-                        shared_ptr<IElementConsumer>                fActiveSubReader_{};
+                        ContainerType*                      fValuePtr_{};
+                        optional<ReaderFromVoidStarFactory> fReaderRactory_{}; // if missing, use Context::GetObjectReaderRegistry ().MakeContextReader ()
+                        function<bool(Name)>                fReadThisName_{[]([[maybe_unused]] const Name& n) { Lambda_Arg_Unused_BWA (n); return true; }};
+                        ElementType                         fProxyValue_{};
+                        shared_ptr<IElementConsumer>        fActiveSubReader_{};
                     };
 
                     /**

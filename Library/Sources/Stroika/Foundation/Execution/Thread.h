@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include <functional>
+#include <optional>
 #include <thread>
 
 #include "../Configuration/Common.h"
@@ -236,7 +237,7 @@ namespace Stroika::Foundation {
                 /**
                  *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
                  */
-                Memory::Optional<size_t> fStackSize;
+                optional<size_t> fStackSize;
 
                 /**
                  *      \note see https://stroika.atlassian.net/browse/STK-474 - @todo and NYI
@@ -245,7 +246,7 @@ namespace Stroika::Foundation {
                  *              http://man7.org/linux/man-pages/man3/pthread_attr_setguardsize.3.html
                  *              Peryaps for windows just add to end of stacksize
                  */
-                Memory::Optional<size_t> fStackGuard;
+                optional<size_t> fStackGuard;
             };
 
         public:
@@ -298,12 +299,12 @@ namespace Stroika::Foundation {
              *          Thread::Ptr t = Thread::New ([r]() { r->Run (); }, Thread::eAutoStart, L"Thread Name");
              *      \endcode
              */
-            static Ptr New (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{});
-            static Ptr New (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{});
+            static Ptr New (const Function<void()>& fun2CallOnce, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
+            static Ptr New (const Function<void()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt);
             template <typename FUNCTION>
-            static Ptr New (FUNCTION f, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+            static Ptr New (FUNCTION f, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
             template <typename FUNCTION>
-            static Ptr New (FUNCTION f, AutoStartFlag, const Memory::Optional<Characters::String>& name = Memory::Optional<Characters::String>{}, const Memory::Optional<Configuration>& configuration = Memory::Optional<Configuration>{}, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
+            static Ptr New (FUNCTION f, AutoStartFlag, const optional<Characters::String>& name = nullopt, const optional<Configuration>& configuration = nullopt, typename enable_if<is_function<FUNCTION>::value>::type* = nullptr);
 
         public:
             /**
@@ -412,31 +413,31 @@ namespace Stroika::Foundation {
                 /**
                  *  Stack starts at base, and grows towards limit - could be up or down.
                  */
-                Memory::Optional<const Memory::Byte*> fStackBase;
+                optional<const Memory::Byte*> fStackBase;
 
                 /**
                  *  @see fStackBase
                  */
-                Memory::Optional<const Memory::Byte*> fStackLimit;
+                optional<const Memory::Byte*> fStackLimit;
 
                 /**
                  *  @see fStackBase, fStackLimit
                  */
-                Memory::Optional<const Memory::Byte*> fCurrentStackAt;
+                optional<const Memory::Byte*> fCurrentStackAt;
 
                 /**
                  *  Return current stack used, if available
                  *
                  *  \note NYI
                  */
-                Memory::Optional<size_t> GetStackUsed () const;
+                optional<size_t> GetStackUsed () const;
 
                 /**
                  *  Return current stack available, if available
                  *
                  *  \note NYI
                  */
-                Memory::Optional<size_t> GetStackAvailable () const;
+                optional<size_t> GetStackAvailable () const;
             };
 
         public:

@@ -172,8 +172,8 @@ namespace Stroika {
                 template <typename VALUE_TYPE>
                 inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
                 {
-                    shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
                     RequireNotNull (result);
+                    shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
                     if (advance and fSuppressMore) {
                         advance       = false;
                         fSuppressMore = false;
@@ -184,7 +184,7 @@ namespace Stroika {
                         }
                     }
                     if (Done ()) {
-                        result->clear ();
+                        *result = nullopt;
                     }
                     else {
                         *result = *fStdIterator;

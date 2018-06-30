@@ -32,7 +32,7 @@ namespace Stroika {
                     virtual void More (Memory::Optional<T>* result, bool advance) override
                     {
                         RequireNotNull (result);
-                        result->clear ();
+                        *result = nullopt;
                         if (advance) {
                             Require (not fAtEnd_);
                             Memory::Optional<T> n = fFun_ ();

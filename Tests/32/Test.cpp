@@ -446,8 +446,8 @@ namespace {
             Stroika_Define_Enum_Bounds (Male, Female)
         };
         struct Person_ {
-            String                firstName;
-            String                lastName;
+            String                        firstName;
+            String                        lastName;
             Memory::Optional<GenderType_> gender;
         };
         struct Address_ {
@@ -556,14 +556,14 @@ namespace {
             Mapping<TunerNumberType_, CurrentType_> TunerTECCurrent;
         };
         struct SensorDataType_ {
-            Memory::Optional<TunerNumberType_>          ActiveLaser;
-            Memory::Optional<WaveNumberType_>           ActiveLaserWaveNumber;
-            Memory::Optional<TemperatureType_>          DetectorTemperature;
-            Memory::Optional<TemperatureType_>          OpticsTemperature;
-            Memory::Optional<TemperatureType_>          ExternalTemperature1;
-            Mapping<TunerNumberType_, TemperatureType_> LaserTemperatures;
-            Mapping<TunerNumberType_, CurrentType_>     LaserCurrents;
-            Mapping<TunerNumberType_, TemperatureType_> MirrorTemperatures;
+            Memory::Optional<TunerNumberType_>              ActiveLaser;
+            Memory::Optional<WaveNumberType_>               ActiveLaserWaveNumber;
+            Memory::Optional<TemperatureType_>              DetectorTemperature;
+            Memory::Optional<TemperatureType_>              OpticsTemperature;
+            Memory::Optional<TemperatureType_>              ExternalTemperature1;
+            Mapping<TunerNumberType_, TemperatureType_>     LaserTemperatures;
+            Mapping<TunerNumberType_, CurrentType_>         LaserCurrents;
+            Mapping<TunerNumberType_, TemperatureType_>     MirrorTemperatures;
             Memory::Optional<TECPowerConsumptionStatsType_> TECPowerConsumptionStats;
         };
         Memory::BLOB mkdata_ ()
@@ -788,12 +788,12 @@ namespace {
         using SpectrumType_               = SortedMapping<double, double>;
         using PersistenceScanAuxDataType_ = Mapping<String, String>;
         struct PersistentScanDetailsType_ {
-            ScanIDType_                 ScanID{};
-            DateTime                    ScanStart;
-            DateTime                    ScanEnd;
-            Memory::Optional<String>    ScanLabel;
+            ScanIDType_                     ScanID{};
+            DateTime                        ScanStart;
+            DateTime                        ScanEnd;
+            Memory::Optional<String>        ScanLabel;
             Memory::Optional<SpectrumType_> RawSpectrum;
-            PersistenceScanAuxDataType_ AuxData;
+            PersistenceScanAuxDataType_     AuxData;
         };
         Memory::BLOB mkdata_ ()
         {

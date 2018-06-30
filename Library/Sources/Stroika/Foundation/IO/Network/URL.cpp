@@ -308,7 +308,7 @@ URL URL::ParseHostRelativeURL_ (const String& w)
 URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
 {
     URL url;
-    url.fPort_.clear ();
+    url.fPort_ = nullopt;
 
     if (w.empty ()) {
         return url;
@@ -466,12 +466,12 @@ String URL::GetHostRelPathDir () const
 
 void URL::clear ()
 {
-    fScheme_.clear ();
+    fScheme_ = nullopt;
     fHost_.clear ();
     fRelPath_.clear ();
     fQuery_.clear ();
     fFragment_.clear ();
-    fPort_.clear ();
+    fPort_ = nullopt;
     Ensure (empty ());
 }
 

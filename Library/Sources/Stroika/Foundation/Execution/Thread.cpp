@@ -270,7 +270,7 @@ namespace Stroika {
  ********************************** Thread::Rep_ ********************************
  ********************************************************************************
  */
-Thread::Rep_::Rep_ (const Function<void()>& runnable, [[maybe_unused]] const Memory::Optional<Configuration>& configuration)
+Thread::Rep_::Rep_ (const Function<void()>& runnable, [[maybe_unused]] const optional<Configuration>& configuration)
     : fRunnable_ (runnable)
     , fAccessSTDThreadMutex_ ()
     , fThread_ ()
@@ -742,7 +742,7 @@ namespace {
 }
 
 namespace {
-    Thread::Configuration CombineCFGs_ (const Memory::Optional<Thread::Configuration>& cfg)
+    Thread::Configuration CombineCFGs_ (const optional<Thread::Configuration>& cfg)
     {
         Thread::Configuration result = Thread::GetDefaultConfiguration ();
         if (cfg) {
@@ -816,7 +816,7 @@ void Thread::Ptr::Start () const
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
     Rep_::DoCreate (&fRep_);
-    if (Memory::Optional<Priority> p = fRep_->fInitialPriority_.load ()) {
+    if (optional<Priority> p = fRep_->fInitialPriority_.load ()) {
         fRep_->ApplyPriority (*p);
     }
     fRep_->fOK2StartEvent_.Set ();
@@ -1039,7 +1039,7 @@ Thread::CleanupPtr::~CleanupPtr ()
  *********************************** Thread *************************************
  ********************************************************************************
  */
-Thread::Ptr Thread::New (const Function<void()>& fun2CallOnce, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration)
+Thread::Ptr Thread::New (const Function<void()>& fun2CallOnce, const optional<Characters::String>& name, const optional<Configuration>& configuration)
 {
     Thread::Ptr ptr = Ptr{make_shared<Rep_> (fun2CallOnce, CombineCFGs_ (configuration))};
     if (name) {
@@ -1048,7 +1048,7 @@ Thread::Ptr Thread::New (const Function<void()>& fun2CallOnce, const Memory::Opt
     return ptr;
 }
 
-Thread::Ptr Thread::New (const Function<void()>& fun2CallOnce, AutoStartFlag, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration)
+Thread::Ptr Thread::New (const Function<void()>& fun2CallOnce, AutoStartFlag, const optional<Characters::String>& name, const optional<Configuration>& configuration)
 {
     Thread::Ptr ptr = Thread::New (fun2CallOnce, name, configuration);
     ptr.Start ();

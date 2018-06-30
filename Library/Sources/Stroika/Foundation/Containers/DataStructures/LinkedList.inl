@@ -505,7 +505,7 @@ namespace Stroika {
                     Assert (not _fSuppressMore);
                     Invariant ();
                     if (this->Done ()) {
-                        result->clear ();
+                        *result = nullopt;
                     }
                     else {
                         AssertNotNull (_fCurrent);

@@ -73,7 +73,7 @@ namespace Stroika {
                                 done = fContext.fMultiSetIterator.Done ();
                             }
                             if (done) {
-                                result->clear ();
+                                *result = nullopt;
                             }
                             else {
                                 *result = fContext.fMultiSetIterator->fValue;
@@ -176,7 +176,7 @@ namespace Stroika {
                             done = fContext.fMultiSetIterator.Done ();
                         }
                         if (done) {
-                            result->clear ();
+                            *result = nullopt;
                         }
                         else {
                             *result = fContext.fMultiSetIterator->fValue;

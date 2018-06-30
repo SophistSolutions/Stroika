@@ -146,7 +146,7 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
                 *result = fStr->GetAt (fCurIdx);
             }
             else {
-                result->clear ();
+                *result = nullopt;
             }
         }
         virtual bool Equals (const IRep* rhs) const override

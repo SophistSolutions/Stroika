@@ -230,7 +230,7 @@ namespace {
                     // wag
                     slabReclaimable = slab.Value () / 2;
                 }
-                updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + slabReclaimable.Value ();
+                updateResult->fPhysicalMemory.fAvailable = *updateResult->fPhysicalMemory.fFree + *updateResult->fPhysicalMemory.fInactive + ValueOrDefault (slabReclaimable);
             }
         }
         void Read_ProcVMStat_ (Instruments::Memory::Info* updateResult)

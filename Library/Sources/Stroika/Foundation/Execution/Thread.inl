@@ -38,7 +38,7 @@ namespace Stroika::Foundation {
          */
         class Thread::Rep_ {
         public:
-            Rep_ (const Function<void()>& runnable, const Memory::Optional<Configuration>& configuration);
+            Rep_ (const Function<void()>& runnable, const optional<Configuration>& configuration);
             ~Rep_ ();
 
         public:
@@ -89,16 +89,16 @@ namespace Stroika::Foundation {
             Function<void()> fRunnable_;
             // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
             // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-            InterruptFlagType_*                      fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
-            mutable std::mutex                       fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
-            std::thread                              fThread_;
-            atomic<Status>                           fStatus_;
-            WaitableEvent                            fRefCountBumpedEvent_;
-            WaitableEvent                            fOK2StartEvent_;
-            WaitableEvent                            fThreadDoneAndCanJoin_;
-            wstring                                  fThreadName_;
-            exception_ptr                            fSavedException_;
-            Synchronized<Memory::Optional<Priority>> fInitialPriority_; // where we store priority before start
+            InterruptFlagType_*              fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
+            mutable std::mutex               fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
+            std::thread                      fThread_;
+            atomic<Status>                   fStatus_;
+            WaitableEvent                    fRefCountBumpedEvent_;
+            WaitableEvent                    fOK2StartEvent_;
+            WaitableEvent                    fThreadDoneAndCanJoin_;
+            wstring                          fThreadName_;
+            exception_ptr                    fSavedException_;
+            Synchronized<optional<Priority>> fInitialPriority_; // where we store priority before start
 
         private:
             friend class Thread;
@@ -251,12 +251,12 @@ namespace Stroika::Foundation {
          ********************************************************************************
          */
         template <typename FUNCTION>
-        inline Thread::Ptr Thread::New (FUNCTION f, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
+        inline Thread::Ptr Thread::New (FUNCTION f, const optional<Characters::String>& name, const optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
         {
             return New (Function<void()> (f), name, configuration);
         }
         template <typename FUNCTION>
-        inline Thread::Ptr Thread::New (FUNCTION f, AutoStartFlag flag, const Memory::Optional<Characters::String>& name, const Memory::Optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
+        inline Thread::Ptr Thread::New (FUNCTION f, AutoStartFlag flag, const optional<Characters::String>& name, const optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
         {
             return New (Function<void()> (f), flag, name, configuration);
         }

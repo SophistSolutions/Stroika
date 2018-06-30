@@ -112,7 +112,7 @@ namespace Stroika {
                     template <typename T>
                     class Registry::OptionalTypesReader_ : public IElementConsumer {
                     public:
-                        OptionalTypesReader_ (Memory::Optional<T>* intoVal)
+                        OptionalTypesReader_ (optional<T>* intoVal)
                             : fValue_ (intoVal)
                         {
                             RequireNotNull (intoVal);
@@ -149,7 +149,66 @@ namespace Stroika {
                          */
                         static ReaderFromVoidStarFactory AsFactory ()
                         {
-                            return IElementConsumer::AsFactory<Memory::Optional<T>, OptionalTypesReader_> ();
+                            return IElementConsumer::AsFactory<optional<T>, OptionalTypesReader_> ();
+                        }
+
+                    private:
+                        optional<T>*                 fValue_{};
+                        T                            fProxyValue_{};
+                        shared_ptr<IElementConsumer> fActualReader_{};
+                    };
+
+                    /**
+                     *  [private]
+                     *
+                     *  OldOptionalTypesReader_ supports reads of optional types. This will work - for any types for
+                     *  which SimpleReader<T> is implemented.
+                     *
+                     *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
+                     *  already occurred. The reaosn for Optional<> part is because the caller had an optional
+                     *  element which might never have triggered the invocation of this class.
+                     */
+                    template <typename T>
+                    class Registry::OldOptionalTypesReader_ : public IElementConsumer {
+                    public:
+                        OldOptionalTypesReader_ (Memory::Optional<T>* intoVal)
+                            : fValue_ (intoVal)
+                        {
+                            RequireNotNull (intoVal);
+                        }
+
+                    public:
+                        virtual void Activated (Context& r) override
+                        {
+                            Assert (fActualReader_ == nullptr);
+                            fActualReader_ = r.GetObjectReaderRegistry ().MakeContextReader (&fProxyValue_);
+                            fActualReader_->Activated (r);
+                        }
+                        virtual shared_ptr<IElementConsumer> HandleChildStart (const Name& name) override
+                        {
+                            AssertNotNull (fActualReader_);
+                            return fActualReader_->HandleChildStart (name);
+                        }
+                        virtual void HandleTextInside (const String& text) override
+                        {
+                            AssertNotNull (fActualReader_);
+                            fActualReader_->HandleTextInside (text);
+                        }
+                        virtual void Deactivating () override
+                        {
+                            AssertNotNull (fActualReader_);
+                            fActualReader_->Deactivating ();
+                            fActualReader_.reset ();
+                            *fValue_ = fProxyValue_;
+                        }
+
+                    public:
+                        /**
+                         *  Helper to convert a reader to a factory (something that creates the reader).
+                         */
+                        static ReaderFromVoidStarFactory AsFactory ()
+                        {
+                            return IElementConsumer::AsFactory<Memory::Optional<T>, OldOptionalTypesReader_> ();
                         }
 
                     private:
@@ -160,7 +219,7 @@ namespace Stroika {
 
                     /*
                      ********************************************************************************
-                     ********************** IElementConsumer ******************
+                     ********************************** IElementConsumer ****************************
                      ********************************************************************************
                      */
                     template <typename TARGET_TYPE, typename READER, typename... ARGS>
@@ -171,7 +230,7 @@ namespace Stroika {
 
                     /*
                      ********************************************************************************
-                     ********************** Registry::Context ***************************
+                     ******************************** Registry::Context ****************************
                      ********************************************************************************
                      */
                     inline Context::Context (const Registry& registry)
@@ -247,7 +306,7 @@ namespace Stroika {
                      ************** ObjectReaderRegistry::StructFieldInfo ***************************
                      ********************************************************************************
                      */
-                    inline StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const Memory::Optional<ReaderFromVoidStarFactory>& typeMapper)
+                    inline StructFieldInfo::StructFieldInfo (const Name& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<ReaderFromVoidStarFactory>& typeMapper)
                         : fSerializedFieldName (serializedFieldName)
                         , fFieldMetaInfo (fieldMetaInfo)
                         , fOverrideTypeMapper (typeMapper)
@@ -309,7 +368,7 @@ namespace Stroika {
                             ReaderFromVoidStarFactory factory             = LookupFactoryForName_ (Name{Name::NameType::eValue});
                             fValueFieldConsumer_                          = (factory) (operatingOnObjField);
                             fValueFieldConsumer_->Activated (*fActiveContext_);
-                            fValueFieldMetaInfo_.clear ();
+                            fValueFieldMetaInfo_ = nullopt;
                         }
                         if (fValueFieldConsumer_) {
                             fValueFieldConsumer_->HandleTextInside (text);
@@ -339,7 +398,7 @@ namespace Stroika {
                                     return *i.fOverrideTypeMapper;
                                 }
                                 else {
-                                    Memory::Optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.fTypeInfo);
+                                    optional<ReaderFromVoidStarFactory> o = fActiveContext_->GetObjectReaderRegistry ().Lookup (i.fFieldMetaInfo.fTypeInfo);
 #if qDebug
                                     if (not o.has_value ()) {
                                         DbgTrace (L"(forTypeInfo = %s) - UnRegistered Type!", Characters::ToString (i.fFieldMetaInfo).c_str ());
@@ -708,7 +767,7 @@ namespace Stroika {
                     {
                         Add<T> (MakeCommonReader<T> (forward<ARGS> (args)...));
                     }
-                    inline Memory::Optional<ReaderFromVoidStarFactory> Registry::Lookup (type_index t) const
+                    inline optional<ReaderFromVoidStarFactory> Registry::Lookup (type_index t) const
                     {
                         return fFactories_.Lookup (t);
                     }
@@ -841,10 +900,15 @@ namespace Stroika {
                     {
                         return MakeCommonReader_SimpleReader_<Time::Duration> ();
                     }
+                    template <typename T>
+                    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const optional<T>*)
+                    {
+                        return cvtFactory_<optional<T>> ([](optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OptionalTypesReader_<T>> (o); });
+                    }
                     template <typename T, typename TRAITS>
                     inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const Memory::Optional<T, TRAITS>*)
                     {
-                        return cvtFactory_<Memory::Optional<T>> ([](Memory::Optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OptionalTypesReader_<T>> (o); });
+                        return cvtFactory_<Memory::Optional<T>> ([](Memory::Optional<T>* o) -> shared_ptr<IElementConsumer> { return make_shared<OldOptionalTypesReader_<T>> (o); });
                     }
                     template <typename T>
                     ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const vector<T>*)

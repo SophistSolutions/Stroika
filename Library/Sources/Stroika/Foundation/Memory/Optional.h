@@ -476,7 +476,7 @@ namespace Stroika::Foundation {
              *
              *  @see reset ();
              */
-            nonvirtual void clear ();
+            [[deprecated ("use =nullopt instead, since Stroika v2.1d4")]] nonvirtual void clear ();
 
         public:
             /**

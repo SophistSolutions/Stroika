@@ -385,7 +385,7 @@ namespace Stroika {
                         }
                         this->Invariant ();
                         if (this->Done ()) {
-                            result->clear ();
+                            *result = nullopt;
                         }
                         else {
                             *result = *this->_fCurrent;
@@ -478,7 +478,7 @@ namespace Stroika {
                         }
                         this->Invariant ();
                         if (this->Done ()) {
-                            result->clear ();
+                            *result = nullopt;
                         }
                         else {
                             *result = *this->_fCurrent;

@@ -207,11 +207,11 @@ namespace {
             DurationSecondsType now = Time::GetTickCount ();
             if (fLastSum and accumSummary.fTotalTCPSegments) {
                 Time::DurationSecondsType timespan{now - fLastSum->fAt};
-                accumSummary.fTCPSegmentsPerSecond = (accumSummary.fTotalTCPSegments.Value () - fLastSum->fTotalTCPSegments) / timespan;
+                accumSummary.fTCPSegmentsPerSecond = (ValueOrDefault (accumSummary.fTotalTCPSegments) - fLastSum->fTotalTCPSegments) / timespan;
             }
             if (fLastSum and accumSummary.fTotalTCPRetransmittedSegments) {
                 Time::DurationSecondsType timespan{now - fLastSum->fAt};
-                accumSummary.fTCPRetransmittedSegmentsPerSecond = (accumSummary.fTotalTCPRetransmittedSegments.Value () - fLastSum->fTotalTCPRetransmittedSegments) / timespan;
+                accumSummary.fTCPRetransmittedSegmentsPerSecond = (ValueOrDefault (accumSummary.fTotalTCPRetransmittedSegments) - fLastSum->fTotalTCPRetransmittedSegments) / timespan;
             }
             if (accumSummary.fTotalTCPSegments and accumSummary.fTotalTCPRetransmittedSegments) {
                 fLastSum = LastSum{*accumSummary.fTotalTCPSegments, *accumSummary.fTotalTCPRetransmittedSegments, now};

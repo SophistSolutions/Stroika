@@ -61,7 +61,7 @@ namespace Stroika {
                         *result = *tmp;
                     }
                     else {
-                        result->clear ();
+                        *result = nullopt;
                     }
                 }
                 template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>

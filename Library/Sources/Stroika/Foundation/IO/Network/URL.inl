@@ -90,7 +90,7 @@ namespace Stroika {
                         SetScheme (*scheme); //validates value
                     }
                     else {
-                        fScheme_.clear ();
+                        fScheme_ = nullopt;
                     }
                 }
                 inline String URL::GetHostRelativePath () const

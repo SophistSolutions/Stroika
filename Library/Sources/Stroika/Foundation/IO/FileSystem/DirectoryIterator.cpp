@@ -148,7 +148,7 @@ public:
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (result);
-        result->clear ();
+        *result = nullopt;
 #if qPlatform_POSIX
         if (advance) {
         Again:
