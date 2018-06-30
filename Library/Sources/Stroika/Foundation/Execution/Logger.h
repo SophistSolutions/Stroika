@@ -12,7 +12,6 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/Enumeration.h"
 #include "../Debug/Assertions.h"
-#include "../Memory/Optional.h"
 #include "../Streams/OutputStream.h"
 #include "../Time/Realtime.h"
 #include "Synchronized.h"
@@ -254,13 +253,13 @@ namespace Stroika {
                  *      The duration is the window of time after the last message we wait before emitting the
                  *      last message. A good default for this might be 5 or 10 seconds.
                  */
-                nonvirtual Memory::Optional<Time::DurationSecondsType> GetSuppressDuplicates () const;
+                nonvirtual optional<Time::DurationSecondsType> GetSuppressDuplicates () const;
 
             public:
                 /**
                  *      @see GetSuppressDuplicates ()
                  */
-                nonvirtual void SetSuppressDuplicates (const Memory::Optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
+                nonvirtual void SetSuppressDuplicates (const optional<Time::DurationSecondsType>& suppressDuplicatesThreshold);
 
             public:
                 /**

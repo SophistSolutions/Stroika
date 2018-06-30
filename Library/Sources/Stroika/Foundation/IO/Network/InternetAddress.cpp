@@ -311,7 +311,7 @@ bool InternetAddress::Equals (const InternetAddress& rhs) const
     return Compare (rhs) == 0;
 }
 
-Memory::Optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamily family) const
+optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamily family) const
 {
     if (GetAddressFamily () == family) {
         return *this;
@@ -335,7 +335,7 @@ Memory::Optional<InternetAddress> InternetAddress::AsAddressFamily (AddressFamil
         }
     }
     // @todo - other cases - can SOMETIMES be done!!!
-    return Memory::Optional<InternetAddress>{};
+    return nullopt;
 }
 
 String InternetAddress::ToString () const

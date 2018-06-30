@@ -6,8 +6,9 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Characters/String.h"
-#include "../../Memory/Optional.h"
 
 /**
  *  \file
@@ -22,7 +23,6 @@ namespace Stroika {
             namespace StructuredStreamEvents {
 
                 using Characters::String;
-                using Memory::Optional;
 
                 /**
                  */
@@ -31,7 +31,7 @@ namespace Stroika {
                      *  fNamespaceURI missing treated as 'wildcard' - matching any other URI name, and
                      *  empty string ("") means no namespace (to require no namespace as ns="").
                      */
-                    Optional<String> fNamespaceURI;
+                    optional<String> fNamespaceURI;
                     String           fLocalName;
 
                     /**

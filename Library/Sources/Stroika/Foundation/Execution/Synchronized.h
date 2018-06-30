@@ -459,7 +459,7 @@ namespace Stroika::Foundation {
 
         public:
             /**
-             *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<Optional<xxx>>>).
+             *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
              *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
              *          more clear.
              */
@@ -506,7 +506,7 @@ namespace Stroika::Foundation {
 
         public:
             /**
-             *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<Optional<xxx>>>).
+             *  \note   Considerd losing operator-> here as possibly confusing (e.g. when mixed with Synchronized<optional<xxx>>>).
              *          But you dont need to use it, and this really does act as a smart pointer so it should most often just be
              *          more clear.
              */

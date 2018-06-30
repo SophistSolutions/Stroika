@@ -8,9 +8,9 @@
 
 #include <ios>
 #include <locale>
+#include <optional>
 
 #include "../Configuration/Common.h"
-#include "../Memory/Optional.h"
 
 #include "String.h"
 
@@ -137,11 +137,11 @@ namespace Stroika {
                 nonvirtual String ToString () const;
 
             private:
-                Memory::Optional<unsigned int>            fPrecision_;
-                Memory::Optional<std::ios_base::fmtflags> fFmtFlags_;
-                Memory::Optional<std::locale>             fUseLocale_;
-                Memory::Optional<bool>                    fTrimTrailingZeros_;
-                Memory::Optional<FloatFormatType>         fFloatFormat_;
+                optional<unsigned int>       fPrecision_;
+                optional<ios_base::fmtflags> fFmtFlags_;
+                optional<locale>             fUseLocale_;
+                optional<bool>               fTrimTrailingZeros_;
+                optional<FloatFormatType>    fFloatFormat_;
             };
 
             /**

@@ -90,7 +90,7 @@ namespace {
             s << setiosflags (*options.GetIOSFmtFlags ());
         }
 
-        Optional<unsigned int> precision{options.GetPrecision ()};
+        optional<unsigned int> precision{options.GetPrecision ()};
         unsigned int           usePrecision = precision ? *precision : static_cast<unsigned int> (s.precision ());
         if (precision) {
             s << setprecision (usePrecision);

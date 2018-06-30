@@ -3,6 +3,8 @@
  */
 #include "../../../StroikaPreComp.h"
 
+#include <optional>
+
 #if qHasFeature_WinHTTP
 #include <windows.h>
 
@@ -23,7 +25,6 @@
 #include "../../../Execution/Platform/Windows/Exception.h"
 #include "../../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
-#include "../../../Memory/Optional.h"
 #include "../HTTP/Exception.h"
 #include "../HTTP/Headers.h"
 
@@ -179,7 +180,7 @@ Response Connection_WinHTTP::Rep_::Send (const Request& request)
     BLOB                              data; // usually empty, but provided for some methods like POST
     Mapping<String, String>           headers;
     HTTP::Status                      status{};
-    Optional<Response::SSLResultInfo> serverEndpointSSLInfo;
+    optional<Response::SSLResultInfo> serverEndpointSSLInfo;
 
     Time::DurationSecondsType startOfSendAt = Time::GetTickCount ();
     Time::DurationSecondsType endBy         = fTimeout_ == Time::kInfinite ? Time::kInfinite : (startOfSendAt + fTimeout_);

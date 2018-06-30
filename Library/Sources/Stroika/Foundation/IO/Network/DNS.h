@@ -6,9 +6,10 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Characters/String.h"
 #include "../../Containers/Collection.h"
-#include "../../Memory/Optional.h"
 
 #include "InternetAddress.h"
 
@@ -32,7 +33,6 @@ namespace Stroika {
 
                 using Characters::String;
                 using Containers::Collection;
-                using Memory::Optional;
 
                 /**
                  *  DNS (Domain Name Service) Resolver.
@@ -66,14 +66,14 @@ namespace Stroika {
                     *  Lookup the dns name associated with the given ip address. This uses internet
                     *  DNS PTR records.
                     */
-                    nonvirtual Optional<String> ReverseLookup (const InternetAddress& address) const;
+                    nonvirtual optional<String> ReverseLookup (const InternetAddress& address) const;
 
                 public:
                     /**
                      *  Lookup the dns name associated with the given ip address. This uses internet
                      *  DNS PTR records, but dont through except in extreme (low memory) circumstances. Just return missing.
                      */
-                    nonvirtual Optional<String> QuietReverseLookup (const InternetAddress& address) const;
+                    nonvirtual optional<String> QuietReverseLookup (const InternetAddress& address) const;
 
                 public:
                     /**

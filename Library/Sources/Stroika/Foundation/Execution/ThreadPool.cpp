@@ -97,7 +97,7 @@ private:
  ****************************** Execution::ThreadPool ***************************
  ********************************************************************************
  */
-ThreadPool::ThreadPool (unsigned int nThreads, const Memory::Optional<String>& threadPoolName)
+ThreadPool::ThreadPool (unsigned int nThreads, const optional<String>& threadPoolName)
     : fThreadPoolName_ (threadPoolName)
 {
     SetPoolSize (nThreads);

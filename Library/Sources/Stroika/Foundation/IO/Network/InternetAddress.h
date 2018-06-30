@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #if qPlatform_POSIX
 #include <arpa/inet.h>
 #include <sys/socket.h> // for AF_INET etc
@@ -18,7 +20,6 @@
 
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
-#include "../../Memory/Optional.h"
 #include "InternetProtocol/IP.h"
 
 /**
@@ -185,13 +186,13 @@ namespace Stroika {
                      *
                      *  \note - there are many ways to convert from IPv4 to IPv6, and this uses "6to4" - https://en.wikipedia.org/wiki/6to4
                      */
-                    nonvirtual Memory::Optional<InternetAddress> AsAddressFamily (AddressFamily family) const;
+                    nonvirtual optional<InternetAddress> AsAddressFamily (AddressFamily family) const;
 
                 public:
                     /**
                      *  The size in bytes of the raw address.
                      */
-                    nonvirtual Memory::Optional<size_t> GetAddressSize () const;
+                    nonvirtual optional<size_t> GetAddressSize () const;
 
                 public:
                     /**

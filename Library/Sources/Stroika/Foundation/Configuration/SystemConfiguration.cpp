@@ -54,7 +54,6 @@ using Characters::SDKChar;
 using Characters::String_Constant;
 using Characters::StringBuilder;
 using Memory::Byte;
-using Memory::Optional;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -365,10 +364,10 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         *       Serial          : 0000000000000000
         */
         // Note - /procfs files always unseekable
-        Optional<String>       foundProcessor;
-        Optional<unsigned int> currentProcessorID;
-        Optional<String>       currentModelName;
-        Optional<unsigned int> currentSocketID;
+        optional<String>       foundProcessor;
+        optional<unsigned int> currentProcessorID;
+        optional<String>       currentModelName;
+        optional<unsigned int> currentSocketID;
         for (String line : TextReader::New (FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable)).ReadLines ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"in Configuration::GetSystemConfiguration_CPU capture_ line=%s", line.c_str ());

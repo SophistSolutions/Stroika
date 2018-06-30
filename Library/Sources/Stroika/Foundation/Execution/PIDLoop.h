@@ -147,7 +147,7 @@ namespace Stroika {
                     ValueType fIntegral_  = {};
                 };
                 Synchronized<UpdatableParams_> fUpdatableParams_;
-                Memory::Optional<Thread::Ptr>  fThread_;
+                optional<Thread::Ptr>          fThread_;
             };
         }
     }

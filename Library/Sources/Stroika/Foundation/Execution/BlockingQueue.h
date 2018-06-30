@@ -199,7 +199,7 @@ namespace Stroika {
 
             public:
                 /**
-                 *  Returns the front element from the Q, if there is one, and an empty Optional<T> if
+                 *  Returns the front element from the Q, if there is one, and an empty optional<T> if
                  *  there is none (without blocking).
                  *
                  *  Analagous to the java BlockingQueue<T>::peek() method.

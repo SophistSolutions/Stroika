@@ -20,7 +20,6 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 
-using Memory::Optional;
 using Time::Date;
 using Time::DateTime;
 using Time::Duration;

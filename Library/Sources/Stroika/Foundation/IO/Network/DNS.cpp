@@ -127,7 +127,7 @@ DNS::HostEntry DNS::GetHostEntry (const String& hostNameOrAddress) const
     return result;
 }
 
-Optional<String> DNS::ReverseLookup (const InternetAddress& address) const
+optional<String> DNS::ReverseLookup (const InternetAddress& address) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::ReverseLookup", L"address=%s", Characters::ToString (address).c_str ())};
@@ -154,7 +154,7 @@ Optional<String> DNS::ReverseLookup (const InternetAddress& address) const
     }
 }
 
-Optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
+optional<String> DNS::QuietReverseLookup (const InternetAddress& address) const
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"DNS::HostEntry DNS::ReverseLookup", L"address=%s", Characters::ToString (address).c_str ())};

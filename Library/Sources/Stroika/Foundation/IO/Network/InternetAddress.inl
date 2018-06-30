@@ -94,11 +94,11 @@ namespace Stroika {
                     , fV4_ ({{.S_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24))}})
 #endif
                 {
-// @todo - only these cases supported, and cannot static_assert cuz too many compiler bugs.... Soon... --LGP 2015-08-26
-// static_assert (Configuration::GetEndianness () == Configuration::Endian::eLittle or Configuration::GetEndianness () == Configuration::Endian::eBig, "NYI rare endian");
+                    // @todo - only these cases supported, and cannot static_assert cuz too many compiler bugs.... Soon... --LGP 2015-08-26
+                    // static_assert (Configuration::GetEndianness () == Configuration::Endian::eLittle or Configuration::GetEndianness () == Configuration::Endian::eBig, "NYI rare endian");
 
-//  a.b.c.d: Each of the four numeric parts specifies a byte of the address
-// in left-to-right order. Network order is big-endian
+                    //  a.b.c.d: Each of the four numeric parts specifies a byte of the address
+                    // in left-to-right order. Network order is big-endian
 #if qPlatform_Windows && !__cpp_designators
                     fV4_.s_addr = Configuration::GetEndianness () == Configuration::Endian::eLittleByte ? static_cast<uint32_t> (octet1 + (octet2 << 8) + (octet3 << 16) + (octet4 << 24)) : static_cast<uint32_t> (octet4 + (octet3 << 8) + (octet2 << 16) + (octet1 << 24));
 #endif
@@ -128,7 +128,7 @@ namespace Stroika {
                 {
                     return fAddressFamily_;
                 }
-                inline Memory::Optional<size_t> InternetAddress::GetAddressSize () const
+                inline optional<size_t> InternetAddress::GetAddressSize () const
                 {
                     switch (this->GetAddressFamily ()) {
                         case AddressFamily::V4:
@@ -136,7 +136,7 @@ namespace Stroika {
                         case AddressFamily::V6:
                             return 32;
                         default:
-                            return {};
+                            return nullopt;
                     }
                 }
                 template <>

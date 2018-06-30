@@ -54,11 +54,11 @@ namespace Stroika {
             inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2)
                 : Float2StringOptions (b1)
             {
-                b2.fPrecision_.CopyToIf (&fPrecision_);
-                b2.fFmtFlags_.CopyToIf (&fFmtFlags_);
-                b2.fUseLocale_.CopyToIf (&fUseLocale_);
-                b2.fTrimTrailingZeros_.CopyToIf (&fTrimTrailingZeros_);
-                b2.fFloatFormat_.CopyToIf (&fFloatFormat_);
+                Memory::CopyToIf (b2.fPrecision_, &fPrecision_);
+                Memory::CopyToIf (b2.fFmtFlags_, &fFmtFlags_);
+                Memory::CopyToIf (b2.fUseLocale_, &fUseLocale_);
+                Memory::CopyToIf (b2.fTrimTrailingZeros_, &fTrimTrailingZeros_);
+                Memory::CopyToIf (b2.fFloatFormat_, &fFloatFormat_);
             }
             template <typename... ARGS>
             inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args)

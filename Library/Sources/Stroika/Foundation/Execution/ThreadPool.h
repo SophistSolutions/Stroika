@@ -79,7 +79,7 @@ namespace Stroika {
              */
             class ThreadPool {
             public:
-                ThreadPool (unsigned int nThreads = 0, const Memory::Optional<Characters::String>& threadPoolName = {});
+                ThreadPool (unsigned int nThreads = 0, const optional<Characters::String>& threadPoolName = {});
                 ThreadPool (ThreadPool&&)      = default;
                 ThreadPool (const ThreadPool&) = delete;
 
@@ -272,13 +272,13 @@ namespace Stroika {
                 /*
                  *  @todo - make clear what fCriticalSection_ protects, and maybe redo using synchronized.
                  */
-                mutable recursive_mutex              fCriticalSection_;
-                atomic<bool>                         fAborted_{false};
-                Containers::Collection<TPInfo_>      fThreads_;                                    // all threads, and a data member for thread object, and one for running task, if any
-                list<TaskType>                       fPendingTasks_;                               // tasks not yet running - @todo Use Stroika Queue
-                WaitableEvent                        fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
-                atomic<unsigned int>                 fNextThreadEntryNumber_{1};
-                Memory::Optional<Characters::String> fThreadPoolName_;
+                mutable recursive_mutex         fCriticalSection_;
+                atomic<bool>                    fAborted_{false};
+                Containers::Collection<TPInfo_> fThreads_;                                    // all threads, and a data member for thread object, and one for running task, if any
+                list<TaskType>                  fPendingTasks_;                               // tasks not yet running - @todo Use Stroika Queue
+                WaitableEvent                   fTasksMaybeAdded_{WaitableEvent::eAutoReset}; // recheck for new tasks (or other events - wakeup waiters on fTasks)
+                atomic<unsigned int>            fNextThreadEntryNumber_{1};
+                optional<Characters::String>    fThreadPoolName_;
 
             private:
                 friend class MyRunnable_; // So MyRunnable_ can call WaitForNextTask_()

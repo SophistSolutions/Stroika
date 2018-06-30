@@ -207,18 +207,6 @@ namespace Stroika::Foundation {
         template <typename T>
         using Optional_Traits_Default = Optional_Traits_Inplace_Storage<T>;
 
-#if 0
-        /**
-         *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt_t
-         */
-        using std::nullopt_t;
-#endif
-
-        /**
-         *      @see http://en.cppreference.com/w/cpp/experimental/optional/nullopt
-         */
-        [[deprecated ("use std::nullopt directly - since Stroika v2.1d4")]] constexpr nullopt_t nullopt{std::nullopt};
-
         template <typename T, typename TRAITS>
         class Optional;
 

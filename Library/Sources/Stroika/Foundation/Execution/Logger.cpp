@@ -30,7 +30,6 @@ using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Execution;
 
 using Characters::String_Constant;
-using Memory::Optional;
 using Time::DurationSecondsType;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
@@ -60,8 +59,8 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
     BlockingQueue<pair<Logger::Priority, String>> fOutMsgQ_;
     // @todo FIX - fOutQMaybeNeedsFlush_ setting can cause race - maybe lose this optimization - pretty harmless, but can lose a message
     // race at end of Flush_()
-    bool                                                fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
-    Synchronized<Memory::Optional<DurationSecondsType>> fSuppressDuplicatesThreshold_;
+    bool                                        fOutQMaybeNeedsFlush_{true}; // slight optimization when using buffering
+    Synchronized<optional<DurationSecondsType>> fSuppressDuplicatesThreshold_;
 
     struct LastMsg_ {
         pair<Logger::Priority, String> fLastMsgSent_{};
@@ -111,7 +110,7 @@ struct Logger::Rep_ : enable_shared_from_this<Logger::Rep_> {
         shared_ptr<IAppenderRep> tmp = fAppender_; // avoid races and critical sections (between check and invoke)
         if (tmp != nullptr) {
             while (true) {
-                Optional<pair<Logger::Priority, String>> p = fOutMsgQ_.RemoveHeadIfPossible ();
+                optional<pair<Logger::Priority, String>> p = fOutMsgQ_.RemoveHeadIfPossible ();
                 if (p.has_value ()) {
                     tmp->Log (p->first, p->second);
                 }
@@ -221,7 +220,7 @@ void Logger::Shutdown ()
     Debug::TraceContextBumper ctx ("Logger::Shutdown");
     // @todo FIX to assure all shutdown properly...
     // But this is OK for now pragmatically
-    SetSuppressDuplicates (Memory::Optional<DurationSecondsType>{});
+    SetSuppressDuplicates (optional<DurationSecondsType>{});
     SetBufferingEnabled (false);
     Flush ();
 }
@@ -296,13 +295,13 @@ bool Logger::GetBufferingEnabled () const
     return fRep_->fBufferingEnabled_;
 }
 
-Memory::Optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () const
+optional<Time::DurationSecondsType> Logger::GetSuppressDuplicates () const
 {
     RequireNotNull (fRep_);
     return fRep_->fSuppressDuplicatesThreshold_.load ();
 }
 
-void Logger::SetSuppressDuplicates (const Memory::Optional<DurationSecondsType>& suppressDuplicatesThreshold)
+void Logger::SetSuppressDuplicates (const optional<DurationSecondsType>& suppressDuplicatesThreshold)
 {
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Logger::SetSuppressDuplicates", L"suppressDuplicatesThreshold=%e", suppressDuplicatesThreshold.value_or (-1))};
     Require (not suppressDuplicatesThreshold.has_value () or *suppressDuplicatesThreshold > 0.0);
