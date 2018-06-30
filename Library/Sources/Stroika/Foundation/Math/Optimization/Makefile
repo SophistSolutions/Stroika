@@ -12,7 +12,6 @@ vpath %cpp $(SrcDir)
 
 
 Objs	=	\
-	$(ObjDir)DownhillSimplexMinimization.o\
 
 
 all:	$(ObjDir) $(Objs)
