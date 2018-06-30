@@ -284,7 +284,7 @@ namespace Stroika {
                     shared_ptr<IElementConsumer> ClassReader<T>::HandleChildStart (const Name& name)
                     {
                         RequireNotNull (fActiveContext_);
-                        Optional<StructFieldMetaInfo> ti = fFieldNameToTypeMap_.Lookup (name);
+                        optional<StructFieldMetaInfo> ti = fFieldNameToTypeMap_.Lookup (name);
                         if (ti) {
                             Byte*                     operatingOnObj      = reinterpret_cast<Byte*> (this->fValuePtr_);
                             Byte*                     operatingOnObjField = operatingOnObj + ti->fOffset;
