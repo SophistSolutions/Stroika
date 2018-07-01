@@ -60,7 +60,7 @@ namespace Stroika {
                     ConnectionOrientedStreamSocket (ConnectionOrientedStreamSocket&& s)      = delete;
 
                 public:
-                    static Ptr New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    static Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
 
                 public:
                     /**
@@ -87,9 +87,9 @@ namespace Stroika {
                     struct KeepAliveOptions {
                         bool fEnabled{};
 #if qPlatform_Linux or qPlatform_Windows
-                        Optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
-                        Optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
-                        Optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
+                        optional<unsigned int>              fMaxProbesSentBeforeDrop;              // https://linux.die.net/man/7/tcp TCP_KEEPCNT
+                        optional<Time::DurationSecondsType> fTimeIdleBeforeSendingKeepalives;      // https://linux.die.net/man/7/tcp TCP_KEEPIDLE
+                        optional<Time::DurationSecondsType> fTimeBetweenIndividualKeepaliveProbes; // https://linux.die.net/man/7/tcp TCP_KEEPINTVL
 #endif
                         /**
                          *  @see Characters::ToString ();

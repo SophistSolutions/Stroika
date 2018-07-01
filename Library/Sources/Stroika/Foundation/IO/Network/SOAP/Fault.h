@@ -6,8 +6,9 @@
 
 #include "../../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../../Characters/String.h"
-#include "../../../Memory/Optional.h"
 #include "../../../Streams/InputStream.h"
 
 /*
@@ -23,7 +24,6 @@ namespace Stroika {
 
                     using Characters::String;
                     using Memory::Byte;
-                    using Memory::Optional;
                     using Streams::InputStream;
                     /*
                      *      SUPER PRIMITIVE PRELIMINARY DRAFT support for SOAP...
@@ -35,8 +35,8 @@ namespace Stroika {
                         String faultstring;
                         //BLOB    detail;     // NYI
                     };
-                    Optional<Fault> Deserialize_Fault (const Streams::InputStream<Byte>::Ptr& from);
-                    Optional<Fault> Deserialize_Fault (const Memory::BLOB& from);
+                    optional<Fault> Deserialize_Fault (const Streams::InputStream<Byte>::Ptr& from);
+                    optional<Fault> Deserialize_Fault (const Memory::BLOB& from);
                 }
             }
         }

@@ -64,15 +64,15 @@ namespace Stroika {
                         return GetDefaultPortForScheme (GetSchemeValue ()).value_or (defaultValue);
                     }
                 }
-                inline Memory::Optional<URL::PortType> URL::GetPortNumber () const
+                inline optional<URL::PortType> URL::GetPortNumber () const
                 {
                     return fPort_;
                 }
-                inline void URL::SetPortNumber (const Optional<PortType>& portNum)
+                inline void URL::SetPortNumber (const optional<PortType>& portNum)
                 {
                     fPort_ = portNum;
                 }
-                inline Optional<URL::SchemeType> URL::GetScheme () const
+                inline optional<URL::SchemeType> URL::GetScheme () const
                 {
                     return fScheme_;
                 }
@@ -84,7 +84,7 @@ namespace Stroika {
                 {
                     fHost_ = host;
                 }
-                inline void URL::SetScheme (const Optional<SchemeType>& scheme)
+                inline void URL::SetScheme (const optional<SchemeType>& scheme)
                 {
                     if (scheme) {
                         SetScheme (*scheme); //validates value

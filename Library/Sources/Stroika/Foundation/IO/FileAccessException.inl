@@ -21,11 +21,11 @@ namespace Stroika {
              ***************************** IO::FileAccessException **************************
              ********************************************************************************
              */
-            inline Memory::Optional<String> FileAccessException::GetFileName () const
+            inline optional<String> FileAccessException::GetFileName () const
             {
                 return fFileName_;
             }
-            inline Memory::Optional<FileAccessMode> FileAccessException::GetFileAccessMode () const
+            inline optional<FileAccessMode> FileAccessException::GetFileAccessMode () const
             {
                 return fFileAccessMode_;
             }

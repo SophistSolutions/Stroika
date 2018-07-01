@@ -50,7 +50,7 @@ namespace Stroika {
                      *  \note ConnectionOrientedMasterSocket is not copyable, but it can be copied into a ConnectionOrientedMasterSocket::Ptr or
                      *        Socket::Ptr.  This is critical to save them in a container, for example.
                      */
-                    static Ptr New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    static Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
 
                 public:
                     /**

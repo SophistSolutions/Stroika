@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../Characters/String.h"
 #include "../Execution/StringException.h"
 #include "../Memory/Optional.h"
@@ -26,26 +28,26 @@ namespace Stroika {
              */
             class FileAccessException : public Execution::StringException {
             public:
-                FileAccessException (const Memory::Optional<String>& fileName = {}, const Memory::Optional<FileAccessMode>& fileAccessMode = {});
+                FileAccessException (const optional<String>& fileName = {}, const optional<FileAccessMode>& fileAccessMode = {});
 
             public:
                 /**
                  *  If filename not specified, empty string returned (backwards compat)
                  */
-                nonvirtual Memory::Optional<String> GetFileName () const;
+                nonvirtual optional<String> GetFileName () const;
 
             public:
                 /**
                  *  If fileAccessMode not specified, FileAccessMode::eReadWrite returned (backwards compat)
                  */
-                nonvirtual Memory::Optional<FileAccessMode> GetFileAccessMode () const;
+                nonvirtual optional<FileAccessMode> GetFileAccessMode () const;
 
             public:
                 nonvirtual FileAccessMode GetFileAccessModeValue (FileAccessMode defaultVal = FileAccessMode::eReadWrite) const { return fFileAccessMode_.value_or (defaultVal); }
 
             private:
-                Memory::Optional<String>         fFileName_;
-                Memory::Optional<FileAccessMode> fFileAccessMode_;
+                optional<String>         fFileName_;
+                optional<FileAccessMode> fFileAccessMode_;
             };
 
             /**
@@ -78,7 +80,7 @@ namespace Stroika {
                 (Memory::Optional<IO::FileAccessMode>{USEACCESSMODE}.OptionalValue (e.GetFileAccessMode ()))));    \
     }
 
-/**
+            /**
              *  Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER()
              *
              *  @see Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAME_ACCCESS_HELPER

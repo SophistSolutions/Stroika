@@ -17,7 +17,7 @@ using namespace Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace {
-    wstring mkMessage_ (const Memory::Optional<String>& fileName, const Memory::Optional<FileAccessMode>& fileAccessMode)
+    wstring mkMessage_ (const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
     {
         DISABLE_COMPILER_MSC_WARNING_START (4800)
         wstring message;
@@ -40,7 +40,7 @@ namespace {
         return message;
     }
 }
-FileAccessException::FileAccessException (const Memory::Optional<String>& fileName, const Memory::Optional<FileAccessMode>& fileAccessMode)
+FileAccessException::FileAccessException (const optional<String>& fileName, const optional<FileAccessMode>& fileAccessMode)
     : StringException (mkMessage_ (fileName, fileAccessMode))
     , fFileName_ (fileName)
     , fFileAccessMode_ (fileAccessMode)

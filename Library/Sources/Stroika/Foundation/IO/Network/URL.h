@@ -11,7 +11,6 @@
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Containers/Mapping.h"
-#include "../../Memory/Optional.h"
 
 /**
  *  \file
@@ -70,12 +69,11 @@ namespace Stroika {
             namespace Network {
 
                 using Characters::String;
-                using Memory::Optional;
 
                 /**
                  *  Probably should define standard protos here - with named constants - like http/ftp/https etc
                  */
-                Optional<uint16_t> GetDefaultPortForScheme (const String& proto);
+                optional<uint16_t> GetDefaultPortForScheme (const String& proto);
 
                 /**
                  */
@@ -194,7 +192,7 @@ namespace Stroika {
                      *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
                      */
                     URL ();
-                    URL (const SchemeType& scheme, const String& host, const Optional<PortType>& portNumber = Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
+                    URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber = nullopt, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
                     URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
                     URL (const String& urlText, ParseOptions po);
 
@@ -233,13 +231,13 @@ namespace Stroika {
                      *  @see GetPortValue
                      *  @see SetPortNumber
                      */
-                    nonvirtual Optional<PortType> GetPortNumber () const;
+                    nonvirtual optional<PortType> GetPortNumber () const;
 
                 public:
                     /**
                      *  @see GetPortNumber ();
                      */
-                    nonvirtual void SetPortNumber (const Optional<PortType>& portNum = Optional<PortType> ());
+                    nonvirtual void SetPortNumber (const optional<PortType>& portNum = nullopt);
 
                 public:
                     /**
@@ -280,7 +278,7 @@ namespace Stroika {
                     /**
                      *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
                      */
-                    nonvirtual Memory::Optional<SchemeType> GetScheme () const;
+                    nonvirtual optional<SchemeType> GetScheme () const;
 
                 public:
                     /**
@@ -293,7 +291,7 @@ namespace Stroika {
                      *  Since From http://www.ietf.org/rfc/rfc1738.txt suggests mapping upper case to lower case, this function does that.
                      *  But other violations in the format of a protocol generate exceptions.
                      */
-                    nonvirtual void SetScheme (const Optional<SchemeType>& scheme);
+                    nonvirtual void SetScheme (const optional<SchemeType>& scheme);
                     nonvirtual void SetScheme (const SchemeType& scheme);
 
                 public:
@@ -397,9 +395,9 @@ namespace Stroika {
                     nonvirtual String ToString () const;
 
                 private:
-                    Optional<String>   fScheme_; // aka protocol
+                    optional<String>   fScheme_; // aka protocol
                     String             fHost_;
-                    Optional<PortType> fPort_;
+                    optional<PortType> fPort_;
                     String             fRelPath_;
                     String             fQuery_;
                     String             fFragment_;

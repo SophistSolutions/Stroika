@@ -22,7 +22,6 @@ using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::Network;
 
 using Characters::String_Constant;
-using Memory::Optional;
 
 namespace {
     URL::SchemeType NormalizeScheme_ (const URL::SchemeType& s)
@@ -64,7 +63,7 @@ namespace {
  ********************* Network::GetDefaultPortForScheme *************************
  ********************************************************************************
  */
-Optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
+optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
 {
     static const String_Constant kHTTPScheme_{L"http"};
     static const String_Constant kHTTPSScheme_{L"https"};
@@ -88,7 +87,7 @@ Optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
     if (proto == String_Constant (L"ftps")) {
         return 990;
     }
-    return Optional<uint16_t>{};
+    return nullopt;
 }
 
 /*
@@ -250,7 +249,7 @@ URL URL::Parse (const String& w, ParseOptions po)
     return result;
 }
 
-URL::URL (const SchemeType& scheme, const String& host, const Optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
+URL::URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber, const String& relPath, const String& query, const String& fragment)
     : fScheme_ (NormalizeScheme_ (scheme))
     , fHost_ (host)
     , fPort_ (portNumber)

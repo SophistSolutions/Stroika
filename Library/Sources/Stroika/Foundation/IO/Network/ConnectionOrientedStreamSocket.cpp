@@ -291,7 +291,7 @@ Characters::String Network::ConnectionOrientedStreamSocket::KeepAliveOptions::To
  ******************** ConnectionOrientedStreamSocket ****************************
  ********************************************************************************
  */
-ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol)
+ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol)
 {
     return Ptr{make_shared<ConnectionOrientedStreamSocket_IMPL_::Rep_> (mkLowLevelSocket_ (family, socketKind, protocol))};
 }
