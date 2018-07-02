@@ -7,9 +7,9 @@
 #include "../StroikaPreComp.h"
 
 #include <memory>
+#include <optional>
 
 #include "../Configuration/Common.h"
-#include "../Memory/Optional.h"
 
 #include "InputStream.h"
 #include "InternallySyncrhonizedInputStream.h"

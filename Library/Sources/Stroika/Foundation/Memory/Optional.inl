@@ -771,6 +771,32 @@ namespace Stroika::Foundation {
 
         /*
          ********************************************************************************
+         ******************************** AccumulateIf **********************************
+         ********************************************************************************
+         */
+        template <typename T, typename OP>
+        void AccumulateIf (optional<T>* lhsOptionalValue, const optional<T>& rhsOptionalValue, const OP& op)
+        {
+            if (*lhsOptionalValue) {
+                if (rhsOptionalValue) {
+                    *lhsOptionalValue = op (**lhsOptionalValue, *rhsOptionalValue);
+                }
+            }
+            else if (rhsOptionalValue) {
+                *lhsOptionalValue = rhsOptionalValue;
+            }
+        }
+        template <typename T, typename OP>
+        void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsOptionalValue, const OP& op)
+        {
+            if (*lhsOptionalValue) {
+                *lhsOptionalValue = op (**lhsOptionalValue, rhsOptionalValue);
+            }
+            *lhsOptionalValue = rhsOptionalValue;
+        }
+
+        /*
+         ********************************************************************************
          ************************************ CopyToIf **********************************
          ********************************************************************************
          */

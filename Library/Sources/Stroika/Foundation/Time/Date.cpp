@@ -285,7 +285,7 @@ String Date::Format (PrintFormat pf) const
              *      12/05/00 to 12/05, but DONT map 12/15/2000 to 12/15/2000
              */
             static const String_Constant kZero_ = String_Constant (L"0");
-            Memory::Optional<size_t>     i      = 0;
+            optional<size_t>             i      = 0;
             while ((i = tmp.Find (kZero_, *i))) {
                 // any 0N (where n a digit) is replaced with a single '0'
                 Assert (tmp[*i] == '0');

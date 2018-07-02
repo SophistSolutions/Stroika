@@ -19,7 +19,6 @@ using namespace Stroika::Foundation::Streams;
 using Characters::String;
 using Characters::String_Constant;
 using Memory::Byte;
-using Memory::Optional;
 
 namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
@@ -454,8 +453,8 @@ private:
     Traversal::Iterable<Character> fSource_;
     Traversal::Iterator<Character> fSrcIter_;
     size_t                         fOffset_{};
-    Optional<Character>            fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
-    Optional<Character>            fPutBack_{};
+    optional<Character>            fPrevCharCached_{}; // fPrevCharCached_/fPutBack_ speed hack to support IsAtEOF (), and Peek () more efficiently, little cost, big cost avoidance for seek
+    optional<Character>            fPutBack_{};
 };
 
 /*
@@ -468,7 +467,7 @@ namespace {
 }
 
 namespace {
-    const MyWCharTConverterType_& LookupCharsetConverter_ (const Optional<Characters::String>& charset)
+    const MyWCharTConverterType_& LookupCharsetConverter_ (const optional<Characters::String>& charset)
     {
         if (not charset.has_value ()) {
             return kUTF8Converter_; // not sure this is best? HTTP 1.1 spec says to default to ISO-8859-1
@@ -477,7 +476,7 @@ namespace {
     }
 }
 
-auto TextReader::New (const Memory::BLOB& src, const Optional<Characters::String>& charset) -> Ptr
+auto TextReader::New (const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
 {
     Ptr p = TextReader::New (src.As<InputStream<Byte>::Ptr> (), charset, true);
     Ensure (p.IsSeekable ());
@@ -491,7 +490,7 @@ auto TextReader::New (const InputStream<Byte>::Ptr& src, bool seekable) -> Ptr
     return p;
 }
 
-auto TextReader::New (const InputStream<Byte>::Ptr& src, const Optional<Characters::String>& charset, bool seekable) -> Ptr
+auto TextReader::New (const InputStream<Byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
 {
     Ptr p = TextReader::New (src, LookupCharsetConverter_ (charset), seekable);
     Ensure (p.IsSeekable () == seekable);
@@ -527,7 +526,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const Optional<Characters::String>& charset) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& src, const optional<Characters::String>& charset) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -557,7 +556,7 @@ auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, const Optional<Characters::String>& charset, bool seekable) -> Ptr
+auto TextReader::New (Execution::InternallySyncrhonized internallySyncrhonized, const InputStream<Byte>::Ptr& src, const optional<Characters::String>& charset, bool seekable) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:

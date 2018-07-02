@@ -376,7 +376,7 @@ String TimeOfDay::Format (PrintFormat pf) const
              *  Adjust String API so this code can be made clear!
              *          -- LGP 2013-03-02
              */
-            Memory::Optional<size_t> i;
+            optional<size_t> i;
             while ((i = tmp.RFind (L":00"))) {
                 // if its a TRAILING :00 - lose it...
                 bool trailing = false;

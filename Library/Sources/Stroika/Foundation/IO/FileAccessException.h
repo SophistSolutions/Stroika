@@ -76,8 +76,8 @@ namespace Stroika {
     {                                                                                                              \
         Stroika::Foundation::Execution::Throw (                                                                    \
             Stroika::Foundation::IO::FileAccessException (                                                         \
-                (Memory::Optional<Characters::String>{USEFILENAME}.OptionalValue (e.GetFileName ())),              \
-                (Memory::Optional<IO::FileAccessMode>{USEACCESSMODE}.OptionalValue (e.GetFileAccessMode ()))));    \
+                (Memory::OptionalValue (optional<Characters::String>{USEFILENAME}, e.GetFileName ())),             \
+                (Memory::OptionalValue (optional<IO::FileAccessMode>{USEACCESSMODE}, e.GetFileAccessMode ()))));   \
     }
 
             /**

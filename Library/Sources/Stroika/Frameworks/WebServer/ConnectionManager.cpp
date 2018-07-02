@@ -17,7 +17,6 @@
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
-#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "DefaultFaultInterceptor.h"
@@ -41,7 +40,7 @@ using Execution::Thread;
 namespace {
     struct ServerHeadersInterceptor_ : public Interceptor {
         struct Rep_ : Interceptor::_IRep {
-            Rep_ (const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
+            Rep_ (const optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
                 : fServerHeader_ (serverHeader)
                 , fCORSModeSupport (corsSupportMode)
             {

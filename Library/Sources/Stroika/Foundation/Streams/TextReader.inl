@@ -10,33 +10,31 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
+namespace Stroika::Foundation {
+    namespace Streams {
 
-            /*
-             ********************************************************************************
-             *********************************** TextReader::Ptr ****************************
-             ********************************************************************************
-             */
-            inline TextReader::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
-                : inherited (from)
-            {
-            }
-            inline TextReader::Ptr::Ptr (const InputStream<Character>::Ptr& from)
-                : inherited (from)
-            {
-            }
+        /*
+         ********************************************************************************
+         *********************************** TextReader::Ptr ****************************
+         ********************************************************************************
+         */
+        inline TextReader::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
+            : inherited (from)
+        {
+        }
+        inline TextReader::Ptr::Ptr (const InputStream<Character>::Ptr& from)
+            : inherited (from)
+        {
+        }
 
-            /*
-             ********************************************************************************
-             *********************************** TextReader *********************************
-             ********************************************************************************
-             */
-            inline auto TextReader::New (const InputStream<Character>::Ptr& src) -> Ptr
-            {
-                return src;
-            }
+        /*
+         ********************************************************************************
+         *********************************** TextReader *********************************
+         ********************************************************************************
+         */
+        inline auto TextReader::New (const InputStream<Character>::Ptr& src) -> Ptr
+        {
+            return src;
         }
     }
 }

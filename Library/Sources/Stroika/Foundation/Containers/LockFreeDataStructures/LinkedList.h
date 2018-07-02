@@ -11,7 +11,6 @@
 #include "../../Configuration/TypeHints.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Memory/BlockAllocated.h"
-#include "../../Memory/Optional.h"
 
 #include "../Common.h"
 
@@ -35,7 +34,7 @@ namespace Stroika {
                 /*
                  *      https://en.wikipedia.org/wiki/Non-blocking_linked_list
                  *
-                 *      or better – Herb Sutter provides a C++ implementation:
+                 *      or better ï¿½ Herb Sutter provides a C++ implementation:
                  *      https://www.infoq.com/news/2014/10/cpp-lock-free-programming
                  */
                 template <typename T>

@@ -33,11 +33,11 @@
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
- *      @todo   Review how we use 'empty()'. Efficient, but might be cleaner design to use Optional
+ *      @todo   Review how we use 'empty()'. Efficient, but might be cleaner design to use optional
  *              and in places that use TimeOfDay::empty () and lose the concept of empty here?
  *
  *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
- *               use Optional<>
+ *               use optional<>
  *
  *              PROS:   probably more logical and typesafe; empty is kindof a 'sentinal' value used
  *                      typically used to represent not present
@@ -51,11 +51,11 @@
  *
  *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
  *              Same format
- *              That doesn’t use std::locale()
+ *              That doesnï¿½t use std::locale()
  *              En.cppreference.com/w/cpp/io/manip/get_time
- *              istringstream xxx (“2011-feb…”)
- *              ss.imbue(std::locale() (“de-DE”));
- *              ss >> std::get_time(&t, “%FT%T%z”)
+ *              istringstream xxx (ï¿½2011-febï¿½ï¿½)
+ *              ss.imbue(std::locale() (ï¿½de-DEï¿½));
+ *              ss >> std::get_time(&t, ï¿½%FT%T%zï¿½)
  *
  *      @todo   Locale based parsing code seems quite poor. Haven't really evaluated locale-based
  *              print code (but I'm not optimistic). I'm not sure if I have it wrong, or if it just
@@ -65,7 +65,7 @@
  *              looks terrible - military format - full zero precision - even if not needed?).
  *              MAYBE try %EX is the locale's alternative time representation.
  *
- *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) –
+ *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) ï¿½
  *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
  *              locking to bump refcount?
  *

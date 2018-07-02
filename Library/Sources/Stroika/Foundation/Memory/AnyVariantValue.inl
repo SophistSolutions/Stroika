@@ -74,9 +74,9 @@ namespace Stroika {
                 return t->fValue;
             }
             template <typename RETURNTYPE>
-            inline Optional<RETURNTYPE> AnyVariantValue::IfAs () const
+            inline optional<RETURNTYPE> AnyVariantValue::IfAs () const
             {
-                return empty () ? Optional<RETURNTYPE>{} : As<RETURNTYPE> ();
+                return empty () ? optional<RETURNTYPE>{} : As<RETURNTYPE> ();
             }
         }
     }

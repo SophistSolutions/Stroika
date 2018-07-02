@@ -159,9 +159,9 @@ namespace Stroika {
                      *  This is just for use the with the ObjectReaderRegistry::AddClass<> (and related) methods, to describe a user-defined type (CLASS).
                      */
                     struct StructFieldInfo {
-                        Name                                                         fSerializedFieldName;
-                        StructFieldMetaInfo                                          fFieldMetaInfo;
-                        Memory::Optional_Indirect_Storage<ReaderFromVoidStarFactory> fOverrideTypeMapper;
+                        Name                                fSerializedFieldName;
+                        StructFieldMetaInfo                 fFieldMetaInfo;
+                        optional<ReaderFromVoidStarFactory> fOverrideTypeMapper;
 
                         /**
                          */

@@ -24,7 +24,7 @@ namespace Stroika::Foundation {
         template <typename ELEMENT_TYPE>
         class InputSubStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
         public:
-            Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const Memory::Optional<SeekOffsetType>& start, const Memory::Optional<SeekOffsetType>& end)
+            Rep_ (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end)
                 : InputStream<ELEMENT_TYPE>::_IRep ()
                 , fRealIn_ (realIn)
                 , fOffsetMine2Real_ (start.value_or (realIn.GetOffset ()))

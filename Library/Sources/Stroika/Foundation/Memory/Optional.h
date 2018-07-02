@@ -30,6 +30,8 @@
  *              >   Value () - what they call value_or - should take T{} as default argument. About 25% of teh time
  *                  thats what I want, and its much more clear/terse.
  *
+ *              >   Accumulate method, and operator +=, operator-= etc overloads calling Accumulate(). Much simpler
+ *                  and more elegant code with those methods.
  *
  *      @todo   BIG ITEM - MOSTLY get rid of this. Maybe not totally. But std::optional is pretty good, and sensible
  *              to use in Stroika. If I can find a way to extend it compatibly (say by subclassing and object slicing)
@@ -749,6 +751,31 @@ namespace Stroika::Foundation {
             template <typename T2, typename TRAITS2>
             friend class Optional;
         };
+
+        /**
+         *  EXPERIEMNTAL - 2015-04-24
+         *  \brief  AccumulateIf () add in the rhs argument value to lhs optional, but if both were missing leave 'lhs'
+         *          as still missing, and if only RHS available, assign it to the left.
+         *
+         *  \par Example Usage
+         *      \code
+         *          optional<int>   accumulator;
+         *          optional<int>   SomeFunctionToGetOptionalValue();
+         *          if (accumulator or (tmp = SomeFunctionToGetOptionalValue())) {
+         *              accumulator = accumulator.Value () + tmp;
+         *          }
+         *      \endcode
+         *      VERSUS
+         *      \code
+         *          accumulator.AccumulateIf (SomeFunctionToGetOptionalValue ());
+         *      \endcode
+         *
+         *      \note   ITS CONFUSING direction of if-test for this versus CopyToIf
+         */
+        template <typename T, typename OP = std::plus<T>>
+        void AccumulateIf (optional<T>* lhsOptionalValue, const optional<T>& rhsOptionalValue, const OP& op = OP{});
+        template <typename T, typename OP = std::plus<T>>
+        void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsOptionalValue, const OP& op = OP{});
 
         /**
          *  Assign the value held by this optional if one is present to destination argument (pointer). Assigns from left to right.

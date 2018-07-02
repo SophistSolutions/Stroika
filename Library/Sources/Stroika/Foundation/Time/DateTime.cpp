@@ -292,7 +292,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             if (nItems >= 5) {
                 t = TimeOfDay (hour * 60 * 60 + minute * 60 + second);
             }
-            Optional<Timezone> tz;
+            optional<Timezone> tz;
             if (tzKnown) {
                 if (tzUTC) {
                     tz = Timezone::UTC ();
@@ -414,7 +414,7 @@ DateTime DateTime::FromTickCount (DurationSecondsType tickCount)
 
 optional<bool> DateTime::IsDaylightSavingsTime () const
 {
-    if (Optional<Timezone> otz = GetTimezone ()) {
+    if (optional<Timezone> otz = GetTimezone ()) {
         return otz->IsDaylightSavingsTime (GetDate (), GetTimeOfDay ());
     }
     return {};

@@ -78,7 +78,7 @@ Traversal::Iterable<String> InputStream<Character>::Ptr::ReadLines () const
     return Traversal::CreateGenerator<String> ([copyOfStream]() -> Memory::Optional<String> {
         String line = copyOfStream.ReadLine ();
         if (line.empty ()) {
-            return Memory::Optional<String> ();
+            return nullopt;
         }
         else {
             return line;

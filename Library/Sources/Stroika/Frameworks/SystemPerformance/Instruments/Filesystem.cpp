@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <functional>
+
 #if qPlatform_POSIX
 #include <sys/stat.h>
 #include <sys/statvfs.h>
@@ -63,7 +65,7 @@ using Time::DurationSecondsType;
  ********* Instruments::Filesystem::IOStatsType::EstimatedPercentInUse **********
  ********************************************************************************
  */
-Optional<double> IOStatsType::EstimatedPercentInUse () const
+optional<double> IOStatsType::EstimatedPercentInUse () const
 {
     if (fInUsePercent) {
         return fInUsePercent;
@@ -76,7 +78,7 @@ Optional<double> IOStatsType::EstimatedPercentInUse () const
         Require (0 <= pct and pct <= 100.0);
         return pct;
     }
-    return Optional<double> ();
+    return nullopt;
 }
 
 // for io stats
@@ -268,7 +270,7 @@ namespace {
             double fWeightedTimeInQSeconds; // see https://www.kernel.org/doc/Documentation/block/stat.txt  time_in_queue (product of the number of milliseconds times the number of requests waiting)
         };
         Mapping<String, uint32_t>            fDeviceName2SectorSizeMap_;
-        Optional<Mapping<dev_t, PerfStats_>> fContextStats_;
+        optional<Mapping<dev_t, PerfStats_>> fContextStats_;
 
     public:
         CapturerWithContext_Linux_ (Options options)
@@ -382,8 +384,8 @@ namespace {
                                     continue;
                                 }
                             }
-                            Optional<PerfStats_> oOld = fContextStats_->Lookup (useDevT);
-                            Optional<PerfStats_> oNew = diskStats.Lookup (useDevT);
+                            optional<PerfStats_> oOld = fContextStats_->Lookup (useDevT);
+                            optional<PerfStats_> oNew = diskStats.Lookup (useDevT);
                             if (oOld.has_value () and oNew.has_value ()) {
                                 unsigned int sectorSizeTmpHack = GetSectorSize_ (devNameLessSlashes);
                                 IOStatsType  readStats;
@@ -419,7 +421,7 @@ namespace {
         }
 
     private:
-        Optional<String> GetSysBlockDirPathForDevice_ (const String& deviceName)
+        optional<String> GetSysBlockDirPathForDevice_ (const String& deviceName)
         {
             Require (not deviceName.empty ());
             Require (not deviceName.Contains (L"/"));
@@ -437,7 +439,7 @@ namespace {
             if (IO::FileSystem::Default ().Access (tmp)) {
                 return tmp;
             }
-            return Optional<String> ();
+            return nullopt;
         }
 
     private:
@@ -445,7 +447,7 @@ namespace {
         {
             auto o = fDeviceName2SectorSizeMap_.Lookup (deviceName);
             if (not o.has_value ()) {
-                Optional<String> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName);
+                optional<String> blockDeviceInfoPath = GetSysBlockDirPathForDevice_ (deviceName);
                 if (blockDeviceInfoPath) {
                     String fn = *blockDeviceInfoPath + L"queue/hw_sector_size";
                     try {
@@ -620,9 +622,9 @@ namespace {
                     String           sectorsWritten     = line[10 - 1];
                     String           timeSpentWritingMS = line[11 - 1];
                     constexpr bool   kAlsoReadQLen_{true};
-                    Optional<double> weightedTimeInQSeconds;
+                    optional<double> weightedTimeInQSeconds;
                     if (kAlsoReadQLen_) {
-                        Optional<String> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
+                        optional<String> sysBlockInfoPath = GetSysBlockDirPathForDevice_ (devName);
                         if (sysBlockInfoPath) {
                             for (Sequence<String> ll : reader.ReadMatrix (FileInputStream::New (*sysBlockInfoPath + L"stat", FileInputStream::eNotSeekable))) {
                                 if (ll.size () >= 11) {
@@ -703,7 +705,7 @@ namespace {
         }
 
     private:
-        Optional<String> GetDeviceNameForVolumneName_ (const String& volumeName)
+        optional<String> GetDeviceNameForVolumneName_ (const String& volumeName)
         {
             //  use
             //      http://msdn.microsoft.com/en-us/library/windows/desktop/cc542456(v=vs.85).aspx
@@ -722,7 +724,7 @@ namespace {
                 tmp[tmp.length () - 1] != L'\\') {
                 //Error = ERROR_BAD_PATHNAME;
                 //wprintf(L"FindFirstVolumeW/FindNextVolumeW returned a bad path: %s\n", VolumeName);
-                return Optional<String> ();
+                return nullopt;
             }
             tmp = tmp.SubString (4, -1);
 
@@ -730,7 +732,7 @@ namespace {
             if (::QueryDosDeviceW (tmp.c_str (), deviceName, ARRAYSIZE (deviceName)) != 0) {
                 return String{deviceName};
             }
-            return Optional<String> ();
+            return nullopt;
         }
 
         Info capture_Windows_GetVolumeInfo_ ()
@@ -846,12 +848,12 @@ namespace {
                         }
 
                         IOStatsType combinedStats = readStats;
-                        combinedStats.fBytesTransfered.AccumulateIf (writeStats.fBytesTransfered);
-                        combinedStats.fTotalTransfers.AccumulateIf (writeStats.fTotalTransfers);
-                        combinedStats.fQLength.AccumulateIf (writeStats.fQLength);
-                        combinedStats.fInUsePercent.AccumulateIf (writeStats.fInUsePercent);
+                        Memory::AccumulateIf (&combinedStats.fBytesTransfered, writeStats.fBytesTransfered);
+                        Memory::AccumulateIf (&combinedStats.fTotalTransfers, writeStats.fTotalTransfers);
+                        Memory::AccumulateIf (&combinedStats.fQLength, writeStats.fQLength);
+                        Memory::AccumulateIf (&combinedStats.fInUsePercent, writeStats.fInUsePercent);
                         if (readStats.fInUsePercent and writeStats.fInUsePercent) {
-                            combinedStats.fInUsePercent /= 2;
+                            Memory::AccumulateIf (&combinedStats.fInUsePercent, 2.0, std::divides{});
                         }
 
                         if (kUsePctIdleIimeForAveQLen_) {
@@ -861,8 +863,8 @@ namespace {
                                     // for some reason, the pct-idle-time #s combined are OK, but #s for aveQLen and disk read PCT/Write PCT wrong.
                                     // asusme ratio rate, and scale
                                     double correction = aveCombinedQLen / *combinedStats.fQLength;
-                                    readStats.fQLength *= correction;
-                                    writeStats.fQLength *= correction;
+                                    Memory::AccumulateIf (&readStats.fQLength, correction, std::multiplies{});
+                                    Memory::AccumulateIf (&writeStats.fQLength, correction, std::multiplies{});
                                 }
                                 combinedStats.fQLength = aveCombinedQLen;
                             }
@@ -948,13 +950,13 @@ namespace {
                             //Assert (0.0 <= scaleFactor and scaleFactor <= 1.0);
                             scaleFactor = Math::PinInRange (scaleFactor, 0.0, 1.0);
                             if (computeInuse and diskIOStats.fInUsePercent) {
-                                cumStats.fInUsePercent += *diskIOStats.fInUsePercent * scaleFactor;
+                                Memory::AccumulateIf<double> (&cumStats.fInUsePercent, *diskIOStats.fInUsePercent * scaleFactor);
                             }
                             if (computeQLen and diskIOStats.fInUsePercent) {
-                                cumStats.fQLength += *diskIOStats.fQLength * scaleFactor;
+                                Memory::AccumulateIf<double> (&cumStats.fQLength, *diskIOStats.fQLength * scaleFactor);
                             }
                             if (computeTotalXFers and diskIOStats.fTotalTransfers) {
-                                cumStats.fTotalTransfers += *diskIOStats.fTotalTransfers * scaleFactor;
+                                Memory::AccumulateIf<double> (&cumStats.fTotalTransfers, *diskIOStats.fTotalTransfers * scaleFactor);
                             }
                         }
                     }
@@ -1030,11 +1032,11 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
     static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        mapper.AddCommonType<Optional<double>> ();
-        mapper.AddCommonType<Optional<uint64_t>> ();
-        mapper.AddCommonType<Optional<String>> ();
+        mapper.AddCommonType<optional<double>> ();
+        mapper.AddCommonType<optional<uint64_t>> ();
+        mapper.AddCommonType<optional<String>> ();
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<BlockDeviceKind> ());
-        mapper.AddCommonType<Optional<BlockDeviceKind>> ();
+        mapper.AddCommonType<optional<BlockDeviceKind>> ();
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<IOStatsType> (initializer_list<StructFieldInfo>{
             {L"Bytes", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fBytesTransfered), StructFieldInfo::eOmitNullFields},
@@ -1042,7 +1044,7 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             {L"In-Use-%", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fInUsePercent), StructFieldInfo::eOmitNullFields},
             {L"Total-Transfers", Stroika_Foundation_DataExchange_StructFieldMetaInfo (IOStatsType, fTotalTransfers), StructFieldInfo::eOmitNullFields},
         });
-        mapper.AddCommonType<Optional<IOStatsType>> ();
+        mapper.AddCommonType<optional<IOStatsType>> ();
         mapper.AddClass<DiskInfoType> (initializer_list<StructFieldInfo>{
             {L"Persistence-Volume-ID", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fPersistenceVolumeID), StructFieldInfo::eOmitNullFields},
             {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
@@ -1052,7 +1054,7 @@ ObjectVariantMapper Instruments::Filesystem::GetObjectVariantMapper ()
             {L"Combined-IO-Stats", Stroika_Foundation_DataExchange_StructFieldMetaInfo (DiskInfoType, fCombinedIOStats), StructFieldInfo::eOmitNullFields},
         });
         mapper.AddCommonType<Set<String>> ();
-        mapper.AddCommonType<Optional<Set<String>>> ();
+        mapper.AddCommonType<optional<Set<String>>> ();
         mapper.AddClass<MountedFilesystemInfoType> (initializer_list<StructFieldInfo>{
             {L"Device-Kind", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fDeviceKind), StructFieldInfo::eOmitNullFields},
             {L"Filesystem-Type", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MountedFilesystemInfoType, fFileSystemType), StructFieldInfo::eOmitNullFields},

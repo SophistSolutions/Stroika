@@ -7,10 +7,10 @@
 #include "../StroikaPreComp.h"
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 #include "../Configuration/Common.h"
-#include "Optional.h"
 
 /**
  *  \file
@@ -127,7 +127,7 @@ namespace Stroika::Foundation {
 
         public:
             /**
-             *  Return Optional<RETURNTYPE> - like @As - except that if empty returns 'missing' value.
+             *  Return optional<RETURNTYPE> - like @As - except that if empty returns 'missing' value.
              *
              *  \par Example Usage
              *      \code
@@ -137,7 +137,7 @@ namespace Stroika::Foundation {
              *      \endcode
              */
             template <typename RETURNTYPE>
-            nonvirtual Optional<RETURNTYPE> IfAs () const;
+            nonvirtual optional<RETURNTYPE> IfAs () const;
 
         private:
             struct IRep_;
