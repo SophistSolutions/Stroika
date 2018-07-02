@@ -412,7 +412,8 @@ namespace {
             result.fTotalProcessCPUUsage = result.fTotalCPUUsage; // @todo fix - remove irq time etc from above? Or add into above if missing
 #if qUseWMICollectionSupport_
             fSystemWMICollector_.Collect ();
-            fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
+            Memory::CopyToIf (fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
+            //fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
             if (result.fRunQLength) {
                 result.fRunQLength += result.fTotalProcessCPUUsage; // both normalized so '1' means all logical cores
             }

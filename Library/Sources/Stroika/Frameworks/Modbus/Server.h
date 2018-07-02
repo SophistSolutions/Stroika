@@ -40,17 +40,17 @@ namespace Stroika {
                 /**
                  *  By spec, defaults to 502
                  */
-                Memory::Optional<uint16_t> fListenPort;
+                optional<uint16_t> fListenPort;
 
                 /**
                  *  Logger to write interesting messages to.
                  */
-                Memory::Optional<Execution::Logger*> fLogger;
+                optional<Execution::Logger*> fLogger;
 
                 /**
                  *  Often helpful to specify reUseAddr = true, to avoid trouble restarting service
                  */
-                Memory::Optional<IO::Network::Socket::BindFlags> fBindFlags;
+                optional<IO::Network::Socket::BindFlags> fBindFlags;
 
                 /**
                  *  To specify size, provide your own threadpool
@@ -62,7 +62,7 @@ namespace Stroika {
                  *
                  *  \note   Either let this class or caller must shutdown threadpool before exiting app.
                  */
-                Memory::Optional<bool> fShutdownThreadPool;
+                optional<bool> fShutdownThreadPool;
             };
 
             /**

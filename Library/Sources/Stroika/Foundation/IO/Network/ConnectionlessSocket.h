@@ -54,7 +54,7 @@ namespace Stroika {
                      *  \note ConnectionlessSocket is not copyable, but it can be copied into a ConnectionlessSocket::Ptr or
                      *        Socket::Ptr.  This is critical to save them in a container, for example.
                      */
-                    static ConnectionlessSocket::Ptr New (SocketAddress::FamilyType family, Type socketKind, const Optional<IPPROTO>& protocol = {});
+                    static ConnectionlessSocket::Ptr New (SocketAddress::FamilyType family, Type socketKind, const optional<IPPROTO>& protocol = {});
 
                 public:
                     /**

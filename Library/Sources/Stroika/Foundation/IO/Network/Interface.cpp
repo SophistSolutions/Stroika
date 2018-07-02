@@ -201,7 +201,7 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
 
 #if qPlatform_Linux
         {
-            auto getSpeed = [](int sd, const char* name) -> Optional<uint64_t> {
+            auto getSpeed = [](int sd, const char* name) -> optional<uint64_t> {
                 struct ifreq ifreq {
                 };
                 Characters::CString::Copy (ifreq.ifr_name, NEltsOf (ifreq.ifr_name), name);
@@ -212,7 +212,7 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
                 int r          = ioctl (sd, SIOCETHTOOL, &ifreq);
                 if (r != 0) {
                     DbgTrace ("No speed for interface %s, errno=%d", name, errno);
-                    return Optional<uint64_t> ();
+                    return nullopt;
                 }
                 constexpr uint64_t kMegabit_ = 1000 * 1000;
                 DbgTrace ("ethtool_cmd_speed (&edata)=%d", ethtool_cmd_speed (&edata));
@@ -228,7 +228,7 @@ Traversal::Iterable<Interface> Network::GetInterfaces ()
                     case SPEED_10000:
                         return 10000 * kMegabit_;
                     default:
-                        return Optional<uint64_t> ();
+                        return nullopt;
                 }
             };
             newInterface.fTransmitSpeedBaud    = getSpeed (sd, ifreqs[i].ifr_name);
@@ -348,7 +348,7 @@ Again:
  ************************** Network::GetInterfaceById ***************************
  ********************************************************************************
  */
-Optional<Interface> Network::GetInterfaceById (const String& internalInterfaceID)
+optional<Interface> Network::GetInterfaceById (const String& internalInterfaceID)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Network::GetInterfaceById");
@@ -365,5 +365,5 @@ Optional<Interface> Network::GetInterfaceById (const String& internalInterfaceID
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     DbgTrace (L"interface %s not found", internalInterfaceID.c_str ());
 #endif
-    return Optional<Interface> ();
+    return nullopt;
 }

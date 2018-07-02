@@ -97,13 +97,13 @@ double WMICollector::PerInstanceData_::GetCurrentValue (const String& counterNam
     return counterVal.doubleValue;
 }
 
-Optional<double> WMICollector::PerInstanceData_::PeekCurrentValue (const String& counterName)
+optional<double> WMICollector::PerInstanceData_::PeekCurrentValue (const String& counterName)
 {
     PDH_FMT_COUNTERVALUE counterVal{};
     PDH_HCOUNTER         counter = *fCounters_.Lookup (counterName);
     PDH_STATUS           x       = ::PdhGetFormattedCounterValue (counter, PDH_FMT_DOUBLE, NULL, &counterVal);
     if (x != 0) {
-        return Optional<double> ();
+        return nullopt;
     }
     return counterVal.doubleValue;
 }
@@ -337,7 +337,7 @@ double WMICollector::GetCurrentValue (const String& instance, const String& coun
     return fInstanceData_.Lookup (instance)->get ()->GetCurrentValue (counterName);
 }
 
-Optional<double> WMICollector::PeekCurrentValue (const String& instance, const String& counterName)
+optional<double> WMICollector::PeekCurrentValue (const String& instance, const String& counterName)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx ("Stroika::Frameworks::SystemPerformance::Support::WMICollector::PeekCurrentValue");

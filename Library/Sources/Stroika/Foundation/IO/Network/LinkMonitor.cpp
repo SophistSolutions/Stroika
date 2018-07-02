@@ -399,11 +399,6 @@ LinkMonitor::LinkMonitor ()
 {
 }
 
-LinkMonitor::LinkMonitor (const LinkMonitor&& rhs)
-    : fRep_ (move (rhs.fRep_))
-{
-}
-
 void LinkMonitor::AddCallback (const Callback& callback)
 {
     fRep_->AddCallback (callback);

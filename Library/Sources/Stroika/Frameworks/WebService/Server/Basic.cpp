@@ -34,7 +34,7 @@ using WebServer::ClientErrorException;
  ************************ WebService::Server::ExpectedMethod ********************
  ********************************************************************************
  */
-void WebService::Server::ExpectedMethod (const Request& request, const Iterable<String>& methods, const Optional<String>& fromInMessage)
+void WebService::Server::ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx{Stroika_Foundation_Debug_OptionalizeTraceArgs (L"WebService::Server::ExpectedMethod", L"request=%s, methods=%s, fromInMessage=%s", Characters::ToString (request).c_str (), Characters::ToString (methods).c_str (), Characters::ToString (fromInMessage).c_str ())};

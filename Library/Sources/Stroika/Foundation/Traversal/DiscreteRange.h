@@ -26,8 +26,8 @@
     >>> this should allow constexpr discrete_rage!!!
     >>> and see other comments on why - in progress switchover...
     >>> (NOTE - downside is
-        -            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
-        +            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Elements ()) {
+        -            for (auto i : DiscreteRange<Color> (optional<Color> (), optional<Color> ())) {
+        +            for (auto i : DiscreteRange<Color> (optional<Color> (), optional<Color> ()).Elements ()) {
 
 
  *
@@ -144,7 +144,7 @@ namespace Stroika {
                  */
                 explicit DiscreteRange () = default;
                 explicit DiscreteRange (T begin, T end);
-                explicit DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
+                explicit DiscreteRange (const optional<T>& begin, const optional<T>& end);
                 explicit DiscreteRange (const Range<T, typename TRAITS::RangeTraitsType>& r);
 
             public:

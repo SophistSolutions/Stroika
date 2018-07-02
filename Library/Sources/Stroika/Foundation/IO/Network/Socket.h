@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #if qPlatform_POSIX
 #include <sys/socket.h>
 #endif
@@ -17,7 +19,6 @@
 #if qPlatform_Windows
 #include "Platform/Windows/WinSock.h"
 #endif
-#include "../../Memory/Optional.h"
 
 #include "SocketAddress.h"
 
@@ -38,7 +39,6 @@ namespace Stroika {
 
                 using Characters::String;
                 using Memory::Byte;
-                using Memory::Optional;
 
                 /**
                  *  A Socket has two parts, a _IRep*, and a smart pointer wrapper (like shared_ptr <_IRep>).
@@ -136,7 +136,7 @@ namespace Stroika {
                     static constexpr ShutdownTarget eBoth   = ShutdownTarget::eBoth;
 
                 protected:
-                    static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol);
+                    static PlatformNativeHandle mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol);
                 };
 
                 /**
@@ -267,7 +267,7 @@ namespace Stroika {
                     /**
                      * if bound (@see Bind ()) - to what local endpoint? Remember a computer can be multi-homed, and can be bound to ADDR_ANY, or a specific address (plus the port).
                      */
-                    nonvirtual Optional<IO::Network::SocketAddress> GetLocalAddress () const;
+                    nonvirtual optional<IO::Network::SocketAddress> GetLocalAddress () const;
 
                 public:
                     /**
@@ -439,7 +439,7 @@ namespace Stroika {
                     virtual void                                 Shutdown (ShutdownTarget shutdownTarget)                                      = 0;
                     virtual void                                 Close ()                                                                      = 0;
                     virtual PlatformNativeHandle                 Detach ()                                                                     = 0;
-                    virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const                                                      = 0;
+                    virtual optional<IO::Network::SocketAddress> GetLocalAddress () const                                                      = 0;
                     virtual SocketAddress::FamilyType            GetAddressFamily () const                                                     = 0;
                     virtual PlatformNativeHandle                 GetNativeSocket () const                                                      = 0;
                     virtual void                                 getsockopt (int level, int optname, void* optval, socklen_t* optvallen) const = 0;

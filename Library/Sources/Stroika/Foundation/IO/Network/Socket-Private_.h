@@ -161,7 +161,7 @@ namespace Stroika {
                                     fSD_ = kINVALID_NATIVE_HANDLE_;
                                 }
                             }
-                            virtual Optional<IO::Network::SocketAddress> GetLocalAddress () const override
+                            virtual optional<IO::Network::SocketAddress> GetLocalAddress () const override
                             {
                                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                                 struct sockaddr_storage                             radr;
@@ -170,7 +170,7 @@ namespace Stroika {
                                     IO::Network::SocketAddress sa{radr};
                                     return sa;
                                 }
-                                return Optional<IO::Network::SocketAddress>{};
+                                return nullopt;
                             }
                             virtual SocketAddress::FamilyType GetAddressFamily () const override
                             {

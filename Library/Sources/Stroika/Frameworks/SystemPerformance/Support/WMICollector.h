@@ -7,6 +7,8 @@
 #include "../../StroikaPreComp.h"
 
 #include <memory>
+#include <optional>
+
 #if qPlatform_Windows
 #include <Pdh.h>
 #else
@@ -16,7 +18,6 @@
 #include "../../../Foundation/Containers/Mapping.h"
 #include "../../../Foundation/Containers/Set.h"
 #include "../../../Foundation/Debug/AssertExternallySynchronizedLock.h"
-#include "../../../Foundation/Memory/Optional.h"
 #include "../../../Foundation/Time/Realtime.h"
 
 /**
@@ -57,7 +58,6 @@ namespace Stroika {
                 using Foundation::Characters::String;
                 using Foundation::Containers::Mapping;
                 using Foundation::Containers::Set;
-                using Foundation::Memory::Optional;
                 using Foundation::Time::DurationSecondsType;
                 using Foundation::Traversal::Iterable;
 
@@ -169,7 +169,7 @@ namespace Stroika {
                      *
                      *  @see GetCurrentValue
                      */
-                    nonvirtual Optional<double> PeekCurrentValue (const String& instance, const String& counterName);
+                    nonvirtual optional<double> PeekCurrentValue (const String& instance, const String& counterName);
 
                 private:
                     DurationSecondsType fTimeOfLastCollection_{};
@@ -189,7 +189,7 @@ namespace Stroika {
 
                         void                    AddCounter (const String& counterName);
                         double                  GetCurrentValue (const String& counterName);
-                        Optional<double>        PeekCurrentValue (const String& counterName);
+                        optional<double>        PeekCurrentValue (const String& counterName);
                         Mapping<String, double> GetCurrentValues (const String& counterName);
                     };
                     // Note - be careful not to ever copy fInstanceData_ since uses shared_ptr and would end up with two

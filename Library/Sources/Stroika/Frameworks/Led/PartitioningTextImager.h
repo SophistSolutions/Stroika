@@ -7,7 +7,6 @@
 #include "../../Foundation/StroikaPreComp.h"
 
 #include "../../Foundation/Cache/LRUCache.h"
-#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 /*
@@ -30,9 +29,7 @@ namespace Stroika {
     namespace Frameworks {
         namespace Led {
 
-            using Foundation::Memory::Optional;
-
-/*
+            /*
             @CONFIGVAR:     qCacheTextMeasurementsForPM
             @DESCRIPTION:   <p>A fairly simple, but effective performance hack. Defaults ON</p>
              */

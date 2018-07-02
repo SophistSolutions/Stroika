@@ -127,12 +127,12 @@ namespace Stroika::Foundation {
             return _GetRepRWRef ().SeekRead (whence, offset);
         }
         template <typename ELEMENT_TYPE>
-        inline auto InputStream<ELEMENT_TYPE>::Ptr::Read () const -> Memory::Optional<ElementType>
+        inline auto InputStream<ELEMENT_TYPE>::Ptr::Read () const -> optional<ElementType>
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             Require (IsOpen ()); // note - its OK for Write() side of input stream to be closed
             ElementType b{};
-            return (_GetRepRWRef ().Read (&b, &b + 1) == 0) ? Memory::Optional<ElementType> () : b;
+            return (_GetRepRWRef ().Read (&b, &b + 1) == 0) ? optional<ElementType> () : b;
         }
         template <typename ELEMENT_TYPE>
         inline size_t InputStream<ELEMENT_TYPE>::Ptr::Read (ElementType* intoStart, ElementType* intoEnd) const
@@ -144,7 +144,7 @@ namespace Stroika::Foundation {
             return _GetRepRWRef ().Read (intoStart, intoEnd);
         }
         template <typename ELEMENT_TYPE>
-        auto InputStream<ELEMENT_TYPE>::Ptr::Peek () const -> Memory::Optional<ElementType>
+        auto InputStream<ELEMENT_TYPE>::Ptr::Peek () const -> optional<ElementType>
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             Require (this->IsSeekable ());

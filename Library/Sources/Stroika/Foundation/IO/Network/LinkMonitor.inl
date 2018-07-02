@@ -9,11 +9,25 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
+namespace Stroika::Foundation {
+    namespace IO {
+        namespace Network {
+
+            /*
+             ********************************************************************************
+             ********************************** LinkMonitor *********************************
+             ********************************************************************************
+             */
+            inline LinkMonitor::LinkMonitor (const LinkMonitor&& rhs)
+                : fRep_ (move (rhs.fRep_))
+            {
             }
+            inline LinkMonitor& LinkMonitor::operator= (const LinkMonitor&& rhs)
+            {
+                fRep_ = move (rhs.fRep_);
+                return *this;
+            }
+
         }
     }
 }

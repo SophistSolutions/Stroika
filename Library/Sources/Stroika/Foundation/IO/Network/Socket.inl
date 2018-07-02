@@ -74,7 +74,7 @@ namespace Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetNativeSocket ();
                 }
-                inline Optional<IO::Network::SocketAddress> Socket::Ptr::GetLocalAddress () const
+                inline optional<IO::Network::SocketAddress> Socket::Ptr::GetLocalAddress () const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetLocalAddress ();

@@ -167,7 +167,7 @@ namespace Stroika {
                 Require (begin <= end);
             }
             template <typename T, typename TRAITS>
-            DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
+            DiscreteRange<T, TRAITS>::DiscreteRange (const optional<T>& begin, const optional<T>& end)
                 : inherited (begin, end)
             {
             }

@@ -43,7 +43,7 @@ namespace {
  ******************************** Network::Socket *******************************
  ********************************************************************************
  */
-Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const Optional<IPPROTO>& protocol)
+Socket::PlatformNativeHandle Socket::mkLowLevelSocket_ (SocketAddress::FamilyType family, Socket::Type socketKind, const optional<IPPROTO>& protocol)
 {
 #if qPlatform_Windows
     IO::Network::Platform::Windows::WinSock::AssureStarted ();

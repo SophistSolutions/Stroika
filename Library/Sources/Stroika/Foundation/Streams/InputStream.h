@@ -7,10 +7,10 @@
 #include "../StroikaPreComp.h"
 
 #include <memory>
+#include <optional>
 
 #include "../Configuration/Common.h"
 #include "../Memory/Common.h"
-#include "../Memory/Optional.h"
 #include "../Traversal/Iterable.h"
 
 #include "Stream.h"
@@ -307,7 +307,7 @@ namespace Stroika::Foundation {
              *
              *  @see ReadNonBlocking ()
              */
-            nonvirtual Memory::Optional<ElementType> Read () const;
+            nonvirtual optional<ElementType> Read () const;
             nonvirtual size_t Read (ElementType* intoStart, ElementType* intoEnd) const;
 
         public:
@@ -329,7 +329,7 @@ namespace Stroika::Foundation {
              *      \req IsSeekable ()
              *
              */
-            nonvirtual Memory::Optional<ElementType> Peek () const;
+            nonvirtual optional<ElementType> Peek () const;
             nonvirtual size_t Peek (ElementType* intoStart, ElementType* intoEnd) const;
 
         public:

@@ -194,7 +194,7 @@ namespace Stroika {
                     /**
                      *  If there is a socket connected to the other side, return that peer's socket address.
                      */
-                    nonvirtual Optional<IO::Network::SocketAddress> GetPeerAddress () const;
+                    nonvirtual optional<IO::Network::SocketAddress> GetPeerAddress () const;
 
                 public:
                     /**
@@ -203,13 +203,13 @@ namespace Stroika {
                      *
                      *  @see SetAutomaticTCPDisconnectOnClose ()
                      */
-                    nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const;
+                    nonvirtual optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const;
 
                 public:
                     /**
                      *  @see GetAutomaticTCPDisconnectOnClose ()
                      */
-                    nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) const;
+                    nonvirtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) const;
 
                 public:
                     /**
@@ -228,13 +228,13 @@ namespace Stroika {
                      *
                      *  @see SetLinger ()
                      */
-                    nonvirtual Optional<int> GetLinger () const;
+                    nonvirtual optional<int> GetLinger () const;
 
                 public:
                     /**
                      *  @see GetLinger ()
                      */
-                    nonvirtual void SetLinger (const Optional<int>& linger) const;
+                    nonvirtual void SetLinger (const optional<int>& linger) const;
 
                 public:
                     /**
@@ -281,9 +281,9 @@ namespace Stroika {
                     virtual size_t                               Read (Byte* intoStart, Byte* intoEnd) const                                           = 0;
                     virtual optional<size_t>                     ReadNonBlocking (Byte* intoStart, Byte* intoEnd) const                                = 0;
                     virtual void                                 Write (const Byte* start, const Byte* end) const                                      = 0;
-                    virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const                                                               = 0;
-                    virtual Optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                             = 0;
-                    virtual void                                 SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) = 0;
+                    virtual optional<IO::Network::SocketAddress> GetPeerAddress () const                                                               = 0;
+                    virtual optional<Time::DurationSecondsType>  GetAutomaticTCPDisconnectOnClose () const                                             = 0;
+                    virtual void                                 SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) = 0;
                     virtual KeepAliveOptions                     GetKeepAlives () const                                                                = 0;
                     virtual void                                 SetKeepAlives (const KeepAliveOptions& keepAliveOptions)                              = 0;
                 };

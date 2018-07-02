@@ -212,7 +212,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
 
 // @todo  INCOMPLETE - URL, Optional<URL> InternetMediaType and two 'list' types incomplete
 #if 0
-        Optional<URL> fPresentationURL;
+        optional<URL> fPresentationURL;
 #endif
 #if 0
         URL               fURL; // url to the icon image file

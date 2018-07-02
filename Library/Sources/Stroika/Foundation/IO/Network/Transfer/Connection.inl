@@ -36,7 +36,7 @@ namespace Stroika {
                     {
                         return fOptions_;
                     }
-                    inline Optional<pair<String, String>> Connection::Options::Authentication::GetUsernameAndPassword () const
+                    inline optional<pair<String, String>> Connection::Options::Authentication::GetUsernameAndPassword () const
                     {
                         return fUsernamePassword_;
                     }

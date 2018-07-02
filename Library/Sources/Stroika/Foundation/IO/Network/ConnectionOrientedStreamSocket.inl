@@ -56,17 +56,17 @@ namespace Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().Write (start, end);
                 }
-                inline Optional<IO::Network::SocketAddress> ConnectionOrientedStreamSocket::Ptr::GetPeerAddress () const
+                inline optional<IO::Network::SocketAddress> ConnectionOrientedStreamSocket::Ptr::GetPeerAddress () const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetPeerAddress ();
                 }
-                inline Optional<Time::DurationSecondsType> ConnectionOrientedStreamSocket::Ptr::GetAutomaticTCPDisconnectOnClose () const
+                inline optional<Time::DurationSecondsType> ConnectionOrientedStreamSocket::Ptr::GetAutomaticTCPDisconnectOnClose () const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     return _cref ().GetAutomaticTCPDisconnectOnClose ();
                 }
-                inline void ConnectionOrientedStreamSocket::Ptr::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& linger) const
+                inline void ConnectionOrientedStreamSocket::Ptr::SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& linger) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     _ref ().SetAutomaticTCPDisconnectOnClose (linger);

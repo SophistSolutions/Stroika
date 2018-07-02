@@ -8,9 +8,7 @@
 
 #if defined(__cplusplus)
 // Declare the namespaces so code early on can freely say stuff like "uses namespace Stroika"
-namespace Stroika {
-    namespace Foundation {
-    }
+namespace Stroika::Foundation {
 }
 #endif
 

@@ -75,9 +75,9 @@ public:
                 this->Restart_ ();
             }
         });
-        fLinkMonitor_ = Optional<IO::Network::LinkMonitor> (move (lm));
+        fLinkMonitor_ = move (optional<IO::Network::LinkMonitor> (move (lm)));
 #if 0
-        fLinkMonitor_ = Optional<IO::Network::LinkMonitor> (move (IO::Network::LinkMonitor ()));
+        fLinkMonitor_ = optional<IO::Network::LinkMonitor> (move (IO::Network::LinkMonitor ()));
         fLinkMonitor_->AddCallback ([this] (IO::Network::LinkMonitor::LinkChange lc, String netName, String ipNum) {
             Debug::TraceContextBumper ctx (Stroika_Foundation_Debug_OptionalizeTraceArgs (L"Basic SSDP server - LinkMonitor callback", L"lc = %d, netName=%s, ipNum=%s", lc, netName.c_str (), ipNum.c_str ()));
             if (lc == IO::Network::LinkMonitor::LinkChange::eAdded) {
@@ -143,7 +143,7 @@ public:
     }
     Execution::Thread::CleanupPtr      fNotifierThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
     Execution::Thread::CleanupPtr      fSearchResponderThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-    Optional<IO::Network::LinkMonitor> fLinkMonitor_; // optional so we can delete it first on shutdown (so no restart while stopping stuff)
+    optional<IO::Network::LinkMonitor> fLinkMonitor_; // optional so we can delete it first on shutdown (so no restart while stopping stuff)
 };
 
 /*

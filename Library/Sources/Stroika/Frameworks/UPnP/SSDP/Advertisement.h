@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../../Foundation/Characters/String.h"
 #include "../../../Foundation/Characters/String_Constant.h"
 #include "../../../Foundation/Configuration/Common.h"
@@ -13,7 +15,6 @@
 #include "../../../Foundation/IO/Network/SocketAddress.h"
 #include "../../../Foundation/IO/Network/URL.h"
 #include "../../../Foundation/Memory/BLOB.h"
-#include "../../../Foundation/Memory/Optional.h"
 
 /**
  *  \file
@@ -34,12 +35,11 @@ namespace Stroika {
                 using Foundation::Containers::Mapping;
                 using Foundation::IO::Network::URL;
                 using Foundation::Memory::BLOB;
-                using Foundation::Memory::Optional;
 
                 /**
                  */
                 struct Advertisement {
-                    Optional<bool>          fAlive; // else Bye notification, or empty if neither
+                    optional<bool>          fAlive; // else Bye notification, or empty if neither
                     String                  fUSN;
                     URL                     fLocation;
                     String                  fServer;

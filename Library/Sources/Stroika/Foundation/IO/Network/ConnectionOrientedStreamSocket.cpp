@@ -187,7 +187,7 @@ namespace {
                 AssertNotImplemented ();
 #endif
             }
-            virtual Optional<IO::Network::SocketAddress> GetPeerAddress () const override
+            virtual optional<IO::Network::SocketAddress> GetPeerAddress () const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 struct sockaddr_storage                             radr;
@@ -196,14 +196,14 @@ namespace {
                     IO::Network::SocketAddress sa{radr};
                     return sa;
                 }
-                return Optional<IO::Network::SocketAddress>{};
+                return nullopt;
             }
-            virtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
+            virtual optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose () const override
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fAutomaticTCPDisconnectOnClose_;
             }
-            virtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor) override
+            virtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor) override
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                 fAutomaticTCPDisconnectOnClose_ = waitFor;
@@ -253,7 +253,7 @@ namespace {
                 }
 #endif
             }
-            Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
+            optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose_;
 #if qDebug
             mutable atomic<int> fCurrentPendingReadsCount{};
 #endif
@@ -306,13 +306,13 @@ ConnectionOrientedStreamSocket::Ptr ConnectionOrientedStreamSocket::Attach (Plat
  ******************** ConnectionOrientedStreamSocket::Ptr ***********************
  ********************************************************************************
  */
-Optional<int> ConnectionOrientedStreamSocket::Ptr::GetLinger () const
+optional<int> ConnectionOrientedStreamSocket::Ptr::GetLinger () const
 {
     linger lr = getsockopt<linger> (SOL_SOCKET, SO_LINGER);
-    return lr.l_onoff ? lr.l_linger : Optional<int>{};
+    return lr.l_onoff ? lr.l_linger : optional<int>{};
 }
 
-void ConnectionOrientedStreamSocket::Ptr::SetLinger (const Optional<int>& linger) const
+void ConnectionOrientedStreamSocket::Ptr::SetLinger (const optional<int>& linger) const
 {
     ::linger so_linger{};
     if (linger) {

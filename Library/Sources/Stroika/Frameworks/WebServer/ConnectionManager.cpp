@@ -17,6 +17,7 @@
 #include "../../Foundation/IO/Network/HTTP/Exception.h"
 #include "../../Foundation/IO/Network/HTTP/Headers.h"
 #include "../../Foundation/IO/Network/HTTP/Methods.h"
+#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include "DefaultFaultInterceptor.h"
@@ -68,10 +69,10 @@ namespace {
                     }
                 }
             }
-            const Optional<String>                   fServerHeader_; // no need for synchronization cuz constant - just set on construction
+            const optional<String>                   fServerHeader_; // no need for synchronization cuz constant - just set on construction
             const ConnectionManager::CORSModeSupport fCORSModeSupport;
         };
-        ServerHeadersInterceptor_ (const Optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
+        ServerHeadersInterceptor_ (const optional<String>& serverHeader, ConnectionManager::CORSModeSupport corsSupportMode)
             : Interceptor (make_shared<Rep_> (serverHeader, corsSupportMode))
         {
         }
@@ -79,7 +80,7 @@ namespace {
 }
 
 namespace {
-    Sequence<Interceptor> mkEarlyInterceptors_ (const Optional<Interceptor>& defaultFaultHandler, const Interceptor& serverEtcInterceptor)
+    Sequence<Interceptor> mkEarlyInterceptors_ (const optional<Interceptor>& defaultFaultHandler, const Interceptor& serverEtcInterceptor)
     {
         Sequence<Interceptor> interceptors;
         interceptors += serverEtcInterceptor;
@@ -106,10 +107,10 @@ namespace {
  */
 constexpr unsigned int                       ConnectionManager::Options::kDefault_MaxConnections;
 constexpr Socket::BindFlags                  ConnectionManager::Options::kDefault_BindFlags;
-const Optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = String_Constant{L"Stroika/2.0"};
+const optional<String>                       ConnectionManager::Options::kDefault_ServerHeader = String_Constant{L"Stroika/2.0"};
 constexpr ConnectionManager::CORSModeSupport ConnectionManager::Options::kDefault_CORSModeSupport;
 constexpr Time::DurationSecondsType          ConnectionManager::Options::kDefault_AutomaticTCPDisconnectOnClose;
-constexpr Optional<int>                      ConnectionManager::Options::kDefault_Linger;
+constexpr optional<int>                      ConnectionManager::Options::kDefault_Linger;
 
 /*
  ********************************************************************************
@@ -139,14 +140,14 @@ namespace {
 }
 
 ConnectionManager::ConnectionManager (const Traversal::Iterable<SocketAddress>& bindAddresses, const Router& router, const Options& options)
-    : fServerHeader_ (options.fServerHeader.OptionalValue (Options::kDefault_ServerHeader))
+    : fServerHeader_ (Memory::OptionalValue (options.fServerHeader, Options::kDefault_ServerHeader))
     , fCORSModeSupport_ (options.fCORSModeSupport.value_or (Options::kDefault_CORSModeSupport))
     , fServerAndCORSEtcInterceptor_{ServerHeadersInterceptor_{fServerHeader_, fCORSModeSupport_}}
     , fDefaultErrorHandler_ (DefaultFaultInterceptor{})
     , fEarlyInterceptors_{mkEarlyInterceptors_ (fDefaultErrorHandler_, fServerAndCORSEtcInterceptor_)}
     , fBeforeInterceptors_{}
     , fAfterInterceptors_{}
-    , fLinger_ (options.fLinger.OptionalValue (Options::kDefault_Linger))
+    , fLinger_ (Memory::OptionalValue (options.fLinger, Options::kDefault_Linger))
     , fAutomaticTCPDisconnectOnClose_ (options.fAutomaticTCPDisconnectOnClose.value_or (Options::kDefault_AutomaticTCPDisconnectOnClose))
     , fRouter_ (router)
     , fInterceptorChain_{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)}
@@ -250,7 +251,7 @@ void ConnectionManager::FixupInterceptorChain_ ()
     fInterceptorChain_ = InterceptorChain{mkInterceptorChain_ (fRouter_, fEarlyInterceptors_, fBeforeInterceptors_, fAfterInterceptors_)};
 }
 
-void ConnectionManager::ReplaceInEarlyInterceptor_ (const Optional<Interceptor>& oldValue, const Optional<Interceptor>& newValue)
+void ConnectionManager::ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue)
 {
     // replace old error handler in the interceptor chain, in the same spot if possible, and otherwise append
     auto                  rwLock = this->fEarlyInterceptors_.rwget ();
@@ -284,7 +285,7 @@ Collection<shared_ptr<Connection>> ConnectionManager::GetConnections () const
     return Collection<shared_ptr<Connection>>{fInactiveOpenConnections_.cget ().cref ().Preimage ()} + fActiveConnections_.cget ().load ();
 }
 
-void ConnectionManager::SetServerHeader (Optional<String> server)
+void ConnectionManager::SetServerHeader (optional<String> server)
 {
     if (fServerHeader_ != server) {
         Interceptor old               = fServerAndCORSEtcInterceptor_;
@@ -304,7 +305,7 @@ void ConnectionManager::SetCORSModeSupport (CORSModeSupport support)
     }
 }
 
-void ConnectionManager::SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler)
+void ConnectionManager::SetDefaultErrorHandler (const optional<Interceptor>& defaultErrorHandler)
 {
     if (fDefaultErrorHandler_ != defaultErrorHandler) {
         ReplaceInEarlyInterceptor_ (fDefaultErrorHandler_.load (), defaultErrorHandler);
@@ -354,14 +355,14 @@ void ConnectionManager::RemoveInterceptor (const Interceptor& i)
     bool found = false;
     {
         auto b4 = fBeforeInterceptors_.rwget ();
-        if (Memory::Optional<size_t> idx = b4->IndexOf (i)) {
+        if (optional<size_t> idx = b4->IndexOf (i)) {
             b4->Remove (*idx);
             found = true;
         }
     }
     if (not found) {
         auto after = fAfterInterceptors_.rwget ();
-        if (Memory::Optional<size_t> idx = after->IndexOf (i)) {
+        if (optional<size_t> idx = after->IndexOf (i)) {
             after->Remove (*idx);
             found = true;
         }

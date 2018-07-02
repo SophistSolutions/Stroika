@@ -57,7 +57,7 @@ namespace Stroika::Foundation {
              *          CallExpectingBinaryInputStreamPtr (InputSubStream<Byte>::New (fromStream, 0, contentLength))
              *      \endcode
              */
-            static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const Memory::Optional<SeekOffsetType>& start, const Memory::Optional<SeekOffsetType>& end);
+            static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const optional<SeekOffsetType>& end);
 
         private:
             class Rep_;

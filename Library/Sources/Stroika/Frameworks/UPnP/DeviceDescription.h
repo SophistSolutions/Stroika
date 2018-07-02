@@ -12,7 +12,6 @@
 #include "../../Foundation/DataExchange/InternetMediaType.h"
 #include "../../Foundation/IO/Network/URL.h"
 #include "../../Foundation/Memory/BLOB.h"
-#include "../../Foundation/Memory/Optional.h"
 
 #include "Device.h"
 
@@ -31,22 +30,21 @@ namespace Stroika {
             using Containers::Collection;
             using DataExchange::InternetMediaType;
             using IO::Network::URL;
-            using Memory::Optional;
 
             /**
              * high level device description - from ssdp. This is the BASIC device info
              * whcih appears to the XML file (poitned to by Device location field).
              */
             struct DeviceDescription {
-                Optional<URL> fPresentationURL;
+                optional<URL> fPresentationURL;
                 String        fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
                 String        fManufactureName;
                 String        fFriendlyName;
-                Optional<URL> fManufacturingURL;
+                optional<URL> fManufacturingURL;
                 String        fModelDescription;
                 String        fModelName;
                 String        fModelNumber;
-                Optional<URL> fModelURL;
+                optional<URL> fModelURL;
                 String        fSerialNumber;
                 String        fUPC;
 

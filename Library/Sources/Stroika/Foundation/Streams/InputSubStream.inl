@@ -165,7 +165,7 @@ namespace Stroika::Foundation {
         private:
             typename InputStream<ELEMENT_TYPE>::Ptr fRealIn_;
             SeekOffsetType                          fOffsetMine2Real_; // subtract from real offset to get our offset
-            Memory::Optional<SeekOffsetType>        fForcedEndInReal_;
+            optional<SeekOffsetType>                fForcedEndInReal_;
         };
 
         /*
@@ -174,7 +174,7 @@ namespace Stroika::Foundation {
          ********************************************************************************
          */
         template <typename ELEMENT_TYPE>
-        inline auto InputSubStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const Memory::Optional<SeekOffsetType>& start, const Memory::Optional<SeekOffsetType>& end) -> Ptr
+        inline auto InputSubStream<ELEMENT_TYPE>::New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn, const optional<SeekOffsetType>& start, const Memory::optional<SeekOffsetType>& end) -> Ptr
         {
             return InputStream<ELEMENT_TYPE>::_mkPtr (make_shared<Rep_> (realIn, start, end));
         }

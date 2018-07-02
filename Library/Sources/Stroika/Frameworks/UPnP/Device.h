@@ -9,7 +9,6 @@
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/IO/Network/URL.h"
-#include "../../Foundation/Memory/Optional.h"
 
 /*
  * TODO:

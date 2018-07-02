@@ -35,7 +35,6 @@ namespace Stroika {
                 using Containers::Mapping;
                 using Containers::Sequence;
                 using Containers::Set;
-                using Memory::Optional;
                 using Traversal::Iterable;
 
                 using WebServer::Request;
@@ -43,7 +42,7 @@ namespace Stroika {
 
                 /**
                  */
-                void ExpectedMethod (const Request& request, const Iterable<String>& methods, const Optional<String>& fromInMessage);
+                void ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage);
                 void ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription);
 
                 /**

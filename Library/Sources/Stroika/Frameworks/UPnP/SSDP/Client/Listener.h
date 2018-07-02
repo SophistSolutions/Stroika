@@ -10,7 +10,6 @@
 
 #include "../../../../Foundation/Containers/Mapping.h"
 #include "../../../../Foundation/IO/Network/InternetProtocol/IP.h"
-#include "../../../../Foundation/Memory/Optional.h"
 
 #include "../../Device.h"
 #include "../Advertisement.h"
@@ -108,7 +107,7 @@ namespace Stroika {
                     public:
                         Containers::Mapping<String, String>     fRawHeaders;
                         String                                  fUSN;
-                        Memory::Optional<bool>                  fAlive; // else Bye notification, or empty if neither
+                        optional<bool>                  fAlive; // else Bye notification, or empty if neither
                     };
 #endif
                 }

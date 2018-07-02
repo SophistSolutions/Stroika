@@ -182,7 +182,7 @@ namespace {
         return Characters::Format (L"\\\\.\\PhysicalDrive%d", i);
     }
     DISABLE_COMPILER_MSC_WARNING_START (6262) // stack usage OK
-    Optional<Set<DynamicDiskIDType>> GetDisksForVolume_ (String volumeName)
+    optional<Set<DynamicDiskIDType>> GetDisksForVolume_ (String volumeName)
     {
         wchar_t volPathsBuf[10 * 1024]; // intentionally uninitialized since we dont use it if GetVolumePathNamesForVolumeNameW () returns error, and its an OUT only parameter
         DWORD   retLen = 0;

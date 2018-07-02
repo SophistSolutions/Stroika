@@ -366,11 +366,11 @@ namespace {
         void Read_WMI_ (Instruments::Memory::Info* updateResult, uint64_t totalRAM)
         {
             fMemoryWMICollector_.Collect ();
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_).CopyToIf (&updateResult->fVirtualMemory.fCommittedBytes);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_).CopyToIf (&updateResult->fVirtualMemory.fCommitLimit);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_).CopyToIf (&updateResult->fPaging.fMajorPageFaultsPerSecond);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_).CopyToIf (&updateResult->fPaging.fPageOutsPerSecond);
-            fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_).CopyToIf (&updateResult->fPhysicalMemory.fFree);
+            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommittedBytes_), &updateResult->fVirtualMemory.fCommittedBytes);
+            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kCommitLimit_), &updateResult->fVirtualMemory.fCommitLimit);
+            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
+            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
+            Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
             if (Optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
                     // Active + Inactive + Free == TotalRAM

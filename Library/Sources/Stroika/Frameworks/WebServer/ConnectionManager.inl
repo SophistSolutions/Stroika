@@ -18,7 +18,7 @@ namespace Stroika {
              ******************************** ConnectionManager *****************************
              ********************************************************************************
              */
-            inline Optional<String> ConnectionManager::GetServerHeader () const
+            inline optional<String> ConnectionManager::GetServerHeader () const
             {
                 return fServerHeader_;
             }
@@ -26,23 +26,23 @@ namespace Stroika {
             {
                 return fCORSModeSupport_;
             }
-            inline Optional<int> ConnectionManager::GetLinger () const
+            inline optional<int> ConnectionManager::GetLinger () const
             {
                 return fLinger_;
             }
-            inline void ConnectionManager::SetLinger (const Optional<int>& linger)
+            inline void ConnectionManager::SetLinger (const optional<int>& linger)
             {
                 fLinger_ = linger;
             }
-            inline Optional<Time::DurationSecondsType> ConnectionManager::GetAutomaticTCPDisconnectOnClose ()
+            inline optional<Time::DurationSecondsType> ConnectionManager::GetAutomaticTCPDisconnectOnClose ()
             {
                 return fAutomaticTCPDisconnectOnClose_;
             }
-            inline void ConnectionManager::SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor)
+            inline void ConnectionManager::SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor)
             {
                 fAutomaticTCPDisconnectOnClose_ = waitFor;
             }
-            inline Optional<Interceptor> ConnectionManager::GetDefaultErrorHandler () const
+            inline optional<Interceptor> ConnectionManager::GetDefaultErrorHandler () const
             {
                 return fDefaultErrorHandler_;
             }

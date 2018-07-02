@@ -73,12 +73,12 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Optional<String> GetServerHeader () const;
+                nonvirtual optional<String> GetServerHeader () const;
 
             public:
                 /**
                  */
-                nonvirtual void SetServerHeader (Optional<String> server);
+                nonvirtual void SetServerHeader (optional<String> server);
 
             public:
                 /**
@@ -113,13 +113,13 @@ namespace Stroika {
                 /**
                  * @see Socket::GetLinger
                  */
-                nonvirtual Optional<int> GetLinger () const;
+                nonvirtual optional<int> GetLinger () const;
 
             public:
                 /**
                  *  @see GetLinger
                  */
-                nonvirtual void SetLinger (const Optional<int>& linger);
+                nonvirtual void SetLinger (const optional<int>& linger);
 
             public:
                 /**
@@ -133,13 +133,13 @@ namespace Stroika {
                  *
                  * @see Socket::GetAutomaticTCPDisconnectOnClose
                  */
-                nonvirtual Optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ();
+                nonvirtual optional<Time::DurationSecondsType> GetAutomaticTCPDisconnectOnClose ();
 
             public:
                 /**
                  *  @see GetAutomaticTCPDisconnectOnClose ()
                  */
-                nonvirtual void SetAutomaticTCPDisconnectOnClose (const Optional<Time::DurationSecondsType>& waitFor);
+                nonvirtual void SetAutomaticTCPDisconnectOnClose (const optional<Time::DurationSecondsType>& waitFor);
 
             public:
                 /**
@@ -147,13 +147,13 @@ namespace Stroika {
                  *  all interceptors can engage in fault handling. This is just meant to provide a simple one-stop-shop for how to
                  *  handle faults in one place.
                  */
-                nonvirtual Optional<Interceptor> GetDefaultErrorHandler () const;
+                nonvirtual optional<Interceptor> GetDefaultErrorHandler () const;
 
             public:
                 /**
                  *  @see GetDefaultErrorHandler
                  */
-                nonvirtual void SetDefaultErrorHandler (const Optional<Interceptor>& defaultErrorHandler);
+                nonvirtual void SetDefaultErrorHandler (const optional<Interceptor>& defaultErrorHandler);
 
             public:
                 /**
@@ -238,18 +238,18 @@ namespace Stroika {
                 nonvirtual void FixupInterceptorChain_ ();
 
             private:
-                nonvirtual void ReplaceInEarlyInterceptor_ (const Optional<Interceptor>& oldValue, const Optional<Interceptor>& newValue);
+                nonvirtual void ReplaceInEarlyInterceptor_ (const optional<Interceptor>& oldValue, const optional<Interceptor>& newValue);
 
             private:
-                Execution::Synchronized<Optional<String>>                    fServerHeader_;
+                Execution::Synchronized<optional<String>>                    fServerHeader_;
                 CORSModeSupport                                              fCORSModeSupport_{CORSModeSupport::eDEFAULT};
                 Execution::Synchronized<Interceptor>                         fServerAndCORSEtcInterceptor_;
-                Execution::Synchronized<Optional<Interceptor>>               fDefaultErrorHandler_;
+                Execution::Synchronized<optional<Interceptor>>               fDefaultErrorHandler_;
                 Execution::Synchronized<Sequence<Interceptor>>               fEarlyInterceptors_;
                 Execution::Synchronized<Sequence<Interceptor>>               fBeforeInterceptors_;
                 Execution::Synchronized<Sequence<Interceptor>>               fAfterInterceptors_;
-                Execution::Synchronized<Optional<int>>                       fLinger_;
-                Execution::Synchronized<Optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
+                Execution::Synchronized<optional<int>>                       fLinger_;
+                Execution::Synchronized<optional<Time::DurationSecondsType>> fAutomaticTCPDisconnectOnClose_;
                 Router                                                       fRouter_;
                 InterceptorChain                                             fInterceptorChain_; // no need to synchonize cuz internally synchronized
 
@@ -272,26 +272,26 @@ namespace Stroika {
             };
 
             struct ConnectionManager::Options {
-                Optional<unsigned int>      fMaxConnections;
-                Optional<Socket::BindFlags> fBindFlags;
-                Optional<String>            fServerHeader;
-                Optional<CORSModeSupport>   fCORSModeSupport;
+                optional<unsigned int>      fMaxConnections;
+                optional<Socket::BindFlags> fBindFlags;
+                optional<String>            fServerHeader;
+                optional<CORSModeSupport>   fCORSModeSupport;
 
                 /**
                  * @see Socket::SetAutomaticTCPDisconnectOnClose ()
                  */
-                Optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose;
+                optional<Time::DurationSecondsType> fAutomaticTCPDisconnectOnClose;
 
                 /**
                  * @see Socket::SetLinger () - SO_LINGER
                  */
-                Optional<int> fLinger;
+                optional<int> fLinger;
 
                 /**
                  * mostly for debugging - so easier to segrate names of threads if you have 
                  * multiple thread pools/connection managers
                  */
-                Optional<String> fThreadPoolName;
+                optional<String> fThreadPoolName;
 
                 /**
                  *  The number of new TCP connections the kernel will buffer before the application has a chance to accept.
@@ -304,14 +304,14 @@ namespace Stroika {
                  *
                  *  @see http://man7.org/linux/man-pages/man2/listen.2.html
                  */
-                Optional<unsigned int> fTCPBacklog;
+                optional<unsigned int> fTCPBacklog;
 
                 static constexpr unsigned int              kDefault_MaxConnections{25}; // temporarily - until we can fix https://stroika.atlassian.net/browse/STK-638
                 static constexpr Socket::BindFlags         kDefault_BindFlags{};
-                static const Optional<String>              kDefault_ServerHeader;
+                static const optional<String>              kDefault_ServerHeader;
                 static constexpr CORSModeSupport           kDefault_CORSModeSupport{CORSModeSupport::eDEFAULT};
                 static constexpr Time::DurationSecondsType kDefault_AutomaticTCPDisconnectOnClose{2.0};
-                static constexpr Optional<int>             kDefault_Linger{};
+                static constexpr optional<int>             kDefault_Linger{};
             };
         }
     }

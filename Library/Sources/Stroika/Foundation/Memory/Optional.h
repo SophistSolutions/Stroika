@@ -793,6 +793,18 @@ namespace Stroika::Foundation {
         T ValueOrDefault (const Optional<T>& o, T defaultValue = T{});
 
         /**
+         * \brief return one of *this, or o, with first preference for which is engaged, and second preference for left-to-right.
+         *
+         *  So Equivilent to this->has_value ()? *this : o;
+         *
+         *  This is VERY similar to Value () - except that the default maybe optional, and this therefore returns an Optional<T>
+         *
+         *  @see Value ()
+         */
+        template <typename T>
+        optional<T> OptionalValue (const optional<T>& l, const optional<T>& r);
+
+        /**
          *  Simple overloaded operator which calls @Optional<T>::Compare (const Optional<T>& rhs)
          */
         template <typename T, typename TRAITS>

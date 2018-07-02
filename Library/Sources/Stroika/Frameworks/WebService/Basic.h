@@ -30,7 +30,6 @@ namespace Stroika {
             using Containers::Sequence;
             using Containers::Set;
             using DataExchange::InternetMediaType;
-            using Memory::Optional;
 
             /**
              *   ////// SUPER DUPER ROUGH DRAFT
@@ -38,11 +37,11 @@ namespace Stroika {
             struct WebServiceMethodDescription {
                 String                      fOperation;
                 Set<String>                 fAllowedMethods; // e.g. GET
-                Optional<InternetMediaType> fResponseType;   // typically DataExchange::PredefinedInternetMediaType::JSON_CT ()
+                optional<InternetMediaType> fResponseType;   // typically DataExchange::PredefinedInternetMediaType::JSON_CT ()
 
-                Optional<String>           fOneLineDocs;
-                Optional<Sequence<String>> fCurlExample;
-                Optional<Sequence<String>> fDetailedDocs;
+                optional<String>           fOneLineDocs;
+                optional<Sequence<String>> fCurlExample;
+                optional<Sequence<String>> fDetailedDocs;
             };
         }
     }

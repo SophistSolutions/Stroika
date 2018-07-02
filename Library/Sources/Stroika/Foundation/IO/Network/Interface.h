@@ -6,11 +6,12 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 #include "../../Configuration/Enumeration.h"
 #include "../../Containers/Set.h"
-#include "../../Memory/Optional.h"
 
 #include "InternetAddress.h"
 
@@ -81,7 +82,7 @@ namespace Stroika {
                      *  This description of the adpapter is typically a short string describing the hardware, such as
                      *      "Intel(R) Dual Band Wireless-AC 7260"
                      */
-                    Memory::Optional<String> fDescription;
+                    optional<String> fDescription;
 
                     /**
                      *
@@ -99,22 +100,22 @@ namespace Stroika {
 
                     /**
                      */
-                    Memory::Optional<Type> fType;
+                    optional<Type> fType;
 
                     /**
                      *  This - if present - is typically an ethernet macaddr (6 bytes in hex separated by :)
                      */
-                    Memory::Optional<String> fHardwareAddress;
+                    optional<String> fHardwareAddress;
 
                     /**
                      *  bits per second
                      */
-                    Memory::Optional<uint64_t> fTransmitSpeedBaud;
+                    optional<uint64_t> fTransmitSpeedBaud;
 
                     /**
                      *  bits per second
                      */
-                    Memory::Optional<uint64_t> fReceiveLinkSpeedBaud;
+                    optional<uint64_t> fReceiveLinkSpeedBaud;
 
                     /**
                      */
@@ -134,7 +135,7 @@ namespace Stroika {
 
                     /**
                      */
-                    Memory::Optional<Containers::Set<Status>> fStatus;
+                    optional<Containers::Set<Status>> fStatus;
 
                     /**
                      *  @see Characters::ToString ();
@@ -152,7 +153,7 @@ namespace Stroika {
                  *
                  *  @see Interface::fInternalInterfaceID
                  */
-                Memory::Optional<Interface> GetInterfaceById (const String& internalInterfaceID);
+                optional<Interface> GetInterfaceById (const String& internalInterfaceID);
             }
         }
     }

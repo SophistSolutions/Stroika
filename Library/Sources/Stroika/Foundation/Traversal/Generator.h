@@ -19,9 +19,9 @@
  *
  *      @todo   I have old docs comment:
  *
- *              "Writeup details on how todo generator – as lambda-from-iteator – like I did for
- *              revision with queie and lambdas – except we have we construct new object with
- *              updstream-get-lambda and pass it to downstream one. I think that works. Try draft…."
+ *              "Writeup details on how todo generator ï¿½ as lambda-from-iteator ï¿½ like I did for
+ *              revision with queie and lambdas ï¿½ except we have we construct new object with
+ *              updstream-get-lambda and pass it to downstream one. I think that works. Try draftï¿½."
  *
  *              I'm now not quite sure what that means. This may have been more for the FunctionApplicaiton module?
  *              But keep for a little bit to see if it makes sense when I review this code later...
@@ -54,7 +54,7 @@ namespace Stroika {
              *          (*myContext)++;
              *          if (*myContext > 10)
              *          {
-             *              return Memory::Optional<int> ();
+             *              return nullopt;
              *          }
              *          return *myContext;
              *      };

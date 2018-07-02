@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/IO/Network/HTTP/MessageStartTextInputStreamBinaryAdapter.h"
@@ -113,8 +115,8 @@ namespace Stroika {
                 /**
                  */
                 struct Remaining {
-                    Memory::Optional<unsigned int>              fMessages;
-                    Memory::Optional<Time::DurationSecondsType> fTimeoutAt;
+                    optional<unsigned int>              fMessages;
+                    optional<Time::DurationSecondsType> fTimeoutAt;
 
                 public:
                     /**
@@ -126,7 +128,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Memory::Optional<Remaining> GetRemainingConnectionLimits () const;
+                nonvirtual optional<Remaining> GetRemainingConnectionLimits () const;
 
             public:
                 /**
@@ -137,7 +139,7 @@ namespace Stroika {
                  *          conn.SetRemainingConnectionMessages (Connection::Remaining{0, 0}); // disable keep-alives
                  *      \endcode
                  */
-                nonvirtual void SetRemainingConnectionMessages (const Memory::Optional<Remaining>& remainingConnectionLimits);
+                nonvirtual void SetRemainingConnectionMessages (const optional<Remaining>& remainingConnectionLimits);
 
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
             private:
@@ -173,7 +175,7 @@ namespace Stroika {
                 ConnectionOrientedStreamSocket::Ptr           fSocket_;
                 Streams::InputOutputStream<Memory::Byte>::Ptr fSocketStream_;
                 shared_ptr<MyMessage_>                        fMessage_; // always there, but ptr so it can be replaced
-                Memory::Optional<Remaining>                   fRemaining_;
+                optional<Remaining>                           fRemaining_;
 #if qStroika_Framework_WebServer_Connection_DetailedMessagingLog
                 Streams::TextWriter::Ptr fLogConnectionState_;
 #endif

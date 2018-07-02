@@ -34,7 +34,6 @@ namespace Stroika {
             namespace FileSystem {
 
                 using Characters::String;
-                using Memory::Optional;
 
                 /**
                  *  A 'MountedFilesystem' is a particular mount point, in a particular filesystem format. There is an N <-->M relationship
@@ -68,7 +67,7 @@ namespace Stroika {
                      *
                      *  \note - on Linux - this path will frequently be for a PARTITION (like /dev/sda1) - not for the underlying disk block device (e.g /dev/sda)
                      */
-                    Optional<Containers::Set<String>> fDevicePaths;
+                    optional<Containers::Set<String>> fDevicePaths;
 
                     /**
                      *  This is an open enumeration indicating the format of the given filesystem:
@@ -83,7 +82,7 @@ namespace Stroika {
                      *         o    "NTFS"
                      *         o    "procfs"
                      */
-                    Optional<String> fFileSystemType;
+                    optional<String> fFileSystemType;
 
                     /**
                      *  This refers - for now - to a windows concept - Volume ID. I think this is roughly equivilent to physical disk
@@ -94,7 +93,7 @@ namespace Stroika {
                      *
                      *  This MIGHT be similar to a UNIX GUID that appears on some kinds of disks, but is currently only implemented for Windows.
                      */
-                    Optional<String> fVolumeID;
+                    optional<String> fVolumeID;
 
                     /**
                      *  @see Characters::ToString ();

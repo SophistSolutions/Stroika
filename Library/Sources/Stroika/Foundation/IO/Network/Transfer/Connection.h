@@ -12,7 +12,6 @@
 #include "../../../Containers/Mapping.h"
 #include "../../../DataExchange/InternetMediaType.h"
 #include "../../../Memory/BLOB.h"
-#include "../../../Memory/Optional.h"
 #include "../../../Time/Realtime.h"
 
 #include "../HTTP/Status.h"
@@ -49,7 +48,6 @@ namespace Stroika {
                     using DataExchange::InternetMediaType;
                     using Memory::BLOB;
                     using Memory::Byte;
-                    using Memory::Optional;
                     using Time::DurationSecondsType;
 
                     /**
@@ -220,7 +218,7 @@ namespace Stroika {
                          *
                          *              Specify it explicitly if you care.
                          */
-                        Optional<bool> fFailConnectionIfSSLCertificateInvalid;
+                        optional<bool> fFailConnectionIfSSLCertificateInvalid;
 
                         /**
                          */
@@ -240,11 +238,11 @@ namespace Stroika {
                          */
                         String fUserAgent{Characters::String_Constant{L"Stroika/2.0"}};
 
-/**
+                        /**
                          *  If authentication options are missing, no authentication will be performed/supported, and if the remote HTTP server
                          *      requires authentication, and 401 HTTP exception will be thrown.
                          */
-#if qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+#if qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy || 1
                         struct Authentication {
                             enum class Options {
                                 eProactivelySendAuthentication,
@@ -256,28 +254,28 @@ namespace Stroika {
                             Authentication (const String& authToken);
                             Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
                             nonvirtual Options GetOptions () const;
-                            nonvirtual Optional<pair<String, String>> GetUsernameAndPassword () const;
+                            nonvirtual optional<pair<String, String>> GetUsernameAndPassword () const;
                             nonvirtual String GetAuthToken () const;
                             nonvirtual String ToString () const;
 
                         private:
                             Options                        fOptions_;
-                            Optional<String>               fExplicitAuthToken_;
-                            Optional<pair<String, String>> fUsernamePassword_;
+                            optional<String>               fExplicitAuthToken_;
+                            optional<pair<String, String>> fUsernamePassword_;
                         };
 #else
                         struct Authentication;
 #endif
-                        Memory::Optional_Indirect_Storage<Authentication> fAuthentication;
+                        optional<Authentication> fAuthentication;
 
                         /*
                          * This is NOT to be confused with HTTP keep alives, but refers to the TCP transport layer variety. This only
                          * matters for long connections
                          */
-                        Memory::Optional<IO::Network::ConnectionOrientedStreamSocket::KeepAliveOptions> fTCPKeepAlives;
+                        optional<IO::Network::ConnectionOrientedStreamSocket::KeepAliveOptions> fTCPKeepAlives;
                     };
 
-#if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
+#if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy && 0
                     /**
                      */
                     struct Connection::Options::Authentication {
@@ -322,7 +320,7 @@ namespace Stroika {
                         /**
                           *      return engaged optional iff constructed with a username/password.
                           */
-                        nonvirtual Optional<pair<String, String>> GetUsernameAndPassword () const;
+                        nonvirtual optional<pair<String, String>> GetUsernameAndPassword () const;
 
                     public:
                         /**
@@ -342,8 +340,8 @@ namespace Stroika {
 
                     private:
                         Options                        fOptions_;
-                        Optional<String>               fExplicitAuthToken_;
-                        Optional<pair<String, String>> fUsernamePassword_;
+                        optional<String>               fExplicitAuthToken_;
+                        optional<pair<String, String>> fUsernamePassword_;
                     };
 #endif
 

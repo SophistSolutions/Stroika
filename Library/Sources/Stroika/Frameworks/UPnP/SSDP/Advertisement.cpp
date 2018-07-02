@@ -116,7 +116,7 @@ void SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* 
         // Need to simplify this code (stroika string util)
         String label;
         String value;
-        if (Memory::Optional<size_t> n = line.Find (':')) {
+        if (optional<size_t> n = line.Find (':')) {
             label = line.SubString (0, *n);
             value = line.SubString (*n + 1).Trim ();
         }
