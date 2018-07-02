@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Foundation/IO/Network/URL.h"
 
 #include "Router.h"
@@ -28,7 +30,6 @@ namespace Stroika {
             using Characters::String;
             using Containers::Sequence;
             using IO::Network::URL;
-            using Memory::Optional;
 
             class Router;
 
@@ -40,7 +41,7 @@ namespace Stroika {
                 /**
                  *  Any route to apply the handler, must match ALL argument constraints.
                  */
-                FileSystemRouter (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
+                FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
             };
         }
     }

@@ -99,7 +99,7 @@ namespace Stroika {
             {
             }
             template <typename T, typename TRAITS>
-            inline Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
+            inline Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end)
                 : Range (begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, TRAITS::kLowerBoundOpenness, TRAITS::kUpperBoundOpenness)
             {
             }
@@ -125,7 +125,7 @@ namespace Stroika {
                 Require (end <= TRAITS::kUpperBound);
             }
             template <typename T, typename TRAITS>
-            inline Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen)
+            inline Range<T, TRAITS>::Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen)
                 : Range (begin.has_value () ? *begin : TRAITS::kLowerBound, end.has_value () ? *end : TRAITS::kUpperBound, lhsOpen, rhsOpen)
             {
             }

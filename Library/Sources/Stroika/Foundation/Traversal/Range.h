@@ -7,12 +7,12 @@
 #include "../StroikaPreComp.h"
 
 #include <limits>
+#include <optional>
 #include <type_traits>
 
 #include "../Characters/String.h"
 #include "../Characters/ToString.h"
 #include "../Configuration/Common.h"
-#include "../Memory/Optional.h"
 
 #include "Iterator.h"
 
@@ -207,10 +207,10 @@ namespace Stroika {
                 template <typename T2, typename TRAITS2>
                 constexpr explicit Range (const Range<T2, TRAITS>& src);
                 constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end);
-                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
+                explicit Range (const optional<T>& begin, const optional<T>& end);
                 constexpr explicit Range (Openness lhsOpen, Openness rhsOpen);
                 constexpr explicit Range (Configuration::ArgByValueType<T> begin, Configuration::ArgByValueType<T> end, Openness lhsOpen, Openness rhsOpen);
-                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness lhsOpen, Openness rhsOpen);
+                explicit Range (const optional<T>& begin, const optional<T>& end, Openness lhsOpen, Openness rhsOpen);
 
             public:
                 /** 

@@ -20,13 +20,13 @@ namespace Stroika {
              ******************************** WebServer::Message ****************************
              ********************************************************************************
              */
-            inline Message::Message (Request&& request, Response&& response, const Memory::Optional<IO::Network::SocketAddress>& peerAddress)
+            inline Message::Message (Request&& request, Response&& response, const optional<IO::Network::SocketAddress>& peerAddress)
                 : fPeerAddress_ (peerAddress)
                 , fRequest_ (move (request))
                 , fResponse_ (move (response))
             {
             }
-            inline Memory::Optional<IO::Network::SocketAddress> Message::GetPeerAddress () const
+            inline optional<IO::Network::SocketAddress> Message::GetPeerAddress () const
             {
                 shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                 return fPeerAddress_;

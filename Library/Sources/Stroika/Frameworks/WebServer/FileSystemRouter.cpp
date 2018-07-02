@@ -30,10 +30,10 @@ using namespace Stroika::Frameworks::WebServer;
 namespace {
     struct FSRouterRep_ {
         filesystem::path fFSRoot_;
-        Optional<String> fURLPrefix2Strip;
+        optional<String> fURLPrefix2Strip;
         Sequence<String> fDefaultIndexFileNames;
 
-        FSRouterRep_ (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
+        FSRouterRep_ (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
             : fFSRoot_ (filesystem::canonical (filesystem::path (filesystemRoot.As<wstring> ())))
             , fURLPrefix2Strip (urlPrefix2Strip)
             , fDefaultIndexFileNames (defaultIndexFileNames)
@@ -52,7 +52,7 @@ namespace {
                 Response&              response = *m->PeekResponse ();
                 InputStream<Byte>::Ptr in{FileInputStream::New (fn)};
                 response.write (in.ReadAll ());
-                if (Optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
+                if (optional<InternetMediaType> oMediaType = kMediaTypesRegistry_.GetAssociatedContentType (fn)) {
                     response.SetContentType (*oMediaType);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                     DbgTrace (L"content-type: %s", oMediaType->ToString ().c_str ());
@@ -94,7 +94,7 @@ namespace {
  ************************* WebServer::FileSystemRouter **************************
  ********************************************************************************
  */
-FileSystemRouter::FileSystemRouter (const String& filesystemRoot, const Optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
+FileSystemRouter::FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames)
     : RequestHandler ((tBuilding_ = make_shared<FSRouterRep_> (filesystemRoot, urlPrefix2Strip, defaultIndexFileNames), [rep = tBuilding_](Message* m) -> void { rep->HandleMessage (m); }))
 {
     Assert (tBuilding_ != nullptr); // @todo use this hack to add instance variable to FileSystemRouter so it can be referenced from above handler

@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Mapping.h"
@@ -13,7 +15,6 @@
 #include "../../Foundation/Debug/AssertExternallySynchronizedLock.h"
 #include "../../Foundation/IO/Network/SocketAddress.h"
 #include "../../Foundation/IO/Network/URL.h"
-#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Streams/InputStream.h"
 
 /*
@@ -103,13 +104,13 @@ namespace Stroika {
                  *
                  *  \note - this does not imply having read the body, and nor is it updated to reflect the body size read after its been read.
                  */
-                nonvirtual Memory::Optional<uint64_t> GetContentLength () const;
+                nonvirtual optional<uint64_t> GetContentLength () const;
 
             public:
                 /**
                  *  Return the HTTP message body Content-Type, if any given
                  */
-                nonvirtual Memory::Optional<InternetMediaType> GetContentType () const;
+                nonvirtual optional<InternetMediaType> GetContentType () const;
 
             public:
                 /**
@@ -154,7 +155,7 @@ namespace Stroika {
 
             private:
                 Streams::InputStream<Memory::Byte>::Ptr fBodyInputStream_;
-                Memory::Optional<Memory::BLOB>          fBody_;
+                optional<Memory::BLOB>          fBody_;
             };
         }
     }

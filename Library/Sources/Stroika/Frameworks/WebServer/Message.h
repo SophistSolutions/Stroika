@@ -36,7 +36,7 @@ namespace Stroika {
                  */
                 Message ()               = delete;
                 Message (const Message&) = delete;
-                Message (Request&& request, Response&& response, const Memory::Optional<IO::Network::SocketAddress>& peerAddress = Memory::Optional<IO::Network::SocketAddress>{});
+                Message (Request&& request, Response&& response, const optional<IO::Network::SocketAddress>& peerAddress = nullopt);
 
             public:
                 nonvirtual Message& operator= (const Message&) = delete;
@@ -45,7 +45,7 @@ namespace Stroika {
                 /**
                  *  @see Socket::GetPeerAddress
                  */
-                nonvirtual Memory::Optional<IO::Network::SocketAddress> GetPeerAddress () const;
+                nonvirtual optional<IO::Network::SocketAddress> GetPeerAddress () const;
 
             public:
                 /**
@@ -128,7 +128,7 @@ namespace Stroika {
                 nonvirtual String ToString () const;
 
             private:
-                Memory::Optional<IO::Network::SocketAddress> fPeerAddress_;
+                optional<IO::Network::SocketAddress> fPeerAddress_;
                 Request                                      fRequest_;
                 Response                                     fResponse_;
             };

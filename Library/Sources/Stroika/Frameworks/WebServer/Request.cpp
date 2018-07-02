@@ -88,25 +88,25 @@ Memory::BLOB Request::GetBody ()
     return *fBody_;
 }
 
-Optional<uint64_t> Request::GetContentLength () const
+optional<uint64_t> Request::GetContentLength () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentLength)) {
         return Characters::String2Int<uint64_t> (*ci);
     }
     else {
-        return Optional<uint64_t>{};
+        return nullopt;
     }
 }
 
-Memory::Optional<InternetMediaType> Request::GetContentType () const
+optional<InternetMediaType> Request::GetContentType () const
 {
     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
     if (auto ci = fHeaders_.Lookup (IO::Network::HTTP::HeaderName::kContentType)) {
         return InternetMediaType{*ci};
     }
     else {
-        return Optional<InternetMediaType>{};
+        return nullopt;
     }
 }
 
@@ -118,7 +118,7 @@ Streams::InputStream<Memory::Byte>::Ptr Request::GetBodyStream ()
     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
     if (fBodyInputStream_ == nullptr) {
         // if we have a content-length, read that many bytes. otherwise, read til EOF
-        if (Optional<uint64_t> contentLength = GetContentLength ()) {
+        if (optional<uint64_t> contentLength = GetContentLength ()) {
             fBodyInputStream_ = InputSubStream<Byte>::New (fInputStream_, {}, fInputStream_.GetOffset () + static_cast<size_t> (*contentLength));
         }
         else {

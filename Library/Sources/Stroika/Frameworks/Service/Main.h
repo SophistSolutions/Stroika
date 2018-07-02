@@ -6,6 +6,8 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Foundation/Characters/String.h"
 #include "../../Foundation/Configuration/Common.h"
 #include "../../Foundation/Containers/Sequence.h"
@@ -14,7 +16,6 @@
 #include "../../Foundation/Execution/Process.h"
 #include "../../Foundation/Execution/Synchronized.h"
 #include "../../Foundation/Execution/Thread.h"
-#include "../../Foundation/Memory/Optional.h"
 #include "../../Foundation/Streams/OutputStream.h"
 
 #if qPlatform_POSIX
@@ -444,7 +445,7 @@ namespace Stroika {
                     eContinue,
                 };
 
-                Memory::Optional<MajorOperation> fMajorOperation;
+                optional<MajorOperation> fMajorOperation;
                 Sequence<String>                 fUnusedArguments;
             };
 
