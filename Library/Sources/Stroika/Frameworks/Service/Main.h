@@ -446,7 +446,7 @@ namespace Stroika {
                 };
 
                 optional<MajorOperation> fMajorOperation;
-                Sequence<String>                 fUnusedArguments;
+                Sequence<String>         fUnusedArguments;
             };
 
             /**

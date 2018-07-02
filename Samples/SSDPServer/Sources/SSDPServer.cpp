@@ -13,7 +13,6 @@
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include "Stroika/Foundation/IO/Network/Listener.h"
-#include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Common.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 #include "Stroika/Frameworks/WebServer/ConnectionManager.h"
@@ -31,7 +30,6 @@ using namespace Stroika::Frameworks::WebServer;
 using Characters::String;
 using Characters::String_Constant;
 using Containers::Sequence;
-using Memory::Optional;
 using Server::BasicServer;
 
 namespace {
@@ -63,7 +61,7 @@ namespace {
             fListener = Listener (SocketAddresses (InternetAddresses_Any (), webServerPortNumber), onConnect);
         }
 
-        Optional<Listener> fListener;
+        optional<Listener> fListener;
     };
 }
 

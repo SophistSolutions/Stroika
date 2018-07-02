@@ -78,6 +78,7 @@ namespace Stroika {
 
                 public:
                     nonvirtual Listener& operator= (const Listener&) = delete;
+                    nonvirtual Listener& operator= (Listener&&) = default;
 
                 private:
                     struct Rep_;

@@ -6,11 +6,12 @@
 
 #include "../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Foundation/Execution/Logger.h"
 #include "../../Foundation/Execution/Thread.h"
 #include "../../Foundation/Execution/ThreadPool.h"
 #include "../../Foundation/IO/Network/Socket.h"
-#include "../../Foundation/Memory/Optional.h"
 
 #include "IModbusService.h"
 

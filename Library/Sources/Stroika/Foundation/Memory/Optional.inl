@@ -970,6 +970,13 @@ namespace Stroika::Foundation {
             result += rhs;
             return result;
         }
+        template <typename T>
+        optional<T> operator+ (const optional<T>& lhs, const optional<T>& rhs)
+        {
+            optional<T> result{lhs};
+            AccumulateIf (&result, rhs);
+            return result;
+        }
 
         /*
          ********************************************************************************
@@ -981,6 +988,13 @@ namespace Stroika::Foundation {
         {
             Optional<T, TRAITS> result{lhs};
             result -= rhs;
+            return result;
+        }
+        template <typename T>
+        optional<T> operator- (const optional<T>& lhs, const optional<T>& rhs)
+        {
+            optional<T> result{lhs};
+            AccumulateIf (&result, rhs, minus{});
             return result;
         }
 
@@ -996,6 +1010,13 @@ namespace Stroika::Foundation {
             result *= rhs;
             return result;
         }
+        template <typename T>
+        optional<T> operator* (const optional<T>& lhs, const optional<T>& rhs)
+        {
+            optional<T> result{lhs};
+            AccumulateIf (&result, rhs, multiplies{});
+            return result;
+        }
 
         /*
          ********************************************************************************
@@ -1007,6 +1028,13 @@ namespace Stroika::Foundation {
         {
             Optional<T, TRAITS> result{lhs};
             result /= rhs;
+            return result;
+        }
+        template <typename T>
+        optional<T> operator/ (const optional<T>& lhs, const optional<T>& rhs)
+        {
+            optional<T> result{lhs};
+            AccumulateIf (&result, rhs, divides{});
             return result;
         }
     }

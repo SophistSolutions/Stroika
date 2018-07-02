@@ -41,7 +41,6 @@ namespace Stroika {
                     using DataExchange::VariantValue;
                     using IO::Network::URL;
                     using Memory::BLOB;
-                    using Memory::Optional;
                     using Traversal::Iterable;
 
                     using WebServer::Request;
@@ -53,8 +52,8 @@ namespace Stroika {
                      *  @see PickoutParamValuesFromBody () to just pickout params from Body
                      *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
-                    Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, const Optional<Iterable<String>>& namedParameters = {});
-                    Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, const Optional<Iterable<String>>& namedParameters = {});
+                    Mapping<String, VariantValue> PickoutParamValuesFromURL (Request* request, const optional<Iterable<String>>& namedParameters = {});
+                    Mapping<String, VariantValue> PickoutParamValuesFromURL (const URL& url, const optional<Iterable<String>>& namedParameters = {});
 
                     /**
                      * Convert body to a mapping of name to value pairs (so they can be mapped to objects)
@@ -62,8 +61,8 @@ namespace Stroika {
                      *  @see PickoutParamValuesFromURL () to just pickout params from URL
                      *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
-                    Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, const Optional<Iterable<String>>& namedParameters);
-                    Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters);
+                    Mapping<String, VariantValue> PickoutParamValuesFromBody (Request* request, const optional<Iterable<String>>& namedParameters);
+                    Mapping<String, VariantValue> PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType, const optional<Iterable<String>>& namedParameters);
 
                     /**
                      * Combine params from URL (@see PickoutParamValuesFromURL) and PickoutParamValuesFromBody - optionally restricting which params we grab from URL/body.
@@ -74,11 +73,11 @@ namespace Stroika {
                      *  @see PickoutParamValuesFromBody () to just pickout params from Body
                      *  @see PickoutParamValues () to pickout params from both url arg and body
                      */
-                    Mapping<String, VariantValue> PickoutParamValues (Request* request, const Optional<Iterable<String>>& namedURLParams = {}, const Optional<Iterable<String>>& namedBodyParams = {});
+                    Mapping<String, VariantValue> PickoutParamValues (Request* request, const optional<Iterable<String>>& namedURLParams = {}, const optional<Iterable<String>>& namedBodyParams = {});
 
                     /**
                      */
-                    VariantValue GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage = {});
+                    VariantValue GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage = {});
 
                     /**
                      *  Take the ordered list of param names, and produce an ordered list of variant values (with the same ordering).

@@ -88,20 +88,20 @@ namespace {
  */
 IOStatistics& IOStatistics::operator+= (const IOStatistics& rhs)
 {
-    fTotalBytesSent.AccumulateIf (rhs.fTotalBytesSent);
-    fTotalBytesReceived.AccumulateIf (rhs.fTotalBytesReceived);
-    fBytesPerSecondSent.AccumulateIf (rhs.fBytesPerSecondSent);
-    fBytesPerSecondReceived.AccumulateIf (rhs.fBytesPerSecondReceived);
-    fTotalTCPSegments.AccumulateIf (rhs.fTotalTCPSegments);
-    fTCPSegmentsPerSecond.AccumulateIf (rhs.fTCPSegmentsPerSecond);
-    fTotalTCPRetransmittedSegments.AccumulateIf (rhs.fTotalTCPRetransmittedSegments);
-    fTCPRetransmittedSegmentsPerSecond.AccumulateIf (rhs.fTCPRetransmittedSegmentsPerSecond);
-    fTotalPacketsSent.AccumulateIf (rhs.fTotalPacketsSent);
-    fTotalPacketsReceived.AccumulateIf (rhs.fTotalPacketsReceived);
-    fPacketsPerSecondSent.AccumulateIf (rhs.fPacketsPerSecondSent);
-    fPacketsPerSecondReceived.AccumulateIf (rhs.fPacketsPerSecondReceived);
-    fTotalErrors.AccumulateIf (rhs.fTotalErrors);
-    fTotalPacketsDropped.AccumulateIf (rhs.fTotalPacketsDropped);
+    Memory::AccumulateIf (&fTotalBytesSent, rhs.fTotalBytesSent);
+    Memory::AccumulateIf (&fTotalBytesReceived, rhs.fTotalBytesReceived);
+    Memory::AccumulateIf (&fBytesPerSecondSent, rhs.fBytesPerSecondSent);
+    Memory::AccumulateIf (&fBytesPerSecondReceived, rhs.fBytesPerSecondReceived);
+    Memory::AccumulateIf (&fTotalTCPSegments, rhs.fTotalTCPSegments);
+    Memory::AccumulateIf (&fTCPSegmentsPerSecond, rhs.fTCPSegmentsPerSecond);
+    Memory::AccumulateIf (&fTotalTCPRetransmittedSegments, rhs.fTotalTCPRetransmittedSegments);
+    Memory::AccumulateIf (&fTCPRetransmittedSegmentsPerSecond, rhs.fTCPRetransmittedSegmentsPerSecond);
+    Memory::AccumulateIf (&fTotalPacketsSent, rhs.fTotalPacketsSent);
+    Memory::AccumulateIf (&fTotalPacketsReceived, rhs.fTotalPacketsReceived);
+    Memory::AccumulateIf (&fPacketsPerSecondSent, rhs.fPacketsPerSecondSent);
+    Memory::AccumulateIf (&fPacketsPerSecondReceived, rhs.fPacketsPerSecondReceived);
+    Memory::AccumulateIf (&fTotalErrors, rhs.fTotalErrors);
+    Memory::AccumulateIf (&fTotalPacketsDropped, rhs.fTotalPacketsDropped);
     return *this;
 }
 
@@ -317,7 +317,7 @@ namespace {
             // Note - /procfs files always unseekable
             bool                    firstTime = true;
             Mapping<String, size_t> labelMap;
-            Optional<uint64_t>      totalTCPSegments;
+            optional<uint64_t>      totalTCPSegments;
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"in Instruments::Network::Info Read_proc_net_snmp_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
@@ -336,12 +336,12 @@ namespace {
                         static const String_Constant kRetransSegs_{L"RetransSegs"};
                         if (auto idx = labelMap.Lookup (kInSegs_)) {
                             if (*idx < line.length ()) {
-                                totalTCPSegments.AccumulateIf (Characters::String2Int<uint64_t> (line[*idx]));
+                                Memory::AccumulateIf (&totalTCPSegments, Characters::String2Int<uint64_t> (line[*idx]));
                             }
                         }
                         if (auto idx = labelMap.Lookup (kOutSegs_)) {
                             if (*idx < line.length ()) {
-                                totalTCPSegments.AccumulateIf (Characters::String2Int<uint64_t> (line[*idx]));
+                                Memory::AccumulateIf (&totalTCPSegments, Characters::String2Int<uint64_t> (line[*idx]));
                             }
                         }
                         if (auto idx = labelMap.Lookup (kRetransSegs_)) {
@@ -352,7 +352,7 @@ namespace {
                     }
                 }
             }
-            totalTCPSegments.CopyToIf (&accumSummary->fTotalTCPSegments);
+            Memory::CopyToIf (totalTCPSegments, &accumSummary->fTotalTCPSegments);
         }
 #endif
     };
@@ -483,11 +483,11 @@ namespace {
                 Memory::CopyToIf (fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsReceivedPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondReceived);
                 Memory::CopyToIf (fNetworkWMICollector_.PeekCurrentValue (wmiInstanceName, kPacketsSentPerSecond_), &updateResult->fIOStatistics.fPacketsPerSecondSent);
 
-                updateResult->fIOStatistics.fTCPSegmentsPerSecond.AccumulateIf (fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
-                updateResult->fIOStatistics.fTCPSegmentsPerSecond.AccumulateIf (fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPSegmentsPerSecond, fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kTCPSegmentsPerSecond_));
 
-                updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.AccumulateIf (fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
-                updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond.AccumulateIf (fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, fTCPv4WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
+                Memory::AccumulateIf (&updateResult->fIOStatistics.fTCPRetransmittedSegmentsPerSecond, fTCPv6WMICollector_.PeekCurrentValue (wmiInstanceName, kSegmentsRetransmittedPerSecond_));
             }
         }
 #endif
@@ -540,14 +540,14 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
     static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        mapper.AddCommonType<Optional<uint64_t>> ();
-        mapper.AddCommonType<Optional<double>> ();
-        mapper.AddCommonType<Optional<String>> ();
+        mapper.AddCommonType<optional<uint64_t>> ();
+        mapper.AddCommonType<optional<double>> ();
+        mapper.AddCommonType<optional<String>> ();
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Type> ());
-        mapper.AddCommonType<Optional<Interface::Type>> ();
+        mapper.AddCommonType<optional<Interface::Type>> ();
         mapper.Add (mapper.MakeCommonSerializer_NamedEnumerations<Interface::Status> ());
         mapper.AddCommonType<Set<Interface::Status>> ();
-        mapper.AddCommonType<Optional<Set<Interface::Status>>> ();
+        mapper.AddCommonType<optional<Set<Interface::Status>>> ();
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         using Interface = InterfaceInfo::Interface;
         mapper.AddClass<Interface> (initializer_list<StructFieldInfo>{
@@ -583,8 +583,8 @@ ObjectVariantMapper Instruments::Network::GetObjectVariantMapper ()
             {L"IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (InterfaceInfo, fIOStatistics)},
         });
         mapper.AddCommonType<Collection<InterfaceInfo>> ();
-        mapper.AddCommonType<Optional<Collection<InterfaceInfo>>> ();
-        mapper.AddCommonType<Optional<IOStatistics>> ();
+        mapper.AddCommonType<optional<Collection<InterfaceInfo>>> ();
+        mapper.AddCommonType<optional<IOStatistics>> ();
         mapper.AddClass<Info> (initializer_list<StructFieldInfo>{
             {L"Interfaces", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fInterfaces), StructFieldInfo::eOmitNullFields},
             {L"Summary-IO-Statistics", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fSummaryIOStatistics), StructFieldInfo::eOmitNullFields},

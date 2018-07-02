@@ -155,7 +155,7 @@ namespace Stroika {
 
             private:
                 Streams::InputStream<Memory::Byte>::Ptr fBodyInputStream_;
-                optional<Memory::BLOB>          fBody_;
+                optional<Memory::BLOB>                  fBody_;
             };
         }
     }

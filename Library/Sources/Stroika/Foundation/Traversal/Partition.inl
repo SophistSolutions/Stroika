@@ -19,7 +19,6 @@ namespace Stroika {
                     using Common::KeyValuePair;
                     using Containers::SortedMapping;
                     using Debug::TraceContextBumper;
-                    using Memory::Optional;
                     TraceContextBumper ctx ("IsPartition_Helper_");
                     using namespace Traversal;
                     using value_type = typename RANGETYPE::value_type;
@@ -27,7 +26,7 @@ namespace Stroika {
                     for (RANGETYPE r : iterable) {
                         tmp.Add (r.GetLowerBound (), r);
                     }
-                    Optional<value_type> upperBoundSeenSoFar;
+                    optional<value_type> upperBoundSeenSoFar;
                     Openness             upperBoundSeenSoFarOpenness{};
                     for (KeyValuePair<value_type, RANGETYPE> i : tmp) {
                         //DbgTrace ("i.fKey = %f, i.fValue = (%f,%f, ol=%d, or=%d)", i.fKey, i.fValue.GetLowerBound (), i.fValue.GetUpperBound (), i.fValue.GetLowerBoundOpenness (), i.fValue.GetUpperBoundOpenness ());

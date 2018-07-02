@@ -14,7 +14,6 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #endif
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
-#include "Stroika/Foundation/Memory/Optional.h"
 #include "Stroika/Foundation/Streams/MemoryStream.h"
 
 #include "Stroika/Frameworks/SystemPerformance/AllInstruments.h"
@@ -31,7 +30,6 @@ using Characters::Character;
 using Characters::String;
 using Containers::Sequence;
 using Memory::Byte;
-using Memory::Optional;
 
 namespace {
     string Serialize_ (VariantValue v, bool oneLineMode)

@@ -771,6 +771,13 @@ namespace Stroika::Foundation {
          *      \endcode
          *
          *      \note   ITS CONFUSING direction of if-test for this versus CopyToIf
+         *
+         *      \note
+         *          typical OP arguments would be:
+         *              std::plus{} **the default**
+         *              std::minus{}
+         *              std::multiplies{}
+         *              std::divides{}
          */
         template <typename T, typename OP = std::plus<T>>
         void AccumulateIf (optional<T>* lhsOptionalValue, const optional<T>& rhsOptionalValue, const OP& op = OP{});
@@ -889,27 +896,47 @@ namespace Stroika::Foundation {
 
         /**
          *  Simple overloaded operator which calls @Optional<T>::operator+= (const Optional<T>& rhs)
+         *
+         *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
+         *        empty, the other side defaults to T{}.
          */
         template <typename T, typename TRAITS>
         Optional<T, TRAITS> operator+ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+        template <typename T>
+        optional<T> operator+ (const optional<T>& lhs, const optional<T>& rhs);
 
         /**
          *  Simple overloaded operator which calls @Optional<T>::operator-= (const Optional<T>& rhs)
+         *
+         *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
+         *        empty, the other side defaults to T{}.
          */
         template <typename T, typename TRAITS>
         Optional<T, TRAITS> operator- (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+        template <typename T>
+        optional<T> operator- (const optional<T>& lhs, const optional<T>& rhs);
 
         /**
          *  Simple overloaded operator which calls @Optional<T>::operator*= (const Optional<T>& rhs)
+         *
+         *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
+         *        empty, the other side defaults to T{}.
          */
         template <typename T, typename TRAITS>
         Optional<T, TRAITS> operator* (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+        template <typename T>
+        optional<T> operator* (const optional<T>& lhs, const optional<T>& rhs);
 
         /**
          *  Simple overloaded operator which calls @Optional<T>::operator/= (const Optional<T>& rhs)
+         *
+         *  \note this uses AccumulateIf(), so if both sides missing, result is missing, but if only one side is
+         *        empty, the other side defaults to T{}.
          */
         template <typename T, typename TRAITS>
         Optional<T, TRAITS> operator/ (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
+        template <typename T>
+        optional<T> operator/ (const optional<T>& lhs, const optional<T>& rhs);
 
         /**
          *  \brief Optional_Indirect_Storage<T> is a type alias for Optional<> but using Optional_Traits_Blockallocated_Indirect_Storage for use in forward declared (no size known) types

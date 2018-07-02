@@ -29,13 +29,13 @@ using WebServer::ClientErrorException;
  ******** WebService::Server::VariantValue::PickoutParamValuesFromURL ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (Request* request, const optional<Iterable<String>>& namedParameters)
 {
     RequireNotNull (request);
     return PickoutParamValuesFromURL (request->GetURL (), namedParameters);
 }
 
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromURL (const URL& url, const optional<Iterable<String>>& namedParameters)
 {
     Mapping<String, VariantValue> result;
     Mapping<String, String>       unconverted = url.GetQuery ().GetMap ();
@@ -59,13 +59,13 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  ******* WebService::Server::VariantValue::PickoutParamValuesFromBody ***********
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (Request* request, const optional<Iterable<String>>& namedParameters)
 {
     Memory::BLOB inData = request->GetBody ();
     return PickoutParamValuesFromBody (request->GetBody (), request->GetContentType (), namedParameters);
 }
 
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const Optional<InternetMediaType>& bodyContentType, const Optional<Iterable<String>>& namedParameters)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValuesFromBody (const BLOB& body, const optional<InternetMediaType>& bodyContentType, const optional<Iterable<String>>& namedParameters)
 {
     static const InternetMediaType kDefaultCT_ = DataExchange::PredefinedInternetMediaType::kJSON;
     if (bodyContentType.value_or (kDefaultCT_) == DataExchange::PredefinedInternetMediaType::kJSON) {
@@ -83,7 +83,7 @@ Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamVa
  ***** WebService::Server::VariantValue::GetWebServiceArgsAsVariantValue ********
  ********************************************************************************
  */
-DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue (Request* request, const Optional<String>& fromInMessage)
+DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue (Request* request, const optional<String>& fromInMessage)
 {
     String method{request->GetHTTPMethod ()};
     if (method == L"POST" or method == L"PUT") {
@@ -112,7 +112,7 @@ DataExchange::VariantValue Server::VariantValue::GetWebServiceArgsAsVariantValue
  ********** WebService::Server::VariantValue::PickoutParamValues ****************
  ********************************************************************************
  */
-Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request* request, const Optional<Iterable<String>>& namedURLParams, const Optional<Iterable<String>>& namedBodyParams)
+Mapping<String, DataExchange::VariantValue> Server::VariantValue::PickoutParamValues (Request* request, const optional<Iterable<String>>& namedURLParams, const optional<Iterable<String>>& namedBodyParams)
 {
     Mapping<String, DataExchange::VariantValue> result = PickoutParamValuesFromURL (request, namedURLParams);
     // body params take precedence, if they overlap

@@ -853,7 +853,7 @@ namespace {
                         Memory::AccumulateIf (&combinedStats.fQLength, writeStats.fQLength);
                         Memory::AccumulateIf (&combinedStats.fInUsePercent, writeStats.fInUsePercent);
                         if (readStats.fInUsePercent and writeStats.fInUsePercent) {
-                            Memory::AccumulateIf (&combinedStats.fInUsePercent, 2.0, std::divides{});
+                            combinedStats.fInUsePercent = *combinedStats.fInUsePercent / 2; // must be safe cuz above would have set combined stats
                         }
 
                         if (kUsePctIdleIimeForAveQLen_) {

@@ -10,7 +10,6 @@
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Execution/CommandLine.h"
 #include "Stroika/Foundation/IO/Network/DNS.h"
-#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Stroika/Frameworks/NetworkMonitor/Ping.h"
 #include "Stroika/Frameworks/NetworkMonitor/Traceroute.h"
@@ -27,7 +26,6 @@ using namespace Stroika::Frameworks::NetworkMonitor;
 using Characters::String;
 using Containers::Collection;
 using Containers::Sequence;
-using Memory::Optional;
 
 int main (int argc, const char* argv[])
 {
@@ -41,7 +39,7 @@ int main (int argc, const char* argv[])
     unsigned int          sampleCount = 3;
     static const Duration kInterSampleTime_{"PT.1S"};
     size_t                packetSize = Ping::Options::kDefaultPayloadSize + sizeof (ICMP::V4::PacketHeader); // historically, the app ping has measured this including ICMP packet header, but not ip packet header size
-    auto                  usage      = [](const Optional<String>& extraArg = {}) {
+    auto                  usage      = [](const optional<String>& extraArg = {}) {
         if (extraArg) {
             cerr << extraArg->AsNarrowSDKString () << endl;
         }

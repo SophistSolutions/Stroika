@@ -129,8 +129,8 @@ namespace Stroika {
 
             private:
                 optional<IO::Network::SocketAddress> fPeerAddress_;
-                Request                                      fRequest_;
-                Response                                     fResponse_;
+                Request                              fRequest_;
+                Response                             fResponse_;
             };
         }
     }

@@ -6,6 +6,8 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 
 #include "../Instrument.h"
@@ -44,15 +46,13 @@ namespace Stroika {
 #endif
 
                     using DataExchange::ObjectVariantMapper;
-                    using Foundation::Memory::Optional;
-                    using Foundation::Memory::Optional_Indirect_Storage;
 
                     /**
                      *
                      */
                     struct Info {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
-                        struct Info::LoadAverage {
+                        struct LoadAverage {
                             double f1MinuteAve{};
                             double f5MinuteAve{};
                             double f15MinuteAve{};
@@ -100,7 +100,7 @@ namespace Stroika {
                          *              (0 means no use, 1 means ALL cores fully used with no Q, and 2 means all cores fully utilized and
                          *              each core with a Q length of 1).
                          */
-                        Optional<double> fRunQLength{};
+                        optional<double> fRunQLength{};
 
                         /**
                          *  @see Characters::ToString ();

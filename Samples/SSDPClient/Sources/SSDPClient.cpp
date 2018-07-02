@@ -11,7 +11,6 @@
 #include "Stroika/Foundation/Execution/SignalHandlers.h"
 #include "Stroika/Foundation/Execution/WaitableEvent.h"
 #include "Stroika/Foundation/IO/Network/Transfer/Client.h"
-#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "Stroika/Frameworks/UPnP/DeviceDescription.h"
 #include "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
@@ -27,7 +26,6 @@ using Characters::String;
 using Client::Listener;
 using Client::Search;
 using Containers::Sequence;
-using Memory::Optional;
 
 namespace {
     mutex kStdOutMutex_; // If the listener impl uses multiple listen threads, prevent display from getting messed up
@@ -101,7 +99,7 @@ int main (int argc, const char* argv[])
     Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGPIPE, Execution::SignalHandlerRegistry::kIGNORED);
 #endif
     bool             listen = false;
-    Optional<String> searchFor;
+    optional<String> searchFor;
 
     Sequence<String> args = Execution::ParseCommandLine (argc, argv);
     for (auto argi = args.begin (); argi != args.end (); ++argi) {

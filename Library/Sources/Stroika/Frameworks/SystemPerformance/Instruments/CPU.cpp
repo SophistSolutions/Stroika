@@ -18,6 +18,7 @@
 #include "../../../Foundation/Execution/Sleep.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/Math/Common.h"
+#include "../../../Foundation/Memory/Optional.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
 
@@ -97,9 +98,9 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
             {L"5-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f5MinuteAve)},
             {L"15-minute", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::LoadAverage, f15MinuteAve)},
         });
-        mapper.AddCommonType<Optional_Indirect_Storage<Info::LoadAverage>> ();
+        mapper.AddCommonType<optional<Info::LoadAverage>> ();
 #endif
-        mapper.AddCommonType<Optional<double>> ();
+        mapper.AddCommonType<optional<double>> ();
         mapper.AddClass<Info> (initializer_list<StructFieldInfo> {
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
             {L"Load-Average", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info, fLoadAverage), StructFieldInfo::eOmitNullFields},
@@ -335,7 +336,7 @@ namespace {
                     result.fLoadAverage = Info::LoadAverage (loadAve[0], loadAve[1], loadAve[2]);
                     result.fRunQLength  = EstimateRunQFromLoadAveArray_ (Time::GetTickCount () - GetLastCaptureAt (), loadAve);
                     static const unsigned int kCPUCoreCount_{GetSystemConfiguration_CPU ().GetNumberOfLogicalCores ()};
-                    result.fRunQLength /= kCPUCoreCount_; // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
+                    Memory::AccumulateIf<double> (&result.fRunQLength, kCPUCoreCount_, std::divides{}); // fRunQLength counts length normalized 0..1 with 1 menaing ALL CPU CORES
                 }
                 else {
                     DbgTrace ("getloadave failed - with result = %d", lr);
@@ -415,7 +416,7 @@ namespace {
             Memory::CopyToIf (fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_), &result.fRunQLength);
             //fSystemWMICollector_.PeekCurrentValue (kInstanceName_, kProcessorQueueLength_).CopyToIf (&result.fRunQLength);
             if (result.fRunQLength) {
-                result.fRunQLength += result.fTotalProcessCPUUsage; // both normalized so '1' means all logical cores
+                Memory::AccumulateIf (&result.fRunQLength, result.fTotalProcessCPUUsage); // both normalized so '1' means all logical cores
             }
 #endif
             NoteCompletedCapture_ ();

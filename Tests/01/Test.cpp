@@ -9,6 +9,7 @@
 #include "Stroika/Foundation/Debug/Assertions.h"
 #include "Stroika/Foundation/Debug/TimingTrace.h"
 #include "Stroika/Foundation/Debug/Trace.h"
+#include "Stroika/Foundation/Memory/Optional.h"
 
 #include "../TestHarness/SimpleClass.h"
 #include "../TestHarness/TestHarness.h"
@@ -114,7 +115,6 @@ namespace {
         // FROM Example Usage in TimedCache<>
         namespace Private_ {
             using Characters::String;
-            using Memory::Optional;
 
             struct DiskSpaceUsageType {
                 int size;
@@ -122,9 +122,9 @@ namespace {
             auto LookupDiskStats_ ([[maybe_unused]] const String& filename) -> DiskSpaceUsageType { return DiskSpaceUsageType{33}; };
 
             Cache::TimedCache<String, DiskSpaceUsageType> sDiskUsageCache_{5.0};
-            Optional<DiskSpaceUsageType>                  LookupDiskStats (String diskName)
+            optional<DiskSpaceUsageType>                  LookupDiskStats (String diskName)
             {
-                Optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
+                optional<DiskSpaceUsageType> o = sDiskUsageCache_.Lookup (diskName);
                 if (not o.has_value ()) {
                     o = LookupDiskStats_ (diskName);
                     if (o) {
@@ -136,8 +136,8 @@ namespace {
         }
         void DoIt ()
         {
-            VerifyTestResult (ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
-            VerifyTestResult (ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
+            VerifyTestResult (Memory::ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
+            VerifyTestResult (Memory::ValueOrDefault (Private_::LookupDiskStats (L"xx")).size == 33);
         }
     }
 }

@@ -40,12 +40,12 @@ struct Router::Rep_ : Interceptor::_IRep {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx{L"Router::Rep_::HandleMessage", L"(...url=%s)", Characters::ToString (m->GetRequestURL ()).c_str ()};
 #endif
-        Optional<RequestHandler> handler = Lookup_ (*m->PeekRequest ());
+        optional<RequestHandler> handler = Lookup_ (*m->PeekRequest ());
         if (handler) {
             (*handler) (m);
         }
         else {
-            if (Optional<Set<String>> o = GetAllowedMethodsForRequest_ (*m->PeekRequest ())) {
+            if (optional<Set<String>> o = GetAllowedMethodsForRequest_ (*m->PeekRequest ())) {
                 // From 10.4.6 405 Method Not Allowed
                 //      The method specified in the Request-Line is not allowed for the resource identified by the Request-URI.
                 //      The response MUST include an Allow header containing a list of valid methods for the requested resource.
@@ -61,7 +61,7 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
         }
     }
-    Optional<RequestHandler> Lookup_ (const Request& request) const
+    optional<RequestHandler> Lookup_ (const Request& request) const
     {
         String method      = request.GetHTTPMethod ();
         URL    url         = request.GetURL ();
@@ -78,9 +78,9 @@ struct Router::Rep_ : Interceptor::_IRep {
             }
             return r.fHandler_;
         }
-        return Optional<RequestHandler>{};
+        return nullopt;
     }
-    Optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
+    optional<Set<String>> GetAllowedMethodsForRequest_ (const Request& request) const
     {
         URL                      url         = request.GetURL ();
         String                   hostRelPath = url.GetHostRelativePath ();
@@ -100,7 +100,7 @@ struct Router::Rep_ : Interceptor::_IRep {
                 methods.Add (method);
             }
         }
-        return methods.empty () ? Optional<Set<String>>{} : Optional<Set<String>>{methods};
+        return methods.empty () ? optional<Set<String>>{} : optional<Set<String>>{methods};
     }
 
     const Sequence<Route> fRoutes_; // no need for synchronization cuz constant - just set on construction
@@ -116,7 +116,7 @@ Router::Router (const Sequence<Route>& routes)
 {
 }
 
-Optional<RequestHandler> Router::Lookup (const Request& request) const
+optional<RequestHandler> Router::Lookup (const Request& request) const
 {
     return _GetRep<Rep_> ().Lookup_ (request);
 }

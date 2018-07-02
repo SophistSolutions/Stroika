@@ -172,7 +172,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Read_ProcMemInfo");
 #endif
-            auto ReadMemInfoLine_ = [](Optional<uint64_t>* result, const String& n, const Sequence<String>& line) {
+            auto ReadMemInfoLine_ = [](optional<uint64_t>* result, const String& n, const Sequence<String>& line) {
                 if (line.size () >= 3 and line[0] == n) {
                     String unit   = line[2];
                     double factor = (unit == L"kB") ? 1024 : 1;
@@ -190,9 +190,9 @@ namespace {
             static const String_Constant                           kProcMemInfoFileName_{L"/proc/meminfo"};
             DataExchange::Variant::CharacterDelimitedLines::Reader reader{{':', ' ', '\t'}};
             // Note - /procfs files always unseekable
-            Optional<uint64_t> memTotal;
-            Optional<uint64_t> slabReclaimable;
-            Optional<uint64_t> slab; // older kernels dont have slabReclaimable
+            optional<uint64_t> memTotal;
+            optional<uint64_t> slabReclaimable;
+            optional<uint64_t> slab; // older kernels dont have slabReclaimable
             for (Sequence<String> line : reader.ReadMatrix (FileInputStream::New (kProcMemInfoFileName_, FileInputStream::eNotSeekable))) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"***in Instruments::Memory::Info capture_ linesize=%d, line[0]=%s", line.size (), line.empty () ? L"" : line[0].c_str ());
@@ -238,7 +238,7 @@ namespace {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx ("Read_ProcVMStat_");
 #endif
-            auto ReadVMStatLine_ = [](Optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
+            auto ReadVMStatLine_ = [](optional<uint64_t>* result, const String& n, const Sequence<String>& line) -> unsigned int {
                 if (line.size () >= 2 and line[0] == n) {
                     *result = Characters::String2Int<uint64_t> (line[1]);
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -250,8 +250,8 @@ namespace {
             };
             {
                 static const String_Constant kProcVMStatFileName_{L"/proc/vmstat"};
-                Optional<uint64_t>           pgfault;
-                Optional<uint64_t>           pgpgout;
+                optional<uint64_t>           pgfault;
+                optional<uint64_t>           pgpgout;
                 {
                     unsigned int nFound{};
                     // Note - /procfs files always unseekable
@@ -278,7 +278,7 @@ namespace {
                 if (pgfault and updateResult->fPaging.fMajorPageFaultsSinceBoot) {
                     updateResult->fPaging.fMinorPageFaultsSinceBoot = *pgfault - *updateResult->fPaging.fMajorPageFaultsSinceBoot;
                 }
-                auto doAve_ = [](Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, Optional<uint64_t> faultsSinceBoot, Optional<double>* faultsPerSecond) {
+                auto doAve_ = [](Time::DurationSecondsType savedVMPageStatsAt, Time::DurationSecondsType now, uint64_t* savedBaseline, optional<uint64_t> faultsSinceBoot, optional<double>* faultsPerSecond) {
                     if (faultsSinceBoot) {
                         if (savedVMPageStatsAt != 0) {
                             *faultsPerSecond = (*faultsSinceBoot - *savedBaseline) / (now - savedVMPageStatsAt);
@@ -335,7 +335,7 @@ namespace {
             // Resource Monitor, the amount reported as 'hardware' - which I'm thinking is roughly 'osreserved' is
             // subtracted from 'standby'.
             if (result.fPhysicalMemory.fOSReserved) {
-                result.fPhysicalMemory.fInactive -= result.fPhysicalMemory.fOSReserved;
+                Memory::AccumulateIf (&result.fPhysicalMemory.fInactive, result.fPhysicalMemory.fOSReserved, std::minus{});
             }
             NoteCompletedCapture_ ();
             return result;
@@ -371,15 +371,15 @@ namespace {
             Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardPageFaultsPerSec_), &updateResult->fPaging.fMajorPageFaultsPerSecond);
             Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kPagesOutPerSec_), &updateResult->fPaging.fPageOutsPerSecond);
             Memory::CopyToIf (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_), &updateResult->fPhysicalMemory.fFree);
-            if (Optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
+            if (optional<double> freeMem = fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kFreeMem_)) {
                 if (updateResult->fPhysicalMemory.fActive) {
                     // Active + Inactive + Free == TotalRAM
                     updateResult->fPhysicalMemory.fInactive = totalRAM - *updateResult->fPhysicalMemory.fActive - static_cast<uint64_t> (*freeMem);
                 }
             }
             updateResult->fPhysicalMemory.fOSReserved = nullopt;
-            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (Optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_)));
-            updateResult->fPhysicalMemory.fOSReserved.AccumulateIf (Optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_)));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved1_)));
+            Memory::AccumulateIf (&updateResult->fPhysicalMemory.fOSReserved, optional<uint64_t> (fMemoryWMICollector_.PeekCurrentValue (kInstanceName_, kHardwareReserved2_)));
             // fPhysicalMemory.fAvailable WAG TMPHACK - probably should add "hardware in use" memory + private WS of each process + shared memory "WS" - but not easy to compute...
             updateResult->fPhysicalMemory.fAvailable = updateResult->fPhysicalMemory.fFree + updateResult->fPhysicalMemory.fInactive;
         }
@@ -440,8 +440,8 @@ ObjectVariantMapper Instruments::Memory::GetObjectVariantMapper ()
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
     static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
-        mapper.AddCommonType<Optional<uint64_t>> ();
-        mapper.AddCommonType<Optional<double>> ();
+        mapper.AddCommonType<optional<uint64_t>> ();
+        mapper.AddCommonType<optional<double>> ();
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
         mapper.AddClass<Info::PhysicalRAMDetailsType> (initializer_list<StructFieldInfo>{
             {L"Available", Stroika_Foundation_DataExchange_StructFieldMetaInfo (Info::PhysicalRAMDetailsType, fAvailable), StructFieldInfo::eOmitNullFields},
