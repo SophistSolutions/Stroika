@@ -3,6 +3,8 @@
  */
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #if qPlatform_Windows
 #include <Windows.h>
 #endif
@@ -18,7 +20,6 @@
 #include "../../../Foundation/Execution/Sleep.h"
 #include "../../../Foundation/IO/FileSystem/FileInputStream.h"
 #include "../../../Foundation/Math/Common.h"
-#include "../../../Foundation/Memory/Optional.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
 
@@ -89,7 +90,7 @@ String Instruments::CPU::Info::ToString () const
 ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
 {
     using StructFieldInfo                     = ObjectVariantMapper::StructFieldInfo;
-    static const ObjectVariantMapper sMapper_ = []() -> ObjectVariantMapper {
+    static const ObjectVariantMapper kMapper_ = []() -> ObjectVariantMapper {
         ObjectVariantMapper mapper;
         DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Winvalid-offsetof\""); // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if qSupport_SystemPerformance_Instruments_CPU_LoadAverage
@@ -112,7 +113,7 @@ ObjectVariantMapper Instruments::CPU::GetObjectVariantMapper ()
         DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Winvalid-offsetof\"");
         return mapper;
     }();
-    return sMapper_;
+    return kMapper_;
 }
 
 namespace {

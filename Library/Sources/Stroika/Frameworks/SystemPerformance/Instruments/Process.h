@@ -11,7 +11,6 @@
 #include "../../../Foundation/Containers/Sequence.h"
 #include "../../../Foundation/DataExchange/ObjectVariantMapper.h"
 #include "../../../Foundation/Execution/Process.h"
-#include "../../../Foundation/Memory/Optional.h"
 
 #include "../Instrument.h"
 
@@ -33,7 +32,6 @@ namespace Stroika {
                     using Foundation::Containers::Mapping;
                     using Foundation::DataExchange::ObjectVariantMapper;
                     using Foundation::Execution::pid_t;
-                    using Foundation::Memory::Optional;
                     using Foundation::Time::DurationSecondsType;
 
                     using MemorySizeType = uint64_t;
@@ -45,7 +43,7 @@ namespace Stroika {
                         /**
                          *  If true (unix only) - this process is really a thread builtin to the kernel. If missing, unknown.
                          */
-                        Optional<bool> fKernelProcess;
+                        optional<bool> fKernelProcess;
 
                         /**
                          *  This will be omitted if unknown, but can be the special value zero, whose meaning varies from OS to OS, but
@@ -53,24 +51,24 @@ namespace Stroika {
                          *
                          *  Kernel processes on some operating systems (e.g. AIX) also tend to have parent PID 0)
                          */
-                        Optional<pid_t> fParentProcessID;
+                        optional<pid_t> fParentProcessID;
 
                         /*
                          *  On some systems, in some cases, we cannot find the EXE name, but still have some sort of process
                          *  name we can retrieve.
                          */
-                        Optional<String> fProcessName;
+                        optional<String> fProcessName;
 
                         /*
                          *   on windows, this is in the form of username@domain if a domain is present
                          */
-                        Optional<String>                  fUserName;
-                        Optional<String>                  fCommandLine;
-                        Optional<String>                  fCurrentWorkingDirectory;
-                        Optional<Mapping<String, String>> fEnvironmentVariables;
-                        Optional<String>                  fEXEPath;
-                        Optional<String>                  fRoot; // chroot
-                        Optional<Time::DateTime>          fProcessStartedAt;
+                        optional<String>                  fUserName;
+                        optional<String>                  fCommandLine;
+                        optional<String>                  fCurrentWorkingDirectory;
+                        optional<Mapping<String, String>> fEnvironmentVariables;
+                        optional<String>                  fEXEPath;
+                        optional<String>                  fRoot; // chroot
+                        optional<Time::DateTime>          fProcessStartedAt;
 
                         /**
                          *  Based on
@@ -94,7 +92,7 @@ namespace Stroika {
 
                         /**
                          */
-                        Optional<RunStatus> fRunStatus;
+                        optional<RunStatus> fRunStatus;
 
                         /**
                          *  This is the total VM allocated solely for the purpose of this process.
@@ -106,14 +104,14 @@ namespace Stroika {
                          *
                          *  @see fPrivateBytes
                          */
-                        Optional<MemorySizeType> fPrivateVirtualMemorySize;
+                        optional<MemorySizeType> fPrivateVirtualMemorySize;
 
                         /**
                          *  This is the total VM size for the process, including all mapped shared data. This value will
                          *  often grossly over-state the amount of 'virtual memory' in use for a process, because
                          *  it can include things like memory mapped files, etc.
                          */
-                        Optional<MemorySizeType> fTotalVirtualMemorySize;
+                        optional<MemorySizeType> fTotalVirtualMemorySize;
 
                         /**
                          *  Resident Set Size (RSS): number of [BYTES] the process has in real memory. This is just the
@@ -129,7 +127,7 @@ namespace Stroika {
                          *
                          *  \note   AIX lipperf:  proc_real_mem_data + proc_real_mem_text
                          */
-                        Optional<MemorySizeType> fResidentMemorySize;
+                        optional<MemorySizeType> fResidentMemorySize;
 
                         /*
                          *  From http://superuser.com/questions/618686/private-bytes-vs-working-set-in-process-explorer:
@@ -151,28 +149,28 @@ namespace Stroika {
                          *
                          *  @see fPrivateVirtualMemorySize
                          */
-                        Optional<MemorySizeType> fPrivateBytes;
+                        optional<MemorySizeType> fPrivateBytes;
 
                         /**
                          *  Total number of page major (causing a block/disk read)
                          */
-                        Optional<unsigned int> fMajorPageFaultCount;
+                        optional<unsigned int> fMajorPageFaultCount;
 
                         /**
                          *  Total number of page faults (read or write) ever for this process.
                          */
-                        Optional<unsigned int> fPageFaultCount;
+                        optional<unsigned int> fPageFaultCount;
 
                         /**
                          *  @todo better document, and only implemented for windows - but need todo for unix
                          */
-                        Optional<MemorySizeType> fWorkingSetSize;
+                        optional<MemorySizeType> fWorkingSetSize;
 
                         /**
                          *  @todo support in Windows AND UNIX - WIndows must use WMI - I think - and
                          *  @todo DOCUMENT
                          */
-                        Optional<MemorySizeType> fPrivateWorkingSetSize;
+                        optional<MemorySizeType> fPrivateWorkingSetSize;
 
                         /**
                          *  Average CPU time used / second over this collection interval. This when available - is logically
@@ -180,7 +178,7 @@ namespace Stroika {
                          *
                          *  So - if you have two cores running constantly, this returns 2.0;
                          */
-                        Optional<DurationSecondsType> fAverageCPUTimeUsed;
+                        optional<DurationSecondsType> fAverageCPUTimeUsed;
 
                         /**
                         *     In seconds - combines system and user time, and is NOT a time over the interval, but rather is
@@ -189,23 +187,23 @@ namespace Stroika {
                         *     This is in units of a single CPU, so if you have a 2 CPU system running flat out for 3 seconds,
                         *     this number would be 6 (2 * 3).
                         */
-                        Optional<DurationSecondsType> fTotalCPUTimeEverUsed;
+                        optional<DurationSecondsType> fTotalCPUTimeEverUsed;
 
                         /**
                          */
-                        Optional<unsigned int> fThreadCount;
+                        optional<unsigned int> fThreadCount;
 
                         /**
                          *  Rate in bytes per second.
                          *  This is summed accross all IO devices, including disk and network.
                          */
-                        Optional<double> fCombinedIOReadRate;
+                        optional<double> fCombinedIOReadRate;
 
                         /*
                          *  Rate in bytes per second
                          *  This is summed accross all IO devices, including disk and network.
                          */
-                        Optional<double> fCombinedIOWriteRate;
+                        optional<double> fCombinedIOWriteRate;
 
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
@@ -217,7 +215,7 @@ namespace Stroika {
                          *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
-                        Optional<double> fCombinedIOReadBytes;
+                        optional<double> fCombinedIOReadBytes;
 
                         /**
                          *  See https://www.kernel.org/doc/Documentation/filesystems/proc.txt
@@ -229,7 +227,7 @@ namespace Stroika {
                          *
                          *  @todo make sure This is summed accross all IO devices, including disk and network
                          */
-                        Optional<double> fCombinedIOWriteBytes;
+                        optional<double> fCombinedIOWriteBytes;
 
                         /**
                          *  Where available, check the number of TCP streams associated with this process - and
@@ -243,7 +241,7 @@ namespace Stroika {
                             unsigned int fListening{};
                             unsigned int fOther{};
                         };
-                        Optional<TCPStats> fTCPStats;
+                        optional<TCPStats> fTCPStats;
 
                         /**
                          *  @see Characters::ToString ();
@@ -306,8 +304,8 @@ namespace Stroika {
                         bool                 fCaptureCurrentWorkingDirectory{true};
                         bool                 fCaptureRoot{true};
                         bool                 fCaptureTCPStatistics{false};
-                        Optional<Set<pid_t>> fRestrictToPIDs;
-                        Optional<Set<pid_t>> fOmitPIDs;
+                        optional<Set<pid_t>> fRestrictToPIDs;
+                        optional<Set<pid_t>> fOmitPIDs;
                         CachePolicy          fCachePolicy{CachePolicy::eIncludeAllRequestedValues};
 
                         enum ProcessNameReadPolicy {
