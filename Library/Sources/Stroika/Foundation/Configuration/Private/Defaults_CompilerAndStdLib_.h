@@ -735,51 +735,6 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 
 #endif
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
-
-./../../../Foundation/DataExchange/Variant/CharacterDelimitedLines/../../ObjectVariantMapper.inl:311:37: error: no viable overloaded '='
-
-
-
-CLANG 5.0:
-/home/lewis/clang-5.0.0/bin/../include/c++/v1/type_traits:3061:38: error: incomplete type 'Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication' used in type trait expression
-    : public integral_constant<bool, __is_constructible(_Tp, _Args...)>
-                                     ^
-./../../../Memory/Optional.h:399:30: note: in instantiation of template class 'std::__1::is_constructible<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication, const
-      Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication &>' requested here
-                        std::is_constructible<T, const T2&>::value and
-                             ^
-./../../../Memory/Optional.h:401:17: note: in instantiation of default argument for 'Optional<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication,
-      Stroika::Foundation::Memory::Optional_Traits_Blockallocated_Indirect_Storage<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication> >' required here
-                Optional (const Optional<T2, TRAITS2>& from);
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./../../../Memory/Optional.h:351:19: note: while substituting deduced template arguments into function template 'Optional' [with T2 = Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication, TRAITS2 =
-      Stroika::Foundation::Memory::Optional_Traits_Blockallocated_Indirect_Storage<Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication>, SFINAE_SAFE_CONVERTIBLE = (no value)]
-            class Optional : private conditional<TRAITS::kIncludeDebugExternalSync, Debug::AssertExternallySynchronizedLock, Execution::NullMutex>::type {
-                  ^
-./Connection.h:205:40: note: while declaring the implicit copy constructor for 'Options'
-                    struct Connection::Options {
-                                       ^
-./Connection.h:269:32: note: forward declaration of 'Stroika::Foundation::IO::Network::Transfer::Connection::Options::Authentication'
-                        struct Authentication;
-
-
-*/
-#ifndef qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy
-
-#if defined(__clang__) && defined(__APPLE__)
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
-#elif defined(__clang__) && !defined(__APPLE__)
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 6))
-#elif !defined(__clang__) && defined(__GNUC__)
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy (__GNUC__ == 8)
-#else
-#define qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy 0
-#endif
-
-#endif
-
 #ifndef qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy
 
 #if defined(_MSC_VER)

@@ -239,23 +239,65 @@ namespace Stroika {
                         String fUserAgent{Characters::String_Constant{L"Stroika/2.0"}};
 
                         /**
-                         *  If authentication options are missing, no authentication will be performed/supported, and if the remote HTTP server
-                         *      requires authentication, and 401 HTTP exception will be thrown.
                          */
-#if qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy || 1
                         struct Authentication {
+                            /**
+                             *      eProactivelySendAuthentication requires fewer round-trips, and less resnding of data, but may not always work
+                             *      (e.g. if the auth requires server side information).
+                             *
+                             *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
+                             */
                             enum class Options {
                                 eProactivelySendAuthentication,
                                 eRespondToWWWAuthenticate,
+
                                 eDEFAULT = eRespondToWWWAuthenticate,
+
                                 Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
                             };
+
+                        public:
+                            /**
+                             *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
+                             *
+                             *      \note   digest/basic/etc - normal username/password:
+                             *              Authentication (L"Mr-Smith", L"Super-Secret") is equivilent to curl --user Mr-Smith:Super-Secret URL
+                             *
+                             *      \note   For OAuth2:
+                             *              Authentication (L"OAuth <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
+                             *
+                             *      \note   For Bearer tokens:
+                             *              Authentication (L"Bearer <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
+                             */
                             Authentication () = delete;
                             Authentication (const String& authToken);
                             Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
+
+                        public:
+                            /**
+                             */
                             nonvirtual Options GetOptions () const;
+
+                        public:
+                            /**
+                              *      return engaged optional iff constructed with a username/password.
+                              */
                             nonvirtual optional<pair<String, String>> GetUsernameAndPassword () const;
+
+                        public:
+                            /**
+                             * Return the parameter to the HTTP Authorization header. So for example, if you provided a username/password, this
+                             * might return (from https://tools.ietf.org/html/rfc2617#section-2) Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+                             *
+                             * This is not generally very useful, except if you've constructed the authorization with an explicit auth token, or when using 
+                             * eProactivelySendAuthentication.
+                             */
                             nonvirtual String GetAuthToken () const;
+
+                        public:
+                            /**
+                             *  @see Characters::ToString ();
+                             */
                             nonvirtual String ToString () const;
 
                         private:
@@ -263,9 +305,11 @@ namespace Stroika {
                             optional<String>               fExplicitAuthToken_;
                             optional<pair<String, String>> fUsernamePassword_;
                         };
-#else
-                        struct Authentication;
-#endif
+
+                        /**
+                         *  If authentication options are missing, no authentication will be performed/supported, and if the remote HTTP server
+                         *      requires authentication, and 401 HTTP exception will be thrown.
+                         */
                         optional<Authentication> fAuthentication;
 
                         /*
@@ -274,76 +318,6 @@ namespace Stroika {
                          */
                         optional<IO::Network::ConnectionOrientedStreamSocket::KeepAliveOptions> fTCPKeepAlives;
                     };
-
-#if !qCompilerAndStdLib_OptionalWithForwardDeclare_Buggy && 0
-                    /**
-                     */
-                    struct Connection::Options::Authentication {
-                        /**
-                         *      eProactivelySendAuthentication requires fewer round-trips, and less resnding of data, but may not always work
-                         *      (e.g. if the auth requires server side information).
-                         *
-                         *      eRespondToWWWAuthenticate is more secure and widely applicable, but can be slower.
-                         */
-                        enum class Options {
-                            eProactivelySendAuthentication,
-                            eRespondToWWWAuthenticate,
-
-                            eDEFAULT = eRespondToWWWAuthenticate,
-
-                            Stroika_Define_Enum_Bounds (eProactivelySendAuthentication, eRespondToWWWAuthenticate)
-                        };
-
-                    public:
-                        /**
-                         *  If the constructor with an authToken is specified, we automatically use eProactivelySendAuthentication.
-                         *
-                         *      \note   digest/basic/etc - normal username/password:
-                         *              Authentication (L"Mr-Smith", L"Super-Secret") is equivilent to curl --user Mr-Smith:Super-Secret URL
-                         *
-                         *      \note   For OAuth2:
-                         *              Authentication (L"OAuth <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: OAuth <ACCESS_TOKEN>" URL
-                         *
-                         *      \note   For Bearer tokens:
-                         *              Authentication (L"Bearer <ACCESS_TOKEN>") is equivilent to curl -H "Authorization: Bearer <ACCESS_TOKEN>" URL
-                         */
-                        Authentication () = delete;
-                        Authentication (const String& authToken);
-                        Authentication (const String& username, const String& password, Options options = Options::eDEFAULT);
-
-                    public:
-                        /**
-                         */
-                        nonvirtual Options GetOptions () const;
-
-                    public:
-                        /**
-                          *      return engaged optional iff constructed with a username/password.
-                          */
-                        nonvirtual optional<pair<String, String>> GetUsernameAndPassword () const;
-
-                    public:
-                        /**
-                         * Return the parameter to the HTTP Authorization header. So for example, if you provided a username/password, this
-                         * might return (from https://tools.ietf.org/html/rfc2617#section-2) Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-                         *
-                         * This is not generally very useful, except if you've constructed the authorization with an explicit auth token, or when using 
-                         * eProactivelySendAuthentication.
-                         */
-                        nonvirtual String GetAuthToken () const;
-
-                    public:
-                        /**
-                         *  @see Characters::ToString ();
-                         */
-                        nonvirtual String ToString () const;
-
-                    private:
-                        Options                        fOptions_;
-                        optional<String>               fExplicitAuthToken_;
-                        optional<pair<String, String>> fUsernamePassword_;
-                    };
-#endif
 
                     /**
                      */
