@@ -120,7 +120,7 @@ namespace Stroika::Foundation {
             return true;
         }
         template <typename T>
-        inline Memory::Optional<T> Set<T>::Lookup (ArgByValueType<T> item) const
+        inline optional<T> Set<T>::Lookup (ArgByValueType<T> item) const
         {
             return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (item);
         }

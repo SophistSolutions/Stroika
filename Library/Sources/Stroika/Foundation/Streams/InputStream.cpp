@@ -75,7 +75,7 @@ template <>
 Traversal::Iterable<String> InputStream<Character>::Ptr::ReadLines () const
 {
     InputStream<Character>::Ptr copyOfStream = *this;
-    return Traversal::CreateGenerator<String> ([copyOfStream]() -> Memory::Optional<String> {
+    return Traversal::CreateGenerator<String> ([copyOfStream]() -> optional<String> {
         String line = copyOfStream.ReadLine ();
         if (line.empty ()) {
             return nullopt;

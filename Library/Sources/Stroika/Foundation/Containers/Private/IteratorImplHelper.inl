@@ -35,7 +35,7 @@ namespace Stroika {
                     return fIterator.GetOwner ();
                 }
                 template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
-                void IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More (Memory::Optional<T>* result, bool advance)
+                void IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More (optional<T>* result, bool advance)
                 {
                     RequireNotNull (result);
                     // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
@@ -45,17 +45,17 @@ namespace Stroika {
                 }
                 template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 template <typename CHECK_KEY>
-                inline void IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
+                inline void IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type*)
                 {
                     RequireNotNull (result);
                     fIterator.More (result, advance);
                 }
                 template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
                 template <typename CHECK_KEY>
-                inline void IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type*)
+                inline void IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>::More_SFINAE_ (optional<T>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type*)
                 {
                     RequireNotNull (result);
-                    Memory::Optional<DataStructureImplValueType_> tmp;
+                    optional<DataStructureImplValueType_> tmp;
                     fIterator.More (&tmp, advance);
                     if (tmp.has_value ()) {
                         *result = *tmp;

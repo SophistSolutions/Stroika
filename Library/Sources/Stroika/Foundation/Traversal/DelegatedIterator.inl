@@ -34,7 +34,7 @@ namespace Stroika {
                 return fDelegateTo.GetOwner ();
             }
             template <typename T, typename EXTRA_DATA>
-            void DelegatedIterator<T, EXTRA_DATA>::Rep::More (Memory::Optional<T>* result, bool advance)
+            void DelegatedIterator<T, EXTRA_DATA>::Rep::More (optional<T>* result, bool advance)
             {
                 fDelegateTo.GetRep ().More (result, advance);
             }

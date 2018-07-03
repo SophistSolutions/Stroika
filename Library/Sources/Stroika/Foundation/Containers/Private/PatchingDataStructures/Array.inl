@@ -371,7 +371,7 @@ namespace Stroika {
                         return (not this->Done ());
                     }
                     template <typename T>
-                    inline void Array<T>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    inline void Array<T>::ForwardIterator::More (optional<T>* result, bool advance)
                     {
                         //// RESTRUCTUIRE SO WE CAN INHERIT IMPL!!!
                         RequireNotNull (result);
@@ -455,7 +455,7 @@ namespace Stroika {
                         return (not this->Done ());
                     }
                     template <typename T>
-                    inline void Array<T>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    inline void Array<T>::BackwardIterator::More (optional<T>* result, bool advance)
                     {
                         //// RESTRUCTUIRE SO WE CAN INHERIT IMPL!!!
                         RequireNotNull (result);

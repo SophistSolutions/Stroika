@@ -33,10 +33,10 @@ namespace Stroika {
                 bool Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs, const ELEMENT_ELEMENT_EQUALS_COMPARER& equalsComparer = {});
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, ArgByValueType<T> item, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer = {});
+                optional<size_t> IndexOf_ (const Iterable<T>& c, ArgByValueType<T> item, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer = {});
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer = {});
+                optional<size_t> IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer = {});
             }
         }
     }

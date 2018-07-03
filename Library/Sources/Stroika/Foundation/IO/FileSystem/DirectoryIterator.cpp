@@ -38,7 +38,6 @@ using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
 using Execution::ThrowErrNoIfNull;
 using Execution::ThrowIfError_errno_t;
-using Memory::Optional;
 
 // from https://www.gnu.org/software/libc/manual/html_node/Reading_002fClosing-Directory.html -
 // To distinguish between an end-of-directory condition or an error, you must set errno to zero before calling readdir.
@@ -81,13 +80,13 @@ public:
                 ThrowErrNoIfNull (fCur_ = ::readdir (fDirIt_));
             }
             if (fCur_ != nullptr and fCur_->d_name[0] == '.' and (CString::Equals (fCur_->d_name, SDKSTR (".")) or CString::Equals (fCur_->d_name, SDKSTR ("..")))) {
-                Memory::Optional<String> tmphack;
+                optional<String> tmphack;
                 More (&tmphack, true);
             }
 #elif qPlatform_Windows
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
             while (fHandle_ != INVALID_HANDLE_VALUE and (CString::Equals (fFindFileData_.cFileName, SDKSTR (".")) or CString::Equals (fFindFileData_.cFileName, SDKSTR ("..")))) {
-                Memory::Optional<String> tmphack;
+                optional<String> tmphack;
                 More (&tmphack, true);
             }
 #endif
@@ -95,7 +94,7 @@ public:
         Stroika_Foundation_IO_FileAccessException_CATCH_REBIND_FILENAMESONLY_HELPER (dir);
     }
 #if qPlatform_POSIX
-    Rep_ (const String& dirName, const Optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
+    Rep_ (const String& dirName, const optional<ino_t>& curInode, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dirName)
         , fReportPrefix_ (mkReportPrefix_ (dirName, iteratorReturns))
@@ -115,7 +114,7 @@ public:
     }
 #elif qPlatform_Windows
     // missing name implies Iterator::IsAtEnd ()
-    Rep_ (const String& dir, const Optional<String>& name, IteratorReturnType iteratorReturns)
+    Rep_ (const String& dir, const optional<String>& name, IteratorReturnType iteratorReturns)
         : fIteratorReturnType_ (iteratorReturns)
         , fDirName_ (dir)
         , fReportPrefix_ (mkReportPrefix_ (dir, iteratorReturns))
@@ -126,7 +125,7 @@ public:
         if (name) {
             fHandle_ = ::FindFirstFile ((dir + L"\\*").AsSDKString ().c_str (), &fFindFileData_);
             while (fHandle_ != INVALID_HANDLE_VALUE and String::FromSDKString (fFindFileData_.cFileName) != name) {
-                Memory::Optional<String> tmphack;
+                optional<String> tmphack;
                 More (&tmphack, true);
             }
         }
@@ -144,7 +143,7 @@ public:
         }
 #endif
     }
-    virtual void More (Memory::Optional<String>* result, bool advance) override
+    virtual void More (optional<String>* result, bool advance) override
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         RequireNotNull (result);
@@ -235,9 +234,9 @@ public:
          *  This above didn't work on macos, so use the (actually simpler) approach of just opening the dir again, and scanning til we
          *  find the same inode. Not perfect (in case that is deleted) - but not sure there is a guaranteed way then.
          */
-        return IteratorRepSharedPtr (MakeSharedPtr<Rep_> (fDirName_, fCur_ == nullptr ? Optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_));
+        return IteratorRepSharedPtr (MakeSharedPtr<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_));
 #elif qPlatform_Windows
-        return IteratorRepSharedPtr (MakeSharedPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? Optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
+        return IteratorRepSharedPtr (MakeSharedPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
 #endif
     }
     virtual IteratorOwnerID GetOwner () const override

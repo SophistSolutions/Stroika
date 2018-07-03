@@ -69,12 +69,12 @@ namespace Stroika {
                 }
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, ArgByValueType<T> item, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer)
+                optional<size_t> IndexOf_ (const Iterable<T>& c, ArgByValueType<T> item, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer)
                 {
                     constexpr bool kUseApply_{true}; // I think apply faster due to single lock
                     if (kUseApply_) {
                         size_t n = 0;
-                        return c.FindFirstThat ([&n, item, equalsComparer](ArgByValueType<T> ii) { return equalsComparer (ii, item) ? true : (n++, false); }) ? n : Memory::Optional<size_t>{};
+                        return c.FindFirstThat ([&n, item, equalsComparer](ArgByValueType<T> ii) { return equalsComparer (ii, item) ? true : (n++, false); }) ? n : optional<size_t>{};
                     }
                     else {
                         size_t n = 0;
@@ -89,7 +89,7 @@ namespace Stroika {
                 }
 
                 template <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
-                Memory::Optional<size_t> IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer)
+                optional<size_t> IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, const ELEMENT_COMPARE_EQUALS_TYPE& equalsComparer)
                 {
                     size_t n = 0;
                     for (auto i = c.begin (); i != c.end (); ++i, ++n) {

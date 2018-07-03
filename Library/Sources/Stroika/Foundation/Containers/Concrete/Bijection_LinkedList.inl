@@ -160,7 +160,7 @@ namespace Stroika {
                     {
                         return this->_Image_Reference_Implementation ();
                     }
-                    virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RANGE_TYPE>* item) const override
+                    virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RANGE_TYPE>* item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -176,7 +176,7 @@ namespace Stroika {
                         }
                         return false;
                     }
-                    virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, Memory::Optional<DOMAIN_TYPE>* item) const override
+                    virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DOMAIN_TYPE>* item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -200,7 +200,7 @@ namespace Stroika {
                         switch (fInjectivityViolationPolicy_) {
                             case Bijection_Base::InjectivityViolationPolicy::eAssertionError: {
 #if qDebug
-                                Memory::Optional<DOMAIN_TYPE> back;
+                                optional<DOMAIN_TYPE> back;
                                 if (InverseLookup (newElt, &back)) {
                                     Require (fDomainEqualsComparer_ (key, *back));
                                 }
@@ -208,7 +208,7 @@ namespace Stroika {
 #endif
                             } break;
                             case Bijection_Base::InjectivityViolationPolicy::eThrowException: {
-                                Memory::Optional<DOMAIN_TYPE> back;
+                                optional<DOMAIN_TYPE> back;
                                 if (InverseLookup (newElt, &back)) {
                                     if (not fDomainEqualsComparer_ (key, *back)) {
                                         Execution::Throw (Bijection_Base::InjectivityViolation{});

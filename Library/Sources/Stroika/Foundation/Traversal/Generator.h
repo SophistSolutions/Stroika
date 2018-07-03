@@ -39,7 +39,7 @@ namespace Stroika {
              *  std::function lambda closure (with smart pointers).
              */
             template <typename T>
-            Iterator<T> CreateGeneratorIterator (const function<Memory::Optional<T> ()>& getNext);
+            Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext);
 
             /**
              *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
@@ -50,7 +50,7 @@ namespace Stroika {
              *      constexpr int kMin = 1;
              *      constexpr int kMax = 10;
              *      auto myContext = make_shared<int> (kMin - 1);
-             *      auto getNext = [myContext] () -> Memory::Optional<int> {
+             *      auto getNext = [myContext] () -> optional<int> {
              *          (*myContext)++;
              *          if (*myContext > 10)
              *          {
@@ -68,7 +68,7 @@ namespace Stroika {
              *      \endcode
              */
             template <typename T>
-            Iterable<T> CreateGenerator (const function<Memory::Optional<T> ()>& getNext);
+            Iterable<T> CreateGenerator (const function<optional<T> ()>& getNext);
         }
     }
 }

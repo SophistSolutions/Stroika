@@ -82,7 +82,7 @@ namespace Stroika {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Head ();
             }
             template <typename T>
-            inline Memory::Optional<T> Queue<T>::HeadIf () const
+            inline optional<T> Queue<T>::HeadIf () const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().HeadIf ();
             }
@@ -92,7 +92,7 @@ namespace Stroika {
                 return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
             }
             template <typename T>
-            inline Memory::Optional<T> Queue<T>::RemoveHeadIf ()
+            inline optional<T> Queue<T>::RemoveHeadIf ()
             {
                 return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHeadIf ();
             }

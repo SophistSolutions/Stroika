@@ -303,11 +303,11 @@ Connection::ReadAndProcessResult Connection::ReadAndProcessMessage () noexcept
             // if missing, no limits
             if (auto oRemaining = GetRemainingConnectionLimits ()) {
                 if (oRemaining->fMessages) {
-                    if (oRemaining->fMessages == 0) {
+                    if (oRemaining->fMessages == 0u) {
                         thisMessageKeepAlive = false;
                     }
                     else {
-                        oRemaining->fMessages = *oRemaining->fMessages - 1;
+                        oRemaining->fMessages = *oRemaining->fMessages - 1u;
                     }
                 }
                 if (oRemaining->fTimeoutAt) {

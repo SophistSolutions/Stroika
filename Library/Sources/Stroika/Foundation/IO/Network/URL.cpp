@@ -70,22 +70,22 @@ optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
     // From http://www.iana.org/assignments/port-numbers
     //if (proto == String ())                     {   return 80; }
     if (proto == kHTTPScheme_) {
-        return 80;
+        return 80u;
     }
     if (proto == kHTTPSScheme_) {
-        return 443;
+        return 443u;
     }
     if (proto == String_Constant (L"ldap")) {
-        return 389;
+        return 389u;
     }
     if (proto == String_Constant (L"ldaps")) {
-        return 636;
+        return 636u;
     }
     if (proto == String_Constant (L"ftp")) {
-        return 21;
+        return 21u;
     }
     if (proto == String_Constant (L"ftps")) {
-        return 990;
+        return 990u;
     }
     return nullopt;
 }

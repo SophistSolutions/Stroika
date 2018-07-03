@@ -134,7 +134,7 @@ namespace Stroika {
                     return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
-                    Memory::Optional<ValueType> tmp;
+                    optional<ValueType> tmp;
                     if (_SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
@@ -143,14 +143,14 @@ namespace Stroika {
                 }
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, optional<ValueType>* item) const
             {
                 return _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, item);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Memory::Optional<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
+            inline  optional<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
             {
-                Memory::Optional<VALUE_TYPE>   r;
+                optional<VALUE_TYPE>   r;
                 bool    result = _SafeReadRepAccessor<_IRep> { this } ._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
@@ -163,7 +163,7 @@ namespace Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
             {
-                Memory::Optional<VALUE_TYPE>   r    { Lookup (key) };
+                optional<VALUE_TYPE>   r    { Lookup (key) };
                 return r.has_value () ? *r : defaultValue;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -402,10 +402,10 @@ namespace Stroika {
                         virtual Iterator<KEY_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                            auto getNext = [myContext] () -> Memory::Optional<KEY_TYPE> {
+                            auto getNext = [myContext] () -> optional<KEY_TYPE> {
                                 if (myContext->Done ())
                                 {
-                                    return Memory::Optional<KEY_TYPE> ();
+                                    return optional<KEY_TYPE> ();
                                 }
                                 else
                                 {
@@ -452,10 +452,10 @@ namespace Stroika {
                         virtual Iterator<VALUE_TYPE>     MakeIterator (IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>> (fMapping_.MakeIterator ());
-                            auto getNext = [myContext] () -> Memory::Optional<VALUE_TYPE> {
+                            auto getNext = [myContext] () -> optional<VALUE_TYPE> {
                                 if (myContext->Done ())
                                 {
-                                    return Memory::Optional<VALUE_TYPE> ();
+                                    return optional<VALUE_TYPE> ();
                                 }
                                 else
                                 {

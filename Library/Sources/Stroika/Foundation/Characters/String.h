@@ -727,11 +727,11 @@ namespace Stroika {
                  *  @see FindEachString ()
                  *  @see Tokenize
                  */
-                nonvirtual Memory::Optional<size_t> Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual Memory::Optional<size_t> Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual Memory::Optional<size_t> Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual Memory::Optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual Memory::Optional<pair<size_t, size_t>> Find (const RegularExpression& regEx, size_t startAt = 0) const;
+                nonvirtual optional<size_t> Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual optional<size_t> Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual optional<size_t> Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual optional<pair<size_t, size_t>> Find (const RegularExpression& regEx, size_t startAt = 0) const;
 
             public:
                 /**
@@ -787,12 +787,12 @@ namespace Stroika {
                 /**
                  * RFind (substring) returns the index of the last occurance of the given substring in
                  * this string. This function always returns a valid string index, which is followed by the
-                 * given substring, or Memory::Optional<size_t> {} otherwise.
+                 * given substring, or optional<size_t> {} otherwise.
                  *
                  *  \note   Alias - could have been called RIndexOf ()
                  */
-                nonvirtual Memory::Optional<size_t> RFind (Character c) const;
-                nonvirtual Memory::Optional<size_t> RFind (const String& subString) const;
+                nonvirtual optional<size_t> RFind (Character c) const;
+                nonvirtual optional<size_t> RFind (const String& subString) const;
 
             public:
                 /**
@@ -823,9 +823,9 @@ namespace Stroika {
                  *
                  *  \note FilteredString could have been called 'SafeString'
                  */
-                nonvirtual String FilteredString (const Iterable<Character>& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character>{}) const;
-                nonvirtual String FilteredString (const RegularExpression& badCharacters, Memory::Optional<Character> replacement = Memory::Optional<Character>{}) const;
-                nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, Memory::Optional<Character> replacement = Memory::Optional<Character>{}) const;
+                nonvirtual String FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement = optional<Character>{}) const;
+                nonvirtual String FilteredString (const RegularExpression& badCharacters, optional<Character> replacement = optional<Character>{}) const;
+                nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
 
             public:
                 /**

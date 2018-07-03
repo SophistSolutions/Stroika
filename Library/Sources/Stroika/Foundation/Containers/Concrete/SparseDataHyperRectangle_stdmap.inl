@@ -183,7 +183,7 @@ namespace Stroika {
                         {
                             return fIterator.GetOwner ();
                         }
-                        virtual void More (Memory::Optional<tuple<T, INDEXES...>>* result, bool advance) override
+                        virtual void More (optional<tuple<T, INDEXES...>>* result, bool advance) override
                         {
                             RequireNotNull (result);
                             // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
@@ -209,16 +209,16 @@ namespace Stroika {
                          *  a temporary, and to copy.
                          */
                         template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                        nonvirtual void More_SFINAE_ (Memory::Optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0)
+                        nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0)
                         {
                             RequireNotNull (result);
                             fIterator.More (result, advance);
                         }
                         template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                        nonvirtual void More_SFINAE_ (Memory::Optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type* = 0)
+                        nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type* = 0)
                         {
                             RequireNotNull (result);
-                            Memory::Optional<pair<tuple<INDEXES...>, T>> tmp;
+                            optional<pair<tuple<INDEXES...>, T>> tmp;
                             fIterator.More (&tmp, advance);
                             if (tmp.has_value ()) {
                                 *result = tuple_cat (tuple<T>{tmp->second}, tmp->first);

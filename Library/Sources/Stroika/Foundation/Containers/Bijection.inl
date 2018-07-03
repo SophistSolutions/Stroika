@@ -151,7 +151,7 @@ namespace Stroika {
                     return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
-                    Memory::Optional<RangeType> tmp;
+                    optional<RangeType> tmp;
                     if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
@@ -160,15 +160,15 @@ namespace Stroika {
                 }
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key, Memory::Optional<RangeType>* item) const
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key, optional<RangeType>* item) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, item);
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            inline Memory::Optional<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key) const
+            inline optional<RANGE_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::Lookup (ArgByValueType<DomainType> key) const
             {
-                Memory::Optional<RANGE_TYPE> r;
-                [[maybe_unused]] bool        result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
+                optional<RANGE_TYPE>  r;
+                [[maybe_unused]] bool result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
             }
@@ -180,7 +180,7 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline RANGE_TYPE Bijection<DOMAIN_TYPE, RANGE_TYPE>::LookupValue (ArgByValueType<DomainType> key, ArgByValueType<RangeType> defaultValue) const
             {
-                Memory::Optional<RANGE_TYPE> r = Lookup (key);
+                optional<RANGE_TYPE> r = Lookup (key);
                 return r.has_value () ? *r : defaultValue;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -190,7 +190,7 @@ namespace Stroika {
                     return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, nullptr);
                 }
                 else {
-                    Memory::Optional<DomainType> tmp;
+                    optional<DomainType> tmp;
                     if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
@@ -199,15 +199,15 @@ namespace Stroika {
                 }
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookup (ArgByValueType<RangeType> key, Memory::Optional<DomainType>* item) const
+            inline bool Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookup (ArgByValueType<RangeType> key, optional<DomainType>* item) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, item);
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-            inline Memory::Optional<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookup (ArgByValueType<RangeType> key) const
+            inline optional<DOMAIN_TYPE> Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookup (ArgByValueType<RangeType> key) const
             {
-                Memory::Optional<DOMAIN_TYPE> r;
-                [[maybe_unused]] bool         result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &r);
+                optional<DOMAIN_TYPE> r;
+                [[maybe_unused]] bool result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().InverseLookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
             }
@@ -219,7 +219,7 @@ namespace Stroika {
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
             inline DOMAIN_TYPE Bijection<DOMAIN_TYPE, RANGE_TYPE>::InverseLookupValue (ArgByValueType<RangeType> key, ArgByValueType<DomainType> defaultValue) const
             {
-                Memory::Optional<DOMAIN_TYPE> r = InverseLookup (key);
+                optional<DOMAIN_TYPE> r = InverseLookup (key);
                 return r.has_value () ? *r : defaultValue;
             }
             template <typename DOMAIN_TYPE, typename RANGE_TYPE>
@@ -430,9 +430,9 @@ namespace Stroika {
                         virtual Iterator<DOMAIN_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                            auto getNext   = [myContext]() -> Memory::Optional<DOMAIN_TYPE> {
+                            auto getNext   = [myContext]() -> optional<DOMAIN_TYPE> {
                                 if (myContext->Done ()) {
-                                    return Memory::Optional<DOMAIN_TYPE> ();
+                                    return optional<DOMAIN_TYPE> ();
                                 }
                                 else {
                                     auto result = (*myContext)->first;
@@ -478,9 +478,9 @@ namespace Stroika {
                         virtual Iterator<RANGE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>> (fBijection_.MakeIterator ());
-                            auto getNext   = [myContext]() -> Memory::Optional<RANGE_TYPE> {
+                            auto getNext   = [myContext]() -> optional<RANGE_TYPE> {
                                 if (myContext->Done ()) {
-                                    return Memory::Optional<RANGE_TYPE> ();
+                                    return optional<RANGE_TYPE> ();
                                 }
                                 else {
                                     auto result = (*myContext)->second;
@@ -521,7 +521,7 @@ namespace Stroika {
                 // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
                 // are present, and with the same Bijection in the second.
                 for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
-                    Memory::Optional<RangeType> tmp;
+                    optional<RangeType> tmp;
                     if (not rhs.Lookup (i->first, &tmp) or not GetRangeEqualsComparer () (*tmp, i->second)) {
                         return false;
                     }

@@ -215,10 +215,10 @@ namespace Stroika {
                  *
                  *  \note   Alias - Lookup (key, value_type* value) - is equivilent to .Net TryGetValue ()
                  */
-                nonvirtual Memory::Optional<value_type> Lookup (ArgByValueType<KeyType> key) const;
-                nonvirtual bool                         Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const;
-                nonvirtual bool                         Lookup (ArgByValueType<KeyType> key, value_type* item) const;
-                nonvirtual bool                         Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
+                nonvirtual optional<value_type> Lookup (ArgByValueType<KeyType> key) const;
+                nonvirtual bool                 Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const;
+                nonvirtual bool                 Lookup (ArgByValueType<KeyType> key, value_type* item) const;
+                nonvirtual bool                 Lookup (ArgByValueType<KeyType> key, nullptr_t) const;
 
             public:
                 /**
@@ -278,8 +278,8 @@ namespace Stroika {
                 virtual Iterable<KEY_TYPE> Keys () const = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual bool Lookup (ArgByValueType<KeyType> key, Memory::Optional<value_type>* item) const = 0;
-                virtual void Remove (ArgByValueType<KEY_TYPE> key)                                          = 0;
+                virtual bool Lookup (ArgByValueType<KeyType> key, optional<value_type>* item) const = 0;
+                virtual void Remove (ArgByValueType<KEY_TYPE> key)                                  = 0;
             };
         }
     }

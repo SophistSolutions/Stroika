@@ -135,7 +135,7 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
             // Simple to enforce Iterator<> compare semantics, but nothing else needed
             return fStr.get ();
         }
-        virtual void More (Memory::Optional<Character>* result, bool advance) override
+        virtual void More (optional<Character>* result, bool advance) override
         {
             RequireNotNull (result);
             if (advance) {
@@ -546,7 +546,7 @@ String String::Remove (Character c) const
     return tmp;
 }
 
-Memory::Optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
+optional<size_t> String::Find (Character c, size_t startAt, CompareOptions co) const
 {
     //@todo could improve performance with strength reduction
     _SafeReadRepAccessor accessor{this};
@@ -571,7 +571,7 @@ Memory::Optional<size_t> String::Find (Character c, size_t startAt, CompareOptio
     return {};
 }
 
-Memory::Optional<size_t> String::Find (const String& subString, size_t startAt, CompareOptions co) const
+optional<size_t> String::Find (const String& subString, size_t startAt, CompareOptions co) const
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeReadRepAccessor accessor{this};
@@ -579,7 +579,7 @@ Memory::Optional<size_t> String::Find (const String& subString, size_t startAt, 
 
     size_t subStrLen = subString.GetLength ();
     if (subStrLen == 0) {
-        return (accessor._ConstGetRep ()._GetLength () == 0) ? Memory::Optional<size_t>{} : 0;
+        return (accessor._ConstGetRep ()._GetLength () == 0) ? optional<size_t>{} : 0;
     }
     if (accessor._ConstGetRep ()._GetLength () < subStrLen) {
         return {}; // important test cuz size_t is unsigned
@@ -613,7 +613,7 @@ Memory::Optional<size_t> String::Find (const String& subString, size_t startAt, 
     return {};
 }
 
-Memory::Optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, [[maybe_unused]] size_t startAt) const
+optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, [[maybe_unused]] size_t startAt) const
 {
     const String threadSafeCopy{*this};
     Require (startAt <= threadSafeCopy.GetLength ());
@@ -631,9 +631,9 @@ vector<size_t> String::FindEach (const String& string2SearchFor, CompareOptions 
 {
     vector<size_t> result;
     const String   threadSafeCopy{*this};
-    for (Memory::Optional<size_t> i = threadSafeCopy.Find (string2SearchFor, 0, co); i; i = threadSafeCopy.Find (string2SearchFor, *i, co)) {
+    for (optional<size_t> i = threadSafeCopy.Find (string2SearchFor, 0, co); i; i = threadSafeCopy.Find (string2SearchFor, *i, co)) {
         result.push_back (*i);
-        i += string2SearchFor.length (); // this cannot point past end of this string because we FOUND string2SearchFor
+        *i += string2SearchFor.length (); // this cannot point past end of this string because we FOUND string2SearchFor
     }
     return result;
 }
@@ -709,7 +709,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     return result;
 }
 #endif
-Memory::Optional<size_t> String::RFind (Character c) const
+optional<size_t> String::RFind (Character c) const
 {
     //@todo: FIX HORRIBLE PERFORMANCE!!!
     _SafeReadRepAccessor accessor{this};
@@ -723,7 +723,7 @@ Memory::Optional<size_t> String::RFind (Character c) const
     return {};
 }
 
-Memory::Optional<size_t> String::RFind (const String& subString) const
+optional<size_t> String::RFind (const String& subString) const
 {
     const String threadSafeCopy{*this};
     //@todo: FIX HORRIBLE PERFORMANCE!!!
@@ -732,7 +732,7 @@ Memory::Optional<size_t> String::RFind (const String& subString) const
      */
     size_t subStrLen = subString.GetLength ();
     if (subStrLen == 0) {
-        return ((threadSafeCopy.GetLength () == 0) ? Memory::Optional<size_t>{} : threadSafeCopy.GetLength () - 1);
+        return ((threadSafeCopy.GetLength () == 0) ? optional<size_t>{} : threadSafeCopy.GetLength () - 1);
     }
 
     size_t limit = threadSafeCopy.GetLength () - subStrLen + 1;
@@ -814,16 +814,16 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
 {
     Require (not string2SearchFor.empty ());
     // simplistic quickie impl...
-    String                   result{*this};
-    Memory::Optional<size_t> i{0};
+    String           result{*this};
+    optional<size_t> i{0};
     while ((i = result.Find (string2SearchFor, *i, co))) {
         result = result.SubString (0, *i) + with + result.SubString (*i + string2SearchFor.length ());
-        i += with.length ();
+        *i += with.length ();
     }
     return result;
 }
 
-String String::FilteredString (const Iterable<Character>& badCharacters, Memory::Optional<Character> replacement) const
+String String::FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement) const
 {
     StringBuilder sb;
     for (Character i : *this) {
@@ -841,13 +841,13 @@ String String::FilteredString (const Iterable<Character>& badCharacters, Memory:
     ;
 }
 
-String String::FilteredString ([[maybe_unused]] const RegularExpression& badCharacters, [[maybe_unused]] Memory::Optional<Character> replacement) const
+String String::FilteredString ([[maybe_unused]] const RegularExpression& badCharacters, [[maybe_unused]] optional<Character> replacement) const
 {
     AssertNotImplemented ();
     return String{};
 }
 
-String String::FilteredString (const function<bool(Character)>& badCharacterP, Memory::Optional<Character> replacement) const
+String String::FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement) const
 {
     StringBuilder sb;
     for (Character i : *this) {

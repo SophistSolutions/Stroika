@@ -16,10 +16,10 @@ namespace Stroika {
                 // @todo - I think we can lose fAtEnd and use the fCur.has_value ()
                 template <typename T>
                 struct GenItWrapper_ : Iterator<T>::IRep {
-                    function<Memory::Optional<T> ()> fFun_;
-                    Memory::Optional<T>              fCur_;
-                    bool                             fAtEnd_;
-                    GenItWrapper_ (function<Memory::Optional<T> ()> f)
+                    function<optional<T> ()> fFun_;
+                    optional<T>              fCur_;
+                    bool                     fAtEnd_;
+                    GenItWrapper_ (function<optional<T> ()> f)
                         : fFun_ (f)
                         , fCur_ ()
                         , fAtEnd_ (false)
@@ -29,13 +29,13 @@ namespace Stroika {
                             fAtEnd_ = true;
                         }
                     }
-                    virtual void More (Memory::Optional<T>* result, bool advance) override
+                    virtual void More (optional<T>* result, bool advance) override
                     {
                         RequireNotNull (result);
                         *result = nullopt;
                         if (advance) {
                             Require (not fAtEnd_);
-                            Memory::Optional<T> n = fFun_ ();
+                            optional<T> n = fFun_ ();
                             if (not n.has_value ()) {
                                 fAtEnd_ = true;
                             }
@@ -73,7 +73,7 @@ namespace Stroika {
             /**
              */
             template <typename T>
-            Iterator<T> CreateGeneratorIterator (const function<Memory::Optional<T> ()>& getNext)
+            Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext)
             {
                 return Iterator<T> (Iterator<T>::template MakeSharedPtr<Private_::GenItWrapper_<T>> (getNext));
             }
@@ -81,10 +81,10 @@ namespace Stroika {
             /**
              */
             template <typename T>
-            Iterable<T> CreateGenerator (const function<Memory::Optional<T> ()>& getNext)
+            Iterable<T> CreateGenerator (const function<optional<T> ()>& getNext)
             {
                 struct MyIterable_ : Iterable<T> {
-                    using MyContextData_ = function<Memory::Optional<T> ()>;
+                    using MyContextData_ = function<optional<T> ()>;
                     using MyIteratorRep_ = typename Private_::GenItWrapper_<T>;
                     struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep {
                         using inherited             = typename IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
@@ -100,7 +100,7 @@ namespace Stroika {
                             return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
                         }
                     };
-                    MyIterable_ (const function<Memory::Optional<T> ()>& getNext)
+                    MyIterable_ (const function<optional<T> ()>& getNext)
                         : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyIterableRep_> (getNext))
                     {
                     }

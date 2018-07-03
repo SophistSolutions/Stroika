@@ -170,7 +170,7 @@ namespace Stroika {
                 }
                 template <typename STL_CONTAINER_OF_T>
                 template <typename VALUE_TYPE>
-                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
+                inline void STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (optional<VALUE_TYPE>* result, bool advance)
                 {
                     RequireNotNull (result);
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};

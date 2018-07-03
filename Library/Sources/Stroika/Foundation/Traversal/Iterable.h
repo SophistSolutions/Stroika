@@ -724,8 +724,8 @@ namespace Stroika {
                  *      BASED ON Microsoft .net Linq.
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.first(v=vs.110).aspx
                  */
-                nonvirtual Memory::Optional<T> First () const;
-                nonvirtual Memory::Optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
+                nonvirtual optional<T> First () const;
+                nonvirtual optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
@@ -758,8 +758,8 @@ namespace Stroika {
                  *      BASED ON Microsoft .net Linq. (Last)
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.last(v=vs.110).aspx
                  */
-                nonvirtual Memory::Optional<T> Last () const;
-                nonvirtual Memory::Optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
+                nonvirtual optional<T> Last () const;
+                nonvirtual optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
 
             public:
                 /**
@@ -798,7 +798,7 @@ namespace Stroika {
                  *      @see SumValue
                  */
                 template <typename RESULT_TYPE = T>
-                nonvirtual Memory::Optional<RESULT_TYPE> Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
+                nonvirtual optional<RESULT_TYPE> Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const;
 
             public:
                 /**
@@ -826,7 +826,7 @@ namespace Stroika {
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Max
                  */
-                nonvirtual Memory::Optional<T> Min () const;
+                nonvirtual optional<T> Min () const;
 
             public:
                 /**
@@ -854,7 +854,7 @@ namespace Stroika {
                  *      https://msdn.microsoft.com/en-us/library/bb503062%28v=vs.100%29.aspx?f=255&MSPPError=-2147217396
                  *      @Min
                  */
-                nonvirtual Memory::Optional<T> Max () const;
+                nonvirtual optional<T> Max () const;
 
             public:
                 /**
@@ -882,7 +882,7 @@ namespace Stroika {
                  *      https://msdn.microsoft.com/en-us/library/bb548647(v=vs.100).aspx
                  */
                 template <typename RESULT_TYPE = T>
-                nonvirtual Memory::Optional<RESULT_TYPE> Mean () const;
+                nonvirtual optional<RESULT_TYPE> Mean () const;
 
             public:
                 /**
@@ -910,7 +910,7 @@ namespace Stroika {
                  *      https://msdn.microsoft.com/en-us/library/system.linq.enumerable.sum(v=vs.110).aspx
                  */
                 template <typename RESULT_TYPE = T>
-                nonvirtual Memory::Optional<RESULT_TYPE> Sum () const;
+                nonvirtual optional<RESULT_TYPE> Sum () const;
 
             public:
                 /**
@@ -932,7 +932,7 @@ namespace Stroika {
                  *  \note   returns nullopt if empty list
                  */
                 template <typename RESULT_TYPE = T>
-                nonvirtual Memory::Optional<RESULT_TYPE> Median (const function<bool(T, T)>& compare = [](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
+                nonvirtual optional<RESULT_TYPE> Median (const function<bool(T, T)>& compare = [](const T& lhs, const T& rhs) -> bool { return lhs < rhs; }) const;
 
             public:
                 /**

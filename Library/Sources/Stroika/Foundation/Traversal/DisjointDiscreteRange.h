@@ -45,7 +45,7 @@ namespace Stroika {
 
             public:
                 template <typename T2>
-                using Optional = Memory::Optional<T2>;
+                using Optional = optional<T2>;
 
             public:
                 /**

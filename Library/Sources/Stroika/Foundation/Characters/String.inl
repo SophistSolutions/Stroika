@@ -283,11 +283,11 @@ namespace Stroika {
             {
                 *this = String ();
             }
-            inline Memory::Optional<size_t> String::Find (Character c, CompareOptions co) const
+            inline optional<size_t> String::Find (Character c, CompareOptions co) const
             {
                 return Find (c, 0, co);
             }
-            inline Memory::Optional<size_t> String::Find (const String& subString, CompareOptions co) const
+            inline optional<size_t> String::Find (const String& subString, CompareOptions co) const
             {
                 return Find (subString, 0, co);
             }

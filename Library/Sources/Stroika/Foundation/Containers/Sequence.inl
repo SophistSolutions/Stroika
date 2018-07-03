@@ -208,13 +208,13 @@ namespace Stroika::Foundation {
 #endif
         template <typename T>
         template <typename EQUALS_COMPARER>
-        inline Memory::Optional<size_t> Sequence<T>::IndexOf (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
+        inline optional<size_t> Sequence<T>::IndexOf (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const
         {
             return Private::IndexOf_<T, EQUALS_COMPARER> (*this, item, equalsComparer);
         }
         template <typename T>
         template <typename EQUALS_COMPARER>
-        inline Memory::Optional<size_t> Sequence<T>::IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer) const
+        inline optional<size_t> Sequence<T>::IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer) const
         {
             return Private::IndexOf_<T, EQUALS_COMPARER> (*this, s, equalsComparer);
         }
@@ -347,12 +347,12 @@ namespace Stroika::Foundation {
             *into = CONTAINER_OF_ADDABLE (this->begin (), this->end ());
         }
         template <typename T>
-        inline Memory::Optional<T> Sequence<T>::First () const
+        inline optional<T> Sequence<T>::First () const
         {
-            return this->IsEmpty () ? Memory::Optional<T>{} : GetAt (0);
+            return this->IsEmpty () ? optional<T>{} : GetAt (0);
         }
         template <typename T>
-        inline Memory::Optional<T> Sequence<T>::First (const function<bool(ArgByValueType<T>)>& that) const
+        inline optional<T> Sequence<T>::First (const function<bool(ArgByValueType<T>)>& that) const
         {
             return inherited::First (that);
         }
@@ -362,13 +362,13 @@ namespace Stroika::Foundation {
             return this->IsEmpty () ? defaultValue : GetAt (0);
         }
         template <typename T>
-        inline Memory::Optional<T> Sequence<T>::Last () const
+        inline optional<T> Sequence<T>::Last () const
         {
             // IRep::GetAt() defined to allow special _IRep::_kBadSequenceIndex
-            return this->IsEmpty () ? Memory::Optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kBadSequenceIndex);
+            return this->IsEmpty () ? optional<T>{} : _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (_IRep::_kBadSequenceIndex);
         }
         template <typename T>
-        inline Memory::Optional<T> Sequence<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
+        inline optional<T> Sequence<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
         {
             // @todo when we have reverse iterators - we could implement this more efficiently by walking the sequence backwards
             return inherited::Last (that);

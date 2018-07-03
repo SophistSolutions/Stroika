@@ -605,7 +605,7 @@ namespace Stroika::Foundation {
             SharedByValueRepType fIterator_;
 
         private:
-            Memory::Optional<T> fCurrent_;
+            optional<T> fCurrent_;
 
         private:
             static IteratorRepSharedPtr Clone_ (const IRep& rep);
@@ -673,7 +673,7 @@ namespace Stroika::Foundation {
              *      to assignment, but only initialization.
              *
              */
-            virtual void More (Memory::Optional<T>* result, bool advance) = 0;
+            virtual void More (optional<T>* result, bool advance) = 0;
             /**
              * \brief two iterators must be iterating over the same source, and be up to the same position.
              *

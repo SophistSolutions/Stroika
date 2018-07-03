@@ -248,15 +248,14 @@ namespace Stroika {
             template <typename CONTAINER_OF_T>
             Iterable<T> Iterable<T>::mk_ (const CONTAINER_OF_T& from)
             {
-                using Memory::Optional;
                 vector<T>                tmp (from.begin (), from.end ()); // Somewhat simplistic / inefficient implementation
                 size_t                   idx{0};
-                function<Optional<T> ()> getNext = [tmp, idx]() mutable -> Memory::Optional<T> {
+                function<optional<T> ()> getNext = [tmp, idx]() mutable -> optional<T> {
                     if (idx < tmp.size ()) {
                         return tmp[idx++];
                     }
                     else {
-                        return Optional<T> ();
+                        return nullopt;
                     }
                 };
                 return CreateGenerator (getNext);
@@ -373,14 +372,13 @@ namespace Stroika {
             Iterable<T> Iterable<T>::Where (const function<bool(ArgByValueType<T>)>& includeIfTrue) const
             {
                 RequireNotNull (includeIfTrue);
-                using Memory::Optional;
                 Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-                function<Optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, includeIfTrue]() mutable -> Memory::Optional<T> {
+                function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, includeIfTrue]() mutable -> optional<T> {
                     while (tmpIt and not includeIfTrue (*tmpIt)) {
                         ++tmpIt;
                     }
-                    return tmpIt ? *tmpIt++ : Optional<T>{};
+                    return tmpIt ? *tmpIt++ : optional<T>{};
                 };
                 return CreateGenerator (getNext);
             }
@@ -404,16 +402,15 @@ namespace Stroika {
             template <typename T>
             Iterable<T> Iterable<T>::Distinct () const
             {
-                using Memory::Optional;
                 set<T>                   t1 (begin (), end ()); // Somewhat simplistic/stupid/weak implementation
                 vector<T>                tmp (t1.begin (), t1.end ());
                 size_t                   idx{0};
-                function<Optional<T> ()> getNext = [tmp, idx]() mutable -> Optional<T> {
+                function<optional<T> ()> getNext = [tmp, idx]() mutable -> optional<T> {
                     if (idx < tmp.size ()) {
                         return tmp[idx++];
                     }
                     else {
-                        return Optional<T> ();
+                        return nullopt;
                     }
                 };
                 return CreateGenerator (getNext);
@@ -423,19 +420,18 @@ namespace Stroika {
             Iterable<RESULT> Iterable<T>::Distinct (const function<RESULT (ArgByValueType<T>)>& extractElt) const
             {
                 RequireNotNull (extractElt);
-                using Memory::Optional;
                 set<RESULT> t1;
                 for (T i : *this) {
                     t1.add (extractElt (i));
                 }
                 vector<RESULT>                tmp (t1.begin (), t1.end ());
                 size_t                        idx{0};
-                function<Optional<RESULT> ()> getNext = [tmp, idx]() mutable -> Optional<RESULT> {
+                function<optional<RESULT> ()> getNext = [tmp, idx]() mutable -> optional<RESULT> {
                     if (idx < tmp.size ()) {
                         return tmp[idx++];
                     }
                     else {
-                        return Optional<T> ();
+                        return nullopt;
                     }
                 };
                 return CreateGenerator (getNext);
@@ -445,14 +441,13 @@ namespace Stroika {
             Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1) const
             {
                 RequireNotNull (extract1);
-                using Memory::Optional;
                 Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-                function<Optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1]() mutable -> Memory::Optional<RESULT> {
+                function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1]() mutable -> optional<RESULT> {
                     if (tmpIt) {
                         return RESULT (extract1 (*tmpIt++));
                     }
-                    return Optional<RESULT> ();
+                    return nullopt;
                 };
                 return CreateGenerator (getNext);
             }
@@ -462,16 +457,15 @@ namespace Stroika {
             {
                 RequireNotNull (extract1);
                 RequireNotNull (extract2);
-                using Memory::Optional;
                 Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-                function<Optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2]() mutable -> Memory::Optional<RESULT> {
+                function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2]() mutable -> optional<RESULT> {
                     if (tmpIt) {
                         RESULT result{extract1 (*tmpIt), extract2 (*tmpIt)};
                         tmpIt++;
                         return result;
                     }
-                    return Optional<RESULT> ();
+                    return nullopt;
                 };
                 return CreateGenerator (getNext);
             }
@@ -479,48 +473,45 @@ namespace Stroika {
             template <typename T1, typename T2, typename T3, typename RESULT>
             Iterable<RESULT> Iterable<T>::Select (const function<T1 (const T&)>& extract1, const function<T2 (const T&)>& extract2, const function<T3 (const T&)>& extract3) const
             {
-                using Memory::Optional;
                 Iterable<T>                   copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T>                   tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-                function<Optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2, extract3]() mutable -> Memory::Optional<RESULT> {
+                function<optional<RESULT> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, extract1, extract2, extract3]() mutable -> optional<RESULT> {
                     if (tmpIt) {
                         RESULT result{extract1 (*tmpIt), extract2 (*tmpIt), extract3 (*tmpIt)};
                         tmpIt++;
                         return result;
                     }
-                    return Optional<RESULT> ();
+                    return nullopt;
                 };
                 return CreateGenerator (getNext);
             }
             template <typename T>
             Iterable<T> Iterable<T>::Skip (size_t nItems) const
             {
-                using Memory::Optional;
                 size_t                   nItemsToSkip                         = nItems;
                 Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-                function<Optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip]() mutable -> Memory::Optional<T> {
+                function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToSkip]() mutable -> optional<T> {
                     while (tmpIt and nItemsToSkip > 0) {
                         nItemsToSkip--;
                         ++tmpIt;
                     }
-                    return tmpIt ? *tmpIt++ : Optional<T> ();
+                    return tmpIt ? *tmpIt++ : optional<T> ();
                 };
                 return CreateGenerator (getNext);
             }
             template <typename T>
             Iterable<T> Iterable<T>::Take (size_t nItems) const
             {
-                using Memory::Optional;
                 size_t                   nItemsToTake                         = nItems;
                 Iterable<T>              copyOfIterableSoRefCntBumpedInLambda = *this;
                 Iterator<T>              tmpIt{copyOfIterableSoRefCntBumpedInLambda.MakeIterator ()};
-                function<Optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToTake]() mutable -> Memory::Optional<T> {
+                function<optional<T> ()> getNext = [copyOfIterableSoRefCntBumpedInLambda, tmpIt, nItemsToTake]() mutable -> optional<T> {
                     if (nItemsToTake == 0) {
-                        return Optional<T> ();
+                        return nullopt;
                     }
                     nItemsToTake--;
-                    return tmpIt ? *tmpIt++ : Optional<T> ();
+                    return tmpIt ? *tmpIt++ : optional<T> ();
                 };
                 return CreateGenerator (getNext);
             }
@@ -528,28 +519,27 @@ namespace Stroika {
             template <typename INORDER_COMPARER_TYPE>
             Iterable<T> Iterable<T>::OrderBy (const INORDER_COMPARER_TYPE& inorderComparer) const
             {
-                using Memory::Optional;
                 vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
                 sort (tmp.begin (), tmp.end (), inorderComparer);
                 size_t                   idx{0};
-                function<Optional<T> ()> getNext = [tmp, idx]() mutable -> Optional<T> {
+                function<optional<T> ()> getNext = [tmp, idx]() mutable -> optional<T> {
                     if (idx < tmp.size ()) {
                         return tmp[idx++];
                     }
                     else {
-                        return Optional<T> ();
+                        return nullopt;
                     }
                 };
                 return CreateGenerator (getNext);
             }
             template <typename T>
-            inline Memory::Optional<T> Iterable<T>::First () const
+            inline optional<T> Iterable<T>::First () const
             {
                 auto i = begin ();
-                return i ? *i : Memory::Optional<T>{};
+                return i ? *i : optional<T>{};
             }
             template <typename T>
-            inline Memory::Optional<T> Iterable<T>::First (const function<bool(ArgByValueType<T>)>& that) const
+            inline optional<T> Iterable<T>::First (const function<bool(ArgByValueType<T>)>& that) const
             {
                 RequireNotNull (that);
                 for (auto i : *this) {
@@ -557,7 +547,7 @@ namespace Stroika {
                         return i;
                     }
                 }
-                return Memory::Optional<T>{};
+                return optional<T>{};
             }
             template <typename T>
             inline T Iterable<T>::FirstValue (ArgByValueType<T> defaultValue) const
@@ -570,7 +560,7 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            Memory::Optional<T> Iterable<T>::Last () const
+            optional<T> Iterable<T>::Last () const
             {
                 auto i = begin ();
                 if (i) {
@@ -581,13 +571,13 @@ namespace Stroika {
                     }
                     return *prev;
                 }
-                return Memory::Optional<T>{};
+                return optional<T>{};
             }
             template <typename T>
-            Memory::Optional<T> Iterable<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
+            optional<T> Iterable<T>::Last (const function<bool(ArgByValueType<T>)>& that) const
             {
                 RequireNotNull (that);
-                Memory::Optional<T> result;
+                optional<T> result;
                 for (auto i : *this) {
                     if (that (i)) {
                         result = i;
@@ -612,9 +602,9 @@ namespace Stroika {
             }
             template <typename T>
             template <typename RESULT_TYPE>
-            Memory::Optional<RESULT_TYPE> Iterable<T>::Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
+            optional<RESULT_TYPE> Iterable<T>::Accumulate (const function<RESULT_TYPE (ArgByValueType<T>, ArgByValueType<T>)>& op) const
             {
-                Memory::Optional<RESULT_TYPE> result;
+                optional<RESULT_TYPE> result;
                 for (T i : *this) {
                     if (result) {
                         result = op (i, *result);
@@ -632,7 +622,7 @@ namespace Stroika {
                 return Accumulate<RESULT_TYPE> (op).Value (defaultValue);
             }
             template <typename T>
-            Memory::Optional<T> Iterable<T>::Min () const
+            optional<T> Iterable<T>::Min () const
             {
                 return Accumulate<T> ([](T lhs, T rhs) { return min (lhs, rhs); });
             }
@@ -643,7 +633,7 @@ namespace Stroika {
                 return Min ().Value (defaultValue);
             }
             template <typename T>
-            Memory::Optional<T> Iterable<T>::Max () const
+            optional<T> Iterable<T>::Max () const
             {
                 return Accumulate<T> ([](T lhs, T rhs) -> T { return std::max (lhs, rhs); });
             }
@@ -655,7 +645,7 @@ namespace Stroika {
             }
             template <typename T>
             template <typename RESULT_TYPE>
-            Memory::Optional<RESULT_TYPE> Iterable<T>::Mean () const
+            optional<RESULT_TYPE> Iterable<T>::Mean () const
             {
                 RESULT_TYPE  result{};
                 unsigned int count{};
@@ -663,7 +653,7 @@ namespace Stroika {
                     count++;
                     result += i;
                 }
-                return (count == 0) ? Memory::Optional<RESULT_TYPE>{} : (result / count);
+                return (count == 0) ? optional<RESULT_TYPE>{} : (result / count);
             }
             template <typename T>
             template <typename RESULT_TYPE>
@@ -673,7 +663,7 @@ namespace Stroika {
             }
             template <typename T>
             template <typename RESULT_TYPE>
-            Memory::Optional<RESULT_TYPE> Iterable<T>::Sum () const
+            optional<RESULT_TYPE> Iterable<T>::Sum () const
             {
                 return Accumulate<RESULT_TYPE> ([](T lhs, T rhs) { return lhs + rhs; });
             }
@@ -685,13 +675,13 @@ namespace Stroika {
             }
             template <typename T>
             template <typename RESULT_TYPE>
-            Memory::Optional<RESULT_TYPE> Iterable<T>::Median (const function<bool(T, T)>& compare) const
+            optional<RESULT_TYPE> Iterable<T>::Median (const function<bool(T, T)>& compare) const
             {
                 vector<T> tmp (begin (), end ()); // Somewhat simplistic implementation
                 sort (tmp.begin (), tmp.end (), compare);
                 size_t sz{tmp.size ()};
                 if (sz == 0) {
-                    return Memory::Optional<RESULT_TYPE>{};
+                    return optional<RESULT_TYPE>{};
                 }
                 if ((sz % 2) == 0) {
                     return (static_cast<RESULT_TYPE> (tmp[sz / 2]) + static_cast<RESULT_TYPE> (tmp[sz / 2 - 1])) / static_cast<RESULT_TYPE> (2);

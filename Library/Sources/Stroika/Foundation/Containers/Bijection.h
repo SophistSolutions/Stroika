@@ -260,10 +260,10 @@ namespace Stroika {
                  *  @see   InverseLookup ()
                  *  @see   InverseLookupValue ()
                  */
-                nonvirtual Memory::Optional<RangeType> Lookup (ArgByValueType<DomainType> key) const;
-                nonvirtual bool                        Lookup (ArgByValueType<DomainType> key, Memory::Optional<RangeType>* item) const;
-                nonvirtual bool                        Lookup (ArgByValueType<DomainType> key, RangeType* item) const;
-                nonvirtual bool                        Lookup (ArgByValueType<DomainType> key, nullptr_t) const;
+                nonvirtual optional<RangeType> Lookup (ArgByValueType<DomainType> key) const;
+                nonvirtual bool                Lookup (ArgByValueType<DomainType> key, optional<RangeType>* item) const;
+                nonvirtual bool                Lookup (ArgByValueType<DomainType> key, RangeType* item) const;
+                nonvirtual bool                Lookup (ArgByValueType<DomainType> key, nullptr_t) const;
 
             public:
                 /**
@@ -289,10 +289,10 @@ namespace Stroika {
                  *  @see   LookupValue ()
                  *  @see   InverseLookupValue ()
                  */
-                nonvirtual Memory::Optional<DomainType> InverseLookup (ArgByValueType<RangeType> key) const;
-                nonvirtual bool                         InverseLookup (ArgByValueType<RangeType> key, Memory::Optional<DomainType>* item) const;
-                nonvirtual bool                         InverseLookup (ArgByValueType<RangeType> key, DomainType* item) const;
-                nonvirtual bool                         InverseLookup (ArgByValueType<RangeType> key, nullptr_t) const;
+                nonvirtual optional<DomainType> InverseLookup (ArgByValueType<RangeType> key) const;
+                nonvirtual bool                 InverseLookup (ArgByValueType<RangeType> key, optional<DomainType>* item) const;
+                nonvirtual bool                 InverseLookup (ArgByValueType<RangeType> key, DomainType* item) const;
+                nonvirtual bool                 InverseLookup (ArgByValueType<RangeType> key, nullptr_t) const;
 
             public:
                 /**
@@ -504,12 +504,12 @@ namespace Stroika {
                 virtual Iterable<RangeType>             Image () const                                         = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, Memory::Optional<RangeType>* item) const        = 0;
-                virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, Memory::Optional<DomainType>* item) const = 0;
-                virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)                 = 0;
-                virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                                      = 0;
-                virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                        = 0;
-                virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)                                = 0;
+                virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RangeType>* item) const        = 0;
+                virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DomainType>* item) const = 0;
+                virtual void Add (ArgByValueType<DOMAIN_TYPE> key, ArgByValueType<RANGE_TYPE> newElt)         = 0;
+                virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d)                              = 0;
+                virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r)                                = 0;
+                virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)                        = 0;
 
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;

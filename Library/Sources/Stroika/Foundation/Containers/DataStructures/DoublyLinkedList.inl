@@ -620,7 +620,7 @@ namespace Stroika {
                     return (not Done ());
                 }
                 template <typename T>
-                inline void DoublyLinkedList<T>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                inline void DoublyLinkedList<T>::ForwardIterator::More (optional<T>* result, bool advance)
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
                     RequireNotNull (result);

@@ -484,7 +484,7 @@ namespace Stroika {
                     return not Done ();
                 }
                 template <typename T>
-                inline void LinkedList<T>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                inline void LinkedList<T>::ForwardIterator::More (optional<T>* result, bool advance)
                 {
                     RequireNotNull (result);
                     Invariant ();

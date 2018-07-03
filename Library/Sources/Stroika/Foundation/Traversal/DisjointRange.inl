@@ -321,7 +321,7 @@ namespace Stroika {
             inline void DisjointRange<T, RANGE_TYPE>::AssertInternalRepValid_ ()
             {
 #if qDebug
-                Memory::Optional<RangeType> lastRangeSeenSoFar;
+                optional<RangeType> lastRangeSeenSoFar;
                 for (RangeType r : fSubRanges_) {
                     Assert (not r.empty ());
                     if (lastRangeSeenSoFar) {

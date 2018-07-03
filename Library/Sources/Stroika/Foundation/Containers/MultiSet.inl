@@ -27,7 +27,7 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-                ElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally, const Iterator<CountedValue<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
+                ElementsIteratorHelperContext_ (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally, const Iterator<CountedValue<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, optional<T> saved2Return = optional<T> ())
                     : fMultiSet (tally)
                     , fMultiSetIterator (delegateTo)
                     , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
@@ -37,7 +37,7 @@ namespace Stroika {
                 typename Iterable<CountedValue<T>>::_IterableRepSharedPtr fMultiSet;
                 Iterator<CountedValue<T>>                                 fMultiSetIterator;
                 size_t                                                    fCountMoreTimesToGoBeforeAdvance;
-                Memory::Optional<T>                                       fSaved2Return;
+                optional<T>                                               fSaved2Return;
             };
 
             template <typename T, typename TRAITS>
@@ -57,7 +57,7 @@ namespace Stroika {
                             }
                         }
                     }
-                    virtual void More (Memory::Optional<T>* result, bool advance) override
+                    virtual void More (optional<T>* result, bool advance) override
                     {
                         RequireNotNull (result);
                         if (fContext.fCountMoreTimesToGoBeforeAdvance > 0) {
@@ -167,7 +167,7 @@ namespace Stroika {
                         , fContext (context)
                     {
                     }
-                    virtual void More (Memory::Optional<T>* result, bool advance) override
+                    virtual void More (optional<T>* result, bool advance) override
                     {
                         RequireNotNull (result);
                         bool done = fContext.fMultiSetIterator.Done ();

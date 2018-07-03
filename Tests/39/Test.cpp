@@ -700,7 +700,7 @@ namespace {
             Private_::TestBasics_<Sequence<int>> (
                 [](Sequence<int>* c, int i) { c->Append (i); },
                 [](Sequence<int>* c, [[maybe_unused]] int i) { Lambda_Arg_Unused_BWA (i); size_t n = c->GetLength (); if (n != 0) c->Remove (n / 2); },
-                [](const Sequence<int>* c) { [[maybe_unused]] size_t n = ValueOrDefault (c->IndexOf (3)); },
+                [](const Sequence<int>* c) { [[maybe_unused]] size_t n = Memory::ValueOrDefault (c->IndexOf (3)); },
                 [&cnt](int v) { cnt += v; });
             Private_::TestBasics_<Set<int>> (
                 [](Set<int>* c, int i) { c->Add (i); },

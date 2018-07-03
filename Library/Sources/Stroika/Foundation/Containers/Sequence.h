@@ -359,9 +359,9 @@ namespace Stroika::Foundation {
              *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
              */
             template <typename EQUALS_COMPARER = std::equal_to<T>>
-            nonvirtual Memory::Optional<size_t> IndexOf (ArgByValueType<T> i, const EQUALS_COMPARER& equalsComparer = {}) const;
+            nonvirtual optional<size_t> IndexOf (ArgByValueType<T> i, const EQUALS_COMPARER& equalsComparer = {}) const;
             template <typename EQUALS_COMPARER = std::equal_to<T>>
-            nonvirtual Memory::Optional<size_t> IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer = {}) const;
+            nonvirtual optional<size_t> IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer = {}) const;
             template <typename IGNORED = void>
             nonvirtual size_t IndexOf (const Iterator<T>& i) const;
 
@@ -464,8 +464,8 @@ namespace Stroika::Foundation {
             /**
              *  @see Iterable<T>::First ()
              */
-            nonvirtual Memory::Optional<T> First () const;
-            nonvirtual Memory::Optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
+            nonvirtual optional<T> First () const;
+            nonvirtual optional<T> First (const function<bool(ArgByValueType<T>)>& that) const;
 
         public:
             /**
@@ -477,8 +477,8 @@ namespace Stroika::Foundation {
             /**
              *  @see Iterable<T>::Last ()
              */
-            nonvirtual Memory::Optional<T> Last () const;
-            nonvirtual Memory::Optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
+            nonvirtual optional<T> Last () const;
+            nonvirtual optional<T> Last (const function<bool(ArgByValueType<T>)>& that) const;
 
         public:
             /**

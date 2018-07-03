@@ -35,7 +35,7 @@ namespace Stroika {
                     , fAtEnd (false)
                 {
                 }
-                virtual void More (Memory::Optional<T>* result, bool advance) override
+                virtual void More (optional<T>* result, bool advance) override
                 {
                     RequireNotNull (result);
                     *result = nullopt;

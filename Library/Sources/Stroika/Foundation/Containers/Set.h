@@ -203,7 +203,7 @@ namespace Stroika::Foundation {
              *  Like Contains - but a Set<> can use a comparison that only examines a part of T,
              *  making it useful to be able to return the rest of T.
              */
-            nonvirtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const;
+            nonvirtual optional<T> Lookup (ArgByValueType<T> item) const;
 
         public:
             /**
@@ -418,7 +418,7 @@ namespace Stroika::Foundation {
             virtual _SetRepSharedPtr     CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
             virtual bool                 Equals (const _IRep& rhs) const                        = 0;
             virtual bool                 Contains (ArgByValueType<T> item) const                = 0;
-            virtual Memory::Optional<T>  Lookup (ArgByValueType<T> item) const                  = 0;
+            virtual optional<T>          Lookup (ArgByValueType<T> item) const                  = 0;
             virtual void                 Add (ArgByValueType<T> item)                           = 0;
             virtual void                 Remove (ArgByValueType<T> item)                        = 0;
             virtual void                 Remove (const Iterator<T>& i)                          = 0;

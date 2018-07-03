@@ -132,11 +132,11 @@ namespace Stroika {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.Contains (item);
                     }
-                    virtual Memory::Optional<T> Lookup (ArgByValueType<T> item) const override
+                    virtual optional<T> Lookup (ArgByValueType<T> item) const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         auto                                                            i = fData_.find (item);
-                        return (i == fData_.end ()) ? Memory::Optional<T> () : Memory::Optional<T> (*i);
+                        return (i == fData_.end ()) ? optional<T> () : optional<T> (*i);
                     }
                     virtual void Add (ArgByValueType<T> item) override
                     {

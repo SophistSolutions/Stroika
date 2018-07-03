@@ -64,7 +64,7 @@ namespace Stroika {
                 public:
                     virtual IteratorRepSharedPtr Clone () const override;
                     virtual IteratorOwnerID      GetOwner () const override;
-                    virtual void                 More (Memory::Optional<T>* result, bool advance) override;
+                    virtual void                 More (optional<T>* result, bool advance) override;
                     virtual bool                 Equals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
@@ -73,9 +73,9 @@ namespace Stroika {
                      *  a temporary, and to copy.
                      */
                     template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                    nonvirtual void More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0);
+                    nonvirtual void More_SFINAE_ (optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0);
                     template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                    nonvirtual void More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type* = 0);
+                    nonvirtual void More_SFINAE_ (optional<T>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type* = 0);
 
                 public:
                     mutable PATCHABLE_CONTAINER_ITERATOR fIterator;

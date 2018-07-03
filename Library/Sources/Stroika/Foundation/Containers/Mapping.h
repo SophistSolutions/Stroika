@@ -272,10 +272,10 @@ namespace Stroika {
                  *
                  *  \note   Alias - Lookup (key, mapped_type* value) - is equivilent to .Net TryGetValue ()
                  */
-                nonvirtual Memory::Optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
-                nonvirtual bool                          Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const;
-                nonvirtual bool                          Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
-                nonvirtual bool                          Lookup (ArgByValueType<key_type> key, nullptr_t) const;
+                nonvirtual optional<mapped_type> Lookup (ArgByValueType<key_type> key) const;
+                nonvirtual bool                  Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const;
+                nonvirtual bool                  Lookup (ArgByValueType<key_type> key, mapped_type* item) const;
+                nonvirtual bool                  Lookup (ArgByValueType<key_type> key, nullptr_t) const;
 
             public:
                 /**
@@ -548,10 +548,10 @@ namespace Stroika {
                 virtual Iterable<mapped_type>        MappedValues () const                                  = 0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual bool Lookup (ArgByValueType<KEY_TYPE> key, Memory::Optional<mapped_type>* item) const = 0;
-                virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)           = 0;
-                virtual void Remove (ArgByValueType<KEY_TYPE> key)                                            = 0;
-                virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)            = 0;
+                virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<mapped_type>* item) const = 0;
+                virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<mapped_type> newElt)   = 0;
+                virtual void Remove (ArgByValueType<KEY_TYPE> key)                                    = 0;
+                virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i)    = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

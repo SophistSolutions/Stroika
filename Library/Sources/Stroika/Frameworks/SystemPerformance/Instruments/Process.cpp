@@ -39,7 +39,6 @@
 #include "../../../Foundation/IO/FileSystem/FileSystem.h"
 #include "../../../Foundation/IO/FileSystem/PathName.h"
 #include "../../../Foundation/Memory/BLOB.h"
-//#include "../../../Foundation/Memory/Optional.h"
 #include "../../../Foundation/Streams/MemoryStream.h"
 #include "../../../Foundation/Streams/TextReader.h"
 #include "../../../Foundation/Streams/iostream/FStreamSupport.h"
@@ -690,7 +689,7 @@ namespace {
             return results;
         }
         // if fails (cuz not readable) dont throw but return missing, but avoid noisy stroika exception logging
-        Optional<String> ReadCmdLineString_ (const String& fullPath2CmdLineFile)
+        optional<String> ReadCmdLineString_ (const String& fullPath2CmdLineFile)
         {
             // this reads /proc format files - meaning that a trialing nul-byte is the EOS
             auto ReadFileString_ = [](const Streams::InputStream<Byte>::Ptr& in) -> String {

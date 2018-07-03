@@ -115,7 +115,7 @@ namespace Stroika::Foundation {
         {
             Require (not Done ());
             RequireNotNull (fIterator_);
-            return fCurrent_.peek ();
+            return fCurrent_.operator-> ();
         }
         template <typename T, typename ITERATOR_TRAITS>
         inline Iterator<T>& Iterator<T, ITERATOR_TRAITS>::operator++ ()

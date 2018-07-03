@@ -109,7 +109,7 @@ namespace Stroika {
                     return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, nullptr);
                 }
                 else {
-                    Memory::Optional<mapped_type> tmp;
+                    optional<mapped_type> tmp;
                     if (_SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
@@ -118,15 +118,15 @@ namespace Stroika {
                 }
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key, Memory::Optional<mapped_type>* item) const
+            inline bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key, optional<mapped_type>* item) const
             {
                 return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, item);
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            inline Memory::Optional<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
+            inline optional<MAPPED_VALUE_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Lookup (ArgByValueType<key_type> key) const
             {
-                Memory::Optional<MAPPED_VALUE_TYPE> r;
-                [[maybe_unused]] bool               result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
+                optional<MAPPED_VALUE_TYPE> r;
+                [[maybe_unused]] bool       result = _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().Lookup (key, &r);
                 Ensure (result == r.has_value ());
                 return r;
             }
@@ -139,7 +139,7 @@ namespace Stroika {
             template <typename THROW_IF_MISSING>
             inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupChecked (ArgByValueType<key_type> key, const THROW_IF_MISSING& throwIfMissing) const
             {
-                if (Memory::Optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) {
+                if (optional<MAPPED_VALUE_TYPE> r{Lookup (key)}) {
                     return *r;
                 }
                 Execution::Throw (throwIfMissing);
@@ -147,7 +147,7 @@ namespace Stroika {
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
             inline MAPPED_VALUE_TYPE Association<KEY_TYPE, MAPPED_VALUE_TYPE>::LookupValue (ArgByValueType<key_type> key, ArgByValueType<mapped_type> defaultValue) const
             {
-                Memory::Optional<MAPPED_VALUE_TYPE> r{Lookup (key)};
+                optional<MAPPED_VALUE_TYPE> r{Lookup (key)};
                 return r.has_value () ? *r : defaultValue;
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -429,9 +429,9 @@ namespace Stroika {
                         virtual Iterator<KEY_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
-                            auto getNext   = [myContext]() -> Memory::Optional<KEY_TYPE> {
+                            auto getNext   = [myContext]() -> optional<KEY_TYPE> {
                                 if (myContext->Done ()) {
-                                    return Memory::Optional<KEY_TYPE> ();
+                                    return optional<KEY_TYPE> ();
                                 }
                                 else {
                                     auto result = (*myContext)->fKey;
@@ -477,9 +477,9 @@ namespace Stroika {
                         virtual Iterator<MAPPED_VALUE_TYPE> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
                         {
                             auto myContext = make_shared<Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>> (fAssociation_.MakeIterator ());
-                            auto getNext   = [myContext]() -> Memory::Optional<MAPPED_VALUE_TYPE> {
+                            auto getNext   = [myContext]() -> optional<MAPPED_VALUE_TYPE> {
                                 if (myContext->Done ()) {
-                                    return Memory::Optional<MAPPED_VALUE_TYPE> ();
+                                    return optional<MAPPED_VALUE_TYPE> ();
                                 }
                                 else {
                                     auto result = (*myContext)->fValue;

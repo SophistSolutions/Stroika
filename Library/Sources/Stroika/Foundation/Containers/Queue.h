@@ -158,7 +158,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Memory::Optional<T> HeadIf () const;
+                nonvirtual optional<T> HeadIf () const;
 
             public:
                 /**
@@ -168,7 +168,7 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Memory::Optional<T> RemoveHeadIf ();
+                nonvirtual optional<T> RemoveHeadIf ();
 
             public:
                 /**
@@ -259,12 +259,12 @@ namespace Stroika {
                 using _QueueRepSharedPtr = typename Queue<T>::_QueueRepSharedPtr;
 
             public:
-                virtual _QueueRepSharedPtr  CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
-                virtual void                AddTail (ArgByValueType<T> item)                       = 0;
-                virtual T                   RemoveHead ()                                          = 0;
-                virtual Memory::Optional<T> RemoveHeadIf ()                                        = 0;
-                virtual T                   Head () const                                          = 0;
-                virtual Memory::Optional<T> HeadIf () const                                        = 0;
+                virtual _QueueRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const = 0;
+                virtual void               AddTail (ArgByValueType<T> item)                       = 0;
+                virtual T                  RemoveHead ()                                          = 0;
+                virtual optional<T>        RemoveHeadIf ()                                        = 0;
+                virtual T                  Head () const                                          = 0;
+                virtual optional<T>        HeadIf () const                                        = 0;
 #if qDebug
                 virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const = 0;
 #endif

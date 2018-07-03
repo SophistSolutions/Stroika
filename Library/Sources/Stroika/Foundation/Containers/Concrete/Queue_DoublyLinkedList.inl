@@ -118,11 +118,11 @@ namespace Stroika {
                         fData_.RemoveFirst ();
                         return item;
                     }
-                    virtual Memory::Optional<T> RemoveHeadIf () override
+                    virtual optional<T> RemoveHeadIf () override
                     {
                         std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (fData_.IsEmpty ()) {
-                            return Memory::Optional<T> ();
+                            return optional<T> ();
                         }
                         T item = fData_.GetFirst ();
                         fData_.RemoveFirst ();
@@ -133,11 +133,11 @@ namespace Stroika {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.GetFirst ();
                     }
-                    virtual Memory::Optional<T> HeadIf () const override
+                    virtual optional<T> HeadIf () const override
                     {
                         std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (fData_.IsEmpty ()) {
-                            return Memory::Optional<T> ();
+                            return optional<T> ();
                         }
                         return fData_.GetFirst ();
                     }

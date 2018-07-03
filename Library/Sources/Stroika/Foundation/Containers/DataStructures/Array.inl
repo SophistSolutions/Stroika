@@ -635,7 +635,7 @@ namespace Stroika {
                     return inherited::More (current, advance);
                 }
                 template <typename T>
-                inline void Array<T>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                inline void Array<T>::ForwardIterator::More (optional<T>* result, bool advance)
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
                     this->Invariant ();
@@ -702,7 +702,7 @@ namespace Stroika {
                     return inherited::More (current, advance);
                 }
                 template <typename T>
-                inline void Array<T>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
+                inline void Array<T>::BackwardIterator::More (optional<T>* result, bool advance)
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
                     this->Invariant ();
