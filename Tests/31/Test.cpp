@@ -415,7 +415,7 @@ namespace {
         SharedContactsConfig_ tmp;
         tmp.fDate1      = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
         tmp.fDateTime1  = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
-        tmp.fTimeOfDay1 = tmp.fDateTime1.GetTimeOfDay ();
+        tmp.fTimeOfDay1 = *tmp.fDateTime1.GetTimeOfDay ();
         tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1.GetAsSecondsCount () + 60);
         VariantValue v  = mapper.FromObject (tmp);
 
