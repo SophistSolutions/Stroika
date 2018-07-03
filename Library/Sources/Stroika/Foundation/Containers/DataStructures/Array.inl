@@ -4,6 +4,8 @@
 #ifndef _Stroika_Foundation_Containers_DataStructures_Array_inl_
 #define _Stroika_Foundation_Containers_DataStructures_Array_inl_ 1
 
+#include <optional>
+
 #include "../../Debug/Assertions.h"
 
 namespace Stroika {

@@ -9,7 +9,6 @@
 #include "../../Configuration/Common.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
 #include "../../Memory/BlockAllocated.h"
-#include "../../Memory/Optional.h"
 
 #include "../Common.h"
 

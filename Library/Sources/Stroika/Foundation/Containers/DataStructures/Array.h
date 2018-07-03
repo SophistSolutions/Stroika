@@ -6,10 +6,11 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Common/Compare.h"
 #include "../../Configuration/Common.h"
 #include "../../Debug/AssertExternallySynchronizedLock.h"
-#include "../../Memory/Optional.h"
 
 #include "../Common.h"
 

@@ -10,6 +10,7 @@
  ********************************************************************************
  */
 #include "../../Characters/CodePage.h"
+#include "../../Memory/Optional.h"
 
 namespace Stroika {
     namespace Foundation {

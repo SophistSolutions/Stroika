@@ -191,7 +191,7 @@ namespace Stroika {
                 /**
                  *  Range () creates an empty range.
                  *
-                 *  Optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as openness).
+                 *  optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values (as well as openness).
                  *
                  *  \req begin <= end (after substitution of optional values)
                  *

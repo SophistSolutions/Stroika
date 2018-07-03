@@ -210,7 +210,7 @@ DeviceDescription UPnP::DeSerialize (const Memory::BLOB& b)
         registry.AddCommonType<String> ();
         registry.AddCommonType<uint16_t> ();
 
-// @todo  INCOMPLETE - URL, Optional<URL> InternetMediaType and two 'list' types incomplete
+// @todo  INCOMPLETE - URL, optional<URL> InternetMediaType and two 'list' types incomplete
 #if 0
         optional<URL> fPresentationURL;
 #endif

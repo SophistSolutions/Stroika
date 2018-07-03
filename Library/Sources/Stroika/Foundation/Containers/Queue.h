@@ -8,7 +8,6 @@
 
 #include "../Common/Compare.h"
 #include "../Execution/Synchronized.h"
-#include "../Memory/Optional.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
 

@@ -7,8 +7,9 @@
 
 #include "../../StroikaPreComp.h"
 
+#include <optional>
+
 #include "../../Configuration/Common.h"
-#include "../../Memory/Optional.h"
 
 #include "../Common.h"
 

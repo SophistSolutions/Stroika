@@ -197,7 +197,7 @@ namespace Stroika {
              *
              *      throw range_error makes sense, but then requires lots of checking when used for throws, and that makes use needlessly complex.
              *
-             *      So we eventually decided to use the return Optional and have a variant named XXXValue () that returns the plain T with a default - since
+             *      So we eventually decided to use the return optional and have a variant named XXXValue () that returns the plain T with a default - since
              *      we use that pattern in so many places.
              *
              *  *Design Note*:
@@ -616,7 +616,7 @@ namespace Stroika {
                  *
                  *  \par Example Usage
                  *      \code
-                 *          void ExpectedMethod (const Request* request, const Set<String>& methods, const Optional<String>& fromInMessage)
+                 *          void ExpectedMethod (const Request* request, const Set<String>& methods, const optional<String>& fromInMessage)
                  *          {
                  *              String method{request->GetHTTPMethod ()};
                  *              Set<String> lcMethods = methods.Select<String> ([](const String& s) { return s.ToLowerCase ();  });
@@ -715,7 +715,7 @@ namespace Stroika {
                  *  \par Example Usage
                  *      \code
                  *          Collection<SomeStruct> c;
-                 *          if (Optional<SomeStruct> o = c.First ([=](SomeStruct smi) { return smi.fID == substanceId; })) {
+                 *          if (optional<SomeStruct> o = c.First ([=](SomeStruct smi) { return smi.fID == substanceId; })) {
                  *              somthing_with_o (o);
                  *          }
                  *      \endcode

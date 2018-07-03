@@ -27,7 +27,7 @@ namespace Stroika::Foundation {
          */
         class FileAccessException : public Execution::StringException {
         public:
-            FileAccessException (const optional<String>& fileName = {}, const optional<FileAccessMode>& fileAccessMode = {});
+            FileAccessException (const optional<String>& fileName = nullopt, const optional<FileAccessMode>& fileAccessMode = nullopt);
 
         public:
             /**

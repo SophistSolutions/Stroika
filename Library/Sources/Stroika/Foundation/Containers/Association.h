@@ -11,7 +11,6 @@
 #include "../Configuration/Common.h"
 #include "../Configuration/Concepts.h"
 #include "../Execution/Synchronized.h"
-#include "../Memory/Optional.h"
 #include "../Traversal/Iterable.h"
 #include "Common.h"
 
@@ -237,7 +236,7 @@ namespace Stroika {
 
             public:
                 /**
-                *  Note - as since Lookup/1 returns an Optional<T> - it can be used very easily to provide
+                *  Note - as since Lookup/1 returns an optional<T> - it can be used very easily to provide
                 *  a default value on Lookup (so for case where not present) - as in:
                 *      returm m.Lookup (key).Value (putDefaultValueHere);
                 *

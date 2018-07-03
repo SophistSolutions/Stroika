@@ -10,7 +10,6 @@
 #include "../Configuration/Common.h"
 #include "../Containers/Sequence.h"
 #include "../Containers/SortedSet.h"
-#include "../Memory/Optional.h"
 
 #include "DiscreteRange.h"
 #include "DisjointRange.h"
@@ -42,10 +41,6 @@ namespace Stroika {
 
             public:
                 using RangeType = typename DisjointRange<T, RANGE_TYPE>::RangeType;
-
-            public:
-                template <typename T2>
-                using Optional = optional<T2>;
 
             public:
                 /**
@@ -80,12 +75,12 @@ namespace Stroika {
             public:
                 /**
                  */
-                nonvirtual Optional<value_type> GetNext (value_type elt) const;
+                nonvirtual optional<value_type> GetNext (value_type elt) const;
 
             public:
                 /**
                  */
-                nonvirtual Optional<value_type> GetPrevious (value_type elt) const;
+                nonvirtual optional<value_type> GetPrevious (value_type elt) const;
 
             public:
                 /**
@@ -116,20 +111,20 @@ namespace Stroika {
                  *  Find the first element of the DisjointDiscreteRange that passes the argument function test.
                  &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
                  */
-                nonvirtual Optional<value_type> FindFirstThat (const function<bool(value_type)>& testF) const;
-                nonvirtual Optional<value_type> FindFirstThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
+                nonvirtual optional<value_type> FindFirstThat (const function<bool(value_type)>& testF) const;
+                nonvirtual optional<value_type> FindFirstThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
 
             public:
                 /**
                  *  Find the last element of the DisjointDiscreteRange that passes the argument function test.
                  &&&& docs - assumes a bit that one subrange meeting criteria - fill in details
                  */
-                nonvirtual Optional<value_type> FindLastThat (const function<bool(value_type)>& testF) const;
-                nonvirtual Optional<value_type> FindLastThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
+                nonvirtual optional<value_type> FindLastThat (const function<bool(value_type)>& testF) const;
+                nonvirtual optional<value_type> FindLastThat (const function<bool(value_type)>& testF, const FindHints& hints) const;
 
             private:
-                nonvirtual Optional<value_type> ScanTil_ (const function<bool(value_type)>& testF, const function<Optional<value_type> (value_type)>& iterNext, value_type seedPosition) const;
-                nonvirtual Optional<value_type> ScanFindAny_ (const function<bool(value_type)>& testF, value_type seedPosition, bool forwardFirst) const;
+                nonvirtual optional<value_type> ScanTil_ (const function<bool(value_type)>& testF, const function<optional<value_type> (value_type)>& iterNext, value_type seedPosition) const;
+                nonvirtual optional<value_type> ScanFindAny_ (const function<bool(value_type)>& testF, value_type seedPosition, bool forwardFirst) const;
             };
         }
     }

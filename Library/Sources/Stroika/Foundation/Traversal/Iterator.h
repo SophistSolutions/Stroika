@@ -8,10 +8,10 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 
 #include "../Configuration/Common.h"
 
-#include "../Memory/Optional.h"
 #include "../Memory/SharedByValue.h"
 #include "../Memory/SharedPtr.h"
 

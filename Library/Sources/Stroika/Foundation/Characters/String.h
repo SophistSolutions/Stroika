@@ -14,7 +14,6 @@
 #include "../Containers/Set.h"
 #include "../Execution/ModuleInit.h"
 #include "../Execution/Synchronized.h"
-#include "../Memory/Optional.h"
 #include "../Memory/SharedByValue.h"
 #include "../Traversal/Iterable.h"
 #include "SDKString.h"
@@ -699,7 +698,7 @@ namespace Stroika {
                 /**
                  *  Find returns the index of the first occurance of the given Character/substring argument in
                  *  this string. Find () always returns a valid string index, which is followed by the
-                 *  given substring, or Optional<> {} otherwise.
+                 *  given substring, or nullopt otherwise.
                  *
                  *  Find () can optionally be provided a 'startAt' offset to begin the search at.
                  *
@@ -707,7 +706,7 @@ namespace Stroika {
                  *  is found, but the length of the match.
                  *
                  *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
-                 *  is non-empty, and Optional<> {} if this string was empty.
+                 *  is non-empty, and nullopt if this string was empty.
                  *
                  *  \note   Alias - could have been called IndexOf ()
                  *

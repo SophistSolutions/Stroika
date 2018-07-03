@@ -9,7 +9,6 @@
 #include "../Characters/String.h"
 #include "../Configuration/Common.h"
 #include "../Containers/Sequence.h"
-#include "../Memory/Optional.h"
 
 #include "Range.h"
 
