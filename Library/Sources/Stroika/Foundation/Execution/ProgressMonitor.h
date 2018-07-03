@@ -91,7 +91,7 @@ namespace Stroika {
                 using ChangedCallbackType = Execution::Function<void(const ProgressMonitor& progressMonitor)>;
 
             private:
-                class IRep_;
+                class Rep_;
 
             public:
                 /**
@@ -103,7 +103,7 @@ namespace Stroika {
                 ProgressMonitor (Thread::Ptr workThread);
 
             private:
-                ProgressMonitor (const shared_ptr<IRep_>& rep);
+                ProgressMonitor (const shared_ptr<Rep_>& rep);
 
             public:
                 ~ProgressMonitor ();
@@ -162,7 +162,7 @@ namespace Stroika {
                 nonvirtual CurrentTaskInfo GetCurrentTaskInfo () const;
 
             private:
-                shared_ptr<IRep_> fRep_;
+                shared_ptr<Rep_> fRep_;
 
             private:
                 friend class Updater;
@@ -233,7 +233,7 @@ namespace Stroika {
                 nonvirtual void CallNotifyProgress_ () const;
 
             private:
-                shared_ptr<IRep_> fRep_;
+                shared_ptr<Rep_>  fRep_;
                 ProgressRangeType fFromProg_;
                 ProgressRangeType fToProg_;
             };

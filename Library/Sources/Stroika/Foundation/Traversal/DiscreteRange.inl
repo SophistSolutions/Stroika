@@ -17,9 +17,8 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T, typename TRAITS>
-            struct DiscreteRange<T, TRAITS>::MyIteratorRep_ : Iterator<T>::IRep {
+            struct DiscreteRange<T, TRAITS>::MyIteratorRep_ : Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIteratorRep_> {
                 using inherited = typename Iterator<T>::IRep;
-                DECLARE_USE_BLOCK_ALLOCATION (MyIteratorRep_);
                 T    fCur;
                 T    fEnd;
                 bool fAtEnd;
@@ -80,12 +79,11 @@ namespace Stroika {
              */
             template <typename T, typename TRAITS>
             struct DiscreteRange<T, TRAITS>::MyIterable_ : Iterable<T> {
-                struct MyRep_ : Iterable<T>::_IRep {
+                struct MyRep_ : Iterable<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
                     using inherited             = typename Iterable<T>::_IRep;
                     using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
                     using _APPLY_ARGTYPE        = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
                     using _APPLYUNTIL_ARGTYPE   = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
-                    DECLARE_USE_BLOCK_ALLOCATION (MyRep_);
                     T    fStart;
                     T    fEnd;
                     bool fForcedEnd;

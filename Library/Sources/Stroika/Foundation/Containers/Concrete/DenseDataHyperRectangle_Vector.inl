@@ -27,7 +27,7 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                class DenseDataHyperRectangle_Vector<T, INDEXES...>::Rep_ : public DenseDataHyperRectangle<T, INDEXES...>::_IRep {
+                class DenseDataHyperRectangle_Vector<T, INDEXES...>::Rep_ : public DenseDataHyperRectangle<T, INDEXES...>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename DenseDataHyperRectangle<T, INDEXES...>::_IRep;
 
@@ -53,9 +53,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<tuple<T, INDEXES...>>::_IRep overrides
                 public:

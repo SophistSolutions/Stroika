@@ -145,15 +145,12 @@ namespace Stroika {
                         building any subclasses which have a different size than this class. You must provide your own overrides
                         of operator new/delete todo so.</p>
             */
-            class Partition::PartitionMarker : public Marker {
+            class Partition::PartitionMarker : public Marker, public Foundation::Memory::UseBlockAllocationIfAppropriate<PartitionMarker> {
             private:
                 using inherited = Marker;
 
             public:
                 PartitionMarker (Partition& owner, PartitionMarker* insertAfterMe); // if insertAfter==nullptr then prepend
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (PartitionMarker);
 
                 // Calls Partition::UpdatePartitions ()
             public:

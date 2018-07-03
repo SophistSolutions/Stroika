@@ -231,10 +231,7 @@ namespace Stroika {
                 };
 
                 template <typename T>
-                class LinkedList<T>::Link {
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Link);
-
+                class LinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link> {
                 public:
                     Link (T item, Link* next);
 

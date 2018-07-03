@@ -22,10 +22,7 @@ using Memory::Byte;
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
 
-class Variant::XML::Reader::Rep_ : public Variant::Reader::_IRep {
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-
+class Variant::XML::Reader::Rep_ : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ (const SerializationConfiguration& config)
         : fSerializationConfiguration_ (config)

@@ -86,10 +86,9 @@ namespace Stroika {
                 struct MyIterable_ : Iterable<T> {
                     using MyContextData_ = function<optional<T> ()>;
                     using MyIteratorRep_ = typename Private_::GenItWrapper_<T>;
-                    struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep {
+                    struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                         using inherited             = typename IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
                         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyContextData_& context)
                             : inherited (context)
                         {

@@ -27,7 +27,7 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T>
-                class Stack_LinkedList<T>::Rep_ : public Stack<T>::_IRep {
+                class Stack_LinkedList<T>::Rep_ : public Stack<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename Stack<T>::_IRep;
 
@@ -49,9 +49,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:

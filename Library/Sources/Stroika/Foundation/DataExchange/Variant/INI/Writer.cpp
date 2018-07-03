@@ -20,10 +20,7 @@ using Memory::Byte;
  ************************** DataExchange::INI::Writer ***************************
  ********************************************************************************
  */
-class Variant::INI::Writer::Rep_ : public Variant::Writer::_IRep {
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-
+class Variant::INI::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     virtual _SharedPtrIRep Clone () const override
     {

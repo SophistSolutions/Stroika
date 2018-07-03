@@ -137,10 +137,7 @@ namespace {
  ************************** Variant::XML::Writer ********************************
  ********************************************************************************
  */
-class Variant::XML::Writer::Rep_ : public Variant::Writer::_IRep {
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-
+class Variant::XML::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     Rep_ (const SerializationConfiguration& config)
         : fSerializationConfiguration_ (config)

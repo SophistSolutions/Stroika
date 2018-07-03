@@ -42,10 +42,9 @@ namespace Stroika {
 
             template <typename T, typename TRAITS>
             struct MultiSet<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
-                struct Rep : public Iterator<T>::IRep {
+                struct Rep : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
                     using inherited = typename Iterator<T>::IRep;
                     ElementsIteratorHelperContext_ fContext;
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep);
                     Rep (const ElementsIteratorHelperContext_& context)
                         : inherited ()
                         , fContext (context)
@@ -115,9 +114,8 @@ namespace Stroika {
             struct MultiSet<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
                 using MyIteratorRep_ = typename ElementsIteratorHelper_::Rep;
                 using MyDataBLOB_    = ElementsIteratorHelperContext_;
-                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
+                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                     using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
-                    DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                     MyIterableRep_ (const ElementsIteratorHelperContext_& context)
                         : inherited (context)
                     {
@@ -158,10 +156,9 @@ namespace Stroika {
 
             template <typename T, typename TRAITS>
             struct MultiSet<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
-                struct Rep : public Iterator<T>::IRep {
+                struct Rep : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
                     using inherited = typename Iterator<T>::IRep;
                     UniqueElementsIteratorHelperContext_ fContext;
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep);
                     Rep (const UniqueElementsIteratorHelperContext_& context)
                         : inherited ()
                         , fContext (context)
@@ -210,9 +207,8 @@ namespace Stroika {
             struct MultiSet<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
                 using MyIteratorRep_ = typename UniqueElementsIteratorHelper_::Rep;
                 using MyDataBLOB_    = UniqueElementsIteratorHelperContext_;
-                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
+                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                     using inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
-                    DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                     MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
                         : inherited (context)
                     {

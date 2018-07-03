@@ -26,10 +26,7 @@ using Memory::Byte;
  *********** DataExchange::Variant::CharacterDelimitedLines::Writer *************
  ********************************************************************************
  */
-class DataExchange::Variant::CharacterDelimitedLines::Writer::Rep_ : public Variant::Writer::_IRep {
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-
+class DataExchange::Variant::CharacterDelimitedLines::Writer::Rep_ : public Variant::Writer::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     virtual _SharedPtrIRep Clone () const override
     {

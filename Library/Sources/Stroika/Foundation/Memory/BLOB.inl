@@ -19,7 +19,7 @@
 namespace Stroika::Foundation {
     namespace Memory {
 
-        struct BLOB::BasicRep_ : public _IRep {
+        struct BLOB::BasicRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<BasicRep_> {
             //  really not sure what size to use???
             //  May not be any universal, good answer...
             //  Remember - users can subclass BLOB, and provider their own
@@ -48,19 +48,16 @@ namespace Stroika::Foundation {
             BasicRep_& operator= (const BasicRep_&) = delete;
 
             virtual pair<const Byte*, const Byte*> GetBounds () const override;
-
-            DECLARE_USE_BLOCK_ALLOCATION (BasicRep_);
         };
 
-        struct BLOB::ZeroRep_ : public _IRep {
+        struct BLOB::ZeroRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<ZeroRep_> {
             virtual pair<const Byte*, const Byte*> GetBounds () const override;
             ZeroRep_ ()                = default;
             ZeroRep_ (const ZeroRep_&) = delete;
             ZeroRep_& operator= (const ZeroRep_&) = delete;
-            DECLARE_USE_BLOCK_ALLOCATION (ZeroRep_);
         };
 
-        struct BLOB::AdoptRep_ : public _IRep {
+        struct BLOB::AdoptRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptRep_> {
             const Byte* fStart;
             const Byte* fEnd;
 
@@ -69,11 +66,9 @@ namespace Stroika::Foundation {
             ~AdoptRep_ ();
             AdoptRep_&                             operator= (const AdoptRep_&) = delete;
             virtual pair<const Byte*, const Byte*> GetBounds () const override;
-
-            DECLARE_USE_BLOCK_ALLOCATION (AdoptRep_);
         };
 
-        struct BLOB::AdoptAppLifetimeRep_ : public _IRep {
+        struct BLOB::AdoptAppLifetimeRep_ : public _IRep, public Memory::UseBlockAllocationIfAppropriate<AdoptAppLifetimeRep_> {
             const Byte* fStart;
             const Byte* fEnd;
 
@@ -82,8 +77,6 @@ namespace Stroika::Foundation {
             AdoptAppLifetimeRep_ (const Byte* start, const Byte* end);
             AdoptAppLifetimeRep_&                  operator= (const AdoptAppLifetimeRep_&) = delete;
             virtual pair<const Byte*, const Byte*> GetBounds () const override;
-
-            DECLARE_USE_BLOCK_ALLOCATION (AdoptAppLifetimeRep_);
         };
 
         /*

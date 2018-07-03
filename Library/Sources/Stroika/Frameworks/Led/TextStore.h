@@ -463,14 +463,11 @@ namespace Stroika {
                         call the cancel method to prevent the didUpdates from happening on destruction.
                         </p>
             */
-            class TextStore::SimpleUpdater {
+            class TextStore::SimpleUpdater : public Foundation::Memory::UseBlockAllocationIfAppropriate<SimpleUpdater> {
             public:
                 SimpleUpdater (TextStore& ts, const UpdateInfo& updateInfo);
                 SimpleUpdater (TextStore& ts, size_t from, size_t to, bool realContentUpdate = true);
                 ~SimpleUpdater ();
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (SimpleUpdater);
 
             public:
                 nonvirtual void Cancel ();

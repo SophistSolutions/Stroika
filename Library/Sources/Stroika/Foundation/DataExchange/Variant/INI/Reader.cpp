@@ -27,10 +27,7 @@ using Memory::Byte;
  ************************** DataExchange::INI::Reader ***************************
  ********************************************************************************
  */
-class Variant::INI::Reader::Rep_ : public Variant::Reader::_IRep {
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
-
+class Variant::INI::Reader::Rep_ : public Variant::Reader::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
 public:
     virtual _SharedPtrIRep Clone () const override
     {

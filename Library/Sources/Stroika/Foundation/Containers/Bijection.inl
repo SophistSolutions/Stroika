@@ -417,11 +417,10 @@ namespace Stroika {
             {
                 struct MyIterable_ : Iterable<DOMAIN_TYPE> {
                     using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
-                    struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep {
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                         using inherited             = typename Traversal::IterableFromIterator<DOMAIN_TYPE>::_Rep;
                         using _IterableRepSharedPtr = typename Iterable<DOMAIN_TYPE>::_IterableRepSharedPtr;
                         Bijection fBijection_;
-                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const Bijection& b)
                             : inherited ()
                             , fBijection_ (b)
@@ -465,11 +464,10 @@ namespace Stroika {
             {
                 struct MyIterable_ : Iterable<RANGE_TYPE> {
                     using MyBijection_ = Bijection<DOMAIN_TYPE, RANGE_TYPE>;
-                    struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep {
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<RANGE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                         using inherited             = typename Traversal::IterableFromIterator<RANGE_TYPE>::_Rep;
                         using _IterableRepSharedPtr = typename Iterable<RANGE_TYPE>::_IterableRepSharedPtr;
                         MyBijection_ fBijection_;
-                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyBijection_& b)
                             : inherited ()
                             , fBijection_ (b)

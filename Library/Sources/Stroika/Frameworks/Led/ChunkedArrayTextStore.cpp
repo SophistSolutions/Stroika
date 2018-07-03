@@ -116,7 +116,7 @@ inline void ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_
 const size_t kEnufChildrenToApplyHackMarkers = 50;
 
 // This is what goes in a fTextStoreHook of a Marker* when we add it...
-class ChunkedArrayMarkerHook : public Marker::HookData {
+class ChunkedArrayMarkerHook : public Marker::HookData, public Memory::UseBlockAllocationIfAppropriate<ChunkedArrayMarkerHook> {
 public:
     ChunkedArrayMarkerHook ()
         : Marker::HookData ()
@@ -131,9 +131,6 @@ public:
         , fOwner (NULL)
     {
     }
-
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (ChunkedArrayMarkerHook);
 
 public:
     virtual MarkerOwner* GetOwner () const override;
@@ -162,15 +159,9 @@ public:
 };
 
 // Subclass only to do block allocation
-class HackMarker : public Marker {
+class HackMarker : public Marker, public Memory::UseBlockAllocationIfAppropriate<HackMarker> {
 public:
-    HackMarker ()
-        : Marker ()
-    {
-    }
-
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (HackMarker);
+    HackMarker () = default;
 };
 
 MarkerOwner* ChunkedArrayMarkerHook::GetOwner () const

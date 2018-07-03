@@ -69,7 +69,7 @@ namespace {
 // do in const c_str() method - and have unsynchonzied).
 namespace   {
     struct String_Substring_ : public String {
-        class   MyRep_ : public _IRep {
+        class   MyRep_ : public _IRep , public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
             using inherited = _IRep;
         public:
             MyRep_ (const _SafeReadRepAccessor& savedSP, const wchar_t* start, const wchar_t* end)
@@ -91,8 +91,6 @@ namespace   {
             }
         private:
             _SafeReadRepAccessor  fSaved_;
-        public:
-            DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
         };
     };
 }
@@ -117,7 +115,7 @@ namespace {
  */
 Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
 {
-    struct MyIterRep_ : Iterator<Character>::IRep {
+    struct MyIterRep_ : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
         _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
         size_t         fCurIdx;
         MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
@@ -158,7 +156,6 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
             Require (fStr == rrhs->fStr); // from same string object
             return fCurIdx == rrhs->fCurIdx;
         }
-        DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
     };
 // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
 // ignore suggested IteratorOwnerID - which explains the arg to Clone () below

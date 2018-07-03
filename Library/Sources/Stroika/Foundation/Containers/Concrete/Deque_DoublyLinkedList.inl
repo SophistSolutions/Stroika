@@ -26,7 +26,7 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T>
-                class Deque_DoublyLinkedList<T>::Rep_ : public Deque<T>::_IRep {
+                class Deque_DoublyLinkedList<T>::Rep_ : public Deque<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename Deque<T>::_IRep;
 
@@ -48,9 +48,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:

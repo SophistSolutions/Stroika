@@ -77,7 +77,7 @@ namespace {
 }
 
 template <typename T>
-struct VariantValue::TIRep_ : VariantValue::IRep_ {
+struct VariantValue::TIRep_ : VariantValue::IRep_, public Memory::UseBlockAllocationIfAppropriate<TIRep_<T>> {
     inline TIRep_ (const T& v)
         : fVal (v)
     {
@@ -91,7 +91,6 @@ struct VariantValue::TIRep_ : VariantValue::IRep_ {
         return TN_<T>::kTYPEENUM;
     }
     T fVal;
-    DECLARE_USE_BLOCK_ALLOCATION (TIRep_);
 };
 
 #if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy

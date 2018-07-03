@@ -312,7 +312,7 @@ namespace Stroika {
                         This is <em>not</em> intended to be subclassed. If you do subclass - beware the overload of operator new () and
                         block-allocation usage. Or better yet, subclass @'SimpleStyleMarkerByIncrementalFontSpec<BASECLASS>' instead.</p>
             */
-            class TrivialFontSpecStyleMarker : public SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>> {
+            class TrivialFontSpecStyleMarker : public SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>>, public Foundation::Memory::UseBlockAllocationIfAppropriate<TrivialFontSpecStyleMarker> {
             private:
                 using inherited = SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByFontSpec<>>;
 
@@ -321,9 +321,6 @@ namespace Stroika {
 
             public:
                 virtual int GetPriority () const override;
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (TrivialFontSpecStyleMarker);
             };
 
             /*

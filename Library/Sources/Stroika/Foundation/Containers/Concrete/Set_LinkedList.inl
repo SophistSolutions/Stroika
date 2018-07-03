@@ -38,7 +38,7 @@ namespace Stroika {
                  */
                 template <typename T>
                 template <typename EQUALS_COMPARER>
-                class Set_LinkedList<T>::Rep_ : public IImplRepBase_ {
+                class Set_LinkedList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -68,9 +68,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:

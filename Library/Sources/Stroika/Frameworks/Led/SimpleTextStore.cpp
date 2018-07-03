@@ -11,7 +11,7 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Frameworks;
 using namespace Stroika::Frameworks::Led;
 
-class SimpleTextStoreMarkerHook : public Marker::HookData {
+class SimpleTextStoreMarkerHook : public Marker::HookData, public Memory::UseBlockAllocationIfAppropriate<SimpleTextStoreMarkerHook> {
 public:
     SimpleTextStoreMarkerHook ()
         : Marker::HookData ()
@@ -21,9 +21,6 @@ public:
         , fIsPreRemoved (false)
     {
     }
-
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (SimpleTextStoreMarkerHook);
 
 public:
     virtual MarkerOwner* GetOwner () const override;

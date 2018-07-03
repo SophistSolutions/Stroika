@@ -35,7 +35,7 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 template <typename EQUALS_COMPARER>
-                class MultiSet_LinkedList<T, TRAITS>::Rep_ : public IImplRepBase_ {
+                class MultiSet_LinkedList<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -63,9 +63,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
                     const EQUALS_COMPARER fEqualsComparer_;

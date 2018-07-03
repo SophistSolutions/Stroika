@@ -308,7 +308,7 @@ namespace Stroika {
                 enum { kPackRowHeightCount = sizeof (RowHeight_*) / sizeof (RowHeight_) };
 
             private:
-                struct Rep {
+                struct Rep : public Foundation::Memory::UseBlockAllocationIfAppropriate<Rep> {
                 public:
                     Rep ();
                     ~Rep ();
@@ -319,9 +319,6 @@ namespace Stroika {
                     size_t       fRowCountCache;
                     RowStart_*   fRowStartArray;
                     RowHeight_*  fRowHeightArray;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep);
 
                 private:
                     Rep (const Rep&);            //  intentionally not defined

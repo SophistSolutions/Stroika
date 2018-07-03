@@ -39,7 +39,7 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 template <typename INORDER_COMPARER>
-                class MultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_ {
+                class MultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -66,9 +66,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:

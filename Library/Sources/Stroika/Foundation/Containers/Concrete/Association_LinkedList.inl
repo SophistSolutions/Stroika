@@ -27,7 +27,7 @@ namespace Stroika {
                 ********************************************************************************
                 */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
+                class Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
@@ -49,9 +49,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
                     equal_to<KEY_TYPE> fKeyEqualsComparer_;

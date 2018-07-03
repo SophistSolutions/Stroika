@@ -25,13 +25,12 @@ namespace Stroika {
 
             /*
              ********************************************************************************
-             ***************************** ProgressMonitor::IRep_ ***************************
+             ***************************** ProgressMonitor::Rep_ ****************************
              ********************************************************************************
              */
-            class ProgressMonitor::IRep_ {
+            class ProgressMonitor::Rep_ : public Memory::UseBlockAllocationIfAppropriate<Rep_> {
             public:
-                DECLARE_USE_BLOCK_ALLOCATION (IRep_);
-                IRep_ ()
+                Rep_ ()
                     : fCurTaskInfo_CritSect_ ()
                     , fCallbacks_ ()
                     , fCanceled_ (false)
@@ -54,7 +53,7 @@ namespace Stroika {
              ***************************** ProgressMontitor *********************************
              ********************************************************************************
              */
-            inline ProgressMonitor::ProgressMonitor (const shared_ptr<IRep_>& rep)
+            inline ProgressMonitor::ProgressMonitor (const shared_ptr<Rep_>& rep)
                 : fRep_ (rep)
             {
             }

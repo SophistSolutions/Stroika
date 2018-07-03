@@ -76,6 +76,24 @@ namespace Stroika {
     namespace Foundation {
         namespace Memory {
 
+            /**
+             *  Use this to force use of block allocation for a given type, by inheriting this class from that type.
+             *
+             *  \par Example Usage:
+             *      \code
+             *            struct MyIterRep_ : Iterator<Character>::IRep, public Memory::BlockAllocationUseHelper<MyIterRep_> {
+             *                _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
+             *                size_t         fCurIdx;
+             *                MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
+             *                    : fStr (r)
+             *                    , fCurIdx (idx)
+             *                {
+             *                    Require (fCurIdx <= fStr->_GetLength ());
+             *                }
+             *                ...
+             *              };
+             *      \endcode
+             */
             template <typename T>
             struct BlockAllocationUseHelper {
                 static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<T>::Allocate (n)); }
@@ -83,15 +101,46 @@ namespace Stroika {
                 static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
                 static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
             };
+
+            /**
+             *  Use this to undo the effect of BlockAllocationUseHelper<> or UseBlockAllocationIfAppropriate<> for a subclass.
+             */
             template <typename T>
             struct BlockAllocationUseGlobalAllocatorHelper {
                 static void* operator new (size_t n) { return ::operator new (n); }
                 static void* operator new (size_t n, int, const char*, int) { return ::operator new (n); }
-                static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
-                static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
+                static void  operator delete (void* p) { ::operator delete (p); }
+                static void  operator delete (void* p, int, const char*, int) { ::operator delete (p); }
             };
 
             /**
+             *  \brief  Use this to enable block allocation for a particular class. *Beware* of subclassing.
+             *
+             *  This helper macro can be used to avoid some of the C++ gorp required in declaring that you are
+             *  using block-allocation with a given class.
+             *
+             *  \par Example Usage:
+             *      \code
+             *            struct MyIterRep_ : Iterator<Character>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIterRep_> {
+             *                _SharedPtrIRep fStr; // effectively RO, since if anyone modifies, our copy will remain unchanged
+             *                size_t         fCurIdx;
+             *                MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
+             *                    : fStr (r)
+             *                    , fCurIdx (idx)
+             *                {
+             *                    Require (fCurIdx <= fStr->_GetLength ());
+             *                }
+             *                ...
+             *            };
+             *      \endcode
+             *
+             *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
+             *  false (0), this will just default to the global ::new/::delete
+             *
+             *  @see DECLARE_DONT_USE_BLOCK_ALLOCATION()
+             *  @see Stroika::Foundation::Memory::BlockAllocator
+             *  @see Stroika::Foundation::Memory::AutomaticallyBlockAllocated
+             *  @see Stroika::Foundation::Memory::ManuallyBlockAllocated
              */
             template <typename T>
             using UseBlockAllocationIfAppropriate = conditional_t<qAllowBlockAllocation, BlockAllocationUseHelper<T>, Configuration::Empty>;
@@ -122,52 +171,36 @@ namespace Stroika {
              *  @see Stroika::Foundation::Memory::AutomaticallyBlockAllocated
              *  @see Stroika::Foundation::Memory::ManuallyBlockAllocated
              *
-             *  \hideinitializer
+             *  \note DEPRECATED - USE UseBlockAllocationIfAppropriate
              */
 #if qAllowBlockAllocation
-#define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)                                                                                                    \
+#define DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)                                                                                                    \
     static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }                        \
     static void* operator new (size_t n, int, const char*, int) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); } \
     static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }                             \
     static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }
 #else
-#define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
+#define DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)
 #endif
 
+// Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
+#define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS) use="DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED"
+
+
             /**
-             *  \def    DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
-             *
-             *  \brief  Use this to disable block allocation for a subclass of a class that HAD been using block allocation.
-             *
-             *  If you subclass from a class which uses block-allocation, you can use this to turn off block allocation
-             *  in your particular subclass.</p>
-             *
-             *
-             *  An example of use might be:
-             *  <code>
-             *  <pre>
-             *      class   Foo {
-             *          public:
-             *              DECLARE_USE_BLOCK_ALLOCATION(Foo);
-             *      };
-             *      class   Bar : public Foo {
-             *          public:
-             *              DECLARE_DONT_USE_BLOCK_ALLOCATION(Bar);
-             *      };
-             *  </pre>
-             *  </code>
-             *
-             *  @see DECLARE_USE_BLOCK_ALLOCATION
-             *
-             *  \hideinitializer
              */
+// Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
 #if qAllowBlockAllocation
-#define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)                   \
+#define DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)                   \
     static void* operator new (size_t n) { return ::operator new (n); } \
     static void  operator delete (void* p) { ::operator delete (p); }
 #else
-#define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
+#define DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)
 #endif
+
+// Deprecated in Stroika v2.1d4 - USE BlockAllocationUseGlobalAllocatorHelper
+#define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS) use="DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED"
+
 
             /**
              * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
@@ -188,10 +221,7 @@ namespace Stroika {
              *  false (0), this will just default to the global ::new/::delete
              */
             template <typename T>
-            class AutomaticallyBlockAllocated {
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (T);
-
+            class AutomaticallyBlockAllocated : UseBlockAllocationIfAppropriate <T> {
             public:
                 /**
                  * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
@@ -204,7 +234,7 @@ namespace Stroika {
                 AutomaticallyBlockAllocated (T&& t);
 
             public:
-                nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated<T>& t);
+                nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated& t);
                 nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const T& t);
 
             public:

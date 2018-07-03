@@ -43,7 +43,7 @@ namespace Stroika {
                  */
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE>
                 template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER>
-                class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_ : public IImplRepBase_ {
+                class Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<DOMAIN_EQUALS_COMPARER, RANGE_EQUALS_COMPARER>> {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -75,9 +75,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
                     const Bijection_Base::InjectivityViolationPolicy fInjectivityViolationPolicy_;

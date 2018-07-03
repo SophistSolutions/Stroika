@@ -30,7 +30,7 @@ namespace Stroika {
                 /*
                  */
                 template <typename T>
-                class Collection_LinkedList<T>::Rep_ : public IImplRep_ {
+                class Collection_LinkedList<T>::Rep_ : public IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = IImplRep_;
 
@@ -52,9 +52,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:

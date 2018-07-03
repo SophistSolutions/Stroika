@@ -41,7 +41,7 @@ namespace Stroika {
                  *  its not likely well suited for use elsewhere.
                  */
                 template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator, typename PATCHABLE_CONTAINER_VALUE = T>
-                class IteratorImplHelper_ : public Iterator<T>::IRep {
+                class IteratorImplHelper_ : public Iterator<T>::IRep, public Memory::UseBlockAllocationIfAppropriate<IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR, PATCHABLE_CONTAINER_VALUE>> {
                 private:
                     using inherited = typename Iterator<T>::IRep;
 
@@ -56,9 +56,6 @@ namespace Stroika {
 
                 public:
                     virtual ~IteratorImplHelper_ () = default;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);
 
                     // Iterator<T>::IRep
                 public:

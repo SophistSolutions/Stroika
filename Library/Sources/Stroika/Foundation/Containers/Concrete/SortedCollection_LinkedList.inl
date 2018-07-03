@@ -35,7 +35,7 @@ namespace Stroika {
                  */
                 template <typename T>
                 template <typename INORDER_COMPARER>
-                class SortedCollection_LinkedList<T>::Rep_ : public IImplRepBase_ {
+                class SortedCollection_LinkedList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -62,9 +62,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
                     const INORDER_COMPARER fInorderComparer_;

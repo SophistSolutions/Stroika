@@ -24,7 +24,7 @@ using namespace Stroika::Foundation::Characters::Concrete;
 using Traversal::IteratorOwnerID;
 
 namespace {
-    class String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep {
+    class String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep, public Memory::UseBlockAllocationIfAppropriate<String_BufferedArray_Rep_> {
     private:
         using inherited = Concrete::Private::BufferedStringRep::_Rep;
 
@@ -39,13 +39,10 @@ namespace {
             // ignore suggested IteratorOwnerID
             return Traversal::Iterable<Character>::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
         }
-
-    public:
-        DECLARE_USE_BLOCK_ALLOCATION (String_BufferedArray_Rep_);
     };
 }
 
-class String_ExternalMemoryOwnership_ApplicationLifetime::MyRep_ : public String::_IRep {
+class String_ExternalMemoryOwnership_ApplicationLifetime::MyRep_ : public String::_IRep, public Memory::UseBlockAllocationIfAppropriate<MyRep_> {
 private:
     using inherited = String::_IRep;
 
@@ -69,9 +66,6 @@ public:
         Assert (_fStart + ::wcslen (_fStart) == _fEnd);
         return _fStart;
     }
-
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (MyRep_);
 };
 
 /*

@@ -244,10 +244,7 @@ namespace Stroika {
                  *  Just an implementation detail. Don't use directly except in helper classes.
                  */
                 template <typename T>
-                class DoublyLinkedList<T>::Link {
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Link);
-
+                class DoublyLinkedList<T>::Link : public Memory::UseBlockAllocationIfAppropriate<Link> {
                 public:
                     Link (ArgByValueType<T> item, Link* prev, Link* next);
 

@@ -339,19 +339,16 @@ namespace Stroika {
             @BASES:         @'InteractiveReplaceCommand::SavedTextRep'
             @DESCRIPTION:   <p>Keep track of only the text, and no font, or misc embedding info. On its
                         @'InteractiveReplaceCommand::SavedTextRep::InsertSelf' call, it uses @'TextInteractor::Replace'</p>
-                            <p>Note that this class uses @'DECLARE_USE_BLOCK_ALLOCATION' - so be carefull when subclass.
+                            <p>Note that this class uses Memory::UseBlockAllocationIfAppropriate<>  - so be carefull when subclass.
                         </p>
             */
-            class InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand::SavedTextRep {
+            class InteractiveReplaceCommand::PlainTextRep : public InteractiveReplaceCommand::SavedTextRep, public Foundation::Memory::UseBlockAllocationIfAppropriate<PlainTextRep> {
             private:
                 using inherited = SavedTextRep;
 
             public:
                 PlainTextRep (size_t selStart, size_t selEnd, const Led_tChar* text, size_t textLen);
                 ~PlainTextRep ();
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (PlainTextRep);
 
             public:
                 virtual size_t GetLength () const override;

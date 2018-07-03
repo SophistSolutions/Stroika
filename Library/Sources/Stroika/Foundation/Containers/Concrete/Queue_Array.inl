@@ -21,7 +21,7 @@ namespace Stroika {
             namespace Concrete {
 
                 template <typename T>
-                class Queue_Array<T>::Rep_ : public Queue<T>::_IRep {
+                class Queue_Array<T>::Rep_ : public Queue<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename Queue<T>::_IRep;
 
@@ -43,9 +43,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:

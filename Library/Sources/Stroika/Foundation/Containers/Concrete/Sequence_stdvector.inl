@@ -22,7 +22,7 @@ namespace Stroika {
             namespace Concrete {
 
                 template <typename T>
-                class Sequence_stdvector<T>::Rep_ : public Sequence<T>::_IRep {
+                class Sequence_stdvector<T>::Rep_ : public Sequence<T>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename Sequence<T>::_IRep;
 
@@ -47,9 +47,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:

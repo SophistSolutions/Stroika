@@ -1560,16 +1560,13 @@ namespace Stroika {
             @CLASS:         WordProcessor::Table::CellRep
             @DESCRIPTION:   <p>Used internally by the @'WordProcessor::Table' code.</p>
             */
-            class WordProcessor::Table::CellRep : public MarkerOwner {
+            class WordProcessor::Table::CellRep : public MarkerOwner, public Foundation::Memory::UseBlockAllocationIfAppropriate<CellRep> {
             private:
                 using inherited = MarkerOwner;
 
             public:
                 CellRep (Table& forTable);
                 ~CellRep ();
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (CellRep);
 
             public:
                 virtual TextStore* PeekAtTextStore () const override;
@@ -1718,12 +1715,9 @@ namespace Stroika {
             @BASES:         @'WordProcessor::Table::SavedTextRepWSel'
             @DESCRIPTION:
             */
-            class WordProcessor::Table::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep {
+            class WordProcessor::Table::SavedTextRepWSel : public InteractiveReplaceCommand::SavedTextRep, public Foundation::Memory::UseBlockAllocationIfAppropriate<SavedTextRepWSel> {
             private:
                 using inherited = InteractiveReplaceCommand::SavedTextRep;
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (SavedTextRepWSel);
 
             public:
                 enum WPRelativeFlag { eWPDirect,

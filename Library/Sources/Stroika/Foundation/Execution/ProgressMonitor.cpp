@@ -14,12 +14,12 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 ProgressMonitor::ProgressMonitor ()
-    : fRep_ (make_shared<IRep_> ())
+    : fRep_ (make_shared<Rep_> ())
 {
 }
 
 ProgressMonitor::ProgressMonitor (Thread::Ptr workThread)
-    : fRep_ (make_shared<IRep_> ())
+    : fRep_ (make_shared<Rep_> ())
 {
 }
 

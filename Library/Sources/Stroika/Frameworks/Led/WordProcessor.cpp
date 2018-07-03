@@ -5638,12 +5638,9 @@ WordProcessor::StandardStyledTextIOSrcStream* WordProcessorFlavorPackageExternal
  */
 using Table = WordProcessor::Table;
 
-class WordProcessor::Table::TableCMD : public InteractiveReplaceCommand {
+class WordProcessor::Table::TableCMD : public InteractiveReplaceCommand, public Memory::UseBlockAllocationIfAppropriate<TableCMD> {
 private:
     using inherited = InteractiveReplaceCommand;
-
-public:
-    DECLARE_USE_BLOCK_ALLOCATION (TableCMD);
 
 public:
     TableCMD (size_t tableAt, size_t tRow, size_t tCol, SavedTextRep* beforeRegion, SavedTextRep* afterRegion, size_t at, const Led_SDK_String& cmdName)

@@ -459,12 +459,11 @@ namespace Stroika {
             {
                 struct MyIterable_ : Iterable<KEY_TYPE> {
                     using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
-                    struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep {
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<KEY_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                         using inherited             = typename Traversal::IterableFromIterator<KEY_TYPE>::_Rep;
                         using _IterableRepSharedPtr = typename Iterable<KEY_TYPE>::_IterableRepSharedPtr;
 
                         MyMapping_ fMapping_;
-                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyMapping_& map)
                             : inherited ()
                             , fMapping_ (map)
@@ -508,11 +507,10 @@ namespace Stroika {
             {
                 struct MyIterable_ : Iterable<MAPPED_VALUE_TYPE> {
                     using MyMapping_ = Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>;
-                    struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep {
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep, public Memory::UseBlockAllocationIfAppropriate<MyIterableRep_> {
                         using inherited             = typename Traversal::IterableFromIterator<MAPPED_VALUE_TYPE>::_Rep;
                         using _IterableRepSharedPtr = typename Iterable<MAPPED_VALUE_TYPE>::_IterableRepSharedPtr;
                         MyMapping_ fMapping_;
-                        DECLARE_USE_BLOCK_ALLOCATION (MyIterableRep_);
                         MyIterableRep_ (const MyMapping_& map)
                             : inherited ()
                             , fMapping_ (map)

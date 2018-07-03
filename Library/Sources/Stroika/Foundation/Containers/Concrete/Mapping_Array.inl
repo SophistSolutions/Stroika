@@ -34,7 +34,7 @@ namespace Stroika {
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 template <typename KEY_EQUALS_COMPARER>
-                class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_ {
+                class Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_EQUALS_COMPARER>> {
                 private:
                     using inherited = IImplRepBase_;
 
@@ -60,9 +60,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                 private:
                     KEY_EQUALS_COMPARER fKeyEqualsComparer_;

@@ -135,10 +135,8 @@ namespace Stroika {
                     };
 
                 protected:
-                    struct Node {
+                    struct Node : public Memory::UseBlockAllocationIfAppropriate<Node> {
                         Node (const KeyType& key, const ValueType& val);
-
-                        DECLARE_USE_BLOCK_ALLOCATION (Node);
 
                         KeyValue           fEntry;
                         std::vector<Node*> fNext; // for a skiplist, you have an array of next pointers, rather than just one

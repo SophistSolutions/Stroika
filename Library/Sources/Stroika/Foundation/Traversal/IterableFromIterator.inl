@@ -115,9 +115,8 @@ namespace Stroika {
             Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator)
             {
                 struct MyIterable_ : public Iterable<T> {
-                    struct Rep : public IterableFromIterator<T>::_Rep {
+                    struct Rep : public IterableFromIterator<T>::_Rep, public Memory::UseBlockAllocationIfAppropriate<Rep> {
                         using _IterableRepSharedPtr = typename Iterable<T>::_IterableRepSharedPtr;
-                        DECLARE_USE_BLOCK_ALLOCATION (Rep);
                         Iterator<T> fOriginalIterator;
 #if qDebug
                         mutable Private_::IteratorTracker<T> fIteratorTracker_{};

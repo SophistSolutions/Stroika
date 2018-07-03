@@ -29,7 +29,7 @@ namespace Stroika {
                  ********************************************************************************
                  */
                 template <typename T, typename... INDEXES>
-                class SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep {
+                class SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename DataHyperRectangle<T, INDEXES...>::_IRep;
 
@@ -54,9 +54,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<tuple<T, INDEXES...>>::_IRep overrides
                 public:
@@ -149,7 +146,7 @@ namespace Stroika {
 
                 private:
                     template <typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
-                    class MyIteratorImplHelper_ : public Iterator<tuple<T, INDEXES...>>::IRep {
+                    class MyIteratorImplHelper_ : public Iterator<tuple<T, INDEXES...>>::IRep, public Memory::UseBlockAllocationIfAppropriate<MyIteratorImplHelper_<PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>> {
                     private:
                         using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
 
@@ -169,9 +166,6 @@ namespace Stroika {
 
                     public:
                         virtual ~MyIteratorImplHelper_ () = default;
-
-                    public:
-                        DECLARE_USE_BLOCK_ALLOCATION (MyIteratorImplHelper_);
 
                         // Iterator<tuple<T, INDEXES...>>::IRep
                     public:

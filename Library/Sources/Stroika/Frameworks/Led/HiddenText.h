@@ -234,15 +234,12 @@ namespace Stroika {
                 some other helper file, and just USE the functionality here.</p>
                     <p>See also @'HidableTextMarkerOwner::LightUnderlineHidableTextMarker'.</p>
             */
-            class HidableTextMarkerOwner::FontSpecHidableTextMarker : public HidableTextMarkerHelper<SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>> {
+            class HidableTextMarkerOwner::FontSpecHidableTextMarker : public HidableTextMarkerHelper<SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>>, public Foundation::Memory::UseBlockAllocationIfAppropriate<FontSpecHidableTextMarker> {
             private:
                 using inherited = HidableTextMarkerHelper<SimpleStyleMarkerByFontSpec<HidableTextMarkerOwner::HidableTextMarker>>;
 
             public:
                 FontSpecHidableTextMarker (const Led_IncrementalFontSpecification& styleInfo);
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (FontSpecHidableTextMarker);
 
             protected:
                 virtual Led_FontSpecification MakeFontSpec (const StyledTextImager* imager, const RunElement& runElement) const override;
@@ -259,7 +256,7 @@ namespace Stroika {
                         it works well with other embeddings and display markers, cuz it lets them
                         do their drawing, and simply adds the underline.</p>
             */
-            class HidableTextMarkerOwner::LightUnderlineHidableTextMarker : public HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>> {
+            class HidableTextMarkerOwner::LightUnderlineHidableTextMarker : public HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>, public Foundation::Memory::UseBlockAllocationIfAppropriate<LightUnderlineHidableTextMarker> {
             private:
                 using inherited = HidableTextMarkerHelper<SimpleStyleMarkerWithLightUnderline<SimpleStyleMarkerByIncrementalFontSpec<SimpleStyleMarkerByIncrementalFontSpecStandardStyleMarkerHelper<SimpleStyleMarkerWithExtraDraw<HidableTextMarkerOwner::HidableTextMarker>>>>>;
 
@@ -267,9 +264,6 @@ namespace Stroika {
                 LightUnderlineHidableTextMarker (const Led_IncrementalFontSpecification& fsp = Led_IncrementalFontSpecification ());
 
                 virtual Led_Color GetUnderlineBaseColor () const override;
-
-            public:
-                DECLARE_USE_BLOCK_ALLOCATION (LightUnderlineHidableTextMarker);
             };
 
             /*

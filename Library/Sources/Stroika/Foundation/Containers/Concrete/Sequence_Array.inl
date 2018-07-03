@@ -39,7 +39,7 @@ namespace Stroika {
                 /*
                  */
                 template <typename T>
-                class Sequence_Array<T>::Rep_ : public Sequence_Array<T>::IImplRep_ {
+                class Sequence_Array<T>::Rep_ : public Sequence_Array<T>::IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
                 private:
                     using inherited = typename Sequence_Array<T>::IImplRep_;
 
@@ -64,9 +64,6 @@ namespace Stroika {
 
                 public:
                     nonvirtual Rep_& operator= (const Rep_&) = delete;
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
