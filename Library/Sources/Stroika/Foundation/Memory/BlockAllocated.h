@@ -136,7 +136,7 @@ namespace Stroika::Foundation {
          *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
          *  false (0), this will just default to the global ::new/::delete
          *
-         *  @see DECLARE_DONT_USE_BLOCK_ALLOCATION()
+         *  @see Stroika::Foundation::Memory::BlockAllocationUseHelper
          *  @see Stroika::Foundation::Memory::BlockAllocator
          *  @see Stroika::Foundation::Memory::AutomaticallyBlockAllocated
          *  @see Stroika::Foundation::Memory::ManuallyBlockAllocated
