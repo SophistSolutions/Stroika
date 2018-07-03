@@ -78,6 +78,9 @@
  *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) –
  *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
  *              locking to bump refcount?
+ *
+ *      @todo   fTimeOfDay_ should be OPTIONAL (instead of using its .empty ()) property, once we can
+ *              do that without a performance cost.
  */
 
 namespace Stroika {
@@ -134,6 +137,8 @@ namespace Stroika {
                  *  \note DateTime (time_t unixEpochTime) returns a datetime in UTC
                  *
                  *  \note All DateTime constructors REQUIRE valid (in range) arguments.
+                 *
+                 *  \note TimeOfDay arguments *must* not be 'empty' - instead use Optional<TimeOfDay> {nullopt} overload (since Stroika 2.1d4)
                  */
                 constexpr DateTime () noexcept;
                 constexpr DateTime (const DateTime& src) = default;
@@ -141,6 +146,7 @@ namespace Stroika {
                 constexpr DateTime (const Date& d) noexcept;
                 constexpr DateTime (const DateTime& dt, const Date& updateDate) noexcept;
                 constexpr DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept;
+                constexpr DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
                 constexpr DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
                 explicit DateTime (time_t unixEpochTime) noexcept;
                 explicit DateTime (const tm& tmTime, const optional<Timezone>& tz = Timezone::Unknown ()) noexcept;
@@ -386,9 +392,12 @@ namespace Stroika {
 
             public:
                 /**
-                 *  returns the TimeOfDay part of the DateTime object (in this datetime's timezone).
+                 *  returns the TimeOfDay part of the DateTime object (in this datetime's timezone). It returns 'missing' if there
+                 *  is no timeofday associated with this DateTime object.
+                 *
+                 *  \ens (not result.has_value () or not result->empty ())
                  */
-                nonvirtual constexpr TimeOfDay GetTimeOfDay () const noexcept;
+                nonvirtual constexpr optional<TimeOfDay> GetTimeOfDay () const noexcept;
 
             public:
                 /**
@@ -447,7 +456,7 @@ namespace Stroika {
             private:
                 optional<Timezone> fTimezone_;
                 Date               fDate_;
-                TimeOfDay          fTimeOfDay_;
+                TimeOfDay          fTimeOfDay_; // for now - still can be 'empty' - but API (as of v2.1d4) disallows passing in or getting out empty TimeOfDay
             };
             template <>
             time_t DateTime::As () const;

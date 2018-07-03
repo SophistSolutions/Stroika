@@ -32,14 +32,14 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Time;
 
 namespace {
-    tm Date2TM_ (const Date& d, const TimeOfDay& tod)
+    tm Date2TM_ (const Date& d, const optional<TimeOfDay>& tod)
     {
         struct tm tm {
         };
         tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
         tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
         tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
-        unsigned int totalSecondsRemaining = tod.GetAsSecondsCount ();
+        unsigned int totalSecondsRemaining = tod.has_value () ? tod->GetAsSecondsCount () : 0;
         tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
         totalSecondsRemaining -= tm.tm_hour * 60 * 60;
         Assert (0 <= totalSecondsRemaining and totalSecondsRemaining < 60 * 60); // cuz would have gone into hours
@@ -56,7 +56,7 @@ namespace {
 }
 
 namespace {
-    bool IsDaylightSavingsTime_ (const Date& date, const TimeOfDay& tod);
+    bool IsDaylightSavingsTime_ (const Date& date, const optional<TimeOfDay>& tod);
     bool IsDaylightSavingsTime_ (const DateTime& d);
 
     /**
@@ -96,7 +96,7 @@ Timezone::BiasInMinutesFromUTCType Timezone::GetBiasInMinutesFromUTCType (const 
     }
 }
 
-optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod)
+optional<bool> Timezone::IsDaylightSavingsTime (const Date& date, const optional<TimeOfDay>& tod)
 {
     // @todo - fix for other (not fixed) timezones - like America/NewYork
     if (fTZ_ == TZ_::eLocalTime) {
@@ -301,7 +301,7 @@ TimeZoneInformationType Time::GetCurrentLocaleTimezoneInfo ()
  ********************************************************************************
  */
 namespace {
-    bool IsDaylightSavingsTime_ (const Date& date, const TimeOfDay& tod)
+    bool IsDaylightSavingsTime_ (const Date& date, const optional<TimeOfDay>& tod)
     {
         struct tm asTM = Date2TM_ (date, tod);
         /*
@@ -341,7 +341,7 @@ namespace {
     {
         struct tm asTM = d.As<struct tm> ();
         if (d.GetTimezone () == Timezone::kLocalTime) {
-            return IsDaylightSavingsTime_ (d.GetDate (), d.GetTimeOfDay ());
+            return IsDaylightSavingsTime_ (d.GetDate (), d.GetTimeOfDay ().has_value () ? *d.GetTimeOfDay () : TimeOfDay{});
         }
         else {
             AssertNotImplemented (); // maybe OK to just assume false given CURRENT (as of 2018-01-15) design of Timezone, but hope to expand soon!

@@ -36,7 +36,7 @@ namespace Stroika {
             inline constexpr DateTime::DateTime (const DateTime& dt, const Date& updateDate) noexcept
                 : fTimezone_ (dt.GetTimezone ())
                 , fDate_ (updateDate)
-                , fTimeOfDay_ (dt.GetTimeOfDay ())
+                , fTimeOfDay_ (dt.GetTimeOfDay ().has_value () ? *dt.GetTimeOfDay () : TimeOfDay{})
             {
             }
             inline constexpr DateTime::DateTime (const DateTime& dt, const TimeOfDay& updateTOD) noexcept
@@ -44,20 +44,29 @@ namespace Stroika {
                 , fDate_ (dt.GetDate ())
                 , fTimeOfDay_ (updateTOD)
             {
+                Require (not updateTOD.empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
+            }
+            inline constexpr DateTime::DateTime (const Date& date, const optional<TimeOfDay>& timeOfDay, const optional<Timezone>& tz) noexcept
+                : fTimezone_{tz}
+                , fDate_{date}
+                , fTimeOfDay_{timeOfDay.has_value () ? *timeOfDay : TimeOfDay{}}
+            {
+                Require (not timeOfDay.has_value () or not timeOfDay->empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
             }
             inline constexpr DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, const optional<Timezone>& tz) noexcept
                 : fTimezone_{tz}
                 , fDate_{date}
                 , fTimeOfDay_{timeOfDay}
             {
+                Require (not timeOfDay.empty ()); // as of v2.1d4 - disallow passing in empty TOD, instead use optional
             }
             inline constexpr DateTime DateTime::min ()
             {
-                return DateTime{Date::min (), TimeOfDay::min (), Timezone::Unknown ()};
+                return DateTime{Date::min (), optional<TimeOfDay>{TimeOfDay::min ()}, Timezone::Unknown ()};
             }
             inline constexpr DateTime DateTime::max ()
             {
-                return DateTime{Date::max (), TimeOfDay::max (), Timezone::Unknown ()};
+                return DateTime{Date::max (), optional<TimeOfDay>{TimeOfDay::max ()}, Timezone::Unknown ()};
             }
             inline constexpr bool DateTime::empty () const noexcept
             {
@@ -67,9 +76,9 @@ namespace Stroika {
             {
                 return fDate_;
             }
-            inline constexpr TimeOfDay DateTime::GetTimeOfDay () const noexcept
+            inline constexpr optional<TimeOfDay> DateTime::GetTimeOfDay () const noexcept
             {
-                return fTimeOfDay_;
+                return fTimeOfDay_.empty () ? optional<TimeOfDay>{} : fTimeOfDay_;
             }
             template <>
             inline Date DateTime::As () const

@@ -90,6 +90,13 @@ namespace {
 }
 
 namespace {
+    inline constexpr uint32_t GetSecondCount_ (const optional<TimeOfDay>& tod)
+    {
+        return tod.has_value () ? tod->GetAsSecondsCount () : 0;
+    }
+}
+
+namespace {
 #if qPlatform_Windows
     SYSTEMTIME toSYSTEM_ (const Date& date)
     {
@@ -305,7 +312,7 @@ DateTime DateTime::Parse (const String& rep, ParseFormat pf)
             else {
                 tz = Timezone::LocalTime ();
             }
-            return DateTime (d, t, tz);
+            return t.empty () ? d : DateTime (d, t, tz);
         } break;
         default: {
             AssertNotReached ();
@@ -471,13 +478,15 @@ String DateTime::Format (const locale& l) const
     if (empty ()) {
         return String ();
     }
-    if (GetTimeOfDay ().empty ()) {
+    if (GetTimeOfDay ().has_value ()) {
+        // Read docs - not sure how to use this to get the local-appropriate format
+        // %X MAYBE just what we want  - locale DEPENDENT!!!
+        return Format (l, String_Constant{L"%x %X"});
+    }
+    else {
         // otherwise we get a 'datetime' of 'XXX ' - with a space at the end
         return GetDate ().Format (l);
     }
-    // Read docs - not sure how to use this to get the local-appropriate format
-    // %X MAYBE just what we want  - locale DEPENDENT!!!
-    return Format (l, String_Constant{L"%x %X"});
 }
 
 String DateTime::Format (const String& formatPattern) const
@@ -530,9 +539,8 @@ Date::JulianRepType DateTime::DaysSince () const
 template <>
 time_t DateTime::As () const
 {
-    DateTime  useDT = this->AsUTC (); // time_t defined in UTC
-    Date      d     = useDT.GetDate ();
-    TimeOfDay tod   = useDT.GetTimeOfDay ();
+    DateTime useDT = this->AsUTC (); // time_t defined in UTC
+    Date     d     = useDT.GetDate ();
 
     if (useDT.GetDate ().GetYear () < Year (1970)) {
         static const range_error kRangeErrror_{"DateTime cannot be convered to time_t - before 1970"};
@@ -544,7 +552,7 @@ time_t DateTime::As () const
     tm.tm_year                         = static_cast<int> (d.GetYear ()) - 1900;
     tm.tm_mon                          = static_cast<int> (d.GetMonth ()) - 1;
     tm.tm_mday                         = static_cast<int> (d.GetDayOfMonth ());
-    unsigned int totalSecondsRemaining = tod.GetAsSecondsCount ();
+    unsigned int totalSecondsRemaining = GetSecondCount_ (useDT.GetTimeOfDay ());
     tm.tm_hour                         = totalSecondsRemaining / (60 * 60);
     totalSecondsRemaining -= tm.tm_hour * 60 * 60;
     tm.tm_min = totalSecondsRemaining / 60;
@@ -636,7 +644,7 @@ DateTime DateTime::AddDays (int days) const
 DateTime DateTime::AddSeconds (int64_t seconds) const
 {
     /* @todo - SHOULD BE MORE CAREFUL ABOUT OVERFLOW */
-    int64_t n = GetTimeOfDay ().GetAsSecondsCount ();
+    int64_t n = GetSecondCount_ (GetTimeOfDay ());
     n += seconds;
     int64_t dayDiff = 0;
     if (n < 0) {
@@ -668,7 +676,7 @@ Duration DateTime::Difference (const DateTime& rhs) const
 {
     if (GetTimezone () == rhs.GetTimezone ()) {
         int64_t             dayDiff         = static_cast<int64_t> (GetDate ().GetJulianRep ()) - static_cast<int64_t> (rhs.GetDate ().GetJulianRep ());
-        DurationSecondsType intraDaySecDiff = static_cast<DurationSecondsType> (GetTimeOfDay ().GetAsSecondsCount ()) - static_cast<DurationSecondsType> (rhs.GetTimeOfDay ().GetAsSecondsCount ());
+        DurationSecondsType intraDaySecDiff = static_cast<DurationSecondsType> (GetSecondCount_ (GetTimeOfDay ())) - static_cast<DurationSecondsType> (GetSecondCount_ (rhs.GetTimeOfDay ()));
         return Duration{DurationSecondsType (kSecondsPerDay_ * dayDiff) + intraDaySecDiff};
     }
     else {
@@ -690,7 +698,20 @@ int DateTime::Compare (const DateTime& rhs) const
     if (GetTimezone () == rhs.GetTimezone () or (GetTimezone () == Timezone::Unknown ()) or (rhs.GetTimezone () == Timezone::Unknown ())) {
         int cmp = GetDate ().Compare (rhs.GetDate ());
         if (cmp == 0) {
+#if 1
+            // @todo - fixup - lost simple impl when I lost use of Memory::Optional and swithc to new style compare logic
+            // --LGP 2018-07-03
+            if (not GetTimeOfDay ().has_value ()) {
+                return rhs.GetTimeOfDay ().has_value () ? -1 : 0; // arbitrary choice - but assume if lhs is empty thats less than any T value
+            }
+            Assert (GetTimeOfDay ().has_value ());
+            if (not rhs.GetTimeOfDay ().has_value ()) {
+                return 1;
+            }
+            cmp = GetTimeOfDay ()->Compare (*rhs.GetTimeOfDay ());
+#else
             cmp = GetTimeOfDay ().Compare (rhs.GetTimeOfDay ());
+#endif
         }
         return cmp;
     }

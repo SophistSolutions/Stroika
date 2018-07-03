@@ -191,7 +191,7 @@ namespace Stroika::Foundation {
             /**
              *  For some kinds of timezones, there is no way to know (e.g. +4:00), but return true if known true, and false if known false.
              */
-            nonvirtual optional<bool> IsDaylightSavingsTime (const Date& date, const TimeOfDay& tod);
+            nonvirtual optional<bool> IsDaylightSavingsTime (const Date& date, const optional<TimeOfDay>& tod);
 
         public:
             /**
