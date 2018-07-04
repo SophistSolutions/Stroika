@@ -65,27 +65,19 @@ namespace {
  */
 optional<uint16_t> Network::GetDefaultPortForScheme (const String& proto)
 {
-    static const String_Constant kHTTPScheme_{L"http"};
-    static const String_Constant kHTTPSScheme_{L"https"};
     // From http://www.iana.org/assignments/port-numbers
-    //if (proto == String ())                     {   return 80; }
-    if (proto == kHTTPScheme_) {
-        return 80u;
-    }
-    if (proto == kHTTPSScheme_) {
-        return 443u;
-    }
-    if (proto == String_Constant (L"ldap")) {
-        return 389u;
-    }
-    if (proto == String_Constant (L"ldaps")) {
-        return 636u;
-    }
-    if (proto == String_Constant (L"ftp")) {
-        return 21u;
-    }
-    if (proto == String_Constant (L"ftps")) {
-        return 990u;
+    static const pair<String_Constant, uint16_t> kPredefined_[] = {
+        {String_Constant{L"http"}, static_cast<uint16_t> (80)},
+        {String_Constant{L"https"}, static_cast<uint16_t> (443)},
+        {String_Constant{L"ldap"}, static_cast<uint16_t> (389)},
+        {String_Constant{L"ldaps"}, static_cast<uint16_t> (636)},
+        {String_Constant{L"ftp"}, static_cast<uint16_t> (21)},
+        {String_Constant{L"ftps"}, static_cast<uint16_t> (990)},
+    };
+    for (auto i : kPredefined_) {
+        if (i.first == proto) {
+            return i.second;
+        }
     }
     return nullopt;
 }
