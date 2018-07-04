@@ -804,14 +804,18 @@ namespace Stroika::Foundation {
         inline void CopyToIf (const optional<T>& lhs, CONVERTABLE_TO_TYPE* to)
         {
             if (lhs) {
-                *to = *lhs;
+                // explicit cast to silence compiler warnigns - use of CopyToIf() is fairly explicit about doing the needed conversions and
+                // offers no other direct way to silence the warnings
+                *to = static_cast<CONVERTABLE_TO_TYPE> (*lhs);
             }
         }
         template <typename T, typename CONVERTABLE_TO_TYPE>
         inline void CopyToIf (const Optional<T>& lhs, CONVERTABLE_TO_TYPE* to)
         {
             if (lhs) {
-                *to = *lhs;
+                // explicit cast to silence compiler warnigns - use of CopyToIf() is fairly explicit about doing the needed conversions and
+                // offers no other direct way to silence the warnings
+                *to = static_cast<CONVERTABLE_TO_TYPE> (*lhs);
             }
         }
 
