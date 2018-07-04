@@ -42,7 +42,9 @@ namespace Stroika {
             public:
                 /**
                  */
-                constexpr KeyValuePair ()          = default;
+                template <typename K2 = KEY_TYPE, typename V2 = VALUE_TYPE,
+                          enable_if_t<is_default_constructible<K2>::value and is_default_constructible<V2>::value, int> = 0>
+                constexpr KeyValuePair ();
                 KeyValuePair (const KeyValuePair&) = default;
                 KeyValuePair (KeyValuePair&&)      = default;
                 template <typename K2 = KEY_TYPE, typename V2 = VALUE_TYPE,

@@ -21,6 +21,14 @@ namespace Stroika {
              */
             template <typename KEY_TYPE, typename VALUE_TYPE>
             template <typename K2, typename V2,
+                      enable_if_t<is_default_constructible<K2>::value and is_default_constructible<V2>::value, int>>
+            constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair ()
+                : fKey{}
+                , fValue{}
+            {
+            }
+            template <typename KEY_TYPE, typename VALUE_TYPE>
+            template <typename K2, typename V2,
                       enable_if_t<
                           is_copy_constructible<K2>::value and
                               is_copy_constructible<V2>::value and
