@@ -160,8 +160,6 @@ namespace Stroika::Foundation {
 // Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS) use = "DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED"
 
-        /**
-             */
 // Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
 #if qAllowBlockAllocation
 #define DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)        \
@@ -236,13 +234,13 @@ namespace Stroika::Foundation {
         class ManuallyBlockAllocated {
         public:
             /**
-                 */
+             */
             template <typename... ARGS>
             static T* New (ARGS&&... args);
 
         public:
             /**
-                 */
+             */
             static void Delete (T* p) noexcept;
         };
     }
