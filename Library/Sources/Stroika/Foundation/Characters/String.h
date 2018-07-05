@@ -964,8 +964,8 @@ namespace Stroika {
                  *
                  *  \note   We tried to also have template<typename T> explicit operator T () const; - conversion operator - but
                  *          We got too frequent confusion in complex combinations of templates, like with:
-                 *          Set<String> x ( * Optional<String> {String ()) );       // fails cuz calls operator Set<String> ()!
-                 *          Set<String> x { * Optional<String> {String ()) };       // works as expected
+                 *          Set<String> x ( *optional<String> {String ()) );       // fails cuz calls operator Set<String> ()!
+                 *          Set<String> x { *optional<String> {String ()) };       // works as expected
                  */
                 template <typename T>
                 nonvirtual T As () const;
