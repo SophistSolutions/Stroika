@@ -84,23 +84,11 @@ namespace {
             using namespace xPrivate_;
             Mapping<int, A> from;
 
-            using Common::KeyValuePair;
-            using KEY_TYPE                = int;
-            using VALUE_TYPE              = B;
-            using CONTAINER_OF_PAIR_KEY_T = Mapping<int, A>;
-            [[maybe_unused]] bool n1      = Configuration::IsIterableOfT<CONTAINER_OF_PAIR_KEY_T, KeyValuePair<KEY_TYPE, VALUE_TYPE>>::value;
-
-            using T = KeyValuePair<KEY_TYPE, VALUE_TYPE>;
-            using ttt =
-                std::conditional<
-                    Configuration::has_beginend<CONTAINER_OF_PAIR_KEY_T>::value and
-                        std::is_convertible<typename std::iterator_traits<Configuration::begin_result<CONTAINER_OF_PAIR_KEY_T>>::value_type, T>::value,
-                    Configuration::substitution_succeeded<T>,
-                    Configuration::substitution_failure>::type;
-            const bool n3 = is_same<ttt, Configuration::substitution_failure>::value;
-
-            using aaaa3   = Configuration::Private_::IsIterableOfT_Impl2_<CONTAINER_OF_PAIR_KEY_T, T>::type;
-            const bool n4 = is_same<aaaa3, Configuration::substitution_failure>::value;
+            {
+                using Common::KeyValuePair;
+                static_assert (Configuration::IsIterableOfT<Mapping<int, A>, KeyValuePair<int, A>>::value);
+                static_assert (Configuration::IsIterableOfT<Mapping<int, B>, KeyValuePair<int, B>>::value);
+            }
 
             Mapping<int, B> to1;
             for (auto i : from) {

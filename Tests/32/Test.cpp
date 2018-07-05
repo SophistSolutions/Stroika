@@ -995,8 +995,8 @@ namespace {
         };
         using FrequencyType_ = double;
         struct PerTunerFactorySettingsType_ {
-            Memory::Optional<FrequencyType_> MirrorOperationFrequency;
-            Memory::Optional<FrequencyType_> MirrorResonantFrequency;
+            optional<FrequencyType_> MirrorOperationFrequency;
+            optional<FrequencyType_> MirrorResonantFrequency;
             nonvirtual String ToString () const
             {
                 StringBuilder out;
@@ -1105,9 +1105,9 @@ namespace {
                 pair<TunerNumberType_, String>{TunerNumberType_::eT3, L"3"},
                 pair<TunerNumberType_, String>{TunerNumberType_::eT4, L"4"},
             }));
-            registry.AddCommonType<Memory::Optional<TunerNumberType_>> ();
+            registry.AddCommonType<optional<TunerNumberType_>> ();
             registry.AddCommonType<FrequencyType_> ();
-            registry.AddCommonType<Memory::Optional<FrequencyType_>> ();
+            registry.AddCommonType<optional<FrequencyType_>> ();
             registry.Add<PerTunerFactorySettingsType_> (k_PerTunerFactorySettingsType_ReaderFactory_);
             registry.Add<Mapping<TunerNumberType_, PerTunerFactorySettingsType_>> (TunerMappingReader_::AsFactory ());
             registry.AddClass<FactorySettingsType_> (initializer_list<ObjectReader::StructFieldInfo>{
