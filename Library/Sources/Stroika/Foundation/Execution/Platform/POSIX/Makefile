@@ -10,9 +10,9 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Users.o\
 	$(ObjDir)SemWaitableEvent.o\
 	$(ObjDir)SignalBlock.o\
+	$(ObjDir)Users.o\
 
 
 all:	$(ObjDir) $(Objs)
