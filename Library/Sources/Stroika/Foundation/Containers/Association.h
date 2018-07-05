@@ -63,7 +63,7 @@ namespace Stroika {
             *      Similarly for std::initalizer_list.
             *
             *  \note   Design Note:
-            *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE, instead of Optional<MAPPED_VALUE_TYPE> because
+            *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because
             *      this adds no value - you can always use Lookup or LookupValue. The reason to use operator[] is
             *      as convenient syntactic sugar. But if you have to check (the elt not necessarily present) - then you
             *      may as well use Lookup () - cuz the code's going to look ugly anyhow.
