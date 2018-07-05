@@ -62,16 +62,15 @@ namespace {
             struct A;
             struct B;
             struct A {
-                A () {}
-                A (const A&) {}
+                A () = default;
+                A (const A&)= default;
                 A (const B&) {}
             };
             struct B {
-                B () {}
+                B () = default;
                 B (const A&) {}
-                B (const B&) {}
+                B (const B&) = default;
             };
-
             using Common::KeyValuePair;
             using KEY_TYPE                = int;
             using VALUE_TYPE              = B;
@@ -84,11 +83,8 @@ namespace {
             using namespace xPrivate_;
             Mapping<int, A> from;
 
-            {
-                using Common::KeyValuePair;
-                static_assert (Configuration::IsIterableOfT<Mapping<int, A>, KeyValuePair<int, A>>::value);
-                static_assert (Configuration::IsIterableOfT<Mapping<int, B>, KeyValuePair<int, B>>::value);
-            }
+            static_assert (Configuration::IsIterableOfT<Mapping<int, A>, KeyValuePair<int, A>>::value);
+            static_assert (Configuration::IsIterableOfT<Mapping<int, B>, KeyValuePair<int, B>>::value);
 
             Mapping<int, B> to1;
             for (auto i : from) {
