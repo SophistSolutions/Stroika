@@ -1330,7 +1330,9 @@ sub PostProcessOptions_ ()
 						push @LIB_DEPENDENCIES_ADD, " $lib";
 					}
 					else {
-						push @LIB_DEPENDENCIES_ADD, " -l$lib";
+						# consider using apt-get install glibc-static libstdc++-static
+						my $dashLName = trim (`echo $STDLIB | sed s/lib//`);
+						push @LIB_DEPENDENCIES_ADD, " -l$dashLName";
 					}
 				}
 			}
