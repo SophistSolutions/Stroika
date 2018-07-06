@@ -218,14 +218,6 @@ namespace Stroika::Foundation {
             wstring Float2String (double f);
 
             /*
-                @CONFIGVAR:     qPlatformSupports_snprintf
-                @DESCRIPTION:   <p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
-            */
-#ifndef qPlatformSupports_snprintf
-#error "qPlatformSupports_snprintf should normally be defined indirectly by StroikaConfig.h"
-#endif
-
-            /*
             @CONFIGVAR:     qPlatformSupports_wcscasecmp
             @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
             */
@@ -239,15 +231,6 @@ namespace Stroika::Foundation {
             */
 #ifndef qPlatformSupports_wcsncasecmp
 #error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
-#endif
-
-#if !qPlatformSupports_snprintf
-#if _MSC_VER
-//#define snprintf _snprintf
-#define snprintf _snprintf_s
-#else
-#error "NYI"
-#endif
 #endif
 
 #if !qPlatformSupports_wcscasecmp
