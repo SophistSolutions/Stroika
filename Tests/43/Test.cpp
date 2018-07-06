@@ -48,6 +48,7 @@ namespace {
         namespace Private_ {
             void Test_1_SimpleFetch_Google_C_ (Connection c)
             {
+                Debug::TraceContextBumper ctx ("{}::...Test_1_SimpleFetch_Google_C_");
                 c.SetURL (URL::Parse (L"http://www.google.com"));
                 Response r = c.GET ();
                 VerifyTestResult (r.GetSucceeded ());
@@ -55,6 +56,7 @@ namespace {
             }
             void Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
             {
+                Debug::TraceContextBumper ctx ("{}::...Test_2_SimpleFetch_SSL_Google_C_");
                 try {
                     c.SetURL (URL::Parse (L"https://www.google.com"));
                     Response r = c.GET ();
@@ -69,13 +71,12 @@ namespace {
                         return;
                     }
 #endif
-                    throw;
-                }
-#else
-                catch (...) {
-                    throw;
+                    Execution::ReThrow ();
                 }
 #endif
+                catch (...) {
+                    Execution::ReThrow ();
+                }
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
             {
@@ -198,6 +199,7 @@ namespace {
             }
             void DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
             {
+                Debug::TraceContextBumper ctx ("{}::...DoRegressionTests_ForConnectionFactory_");
                 // Ignore some server-side errors, because this service we use (http://httpbin.org/) sometimes fails
                 try {
                     {
@@ -212,6 +214,18 @@ namespace {
                         T3_httpbin_SimplePUT_ (conn);
                     }
                 }
+#if qHasFeature_LibCurl
+                // NOTE - even though this uses non-ssl URL, it gets redirected to SSL-based url, so we must support that to test this
+                catch (const LibCurlException& lce) {
+#if !qHasFeature_OpenSSL
+                    if (lce.GetCode () == CURLE_UNSUPPORTED_PROTOCOL) {
+                        DbgTrace ("Warning - ignored exception doing LibCurl/ssl - for now probably just no SSL support with libcurl");
+                        return;
+                    }
+#endif
+                    Execution::ReThrow ();
+                }
+#endif
                 catch (const HTTP::Exception& e) {
                     if (e.GetStatus () == HTTP::StatusCodes::kServiceUnavailable or e.GetStatus () == HTTP::StatusCodes::kGatewayTimeout or e.GetStatus () == HTTP::StatusCodes::kRequestTimeout) {
                         // Ignore/Eat
@@ -346,13 +360,12 @@ namespace {
                         return;
                     }
 #endif
-                    throw;
-                }
-#else
-                catch (...) {
-                    throw;
+                    Execution::ReThrow ();
                 }
 #endif
+                catch (...) {
+                    Execution::ReThrow ();
+                }
             }
         }
         void DoTests_ ()
