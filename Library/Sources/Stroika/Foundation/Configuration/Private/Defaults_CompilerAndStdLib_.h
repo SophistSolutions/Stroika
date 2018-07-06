@@ -556,6 +556,26 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 
 #endif
 
+/*
+ *
+    Compiling {StroikaRoot}Library/Sources/Stroika/Frameworks/Modbus/Server.cpp ...
+    Server.cpp:369:45: error: call to unavailable member function 'value': introduced in macOS 10.14
+        options.fLogger.value ()->Log (Logger::Priority::eWarning, L"ModbusTCP unrecognized f...
+           ~~~~~~~~~~~~~~~~^~~~~
+    /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1/optional:933:33: note:
+      candidate function has been explicitly made unavailable
+    constexpr value_type const& value() const&
+*/
+#ifndef qCompilerAndStdLib_optional_value_const_Buggy
+
+#if defined(__clang__) && defined(__APPLE__)
+#define qCompilerAndStdLib_optional_value_const_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ ((__clang_major__ <= 10))
+#else
+#define qCompilerAndStdLib_optional_value_const_Buggy 0
+#endif
+
+#endif
+
 /**
  * get warnings like 
  *      warning: ‘no_sanitize’ attribute directive ignored [-Wattributes
