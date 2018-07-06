@@ -31,198 +31,196 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
+namespace Stroika::Foundation {
+    namespace Containers {
 
-            using Configuration::ArgByValueType;
-            using Traversal::Iterable;
-            using Traversal::Iterator;
+        using Configuration::ArgByValueType;
+        using Traversal::Iterable;
+        using Traversal::Iterator;
 
+        /**
+         *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
+         */
+        template <typename T, typename... INDEXES>
+        class DataHyperRectangle : public Iterable<tuple<T, INDEXES...>> {
+        private:
+            using inherited = Iterable<tuple<T, INDEXES...>>;
+
+        protected:
+            class _IRep;
+
+        protected:
+            using _DataHyperRectangleRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+        public:
             /**
-             *  \note   Aliases: Data-Cube, Date Cube, Hyper-Cube, Hypercube
+             *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
              */
-            template <typename T, typename... INDEXES>
-            class DataHyperRectangle : public Iterable<tuple<T, INDEXES...>> {
-            private:
-                using inherited = Iterable<tuple<T, INDEXES...>>;
+            using ArchetypeContainerType = DataHyperRectangle<T, INDEXES...>;
 
-            protected:
-                class _IRep;
+        public:
+            /**
+             *  \note - its typically best to select a specific subtype of DataHyperRectangle to construct so you can 
+             *          specify the appropriate additional parameters. Typically use subclasses 
+             *          @see SparseDataHyperRectangle or @see DenseDataHyperRectangle.
+             *
+             *  \par Example:
+             *      DataHyperRectangle2<int> x1 = DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+             *      DataHyperRectangle2<int> x1 = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
+             *      DataHyperRectangle2<int> x2 = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
+             */
+            DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
+            DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
 
-            protected:
-                using _DataHyperRectangleRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+        protected:
+            explicit DataHyperRectangle (const _DataHyperRectangleRepSharedPtr& src) noexcept;
+            explicit DataHyperRectangle (_DataHyperRectangleRepSharedPtr&& src) noexcept;
 
-            public:
-                /**
-                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
-                 */
-                using ArchetypeContainerType = DataHyperRectangle<T, INDEXES...>;
+        public:
+            /**
+             */
+            nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (const DataHyperRectangle<T, INDEXES...>& rhs) = default;
+            nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (DataHyperRectangle<T, INDEXES...>&& rhs) = default;
 
-            public:
-                /**
-                 *  \note - its typically best to select a specific subtype of DataHyperRectangle to construct so you can 
-                 *          specify the appropriate additional parameters. Typically use subclasses 
-                 *          @see SparseDataHyperRectangle or @see DenseDataHyperRectangle.
-                 *
-                 *  \par Example:
-                 *      DataHyperRectangle2<int> x1 = DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
-                 *      DataHyperRectangle2<int> x1 = Concrete::DenseDataHyperRectangle_Vector<int, size_t, size_t>{3, 4};
-                 *      DataHyperRectangle2<int> x2 = Concrete::SparseDataHyperRectangle_stdmap<int, size_t, size_t>{};
-                 */
-                DataHyperRectangle (const DataHyperRectangle<T, INDEXES...>& src) noexcept;
-                DataHyperRectangle (DataHyperRectangle<T, INDEXES...>&& src) noexcept;
+        public:
+            /**
+             */
+            nonvirtual T GetAt (INDEXES... indexes) const;
 
-            protected:
-                explicit DataHyperRectangle (const _DataHyperRectangleRepSharedPtr& src) noexcept;
-                explicit DataHyperRectangle (_DataHyperRectangleRepSharedPtr&& src) noexcept;
+        public:
+            /**
+             */
+            nonvirtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v);
 
-            public:
-                /**
-                 */
-                nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (const DataHyperRectangle<T, INDEXES...>& rhs) = default;
-                nonvirtual DataHyperRectangle<T, INDEXES...>& operator= (DataHyperRectangle<T, INDEXES...>&& rhs) = default;
-
-            public:
-                /**
-                 */
-                nonvirtual T GetAt (INDEXES... indexes) const;
-
-            public:
-                /**
-                 */
-                nonvirtual void SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v);
-
-            private:
-                template <typename INDEX, typename... REST_OF_INDEXES>
-                struct TemporarySliceReference_ {
-                    const DataHyperRectangle<T, INDEXES...>& fCube;
-                    tuple<REST_OF_INDEXES...>                fSliceIdxes;
-                    T                                        operator[] (INDEX i) const
-                    {
-                        return fCube.GetAt (i, std::forward<REST_OF_INDEXES> (fSliceIdxes)...);
-                    }
-                };
-
-            public:
-                /**
-                 *  EXAMPLE USAGE:
-                 *      DataHyperRectangle<double, int, int> m (2,2);
-                 *      Assert (m[1][1] == 0);
-                 */
-                template <typename INDEX, typename... REST_OF_INDEXES>
-                nonvirtual TemporarySliceReference_<REST_OF_INDEXES...> operator[] (INDEX i1) const;
-
-            public:
-                /**
-                 *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with EQUALS_COMPARER)
-                 *  in exactly the same order.
-                 *
-                 *  Equals is commutative().
-                 *
-                 *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
-                 *  be be defined, but obviously to compare if the containers are equal, you must
-                 *  compare the individual elements (at least sometimes).
-                 *
-                 *  If == is predefined, you can just call Equals() - but if its not, or if you wish
-                 *  to compare with an alternative comparer, just pass it as a template parameter.
-                 */
-                template <typename EQUALS_COMPARER = std::equal_to<T>>
-                nonvirtual bool Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
-
-            protected:
-                /**
-                 */
-                template <typename T2>
-                using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
-
-            protected:
-                /**
-                 */
-                template <typename T2>
-                using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
-
-            protected:
-                nonvirtual void _AssertRepValidType () const;
+        private:
+            template <typename INDEX, typename... REST_OF_INDEXES>
+            struct TemporarySliceReference_ {
+                const DataHyperRectangle<T, INDEXES...>& fCube;
+                tuple<REST_OF_INDEXES...>                fSliceIdxes;
+                T                                        operator[] (INDEX i) const
+                {
+                    return fCube.GetAt (i, std::forward<REST_OF_INDEXES> (fSliceIdxes)...);
+                }
             };
 
-            using Traversal::IteratorOwnerID;
-
+        public:
             /**
-             *  \brief  Implementation detail for DataHyperRectangle<T, INDEXES...> implementors.
-             *
-             *  Protected abstract interface to support concrete implementations of
-             *  the DataHyperRectangle<T, INDEXES...> container API.
+             *  EXAMPLE USAGE:
+             *      DataHyperRectangle<double, int, int> m (2,2);
+             *      Assert (m[1][1] == 0);
              */
-            template <typename T, typename... INDEXES>
-            class DataHyperRectangle<T, INDEXES...>::_IRep : public Iterable<tuple<T, INDEXES...>>::_IRep {
-            private:
-                using inherited = _IRep;
+            template <typename INDEX, typename... REST_OF_INDEXES>
+            nonvirtual TemporarySliceReference_<REST_OF_INDEXES...> operator[] (INDEX i1) const;
+
+        public:
+            /**
+             *  Two DataHyperRectangle are considered equal if they contain the same elements (by comparing them with EQUALS_COMPARER)
+             *  in exactly the same order.
+             *
+             *  Equals is commutative().
+             *
+             *  A DataHyperRectangle<T, INDEXES...> doesn't generally require a comparison for individual elements
+             *  be be defined, but obviously to compare if the containers are equal, you must
+             *  compare the individual elements (at least sometimes).
+             *
+             *  If == is predefined, you can just call Equals() - but if its not, or if you wish
+             *  to compare with an alternative comparer, just pass it as a template parameter.
+             */
+            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            nonvirtual bool Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
+
+        protected:
+            /**
+             */
+            template <typename T2>
+            using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<T2>;
+
+        protected:
+            /**
+             */
+            template <typename T2>
+            using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<T2>;
+
+        protected:
+            nonvirtual void _AssertRepValidType () const;
+        };
+
+        using Traversal::IteratorOwnerID;
+
+        /**
+         *  \brief  Implementation detail for DataHyperRectangle<T, INDEXES...> implementors.
+         *
+         *  Protected abstract interface to support concrete implementations of
+         *  the DataHyperRectangle<T, INDEXES...> container API.
+         */
+        template <typename T, typename... INDEXES>
+        class DataHyperRectangle<T, INDEXES...>::_IRep : public Iterable<tuple<T, INDEXES...>>::_IRep {
+        private:
+            using inherited = _IRep;
 
 #if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
-            protected:
-                using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
-                using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+        protected:
+            using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
+            using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
 #endif
 
-            protected:
-                _IRep () = default;
+        protected:
+            _IRep () = default;
 
-            public:
-                virtual ~_IRep () = default;
+        public:
+            virtual ~_IRep () = default;
 
-            protected:
-                using _DataHyperRectangleRepSharedPtr = typename DataHyperRectangle<T, INDEXES...>::_DataHyperRectangleRepSharedPtr;
+        protected:
+            using _DataHyperRectangleRepSharedPtr = typename DataHyperRectangle<T, INDEXES...>::_DataHyperRectangleRepSharedPtr;
 
-            public:
-                virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const         = 0;
-                virtual T                               GetAt (INDEXES... indexes) const                               = 0;
-                virtual void                            SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
-            };
+        public:
+            virtual _DataHyperRectangleRepSharedPtr CloneEmpty (IteratorOwnerID forIterableEnvelope) const         = 0;
+            virtual T                               GetAt (INDEXES... indexes) const                               = 0;
+            virtual void                            SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v) = 0;
+        };
 
 #if 0
-            template <typename T, size_t N>
-            using DataHyperRectangleN = void;
-            // @todo - use generator to do this automatically/genrally
-            template <typename T>
-            using DataHyperRectangleN<T,1> = DataHyperRectangle<T, size_t>;
-            template <typename T>
-            using DataHyperRectangleN<T, 2> = DataHyperRectangle<T, size_t, size_t>;
-            template <typename T, 3>
-            using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t>;
-            template <typename T, 4>
-            using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+        template <typename T, size_t N>
+        using DataHyperRectangleN = void;
+        // @todo - use generator to do this automatically/genrally
+        template <typename T>
+        using DataHyperRectangleN<T,1> = DataHyperRectangle<T, size_t>;
+        template <typename T>
+        using DataHyperRectangleN<T, 2> = DataHyperRectangle<T, size_t, size_t>;
+        template <typename T, 3>
+        using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t>;
+        template <typename T, 4>
+        using DataHyperRectangleN = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
 #endif
-            /**
-             *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>
-             */
-            template <typename T>
-            using DataHyperRectangle1 = DataHyperRectangle<T, size_t>;
-            template <typename T>
-            using DataHyperRectangle2 = DataHyperRectangle<T, size_t, size_t>;
-            template <typename T>
-            using DataHyperRectangle3 = DataHyperRectangle<T, size_t, size_t, size_t>;
-            template <typename T>
-            using DataHyperRectangle4 = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
+        /**
+         *  @todo see if there is a way to define this genericly using templates/sequences - DataHyperRectangleN<N>
+         */
+        template <typename T>
+        using DataHyperRectangle1 = DataHyperRectangle<T, size_t>;
+        template <typename T>
+        using DataHyperRectangle2 = DataHyperRectangle<T, size_t, size_t>;
+        template <typename T>
+        using DataHyperRectangle3 = DataHyperRectangle<T, size_t, size_t, size_t>;
+        template <typename T>
+        using DataHyperRectangle4 = DataHyperRectangle<T, size_t, size_t, size_t, size_t>;
 
-            /**
-             *      Syntactic sugar for Equals()
-             *
-             *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
-             *          use a different comparer, call Equals() directly.
-             */
-            template <typename T, typename... INDEXES>
-            bool operator== (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
+        /**
+         *      Syntactic sugar for Equals()
+         *
+         *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
+         *          use a different comparer, call Equals() directly.
+         */
+        template <typename T, typename... INDEXES>
+        bool operator== (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
 
-            /**
-             *      Syntactic sugar for not Equals()
-             *
-             *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
-             *          use a different comparer, call Equals() directly.
-             */
-            template <typename T, typename... INDEXES>
-            bool operator!= (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
-        }
+        /**
+         *      Syntactic sugar for not Equals()
+         *
+         *  \note   This function uses std::equal_to<T>, which in turn uses operator==(T,T). To
+         *          use a different comparer, call Equals() directly.
+         */
+        template <typename T, typename... INDEXES>
+        bool operator!= (const DataHyperRectangle<T, INDEXES...>& lhs, const DataHyperRectangle<T, INDEXES...>& rhs);
     }
 }
 

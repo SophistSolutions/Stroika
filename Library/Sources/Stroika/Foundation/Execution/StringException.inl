@@ -11,34 +11,32 @@
  */
 #include "../Debug/Trace.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation {
+    namespace Execution {
 
-            /*
-             ********************************************************************************
-             ******************************** StringException *******************************
-             ********************************************************************************
-             */
-            inline StringException::StringException (const Characters::String& reasonForError)
-                : fError_ (reasonForError)
-                , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
-            {
-            }
-            template <>
-            inline wstring StringException::As () const
-            {
-                return fError_.As<wstring> ();
-            }
-            template <>
-            inline Characters::String StringException::As () const
-            {
-                return fError_;
-            }
-            inline const char* StringException::what () const noexcept
-            {
-                return fSDKCharString_.c_str ();
-            }
+        /*
+         ********************************************************************************
+         ******************************** StringException *******************************
+         ********************************************************************************
+         */
+        inline StringException::StringException (const Characters::String& reasonForError)
+            : fError_ (reasonForError)
+            , fSDKCharString_ (reasonForError.AsNarrowSDKString ())
+        {
+        }
+        template <>
+        inline wstring StringException::As () const
+        {
+            return fError_.As<wstring> ();
+        }
+        template <>
+        inline Characters::String StringException::As () const
+        {
+            return fError_;
+        }
+        inline const char* StringException::what () const noexcept
+        {
+            return fSDKCharString_.c_str ();
         }
     }
 }

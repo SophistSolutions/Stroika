@@ -15,9 +15,8 @@
 #include "../Traversal/Generator.h"
 #include "Factory/Mapping_Factory.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
+namespace Stroika::Foundation {
+    namespace Containers {
 
 #if 0
             /*
@@ -500,7 +499,6 @@ namespace Stroika {
                 return not lhs.Equals (rhs);
             }
 #endif
-        }
     }
 }
 #endif /* _Stroika_Foundation_Containers_KeyedCollection_inl_ */

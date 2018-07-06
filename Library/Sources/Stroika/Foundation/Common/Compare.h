@@ -54,7 +54,7 @@ namespace Stroika::Foundation {
 
         /**
          *
-         *  NEW (as of 2.0a231) Comparison logic
+         *  Comparison logic:
          *
          *  \par Total Ordering (http://mathworld.wolfram.com/TotallyOrderedSet.html)
          *          o   Reflexivity: a <= a
@@ -86,7 +86,7 @@ namespace Stroika::Foundation {
          *      >   greater_equal
          *      >   not_equal_to
          *
-         *  c++ also appears to support this funtion<int(T,T)> approach rarely (eg. string<>::compare).
+         *  c++ also appears to support this three-way-compare approach rarely (eg. string<>::compare).
          *
          *  The biggest problem with how std-c++ supports these comparison operators, is that typeid(equal_to<int>) is
          *  essentially unrelated to typeid(equal_to<char>). There is no 'tag' (as with bidirectional iterators etc) to
@@ -126,6 +126,8 @@ namespace Stroika::Foundation {
         };
 
         /**
+         *  \brief ExtractComparisonTraits<> extracts the @ComparisonRelationType for the given argument comparer. For common builtin types this is known with no user effort. For user-defined comparers, this will need to be declared (e.g. via ComparisonRelationDeclaration)
+         *
          *  This is ONLY defined for builtin c++ comparison objects, though your code can define it however you wish for
          *  specific user-defined types using ComparisonRelationDeclaration<>.
          */
@@ -216,42 +218,44 @@ namespace Stroika::Foundation {
             static constexpr ComparisonRelationType kComparisonRelationKind = KIND; // accessed by ExtractComparisonTraits<>
         };
 
-        /*
-            *  \brief  DeclareEqualsComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for equality
-            *
-            *  DeclareEqualsComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
-            *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
-            *
-            *  @see DeclareInOrderComparer
-            *  @see mkEqualsComparerAdapter
-            *
-            *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
-            *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
-            */
+        /**
+         *  \brief  DeclareEqualsComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for equality
+         *
+         *  DeclareEqualsComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
+         *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
+         *
+         *  @see DeclareInOrderComparer
+         *  @see mkEqualsComparerAdapter
+         *
+         *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
+         *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
+         */
         template <typename FUNCTOR>
         constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (const FUNCTOR& f);
         template <typename FUNCTOR>
         constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eEquals, FUNCTOR> DeclareEqualsComparer (FUNCTOR&& f);
 
-        /*
-            *  \brief  DeclareInOrderComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for in-order
-            * 
-            *  DeclareInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
-            *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
-            *
-            *  @see DeclareEqualsComparer
-            *  @see mkInOrderComparerAdapter
-            *
-            *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
-            *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
-            */
+        /**
+         *  \brief  DeclareInOrderComparer () marks a FUNCTOR (lambda or not) as being a FUNCTOR which compares for in-order
+         * 
+         *  DeclareInOrderComparer is a trivial wrapper on ComparisonRelationDeclaration, but takes advantage of the fact that you
+         *  can deduce types on functions arguments not not on type of object for constructor (at least as of C++17).
+         *
+         *  @see DeclareEqualsComparer
+         *  @see mkInOrderComparerAdapter
+         *
+         *  \note similar to mkInOrderComparerAdapter(), except this function ignores the TYEP of 'f' and just marks it as an InOrder comparer
+         *        Whereas mkInOrderComparerAdapter looks at the type of 'f' and does the appropriate mapping logic.
+         */
         template <typename FUNCTOR>
         constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (const FUNCTOR& f);
         template <typename FUNCTOR>
         constexpr Common::ComparisonRelationDeclaration<ComparisonRelationType::eStrictInOrder, FUNCTOR> DeclareInOrderComparer (FUNCTOR&& f);
 
         /**
-         *  \brief Use this to wrap any basic comparer, and produce an Equals comparer
+         *  \brief Use this to wrap any basic comparer, and produce an Equals comparer.
+         *
+         *  This is done by querying the 'type' of the baseComparer with @see ExtractComparisonTraits, and mapping the logic accordingly.
          */
         template <typename BASE_COMPARER>
         struct EqualsComparerAdapter {

@@ -19,24 +19,25 @@
 
 #include "../Debug/Assertions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation {
+    namespace Execution {
 
-            //redeclare to avoid having to include Thread code
-            void CheckForThreadInterruption ();
+        //redeclare to avoid having to include Thread code
+        void CheckForThreadInterruption ();
 
-            /*
-             ********************************************************************************
-             ******************************** Execution::Sleep ******************************
-             ********************************************************************************
-             */
-            inline void Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep)
-            {
-                Require (seconds2Wait >= 0.0);
-                RequireNotNull (remainingInSleep); // else call the over overload
-                CheckForThreadInterruption ();
+        /*
+         ********************************************************************************
+         ******************************** Execution::Sleep ******************************
+         ********************************************************************************
+         */
+        inline void Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep)
+        {
+            Require (seconds2Wait >= 0.0);
+            RequireNotNull (remainingInSleep); // else call the over overload
+            CheckForThreadInterruption ();
+            // @todo lose if the #if stuff and use just if constexpr (but not working on msvc)
 #if qPlatform_Windows
+            if constexpr (qPlatform_Windows) {
                 Time::DurationSecondsType tc = Time::GetTickCount ();
                 if (::SleepEx (static_cast<int> (seconds2Wait * 1000), true) == 0) {
                     *remainingInSleep = 0;
@@ -48,7 +49,9 @@ namespace Stroika {
                     }
                     *remainingInSleep = remaining;
                 }
+            }
 #elif qPlatform_POSIX
+            if constexpr (qPlatform_POSIX) {
                 const long kNanoSecondsPerSecond = 1000L * 1000L * 1000L;
                 timespec   ts;
                 ts.tv_sec  = static_cast<time_t> (seconds2Wait);
@@ -61,26 +64,26 @@ namespace Stroika {
                 else {
                     *remainingInSleep = nextTS.tv_sec + static_cast<Time::DurationSecondsType> (ts.tv_nsec) / kNanoSecondsPerSecond;
                 }
+            }
 #else
-                AssertNotImplemented ();
+            AssertNotImplemented ();
 #endif
+            CheckForThreadInterruption ();
+        }
+
+        /*
+         ********************************************************************************
+         *************************** Execution::SleepUntil ******************************
+         ********************************************************************************
+         */
+        inline void SleepUntil (Time::DurationSecondsType untilTickCount)
+        {
+            Time::DurationSecondsType waitMoreSeconds = untilTickCount - Time::GetTickCount ();
+            if (waitMoreSeconds <= 0) {
                 CheckForThreadInterruption ();
             }
-
-            /*
-             ********************************************************************************
-             *************************** Execution::SleepUntil ******************************
-             ********************************************************************************
-             */
-            inline void SleepUntil (Time::DurationSecondsType untilTickCount)
-            {
-                Time::DurationSecondsType waitMoreSeconds = untilTickCount - Time::GetTickCount ();
-                if (waitMoreSeconds <= 0) {
-                    CheckForThreadInterruption ();
-                }
-                else {
-                    Sleep (waitMoreSeconds);
-                }
+            else {
+                Sleep (waitMoreSeconds);
             }
         }
     }

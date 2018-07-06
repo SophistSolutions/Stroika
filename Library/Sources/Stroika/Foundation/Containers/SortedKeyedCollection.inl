@@ -7,11 +7,10 @@
 #include "../Debug/Assertions.h"
 //#include    "Factory/SortedKeyedCollection_Factory.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
+namespace Stroika::Foundation {
+    namespace Containers {
 
-            /*
+        /*
              ********************************************************************************
              ******************* SortedKeyedCollection<T, TRAITS> ***************************
              ********************************************************************************
@@ -74,7 +73,6 @@ namespace Stroika {
 #endif
             }
 #endif
-        }
     }
 }
 
