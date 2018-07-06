@@ -11,60 +11,130 @@
  */
 #include "CodePage.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
+namespace Stroika::Foundation {
+    namespace Characters {
 
-            inline wstring NarrowSDKStringToWide (const string& s)
-            {
-                return NarrowStringToWide (s, GetDefaultSDKCodePage ());
-            }
-            inline string WideStringToNarrowSDKString (const wstring& ws)
-            {
-                return WideStringToNarrow (ws, GetDefaultSDKCodePage ());
-            }
+        /*
+         ********************************************************************************
+         ***************************** NarrowSDKStringToWide ****************************
+         ********************************************************************************
+         */
+        inline wstring NarrowSDKStringToWide (const string& s)
+        {
+            return NarrowStringToWide (s, GetDefaultSDKCodePage ());
+        }
 
-            inline string SDKString2NarrowSDK (const SDKString& s)
-            {
+        /*
+         ********************************************************************************
+         ************************ WideStringToNarrowSDKString ***************************
+         ********************************************************************************
+         */
+        inline string WideStringToNarrowSDKString (const wstring& ws)
+        {
+            return WideStringToNarrow (ws, GetDefaultSDKCodePage ());
+        }
+
+        /*
+         ********************************************************************************
+         ***************************** SDKString2NarrowSDK ******************************
+         ********************************************************************************
+         */
+        inline string SDKString2NarrowSDK (const SDKString& s)
+        {
 #if qTargetPlatformSDKUseswchar_t
+            return WideStringToNarrowSDKString (s);
+#else
+            return s;
+#endif
+#if 0
+            if constexpr (qTargetPlatformSDKUseswchar_t) {
                 return WideStringToNarrowSDKString (s);
-#else
-                return s;
-#endif
             }
-            inline SDKString NarrowSDK2SDKString (const string& s)
-            {
-#if qTargetPlatformSDKUseswchar_t
-                return NarrowSDKStringToWide (s);
-#else
+            else {
                 return s;
-#endif
             }
+#endif
+        }
 
-            inline wstring SDKString2Wide (const SDKString& s)
-            {
+        /*
+         ********************************************************************************
+         ******************************** NarrowSDK2SDKString ***************************
+         ********************************************************************************
+         */
+        inline SDKString NarrowSDK2SDKString (const string& s)
+        {
 #if qTargetPlatformSDKUseswchar_t
-                return s;
+            return NarrowSDKStringToWide (s);
 #else
+            return s;
+#endif
+#if 0
+            constexpr bool x = qTargetPlatformSDKUseswchar_t;
+            if constexpr (x) {
                 return NarrowSDKStringToWide (s);
-#endif
             }
-            inline SDKString Wide2SDKString (const wstring& s)
-            {
-#if qTargetPlatformSDKUseswchar_t
+            else {
                 return s;
-#else
-                return WideStringToNarrowSDKString (s);
+            }
 #endif
+        }
+
+        /*
+         ********************************************************************************
+         *********************************** SDKString2Wide *****************************
+         ********************************************************************************
+         */
+        inline wstring SDKString2Wide (const SDKString& s)
+        {
+#if qTargetPlatformSDKUseswchar_t
+            return s;
+#else
+            return NarrowSDKStringToWide (s);
+#endif
+#if 0
+            if constexpr (qTargetPlatformSDKUseswchar_t) {
+                return s;
             }
-            inline SDKString ToSDKString (const string& s)
-            {
-                return NarrowSDK2SDKString (s);
+            else {
+                return NarrowSDKStringToWide (s);
             }
-            inline SDKString ToSDKString (const wstring& s)
-            {
-                return Wide2SDKString (s);
+#endif
+        }
+
+        /*
+         ********************************************************************************
+         ********************************** Wide2SDKString ******************************
+         ********************************************************************************
+         */
+        inline SDKString Wide2SDKString (const wstring& s)
+        {
+#if qTargetPlatformSDKUseswchar_t
+            return s;
+#else
+            return WideStringToNarrowSDKString (s);
+#endif
+#if 0
+            if constexpr (qTargetPlatformSDKUseswchar_t) {
+                return s;
             }
+            else {
+                return WideStringToNarrowSDKString (s);
+            }
+#endif
+        }
+
+        /*
+         ********************************************************************************
+         *********************************** ToSDKString ********************************
+         ********************************************************************************
+         */
+        inline SDKString ToSDKString (const string& s)
+        {
+            return NarrowSDK2SDKString (s);
+        }
+        inline SDKString ToSDKString (const wstring& s)
+        {
+            return Wide2SDKString (s);
         }
     }
 }

@@ -19,28 +19,22 @@
  *  SDKChar is the underlying represenation of the SDK's characters - whether it be narrow or wide.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
+namespace Stroika::Foundation {
+    namespace Characters {
 
-/**
-             *  qTargetPlatformSDKUseswchar_t
-             *
-             *  Defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)
-             */
+        /**
+         *  qTargetPlatformSDKUseswchar_t
+         *
+         *  Defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)
+         */
 #if !defined(qTargetPlatformSDKUseswchar_t)
 #error "qTargetPlatformSDKUseswchar_t should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-/**
-             *  SDKChar is the kind of character passed to most/default platform SDK APIs.
-             */
-#if qTargetPlatformSDKUseswchar_t
-            using SDKChar = wchar_t;
-#else
-            using SDKChar = char;
-#endif
-        }
+        /**
+         *  SDKChar is the kind of character passed to most/default platform SDK APIs.
+         */
+        using SDKChar = conditional_t<qTargetPlatformSDKUseswchar_t, wchar_t, char>;
     }
 }
 

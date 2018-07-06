@@ -13,79 +13,77 @@
 #include "../Memory/Optional.h"
 #include "../Memory/SmallStackBuffer.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
+namespace Stroika::Foundation {
+    namespace Characters {
 
-            /*
-             ********************************************************************************
-             *********************** Float2StringOptions::Precision *************************
-             ********************************************************************************
-             */
-            inline Float2StringOptions::Precision::Precision (unsigned int p)
-                : fPrecision (p)
-            {
-            }
+        /*
+            ********************************************************************************
+            *********************** Float2StringOptions::Precision *************************
+            ********************************************************************************
+            */
+        inline Float2StringOptions::Precision::Precision (unsigned int p)
+            : fPrecision (p)
+        {
+        }
 
-            /*
-             ********************************************************************************
-             ****************************** Float2StringOptions *****************************
-             ********************************************************************************
-             */
-            inline Float2StringOptions::Float2StringOptions (const std::locale& l)
-                : fUseLocale_ (l)
-            {
-            }
-            inline Float2StringOptions::Float2StringOptions (std::ios_base::fmtflags fmtFlags)
-                : fFmtFlags_ (fmtFlags)
-            {
-            }
-            inline Float2StringOptions::Float2StringOptions (Precision precision)
-                : fPrecision_ (precision.fPrecision)
-            {
-            }
-            inline Float2StringOptions::Float2StringOptions (FloatFormatType scientificNotation)
-                : fFloatFormat_ (scientificNotation)
-            {
-            }
-            inline Float2StringOptions::Float2StringOptions (TrimTrailingZerosType trimTrailingZeros)
-                : fTrimTrailingZeros_ (trimTrailingZeros == TrimTrailingZerosType::eTrim)
-            {
-            }
-            inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2)
-                : Float2StringOptions (b1)
-            {
-                Memory::CopyToIf (b2.fPrecision_, &fPrecision_);
-                Memory::CopyToIf (b2.fFmtFlags_, &fFmtFlags_);
-                Memory::CopyToIf (b2.fUseLocale_, &fUseLocale_);
-                Memory::CopyToIf (b2.fTrimTrailingZeros_, &fTrimTrailingZeros_);
-                Memory::CopyToIf (b2.fFloatFormat_, &fFloatFormat_);
-            }
-            template <typename... ARGS>
-            inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args)
-                : Float2StringOptions (Float2StringOptions{b1, b2}, forward<ARGS> (args)...)
-            {
-            }
-            inline optional<unsigned int> Float2StringOptions::GetPrecision () const
-            {
-                return fPrecision_;
-            }
-            inline optional<bool> Float2StringOptions::GetTrimTrailingZeros () const
-            {
-                return fTrimTrailingZeros_;
-            }
-            inline optional<std::locale> Float2StringOptions::GetUseLocale () const
-            {
-                return fUseLocale_;
-            }
-            inline optional<Float2StringOptions::FloatFormatType> Float2StringOptions::GetFloatFormat () const
-            {
-                return fFloatFormat_;
-            }
-            inline optional<std::ios_base::fmtflags> Float2StringOptions::GetIOSFmtFlags () const
-            {
-                return fFmtFlags_;
-            }
+        /*
+            ********************************************************************************
+            ****************************** Float2StringOptions *****************************
+            ********************************************************************************
+            */
+        inline Float2StringOptions::Float2StringOptions (const std::locale& l)
+            : fUseLocale_ (l)
+        {
+        }
+        inline Float2StringOptions::Float2StringOptions (std::ios_base::fmtflags fmtFlags)
+            : fFmtFlags_ (fmtFlags)
+        {
+        }
+        inline Float2StringOptions::Float2StringOptions (Precision precision)
+            : fPrecision_ (precision.fPrecision)
+        {
+        }
+        inline Float2StringOptions::Float2StringOptions (FloatFormatType scientificNotation)
+            : fFloatFormat_ (scientificNotation)
+        {
+        }
+        inline Float2StringOptions::Float2StringOptions (TrimTrailingZerosType trimTrailingZeros)
+            : fTrimTrailingZeros_ (trimTrailingZeros == TrimTrailingZerosType::eTrim)
+        {
+        }
+        inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2)
+            : Float2StringOptions (b1)
+        {
+            Memory::CopyToIf (b2.fPrecision_, &fPrecision_);
+            Memory::CopyToIf (b2.fFmtFlags_, &fFmtFlags_);
+            Memory::CopyToIf (b2.fUseLocale_, &fUseLocale_);
+            Memory::CopyToIf (b2.fTrimTrailingZeros_, &fTrimTrailingZeros_);
+            Memory::CopyToIf (b2.fFloatFormat_, &fFloatFormat_);
+        }
+        template <typename... ARGS>
+        inline Float2StringOptions::Float2StringOptions (const Float2StringOptions& b1, const Float2StringOptions& b2, ARGS&&... args)
+            : Float2StringOptions (Float2StringOptions{b1, b2}, forward<ARGS> (args)...)
+        {
+        }
+        inline optional<unsigned int> Float2StringOptions::GetPrecision () const
+        {
+            return fPrecision_;
+        }
+        inline optional<bool> Float2StringOptions::GetTrimTrailingZeros () const
+        {
+            return fTrimTrailingZeros_;
+        }
+        inline optional<std::locale> Float2StringOptions::GetUseLocale () const
+        {
+            return fUseLocale_;
+        }
+        inline optional<Float2StringOptions::FloatFormatType> Float2StringOptions::GetFloatFormat () const
+        {
+            return fFloatFormat_;
+        }
+        inline optional<std::ios_base::fmtflags> Float2StringOptions::GetIOSFmtFlags () const
+        {
+            return fFmtFlags_;
         }
     }
 }

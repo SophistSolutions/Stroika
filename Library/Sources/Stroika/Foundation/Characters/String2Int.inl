@@ -11,49 +11,47 @@
  */
 #include "../Configuration/Common.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
+namespace Stroika::Foundation {
+    namespace Characters {
 
-            namespace Private_ {
-                unsigned long long int String2UInt_ (const String& s);
-                long long int          String2Int_ (const String& s);
-                DISABLE_COMPILER_MSC_WARNING_START (4018)
-                template <typename T>
-                T String2IntOrUInt_ (const String& s)
-                {
-                    using std::numeric_limits;
-                    if (numeric_limits<T>::is_signed) {
-                        long long int l = String2Int_ (s);
-                        if (l <= numeric_limits<T>::min ()) {
-                            return numeric_limits<T>::min ();
-                        }
-                        if (l >= numeric_limits<T>::max ()) {
-                            return numeric_limits<T>::max ();
-                        }
-                        return static_cast<T> (l);
+        namespace Private_ {
+            unsigned long long int String2UInt_ (const String& s);
+            long long int          String2Int_ (const String& s);
+            DISABLE_COMPILER_MSC_WARNING_START (4018)
+            template <typename T>
+            T String2IntOrUInt_ (const String& s)
+            {
+                using std::numeric_limits;
+                if (numeric_limits<T>::is_signed) {
+                    long long int l = String2Int_ (s);
+                    if (l <= numeric_limits<T>::min ()) {
+                        return numeric_limits<T>::min ();
                     }
-                    else {
-                        unsigned long long int l = String2UInt_ (s);
-                        if (l >= numeric_limits<T>::max ()) {
-                            return numeric_limits<T>::max ();
-                        }
-                        return static_cast<T> (l);
+                    if (l >= numeric_limits<T>::max ()) {
+                        return numeric_limits<T>::max ();
                     }
+                    return static_cast<T> (l);
+                }
+                else {
+                    unsigned long long int l = String2UInt_ (s);
+                    if (l >= numeric_limits<T>::max ()) {
+                        return numeric_limits<T>::max ();
+                    }
+                    return static_cast<T> (l);
                 }
             }
             DISABLE_COMPILER_MSC_WARNING_END (4018)
+        }
 
-            /*
-            ********************************************************************************
-            *********************************** String2Int *********************************
-            ********************************************************************************
-            */
-            template <typename T>
-            inline T String2Int (const String& s)
-            {
-                return Private_::String2IntOrUInt_<T> (s);
-            }
+        /*
+        ********************************************************************************
+        *********************************** String2Int *********************************
+        ********************************************************************************
+        */
+        template <typename T>
+        inline T String2Int (const String& s)
+        {
+            return Private_::String2IntOrUInt_<T> (s);
         }
     }
 }

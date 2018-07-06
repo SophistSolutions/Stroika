@@ -217,1168 +217,1166 @@
  *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
+namespace Stroika::Foundation {
+    namespace Characters {
 
-            class RegularExpression;
-            class RegularExpressionMatch;
+        class RegularExpression;
+        class RegularExpressionMatch;
 
+        /**
+         *  The Stroika String class is an alternatve for the wstring class, which should be largely
+         *  interoperable with code using wstring (there is wstring constructor and As<wstring>()
+         *  methods).
+         *
+         *  The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
+         *  no obvious way to map the Stroika String to a string. However, if you specify a codepage
+         *  for conversion, or are converting to/from SDKString/SDKChar, there is builtin support for that.
+         *
+         *
+         *  EOS Handling:
+         *      The Stroika String class does support having embedded NUL-characters. It also supports
+         *      returning wchar_t* strings which are NUL-terminated. In order to provide NUL-terminated
+         *      strings through the cost c_str () API, Stroika may maintain strings internally as NUL-terminted
+         *      wchar_t* (or at least retains the ability to as needed).
+         *
+         *      See String::c_str ().
+         *
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *                              with caveats!
+         *
+         *                              const wchar_t* c_str ()
+         *                              const wchar_t* As<const wchar_t*> ()
+         *                              const Character* As<const Character*> ()
+         *
+         *                              all return 'internal' pointers whose lifetime extends until the next modification of the String object.
+         *                              But if another thread modifies this String object, that might not be usefully long.
+         *
+         *                              You can always copy a 'shared' String to a copy no other thread is modifying, and call c_str() on that.
+         *
+         *      @see   Concrete::String_BufferedArray
+         *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
+         *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime
+         *      @see   Concrete::String_Common
+         *
+         *          Uses immutable string rep pattern.
+         *
+         *  \note   Design Choice - Iterable<T> / Iterator<T> behavior
+         *      We have two basic choices of how to define the behavior of iterators:
+         *      o   Live Update (like we do for Containers) - where changes to the
+         *          String appear in iteration.
+         *
+         *      o   Snapshot at the start of iteration
+         *
+         *      The advantages of 'live update' are that its probably better / clearer semantics. We may
+         *      want to switch to that. But to implement, we need to keep the update and iteration code
+         *      in sync.
+         *
+         *      'Snapshot at the start of iteration' can be more efficient, and easier to implement.
+         *      So - we do that for now.
+         *
+         *      Among 'snapshot' impl choices - we COULD do lazy copy snapshot (COW). That would perform best.
+         *      But to do so - the way the code is currently structured, we would need to use enable_shared_from_this
+         *      so we can recover a shared_ptr in ReadOnlyRep::_Rep::MakeIterator.
+         *
+         *      enable_shared_from_this() would add costs (at least size) even when we dont use String iteration
+         *      (which we didnt even impelement for a couple years, so may not be that critical).
+         *
+         *      For now - stick to simple impl - of just copy on start of iteration.
+         *          -- LGP 2013-12-17
+         *
+         *  \note   Design Note: operator overloads
+         *      See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+         *
+         *      We use non-member function operator overloads for comparisons and +, so that
+         *      things like L"fred" != String(L"banry") works.
+         *
+         *      Since the enclosing namespace of both arguments is considered in lookups this should generally work
+         *      pretty well, I think. At least we are testing this as of 2014-12-20.
+         *
+         *  \note   Static Initialization, file scope variables, application lifetime variables.
+         *          It \em IS safe to use the String class at file scope. The constructors are carefully crafted to
+         *          operate properly, even if used at file scope, and to initialize other strings or objects.
+         *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
+         *
+         *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+         */
+        class String : public Traversal::Iterable<Character> {
+        private:
+            using inherited = Iterable<Character>;
+
+        public:
             /**
-             *  The Stroika String class is an alternatve for the wstring class, which should be largely
-             *  interoperable with code using wstring (there is wstring constructor and As<wstring>()
-             *  methods).
-             *
-             *  The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
-             *  no obvious way to map the Stroika String to a string. However, if you specify a codepage
-             *  for conversion, or are converting to/from SDKString/SDKChar, there is builtin support for that.
-             *
-             *
-             *  EOS Handling:
-             *      The Stroika String class does support having embedded NUL-characters. It also supports
-             *      returning wchar_t* strings which are NUL-terminated. In order to provide NUL-terminated
-             *      strings through the cost c_str () API, Stroika may maintain strings internally as NUL-terminted
-             *      wchar_t* (or at least retains the ability to as needed).
-             *
-             *      See String::c_str ().
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-             *                              with caveats!
-             *
-             *                              const wchar_t* c_str ()
-             *                              const wchar_t* As<const wchar_t*> ()
-             *                              const Character* As<const Character*> ()
-             *
-             *                              all return 'internal' pointers whose lifetime extends until the next modification of the String object.
-             *                              But if another thread modifies this String object, that might not be usefully long.
-             *
-             *                              You can always copy a 'shared' String to a copy no other thread is modifying, and call c_str() on that.
-             *
-             *      @see   Concrete::String_BufferedArray
-             *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime     (aka String_Constant)
-             *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime
-             *      @see   Concrete::String_Common
-             *
-             *          Uses immutable string rep pattern.
-             *
-             *  \note   Design Choice - Iterable<T> / Iterator<T> behavior
-             *      We have two basic choices of how to define the behavior of iterators:
-             *      o   Live Update (like we do for Containers) - where changes to the
-             *          String appear in iteration.
-             *
-             *      o   Snapshot at the start of iteration
-             *
-             *      The advantages of 'live update' are that its probably better / clearer semantics. We may
-             *      want to switch to that. But to implement, we need to keep the update and iteration code
-             *      in sync.
-             *
-             *      'Snapshot at the start of iteration' can be more efficient, and easier to implement.
-             *      So - we do that for now.
-             *
-             *      Among 'snapshot' impl choices - we COULD do lazy copy snapshot (COW). That would perform best.
-             *      But to do so - the way the code is currently structured, we would need to use enable_shared_from_this
-             *      so we can recover a shared_ptr in ReadOnlyRep::_Rep::MakeIterator.
-             *
-             *      enable_shared_from_this() would add costs (at least size) even when we dont use String iteration
-             *      (which we didnt even impelement for a couple years, so may not be that critical).
-             *
-             *      For now - stick to simple impl - of just copy on start of iteration.
-             *          -- LGP 2013-12-17
-             *
-             *  \note   Design Note: operator overloads
-             *      See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-             *
-             *      We use non-member function operator overloads for comparisons and +, so that
-             *      things like L"fred" != String(L"banry") works.
-             *
-             *      Since the enclosing namespace of both arguments is considered in lookups this should generally work
-             *      pretty well, I think. At least we are testing this as of 2014-12-20.
-             *
-             *  \note   Static Initialization, file scope variables, application lifetime variables.
-             *          It \em IS safe to use the String class at file scope. The constructors are carefully crafted to
-             *          operate properly, even if used at file scope, and to initialize other strings or objects.
-             *          @see "Test of STATIC FILE SCOPE INITIALIZATION"
-             *
-             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
+             * except for the case of single char* argument constructors - which find the length based on
+             * the terminating NUL-character.
              */
-            class String : public Traversal::Iterable<Character> {
-            private:
-                using inherited = Iterable<Character>;
-
-            public:
-                /**
-                 * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
-                 * except for the case of single char* argument constructors - which find the length based on
-                 * the terminating NUL-character.
-                 */
-                String ();
-                String (const char16_t* cString);
-                String (const char32_t* cString);
-                String (const wchar_t* cString);
-                String (const char16_t* from, const char16_t* to);
-                String (const char32_t* from, const char32_t* to);
-                String (const wchar_t* from, const wchar_t* to);
-                String (const Character* from, const Character* to);
-                String (const wstring& r);
-                String (const u16string& r);
-                String (const u32string& r);
-                String (const Iterable<Character>& src);
-                String (const String& from) noexcept;
-                String (String&& from) noexcept;
-                explicit String (const Character& c);
-
-            public:
-                ~String () = default;
-
-            protected:
-                class _IRep;
-
-            protected:
-                using _IterableRepSharedPtr = Iterable<Character>::_IterableRepSharedPtr;
-
-            protected:
-                using _SharedPtrIRep = SharedPtrImplementationTemplate<_IRep>;
-
-            protected:
-                /**
-                 */
-                using _SafeReadRepAccessor = Iterable<Character>::_SafeReadRepAccessor<_IRep>;
-
-            protected:
-                /**
-                 * \req rep MUST be not-null
-                 *  However, with move constructor, it maybe null on exit.
-                 */
-                String (const _SharedPtrIRep& rep) noexcept;
-                String (_SharedPtrIRep&& rep) noexcept;
-
-            public:
-                nonvirtual String& operator= (const String& rhs) = default;
-                nonvirtual String& operator= (String&& newString) = default;
-
-            public:
-                /**
-                 *  Create a String object from a 'char-based' utf-8 encoded string.
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8 ());
-                 *      \endcode
-                 */
-                static String FromUTF8 (const char* from);
-                static String FromUTF8 (const char* from, const char* to);
-                static String FromUTF8 (const string& from);
-
-            public:
-                /**
-                 *  Create a String object from a 'SDKChar' (os-setting - current code page) encoded string.
-                 *  See @SDKChar
-                 *  See @SDKString
-                 */
-                static String FromSDKString (const SDKChar* from);
-                static String FromSDKString (const SDKChar* from, const SDKChar* to);
-                static String FromSDKString (const SDKString& from);
-
-            public:
-                /**
-                 *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
-                 */
-                static String FromNarrowSDKString (const char* from);
-                static String FromNarrowSDKString (const char* from, const char* to);
-                static String FromNarrowSDKString (const string& from);
-
-            public:
-                /**
-                 *  Create a String object from a 'char-based' on the encoding from the argument locale.
-                 *  This throws an exception if there is an error performing the conversion.
-                 */
-                static String FromNarrowString (const char* from, const locale& l);
-                static String FromNarrowString (const char* from, const char* to, const locale& l);
-                static String FromNarrowString (const string& from, const locale& l);
-
-            public:
-                /**
-                 *  Create a String object from ascii text. This function requires that its arguments all ascii (no high-bit set)
-                 */
-                static String FromASCII (const char* from);
-                static String FromASCII (const string& from);
-
-            public:
-                /**
-                 *  Create a String object from ISO-Latin-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
-                 *
-                 *  \note Though ISO-Latin-1 is is defined to only have 192 valid characters (source), UNICODE
-                 *        is defined so that the first 256 code points match ISO-Latin-1.
-                 *
-                 *        Because of this, This function allows ANY 8-bit) characters at all - to be passed in, and those characters
-                 *        will be mapped to UNICODE characters (of the same code point) in the resulting String.
-                 *
-                 *  \note Alias From8bitASCII () or FromExtendedASCII () or FromAnyCharset (), FromAnyCharacterSet ()
-                 */
-                static String FromISOLatin1 (const char* from);
-                static String FromISOLatin1 (const char* start, const char* end);
-                static String FromISOLatin1 (const string& from);
-
-            private:
-                static _SharedPtrIRep mkEmpty_ ();
-                static _SharedPtrIRep mk_ (const wchar_t* start, const wchar_t* end);
-                static _SharedPtrIRep mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
-                static _SharedPtrIRep mk_ (const char16_t* start, const char16_t* end);
-                static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
-
-            public:
-                nonvirtual String& operator+= (Character appendage);
-                nonvirtual String& operator+= (const String& appendage);
-                nonvirtual String& operator+= (const wchar_t* appendageCStr);
-
-            public:
-                /**
-                 *  @see    Append() for a similar function that modifies 'this'
-                 */
-                nonvirtual String Concatenate (const String& rhs) const;
-                nonvirtual String Concatenate (const wchar_t* appendageCStr) const;
-
-            public:
-                /**
-                 *  Returns the number of characters in the String. Note that this may not be the same as bytes,
-                 *  does not include NUL termination, and doesn't in any way respect NUL termination (meaning
-                 *  a nul-character is allowed in a Stroika string.
-                 */
-                nonvirtual size_t GetLength () const;
-
-            public:
-                /**
-                 */
-                nonvirtual bool empty () const;
-
-            public:
-                /**
-                 *  Alias for *this = String ();
-                 */
-                nonvirtual void clear ();
-
-            public:
-                /**
-                 */
-                nonvirtual const Character GetCharAt (size_t i) const;
-
-            public:
-                /**
-                 */
-                nonvirtual void SetCharAt (Character c, size_t i);
-
-            public:
-                /**
-                 *  \brief return (read-only) Character object
-                 *
-                 *  Alias for GetCharAt (size_t i) const;
-                 */
-                nonvirtual const Character operator[] (size_t i) const;
-
-            public:
-                /**
-                 *  InsertAt() constructs a new string by taking this string, and inserting the argument
-                 *  characters.
-                 *
-                 *  \em Note that for repeated insertions, this is much less efficient than just
-                 *      using StringBuilder.
-                 */
-                nonvirtual String InsertAt (Character c, size_t at) const;
-                nonvirtual String InsertAt (const String& s, size_t at) const;
-                nonvirtual String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const;
-                nonvirtual String InsertAt (const Character* from, const Character* to, size_t at) const;
-
-            public:
-                /**
-                 *  Append() adds the given argument characters to the end of this string object.
-                 *
-                 *  Unlike InsertAt() - this modifies 'this' string, rather than returning a new one.
-                 *
-                 *  \em Note that for repeated insertions, this is much less efficient than just
-                 *      using StringBuilder.
-                 *
-                 *  \em Note that it is legal, but pointless to pass in an empty string to insert
-                 *
-                 *  @see    Concatenate() for a similar function that doesn't modify the source
-                 */
-                nonvirtual void Append (Character c);
-                nonvirtual void Append (const String& s);
-                nonvirtual void Append (const wchar_t* s);
-                nonvirtual void Append (const wchar_t* from, const wchar_t* to);
-                nonvirtual void Append (const Character* from, const Character* to);
-
-            public:
-                /**
-                 * Remove the characters at 'charAt' (RemoveAt/1) or between 'from' and 'to'.
-                 *
-                 * It is an error if this implies removing characters off the end of the string.
-                 *
-                 *  \req (charAt < GetLength ())
-                 *  \req (from <= to)
-                 *  \req (to <= GetLength ())
-                 *
-                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
-                 */
-                nonvirtual String RemoveAt (size_t charAt) const;
-                nonvirtual String RemoveAt (size_t from, size_t to) const;
-
-            public:
-                /**
-                 *  Remove the first occurence of Character 'c' from the string. Not an error if none
-                 *  found.
-                 *
-                 *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
-                 */
-                nonvirtual String Remove (Character c) const;
-
-            public:
-                /**
-                 *  OVERLOADS WITH size_t:
-                 *
-                 *  Produce a substring of this string, starting at 'from', and up to 'to' (or end of string
-                 *  for one-arg overload).
-                 *
-                 *  *NB* This function treats the second argument differently than String::substr () -
-                 *  which respects the STL basic_string API. This function treats the second argument
-                 *  as a 'to', STL substr() treats it as a count. This amounts to the same thing for the
-                 *  very common cases of substr(N) - because second argument is defaulted, and,
-                 *  substr (0, N) - because then the count and end are the same.
-                 *
-                 *  \req  (from <= to);
-                 *  \req  (to <= GetLength ());     // for 2-arg variant
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      String tmp { L"This is good" };
-                 *      Assert (tmp.SubString (5) == L"is good");
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      const String_Constant kTest_ { L"a=b" };
-                 *      const String_Constant kLbl2LookFor_ { L"a=" };
-                 *      if (resultLine.Find (kLbl2LookFor_)) {
-                 *          String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
-                 *      }
-                 *      Assert (tmp == L"b");
-                 *      \endcode
-                 *
-                 *  OVERLOADS WITH ptrdiff_t:
-                 *
-                 *  This is like SubString() except that if from/to are negative, they are treated as relative to the end
-                 *  of the String.
-                 *
-                 *  So for example, SubString (0, -1) is equivalent to SubString (0, GetLength () - 1) - and so is an
-                 *  error if the string is empty.
-                 *
-                 *  Similarly, SubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
-                 *  to grab the end of a string.
-                 *
-                 *  \req  (adjustedFrom <= adjustedTo);
-                 *  \req  (adjustedTo <= GetLength ());     // for 2-arg variant
-                 *
-                 *  \note \em Design Note
-                 *      We chose not to overload SubString() with this functionality because it would have been to easy
-                 *      to mask bugs.
-                 *
-                 *  \note \em Design Note
-                 *      This was originally inspired by Python arrays. From https://docs.python.org/2/tutorial/introduction.html:
-                 *          Indices may also be negative numbers, to start counting from the right
-                 *
-                 *  \note \em Alias
-                 *      This API is identical to the javascript String.slice () method/behavior
-                 *      @see http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
-                 *           15.5.4.13 String.prototype.slice (start, end)
-                 *
-                 *  \note \em Alias
-                 *      This API - when called with negative indexes - used to be called CircularSubString ().
-                 *
-                 *  @see substr
-                 *  @see SafeSubString
-                 */
-                template <typename SZ>
-                nonvirtual String SubString (SZ from) const;
-                template <typename SZ1, typename SZ2>
-                nonvirtual String SubString (SZ1 from, SZ2 to) const;
-
-            private:
-                nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;
-                nonvirtual size_t SubString_adjust_ (unsigned long fromOrTo, size_t myLength) const;
-                nonvirtual size_t SubString_adjust_ (unsigned long long fromOrTo, size_t myLength) const;
-                nonvirtual size_t SubString_adjust_ (int fromOrTo, size_t myLength) const;
-                nonvirtual size_t SubString_adjust_ (long fromOrTo, size_t myLength) const;
-                nonvirtual size_t SubString_adjust_ (long long fromOrTo, size_t myLength) const;
-
-            public:
-                /**
-                 *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
-                 *  if the exceed those endpoints.
-                 *
-                 *  @see substr
-                 *  @see SubString
-                 */
-                nonvirtual String SafeSubString (size_t from) const;
-                nonvirtual String SafeSubString (size_t from, size_t to) const;
-
-            private:
-                static String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
-
-            public:
-                /**
-                 *  Return 'count' copies of this String (concatenated after one another).
-                 */
-                nonvirtual String Repeat (unsigned int count) const;
-
-            public:
-                /**
-                 *  Returns true if the argument character or string is found anywhere inside this string.
-                 *  This is equivalent to
-                 *      return Match (".*" + X + L".*");    // If X had no characters which look like they are part of
-                 *                                          // a regular expression
-                 *
-                 *  @see Match
-                 */
-                nonvirtual bool Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual bool Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
-                /**
-                 *  Returns true iff the given substring is contained in this string.
-                 *
-                 *  Similar to:
-                 *      return Match (X + L".*");
-                 *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
-                 *
-                 *  @see Match
-                 *  @see EndsWith
-                 */
-                nonvirtual bool StartsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual bool StartsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
-                /**
-                 *  Returns true iff the given substring is contained in this string.
-                 *
-                 *  Similar to:
-                 *      return Match (X + L".*");
-                 *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
-                 *
-                 *  @see Match
-                 *  @see StartsWith
-                 */
-                nonvirtual bool EndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual bool EndsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
-                /**
-                 *  Apply the given regular expression return true if it matches this string. This only
-                 *  returns true if the expression matches the ENTIRE string - all the way to the end.
-                 *  @see FindEach() or @see Find - to find a set of things which match.
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      Assert (String (L"abc").Match (L"abc"));
-                 *      Assert (not (String (L"abc").Match (L"bc")));
-                 *      Assert (String (L"abc").Match (L".*bc"));
-                 *      Assert (not String (L"abc").Match (L"b.*c"));
-                 *      \endcode
-                 *
-                 *  Details on the regular expression language/format can be found at:
-                 *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
-                 *
-                 *  @see Contains
-                 *  @see StartsWith
-                 *  @see EndsWith
-                 *  @see Find
-                 *  @see FindEach
-                 */
-                nonvirtual bool Match (const RegularExpression& regEx) const;
-
-            public:
-                /**
-                 *  Find returns the index of the first occurance of the given Character/substring argument in
-                 *  this string. Find () always returns a valid string index, which is followed by the
-                 *  given substring, or nullopt otherwise.
-                 *
-                 *  Find () can optionally be provided a 'startAt' offset to begin the search at.
-                 *
-                 *  And the overload taking a RegularExpression - returns BOTH the location where the match
-                 *  is found, but the length of the match.
-                 *
-                 *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
-                 *  is non-empty, and nullopt if this string was empty.
-                 *
-                 *  \note   Alias - could have been called IndexOf ()
-                 *
-                 *  \req (startAt <= GetLength ());
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      const String kTest_ { L"a=b" };
-                 *      const String kLbl2LookFor_ { L"a=" };
-                 *      if (kTest_.Find (kLbl2LookFor_)) {
-                 *          String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
-                 *      }
-                 *      Assert (tmp == L"b");
-                 *      \endcode
-                 *
-                 *  @see FindEach ()
-                 *  @see FindEachString ()
-                 *  @see Tokenize
-                 */
-                nonvirtual optional<size_t> Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual optional<size_t> Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual optional<size_t> Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual optional<pair<size_t, size_t>> Find (const RegularExpression& regEx, size_t startAt = 0) const;
-
-            public:
-                /**
-                 *  This is just like Find, but captures all the matching results in an iterable result.
-                 *  The reason the overload for RegularExpression's returns a list of pair<size_t,size_t> is because
-                 *  the endpoint of the match is ambiguous. For fixed string Find, the end of match is computable
-                 *  from the arguments.
-                 *
-                 *  FindEach () can be more handy to use than directly using Find () in scenarios where you want
-                 *  to iterate over each match:
-                 *      e.g.:
-                 *          for (auto i : s.FindEach ("xxx")) {....}
-                 *
-                 *  Also, to count matches, you can use:
-                 *      size_t nMatches = FindEach (matchexp).size ();
-                 *
-                 *  Note: FindEach handles the special case of an empty match as ignored, so FindEach(empty-str-or-regexp)
-                 *  always returns an empty list. Also - for the String case, it returns distinct matches, so if you
-                 *  search String ("AAAA").FindEach ("AA"), you will get 2 answers ({0, 2}).
-                 *
-                 *  @see Find ()
-                 *  @see FindEachString ()
-                 */
-                nonvirtual vector<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
-                nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
-                /**
-                 *  @todo CLEANUP DOCS
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      const String_Constant kTest_    { L"a=b," };
-                 *      const RegularExpression kRE_    { L"a=(.*)[, ]" };
-                 *      Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
-                 *      Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
-                 *      Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
-                 *      Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      const String_Constant kTest_ { L"a=b, c=d" };
-                 *      const RegularExpression kRE_ { L"(.)=(.)" };
-                 *      Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
-                 *      \endcode
-                 *
-                 */
-                nonvirtual vector<RegularExpressionMatch> FindEachMatch (const RegularExpression& regEx) const;
-                nonvirtual vector<String> FindEachString (const RegularExpression& regEx) const;
-
-            public:
-                /**
-                 * RFind (substring) returns the index of the last occurance of the given substring in
-                 * this string. This function always returns a valid string index, which is followed by the
-                 * given substring, or optional<size_t> {} otherwise.
-                 *
-                 *  \note   Alias - could have been called RIndexOf ()
-                 */
-                nonvirtual optional<size_t> RFind (Character c) const;
-                nonvirtual optional<size_t> RFind (const String& subString) const;
-
-            public:
-                /**
-                 * Apply the given regular expression, with 'with' and replace each match. This doesn't
-                 * modify this string, but returns the replacement string.
-                 *
-                 * CHECK - BUT HI HTINK WE DEFINE TO REPLACE ALL? OR MAKE PARAM?
-                 * See regex_replace () for definition of the regEx language
-                 *
-                 *   Require (not string2SearchFor.empty ());
-                 *       TODO: GIVE EXAMPLES
-                 *
-                 *  Note - it IS legal to have with contain the original search for string, or even
-                 *  to have it 'created' as part of where it gets
-                 *  inserted. The implementation will only replace those that pre-existed.
-                 *
-                 *  \note To perform a regular expression replace-all, which is case insensitive, create the regular expression with CompareOptions::eCaseInsensitive
-                 */
-                nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with) const;
-                nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
-                /**
-                 *  Utility to squash out bad characters from a string, and replace them with the argument 'safe' character. Handly
-                 *  for things like file names, etc...
-                 *
-                 *  If replacement missing (the default) - the badCharacters are just removed, and not replaced.
-                 *
-                 *  \note FilteredString could have been called 'SafeString'
-                 */
-                nonvirtual String FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement = optional<Character>{}) const;
-                nonvirtual String FilteredString (const RegularExpression& badCharacters, optional<Character> replacement = optional<Character>{}) const;
-                nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
-
-            public:
-                /**
-                 *  Break this String into constituent parts. This is a simplistic API but at least handy as is.
-                 *
-                 *  The caller can specify the token seperators by set, by lambda. This defaults to the lambda "isWhitespace".
-                 *
-                 *  This is often called 'Split' in other APIs. This is NOT (as is now) a replacement for flex, but just for
-                 *  simple, but common string splitting needs (though if I had a regexp param, it may approach the power of flex).
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      String  t { L"ABC DEF G" };
-                 *      Assert (t.Tokenize ().length () == 3);
-                 *      Assert (t.Tokenize ()[1] == L"DEF");
-                 *      \endcode
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      String  t { L"foo=   7" };
-                 *      auto    tt = t.Tokenize (Set<Character> { '=' });
-                 *      Assert (t.length () == 2);
-                 *      Assert (t[1] == L"7");
-                 *      \endcode
-                 *
-                 *  @see Find
-                 *
-                 *  TODO:
-                 *      @todo   Consider adding overload that uses RegularExpression to define tokens.
-                 *
-                 *      @todo   Consider adding overload where trim is replaced with lambda saying 'isTrimmedCharacter')
-                 *
-                 *      @todo   Review:
-                 *                  http://qt-project.org/doc/qt-5.0/qtcore/qstring.html#split
-                 *              especially:
-                 *                  QString line = "forename\tmiddlename  surname \t \t phone";
-                 *                  QRegularExpression sep("\\s+");
-                 *                  str = line.section(sep, 2, 2); // str == "surname"
-                 *                  str = line.section(sep, -3, -2); // str == "middlename  surname"
-                 *              Make sure our Find/Tokenize is at least this simple, and maybe diff between find and split
-                 *              is FIND the regular expression names the things looked for and SPLIT() uses regexp to name the separators?
-                 *              Add something like the above to the String String demo app (when it exists)
-                 */
-                nonvirtual Containers::Sequence<String> Tokenize (const function<bool(Character)>& isTokenSeperator = [](Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
-                nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
-
-            public:
-                /**
-                 * String LTrim () scans the characters form the left to right, and applies the given
-                 * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
-                 * and the resulting string is returned. This does not modify the current string its
-                 * applied to - just returns the trimmed string.
-                 */
-                nonvirtual String LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
-
-            public:
-                /**
-                 * String RTrim () scans the characters form the right to left, and applies the given
-                 * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
-                 * and the resulting string is returned. This does not modify the current string its
-                 * applied to - just returns the trimmed string.
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *       String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
-                 *      \endcode
-                 */
-                nonvirtual String RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
-
-            public:
-                /**
-                 * String Trim () is locally equivalent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
-                 */
-                nonvirtual String Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
-
-            public:
-                /**
-                 * Walk the entire string, and produce a new string consisting of all characters for which
-                 * the predicate 'removeCharIf' returned false.
-                 */
-                nonvirtual String StripAll (bool (*removeCharIf) (Character)) const;
-
-            public:
-                /**
-                 * Return a new string based on this string where each lower case characer is replaced by its
-                 * upper case equivalent. Note that non-lower-case characters (such as punctuation) un unchanged.
-                 */
-                nonvirtual String ToLowerCase () const;
-
-            public:
-                /**
-                 * Return a new string based on this string where each lower case characer is replaced by its
-                 * upper case equivalent. Note that non-upper-case characters (such as punctuation) un unchanged.
-                 */
-                nonvirtual String ToUpperCase () const;
-
-            public:
-                /**
-                 * Return true if the string contains zero non-whitespace characters.
-                 */
-                nonvirtual bool IsWhitespace () const;
-
-            public:
-                /**
-                 *  This function is for GUI/display purposes. It returns the given string, trimmed down
-                 *  to at most maxLen characters, and removes whitespace (on 'to trim' side - given by keepLeft flag -
-                 *  if needed to get under maxLen).
-                 *
-                 *  Note in the 3-arg overload, the elipsis string MAY be the empty string.
-                 */
-                nonvirtual String LimitLength (size_t maxLen, bool keepLeft = true) const;
-                nonvirtual String LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const;
-
-            public:
-                /**
-                 *  CopyTo () copies the contents of this string to the target buffer.
-                 *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
-                 *  is >= this->GetLength ()
-                 */
-                nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
-                nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
-
-            public:
-                /**
-                 * Convert String losslessly into a standard C++ type.
-                 *
-                 *  Only specifically specialized variants are supported. Supported type 'T' values include:
-                 *      o   wstring
-                 *      o   const wchar_t*
-                 *      o   const Character*
-                 *      o   u16string
-                 *      o   u32string
-                 *
-                 *  \note
-                 *      o   As<u16string> () equivilent to AsUTF16 () calll
-                 *      o   As<u32string> () equivilent to AsUTF32 () calll
-                 *
-                 *  \note   We tried to also have template<typename T> explicit operator T () const; - conversion operator - but
-                 *          We got too frequent confusion in complex combinations of templates, like with:
-                 *          Set<String> x ( *optional<String> {String ()) );       // fails cuz calls operator Set<String> ()!
-                 *          Set<String> x { *optional<String> {String ()) };       // works as expected
-                 */
-                template <typename T>
-                nonvirtual T As () const;
-                template <typename T>
-                nonvirtual void As (T* into) const;
-
-            public:
-                /**
-                 *  Create a narrow string object from this, based on the encoding from the argument locale.
-                 *  This throws an exception if there is an error performing the conversion, and the 'into' overload
-                 *  leaves 'into' in an undefined (but safe) state.
-                 */
-                nonvirtual string AsNarrowString (const locale& l) const;
-                nonvirtual void   AsNarrowString (const locale& l, string* into) const;
-
-            public:
-                /**
-                 * Convert String losslessly into a standard C++ type.
-                 * Only specifically specialized variants are supported (right now just <string> supported).
-                 * Note - template param is optional.
-                 */
-                template <typename T>
-                nonvirtual T AsUTF8 () const;
-                template <typename T>
-                nonvirtual void AsUTF8 (T* into) const;
-                nonvirtual string AsUTF8 () const;
-                nonvirtual void   AsUTF8 (string* into) const;
-
-            public:
-                /**
-                 * Convert String losslessly into a standard C++ type u16string.
-                 */
-                nonvirtual u16string AsUTF16 () const;
-                nonvirtual void      AsUTF16 (u16string* into) const;
-
-            public:
-                /**
-                 * Convert String losslessly into a standard C++ type u32string.
-                 */
-                nonvirtual u32string AsUTF32 () const;
-                nonvirtual void      AsUTF32 (u32string* into) const;
-
-            public:
-                /**
-                 */
-                nonvirtual SDKString AsSDKString () const;
-                nonvirtual void      AsSDKString (SDKString* into) const;
-
-            public:
-                /**
-                 */
-                nonvirtual string AsNarrowSDKString () const;
-                nonvirtual void   AsNarrowSDKString (string* into) const;
-
-            public:
-                /**
-                 * Convert String losslessly into a standard C++ type.
-                 * Only specifically specialized variants are supported (right now just <string> supported).
-                 * The source string MUST be valid ascii characters (asserted)
-                 */
-                template <typename T>
-                nonvirtual T AsASCII () const;
-                template <typename T>
-                nonvirtual void AsASCII (T* into) const;
-                nonvirtual string AsASCII () const;
-                nonvirtual void   AsASCII (string* into) const;
-
-            public:
-                /**
-                 *  Only defined for CHAR_TYPE=Character or wchar_t (for now).
-                 *
-                 *  Lifetime is ONLY up until next method access to String.
-                 *
-                 *  @see c_str()
-                 *
-                 *  \note Design Note:
-                 *      This is eqivilent to returning pair { c_str (), c_str () + length () } - only a bit faster since all in one call.
-                 *      So long as we support c_str () returning an internal wchar_t* pointer, this adds no extra cost/constraints.
-                 */
-                template <typename CHAR_TYPE>
-                nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
-
-            public:
-                /**
-                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                  */
-                nonvirtual int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
-                /**
-                 * @brief   Return true of the two argument strings are equal. This is equivalent to
-                 *              lhs.Compare (rhs, co);
-                 */
-                nonvirtual bool Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual bool Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
-                struct EqualToCI;
-
-            public:
-                struct LessCI;
-
-            public:
-                /**
-                 *  Alias for basic_string>char>::npos - except this is constexpr.
-                 *
-                 *  This is only used for 'STL-compatabiliity' apis, like substr (), find, rfind (), etc.
-                 */
-                static constexpr size_t npos = static_cast<size_t> (-1);
-
-            public:
-                /**
-                 *  basic_string alias: size = GetLength
-                 */
-                nonvirtual size_t size () const;
-
-            public:
-                /**
-                 *  basic_string alias: length = GetLength
-                 */
-                nonvirtual size_t length () const;
-
-            public:
-                /**
-                 *  As with STL, the return value of the data () function should NOT be assumed to be
-                 *  NUL-terminated
-                 *
-                 *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
-                 *  envelope class (that is if other reps change, or are acceessed this data will not
-                 *  be modified)
-                 *
-                 *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
-                 */
-                nonvirtual const wchar_t* data () const;
-
-            public:
-                /**
-                 *  This will always return a value which is NUL-terminated.
-                 *
-                 *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
-                 *  envelope class (that is if other reps change, or are acceessed this data will not be modified)
-                 *  Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
-                 *  class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing
-                 *  confusion elsewhere.
-                 *
-                 *  Lifetime is ONLY up until next non-const method access to String, so this API is intrinsically not threadsafe.
-                 *  That is - if you call this on a String, you better not be updating the string at the same time!
-                 *
-                 *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
-                 *
-                 *  @see GetData ()
-                 */
-                nonvirtual const wchar_t* c_str () const noexcept;
-
-            public:
-                /**
-                 *  need more overloads.
-                 *
-                 *  Returns String::npos if not found, else the zero based index.
-                 */
-                nonvirtual size_t find (wchar_t c, size_t startAt = 0) const;
-
-            public:
-                /**
-                 *   need more overloads.
-                 *
-                 *   Returns String::npos if not found, else the zero based index.
-                 */
-                nonvirtual size_t rfind (wchar_t c) const;
-
-            public:
-                /**
-                 *  mimic (much of - need more overloads) STL variant
-                 */
-                nonvirtual void erase (size_t from = 0);
-                nonvirtual void erase (size_t from, size_t count);
-
-            public:
-                /**
-                 */
-                nonvirtual void push_back (wchar_t c);
-                nonvirtual void push_back (Character c);
-
-            public:
-                /**
-                 *  Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
-                 *  as Stroika::String::SubString (where the second argument is a 'to')
-                 *
-                 *  @see SubString
-                 *
-                 *  From http://en.cppreference.com/w/cpp/string/basic_string/substr
-                 *      Returns a substring [pos, pos+count). If the requested substring extends
-                 *      past the end of the string, or if count == npos, the returned substring is [pos, size()).
-                 *      std::out_of_range if pos > size()
-                 */
-                nonvirtual String substr (size_t from, size_t count = npos) const;
-
-            protected:
-                nonvirtual void _AssertRepValidType () const;
-
-            public:
-                friend wostream& operator<< (wostream& out, const String& s);
-                friend String    operator+ (const wchar_t* lhs, const String& rhs);
-            };
-
-            template <>
-            void String::As (wstring* into) const;
-            template <>
-            wstring String::As () const;
-            template <>
-            const wchar_t* String::As () const;
-            template <>
-            const Character* String::As () const;
-            template <>
-            u16string String::As () const;
-            template <>
-            u32string String::As () const;
-
-            template <>
-            void String::AsUTF8 (string* into) const;
-            template <>
-            string String::AsUTF8 () const;
-
-            template <>
-            void String::AsASCII (string* into) const;
-            template <>
-            string String::AsASCII () const;
-
-            template <>
-            pair<const Character*, const Character*> String::GetData () const;
-            template <>
-            pair<const wchar_t*, const wchar_t*> String::GetData () const;
-
-            /*
-             *  Equivilent to std::equal_to<String>, except doing case insensitive compares
-             */
-            struct String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
-                nonvirtual bool operator() (const String& lhs, const String& rhs) const;
-            };
-
-            /*
-             *  Equivilent to std::less<String>, except doing case insensitive compares
-             */
-            struct String::LessCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
-                nonvirtual bool operator() (const String& lhs, const String& rhs) const;
-            };
-
+            String ();
+            String (const char16_t* cString);
+            String (const char32_t* cString);
+            String (const wchar_t* cString);
+            String (const char16_t* from, const char16_t* to);
+            String (const char32_t* from, const char32_t* to);
+            String (const wchar_t* from, const wchar_t* to);
+            String (const Character* from, const Character* to);
+            String (const wstring& r);
+            String (const u16string& r);
+            String (const u32string& r);
+            String (const Iterable<Character>& src);
+            String (const String& from) noexcept;
+            String (String&& from) noexcept;
+            explicit String (const Character& c);
+
+        public:
+            ~String () = default;
+
+        protected:
+            class _IRep;
+
+        protected:
+            using _IterableRepSharedPtr = Iterable<Character>::_IterableRepSharedPtr;
+
+        protected:
+            using _SharedPtrIRep = SharedPtrImplementationTemplate<_IRep>;
+
+        protected:
             /**
-             * Protected helper Rep class.
              */
-            class String::_IRep
-                : public Iterable<Character>::_IRep
+            using _SafeReadRepAccessor = Iterable<Character>::_SafeReadRepAccessor<_IRep>;
+
+        protected:
+            /**
+             * \req rep MUST be not-null
+             *  However, with move constructor, it maybe null on exit.
+             */
+            String (const _SharedPtrIRep& rep) noexcept;
+            String (_SharedPtrIRep&& rep) noexcept;
+
+        public:
+            nonvirtual String& operator= (const String& rhs) = default;
+            nonvirtual String& operator= (String&& newString) = default;
+
+        public:
+            /**
+             *  Create a String object from a 'char-based' utf-8 encoded string.
+             *
+             *  \par Example Usage
+             *      \code
+             *          VerifyTestResult (string (u8"שלום") == String::FromUTF8 (u8"שלום").AsUTF8 ());
+             *      \endcode
+             */
+            static String FromUTF8 (const char* from);
+            static String FromUTF8 (const char* from, const char* to);
+            static String FromUTF8 (const string& from);
+
+        public:
+            /**
+             *  Create a String object from a 'SDKChar' (os-setting - current code page) encoded string.
+             *  See @SDKChar
+             *  See @SDKString
+             */
+            static String FromSDKString (const SDKChar* from);
+            static String FromSDKString (const SDKChar* from, const SDKChar* to);
+            static String FromSDKString (const SDKString& from);
+
+        public:
+            /**
+             *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
+             */
+            static String FromNarrowSDKString (const char* from);
+            static String FromNarrowSDKString (const char* from, const char* to);
+            static String FromNarrowSDKString (const string& from);
+
+        public:
+            /**
+             *  Create a String object from a 'char-based' on the encoding from the argument locale.
+             *  This throws an exception if there is an error performing the conversion.
+             */
+            static String FromNarrowString (const char* from, const locale& l);
+            static String FromNarrowString (const char* from, const char* to, const locale& l);
+            static String FromNarrowString (const string& from, const locale& l);
+
+        public:
+            /**
+             *  Create a String object from ascii text. This function requires that its arguments all ascii (no high-bit set)
+             */
+            static String FromASCII (const char* from);
+            static String FromASCII (const string& from);
+
+        public:
+            /**
+             *  Create a String object from ISO-Latin-1 (https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
+             *
+             *  \note Though ISO-Latin-1 is is defined to only have 192 valid characters (source), UNICODE
+             *        is defined so that the first 256 code points match ISO-Latin-1.
+             *
+             *        Because of this, This function allows ANY 8-bit) characters at all - to be passed in, and those characters
+             *        will be mapped to UNICODE characters (of the same code point) in the resulting String.
+             *
+             *  \note Alias From8bitASCII () or FromExtendedASCII () or FromAnyCharset (), FromAnyCharacterSet ()
+             */
+            static String FromISOLatin1 (const char* from);
+            static String FromISOLatin1 (const char* start, const char* end);
+            static String FromISOLatin1 (const string& from);
+
+        private:
+            static _SharedPtrIRep mkEmpty_ ();
+            static _SharedPtrIRep mk_ (const wchar_t* start, const wchar_t* end);
+            static _SharedPtrIRep mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2);
+            static _SharedPtrIRep mk_ (const char16_t* start, const char16_t* end);
+            static _SharedPtrIRep mk_ (const char32_t* start, const char32_t* end);
+
+        public:
+            nonvirtual String& operator+= (Character appendage);
+            nonvirtual String& operator+= (const String& appendage);
+            nonvirtual String& operator+= (const wchar_t* appendageCStr);
+
+        public:
+            /**
+             *  @see    Append() for a similar function that modifies 'this'
+             */
+            nonvirtual String Concatenate (const String& rhs) const;
+            nonvirtual String Concatenate (const wchar_t* appendageCStr) const;
+
+        public:
+            /**
+             *  Returns the number of characters in the String. Note that this may not be the same as bytes,
+             *  does not include NUL termination, and doesn't in any way respect NUL termination (meaning
+             *  a nul-character is allowed in a Stroika string.
+             */
+            nonvirtual size_t GetLength () const;
+
+        public:
+            /**
+             */
+            nonvirtual bool empty () const;
+
+        public:
+            /**
+             *  Alias for *this = String ();
+             */
+            nonvirtual void clear ();
+
+        public:
+            /**
+             */
+            nonvirtual const Character GetCharAt (size_t i) const;
+
+        public:
+            /**
+             */
+            nonvirtual void SetCharAt (Character c, size_t i);
+
+        public:
+            /**
+             *  \brief return (read-only) Character object
+             *
+             *  Alias for GetCharAt (size_t i) const;
+             */
+            nonvirtual const Character operator[] (size_t i) const;
+
+        public:
+            /**
+             *  InsertAt() constructs a new string by taking this string, and inserting the argument
+             *  characters.
+             *
+             *  \em Note that for repeated insertions, this is much less efficient than just
+             *      using StringBuilder.
+             */
+            nonvirtual String InsertAt (Character c, size_t at) const;
+            nonvirtual String InsertAt (const String& s, size_t at) const;
+            nonvirtual String InsertAt (const wchar_t* from, const wchar_t* to, size_t at) const;
+            nonvirtual String InsertAt (const Character* from, const Character* to, size_t at) const;
+
+        public:
+            /**
+             *  Append() adds the given argument characters to the end of this string object.
+             *
+             *  Unlike InsertAt() - this modifies 'this' string, rather than returning a new one.
+             *
+             *  \em Note that for repeated insertions, this is much less efficient than just
+             *      using StringBuilder.
+             *
+             *  \em Note that it is legal, but pointless to pass in an empty string to insert
+             *
+             *  @see    Concatenate() for a similar function that doesn't modify the source
+             */
+            nonvirtual void Append (Character c);
+            nonvirtual void Append (const String& s);
+            nonvirtual void Append (const wchar_t* s);
+            nonvirtual void Append (const wchar_t* from, const wchar_t* to);
+            nonvirtual void Append (const Character* from, const Character* to);
+
+        public:
+            /**
+             * Remove the characters at 'charAt' (RemoveAt/1) or between 'from' and 'to'.
+             *
+             * It is an error if this implies removing characters off the end of the string.
+             *
+             *  \req (charAt < GetLength ())
+             *  \req (from <= to)
+             *  \req (to <= GetLength ())
+             *
+             *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
+             */
+            nonvirtual String RemoveAt (size_t charAt) const;
+            nonvirtual String RemoveAt (size_t from, size_t to) const;
+
+        public:
+            /**
+             *  Remove the first occurence of Character 'c' from the string. Not an error if none
+             *  found.
+             *
+             *  \em Note that this is quite inefficent: consider using StringBuffer (@todo is that the right name)???
+             */
+            nonvirtual String Remove (Character c) const;
+
+        public:
+            /**
+             *  OVERLOADS WITH size_t:
+             *
+             *  Produce a substring of this string, starting at 'from', and up to 'to' (or end of string
+             *  for one-arg overload).
+             *
+             *  *NB* This function treats the second argument differently than String::substr () -
+             *  which respects the STL basic_string API. This function treats the second argument
+             *  as a 'to', STL substr() treats it as a count. This amounts to the same thing for the
+             *  very common cases of substr(N) - because second argument is defaulted, and,
+             *  substr (0, N) - because then the count and end are the same.
+             *
+             *  \req  (from <= to);
+             *  \req  (to <= GetLength ());     // for 2-arg variant
+             *
+             *  \par Example Usage
+             *      \code
+             *      String tmp { L"This is good" };
+             *      Assert (tmp.SubString (5) == L"is good");
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *      const String_Constant kTest_ { L"a=b" };
+             *      const String_Constant kLbl2LookFor_ { L"a=" };
+             *      if (resultLine.Find (kLbl2LookFor_)) {
+             *          String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
+             *      }
+             *      Assert (tmp == L"b");
+             *      \endcode
+             *
+             *  OVERLOADS WITH ptrdiff_t:
+             *
+             *  This is like SubString() except that if from/to are negative, they are treated as relative to the end
+             *  of the String.
+             *
+             *  So for example, SubString (0, -1) is equivalent to SubString (0, GetLength () - 1) - and so is an
+             *  error if the string is empty.
+             *
+             *  Similarly, SubString (-5) is equivalent to SubString (GetLength ()-5, GetLength ()) - so can be used
+             *  to grab the end of a string.
+             *
+             *  \req  (adjustedFrom <= adjustedTo);
+             *  \req  (adjustedTo <= GetLength ());     // for 2-arg variant
+             *
+             *  \note \em Design Note
+             *      We chose not to overload SubString() with this functionality because it would have been to easy
+             *      to mask bugs.
+             *
+             *  \note \em Design Note
+             *      This was originally inspired by Python arrays. From https://docs.python.org/2/tutorial/introduction.html:
+             *          Indices may also be negative numbers, to start counting from the right
+             *
+             *  \note \em Alias
+             *      This API is identical to the javascript String.slice () method/behavior
+             *      @see http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+             *           15.5.4.13 String.prototype.slice (start, end)
+             *
+             *  \note \em Alias
+             *      This API - when called with negative indexes - used to be called CircularSubString ().
+             *
+             *  @see substr
+             *  @see SafeSubString
+             */
+            template <typename SZ>
+            nonvirtual String SubString (SZ from) const;
+            template <typename SZ1, typename SZ2>
+            nonvirtual String SubString (SZ1 from, SZ2 to) const;
+
+        private:
+            nonvirtual size_t SubString_adjust_ (unsigned int fromOrTo, size_t myLength) const;
+            nonvirtual size_t SubString_adjust_ (unsigned long fromOrTo, size_t myLength) const;
+            nonvirtual size_t SubString_adjust_ (unsigned long long fromOrTo, size_t myLength) const;
+            nonvirtual size_t SubString_adjust_ (int fromOrTo, size_t myLength) const;
+            nonvirtual size_t SubString_adjust_ (long fromOrTo, size_t myLength) const;
+            nonvirtual size_t SubString_adjust_ (long long fromOrTo, size_t myLength) const;
+
+        public:
+            /**
+             *  Like SubString(), but no requirements on from/to. These are just adjusted to the edge of the string
+             *  if the exceed those endpoints.
+             *
+             *  @see substr
+             *  @see SubString
+             */
+            nonvirtual String SafeSubString (size_t from) const;
+            nonvirtual String SafeSubString (size_t from, size_t to) const;
+
+        private:
+            static String SubString_ (const _SafeReadRepAccessor& thisAccessor, size_t thisLen, size_t from, size_t to);
+
+        public:
+            /**
+             *  Return 'count' copies of this String (concatenated after one another).
+             */
+            nonvirtual String Repeat (unsigned int count) const;
+
+        public:
+            /**
+             *  Returns true if the argument character or string is found anywhere inside this string.
+             *  This is equivalent to
+             *      return Match (".*" + X + L".*");    // If X had no characters which look like they are part of
+             *                                          // a regular expression
+             *
+             *  @see Match
+             */
+            nonvirtual bool Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual bool Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+
+        public:
+            /**
+             *  Returns true iff the given substring is contained in this string.
+             *
+             *  Similar to:
+             *      return Match (X + L".*");
+             *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
+             *
+             *  @see Match
+             *  @see EndsWith
+             */
+            nonvirtual bool StartsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual bool StartsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+
+        public:
+            /**
+             *  Returns true iff the given substring is contained in this string.
+             *
+             *  Similar to:
+             *      return Match (X + L".*");
+             *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
+             *
+             *  @see Match
+             *  @see StartsWith
+             */
+            nonvirtual bool EndsWith (const Character& c, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual bool EndsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+
+        public:
+            /**
+             *  Apply the given regular expression return true if it matches this string. This only
+             *  returns true if the expression matches the ENTIRE string - all the way to the end.
+             *  @see FindEach() or @see Find - to find a set of things which match.
+             *
+             *  \par Example Usage
+             *      \code
+             *      Assert (String (L"abc").Match (L"abc"));
+             *      Assert (not (String (L"abc").Match (L"bc")));
+             *      Assert (String (L"abc").Match (L".*bc"));
+             *      Assert (not String (L"abc").Match (L"b.*c"));
+             *      \endcode
+             *
+             *  Details on the regular expression language/format can be found at:
+             *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
+             *
+             *  @see Contains
+             *  @see StartsWith
+             *  @see EndsWith
+             *  @see Find
+             *  @see FindEach
+             */
+            nonvirtual bool Match (const RegularExpression& regEx) const;
+
+        public:
+            /**
+             *  Find returns the index of the first occurance of the given Character/substring argument in
+             *  this string. Find () always returns a valid string index, which is followed by the
+             *  given substring, or nullopt otherwise.
+             *
+             *  Find () can optionally be provided a 'startAt' offset to begin the search at.
+             *
+             *  And the overload taking a RegularExpression - returns BOTH the location where the match
+             *  is found, but the length of the match.
+             *
+             *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
+             *  is non-empty, and nullopt if this string was empty.
+             *
+             *  \note   Alias - could have been called IndexOf ()
+             *
+             *  \req (startAt <= GetLength ());
+             *
+             *  \par Example Usage
+             *      \code
+             *      const String kTest_ { L"a=b" };
+             *      const String kLbl2LookFor_ { L"a=" };
+             *      if (kTest_.Find (kLbl2LookFor_)) {
+             *          String  tmp { kTest_.SubString (kLbl2LookFor_.length ()) };
+             *      }
+             *      Assert (tmp == L"b");
+             *      \endcode
+             *
+             *  @see FindEach ()
+             *  @see FindEachString ()
+             *  @see Tokenize
+             */
+            nonvirtual optional<size_t> Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual optional<size_t> Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual optional<size_t> Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual optional<size_t> Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual optional<pair<size_t, size_t>> Find (const RegularExpression& regEx, size_t startAt = 0) const;
+
+        public:
+            /**
+             *  This is just like Find, but captures all the matching results in an iterable result.
+             *  The reason the overload for RegularExpression's returns a list of pair<size_t,size_t> is because
+             *  the endpoint of the match is ambiguous. For fixed string Find, the end of match is computable
+             *  from the arguments.
+             *
+             *  FindEach () can be more handy to use than directly using Find () in scenarios where you want
+             *  to iterate over each match:
+             *      e.g.:
+             *          for (auto i : s.FindEach ("xxx")) {....}
+             *
+             *  Also, to count matches, you can use:
+             *      size_t nMatches = FindEach (matchexp).size ();
+             *
+             *  Note: FindEach handles the special case of an empty match as ignored, so FindEach(empty-str-or-regexp)
+             *  always returns an empty list. Also - for the String case, it returns distinct matches, so if you
+             *  search String ("AAAA").FindEach ("AA"), you will get 2 answers ({0, 2}).
+             *
+             *  @see Find ()
+             *  @see FindEachString ()
+             */
+            nonvirtual vector<pair<size_t, size_t>> FindEach (const RegularExpression& regEx) const;
+            nonvirtual vector<size_t> FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
+
+        public:
+            /**
+             *  @todo CLEANUP DOCS
+             *
+             *  \par Example Usage
+             *      \code
+             *      const String_Constant kTest_    { L"a=b," };
+             *      const RegularExpression kRE_    { L"a=(.*)[, ]" };
+             *      Sequence<String>      tmp1      { kTest_.FindEachString (kRE_) };
+             *      Assert (tmp1.size () == 1 and tmp1[0] == L"a=b,");
+             *      Sequence<RegularExpressionMatch>      tmp2 { kTest_.FindEachMatch (kRE_) };
+             *      Assert (tmp2.size () == 1 and tmp2[0].GetFullMatch () == L"a=b," and tmp2[0].GetSubMatches () == Sequence<String> {L"b"});
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *      const String_Constant kTest_ { L"a=b, c=d" };
+             *      const RegularExpression kRE_ { L"(.)=(.)" };
+             *      Assert ((kTest_.FindEachString (kRE_) ==  vector<String> {L"a=b", L"c=d"}));
+             *      \endcode
+             *
+             */
+            nonvirtual vector<RegularExpressionMatch> FindEachMatch (const RegularExpression& regEx) const;
+            nonvirtual vector<String> FindEachString (const RegularExpression& regEx) const;
+
+        public:
+            /**
+             * RFind (substring) returns the index of the last occurance of the given substring in
+             * this string. This function always returns a valid string index, which is followed by the
+             * given substring, or optional<size_t> {} otherwise.
+             *
+             *  \note   Alias - could have been called RIndexOf ()
+             */
+            nonvirtual optional<size_t> RFind (Character c) const;
+            nonvirtual optional<size_t> RFind (const String& subString) const;
+
+        public:
+            /**
+             * Apply the given regular expression, with 'with' and replace each match. This doesn't
+             * modify this string, but returns the replacement string.
+             *
+             * CHECK - BUT HI HTINK WE DEFINE TO REPLACE ALL? OR MAKE PARAM?
+             * See regex_replace () for definition of the regEx language
+             *
+             *   Require (not string2SearchFor.empty ());
+             *       TODO: GIVE EXAMPLES
+             *
+             *  Note - it IS legal to have with contain the original search for string, or even
+             *  to have it 'created' as part of where it gets
+             *  inserted. The implementation will only replace those that pre-existed.
+             *
+             *  \note To perform a regular expression replace-all, which is case insensitive, create the regular expression with CompareOptions::eCaseInsensitive
+             */
+            nonvirtual String ReplaceAll (const RegularExpression& regEx, const String& with) const;
+            nonvirtual String ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
+
+        public:
+            /**
+             *  Utility to squash out bad characters from a string, and replace them with the argument 'safe' character. Handly
+             *  for things like file names, etc...
+             *
+             *  If replacement missing (the default) - the badCharacters are just removed, and not replaced.
+             *
+             *  \note FilteredString could have been called 'SafeString'
+             */
+            nonvirtual String FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement = optional<Character>{}) const;
+            nonvirtual String FilteredString (const RegularExpression& badCharacters, optional<Character> replacement = optional<Character>{}) const;
+            nonvirtual String FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement = optional<Character>{}) const;
+
+        public:
+            /**
+             *  Break this String into constituent parts. This is a simplistic API but at least handy as is.
+             *
+             *  The caller can specify the token seperators by set, by lambda. This defaults to the lambda "isWhitespace".
+             *
+             *  This is often called 'Split' in other APIs. This is NOT (as is now) a replacement for flex, but just for
+             *  simple, but common string splitting needs (though if I had a regexp param, it may approach the power of flex).
+             *
+             *  \par Example Usage
+             *      \code
+             *      String  t { L"ABC DEF G" };
+             *      Assert (t.Tokenize ().length () == 3);
+             *      Assert (t.Tokenize ()[1] == L"DEF");
+             *      \endcode
+             *
+             *  \par Example Usage
+             *      \code
+             *      String  t { L"foo=   7" };
+             *      auto    tt = t.Tokenize (Set<Character> { '=' });
+             *      Assert (t.length () == 2);
+             *      Assert (t[1] == L"7");
+             *      \endcode
+             *
+             *  @see Find
+             *
+             *  TODO:
+             *      @todo   Consider adding overload that uses RegularExpression to define tokens.
+             *
+             *      @todo   Consider adding overload where trim is replaced with lambda saying 'isTrimmedCharacter')
+             *
+             *      @todo   Review:
+             *                  http://qt-project.org/doc/qt-5.0/qtcore/qstring.html#split
+             *              especially:
+             *                  QString line = "forename\tmiddlename  surname \t \t phone";
+             *                  QRegularExpression sep("\\s+");
+             *                  str = line.section(sep, 2, 2); // str == "surname"
+             *                  str = line.section(sep, -3, -2); // str == "middlename  surname"
+             *              Make sure our Find/Tokenize is at least this simple, and maybe diff between find and split
+             *              is FIND the regular expression names the things looked for and SPLIT() uses regexp to name the separators?
+             *              Add something like the above to the String String demo app (when it exists)
+             */
+            nonvirtual Containers::Sequence<String> Tokenize (const function<bool(Character)>& isTokenSeperator = [](Character c) -> bool { return c.IsWhitespace (); }, bool trim = true) const;
+            nonvirtual Containers::Sequence<String> Tokenize (const Containers::Set<Character>& delimiters, bool trim = true) const;
+
+        public:
+            /**
+             * String LTrim () scans the characters form the left to right, and applies the given
+             * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
+             * and the resulting string is returned. This does not modify the current string its
+             * applied to - just returns the trimmed string.
+             */
+            nonvirtual String LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+
+        public:
+            /**
+             * String RTrim () scans the characters form the right to left, and applies the given
+             * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
+             * and the resulting string is returned. This does not modify the current string its
+             * applied to - just returns the trimmed string.
+             *
+             *  \par Example Usage
+             *      \code
+             *       String name = origName.RTrim ([] (Character c) { return c == '\\';});        // Trim a trailing backslash(s), if present
+             *      \endcode
+             */
+            nonvirtual String RTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+
+        public:
+            /**
+             * String Trim () is locally equivalent to RTrim (shouldBeTrimmed).LTrim (shouldBeTrimmed).
+             */
+            nonvirtual String Trim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
+
+        public:
+            /**
+             * Walk the entire string, and produce a new string consisting of all characters for which
+             * the predicate 'removeCharIf' returned false.
+             */
+            nonvirtual String StripAll (bool (*removeCharIf) (Character)) const;
+
+        public:
+            /**
+             * Return a new string based on this string where each lower case characer is replaced by its
+             * upper case equivalent. Note that non-lower-case characters (such as punctuation) un unchanged.
+             */
+            nonvirtual String ToLowerCase () const;
+
+        public:
+            /**
+             * Return a new string based on this string where each lower case characer is replaced by its
+             * upper case equivalent. Note that non-upper-case characters (such as punctuation) un unchanged.
+             */
+            nonvirtual String ToUpperCase () const;
+
+        public:
+            /**
+             * Return true if the string contains zero non-whitespace characters.
+             */
+            nonvirtual bool IsWhitespace () const;
+
+        public:
+            /**
+             *  This function is for GUI/display purposes. It returns the given string, trimmed down
+             *  to at most maxLen characters, and removes whitespace (on 'to trim' side - given by keepLeft flag -
+             *  if needed to get under maxLen).
+             *
+             *  Note in the 3-arg overload, the elipsis string MAY be the empty string.
+             */
+            nonvirtual String LimitLength (size_t maxLen, bool keepLeft = true) const;
+            nonvirtual String LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis) const;
+
+        public:
+            /**
+             *  CopyTo () copies the contents of this string to the target buffer.
+             *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
+             *  is >= this->GetLength ()
+             */
+            nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
+            nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
+
+        public:
+            /**
+             * Convert String losslessly into a standard C++ type.
+             *
+             *  Only specifically specialized variants are supported. Supported type 'T' values include:
+             *      o   wstring
+             *      o   const wchar_t*
+             *      o   const Character*
+             *      o   u16string
+             *      o   u32string
+             *
+             *  \note
+             *      o   As<u16string> () equivilent to AsUTF16 () calll
+             *      o   As<u32string> () equivilent to AsUTF32 () calll
+             *
+             *  \note   We tried to also have template<typename T> explicit operator T () const; - conversion operator - but
+             *          We got too frequent confusion in complex combinations of templates, like with:
+             *          Set<String> x ( *optional<String> {String ()) );       // fails cuz calls operator Set<String> ()!
+             *          Set<String> x { *optional<String> {String ()) };       // works as expected
+             */
+            template <typename T>
+            nonvirtual T As () const;
+            template <typename T>
+            nonvirtual void As (T* into) const;
+
+        public:
+            /**
+             *  Create a narrow string object from this, based on the encoding from the argument locale.
+             *  This throws an exception if there is an error performing the conversion, and the 'into' overload
+             *  leaves 'into' in an undefined (but safe) state.
+             */
+            nonvirtual string AsNarrowString (const locale& l) const;
+            nonvirtual void   AsNarrowString (const locale& l, string* into) const;
+
+        public:
+            /**
+             * Convert String losslessly into a standard C++ type.
+             * Only specifically specialized variants are supported (right now just <string> supported).
+             * Note - template param is optional.
+             */
+            template <typename T>
+            nonvirtual T AsUTF8 () const;
+            template <typename T>
+            nonvirtual void AsUTF8 (T* into) const;
+            nonvirtual string AsUTF8 () const;
+            nonvirtual void   AsUTF8 (string* into) const;
+
+        public:
+            /**
+             * Convert String losslessly into a standard C++ type u16string.
+             */
+            nonvirtual u16string AsUTF16 () const;
+            nonvirtual void      AsUTF16 (u16string* into) const;
+
+        public:
+            /**
+             * Convert String losslessly into a standard C++ type u32string.
+             */
+            nonvirtual u32string AsUTF32 () const;
+            nonvirtual void      AsUTF32 (u32string* into) const;
+
+        public:
+            /**
+             */
+            nonvirtual SDKString AsSDKString () const;
+            nonvirtual void      AsSDKString (SDKString* into) const;
+
+        public:
+            /**
+             */
+            nonvirtual string AsNarrowSDKString () const;
+            nonvirtual void   AsNarrowSDKString (string* into) const;
+
+        public:
+            /**
+             * Convert String losslessly into a standard C++ type.
+             * Only specifically specialized variants are supported (right now just <string> supported).
+             * The source string MUST be valid ascii characters (asserted)
+             */
+            template <typename T>
+            nonvirtual T AsASCII () const;
+            template <typename T>
+            nonvirtual void AsASCII (T* into) const;
+            nonvirtual string AsASCII () const;
+            nonvirtual void   AsASCII (string* into) const;
+
+        public:
+            /**
+             *  Only defined for CHAR_TYPE=Character or wchar_t (for now).
+             *
+             *  Lifetime is ONLY up until next method access to String.
+             *
+             *  @see c_str()
+             *
+             *  \note Design Note:
+             *      This is eqivilent to returning pair { c_str (), c_str () + length () } - only a bit faster since all in one call.
+             *      So long as we support c_str () returning an internal wchar_t* pointer, this adds no extra cost/constraints.
+             */
+            template <typename CHAR_TYPE>
+            nonvirtual pair<const CHAR_TYPE*, const CHAR_TYPE*> GetData () const;
+
+        public:
+            /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 */
+            nonvirtual int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+
+        public:
+            /**
+             * @brief   Return true of the two argument strings are equal. This is equivalent to
+             *              lhs.Compare (rhs, co);
+             */
+            nonvirtual bool Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+            nonvirtual bool Equals (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
+
+        public:
+            struct EqualToCI;
+
+        public:
+            struct LessCI;
+
+        public:
+            /**
+             *  Alias for basic_string>char>::npos - except this is constexpr.
+             *
+             *  This is only used for 'STL-compatabiliity' apis, like substr (), find, rfind (), etc.
+             */
+            static constexpr size_t npos = static_cast<size_t> (-1);
+
+        public:
+            /**
+             *  basic_string alias: size = GetLength
+             */
+            nonvirtual size_t size () const;
+
+        public:
+            /**
+             *  basic_string alias: length = GetLength
+             */
+            nonvirtual size_t length () const;
+
+        public:
+            /**
+             *  As with STL, the return value of the data () function should NOT be assumed to be
+             *  NUL-terminated
+             *
+             *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
+             *  envelope class (that is if other reps change, or are acceessed this data will not
+             *  be modified)
+             *
+             *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
+             */
+            nonvirtual const wchar_t* data () const;
+
+        public:
+            /**
+             *  This will always return a value which is NUL-terminated.
+             *
+             *  The lifetime of the pointer returned is guaranteed until the next non-const call to this String
+             *  envelope class (that is if other reps change, or are acceessed this data will not be modified)
+             *  Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
+             *  class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing
+             *  confusion elsewhere.
+             *
+             *  Lifetime is ONLY up until next non-const method access to String, so this API is intrinsically not threadsafe.
+             *  That is - if you call this on a String, you better not be updating the string at the same time!
+             *
+             *  \note THREAD-SAFETY - small risk - be sure reference to returned pointer cleaered before String modified
+             *
+             *  @see GetData ()
+             */
+            nonvirtual const wchar_t* c_str () const noexcept;
+
+        public:
+            /**
+             *  need more overloads.
+             *
+             *  Returns String::npos if not found, else the zero based index.
+             */
+            nonvirtual size_t find (wchar_t c, size_t startAt = 0) const;
+
+        public:
+            /**
+             *   need more overloads.
+             *
+             *   Returns String::npos if not found, else the zero based index.
+             */
+            nonvirtual size_t rfind (wchar_t c) const;
+
+        public:
+            /**
+             *  mimic (much of - need more overloads) STL variant
+             */
+            nonvirtual void erase (size_t from = 0);
+            nonvirtual void erase (size_t from, size_t count);
+
+        public:
+            /**
+             */
+            nonvirtual void push_back (wchar_t c);
+            nonvirtual void push_back (Character c);
+
+        public:
+            /**
+             *  Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
+             *  as Stroika::String::SubString (where the second argument is a 'to')
+             *
+             *  @see SubString
+             *
+             *  From http://en.cppreference.com/w/cpp/string/basic_string/substr
+             *      Returns a substring [pos, pos+count). If the requested substring extends
+             *      past the end of the string, or if count == npos, the returned substring is [pos, size()).
+             *      std::out_of_range if pos > size()
+             */
+            nonvirtual String substr (size_t from, size_t count = npos) const;
+
+        protected:
+            nonvirtual void _AssertRepValidType () const;
+
+        public:
+            friend wostream& operator<< (wostream& out, const String& s);
+            friend String    operator+ (const wchar_t* lhs, const String& rhs);
+        };
+
+        template <>
+        void String::As (wstring* into) const;
+        template <>
+        wstring String::As () const;
+        template <>
+        const wchar_t* String::As () const;
+        template <>
+        const Character* String::As () const;
+        template <>
+        u16string String::As () const;
+        template <>
+        u32string String::As () const;
+
+        template <>
+        void String::AsUTF8 (string* into) const;
+        template <>
+        string String::AsUTF8 () const;
+
+        template <>
+        void String::AsASCII (string* into) const;
+        template <>
+        string String::AsASCII () const;
+
+        template <>
+        pair<const Character*, const Character*> String::GetData () const;
+        template <>
+        pair<const wchar_t*, const wchar_t*> String::GetData () const;
+
+        /*
+            *  Equivilent to std::equal_to<String>, except doing case insensitive compares
+            */
+        struct String::EqualToCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals> {
+            nonvirtual bool operator() (const String& lhs, const String& rhs) const;
+        };
+
+        /*
+            *  Equivilent to std::less<String>, except doing case insensitive compares
+            */
+        struct String::LessCI : Common::ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder> {
+            nonvirtual bool operator() (const String& lhs, const String& rhs) const;
+        };
+
+        /**
+         * Protected helper Rep class.
+         */
+        class String::_IRep
+            : public Iterable<Character>::_IRep
 #if !qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-                ,
-                  public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<String::_IRep>
+            ,
+              public Traversal::IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<String::_IRep>
 #endif
-            {
-            protected:
-                using _IterableRepSharedPtr = String::_IterableRepSharedPtr;
+        {
+        protected:
+            using _IterableRepSharedPtr = String::_IterableRepSharedPtr;
 
-            protected:
-                using _SharedPtrIRep = String::_SharedPtrIRep;
+        protected:
+            using _SharedPtrIRep = String::_SharedPtrIRep;
 
-            protected:
-                _IRep () = default;
+        protected:
+            _IRep () = default;
 
-            protected:
-                _IRep (const wchar_t* start, const wchar_t* end);
+        protected:
+            _IRep (const wchar_t* start, const wchar_t* end);
 
-            public:
-                virtual ~_IRep () = default;
+        public:
+            virtual ~_IRep () = default;
 
-            protected:
-                /**
-                 *  PROTECTED INLINE UTILITY
-                 *  \req *end == '\0'
-                 *
-                 *  So allocated storage MUST always contain space for the terminating NUL-character.
-                 */
-                nonvirtual void _SetData (const wchar_t* start, const wchar_t* end);
-
-            protected:
-                /**
-                 *  PROTECTED INLINE UTILITY
-                 */
-                nonvirtual size_t _GetLength () const;
-
-            protected:
-                /**
-                 *  PROTECTED INLINE UTILITY
-                 */
-                nonvirtual Character _GetAt (size_t index) const;
-
-            protected:
-                /**
-                 *  PROTECTED INLINE UTILITY
-                 */
-                nonvirtual const Character* _Peek () const;
-
-                // Overrides for Iterable<Character>
-            public:
-                virtual Traversal::Iterator<Character> MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
-                virtual size_t                         GetLength () const override;
-                virtual bool                           IsEmpty () const override;
-                virtual void                           Apply (_APPLY_ARGTYPE doToElement) const override;
-                virtual Traversal::Iterator<Character> FindFirstThat (_APPLYUNTIL_ARGTYPE, Traversal::IteratorOwnerID suggestedOwner) const override;
-
-            public:
-                nonvirtual Character GetAt (size_t index) const;
-
-            public:
-                nonvirtual pair<const Character*, const Character*> GetData () const;
-
-            public:
-                /*
-                 *  Return a pointer to mostly standard (wide, nul-terminated) C string,
-                 *  whose lifetime extends to the next non-const call on this rep.
-                 *
-                 *  It is only 'mostly' standard because it is allowed to have nul-chars embedded in it. But it will
-                 *  always have str[len] == 0;
-                 *
-                 *  \ensure returnResult[len] == '\0';
-                 */
-                virtual const wchar_t* c_str_peek () const noexcept = 0;
-
-            public:
-                /*
-                 *  CopyTo () copies the contents of this string to the target buffer.
-                 *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->GetLength ()
-                 */
-                nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
-                nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
-
-            protected:
-                const wchar_t* _fStart;
-                const wchar_t* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
-
-            private:
-                friend class String;
-            };
-
+        protected:
             /**
-             *  Use Stroika String more easily with std::ostream.
+             *  PROTECTED INLINE UTILITY
+             *  \req *end == '\0'
              *
-             *  \note   EXPERIMENTAL API (added /as of 2014-02-15 - Stroika 2.0a21)
-             *
-             *  \note   Note sure how well this works being in a namespace!
-             *
-             *  \note   Intentionally dont do operator>> because not so well defined for strings (could do as wtith STL I guess?)
-             *
-             *  \note   tried to use templates to avoid the need to create a dependency of this module on iostream,
-             *          but that failed (maybe doable but overloading was trickier).
+             *  So allocated storage MUST always contain space for the terminating NUL-character.
              */
-            wostream& operator<< (wostream& out, const String& s);
+            nonvirtual void _SetData (const wchar_t* start, const wchar_t* end);
 
+        protected:
             /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+             *  PROTECTED INLINE UTILITY
              */
-            bool operator< (const String& lhs, const String& rhs);
-            bool operator< (const String& lhs, const wchar_t* rhs);
-            bool operator< (const wchar_t* lhs, const String& rhs);
+            nonvirtual size_t _GetLength () const;
 
+        protected:
             /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+             *  PROTECTED INLINE UTILITY
              */
-            bool operator<= (const String& lhs, const String& rhs);
-            bool operator<= (const String& lhs, const wchar_t* rhs);
-            bool operator<= (const wchar_t* lhs, const String& rhs);
+            nonvirtual Character _GetAt (size_t index) const;
 
+        protected:
             /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
+             *  PROTECTED INLINE UTILITY
              */
-            bool operator== (const String& lhs, const String& rhs);
-            bool operator== (const String& lhs, const wchar_t* rhs);
-            bool operator== (const wchar_t* lhs, const String& rhs);
+            nonvirtual const Character* _Peek () const;
 
-            /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
-             */
-            bool operator!= (const String& lhs, const String& rhs);
-            bool operator!= (const String& lhs, const wchar_t* rhs);
-            bool operator!= (const wchar_t* lhs, const String& rhs);
+            // Overrides for Iterable<Character>
+        public:
+            virtual Traversal::Iterator<Character> MakeIterator (Traversal::IteratorOwnerID suggestedOwner) const override;
+            virtual size_t                         GetLength () const override;
+            virtual bool                           IsEmpty () const override;
+            virtual void                           Apply (_APPLY_ARGTYPE doToElement) const override;
+            virtual Traversal::Iterator<Character> FindFirstThat (_APPLYUNTIL_ARGTYPE, Traversal::IteratorOwnerID suggestedOwner) const override;
 
-            /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
-             */
-            bool operator>= (const String& lhs, const String& rhs);
-            bool operator>= (const String& lhs, const wchar_t* rhs);
-            bool operator>= (const wchar_t* lhs, const String& rhs);
+        public:
+            nonvirtual Character GetAt (size_t index) const;
 
-            /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
-             */
-            bool operator> (const String& lhs, const String& rhs);
-            bool operator> (const String& lhs, const wchar_t* rhs);
-            bool operator> (const wchar_t* lhs, const String& rhs);
+        public:
+            nonvirtual pair<const Character*, const Character*> GetData () const;
 
-            /**
-             *  Basic operator overload with the obivous meaning, and simply indirect to @String::Concatenate (const String& rhs)
-             */
-            String operator+ (const String& lhs, const wchar_t* rhs);
-            String operator+ (const String& lhs, const String& rhs);
-            String operator+ (const wchar_t* lhs, const String& rhs);
+        public:
+            /*
+                *  Return a pointer to mostly standard (wide, nul-terminated) C string,
+                *  whose lifetime extends to the next non-const call on this rep.
+                *
+                *  It is only 'mostly' standard because it is allowed to have nul-chars embedded in it. But it will
+                *  always have str[len] == 0;
+                *
+                *  \ensure returnResult[len] == '\0';
+                */
+            virtual const wchar_t* c_str_peek () const noexcept = 0;
 
-            /**
-             *  This can be referenced in your ModuleInitializer<> to force correct inter-module construction order.
-             */
-            Execution::ModuleDependency MakeModuleDependency_String ();
-        }
+        public:
+            /*
+                *  CopyTo () copies the contents of this string to the target buffer.
+                *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom) is >= this->GetLength ()
+                */
+            nonvirtual void CopyTo (Character* bufFrom, Character* bufTo) const;
+            nonvirtual void CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
+
+        protected:
+            const wchar_t* _fStart;
+            const wchar_t* _fEnd; // \note - _fEnd must always point to a 'NUL' character, so the underlying array extends one or more beyond
+
+        private:
+            friend class String;
+        };
+
+        /**
+         *  Use Stroika String more easily with std::ostream.
+         *
+         *  \note   EXPERIMENTAL API (added /as of 2014-02-15 - Stroika 2.0a21)
+         *
+         *  \note   Note sure how well this works being in a namespace!
+         *
+         *  \note   Intentionally dont do operator>> because not so well defined for strings (could do as wtith STL I guess?)
+         *
+         *  \note   tried to use templates to avoid the need to create a dependency of this module on iostream,
+         *          but that failed (maybe doable but overloading was trickier).
+         */
+        wostream& operator<< (wostream& out, const String& s);
+
+        /**
+         *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+         */
+        bool operator< (const String& lhs, const String& rhs);
+        bool operator< (const String& lhs, const wchar_t* rhs);
+        bool operator< (const wchar_t* lhs, const String& rhs);
+
+        /**
+         *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+         */
+        bool operator<= (const String& lhs, const String& rhs);
+        bool operator<= (const String& lhs, const wchar_t* rhs);
+        bool operator<= (const wchar_t* lhs, const String& rhs);
+
+        /**
+         *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
+         */
+        bool operator== (const String& lhs, const String& rhs);
+        bool operator== (const String& lhs, const wchar_t* rhs);
+        bool operator== (const wchar_t* lhs, const String& rhs);
+
+        /**
+         *  Basic operator overload with the obivous meaning, and simply indirect to @String::Equals (const String& rhs)
+         */
+        bool operator!= (const String& lhs, const String& rhs);
+        bool operator!= (const String& lhs, const wchar_t* rhs);
+        bool operator!= (const wchar_t* lhs, const String& rhs);
+
+        /**
+         *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+         */
+        bool operator>= (const String& lhs, const String& rhs);
+        bool operator>= (const String& lhs, const wchar_t* rhs);
+        bool operator>= (const wchar_t* lhs, const String& rhs);
+
+        /**
+         *  Basic operator overload with the obivous meaning, and simply indirect to @String::Compare (const String& rhs)
+         */
+        bool operator> (const String& lhs, const String& rhs);
+        bool operator> (const String& lhs, const wchar_t* rhs);
+        bool operator> (const wchar_t* lhs, const String& rhs);
+
+        /**
+         *  Basic operator overload with the obivous meaning, and simply indirect to @String::Concatenate (const String& rhs)
+         */
+        String operator+ (const String& lhs, const wchar_t* rhs);
+        String operator+ (const String& lhs, const String& rhs);
+        String operator+ (const wchar_t* lhs, const String& rhs);
+
+        /**
+         *  This can be referenced in your ModuleInitializer<> to force correct inter-module construction order.
+         */
+        Execution::ModuleDependency MakeModuleDependency_String ();
     }
 }
 

@@ -31,164 +31,162 @@
  *              the right thing for queer cases like this, and use this API for the most common cases.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
+namespace Stroika::Foundation {
+    namespace Characters {
 
+        /**
+         */
+        enum class CompareOptions : uint8_t {
+            eWithCase,
+            eCaseInsensitive,
+
+            Stroika_Define_Enum_Bounds (eWithCase, eCaseInsensitive)
+        };
+
+        /**
+         *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+         */
+        class Character {
+        public:
             /**
              */
-            enum class CompareOptions : uint8_t {
-                eWithCase,
-                eCaseInsensitive,
+            constexpr Character ();
+            constexpr Character (char c);
+            constexpr Character (char16_t c);
+            constexpr Character (char32_t c); // @todo decide how to handle surrogates
+            constexpr Character (wchar_t wc);
 
-                Stroika_Define_Enum_Bounds (eWithCase, eCaseInsensitive)
-            };
-
+        public:
             /**
-             *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+             *  \req IsASCII()
              */
-            class Character {
-            public:
-                /**
-                 */
-                constexpr Character ();
-                constexpr Character (char c);
-                constexpr Character (char16_t c);
-                constexpr Character (char32_t c); // @todo decide how to handle surrogates
-                constexpr Character (wchar_t wc);
+            nonvirtual char GetAsciiCode () const;
 
-            public:
-                /**
-                 *  \req IsASCII()
-                 */
-                nonvirtual char GetAsciiCode () const;
+        public:
+            nonvirtual wchar_t GetCharacterCode () const;
 
-            public:
-                nonvirtual wchar_t GetCharacterCode () const;
+        public:
+            /*
+                * @todo    NOT SURE WE WANT THIS FOR wchar_t etc - maybe just get rid of this!!! TRICKYYY;
+                *          IF we go with design based on char32_t - then thats all we can ever safely return.
+                *          We need diff API to return up to 2 wchar_t's!!!
+                */
+            template <typename T>
+            nonvirtual T As () const;
 
-            public:
-                /*
-                 * @todo    NOT SURE WE WANT THIS FOR wchar_t etc - maybe just get rid of this!!! TRICKYYY;
-                 *          IF we go with design based on char32_t - then thats all we can ever safely return.
-                 *          We need diff API to return up to 2 wchar_t's!!!
-                 */
-                template <typename T>
-                nonvirtual T As () const;
+        public:
+            nonvirtual bool IsASCII () const;
 
-            public:
-                nonvirtual bool IsASCII () const;
+        public:
+            nonvirtual bool IsWhitespace () const;
 
-            public:
-                nonvirtual bool IsWhitespace () const;
+        public:
+            nonvirtual bool IsDigit () const;
 
-            public:
-                nonvirtual bool IsDigit () const;
+        public:
+            nonvirtual bool IsHexDigit () const;
 
-            public:
-                nonvirtual bool IsHexDigit () const;
+        public:
+            nonvirtual bool IsAlphabetic () const;
 
-            public:
-                nonvirtual bool IsAlphabetic () const;
+        public:
+            // Checks if the given character is uppper case. Can be called on any character.
+            // Returns false if not alphabetic
+            nonvirtual bool IsUpperCase () const;
 
-            public:
-                // Checks if the given character is uppper case. Can be called on any character.
-                // Returns false if not alphabetic
-                nonvirtual bool IsUpperCase () const;
+        public:
+            // Checks if the given character is lower case. Can be called on any character.
+            // Returns false if not alphabetic
+            nonvirtual bool IsLowerCase () const;
 
-            public:
-                // Checks if the given character is lower case. Can be called on any character.
-                // Returns false if not alphabetic
-                nonvirtual bool IsLowerCase () const;
+        public:
+            nonvirtual bool IsAlphaNumeric () const;
 
-            public:
-                nonvirtual bool IsAlphaNumeric () const;
+        public:
+            nonvirtual bool IsPunctuation () const;
 
-            public:
-                nonvirtual bool IsPunctuation () const;
+        public:
+            nonvirtual bool IsControl () const;
 
-            public:
-                nonvirtual bool IsControl () const;
-
-            public:
-                /**
-                 *      Note that this does NOT modify the character in place but returns the new desired
-                 * character.
-                 *
-                 *      It is not necessary to first check
-                 * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the
-                 * original character if there is no sensible conversion.
-                 */
-                nonvirtual Character ToLowerCase () const;
-
-            public:
-                /**
-                 *      Note that this does NOT modify the character in place but returns the new desired
-                 * character.
-                 *
-                 *      It is not necessary to first check
-                 * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the
-                 * original character if there is no sensible conversion.
-                 */
-                nonvirtual Character ToUpperCase () const;
-
-            public:
-                /**
-                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                 */
-                nonvirtual int Compare (Character rhs) const;
-                nonvirtual int Compare (Character rhs, CompareOptions co) const;
-
-            public:
-                static int Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
-
-            private:
-                wchar_t fCharacterCode_;
-            };
-
-            template <>
-            wchar_t Character::As () const;
-            template <>
-            char32_t Character::As () const;
-
+        public:
             /**
-             *  operator indirects to Character::Compare()
+             *      Note that this does NOT modify the character in place but returns the new desired
+             * character.
+             *
+             *      It is not necessary to first check
+             * if the argument character is uppercase or alpabetic. ToLowerCase () just returns the
+             * original character if there is no sensible conversion.
              */
-            bool operator< (Character lhs, Character rhs);
+            nonvirtual Character ToLowerCase () const;
 
+        public:
             /**
-             *  operator indirects to Character::Compare()
+             *      Note that this does NOT modify the character in place but returns the new desired
+             * character.
+             *
+             *      It is not necessary to first check
+             * if the argument character is lowercase or alpabetic. ToUpperCase () just returns the
+             * original character if there is no sensible conversion.
              */
-            bool operator<= (Character lhs, Character rhs);
+            nonvirtual Character ToUpperCase () const;
 
+        public:
             /**
-             *  operator indirects to Character::Compare()
+             *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
              */
-            bool operator== (Character lhs, Character rhs);
+            nonvirtual int Compare (Character rhs) const;
+            nonvirtual int Compare (Character rhs, CompareOptions co) const;
 
-            /**
-             *  operator indirects to Character::Compare()
-             */
-            bool operator!= (Character lhs, Character rhs);
+        public:
+            static int Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
 
-            /**
-             *  operator indirects to Character::Compare()
-             */
-            bool operator>= (Character lhs, Character rhs);
+        private:
+            wchar_t fCharacterCode_;
+        };
 
-            /**
-             *  operator indirects to Character::Compare()
-             */
-            bool operator> (Character lhs, Character rhs);
+        template <>
+        wchar_t Character::As () const;
+        template <>
+        char32_t Character::As () const;
 
-            /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE
-            /// SO I CAN SEARCH FOR IT AND FIX IT WHEN I HAVE A GOOD IDEA HOW.
-            //
-            // ASSUME sizeof(wchar_t) same as sizeof (Character) everwhere so the cast between
-            // them is safe
-            inline const wchar_t* CVT_CHARACTER_2_wchar_t (const Character* c)
-            {
-                return reinterpret_cast<const wchar_t*> (c);
-            }
+        /**
+         *  operator indirects to Character::Compare()
+         */
+        bool operator< (Character lhs, Character rhs);
+
+        /**
+         *  operator indirects to Character::Compare()
+         */
+        bool operator<= (Character lhs, Character rhs);
+
+        /**
+         *  operator indirects to Character::Compare()
+         */
+        bool operator== (Character lhs, Character rhs);
+
+        /**
+         *  operator indirects to Character::Compare()
+         */
+        bool operator!= (Character lhs, Character rhs);
+
+        /**
+         *  operator indirects to Character::Compare()
+         */
+        bool operator>= (Character lhs, Character rhs);
+
+        /**
+         *  operator indirects to Character::Compare()
+         */
+        bool operator> (Character lhs, Character rhs);
+
+        /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE
+        /// SO I CAN SEARCH FOR IT AND FIX IT WHEN I HAVE A GOOD IDEA HOW.
+        //
+        // ASSUME sizeof(wchar_t) same as sizeof (Character) everwhere so the cast between
+        // them is safe
+        inline const wchar_t* CVT_CHARACTER_2_wchar_t (const Character* c)
+        {
+            return reinterpret_cast<const wchar_t*> (c);
         }
     }
 }
