@@ -6,16 +6,14 @@
 
 #include "../StroikaPreComp.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
+namespace Stroika::Foundation {
+    namespace Configuration {
 
-            /**
-             *  Believe it or not, this is often useful in template metaprogramming.
-             */
-            struct Empty {
-            };
-        }
+        /**
+         *  Believe it or not, this is often useful in template metaprogramming.
+         */
+        struct Empty {
+        };
     }
 }
 

@@ -10,10 +10,8 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-        }
+namespace Stroika::Foundation {
+    namespace Characters {
     }
 }
 #endif // _Stroika_Foundation_Characters_String_stdwstring_inl_

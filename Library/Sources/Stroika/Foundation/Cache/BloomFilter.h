@@ -24,28 +24,26 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cache {
+namespace Stroika::Foundation {
+    namespace Cache {
 
+        /**
+         *  @todo   very rough initial draft of API
+         */
+        template <typename T>
+        class BloomFilter<T> {
+        public:
+            nonvirtual void Add (T elt);
+
+        public:
+            nonvirtual void Remove (T elt);
+
+        public:
             /**
-             *  @todo   very rough initial draft of API
+             *  False positive retrieval results are possible, but false negatives are not;
              */
-            template <typename T>
-            class BloomFilter<T> {
-            public:
-                nonvirtual void Add (T elt);
-
-            public:
-                nonvirtual void Remove (T elt);
-
-            public:
-                /**
-                 *  False positive retrieval results are possible, but false negatives are not;
-                 */
-                nonvirtual void IsPresent (T elt) const;
-            };
-        }
+            nonvirtual void IsPresent (T elt) const;
+        };
     }
 }
 

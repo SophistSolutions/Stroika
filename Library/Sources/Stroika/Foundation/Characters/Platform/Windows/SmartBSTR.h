@@ -27,55 +27,53 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation {
+    namespace Characters {
+        namespace Platform {
+            namespace Windows {
 
-                    /**
-                     *  Avoid dependency on CComBSTR since its part of ATL, and MSFT doesn't distribute that in Visual Studio Express.
-                     *  Avoid _bstr_t since I'm not sure thats portable to other SDK implementations (e.g. Mingw?? not sure)
-                     */
-                    class SmartBSTR {
-                    public:
-                        SmartBSTR () = default;
-                        SmartBSTR (nullptr_t) {}
-                        SmartBSTR (const wchar_t* from)
-                            : fStr_ (::SysAllocString (from))
-                        {
-                            RequireNotNull (from);
+                /**
+                 *  Avoid dependency on CComBSTR since its part of ATL, and MSFT doesn't distribute that in Visual Studio Express.
+                 *  Avoid _bstr_t since I'm not sure thats portable to other SDK implementations (e.g. Mingw?? not sure)
+                 */
+                class SmartBSTR {
+                public:
+                    SmartBSTR () = default;
+                    SmartBSTR (nullptr_t) {}
+                    SmartBSTR (const wchar_t* from)
+                        : fStr_ (::SysAllocString (from))
+                    {
+                        RequireNotNull (from);
+                    }
+                    ~SmartBSTR ()
+                    {
+                        if (fStr_ != nullptr) {
+                            ::SysFreeString (fStr_);
                         }
-                        ~SmartBSTR ()
-                        {
-                            if (fStr_ != nullptr) {
-                                ::SysFreeString (fStr_);
-                            }
+                    }
+                    SmartBSTR& operator= (const SmartBSTR& rhs)
+                    {
+                        if (fStr_ != nullptr) {
+                            ::SysFreeString (fStr_);
+                            fStr_ = NULL;
                         }
-                        SmartBSTR& operator= (const SmartBSTR& rhs)
-                        {
-                            if (fStr_ != nullptr) {
-                                ::SysFreeString (fStr_);
-                                fStr_ = NULL;
-                            }
-                            if (rhs.fStr_ != nullptr) {
-                                fStr_ = ::SysAllocString (rhs.fStr_);
-                            }
-                            return *this;
+                        if (rhs.fStr_ != nullptr) {
+                            fStr_ = ::SysAllocString (rhs.fStr_);
                         }
-                        operator BSTR () const noexcept
-                        {
-                            return fStr_;
-                        }
-                        unsigned int Length () const noexcept
-                        {
-                            return ::SysStringLen (fStr_);
-                        }
+                        return *this;
+                    }
+                    operator BSTR () const noexcept
+                    {
+                        return fStr_;
+                    }
+                    unsigned int Length () const noexcept
+                    {
+                        return ::SysStringLen (fStr_);
+                    }
 
-                    private:
-                        BSTR fStr_ = nullptr;
-                    };
-                }
+                private:
+                    BSTR fStr_ = nullptr;
+                };
             }
         }
     }

@@ -59,94 +59,92 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-            namespace Concrete {
+namespace Stroika::Foundation {
+    namespace Characters {
+        namespace Concrete {
 
-                /*
-                 *  String_ExternalMemoryOwnership_StackLifetime is a subtype of String you can use to construct a String object, so long as the memory pointed to
-                 * in the argument has a
-                 *      o   Greater lifetime than the String_ExternalMemoryOwnership_StackLifetime envelope class
-                 *      o   and buffer data never changes value externally to this String represenation
-                 *
-                ///REVIEW - PRETTY SURE THIS IS WRONG!!!! - UNSAFE - READONLY SHOULD mean pointer passed in is CONST - so memory may NOT be modified in this case -- LGP 2012-03-28
-                /// DOBLE CHECK NO ASSIMPTIONS BELOW - WRONG - LINE NOT ASSUMED ANYWHERE
-                 *  Note that the memory passed in must be READ/WRITE - and may be modified by the String_ExternalMemoryOwnership_StackLifetime ()!
-                 *
-                 *  Strings constructed with this String_ExternalMemoryOwnership_StackLifetime maybe treated like normal strings - passed anywhere, and even modified via the
-                 *  String APIs. However, the underlying implementation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
-                 *  and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
-                 *
-                 *  This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
-                 *  call a 'String' based API. The argument C-string will be used to handle all the Stroika-String operations, and never modified, and the
-                 *  association will be broken when the String_ExternalMemoryOwnership_StackLifetime goes out of scope.
-                 *
-                 *  This means its EVEN safe to use in cases where the String object might get assigned to long-lived String variables (the internal data will be
-                 *  copied in that case).
-                 *
-                 *  For example
-                 *
-                 *      extern String saved;
-                 *      inline  String  F(String x)         { saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
-                 *
-                 *
-                 *      void f (const wchar_t* cs)
-                 *          {
-                 *              F(L"FRED";);
-                 *              F(String (L"FRED"));
-                 *              F(String_ExternalMemoryOwnership_StackLifetime (cs));
-                 *          }
-                 *
-                 *  These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime()
-                 *  based memory maybe more efficient than the previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
-                 *
-                 *      <<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
-                 *          real optimized implementation >>
-                 *
-                 *
-                 *  TODO::::COOPY SOME OF THIS - CLEANUP THESE DCOS
-                 *
-                *       This class looks and acts like a regular String object, but with the performance advantage
-                *   that it requires no (significant) free-store allocation. It allocates a 'rep' object from
-                *   block-allocation, and re-uses its argument pointers for actual string character storage.
+            /*
+                *  String_ExternalMemoryOwnership_StackLifetime is a subtype of String you can use to construct a String object, so long as the memory pointed to
+                * in the argument has a
+                *      o   Greater lifetime than the String_ExternalMemoryOwnership_StackLifetime envelope class
+                *      o   and buffer data never changes value externally to this String represenation
                 *
-                *       Also important, it avoids having todo any copying of the original string.
+            ///REVIEW - PRETTY SURE THIS IS WRONG!!!! - UNSAFE - READONLY SHOULD mean pointer passed in is CONST - so memory may NOT be modified in this case -- LGP 2012-03-28
+            /// DOBLE CHECK NO ASSIMPTIONS BELOW - WRONG - LINE NOT ASSUMED ANYWHERE
+                *  Note that the memory passed in must be READ/WRITE - and may be modified by the String_ExternalMemoryOwnership_StackLifetime ()!
                 *
-                *       It can avoid these costs under MANY - but not ALL circumstances. This underlying String
-                *   object may remain highly efficient (working off stack memory) only so long as its original
-                *   String_ExternalMemoryOwnership_StackLifetime exsts. Once that goes out of scope
-                *   the underlying StringRep must be 'morphed' effectively into a regular string-rep (if there
-                *   remain any references.
+                *  Strings constructed with this String_ExternalMemoryOwnership_StackLifetime maybe treated like normal strings - passed anywhere, and even modified via the
+                *  String APIs. However, the underlying implementation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
+                *  and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
                 *
-                *       Also - SOME APIS (still TBD, but perhaps including c_str()) - will force that morphing
-                *   /copying.
+                *  This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
+                *  call a 'String' based API. The argument C-string will be used to handle all the Stroika-String operations, and never modified, and the
+                *  association will be broken when the String_ExternalMemoryOwnership_StackLifetime goes out of scope.
                 *
-                *       This can STILL be a HUGE performance benefit. Consider a shim API between Xerces and
-                *   Stroika - for SAX - where lots of strings are efficiently passed by Xerces - and are forwarded
-                *   to Stroika 'SAX' APIs. But consider a usage, where several of the strings are never used.
+                *  This means its EVEN safe to use in cases where the String object might get assigned to long-lived String variables (the internal data will be
+                *  copied in that case).
                 *
-                *       The shim would be copying/converting these strings, all for no purpose, since they never
-                *   got used. This cost can be almost totally eliminated.
+                *  For example
                 *
-                *       Plus - many - perhaps even most String API methods can be applied to these ligher cost
-                *   strings in that 'SAX Callback' scenario without ever constructing high-cost String objects.
+                *      extern String saved;
+                *      inline  String  F(String x)         { saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
                 *
-                *       But - if anyone ever does allocate one of those objects - no biggie. It just gets morphed
-                *   and the cost paid then.
                 *
-                *       THATS THE PLAN ANYHOW....
-                 */
-                class String_ExternalMemoryOwnership_StackLifetime : public String {
-                private:
-                    using inherited = String;
+                *      void f (const wchar_t* cs)
+                *          {
+                *              F(L"FRED";);
+                *              F(String (L"FRED"));
+                *              F(String_ExternalMemoryOwnership_StackLifetime (cs));
+                *          }
+                *
+                *  These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime()
+                *  based memory maybe more efficient than the previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
+                *
+                *      <<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
+                *          real optimized implementation >>
+                *
+                *
+                *  TODO::::COOPY SOME OF THIS - CLEANUP THESE DCOS
+                *
+            *       This class looks and acts like a regular String object, but with the performance advantage
+            *   that it requires no (significant) free-store allocation. It allocates a 'rep' object from
+            *   block-allocation, and re-uses its argument pointers for actual string character storage.
+            *
+            *       Also important, it avoids having todo any copying of the original string.
+            *
+            *       It can avoid these costs under MANY - but not ALL circumstances. This underlying String
+            *   object may remain highly efficient (working off stack memory) only so long as its original
+            *   String_ExternalMemoryOwnership_StackLifetime exsts. Once that goes out of scope
+            *   the underlying StringRep must be 'morphed' effectively into a regular string-rep (if there
+            *   remain any references.
+            *
+            *       Also - SOME APIS (still TBD, but perhaps including c_str()) - will force that morphing
+            *   /copying.
+            *
+            *       This can STILL be a HUGE performance benefit. Consider a shim API between Xerces and
+            *   Stroika - for SAX - where lots of strings are efficiently passed by Xerces - and are forwarded
+            *   to Stroika 'SAX' APIs. But consider a usage, where several of the strings are never used.
+            *
+            *       The shim would be copying/converting these strings, all for no purpose, since they never
+            *   got used. This cost can be almost totally eliminated.
+            *
+            *       Plus - many - perhaps even most String API methods can be applied to these ligher cost
+            *   strings in that 'SAX Callback' scenario without ever constructing high-cost String objects.
+            *
+            *       But - if anyone ever does allocate one of those objects - no biggie. It just gets morphed
+            *   and the cost paid then.
+            *
+            *       THATS THE PLAN ANYHOW....
+                */
+            class String_ExternalMemoryOwnership_StackLifetime : public String {
+            private:
+                using inherited = String;
 
-                public:
-                    explicit String_ExternalMemoryOwnership_StackLifetime (const wchar_t* cString);
-                    // DOCUMENT THESE NEW EXTRA CTORS!!! NYI
-                    explicit String_ExternalMemoryOwnership_StackLifetime (const wchar_t* start, const wchar_t* end);
-                };
-            }
+            public:
+                explicit String_ExternalMemoryOwnership_StackLifetime (const wchar_t* cString);
+                // DOCUMENT THESE NEW EXTRA CTORS!!! NYI
+                explicit String_ExternalMemoryOwnership_StackLifetime (const wchar_t* start, const wchar_t* end);
+            };
         }
     }
 }

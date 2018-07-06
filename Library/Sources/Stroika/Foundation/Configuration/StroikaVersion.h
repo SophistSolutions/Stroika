@@ -21,15 +21,13 @@
  */
 
 #if defined(__cplusplus)
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
+namespace Stroika::Foundation {
+    namespace Configuration {
 #endif
 
 #include "Stroika-Current-Version.h"
 
 #if defined(__cplusplus)
-        }
     }
 }
 #endif
