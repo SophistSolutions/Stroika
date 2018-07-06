@@ -16,7 +16,6 @@ Objs	=	\
 	$(ObjDir)FloatConversion.o\
 	$(ObjDir)Format.o\
 	$(ObjDir)RegularExpression.o\
-	$(ObjDir)SDKString.o\
 	$(ObjDir)String.o\
 	$(ObjDir)StringBuilder.o\
 	$(ObjDir)String2Int.o\
