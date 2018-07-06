@@ -19,10 +19,10 @@ namespace Stroika::Foundation {
     namespace Containers {
 
         /*
-            ********************************************************************************
-            ******************** Association<KEY_TYPE, MAPPED_VALUE_TYPE> **********************
-            ********************************************************************************
-            */
+         ********************************************************************************
+         ******************** Association<KEY_TYPE, MAPPED_VALUE_TYPE> ******************
+         ********************************************************************************
+         */
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
         inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association ()
             : inherited (move (Factory::Association_Factory<KEY_TYPE, MAPPED_VALUE_TYPE, false_type> () ()))
@@ -506,10 +506,10 @@ namespace Stroika::Foundation {
         }
 
         /*
-            ********************************************************************************
-            ************************** Association operators ***********************************
-            ********************************************************************************
-            */
+         ********************************************************************************
+         ************************** Association operators *******************************
+         ********************************************************************************
+         */
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
         inline bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
         {
@@ -521,6 +521,5 @@ namespace Stroika::Foundation {
             return not lhs.Equals (rhs);
         }
     }
-}
 }
 #endif /* _Stroika_Foundation_Containers_Association_inl_ */
