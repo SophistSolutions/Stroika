@@ -62,8 +62,8 @@ namespace {
             struct A;
             struct B;
             struct A {
-                A () = default;
-                A (const A&)= default;
+                A ()         = default;
+                A (const A&) = default;
                 A (const B&) {}
             };
             struct B {
