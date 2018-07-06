@@ -249,7 +249,7 @@ size_t Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, s
 Response Connection_LibCurl::Rep_::Send (const Request& request)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
-    Debug::TraceContextBumper ctx ("Connection_LibCurl::Rep_::Send", L"method='%s'", request.fMethod.c_str ());
+    Debug::TraceContextBumper{ L"Connection_LibCurl::Rep_::Send", L"method='%s'", request.fMethod.c_str () };
 #endif
     MakeHandleIfNeeded_ ();
     fUploadData_       = request.fData.As<vector<Byte>> ();
