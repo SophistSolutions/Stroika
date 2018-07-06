@@ -138,7 +138,7 @@ namespace Stroika {
                  *
                  *  \note All DateTime constructors REQUIRE valid (in range) arguments.
                  *
-                 *  \note TimeOfDay arguments *must* not be 'empty' - instead use Optional<TimeOfDay> {nullopt} overload (since Stroika 2.1d4)
+                 *  \note TimeOfDay arguments *must* not be 'empty' - instead use optional<TimeOfDay> {nullopt} overload (since Stroika 2.1d4)
                  */
                 constexpr DateTime () noexcept;
                 constexpr DateTime (const DateTime& src) = default;
