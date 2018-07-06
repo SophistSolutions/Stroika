@@ -30,13 +30,13 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
 #if 0
-            //  https://stroika.atlassian.net/browse/STK-541
-            template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            inline  Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (Association<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) noexcept
-                : inherited (move (src))
-            {
-                _AssertRepValidType ();
-            }
+        //  https://stroika.atlassian.net/browse/STK-541
+        template    <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+        inline  Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (Association<KEY_TYPE, MAPPED_VALUE_TYPE>&& src) noexcept
+            : inherited (move (src))
+        {
+            _AssertRepValidType ();
+        }
 #endif
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
         inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src)
@@ -193,10 +193,10 @@ namespace Stroika::Foundation {
         inline void Association<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
         {
             /*
-                *  Note - unlike other containers - we dont need to check for this != &s because if we
-                *  attempt to add items that already exist, it would do nothing to our iteration
-                *  and therefore not lead to an infinite loop.
-                */
+            *  Note - unlike other containers - we dont need to check for this != &s because if we
+            *  attempt to add items that already exist, it would do nothing to our iteration
+            *  and therefore not lead to an infinite loop.
+            */
             AddAll (std::begin (items), std::end (items));
         }
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
@@ -239,13 +239,13 @@ namespace Stroika::Foundation {
         {
             // @see https://stroika.atlassian.net/browse/STK-539
 #if 0
-                Association<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Association<KEY_TYPE, MAPPED_VALUE_TYPE>{ _SafeReadRepAccessor<_IRep> { this }._ConstGetRep ().CloneEmpty (this) };
-                for (auto key2Keep : items) {
-                    if (auto l = this->Lookup (key2Keep)) {
-                        result.Add (key2Keep, *l);
-                    }
+            Association<KEY_TYPE, MAPPED_VALUE_TYPE>   result = Association<KEY_TYPE, MAPPED_VALUE_TYPE>{ _SafeReadRepAccessor<_IRep> { this }._ConstGetRep ().CloneEmpty (this) };
+            for (auto key2Keep : items) {
+                if (auto l = this->Lookup (key2Keep)) {
+                    result.Add (key2Keep, *l);
                 }
-                *this = result;
+            }
+            *this = result;
 #else
             // cannot easily use STL::less because our Association class only requires KeyEqualsCompareFunctionType - SO - should use Stroika Set<> But dont want cross-dependencies if not needed
             set<KEY_TYPE> tmp (items.begin (), items.end ()); // @todo - weak implementation because of 'comparison' function, and performance (if items already a set)
@@ -311,8 +311,8 @@ namespace Stroika::Foundation {
         bool Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Equals (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer) const
         {
             /*
-                *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
-                */
+            *    @todo   THIS CODE IS TOO COMPLICATED, and COULD USE CLEANUP/CODE REVIEW - LGP 2014-06-11
+            */
             _SafeReadRepAccessor<_IRep> lhs{this};
             _SafeReadRepAccessor<_IRep> rhsR{&rhs};
             if (&lhs._ConstGetRep () == &rhsR._ConstGetRep ()) {
@@ -324,10 +324,10 @@ namespace Stroika::Foundation {
                 return false;
             }
             /*
-                *  Two Associations compare equal, if they have the same domain, and map each element of that domain to the same range.
-                *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
-                *  If they miss, we need to fall back to a slower strategy.
-                */
+            *  Two Associations compare equal, if they have the same domain, and map each element of that domain to the same range.
+            *  They need not be in the same order to compare equals. Still - they often are, and if they are, this algorithm is faster.
+            *  If they miss, we need to fall back to a slower strategy.
+            */
             auto li = lhs._ConstGetRep ().MakeIterator (this);
             auto ri = rhs.MakeIterator ();
             while (not li.Done ()) {
@@ -405,10 +405,10 @@ namespace Stroika::Foundation {
         }
 
         /*
-            ********************************************************************************
-            ****************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
-            ********************************************************************************
-            */
+        ********************************************************************************
+        ****************** Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep *****************
+        ********************************************************************************
+        */
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
         Iterable<KEY_TYPE> Association<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep::_Keys_Reference_Implementation () const
         {
@@ -506,10 +506,10 @@ namespace Stroika::Foundation {
         }
 
         /*
-         ********************************************************************************
-         ************************** Association operators *******************************
-         ********************************************************************************
-         */
+        ********************************************************************************
+        ************************** Association operators ***********************************
+        ********************************************************************************
+        */
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
         inline bool operator== (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& lhs, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs)
         {

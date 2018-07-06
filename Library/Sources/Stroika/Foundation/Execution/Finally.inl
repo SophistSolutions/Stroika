@@ -12,39 +12,36 @@
 
 #include "Exceptions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            /*
-             ********************************************************************************
-             **************************** Execution::FinallySentry **************************
-             ********************************************************************************
-             */
-            template <typename FUNCTION>
-            inline FinallySentry<FUNCTION>::FinallySentry (FUNCTION f)
-                : fCleanupCodeBlock_ (move (f))
-            {
-            }
-            template <typename FUNCTION>
-            inline FinallySentry<FUNCTION>::~FinallySentry ()
-            {
-                // consider checking noexcept(f) and not doing the ignore, but that being helpful depends on compiler
-                // analysis, which if done, probably always optimizes this try/catch anyhow
-                IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
-            }
-
-            /*
-             ********************************************************************************
-             ******************************* Execution::Finally *****************************
-             ********************************************************************************
-             */
-            template <typename FUNCTION>
-            inline auto Finally (FUNCTION f) -> FinallySentry<FUNCTION>
-            {
-                return {std::move (f)};
-            }
-        }
+    /*
+     ********************************************************************************
+     **************************** Execution::FinallySentry **************************
+     ********************************************************************************
+     */
+    template <typename FUNCTION>
+    inline FinallySentry<FUNCTION>::FinallySentry (FUNCTION f)
+        : fCleanupCodeBlock_ (move (f))
+    {
     }
+    template <typename FUNCTION>
+    inline FinallySentry<FUNCTION>::~FinallySentry ()
+    {
+        // consider checking noexcept(f) and not doing the ignore, but that being helpful depends on compiler
+        // analysis, which if done, probably always optimizes this try/catch anyhow
+        IgnoreExceptionsForCall (fCleanupCodeBlock_ ());
+    }
+
+    /*
+     ********************************************************************************
+     ******************************* Execution::Finally *****************************
+     ********************************************************************************
+     */
+    template <typename FUNCTION>
+    inline auto Finally (FUNCTION f) -> FinallySentry<FUNCTION>
+    {
+        return {std::move (f)};
+    }
+
 }
 #endif /*_Stroika_Foundation_Execution_Finally_inl_*/
