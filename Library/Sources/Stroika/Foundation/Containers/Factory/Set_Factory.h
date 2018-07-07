@@ -73,7 +73,7 @@ namespace Stroika {
 
                 private:
                     template <typename CHECK_T>
-                    static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value>::type* = 0);
+                    static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>* = 0);
                     static Set<T> Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, ...);
                 };
             }

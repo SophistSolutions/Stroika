@@ -203,13 +203,13 @@ namespace Stroika {
                          *  a temporary, and to copy.
                          */
                         template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                        nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0)
+                        nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, enable_if_t<is_same<T, CHECK_KEY>::value>* = 0)
                         {
                             RequireNotNull (result);
                             fIterator.More (result, advance);
                         }
                         template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
-                        nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, typename std::enable_if<!is_same<T, CHECK_KEY>::value>::type* = 0)
+                        nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, enable_if_t<!is_same<T, CHECK_KEY>::value>* = 0)
                         {
                             RequireNotNull (result);
                             optional<pair<tuple<INDEXES...>, T>> tmp;

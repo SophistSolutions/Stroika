@@ -120,9 +120,9 @@ namespace Stroika::Foundation {
                 nonvirtual constexpr const T* peek () const;
 
             private:
-                template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
+                template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = enable_if_t<std::is_copy_assignable<USE_T>::value>>
                 nonvirtual void Assign_ (ARGT&& arg);
-                template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
+                template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = enable_if_t<not std::is_copy_assignable<USE_T>::value>>
                 nonvirtual void Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
             };
             template <typename TT>
@@ -158,9 +158,9 @@ namespace Stroika::Foundation {
                 nonvirtual const T* peek () const;
 
             private:
-                template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = typename enable_if<std::is_copy_assignable<USE_T>::value>::type>
+                template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = enable_if_t<std::is_copy_assignable<USE_T>::value>>
                 nonvirtual void Assign_ (ARGT&& arg);
-                template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = typename enable_if<not std::is_copy_assignable<USE_T>::value>::type>
+                template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = enable_if_t<not std::is_copy_assignable<USE_T>::value>>
                 nonvirtual void Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
             };
             using StorageType = StorageType_<T, not is_trivially_destructible<T>::value>;
@@ -375,49 +375,49 @@ namespace Stroika::Foundation {
             template <
                 typename T2,
                 typename TRAITS2,
-                typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
+                typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<T2, TRAITS2>::value and
                     std::is_constructible<T, const T2&>::value and
-                    std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
+                    std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>>
             Optional (const Optional<T2, TRAITS2>& from);
             template <
                 typename T2,
                 typename TRAITS2,
-                typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if<
+                typename SFINAE_UNSAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<T2, TRAITS2>::value and
                     std::is_constructible<T, const T2&>::value and
-                    not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
+                    not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>>
             explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
             template <
                 typename T2,
                 typename TRAITS2,
-                typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
+                typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<T2, TRAITS2>::value and
                     std::is_constructible<T, T2&&>::value and
-                    std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
+                    std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>>
             Optional (Optional<T2, TRAITS2>&& from);
             template <
                 typename T2,
                 typename TRAITS2,
-                typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if<
+                typename SFINAE_UNSAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<T2, TRAITS2>::value and
                     std::is_constructible<T, T2&&>::value and
-                    not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>::type>
+                    not std::is_same<typename std::decay<T>::type, typename std::common_type<T, T2>::type>::value>>
             explicit Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
             // @todo  more SFINAE checks needed
             template <
                 typename U                       = T,
-                typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
+                typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<
                     not std::is_same<Optional<T, TRAITS>, U>::value and
                     std::is_constructible<T, U&&>::value and
-                    std::is_convertible<U&&, T>::value>::type>
+                    std::is_convertible<U&&, T>::value>>
             constexpr Optional (U&& from);
             template <
                 typename U                         = T,
-                typename SFINAE_UNSAFE_CONVERTIBLE = typename std::enable_if<
+                typename SFINAE_UNSAFE_CONVERTIBLE = enable_if_t<
                     not std::is_same<Optional<T, TRAITS>, U>::value and
                     std::is_constructible<T, U&&>::value and
-                    not std::is_convertible<U&&, T>::value>::type>
+                    not std::is_convertible<U&&, T>::value>>
             constexpr explicit Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
 
         public:
@@ -433,11 +433,11 @@ namespace Stroika::Foundation {
             nonvirtual Optional& operator= (Optional&& rhs);
             template <
                 typename U                       = T,
-                typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<
+                typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<U, typename U::TraitsType>::value and
                     std::is_constructible<T, U>::value and
                     std::is_assignable<T&, U>::value and
-                    (std::is_scalar<T>::value or not is_same<std::decay_t<U>, T>::value)>::type>
+                    (std::is_scalar<T>::value or not is_same<std::decay_t<U>, T>::value)>>
             nonvirtual Optional& operator= (U&& rhs);
 
         public:
@@ -459,7 +459,7 @@ namespace Stroika::Foundation {
              *          VerifyTestResult (url.GetScheme () == L"dyn");
              *          // wchar_t* overload is optional gets STRING with value "d";
              */
-            template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type>
+            template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>>
             static Optional<T, TRAITS> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
         public:
@@ -867,7 +867,7 @@ namespace Stroika::Foundation {
         bool operator== (T lhs, const Optional<T, TRAITS>& rhs);
         template <typename T, typename TRAITS>
         bool operator== (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-        template <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value>::type>
+        template <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = enable_if_t<is_constructible<T, RHS_CONVERTABLE_TO_OPTIONAL>::value>>
         bool operator== (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
 
         /**
@@ -879,7 +879,7 @@ namespace Stroika::Foundation {
         bool operator!= (T lhs, const Optional<T, TRAITS>& rhs);
         template <typename T, typename TRAITS>
         bool operator!= (const Optional<T, TRAITS>& lhs, const Optional<T, TRAITS>& rhs);
-        template <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = typename enable_if<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value>::type>
+        template <typename T, typename TRAITS, typename RHS_CONVERTABLE_TO_OPTIONAL, typename SFINAE_CHECK = enable_if_t<is_constructible<Optional<T, TRAITS>, RHS_CONVERTABLE_TO_OPTIONAL>::value>>
         bool operator!= (const Optional<T, TRAITS>& lhs, RHS_CONVERTABLE_TO_OPTIONAL rhs);
 
         /**

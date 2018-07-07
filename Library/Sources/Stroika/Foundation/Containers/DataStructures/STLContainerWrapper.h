@@ -104,9 +104,9 @@ namespace Stroika {
 
                 private:
                     template <typename CHECK_ = STL_CONTAINER_OF_T>
-                    static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type* = 0);
+                    static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, enable_if_t<Private_::has_erase<CHECK_>::value>* = 0);
                     template <typename CHECK_ = STL_CONTAINER_OF_T>
-                    static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<!Private_::has_erase<CHECK_>::value>::type* = 0);
+                    static typename STL_CONTAINER_OF_T::iterator remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, enable_if_t<!Private_::has_erase<CHECK_>::value>* = 0);
                 };
 
                 /**

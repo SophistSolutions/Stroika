@@ -164,9 +164,9 @@ namespace Stroika::Foundation {
             Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>>
             Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>::type>
+            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>>
             Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
-            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>::type>
+            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>>
             Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
             template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>>
             Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
@@ -352,14 +352,14 @@ namespace Stroika::Foundation {
              */
             nonvirtual void Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
             nonvirtual void Add (const pair<DomainType, RangeType>& p);
-            template <typename KEYVALUEPAIR, typename ENABLE_IF_TEST = typename enable_if<!is_convertible<KEYVALUEPAIR, pair<DomainType, RangeType>>::value>::type>
+            template <typename KEYVALUEPAIR, typename ENABLE_IF_TEST = enable_if_t<!is_convertible<KEYVALUEPAIR, pair<DomainType, RangeType>>::value>>
             nonvirtual void Add (KEYVALUEPAIR p);
 
         public:
             /**
              *  \note   AddAll/2 is alias for .net AddRange ()
              */
-            template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>::type>
+            template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>>
             nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
             template <typename COPY_FROM_ITERATOR_KEYVALUE>
             nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);

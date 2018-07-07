@@ -175,7 +175,7 @@ namespace Stroika {
                 }
             }
             template <typename T1, typename T2, typename EPSILON_TYPE, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, typename std::enable_if<std::is_floating_point<TC>::value>::type*)
+            inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<std::is_floating_point<TC>::value>*)
             {
                 Require (epsilon >= 0);
                 TC diff = (l - r);
@@ -210,17 +210,17 @@ namespace Stroika {
                 return std::fabs (diff) <= epsilon;
             }
             template <typename T1, typename T2, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_integral<TC>::value>::type*)
+            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<std::is_integral<TC>::value>*)
             {
                 return l == r;
             }
             template <typename T1, typename T2, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, typename std::enable_if<std::is_floating_point<TC>::value>::type*)
+            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<std::is_floating_point<TC>::value>*)
             {
                 return NearlyEquals (l, r, Private_::mkCompareEpsilon_<TC> (l, r));
             }
             template <typename T1, typename T2, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, typename std::enable_if<!std::is_integral<TC>::value && !std::is_floating_point<TC>::value>::type*)
+            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<!std::is_integral<TC>::value && !std::is_floating_point<TC>::value>*)
             {
                 return l == r;
             }

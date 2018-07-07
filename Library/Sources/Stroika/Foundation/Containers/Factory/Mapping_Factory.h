@@ -100,7 +100,7 @@ namespace Stroika {
 
                 private:
                     template <typename CHECK_KEY>
-                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (CHECK_KEY*, typename enable_if<Configuration::has_lt<CHECK_KEY>::value>::type* = 0);
+                    static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (CHECK_KEY*, enable_if_t<Configuration::has_lt<CHECK_KEY>::value>* = 0);
                     static Mapping<KEY_TYPE, VALUE_TYPE> Default_SFINAE_ (...);
                 };
             }

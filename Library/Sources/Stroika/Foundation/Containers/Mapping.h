@@ -173,9 +173,9 @@ namespace Stroika::Foundation {
             Mapping (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
             template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>>
             Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>>
             Mapping (const CONTAINER_OF_ADDABLE& src);
-            template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+            template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>>
             Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
             Mapping (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -329,7 +329,7 @@ namespace Stroika::Foundation {
             /**
              *  \note   AddAll/2 is alias for .net AddRange ()
              */
-            template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>::type>
+            template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>>
             nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -434,9 +434,9 @@ namespace Stroika::Foundation {
 
         private:
             template <typename CONTAINER_OF_Key_T>
-            nonvirtual CONTAINER_OF_Key_T As_ (typename enable_if<is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const;
+            nonvirtual CONTAINER_OF_Key_T As_ (enable_if_t<is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int> usesInsertPair = 0) const;
             template <typename CONTAINER_OF_Key_T>
-            nonvirtual CONTAINER_OF_Key_T As_ (typename enable_if<!is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>::type usesDefaultIterableImpl = 0) const;
+            nonvirtual CONTAINER_OF_Key_T As_ (enable_if_t<!is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int> usesDefaultIterableImpl = 0) const;
 
         public:
             /**

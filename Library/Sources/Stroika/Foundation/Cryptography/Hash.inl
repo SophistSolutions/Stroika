@@ -18,13 +18,13 @@ namespace Stroika::Foundation {
 
         namespace Private_ {
             template <typename TYPE_TO_COMPUTE_HASH_OF>
-            Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value, void>::type* = nullptr)
+            Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value, void>* = nullptr)
             {
                 using Memory::Byte;
                 return Memory::BLOB (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash + 1));
             }
             template <typename TYPE_TO_COMPUTE_HASH_OF>
-            inline Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_same<typename remove_cv<TYPE_TO_COMPUTE_HASH_OF>::type, Memory::BLOB>::value, void>::type* = nullptr)
+            inline Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_same<typename remove_cv<TYPE_TO_COMPUTE_HASH_OF>::type, Memory::BLOB>::value, void>* = nullptr)
             {
                 return data2Hash;
             }
@@ -53,12 +53,12 @@ namespace Stroika::Foundation {
 
         namespace Private_ {
             template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-            inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_arithmetic<ADAPTER_RETURN_TYPE>::value, void>::type* = nullptr)
+            inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_arithmetic<ADAPTER_RETURN_TYPE>::value, void>* = nullptr)
             {
                 return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
             }
             template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-            inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, typename enable_if<is_same<ADAPTER_RETURN_TYPE, string>::value, void>::type* = nullptr)
+            inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_same<ADAPTER_RETURN_TYPE, string>::value, void>* = nullptr)
             {
                 return Format (hashVal);
             }
@@ -71,7 +71,7 @@ namespace Stroika::Foundation {
 
         namespace Private_ {
             template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
-            inline HASH_RETURN_TYPE Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value>::type* = nullptr)
+            inline HASH_RETURN_TYPE Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value>* = nullptr)
             {
                 using Memory::Byte;
                 // Just pass in pointers directly, and dont make a BLOB memory object (speed hack)
@@ -79,7 +79,7 @@ namespace Stroika::Foundation {
                 return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash) + sizeof (data2Hash)));
             }
             template <typename DIGESTER, typename TYPE_TO_COMPUTE_HASH_OF, typename HASH_RETURN_TYPE>
-            HASH_RETURN_TYPE Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, typename enable_if<not is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value>::type* = nullptr)
+            HASH_RETURN_TYPE Hash_SimpleHash_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<not is_arithmetic<TYPE_TO_COMPUTE_HASH_OF>::value>* = nullptr)
             {
                 Memory::BLOB blob = Private_::SerializeForHash_ (data2Hash);
                 return Private_::mkReturnType_<HASH_RETURN_TYPE> (DIGESTER::ComputeDigest (blob.begin (), blob.end ()));

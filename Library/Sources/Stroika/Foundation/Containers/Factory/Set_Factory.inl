@@ -65,7 +65,7 @@ namespace Stroika {
                 }
                 template <typename T, typename EQUALS_COMPARER>
                 template <typename CHECK_T>
-                inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, typename enable_if<Configuration::has_lt<CHECK_T>::value>::type*)
+                inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_SFINAE_ (const EQUALS_COMPARER& equalsComparer, CHECK_T*, enable_if_t<Configuration::has_lt<CHECK_T>::value>*)
                 {
                     if (typeid (EQUALS_COMPARER) == typeid (equal_to<T>)) {
                         return Concrete::Set_stdset<T> ();

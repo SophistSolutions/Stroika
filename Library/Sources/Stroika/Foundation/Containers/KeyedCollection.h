@@ -151,17 +151,17 @@ namespace Stroika::Foundation {
              *
              *  @todo use kConstructorsHaveExtractorArgument in SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR but harder with MSVC2k13
              */
-            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<is_function<typename TraitsType::KeyExtractor>::value>::type>
+            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = enable_if_t<is_function<typename TraitsType::KeyExtractor>::value>>
             KeyedCollection ();
-            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<not is_function<typename TraitsType::KeyExtractor>::value>::type>
+            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = enable_if_t<not is_function<typename TraitsType::KeyExtractor>::value>>
             KeyedCollection (KeyExtractorFunctionType keyExtractor);
             KeyedCollection (const KeyedCollection<KEY_TYPE, T, TRAITS>& src);
             KeyedCollection (KeyedCollection<KEY_TYPE, T, TRAITS>&& src);
-            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<is_function<typename TraitsType::KeyExtractor>::value>::type>
+            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = enable_if_t<is_function<typename TraitsType::KeyExtractor>::value>>
             KeyedCollection (const std::initializer_list<T>& src);
-            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = typename enable_if<not is_function<typename TraitsType::KeyExtractor>::value>::type>
+            template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = enable_if_t<not is_function<typename TraitsType::KeyExtractor>::value>>
             KeyedCollection (const std::initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value>::type>
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>::value>>
             explicit KeyedCollection (const CONTAINER_OF_ADDABLE& src, KeyExtractorFunctionType keyExtractor);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             KeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, KeyExtractorFunctionType keyExtractor);

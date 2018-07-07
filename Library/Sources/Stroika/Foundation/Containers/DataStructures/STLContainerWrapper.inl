@@ -112,14 +112,14 @@ namespace Stroika {
                 }
                 template <typename STL_CONTAINER_OF_T>
                 template <typename CHECK_>
-                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<Private_::has_erase<CHECK_>::value>::type*)
+                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, enable_if_t<Private_::has_erase<CHECK_>::value>*)
                 {
                     // http://stackoverflow.com/questions/765148/how-to-remove-constness-of-const-iterator
                     return c.erase (it, it);
                 }
                 template <typename STL_CONTAINER_OF_T>
                 template <typename CHECK_>
-                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, typename std::enable_if<!Private_::has_erase<CHECK_>::value>::type*)
+                inline typename STL_CONTAINER_OF_T::iterator STLContainerWrapper<STL_CONTAINER_OF_T>::remove_constness_ (STL_CONTAINER_OF_T& c, typename STL_CONTAINER_OF_T::const_iterator it, enable_if_t<!Private_::has_erase<CHECK_>::value>*)
                 {
                     // if erase trick doesn't work - this will - but at a horid cost
                     typename STL_CONTAINER_OF_T::iterator i (c.begin ());
