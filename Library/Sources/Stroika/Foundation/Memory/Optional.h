@@ -779,8 +779,8 @@ namespace Stroika::Foundation {
          *              std::multiplies{}
          *              std::divides{}
          */
-        template <typename T, typename OP = std::plus<T>>
-        void AccumulateIf (optional<T>* lhsOptionalValue, const optional<T>& rhsOptionalValue, const OP& op = OP{});
+        template <typename T, typename CONVERTIBLE_TO_T, typename OP = std::plus<T>>
+        void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op = OP{});
         template <typename T, typename OP = std::plus<T>>
         void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsOptionalValue, const OP& op = OP{});
 
@@ -810,10 +810,14 @@ namespace Stroika::Foundation {
          *      \endcode
          *
          *  @see Value
+         *
+         *  \note - the overload with the second arg optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE> is just to silence an msvc compiler warning.
          */
-        template <typename T, typename CONVERTABLE_TO_TYPE = T>
+        template <typename T, typename CONVERTABLE_TO_TYPE>
         void CopyToIf (const optional<T>& lhs, CONVERTABLE_TO_TYPE* to);
-        template <typename T, typename CONVERTABLE_TO_TYPE = T>
+        template <typename T, typename CONVERTABLE_TO_OPTIONAL_OF_TYPE>
+        void CopyToIf (const optional<T>& lhs, optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to);
+        template <typename T, typename CONVERTABLE_TO_TYPE>
         void CopyToIf (const Optional<T>& lhs, CONVERTABLE_TO_TYPE* to);
 
         /**
@@ -831,7 +835,7 @@ namespace Stroika::Foundation {
          *
          *  So Equivilent to this->has_value ()? *this : o;
          *
-         *  This is VERY similar to Value () - except that the default maybe optional, and this therefore returns an Optional<T>
+         *  This is VERY similar to ValueOrDefault () - except that the default maybe optional, and this therefore returns an Optional<T>
          *
          *  @see Value ()
          */

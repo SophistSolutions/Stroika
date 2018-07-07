@@ -774,16 +774,16 @@ namespace Stroika::Foundation {
          ******************************** AccumulateIf **********************************
          ********************************************************************************
          */
-        template <typename T, typename OP>
-        void AccumulateIf (optional<T>* lhsOptionalValue, const optional<T>& rhsOptionalValue, const OP& op)
+        template <typename T, typename CONVERTIBLE_TO_T, typename OP>
+        void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op)
         {
             if (*lhsOptionalValue) {
                 if (rhsOptionalValue) {
-                    *lhsOptionalValue = op (**lhsOptionalValue, *rhsOptionalValue);
+                    *lhsOptionalValue = op (**lhsOptionalValue, static_cast<T> (*rhsOptionalValue));
                 }
             }
             else if (rhsOptionalValue) {
-                *lhsOptionalValue = rhsOptionalValue;
+                *lhsOptionalValue = static_cast<T> (*rhsOptionalValue);
             }
         }
         template <typename T, typename OP>
@@ -807,6 +807,15 @@ namespace Stroika::Foundation {
                 // explicit cast to silence compiler warnigns - use of CopyToIf() is fairly explicit about doing the needed conversions and
                 // offers no other direct way to silence the warnings
                 *to = static_cast<CONVERTABLE_TO_TYPE> (*lhs);
+            }
+        }
+        template <typename T, typename CONVERTABLE_TO_OPTIONAL_OF_TYPE>
+        inline void CopyToIf (const optional<T>& lhs, optional<CONVERTABLE_TO_OPTIONAL_OF_TYPE>* to)
+        {
+            if (lhs) {
+                // explicit cast to silence compiler warnigns - use of CopyToIf() is fairly explicit about doing the needed conversions and
+                // offers no other direct way to silence the warnings
+                *to = static_cast<CONVERTABLE_TO_OPTIONAL_OF_TYPE> (*lhs);
             }
         }
         template <typename T, typename CONVERTABLE_TO_TYPE>
