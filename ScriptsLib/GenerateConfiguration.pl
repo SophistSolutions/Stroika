@@ -439,7 +439,6 @@ sub	SetInitialDefaults_
 	}
 	if ("$^O" eq "darwin") {
 		# hacks so can do initial port/compile
-		#$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
 		$FEATUREFLAG_librt = $LIBFEATUREFLAG_No;
 		$STATIC_LINK_GCCRUNTIME = 0;
 		$COMPILER_DRIVER = "clang";
@@ -1258,14 +1257,7 @@ sub PostProcessOptions_ ()
 		$EXTRA_PREFIX_LINKER_ARGS .= " -fno-sanitize=" . $noSanitizerFlags;
 	}
 	if ($FEATUREFLAG_OpenSSL eq "") {
-		if ($CrossCompiling eq "false") {
-			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
-		}
-		else {
-			#See https://stroika.atlassian.net/browse/STK-427 
-			#Dont know how to do this yet...
-			$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_No;
-		}
+		$FEATUREFLAG_OpenSSL = $LIBFEATUREFLAG_UseStaticTPP;
 	}
 
 	if ($INCLUDE_SYMBOLS_EXE == DEFAULT_BOOL_OPTIONS) {
