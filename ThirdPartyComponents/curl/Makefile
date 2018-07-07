@@ -119,8 +119,6 @@ else
 endif
 
 
-#note - we override PKG_CONFIG_PATH because  with-ssl=$(shell realpath --canonicalize-missing ../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include/openssl/)
-#didn't work (failed to find crypto lib)
 PKG_CONFIG_PATH=
 ifeq ($(qFeatureFlag_OpenSSL), use)
 ifeq (Unix,$(ProjectPlatformSubdir))
@@ -128,9 +126,14 @@ PKG_CONFIG_PATH=$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CON
 endif
 endif
 
-PKG_CONFIG_CONFIGURE_PREFIX=
+ENVIRONMENT_CONFIGURE_PREFIX=
 ifneq (,$(PKG_CONFIG_PATH))
-PKG_CONFIG_CONFIGURE_PREFIX=export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
+ENVIRONMENT_CONFIGURE_PREFIX=
+ENVIRONMENT_CONFIGURE_PREFIX+= export PKG_CONFIG_PATH=$(PKG_CONFIG_PATH);
+
+###https://stroika.atlassian.net/browse/STK-427 workaround - these are needed else HMAC_xxx detect fails looking for openssl - not sure why it ignores the PKG_CONFIG_PATH - openssl 1.1.1 -LGP 2018-07-06
+ENVIRONMENT_CONFIGURE_PREFIX+= export CFLAGS=-I$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION)/ThirdPartyComponents/include);
+ENVIRONMENT_CONFIGURE_PREFIX+= export LDFLAGS=-L$(shell realpath --canonicalize-missing `pwd`/../../Builds/$(CONFIGURATION)/ThirdPartyComponents/lib);
 endif
 
 
@@ -237,8 +240,8 @@ endif
 	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR);./buildconf > BUILD-CONF-TOOLS.OUT 2>&1
 	@$(ECHO) done
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Running Configure (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT) ... "`
-	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
-	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(PKG_CONFIG_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
+	@$(ECHO) "export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(ENVIRONMENT_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/CONFIGURE.OUT
+	@cd $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) && (export CC=$(CC); export CXX=$(CXX); export AR=$(AR); export RANLIB=$(RANLIB); $(ENVIRONMENT_CONFIGURE_PREFIX)./configure --prefix=$(PER_CONFIGURATION_BUILDS_DIR) $(LIBCURL_CONFIGURE) 2>&1) >> CONFIGURE.OUT
 	@$(ECHO) done
 	@../../ScriptsLib/PrintProgressLine.sh $$(($(MAKE_INDENT_LEVEL)+1)) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Building (see $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT) ... "`
 	@echo $(MAKE) --directory $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR) --no-print-directory install CC="$(CC)" > $(PER_CONFIGURATION_CURL_INTERMEDIATEFILES_DIR)/MAKE.OUT
