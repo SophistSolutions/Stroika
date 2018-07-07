@@ -251,14 +251,14 @@ namespace {
             VerifyTestResult (s.size () == 1000);
 
             Sequence<T> s2 = s;
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s2) == 0);
-            VerifyTestResult (s2.template IndexOf<EQUALS_COMPARER> (s) == 0);
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s2) == 0u);
+            VerifyTestResult (s2.template IndexOf<EQUALS_COMPARER> (s) == 0u);
 
             Sequence<T> s3;
             s3.Append (3);
             s3.Append (4);
             VerifyTestResult (not s3.template IndexOf<EQUALS_COMPARER> (s).has_value ());
-            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s3) == 3);
+            VerifyTestResult (s.template IndexOf<EQUALS_COMPARER> (s3) == 3u);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }

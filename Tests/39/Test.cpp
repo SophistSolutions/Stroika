@@ -519,7 +519,7 @@ namespace {
                     [&tmp]() {
                         for (int i = 1; i < kIOverallRepeatCount_; ++i) {
                             if (tmp.GetLength () == 1000) {
-                                VerifyTestResult (tmp.IndexOf (6) == 5);
+                                VerifyTestResult (tmp.IndexOf (6) == 5u);
                                 VerifyTestResult (*tmp.First () == 1);
                                 VerifyTestResult (*tmp.Last () == 1000);
                             }

@@ -330,7 +330,7 @@ namespace {
         VerifyTestResult (t5 == L"Flintstone");
         VerifyTestResult (not t5.Find (L"STONE").has_value ());
         VerifyTestResult (not t5.Contains (L"SToNE"));
-        VerifyTestResult (t5.Find (L"STONE", CompareOptions::eCaseInsensitive) == 5);
+        VerifyTestResult (t5.Find (L"STONE", CompareOptions::eCaseInsensitive) == 5u);
         VerifyTestResult (t5.Contains (L"SToNE", CompareOptions::eCaseInsensitive));
 
         t1.erase (4);
@@ -346,36 +346,36 @@ namespace {
         VerifyTestResult (t5[1] == 'R');
         VerifyTestResult (t5[2] == 'E');
         VerifyTestResult (t5[3] == 'D');
-        VerifyTestResult (t5.Find ('f') == 0);
-        VerifyTestResult (t5.Find (L"f") == 0);
-        VerifyTestResult (t5.Find (L"fR") == 0);
-        VerifyTestResult (t5.Find (L"fRE") == 0);
-        VerifyTestResult (t5.Find (L"fRED") == 0);
+        VerifyTestResult (t5.Find ('f') == 0u);
+        VerifyTestResult (t5.Find (L"f") == 0u);
+        VerifyTestResult (t5.Find (L"fR") == 0u);
+        VerifyTestResult (t5.Find (L"fRE") == 0u);
+        VerifyTestResult (t5.Find (L"fRED") == 0u);
         VerifyTestResult (not t5.Find (L"fRD").has_value ());
-        VerifyTestResult (t5.Find ('R') == 1);
-        VerifyTestResult (t5.Find ('E') == 2);
-        VerifyTestResult (t5.Find ('D') == 3);
-        VerifyTestResult (t5.Find (L"D") == 3);
+        VerifyTestResult (t5.Find ('R') == 1u);
+        VerifyTestResult (t5.Find ('E') == 2u);
+        VerifyTestResult (t5.Find ('D') == 3u);
+        VerifyTestResult (t5.Find (L"D") == 3u);
 
-        VerifyTestResult (t5.RFind ('f') == 0);
-        VerifyTestResult (t5.RFind ('R') == 1);
-        VerifyTestResult (t5.RFind ('E') == 2);
-        VerifyTestResult (t5.RFind ('D') == 3);
-        VerifyTestResult (t5.RFind (L"D") == 3);
-        VerifyTestResult (t5.RFind (L"ED") == 2);
-        VerifyTestResult (t5.RFind (L"RED") == 1);
-        VerifyTestResult (t5.RFind (L"fRED") == 0);
+        VerifyTestResult (t5.RFind ('f') == 0u);
+        VerifyTestResult (t5.RFind ('R') == 1u);
+        VerifyTestResult (t5.RFind ('E') == 2u);
+        VerifyTestResult (t5.RFind ('D') == 3u);
+        VerifyTestResult (t5.RFind (L"D") == 3u);
+        VerifyTestResult (t5.RFind (L"ED") == 2u);
+        VerifyTestResult (t5.RFind (L"RED") == 1u);
+        VerifyTestResult (t5.RFind (L"fRED") == 0u);
         VerifyTestResult (not t5.RFind (L"fr").has_value ());
-        VerifyTestResult (t5.RFind (L"f") == 0);
+        VerifyTestResult (t5.RFind (L"f") == 0u);
 
         t5.SetCharAt ('D', 0);
         t5.SetCharAt ('D', 1);
         t5.SetCharAt ('D', 2);
         t5.SetCharAt ('D', 3);
-        VerifyTestResult (t5.Find ('D') == 0);
-        VerifyTestResult (t5.Find (L"D") == 0);
-        VerifyTestResult (t5.RFind ('D') == 3);
-        VerifyTestResult (t5.RFind (L"D") == 3);
+        VerifyTestResult (t5.Find ('D') == 0u);
+        VerifyTestResult (t5.Find (L"D") == 0u);
+        VerifyTestResult (t5.RFind ('D') == 3u);
+        VerifyTestResult (t5.RFind (L"D") == 3u);
 
         VerifyTestResult (not t5.Find ('f').has_value ());
         VerifyTestResult (not t5.Find (L"f").has_value ());
@@ -656,7 +656,7 @@ namespace {
     namespace Test17_Private_ {
         void Test17_Find_ ()
         {
-            VerifyTestResult (String (L"abc").Find (L"b") == 1);
+            VerifyTestResult (String (L"abc").Find (L"b") == 1u);
             VerifyTestResult (not String (L"abc").Find (L"x").has_value ());
             VerifyTestResult (not String (L"abc").Find (L"b", 2).has_value ());
         }
