@@ -196,7 +196,7 @@ namespace Stroika::Foundation {
             static constexpr bool value = false;
         };
         template <typename T>
-        struct is_iterator<T, typename std::enable_if<!std::is_same<typename std::iterator_traits<T>::value_type, void>::value>::type> {
+        struct is_iterator<T, enable_if_t<!std::is_same<typename std::iterator_traits<T>::value_type, void>::value>> {
             static constexpr bool value = true;
         };
 

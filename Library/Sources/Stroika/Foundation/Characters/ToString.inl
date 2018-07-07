@@ -38,12 +38,12 @@ namespace Stroika::Foundation {
             STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (name, (x.name (), x.name ()));
 
             template <typename T>
-            inline String ToString_ (const T& t, typename enable_if<has_ToString<T>::value>::type* = 0)
+            inline String ToString_ (const T& t, enable_if_t<has_ToString<T>::value>* = 0)
             {
                 return t.ToString ();
             }
             template <typename T>
-            String ToString_ (const T& t, typename enable_if<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>::type* = 0)
+            String ToString_ (const T& t, enable_if_t<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>* = 0)
             {
                 StringBuilder sb;
                 sb << L"[";
@@ -65,19 +65,19 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            inline String ToString_ (const T& t, typename enable_if<is_convertible<T, String>::value>::type* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_convertible<T, String>::value>* = 0)
             {
                 return static_cast<String> (t);
             }
             template <typename T>
-            inline String ToString_ (const T& t, typename enable_if<is_convertible<T, const std::exception&>::value>::type* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_convertible<T, const std::exception&>::value>* = 0)
             {
                 //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
                 //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
                 return String::FromNarrowSDKString (t.what ());
             }
             template <typename T>
-            String ToString_ (const T& t, typename enable_if<has_pair<T>::value>::type* = 0)
+            String ToString_ (const T& t, enable_if_t<has_pair<T>::value>* = 0)
             {
                 StringBuilder sb;
                 sb << L"{";
@@ -86,7 +86,7 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            String ToString_ (const T& t, typename enable_if<has_KeyValuePair<T>::value>::type* = 0)
+            String ToString_ (const T& t, enable_if_t<has_KeyValuePair<T>::value>* = 0)
             {
                 StringBuilder sb;
                 sb << L"{";
@@ -95,7 +95,7 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            String ToString_ (const T& t, typename enable_if<has_CountedValue<T>::value>::type* = 0)
+            String ToString_ (const T& t, enable_if_t<has_CountedValue<T>::value>* = 0)
             {
                 StringBuilder sb;
                 sb << L"{";
@@ -104,7 +104,7 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            inline String ToString_ (const T& t, typename enable_if<is_enum<T>::value>::type* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_enum<T>::value>* = 0)
             {
                 // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
                 // not a problem: just dont call this, or replace it with a specific specialization of ToString
@@ -128,12 +128,12 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            inline String ToString_ (const T& t, typename enable_if<is_array<T>::value and not is_convertible<T, String>::value>::type* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_array<T>::value and not is_convertible<T, String>::value>* = 0)
             {
                 return ToString_array_ (t);
             }
             template <typename T>
-            inline String ToString_ (const T& t, typename enable_if<is_floating_point<T>::value>::type* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_floating_point<T>::value>* = 0)
             {
                 return Float2String (t);
             }

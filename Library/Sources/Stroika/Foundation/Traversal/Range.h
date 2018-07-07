@@ -84,24 +84,24 @@ namespace Stroika {
                      *  Return the Next possible value, or if already at the end of the range, the same value.
                      */
                     template <typename SFINAE = value_type>
-                    static value_type GetNext (value_type i, typename enable_if<std::is_integral<SFINAE>::value>::type* = 0);
+                    static value_type GetNext (value_type i, enable_if_t<std::is_integral<SFINAE>::value>* = 0);
                     template <typename SFINAE = value_type>
-                    static value_type GetNext (value_type i, typename enable_if<std::is_floating_point<SFINAE>::value>::type* = 0);
+                    static value_type GetNext (value_type i, enable_if_t<std::is_floating_point<SFINAE>::value>* = 0);
 
                     /**
                      *  Return the Previous possible value, or if already at the end of the range, the same value.
                      */
                     template <typename SFINAE = value_type>
-                    static value_type GetPrevious (value_type i, typename enable_if<std::is_integral<SFINAE>::value>::type* = 0);
+                    static value_type GetPrevious (value_type i, enable_if_t<std::is_integral<SFINAE>::value>* = 0);
                     template <typename SFINAE = value_type>
-                    static value_type GetPrevious (value_type i, typename enable_if<std::is_floating_point<SFINAE>::value>::type* = 0);
+                    static value_type GetPrevious (value_type i, enable_if_t<std::is_floating_point<SFINAE>::value>* = 0);
 
                     /**
                      *  Compute the difference between two elements of type T for the Range
                      */
-                    template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if<std::is_enum<TYPE2CHECK>::value or std::is_convertible<TYPE2CHECK, SignedDifferenceType>::value>::type>
+                    template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<std::is_enum<TYPE2CHECK>::value or std::is_convertible<TYPE2CHECK, SignedDifferenceType>::value>>
                     static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = 0);
-                    template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = typename enable_if<not(std::is_enum<TYPE2CHECK>::value or std::is_convertible<TYPE2CHECK, SignedDifferenceType>::value)>::type>
+                    template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(std::is_enum<TYPE2CHECK>::value or std::is_convertible<TYPE2CHECK, SignedDifferenceType>::value)>>
                     static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
                 };
 
@@ -130,9 +130,9 @@ namespace Stroika {
                  *  This defaults to a half-open (lhs closed, rhs-open) range.
                  */
                 template <typename T>
-                struct DefaultRangeTraits : enable_if<
+                struct DefaultRangeTraits : enable_if_t<
                                                 is_arithmetic<T>::value,
-                                                ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, decltype (T{} - T{}), Private_::UnsignedDifferenceType_<T>>>::type {
+                                                ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, decltype (T{} - T{}), Private_::UnsignedDifferenceType_<T>>> {
                     static constexpr T kLowerBound = numeric_limits<T>::lowest ();
                     static constexpr T kUpperBound = numeric_limits<T>::max ();
                 };

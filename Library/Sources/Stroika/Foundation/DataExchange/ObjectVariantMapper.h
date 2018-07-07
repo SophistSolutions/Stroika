@@ -235,7 +235,7 @@ namespace Stroika::Foundation {
                 TypeMappingDetails ()                          = delete;
                 TypeMappingDetails (const TypeMappingDetails&) = default;
                 explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
-                template <typename T, typename ENABLE_IF = typename enable_if<not std::is_same<T, void>::value>::type>
+                template <typename T, typename ENABLE_IF = enable_if_t<not std::is_same<T, void>::value>>
                 TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
                 nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;
@@ -625,7 +625,7 @@ namespace Stroika::Foundation {
             template <typename T>
             static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
             template <typename T>
-            static TypeMappingDetails MakeCommonSerializer_ (const T*, typename std::enable_if<std::is_enum<T>::value>::type* = 0);
+            static TypeMappingDetails MakeCommonSerializer_ (const T*, enable_if_t<std::is_enum<T>::value>* = 0);
             template <typename T, size_t SZ>
             static TypeMappingDetails MakeCommonSerializer_ (const T (*)[SZ]);
 

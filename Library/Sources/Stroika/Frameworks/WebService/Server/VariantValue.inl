@@ -190,12 +190,12 @@ namespace Stroika {
                     }
                     namespace PRIVATE_ {
                         template <typename RETURN_TYPE>
-                        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, typename enable_if<!is_same<RETURN_TYPE, void>::value>::type* = 0)
+                        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<!is_same<RETURN_TYPE, void>::value>* = 0)
                         {
                             WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<RETURN_TYPE> (f ())));
                         }
                         template <typename RETURN_TYPE>
-                        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, typename enable_if<is_same<RETURN_TYPE, void>::value>::type* = 0)
+                        inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<is_same<RETURN_TYPE, void>::value>* = 0)
                         {
                             f ();
                             WriteResponse (response, webServiceDescription);

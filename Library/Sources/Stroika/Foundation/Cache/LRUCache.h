@@ -83,9 +83,9 @@ namespace Stroika::Foundation {
 
                 //tmphack - SHOULD do smarter defaults!!!!
                 template <typename SFINAE>
-                static size_t Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if<is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value, void>::type* = nullptr);
+                static size_t Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, enable_if_t<is_arithmetic_v<SFINAE> or is_convertible_v<SFINAE, string> or is_convertible_v<SFINAE, Characters::String>, void>* = nullptr);
                 template <typename SFINAE>
-                static size_t Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if<not(is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void>::type* = nullptr);
+                static size_t Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, enable_if_t<not(is_arithmetic_v<SFINAE> or is_convertible_v<SFINAE, string> or is_convertible_v<SFINAE, Characters::String>), void>* = nullptr);
                 static size_t Hash (typename Configuration::ArgByValueType<KEY> e);
 
                 /**

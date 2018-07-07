@@ -217,12 +217,12 @@ namespace {
     }
 }
 #endif
+
 /*
  ********************************************************************************
  *************************** InternetMediaTypeRegistry **************************
  ********************************************************************************
  */
-
 optional<FileSuffixType> InternetMediaTypeRegistry::GetPreferredAssociatedFileSuffix (const InternetMediaType& ct) const
 {
 #if qPlatform_Windows

@@ -195,22 +195,22 @@ namespace Stroika::Foundation {
              *  \req IsOpen ()
              */
             nonvirtual void Write (const ElementType* start, const ElementType* end) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Memory::Byte>::value>>
             nonvirtual void Write (const Memory::BLOB& blob) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Characters::Character>::value>>
             nonvirtual void Write (const wchar_t* start, const wchar_t* end) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Characters::Character>::value>>
             nonvirtual void Write (const wchar_t* cStr) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Characters::Character>::value>>
             nonvirtual void Write (const Characters::String& s) const;
             nonvirtual void Write (const ElementType& e) const;
 
         public:
             /**
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Characters::Character>::value>>
             nonvirtual void WriteLn (const wchar_t* cStr) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Characters::Character>::value>>
             nonvirtual void WriteLn (const Characters::String& s) const;
 
         public:
@@ -232,16 +232,16 @@ namespace Stroika::Foundation {
              *      POD_TYPE    tmp;
              *      Write ((Byte*)&tmp, (Byte*)(&tmp+1));
              */
-            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Memory::Byte>::value>>
             nonvirtual void WriteRaw (const POD_TYPE& p) const;
-            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Memory::Byte>::value>::type>
+            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Memory::Byte>::value>>
             nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const;
 
         public:
             /**
              *  \req IsOpen ()
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+            template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Characters::Character>::value>>
             nonvirtual void PrintF (const wchar_t* format, ...);
 
         public:
@@ -315,7 +315,7 @@ namespace Stroika::Foundation {
              *
              *  \req IsOpen ()
              */
-            template <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = typename enable_if<is_same<TEST_TYPE, Characters::Character>::value>::type>
+            template <typename T, typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Characters::Character>::value>>
             const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (T write2TextStream) const;
 
         protected:

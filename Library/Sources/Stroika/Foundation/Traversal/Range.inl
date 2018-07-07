@@ -21,25 +21,25 @@ namespace Stroika {
              */
             template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template <typename SFINAE>
-            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, typename enable_if<std::is_integral<SFINAE>::value>::type*)
+            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<std::is_integral<SFINAE>::value>*)
             {
                 return i == numeric_limits<value_type>::max () ? i : static_cast<value_type> (i + 1);
             }
             template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template <typename SFINAE>
-            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, typename enable_if<std::is_floating_point<SFINAE>::value>::type*)
+            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<std::is_floating_point<SFINAE>::value>*)
             {
                 return i == numeric_limits<value_type>::max () ? i : nextafter (i, numeric_limits<value_type>::max ());
             }
             template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template <typename SFINAE>
-            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, typename enable_if<std::is_integral<SFINAE>::value>::type*)
+            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<std::is_integral<SFINAE>::value>*)
             {
                 return i == numeric_limits<value_type>::min () ? i : static_cast<value_type> (i - 1);
             }
             template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             template <typename SFINAE>
-            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, typename enable_if<std::is_floating_point<SFINAE>::value>::type*)
+            inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<std::is_floating_point<SFINAE>::value>*)
             {
                 return i == numeric_limits<value_type>::min () ? i : nextafter (i, numeric_limits<value_type>::min ());
             }

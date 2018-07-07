@@ -50,7 +50,7 @@ namespace Stroika::Foundation {
          */
         template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
         template <typename SFINAE>
-        size_t LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, typename enable_if<is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value, void>::type*)
+        size_t LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, enable_if_t<is_arithmetic_v<SFINAE> or is_convertible_v<SFINAE, string> or is_convertible_v<SFINAE, Characters::String>, void>*)
         {
             using Cryptography::Digest::Digester;
             using Cryptography::Digest::Algorithm::Jenkins;
@@ -59,7 +59,7 @@ namespace Stroika::Foundation {
         }
         template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE, typename KEY_EQUALS_COMPARER>
         template <typename SFINAE>
-        inline size_t LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ ([[maybe_unused]] typename Configuration::ArgByValueType<KEY> e, typename enable_if<not(is_arithmetic<SFINAE>::value or is_convertible<SFINAE, string>::value or is_convertible<SFINAE, Characters::String>::value), void>::type*)
+        inline size_t LRUCacheSupport::DefaultTraits<KEY, VALUE, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER>::Hash_SFINAE_ ([[maybe_unused]] typename Configuration::ArgByValueType<KEY> e, enable_if_t<not(is_arithmetic_v<SFINAE> or is_convertible_v<SFINAE, string> or is_convertible_v<SFINAE, Characters::String>), void>*)
         {
             return 0;
         }

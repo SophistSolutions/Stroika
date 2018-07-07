@@ -420,7 +420,7 @@ namespace Stroika::Foundation {
             return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
         }
         template <typename T>
-        inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T*, typename std::enable_if<std::is_enum<T>::value>::type*)
+        inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T*, enable_if_t<std::is_enum<T>::value>*)
         {
             return MakeCommonSerializer_NamedEnumerations<T> ();
         }

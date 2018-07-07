@@ -43,7 +43,7 @@ namespace Stroika {
                     template <typename KEY_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> ()>>
                     explicit Mapping_LinkedList (const KEY_EQUALS_COMPARER& keyEqualsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     Mapping_LinkedList (const Mapping_LinkedList& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>::type>
+                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>>
                     explicit Mapping_LinkedList (const CONTAINER_OF_ADDABLE& src);
                     template <typename COPY_FROM_ITERATOR_KEYVALUE>
                     explicit Mapping_LinkedList (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);

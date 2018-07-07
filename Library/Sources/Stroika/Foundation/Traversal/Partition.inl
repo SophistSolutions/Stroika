@@ -14,7 +14,7 @@ namespace Stroika {
 
             namespace Private_ {
                 template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
-                bool IsPartition_Helper_ (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer /*, typename enable_if <isomethingto check for operator <>::type usesInsertPair = 0*/)
+                bool IsPartition_Helper_ (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer /*, enable_if_t <isomethingto check for operator <> usesInsertPair = 0*/)
                 {
                     using Common::KeyValuePair;
                     using Containers::SortedMapping;

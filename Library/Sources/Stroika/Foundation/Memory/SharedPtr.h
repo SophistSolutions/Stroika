@@ -149,13 +149,13 @@ namespace Stroika::Foundation {
              */
             SharedPtr () noexcept;
             SharedPtr (nullptr_t) noexcept;
-            template <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
+            template <typename T2, typename SFINAE = enable_if_t<is_convertible<T2*, T*>::value, void>>
             explicit SharedPtr (T2* from);
             SharedPtr (const SharedPtr<T>& from) noexcept;
             SharedPtr (SharedPtr<T>&& from) noexcept;
-            template <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
+            template <typename T2, typename SFINAE = enable_if_t<is_convertible<T2*, T*>::value, void>>
             SharedPtr (const SharedPtr<T2>& from) noexcept;
-            template <typename T2, typename SFINAE = typename enable_if<is_convertible<T2*, T*>::value, void>::type>
+            template <typename T2, typename SFINAE = enable_if_t<is_convertible<T2*, T*>::value, void>>
             SharedPtr (SharedPtr<T2>&& from) noexcept;
 
         private:
@@ -163,9 +163,9 @@ namespace Stroika::Foundation {
 
         private:
             template <typename T2>
-            static Envelope_ mkEnvelope_ (T2* from, typename enable_if<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>::type* = 0);
+            static Envelope_ mkEnvelope_ (T2* from, enable_if_t<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>* = 0);
             template <typename T2>
-            static Envelope_ mkEnvelope_ (T2* from, typename enable_if<!is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>::type* = 0);
+            static Envelope_ mkEnvelope_ (T2* from, enable_if_t<!is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>* = 0);
 
         public:
             nonvirtual SharedPtr<T>& operator= (const SharedPtr<T>& rhs) noexcept;

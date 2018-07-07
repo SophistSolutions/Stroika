@@ -238,7 +238,7 @@ namespace Stroika::Foundation {
              */
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = typename enable_if<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>::type>
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>>
             nonvirtual void AddAll (const CONTAINER_OF_ADDABLE& s);
 
         public:

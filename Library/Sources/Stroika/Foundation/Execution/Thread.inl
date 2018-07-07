@@ -251,12 +251,12 @@ namespace Stroika::Foundation {
          ********************************************************************************
          */
         template <typename FUNCTION>
-        inline Thread::Ptr Thread::New (FUNCTION f, const optional<Characters::String>& name, const optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
+        inline Thread::Ptr Thread::New (FUNCTION f, const optional<Characters::String>& name, const optional<Configuration>& configuration, enable_if_t<is_function<FUNCTION>::value>*)
         {
             return New (Function<void()> (f), name, configuration);
         }
         template <typename FUNCTION>
-        inline Thread::Ptr Thread::New (FUNCTION f, AutoStartFlag flag, const optional<Characters::String>& name, const optional<Configuration>& configuration, typename enable_if<is_function<FUNCTION>::value>::type*)
+        inline Thread::Ptr Thread::New (FUNCTION f, AutoStartFlag flag, const optional<Characters::String>& name, const optional<Configuration>& configuration, enable_if_t<is_function<FUNCTION>::value>*)
         {
             return New (Function<void()> (f), flag, name, configuration);
         }
