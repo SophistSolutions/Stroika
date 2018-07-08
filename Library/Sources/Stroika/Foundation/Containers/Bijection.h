@@ -145,7 +145,7 @@ namespace Stroika::Foundation {
              *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
              */
             template <typename POTENTIALLY_ADDABLE_T>
-            static constexpr bool IsAddable = is_convertible<POTENTIALLY_ADDABLE_T, pair<DOMAIN_TYPE, RANGE_TYPE>>::value;
+            static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, pair<DOMAIN_TYPE, RANGE_TYPE>>;
 
         public:
             /**
@@ -164,9 +164,9 @@ namespace Stroika::Foundation {
             Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>>
             Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>>
+            template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>>>
             Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
-            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not std::is_convertible<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>::value>>
+            template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection*>>>
             Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
             template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>>
             Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
@@ -352,7 +352,7 @@ namespace Stroika::Foundation {
              */
             nonvirtual void Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
             nonvirtual void Add (const pair<DomainType, RangeType>& p);
-            template <typename KEYVALUEPAIR, typename ENABLE_IF_TEST = enable_if_t<!is_convertible<KEYVALUEPAIR, pair<DomainType, RangeType>>::value>>
+            template <typename KEYVALUEPAIR, typename ENABLE_IF_TEST = enable_if_t<not is_convertible_v<KEYVALUEPAIR, pair<DomainType, RangeType>>>>
             nonvirtual void Add (KEYVALUEPAIR p);
 
         public:

@@ -42,7 +42,7 @@ namespace Stroika {
                      */
                     Association_LinkedList ();
                     Association_LinkedList (const Association_LinkedList& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>::value>>
+                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>>>
                     explicit Association_LinkedList (const CONTAINER_OF_ADDABLE& src);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Association_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

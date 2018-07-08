@@ -54,9 +54,9 @@ namespace Stroika {
                 template <typename CONTAINER_OF_DISCRETERANGE_OF_T>
                 explicit DisjointDiscreteRange (const CONTAINER_OF_DISCRETERANGE_OF_T& from);
                 template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>::value, int>* = nullptr);
+                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>, int>* = nullptr);
                 template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>::value, int>* = nullptr);
+                explicit DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>, int>* = nullptr);
 
             public:
                 nonvirtual DisjointDiscreteRange& operator= (const DisjointDiscreteRange& rhs) = default;

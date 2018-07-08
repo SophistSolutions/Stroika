@@ -37,9 +37,9 @@ namespace Stroika {
                  */
                 RequestHandler (const function<void(Message* message)>& f);
                 RequestHandler (const function<void(Request* request, Response* response)>& f);
-                template <typename _Fx, typename COMPILE_IF_IS_CONVERTIBLE_FUNC_MESSAGE = enable_if_t<is_convertible<_Fx, function<void(Message*)>>::value>>
+                template <typename _Fx, typename COMPILE_IF_IS_CONVERTIBLE_FUNC_MESSAGE = enable_if_t<is_convertible_v<_Fx, function<void(Message*)>>>>
                 RequestHandler (_Fx _Func, COMPILE_IF_IS_CONVERTIBLE_FUNC_MESSAGE* = 0);
-                template <typename _Fx, typename COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP = enable_if_t<is_convertible<_Fx, function<void(Request*, Response*)>>::value>>
+                template <typename _Fx, typename COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP = enable_if_t<is_convertible_v<_Fx, function<void(Request*, Response*)>>>>
                 RequestHandler (_Fx _Func, COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP* = 0, int j = 6);
             };
         }

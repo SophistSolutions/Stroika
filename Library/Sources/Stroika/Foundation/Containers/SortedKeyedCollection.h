@@ -97,7 +97,7 @@ namespace Stroika::Foundation {
             SortedKeyedCollection (const SortedKeyedCollection& src)  = default;
             SortedKeyedCollection (const SortedKeyedCollection&& src) = default;
             SortedKeyedCollection (const std::initializer_list<T>& src);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !std::is_convertible<const CONTAINER_OF_ADDABLE*, const SortedKeyedCollection<T>*>::value>>
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && !is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedKeyedCollection<T>*>>>
             explicit SortedKeyedCollection (const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             SortedKeyedCollection (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

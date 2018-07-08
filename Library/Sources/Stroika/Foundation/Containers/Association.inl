@@ -286,7 +286,7 @@ namespace Stroika::Foundation {
         }
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
         template <typename CONTAINER_OF_Key_T>
-        CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int> usesInsertPair) const
+        CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int> usesInsertPair) const
         {
             CONTAINER_OF_Key_T result;
             for (auto i : *this) {
@@ -297,7 +297,7 @@ namespace Stroika::Foundation {
         }
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
         template <typename CONTAINER_OF_Key_T>
-        CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<!is_convertible<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value, int>) const
+        CONTAINER_OF_Key_T Association<KEY_TYPE, MAPPED_VALUE_TYPE>::As_ (enable_if_t<!is_convertible_v<typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>, int>) const
         {
             CONTAINER_OF_Key_T result;
             for (auto i : *this) {

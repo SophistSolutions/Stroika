@@ -21,12 +21,12 @@ namespace Stroika::Foundation::Execution {
 #endif
         string ToString_s (const type_info&);
         template <typename T>
-        inline string Except2String_ (const T& t, enable_if_t<is_convertible<T, const std::exception&>::value>* = 0)
+        inline string Except2String_ (const T& t, enable_if_t<is_convertible_v<T, const exception&>>* = 0)
         {
             return t.what ();
         }
         template <typename T>
-        inline string Except2String_ (const T& /*t*/, enable_if_t<not is_convertible<T, const std::exception&>::value>* = 0)
+        inline string Except2String_ (const T& /*t*/, enable_if_t<not is_convertible_v<T, const exception&>>* = 0)
         {
             return ToString_s (typeid (T));
         }

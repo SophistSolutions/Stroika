@@ -358,8 +358,8 @@ namespace Stroika::Foundation {
             constexpr Optional (Optional&& from);
             /*
              *  Note - in C++17, std::optional checks
-             *      std::is_convertible<const T2&, T>::value
-             *      (or std::is_convertible < T2 &&, T >::value in the rvalue-ref overload)
+             *      is_convertible_v<const T2&, T>
+             *      (or std::is_convertible_v < T2 &&, T > in the rvalue-ref overload)
              *  to see if we make this constructor explicit.
              *
              *  In stroika - instead - we use
@@ -410,14 +410,14 @@ namespace Stroika::Foundation {
                 typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<
                     not std::is_same<Optional<T, TRAITS>, U>::value and
                     std::is_constructible<T, U&&>::value and
-                    std::is_convertible<U&&, T>::value>>
+                    std::is_convertible_v<U&&, T>>>
             constexpr Optional (U&& from);
             template <
                 typename U                         = T,
                 typename SFINAE_UNSAFE_CONVERTIBLE = enable_if_t<
                     not std::is_same<Optional<T, TRAITS>, U>::value and
                     std::is_constructible<T, U&&>::value and
-                    not std::is_convertible<U&&, T>::value>>
+                    not is_convertible_v<U&&, T>>>
             constexpr explicit Optional (U&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
 
         public:

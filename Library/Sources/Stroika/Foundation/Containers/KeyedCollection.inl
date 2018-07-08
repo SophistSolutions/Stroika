@@ -267,7 +267,7 @@ namespace Stroika::Foundation {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_Key_T>
-            CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (enable_if_t <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int> usesInsertPair) const
+            CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (enable_if_t <is_convertible_v <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>, int> usesInsertPair) const
             {
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {
@@ -278,7 +278,7 @@ namespace Stroika::Foundation {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename   CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (enable_if_t < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >) const
+            inline  CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (enable_if_t < !is_convertible_v <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>, int >) const
             {
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {

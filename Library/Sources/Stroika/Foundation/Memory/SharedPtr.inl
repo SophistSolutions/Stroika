@@ -256,7 +256,7 @@ namespace Stroika::Foundation {
         }
         template <typename T>
         template <typename T2>
-        inline typename SharedPtr<T>::Envelope_ SharedPtr<T>::mkEnvelope_ (T2* from, enable_if_t<is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>*)
+        inline typename SharedPtr<T>::Envelope_ SharedPtr<T>::mkEnvelope_ (T2* from, enable_if_t<is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>*)
         {
             if (from == nullptr) {
                 return Envelope_ (nullptr, nullptr);
@@ -267,7 +267,7 @@ namespace Stroika::Foundation {
         }
         template <typename T>
         template <typename T2>
-        typename SharedPtr<T>::Envelope_ SharedPtr<T>::mkEnvelope_ (T2* from, enable_if_t<!is_convertible<T2*, Private_::ReferenceCounterContainerType_*>::value>*)
+        typename SharedPtr<T>::Envelope_ SharedPtr<T>::mkEnvelope_ (T2* from, enable_if_t<!is_convertible_v<T2*, Private_::ReferenceCounterContainerType_*>>*)
         {
             return Envelope_ (from, from == nullptr ? nullptr : ManuallyBlockAllocated<Private_::ReferenceCounterContainerType_>::New ());
         }

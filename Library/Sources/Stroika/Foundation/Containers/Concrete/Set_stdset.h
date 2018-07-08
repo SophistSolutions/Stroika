@@ -49,9 +49,9 @@ namespace Stroika {
                     Set_stdset (const Set_stdset& src) = default;
                     Set_stdset (const std::initializer_list<T>& src);
                     Set_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value>>
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>>
                     Set_stdset (const CONTAINER_OF_T& src);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !std::is_convertible<const CONTAINER_OF_T*, const Set_stdset<T>*>::value>>
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>>
                     Set_stdset (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_T>
                     Set_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);

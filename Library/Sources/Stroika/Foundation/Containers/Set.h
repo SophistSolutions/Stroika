@@ -115,7 +115,7 @@ namespace Stroika::Foundation {
              *  \todo https://stroika.atlassian.net/browse/STK-651 - Experimental feature which might be used as a concept check on various templates
              */
             template <typename POTENTIALLY_ADDABLE_T>
-            static constexpr bool IsAddable = is_convertible<POTENTIALLY_ADDABLE_T, T>::value;
+            static constexpr bool IsAddable = is_convertible_v<POTENTIALLY_ADDABLE_T, T>;
 
         public:
             /**
@@ -155,9 +155,9 @@ namespace Stroika::Foundation {
             Set (const initializer_list<T>& src);
             template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>>
             Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Set<T>*>::value>>
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>>
             Set (const CONTAINER_OF_ADDABLE& src);
-            template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const Set<T>*>::value>>
+            template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>>
             Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
             Set (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

@@ -45,13 +45,13 @@ namespace Stroika {
             }
             template <typename T, typename RANGE_TYPE>
             template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>::value, int>*)
+            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, RangeType>, int>*)
                 : inherited (start, end)
             {
             }
             template <typename T, typename RANGE_TYPE>
             template <typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T>
-            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>::value, int>*)
+            DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T start, COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T end, enable_if_t<is_convertible_v<typename COPY_FROM_ITERATOR_OF_DISCRETERANGE_OF_T::value_type, value_type>, int>*)
                 : inherited ()
             {
                 Containers::Sequence<RangeType> srs{};

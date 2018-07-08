@@ -69,7 +69,7 @@ namespace Stroika::Foundation {
             template <typename FUNCTOR_ARG, typename FUNCTOR, typename RESULT = result_of_t<FUNCTOR (FUNCTOR_ARG, FUNCTOR_ARG)>>
             constexpr bool IsPotentiallyComparerRelation_Helper_ (nullptr_t)
             {
-                return Configuration::is_callable<FUNCTOR>::value and is_convertible<RESULT, bool>::value;
+                return Configuration::is_callable<FUNCTOR>::value and is_convertible_v<RESULT, bool>;
             }
             template <typename FUNCTOR_ARG, typename FUNCTOR>
             constexpr bool IsPotentiallyComparerRelation_Helper_ (...)

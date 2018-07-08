@@ -180,9 +180,9 @@ namespace Stroika::Foundation {
             MultiSet (const initializer_list<CountedValue<T>>& src);
             template <typename EQUALS_COMPARER, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>>
             MultiSet (EQUALS_COMPARER&& equalsComparer, const initializer_list<CountedValue<T>>& src);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const MultiSet<T, TRAITS>*>::value>>
+            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const MultiSet<T, TRAITS>*>>>
             MultiSet (const CONTAINER_OF_ADDABLE& src);
-            template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not std::is_convertible<const CONTAINER_OF_ADDABLE*, const MultiSet<T, TRAITS>*>::value>>
+            template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const MultiSet<T, TRAITS>*>>>
             MultiSet (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>>
             MultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

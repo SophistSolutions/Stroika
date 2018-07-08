@@ -109,7 +109,7 @@ namespace Stroika::Foundation {
         namespace Private_ {
             template <typename ITERABLE_OF_T, typename T>
             struct IsIterableOfT_Impl2_ {
-                template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = std::is_convertible<typename std::iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>::value>
+                template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = is_convertible_v<typename std::iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>>
                 static auto check (const X& x) -> std::conditional_t<
                     has_beginend<ITERABLE_OF_T>::value and
                         ITER_RESULT_CONVERTIBLE_TO_T,
@@ -147,7 +147,7 @@ namespace Stroika::Foundation {
         template <typename T>
         constexpr bool EqualityComparable ()
         {
-            return has_eq<T>::value && is_convertible<eq_result<T>, bool>::value;
+            return has_eq<T>::value && is_convertible_v<eq_result<T>, bool>;
         }
 
         /**
@@ -156,13 +156,13 @@ namespace Stroika::Foundation {
         template <typename T>
         constexpr bool LessThanComparable ()
         {
-            return has_lt<T>::value && is_convertible<lt_result<T>, bool>::value;
+            return has_lt<T>::value && is_convertible_v<lt_result<T>, bool>;
         }
 
         template <typename T>
         constexpr bool HasMinusWithIntegerResult ()
         {
-            return has_minus<T>::value && is_convertible<minus_result<T>, int>::value;
+            return has_minus<T>::value && is_convertible_v<minus_result<T>, int>;
         }
 
         /*

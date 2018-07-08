@@ -43,7 +43,7 @@ namespace Stroika::Foundation {
                 return t.ToString ();
             }
             template <typename T>
-            String ToString_ (const T& t, enable_if_t<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible<T, String>::value>* = 0)
+            String ToString_ (const T& t, enable_if_t<has_beginenditerable<T>::value and not has_ToString<T>::value and not is_convertible_v<T, String>>* = 0)
             {
                 StringBuilder sb;
                 sb << L"[";
@@ -65,12 +65,12 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            inline String ToString_ (const T& t, enable_if_t<is_convertible<T, String>::value>* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, String>>* = 0)
             {
                 return static_cast<String> (t);
             }
             template <typename T>
-            inline String ToString_ (const T& t, enable_if_t<is_convertible<T, const std::exception&>::value>* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, const std::exception&>>* = 0)
             {
                 //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
                 //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };
@@ -128,7 +128,7 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            inline String ToString_ (const T& t, enable_if_t<is_array<T>::value and not is_convertible<T, String>::value>* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_array<T>::value and not is_convertible_v<T, String>>* = 0)
             {
                 return ToString_array_ (t);
             }
