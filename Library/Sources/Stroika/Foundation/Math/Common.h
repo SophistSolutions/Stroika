@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Math {
     template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
     bool NearlyEquals (T1 l, T2 r, enable_if_t<is_integral_v<TC>>* = 0);
     template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> && ! is_floating_point_v<TC>>* = 0);
+    bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> && !is_floating_point_v<TC>>* = 0);
 
     /**
      *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEquals() to it (but better)
