@@ -84,17 +84,17 @@ namespace Stroika {
                      *  Return the Next possible value, or if already at the end of the range, the same value.
                      */
                     template <typename SFINAE = value_type>
-                    static value_type GetNext (value_type i, enable_if_t<std::is_integral<SFINAE>::value>* = 0);
+                    static value_type GetNext (value_type i, enable_if_t<is_integral_v<SFINAE>>* = 0);
                     template <typename SFINAE = value_type>
-                    static value_type GetNext (value_type i, enable_if_t<std::is_floating_point<SFINAE>::value>* = 0);
+                    static value_type GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = 0);
 
                     /**
                      *  Return the Previous possible value, or if already at the end of the range, the same value.
                      */
                     template <typename SFINAE = value_type>
-                    static value_type GetPrevious (value_type i, enable_if_t<std::is_integral<SFINAE>::value>* = 0);
+                    static value_type GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE>>* = 0);
                     template <typename SFINAE = value_type>
-                    static value_type GetPrevious (value_type i, enable_if_t<std::is_floating_point<SFINAE>::value>* = 0);
+                    static value_type GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = 0);
 
                     /**
                      *  Compute the difference between two elements of type T for the Range
@@ -131,7 +131,7 @@ namespace Stroika {
                  */
                 template <typename T>
                 struct DefaultRangeTraits : enable_if_t<
-                                                is_arithmetic<T>::value,
+                                                is_arithmetic_v<T>,
                                                 ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, decltype (T{} - T{}), Private_::UnsignedDifferenceType_<T>>> {
                     static constexpr T kLowerBound = numeric_limits<T>::lowest ();
                     static constexpr T kUpperBound = numeric_limits<T>::max ();

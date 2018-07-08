@@ -230,14 +230,8 @@ namespace Stroika::Foundation {
         /**
          */
         template <typename T>
-        struct is_callable
-            : std::conditional_t<
-                  std::is_class<T>::value,
-                  Private_::is_callable_impl_<T>,
-                  std::false_type> {
-        };
+        using is_callable = conditional_t<is_class_v<T>, Private_::is_callable_impl_<T>, false_type>;
     }
-
 }
 
 /*

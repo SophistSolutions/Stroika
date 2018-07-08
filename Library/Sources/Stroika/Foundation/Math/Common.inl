@@ -164,7 +164,7 @@ namespace Stroika {
                 // @todo see if we can make this constexpr somehow?
                 const inline TC mkCompareEpsilon_ (TC l, [[maybe_unused]] TC r)
                 {
-                    static_assert (std::is_floating_point<TC>::value, "can only be used for float values");
+                    static_assert (is_floating_point_v<TC>, "can only be used for float values");
 #if 1
                     if (l < -10 or l > 10) {
                         static const TC kScale_ = pow (static_cast<TC> (10), -(numeric_limits<TC>::digits10 - 1)); // @todo constexpr? is pow() constexpr?
@@ -175,7 +175,7 @@ namespace Stroika {
                 }
             }
             template <typename T1, typename T2, typename EPSILON_TYPE, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<std::is_floating_point<TC>::value>*)
+            inline bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<is_floating_point_v<TC>>*)
             {
                 Require (epsilon >= 0);
                 TC diff = (l - r);
@@ -210,17 +210,17 @@ namespace Stroika {
                 return std::fabs (diff) <= epsilon;
             }
             template <typename T1, typename T2, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<std::is_integral<TC>::value>*)
+            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<is_integral_v<TC>>*)
             {
                 return l == r;
             }
             template <typename T1, typename T2, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<std::is_floating_point<TC>::value>*)
+            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<is_floating_point_v<TC>>*)
             {
                 return NearlyEquals (l, r, Private_::mkCompareEpsilon_<TC> (l, r));
             }
             template <typename T1, typename T2, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<!std::is_integral<TC>::value && !std::is_floating_point<TC>::value>*)
+            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> && !is_floating_point_v<TC>>*)
             {
                 return l == r;
             }

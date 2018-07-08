@@ -104,7 +104,7 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            inline String ToString_ (const T& t, enable_if_t<is_enum<T>::value>* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_enum_v<T>>* = 0)
             {
                 // SHOULD MAYBE only do if can detect is-defined Configuration::DefaultNames<T>, but right now not easy, and
                 // not a problem: just dont call this, or replace it with a specific specialization of ToString
@@ -128,12 +128,12 @@ namespace Stroika::Foundation {
                 return sb.str ();
             }
             template <typename T>
-            inline String ToString_ (const T& t, enable_if_t<is_array<T>::value and not is_convertible_v<T, String>>* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_array_v<T> and not is_convertible_v<T, String>>* = 0)
             {
                 return ToString_array_ (t);
             }
             template <typename T>
-            inline String ToString_ (const T& t, enable_if_t<is_floating_point<T>::value>* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_floating_point_v<T>>* = 0)
             {
                 return Float2String (t);
             }

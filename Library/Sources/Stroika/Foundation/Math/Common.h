@@ -71,13 +71,13 @@ namespace Stroika::Foundation::Math {
      *  and becomes require equality (==).
      */
     template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, enable_if_t<std::is_floating_point<TC>::value>* = 0);
+    bool NearlyEquals (T1 l, T2 r, enable_if_t<is_floating_point_v<TC>>* = 0);
     template <typename T1, typename T2, typename EPSILON_TYPE, typename TC = typename std::common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<std::is_floating_point<TC>::value>* = 0);
+    bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<is_floating_point_v<TC>>* = 0);
     template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, enable_if_t<std::is_integral<TC>::value>* = 0);
+    bool NearlyEquals (T1 l, T2 r, enable_if_t<is_integral_v<TC>>* = 0);
     template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
-    bool NearlyEquals (T1 l, T2 r, enable_if_t<!std::is_integral<TC>::value && !std::is_floating_point<TC>::value>* = 0);
+    bool NearlyEquals (T1 l, T2 r, enable_if_t<!std::is_integral_v<TC> && !is_floating_point_v<TC>>* = 0);
 
     /**
      *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEquals() to it (but better)

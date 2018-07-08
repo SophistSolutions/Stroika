@@ -27,12 +27,12 @@ namespace Stroika {
              */
             namespace Private_ {
                 template <typename T>
-                inline enable_if_t<not std::is_floating_point<T>::value, T> CheckedConverter_Range_Helper_Pinner_ (T t, T /*lower*/, T /*upper*/)
+                inline enable_if_t<not is_floating_point_v<T>, T> CheckedConverter_Range_Helper_Pinner_ (T t, T /*lower*/, T /*upper*/)
                 {
                     return t;
                 }
                 template <typename T>
-                inline enable_if_t<std::is_floating_point<T>::value, T> CheckedConverter_Range_Helper_Pinner_ (T t, T lower, T upper)
+                inline enable_if_t<is_floating_point_v<T>, T> CheckedConverter_Range_Helper_Pinner_ (T t, T lower, T upper)
                 {
                     return Math::PinToSpecialPoint (Math::PinToSpecialPoint (t, lower), upper);
                 }
