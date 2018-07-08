@@ -123,7 +123,7 @@ namespace Stroika::Foundation {
          *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
          */
         template <typename ITERABLE_OF_T, typename T>
-        using IsIterableOfT = std::integral_constant<bool, not std::is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+        using IsIterableOfT = std::integral_constant<bool, not is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
         /**
          *  See http://en.cppreference.com/w/cpp/concept/Container
@@ -196,7 +196,7 @@ namespace Stroika::Foundation {
             static constexpr bool value = false;
         };
         template <typename T>
-        struct is_iterator<T, enable_if_t<!std::is_same<typename std::iterator_traits<T>::value_type, void>::value>> {
+        struct is_iterator<T, enable_if_t<!is_same_v<typename std::iterator_traits<T>::value_type, void>>> {
             static constexpr bool value = true;
         };
 

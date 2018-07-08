@@ -31,7 +31,7 @@ namespace Stroika::Foundation {
         template <typename T>
         template <typename X, typename ENABLE>
         struct Sequence<T>::TemporaryElementReference_ { // for 'X' non-class (e.g == int which we cannot subclass from)
-            static_assert (is_same<T, X>::value, "constructed so this is so - just use second template so we can do enable_if_t");
+            static_assert (is_same_v<T, X>, "constructed so this is so - just use second template so we can do enable_if_t");
             Sequence<X>* fV;
             size_t       fIndex;
             TemporaryElementReference_ (const TemporaryElementReference_&) = default;
@@ -57,7 +57,7 @@ namespace Stroika::Foundation {
         template <typename T>
         template <typename X>
         struct Sequence<T>::TemporaryElementReference_<X, enable_if_t<is_class<X>::value or is_union<X>::value>> : X {
-            static_assert (is_same<T, X>::value, "constructed so this is so - just use second template so we can do enable_if_t");
+            static_assert (is_same_v<T, X>, "constructed so this is so - just use second template so we can do enable_if_t");
             Sequence<T>* fV;
             size_t       fIndex;
             TemporaryElementReference_ (const TemporaryElementReference_&) = default;

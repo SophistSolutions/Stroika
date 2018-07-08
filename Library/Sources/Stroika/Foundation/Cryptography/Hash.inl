@@ -24,7 +24,7 @@ namespace Stroika::Foundation {
                 return Memory::BLOB (reinterpret_cast<const Byte*> (&data2Hash), reinterpret_cast<const Byte*> (&data2Hash + 1));
             }
             template <typename TYPE_TO_COMPUTE_HASH_OF>
-            inline Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_same<typename remove_cv<TYPE_TO_COMPUTE_HASH_OF>::type, Memory::BLOB>::value, void>* = nullptr)
+            inline Memory::BLOB SerializeForHash1_ (TYPE_TO_COMPUTE_HASH_OF data2Hash, enable_if_t<is_same_v<typename remove_cv<TYPE_TO_COMPUTE_HASH_OF>::type, Memory::BLOB>>* = nullptr)
             {
                 return data2Hash;
             }
@@ -58,7 +58,7 @@ namespace Stroika::Foundation {
                 return static_cast<ADAPTER_RETURN_TYPE> (hashVal);
             }
             template <typename ADAPTER_RETURN_TYPE, typename HASHER_RETURN_TYPE>
-            inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_same<ADAPTER_RETURN_TYPE, string>::value, void>* = nullptr)
+            inline ADAPTER_RETURN_TYPE mkReturnType1_ (HASHER_RETURN_TYPE hashVal, enable_if_t<is_same_v<ADAPTER_RETURN_TYPE, string>>* = nullptr)
             {
                 return Format (hashVal);
             }

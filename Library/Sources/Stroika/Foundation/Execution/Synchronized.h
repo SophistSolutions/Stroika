@@ -92,8 +92,8 @@ namespace Stroika::Foundation {
          *        @see http://joeduffyblog.com/2009/02/11/readerwriter-locks-and-their-lack-of-applicability-to-finegrained-synchronization/
          */
         template <typename MUTEX             = recursive_mutex,
-                  bool IS_RECURSIVE          = std::is_same<MUTEX, recursive_mutex>::value or std::is_same<MUTEX, recursive_timed_mutex>::value,
-                  bool SUPPORTS_SHARED_LOCKS = std::is_same<MUTEX, shared_timed_mutex>::value or std::is_same<MUTEX, shared_mutex>::value,
+                  bool IS_RECURSIVE          = is_same_v<MUTEX, recursive_mutex> or is_same_v<MUTEX, recursive_timed_mutex>,
+                  bool SUPPORTS_SHARED_LOCKS = is_same_v<MUTEX, shared_timed_mutex> or is_same_v<MUTEX, shared_mutex>,
                   typename READ_LOCK_TYPE    = conditional_t<SUPPORTS_SHARED_LOCKS, shared_lock<MUTEX>, unique_lock<MUTEX>>,
                   typename WRITE_LOCK_TYPE   = unique_lock<MUTEX>>
         struct Synchronized_Traits {

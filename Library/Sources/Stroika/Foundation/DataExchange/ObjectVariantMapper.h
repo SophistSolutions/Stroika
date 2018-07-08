@@ -235,7 +235,7 @@ namespace Stroika::Foundation {
                 TypeMappingDetails ()                          = delete;
                 TypeMappingDetails (const TypeMappingDetails&) = default;
                 explicit TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper);
-                template <typename T, typename ENABLE_IF = enable_if_t<not std::is_same<T, void>::value>>
+                template <typename T, typename ENABLE_IF = enable_if_t<not is_same_v<T, void>>>
                 TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper);
 
                 nonvirtual TypeMappingDetails& operator= (const TypeMappingDetails& rhs) = default;

@@ -91,7 +91,7 @@ namespace Stroika {
                 static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const ELEMENT_TYPE* start, const ELEMENT_TYPE* end);
                 template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>>
                 static Ptr New (const Memory::BLOB& blob);
-                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same<TEST_TYPE, Memory::Byte>::value>>
+                template <typename TEST_TYPE = ELEMENT_TYPE, typename ENABLE_IF_TEST = enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>>
                 static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob);
 
             private:
