@@ -345,9 +345,9 @@ namespace Stroika {
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::DateTime*);
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const Time::Duration*);
                         template <typename T>
-                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<std::is_enum<T>::value>* = 0);
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>* = 0);
                         template <typename T>
-                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<std::is_pod<T>::value and !std::is_enum<T>::value>* = 0);
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<std::is_pod<T>::value and !std::is_enum_v<T>>* = 0);
                         template <typename T>
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);
                         template <typename T, typename TRAITS>

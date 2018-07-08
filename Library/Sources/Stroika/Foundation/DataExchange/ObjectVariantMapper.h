@@ -625,7 +625,7 @@ namespace Stroika::Foundation {
             template <typename T>
             static TypeMappingDetails MakeCommonSerializer_ (const vector<T>*);
             template <typename T>
-            static TypeMappingDetails MakeCommonSerializer_ (const T*, enable_if_t<std::is_enum<T>::value>* = 0);
+            static TypeMappingDetails MakeCommonSerializer_ (const T*, enable_if_t<is_enum_v<T>>* = 0);
             template <typename T, size_t SZ>
             static TypeMappingDetails MakeCommonSerializer_ (const T (*)[SZ]);
 

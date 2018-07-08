@@ -883,12 +883,12 @@ namespace Stroika {
                         return MakeCommonReader_SimpleReader_<String> ();
                     }
                     template <typename T>
-                    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<std::is_enum<T>::value>*)
+                    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>*)
                     {
                         return MakeCommonReader_NamedEnumerations<T> ();
                     }
                     template <typename T>
-                    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<std::is_pod<T>::value and !std::is_enum<T>::value>*)
+                    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<std::is_pod<T>::value and !is_enum_v<T>>*)
                     {
                         return MakeCommonReader_SimpleReader_<T> ();
                     }

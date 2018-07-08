@@ -420,7 +420,7 @@ namespace Stroika::Foundation {
             return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
         }
         template <typename T>
-        inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T*, enable_if_t<std::is_enum<T>::value>*)
+        inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_ (const T*, enable_if_t<is_enum_v<T>>*)
         {
             return MakeCommonSerializer_NamedEnumerations<T> ();
         }
@@ -503,7 +503,7 @@ namespace Stroika::Foundation {
         ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_NamedEnumerations (const Containers::Bijection<ENUM_TYPE, String>& nameMap)
         {
             using Characters::String_Constant;
-            static_assert (std::is_enum<ENUM_TYPE>::value, "MakeCommonSerializer_NamedEnumerations only works for enum types");
+            static_assert (is_enum_v<ENUM_TYPE>, "MakeCommonSerializer_NamedEnumerations only works for enum types");
             using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
             static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
             FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [nameMap]([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
@@ -540,7 +540,7 @@ namespace Stroika::Foundation {
              *
              *  See MakeCommonSerializer_NamedEnumerations
              */
-            static_assert (std::is_enum<ENUM_TYPE>::value, "This only works for enum types");
+            static_assert (is_enum_v<ENUM_TYPE>, "This only works for enum types");
             using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
             static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
             FromObjectMapperType<ENUM_TYPE> fromObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {

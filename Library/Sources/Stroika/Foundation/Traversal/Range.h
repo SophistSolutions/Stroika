@@ -99,9 +99,9 @@ namespace Stroika {
                     /**
                      *  Compute the difference between two elements of type T for the Range
                      */
-                    template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<std::is_enum<TYPE2CHECK>::value or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
+                    template <typename TYPE2CHECK = value_type, typename SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>>>
                     static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, SFINAE_CAN_CONVERT_TYPE_TO_SIGNEDDIFFTYPE* = 0);
-                    template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(std::is_enum<TYPE2CHECK>::value or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
+                    template <typename TYPE2CHECK = value_type, typename SFINAE_CANNOT_CONVERT_TYPE_TO_SIGNEDDIFFTYPE = enable_if_t<not(is_enum_v<TYPE2CHECK> or is_convertible_v<TYPE2CHECK, SignedDifferenceType>)>>
                     static constexpr SignedDifferenceType Difference (Configuration::ArgByValueType<value_type> lhs, Configuration::ArgByValueType<value_type> rhs, ...);
                 };
 
