@@ -42,7 +42,7 @@ namespace Stroika {
                      */
                     Stack_LinkedList ();
                     Stack_LinkedList (const Stack_LinkedList<T>& src);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !is_convertible_v<const CONTAINER_OF_T*, const Stack_LinkedList<T>*>>>
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Stack_LinkedList<T>*>>>
                     explicit Stack_LinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

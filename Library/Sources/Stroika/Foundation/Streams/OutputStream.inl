@@ -136,7 +136,7 @@ namespace Stroika::Foundation {
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             Require (IsOpen ());
-            static_assert (std::is_pod<POD_TYPE>::value, "");
+            static_assert (is_pod_v<POD_TYPE>);
             Write (reinterpret_cast<const Memory::Byte*> (start), reinterpret_cast<const Memory::Byte*> (end));
         }
         template <typename ELEMENT_TYPE>

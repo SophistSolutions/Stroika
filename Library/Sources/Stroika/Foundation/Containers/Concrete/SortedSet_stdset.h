@@ -52,9 +52,9 @@ namespace Stroika {
                     SortedSet_stdset (const SortedSet_stdset& src) = default;
                     SortedSet_stdset (const std::initializer_list<T>& src);
                     SortedSet_stdset (const InOrderComparerType& inOrderComparer, const std::initializer_list<T>& src);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>>
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>>
                     SortedSet_stdset (const CONTAINER_OF_T& src);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>>
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>>
                     SortedSet_stdset (const InOrderComparerType& inOrderComparer, const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

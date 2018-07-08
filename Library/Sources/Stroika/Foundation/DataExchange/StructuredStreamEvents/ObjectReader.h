@@ -347,7 +347,7 @@ namespace Stroika {
                         template <typename T>
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_enum_v<T>>* = 0);
                         template <typename T>
-                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<std::is_pod<T>::value and !std::is_enum_v<T>>* = 0);
+                        static ReaderFromVoidStarFactory MakeCommonReader_ (const T*, enable_if_t<is_pod_v<T> and not is_enum_v<T>>* = 0);
                         template <typename T>
                         static ReaderFromVoidStarFactory MakeCommonReader_ (const optional<T>*);
                         template <typename T, typename TRAITS>

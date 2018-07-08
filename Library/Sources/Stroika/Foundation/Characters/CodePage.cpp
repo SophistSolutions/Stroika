@@ -191,7 +191,7 @@ namespace {
                 ch = *source++;
                 if (ch <= UNI_MAX_BMP) { /* Target is a character <= 0xFFFF */
                     /* UTF-16 surrogate values are illegal in UTF-32; 0xffff or 0xfffe are both reserved values */
-                    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END) {
+                    if (ch >= UNI_SUR_HIGH_START and ch <= UNI_SUR_LOW_END) {
                         if (flags == strictConversion) {
                             --source; /* return to the illegal value itself */
                             result = sourceIllegal;

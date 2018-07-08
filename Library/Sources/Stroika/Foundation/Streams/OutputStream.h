@@ -224,7 +224,7 @@ namespace Stroika::Foundation {
              *      \note Used to be called WritePOD (too easy to use mistakenly, and if you really want to do something like this with
              *            non-POD data, not hard, but we dont want to encourage it.
              *
-             *  \req std::is_pod<POD_TYPE>::value
+             *  \req is_pod_v<POD_TYPE>
              *  \req ELEMENT_TYPE==Byte
              *  \req IsOpen ()
              *

@@ -45,7 +45,7 @@ namespace Stroika {
                     template <typename KEY_INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_INORDER_COMPARER> ()>>
                     explicit SortedMapping_stdmap (const KEY_INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
                     SortedMapping_stdmap (const SortedMapping_stdmap& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value && not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>>
+                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>>
                     SortedMapping_stdmap (const CONTAINER_OF_ADDABLE& src);
                     template <typename COPY_FROM_ITERATOR_KEYVALUE>
                     SortedMapping_stdmap (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);

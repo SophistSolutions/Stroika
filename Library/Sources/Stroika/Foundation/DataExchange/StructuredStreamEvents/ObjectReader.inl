@@ -888,7 +888,7 @@ namespace Stroika {
                         return MakeCommonReader_NamedEnumerations<T> ();
                     }
                     template <typename T>
-                    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<std::is_pod<T>::value and !is_enum_v<T>>*)
+                    inline ReaderFromVoidStarFactory Registry::MakeCommonReader_ (const T*, enable_if_t<is_pod_v<T> and not is_enum_v<T>>*)
                     {
                         return MakeCommonReader_SimpleReader_<T> ();
                     }

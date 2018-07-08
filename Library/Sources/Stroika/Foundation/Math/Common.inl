@@ -220,7 +220,7 @@ namespace Stroika {
                 return NearlyEquals (l, r, Private_::mkCompareEpsilon_<TC> (l, r));
             }
             template <typename T1, typename T2, typename TC>
-            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> && !is_floating_point_v<TC>>*)
+            inline bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> and !is_floating_point_v<TC>>*)
             {
                 return l == r;
             }

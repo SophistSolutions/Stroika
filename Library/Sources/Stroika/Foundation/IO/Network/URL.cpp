@@ -203,7 +203,7 @@ URL URL::Parse (const String& w, ParseOptions po)
                 if (w[i] == ':') {
                     String num;
                     ++i;
-                    while (i < w.length () && w[i].IsDigit ()) {
+                    while (i < w.length () and w[i].IsDigit ()) {
                         num.push_back (w[i].As<wchar_t> ());
                         ++i;
                     }
@@ -356,7 +356,7 @@ URL URL::ParseHosteStroikaPre20a50BackCompatMode_ (const String& w)
                 if (w[i] == ':') {
                     String num;
                     ++i;
-                    while (i < w.length () && w[i].IsDigit ()) {
+                    while (i < w.length () and w[i].IsDigit ()) {
                         num.push_back (w[i].As<wchar_t> ());
                         ++i;
                     }

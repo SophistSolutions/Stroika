@@ -129,7 +129,7 @@ namespace Stroika::Foundation {
             static BLOB Raw (const T* s, size_t sz);
             static BLOB Raw (const char* s);
             static BLOB Raw (const wchar_t* s);
-            template <typename CONTAINER_OF_POD_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_POD_T>::value && is_pod_v<typename CONTAINER_OF_POD_T::value_type>>>
+            template <typename CONTAINER_OF_POD_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_POD_T>::value and is_pod_v<typename CONTAINER_OF_POD_T::value_type>>>
             static BLOB Raw (const CONTAINER_OF_POD_T& s);
 
         protected:

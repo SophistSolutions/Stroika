@@ -194,7 +194,7 @@ namespace Stroika::Foundation {
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             Require (IsOpen ());
-            static_assert (std::is_pod<POD_TYPE>::value, "");
+            static_assert (is_pod_v<POD_TYPE>);
             POD_TYPE tmp; // intentionally don't zero-initialize
             size_t   n{ReadAll (reinterpret_cast<Memory::Byte*> (&tmp), reinterpret_cast<Memory::Byte*> (&tmp + 1))};
             if (n == sizeof (tmp)) {
@@ -210,7 +210,7 @@ namespace Stroika::Foundation {
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
             Require (IsOpen ());
-            static_assert (std::is_pod<POD_TYPE>::value, "");
+            static_assert (is_pod_v<POD_TYPE>);
             size_t n{ReadAll (reinterpret_cast<Memory::Byte*> (start), reinterpret_cast<Memory::Byte*> (end))};
             if (n != sizeof (POD_TYPE) * (end - start)) {
                 Execution::Throw ((n == 0) ? EOFException::kThe : EOFException (true));

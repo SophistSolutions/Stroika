@@ -45,7 +45,7 @@ namespace Stroika {
                      */
                     Sequence_stdvector ();
                     Sequence_stdvector (const Sequence_stdvector<T>& src);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !is_convertible_v<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>>>
+                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>>>
                     explicit Sequence_stdvector (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

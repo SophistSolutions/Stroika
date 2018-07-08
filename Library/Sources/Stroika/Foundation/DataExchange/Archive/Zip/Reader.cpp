@@ -940,9 +940,9 @@ namespace {
         for (;;) {
             char c1 = *(fileName1++);
             char c2 = *(fileName2++);
-            if ((c1 >= 'a') && (c1 <= 'z'))
+            if ((c1 >= 'a') and (c1 <= 'z'))
                 c1 -= 0x20;
-            if ((c2 >= 'a') && (c2 <= 'z'))
+            if ((c2 >= 'a') and (c2 <= 'z'))
                 c2 -= 0x20;
             if (c1 == '\0')
                 return ((c2 == '\0') ? 0 : -1);
@@ -1035,8 +1035,8 @@ namespace {
                 break;
 
             for (i = (int)uReadSize - 3; (i--) > 0;)
-                if (((*(buf + i)) == 0x50) && ((*(buf + i + 1)) == 0x4b) &&
-                    ((*(buf + i + 2)) == 0x05) && ((*(buf + i + 3)) == 0x06)) {
+                if (((*(buf + i)) == 0x50) and ((*(buf + i + 1)) == 0x4b) &&
+                    ((*(buf + i + 2)) == 0x05) and ((*(buf + i + 3)) == 0x06)) {
                     uPosFound = uReadPos + i;
                     break;
                 }
@@ -1093,8 +1093,8 @@ namespace {
                 break;
 
             for (i = (int)uReadSize - 3; (i--) > 0;)
-                if (((*(buf + i)) == 0x50) && ((*(buf + i + 1)) == 0x4b) &&
-                    ((*(buf + i + 2)) == 0x06) && ((*(buf + i + 3)) == 0x07)) {
+                if (((*(buf + i)) == 0x50) and ((*(buf + i + 1)) == 0x4b) &&
+                    ((*(buf + i + 2)) == 0x06) and ((*(buf + i + 3)) == 0x07)) {
                     uPosFound = uReadPos + i;
                     break;
                 }
@@ -1494,7 +1494,7 @@ namespace {
         file_info_internal.offset_curfile = uL;
 
         lSeek += file_info.size_filename;
-        if ((err == UNZ_OK) && (szFileName != NULL)) {
+        if ((err == UNZ_OK) and (szFileName != NULL)) {
             uLong uSizeRead;
             if (file_info.size_filename < fileNameBufferSize) {
                 *(szFileName + file_info.size_filename) = '\0';
@@ -1503,14 +1503,14 @@ namespace {
             else
                 uSizeRead = fileNameBufferSize;
 
-            if ((file_info.size_filename > 0) && (fileNameBufferSize > 0))
+            if ((file_info.size_filename > 0) and (fileNameBufferSize > 0))
                 if (ZREAD64 (s->z_filefunc, s->filestream, szFileName, uSizeRead) != uSizeRead)
                     err = UNZ_ERRNO;
             lSeek -= uSizeRead;
         }
 
         // Read extrafield
-        if ((err == UNZ_OK) && (extraField != NULL)) {
+        if ((err == UNZ_OK) and (extraField != NULL)) {
             ZPOS64_T uSizeRead;
             if (file_info.size_file_extra < extraFieldBufferSize)
                 uSizeRead = file_info.size_file_extra;
@@ -1524,7 +1524,7 @@ namespace {
                     err = UNZ_ERRNO;
             }
 
-            if ((file_info.size_file_extra > 0) && (extraFieldBufferSize > 0))
+            if ((file_info.size_file_extra > 0) and (extraFieldBufferSize > 0))
                 if (ZREAD64 (s->z_filefunc, s->filestream, extraField, (uLong)uSizeRead) != uSizeRead)
                     err = UNZ_ERRNO;
 
@@ -1533,7 +1533,7 @@ namespace {
         else
             lSeek += file_info.size_file_extra;
 
-        if ((err == UNZ_OK) && (file_info.size_file_extra != 0)) {
+        if ((err == UNZ_OK) and (file_info.size_file_extra != 0)) {
             uLong acc = 0;
 
             // since lSeek now points to after the extra field we need to move back
@@ -1591,7 +1591,7 @@ namespace {
             }
         }
 
-        if ((err == UNZ_OK) && (szComment != NULL)) {
+        if ((err == UNZ_OK) and (szComment != NULL)) {
             uLong uSizeRead;
             if (file_info.size_file_comment < commentBufferSize) {
                 *(szComment + file_info.size_file_comment) = '\0';
@@ -1607,7 +1607,7 @@ namespace {
                     err = UNZ_ERRNO;
             }
 
-            if ((file_info.size_file_comment > 0) && (commentBufferSize > 0))
+            if ((file_info.size_file_comment > 0) and (commentBufferSize > 0))
                 if (ZREAD64 (s->z_filefunc, s->filestream, szComment, uSizeRead) != uSizeRead)
                     err = UNZ_ERRNO;
             lSeek += file_info.size_file_comment - uSizeRead;
@@ -1615,10 +1615,10 @@ namespace {
         else
             lSeek += file_info.size_file_comment;
 
-        if ((err == UNZ_OK) && (pfile_info != NULL))
+        if ((err == UNZ_OK) and (pfile_info != NULL))
             *pfile_info = file_info;
 
-        if ((err == UNZ_OK) && (pfile_info_internal != NULL))
+        if ((err == UNZ_OK) and (pfile_info_internal != NULL))
             *pfile_info_internal = file_info_internal;
 
         return err;
@@ -1642,7 +1642,7 @@ namespace {
                                                       szFileName, fileNameBufferSize,
                                                       extraField, extraFieldBufferSize,
                                                       szComment, commentBufferSize);
-        if ((err == UNZ_OK) && (pfile_info != NULL)) {
+        if ((err == UNZ_OK) and (pfile_info != NULL)) {
             pfile_info->version            = file_info64.version;
             pfile_info->version_needed     = file_info64.version_needed;
             pfile_info->flag               = file_info64.flag;
@@ -1894,7 +1894,7 @@ namespace {
         if (unz64local_getShort (&s->z_filefunc, s->filestream, &uData) != UNZ_OK)
             err = UNZ_ERRNO;
         /*
-            else if ((err==UNZ_OK) && (uData!=s->cur_file_info.wVersion))
+            else if ((err==UNZ_OK) and (uData!=s->cur_file_info.wVersion))
                 err=UNZ_BADZIPFILE;
         */
         if (unz64local_getShort (&s->z_filefunc, s->filestream, &uFlags) != UNZ_OK)
@@ -1902,10 +1902,10 @@ namespace {
 
         if (unz64local_getShort (&s->z_filefunc, s->filestream, &uData) != UNZ_OK)
             err = UNZ_ERRNO;
-        else if ((err == UNZ_OK) && (uData != s->cur_file_info.compression_method))
+        else if ((err == UNZ_OK) and (uData != s->cur_file_info.compression_method))
             err = UNZ_BADZIPFILE;
 
-        if ((err == UNZ_OK) && (s->cur_file_info.compression_method != 0) &&
+        if ((err == UNZ_OK) and (s->cur_file_info.compression_method != 0) &&
             /* #ifdef HAVE_BZIP2 */
             (s->cur_file_info.compression_method != Z_BZIP2ED) &&
             /* #endif */
@@ -1917,22 +1917,22 @@ namespace {
 
         if (unz64local_getLong (&s->z_filefunc, s->filestream, &uData) != UNZ_OK) /* crc */
             err = UNZ_ERRNO;
-        else if ((err == UNZ_OK) && (uData != s->cur_file_info.crc) && ((uFlags & 8) == 0))
+        else if ((err == UNZ_OK) and (uData != s->cur_file_info.crc) and ((uFlags & 8) == 0))
             err = UNZ_BADZIPFILE;
 
         if (unz64local_getLong (&s->z_filefunc, s->filestream, &uData) != UNZ_OK) /* size compr */
             err = UNZ_ERRNO;
-        else if (uData != 0xFFFFFFFF && (err == UNZ_OK) && (uData != s->cur_file_info.compressed_size) && ((uFlags & 8) == 0))
+        else if (uData != 0xFFFFFFFF and (err == UNZ_OK) and (uData != s->cur_file_info.compressed_size) and ((uFlags & 8) == 0))
             err = UNZ_BADZIPFILE;
 
         if (unz64local_getLong (&s->z_filefunc, s->filestream, &uData) != UNZ_OK) /* size uncompr */
             err = UNZ_ERRNO;
-        else if (uData != 0xFFFFFFFF && (err == UNZ_OK) && (uData != s->cur_file_info.uncompressed_size) && ((uFlags & 8) == 0))
+        else if (uData != 0xFFFFFFFF and (err == UNZ_OK) and (uData != s->cur_file_info.uncompressed_size) and ((uFlags & 8) == 0))
             err = UNZ_BADZIPFILE;
 
         if (unz64local_getShort (&s->z_filefunc, s->filestream, &size_filename) != UNZ_OK)
             err = UNZ_ERRNO;
-        else if ((err == UNZ_OK) && (size_filename != s->cur_file_info.size_filename))
+        else if ((err == UNZ_OK) and (size_filename != s->cur_file_info.size_filename))
             err = UNZ_BADZIPFILE;
 
         *piSizeVar += (uInt)size_filename;
@@ -2032,7 +2032,7 @@ namespace {
 
         pfile_in_zip_read_info->stream.total_out = 0;
 
-        if ((s->cur_file_info.compression_method == Z_BZIP2ED) && (!raw)) {
+        if ((s->cur_file_info.compression_method == Z_BZIP2ED) and (!raw)) {
 #ifdef HAVE_BZIP2
             pfile_in_zip_read_info->bstream.bzalloc = (void* (*)(void*, int, int))0;
             pfile_in_zip_read_info->bstream.bzfree  = (free_func)0;
@@ -2056,7 +2056,7 @@ namespace {
             pfile_in_zip_read_info->raw = 1;
 #endif
         }
-        else if ((s->cur_file_info.compression_method == Z_DEFLATED) && (!raw)) {
+        else if ((s->cur_file_info.compression_method == Z_DEFLATED) and (!raw)) {
             pfile_in_zip_read_info->stream.zalloc   = (alloc_func)0;
             pfile_in_zip_read_info->stream.zfree    = (free_func)0;
             pfile_in_zip_read_info->stream.opaque   = (voidpf)0;
@@ -2322,7 +2322,7 @@ namespace {
                 */
                 err = inflate (&pfile_in_zip_read_info->stream, flush);
 
-                if ((err >= 0) && (pfile_in_zip_read_info->stream.msg != NULL))
+                if ((err >= 0) and (pfile_in_zip_read_info->stream.msg != NULL))
                     err = Z_DATA_ERROR;
 
                 uTotalOutAfter = pfile_in_zip_read_info->stream.total_out;
@@ -2529,7 +2529,7 @@ namespace {
                 return UNZ_ERRNO;
         }
 
-        if ((szComment != NULL) && (uSizeBuf > s->gi.size_comment))
+        if ((szComment != NULL) and (uSizeBuf > s->gi.size_comment))
             *(szComment + s->gi.size_comment) = '\0';
         return (int)uReadThis;
     }
@@ -2544,7 +2544,7 @@ namespace {
         s = (unz64_s*)file;
         if (!s->current_file_ok)
             return 0;
-        if (s->gi.number_entry != 0 && s->gi.number_entry != 0xffff)
+        if (s->gi.number_entry != 0 and s->gi.number_entry != 0xffff)
             if (s->num_file == s->gi.number_entry)
                 return 0;
         return s->pos_in_central_dir;

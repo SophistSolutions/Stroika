@@ -1258,7 +1258,7 @@ Led_Tablet_::Led_Tablet_ (Display* display, Drawable drawable)
     int (*oldErrHandler) (Display*, XErrorEvent*) = ::XSetErrorHandler (IgnoreXErrorHandler);
     Status s = ::XGetWindowAttributes (display, drawable, &wa);
     ::XSetErrorHandler (oldErrHandler);
-    if (s != 0 && wa.map_installed) {
+    if (s != 0 and wa.map_installed) {
         fColormap = wa.colormap;
     }
     else {

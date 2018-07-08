@@ -59,7 +59,7 @@ namespace Stroika {
                  *  It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
                  *  spinning. And we could reduce this further during mallocs of new blocks.
                  */
-                constexpr bool kUseSpinLock_ = !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ && Execution::kSpinLock_IsFasterThan_mutex;
+                constexpr bool kUseSpinLock_ = !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ and Execution::kSpinLock_IsFasterThan_mutex;
 
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
                 /**

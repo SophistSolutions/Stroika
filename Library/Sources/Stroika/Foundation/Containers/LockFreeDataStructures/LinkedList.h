@@ -69,7 +69,7 @@ public:
                 auto find(T t) const
                 {
                     auto p = head.load();
-                    while (p && p->t != t)
+                    while (p and p->t != t)
                         p = p->next;
                     return reference{move(p)};
 
@@ -83,7 +83,7 @@ public:
 
                     void pop_front() {
                         auto p = head.load();
-                        while (p && !head.compare_exchange_weak(p, p->next))
+                        while (p and !head.compare_exchange_weak(p, p->next))
                         {}
                     }
                 };

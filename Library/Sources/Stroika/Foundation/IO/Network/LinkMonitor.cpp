@@ -330,12 +330,12 @@ struct LinkMonitor::Rep_ {
                 struct nlmsghdr* nlh;
                 nlh = (struct nlmsghdr*)buffer;
                 while ((len = recv (sock.GetNativeSocket (), nlh, 4096, 0)) > 0) {
-                    while ((NLMSG_OK (nlh, len)) && (nlh->nlmsg_type != NLMSG_DONE)) {
+                    while ((NLMSG_OK (nlh, len)) and (nlh->nlmsg_type != NLMSG_DONE)) {
                         if (nlh->nlmsg_type == RTM_NEWADDR) {
                             struct ifaddrmsg* ifa = (struct ifaddrmsg*)NLMSG_DATA (nlh);
                             struct rtattr*    rth = IFA_RTA (ifa);
                             int               rtl = IFA_PAYLOAD (nlh);
-                            while (rtl && RTA_OK (rth, rtl)) {
+                            while (rtl and RTA_OK (rth, rtl)) {
                                 if (rth->rta_type == IFA_LOCAL) {
                                     DISABLE_COMPILER_CLANG_WARNING_START ("clang diagnostic ignored \"-Wdeprecated\""); // macro uses 'register' - htons not deprecated
                                     uint32_t ipaddr = htonl (*((uint32_t*)RTA_DATA (rth)));                             //NB no '::' cuz some systems use macro
