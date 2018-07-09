@@ -65,7 +65,7 @@ namespace Stroika::Foundation {
             RequireNotNull (fromObjectMapper);
             RequireNotNull (toObjectMapper);
         }
-        template <typename T, typename ENABLE_IF>
+        template <typename T, enable_if_t<not is_same_v<T, void>, int>>
         inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromObjectMapperType<T>& fromObjectMapper, const ToObjectMapperType<T>& toObjectMapper)
             : TypeMappingDetails (forTypeInfo, *reinterpret_cast<const FromGenericObjectMapperType*> (&fromObjectMapper), *reinterpret_cast<const ToGenericObjectMapperType*> (&toObjectMapper))
         {
