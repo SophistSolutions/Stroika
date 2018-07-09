@@ -81,7 +81,7 @@ namespace Stroika::Foundation {
                   enable_if_t<
                       is_constructible<KEY_TYPE, const KEY_TYPE2&>::value and
                           is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value and
-                          !(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
+                          not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
                       int>>
         inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
             : fKey (src.fKey)
