@@ -43,7 +43,7 @@ namespace Stroika::Foundation {
             /**
              */
             template <typename K2 = KEY_TYPE, typename V2 = VALUE_TYPE,
-                      enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>, int> = 0>
+                      enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>>>
             constexpr KeyValuePair ();
             KeyValuePair (const KeyValuePair&) = default;
             KeyValuePair (KeyValuePair&&)      = default;
@@ -53,8 +53,7 @@ namespace Stroika::Foundation {
                               is_copy_constructible_v<V2> and
                               is_convertible_v<const K2&, K2> and
                               is_convertible_v<const V2&, V2>,
-                          int>
-                          ENABLE_IF = 0>
+                          int> = 0>
             constexpr KeyValuePair (const KeyType& key, const ValueType& value);
             template <typename KEY_TYPE2, typename VALUE_TYPE2,
                       enable_if_t<
@@ -62,32 +61,28 @@ namespace Stroika::Foundation {
                               is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&> and
                               is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and
                               is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>,
-                          int>
-                          ENABLE_IF_CONVERTIBLE = 0>
+                          int> = 0>
             constexpr KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src);
             template <typename KEY_TYPE2, typename VALUE_TYPE2,
                       enable_if_t<
                           is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and
                               is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&> and
                               not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
-                          int>
-                          ENABLE_IF_NOT_CONVERTIBLE = 0>
+                          int> = 0>
             constexpr explicit KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src);
             template <typename KEY_TYPE2, typename VALUE_TYPE2,
                       enable_if_t<
                           is_constructible<KEY_TYPE, const KEY_TYPE2&>::value and
                               is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value and
                               (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
-                          int>
-                          ENABLE_IF_CONVERTIBLE = 0>
+                          int> = 0>
             constexpr KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src);
             template <typename KEY_TYPE2, typename VALUE_TYPE2,
                       enable_if_t<
                           is_constructible<KEY_TYPE, const KEY_TYPE2&>::value and
                               is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value and
                               !(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
-                          int>
-                          ENABLE_IF_NOT_CONVERTIBLE = 0>
+                          int> = 0>
             constexpr explicit KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src);
 
         public:
