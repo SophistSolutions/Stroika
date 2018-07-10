@@ -26,7 +26,7 @@ namespace Stroika::Foundation {
          *
          *      Sequence<String> x;
          *      size_t a = x[3].length ();      // wont work if we use aggregating variant of TemporaryElementReference_
-         *                                      // e.g: error: ‘struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_’ has no member named ‘Trim’
+         *                                      // e.g: error: ï¿½struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_ï¿½ has no member named ï¿½Trimï¿½
          */
         template <typename T>
         template <typename X, typename ENABLE>
@@ -108,7 +108,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>>*>
         inline Sequence<T>::Sequence (const CONTAINER_OF_ADDABLE& src)
             : Sequence ()
         {
@@ -250,7 +250,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
         inline void Sequence<T>::InsertAll (size_t i, const CONTAINER_OF_ADDABLE& s)
         {
             Require (i <= this->GetLength ());
@@ -262,7 +262,7 @@ namespace Stroika::Foundation {
             Insert (0, item);
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
         inline void Sequence<T>::PrependAll (const CONTAINER_OF_ADDABLE& s)
         {
             InsertAll (0, s);

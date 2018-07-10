@@ -250,7 +250,7 @@ namespace Stroika::Foundation {
             Sequence (const Sequence& src) noexcept = default;
             Sequence (Sequence&& src) noexcept      = default;
             Sequence (const initializer_list<T>& src);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>>>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>>* = nullptr>
             Sequence (const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -386,7 +386,7 @@ namespace Stroika::Foundation {
              */
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void InsertAll (size_t i, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>* = nullptr>
             nonvirtual void InsertAll (size_t i, const CONTAINER_OF_ADDABLE& s);
 
         public:
@@ -396,8 +396,8 @@ namespace Stroika::Foundation {
 
         public:
             /**
-                 */
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>>
+             */
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>* = nullptr>
             nonvirtual void PrependAll (const CONTAINER_OF_ADDABLE& s);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void PrependAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
