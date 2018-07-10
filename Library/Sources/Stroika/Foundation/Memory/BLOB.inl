@@ -160,7 +160,7 @@ namespace Stroika::Foundation {
             RequireNotNull (s);
             return Raw (s, s + ::wcslen (s));
         }
-        template <typename CONTAINER_OF_POD_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_POD_T>::value and is_pod_v<typename CONTAINER_OF_POD_T::value_type>, int>>
+        template <typename CONTAINER_OF_POD_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_POD_T>::value and is_pod_v<typename CONTAINER_OF_POD_T::value_type>>*>
         inline BLOB BLOB::Raw (const CONTAINER_OF_POD_T& s)
         {
             // note we use .size () instead of s.end () because this funtion requires argument CONTAINER to be contiguous, and thats more likely checked by this (really need some concept check)
