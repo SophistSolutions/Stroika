@@ -203,7 +203,7 @@ namespace Stroika::Foundation {
         {
         }
         template <typename T>
-        template <typename T2, typename SFINAE>
+        template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>*>
         inline SharedPtr<T>::SharedPtr (T2* from)
             : fEnvelope_ (mkEnvelope_ (from))
         {
@@ -238,7 +238,7 @@ namespace Stroika::Foundation {
             // no need to increment refcount here because the entire envelope moved from from to this, and so total counts same
         }
         template <typename T>
-        template <typename T2, typename SFINAE>
+        template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>*>
         SharedPtr<T>::SharedPtr (const SharedPtr<T2>& from) noexcept
             : fEnvelope_ (from.fEnvelope_)
         {
@@ -247,7 +247,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename T>
-        template <typename T2, typename SFINAE>
+        template <typename T2, enable_if_t<is_convertible_v<T2*, T*>>*>
         SharedPtr<T>::SharedPtr (SharedPtr<T2>&& from) noexcept
             : fEnvelope_ (std::move (from.fEnvelope_))
         {
