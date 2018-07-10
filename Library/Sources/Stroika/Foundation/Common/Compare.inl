@@ -35,8 +35,8 @@ namespace Stroika::Foundation {
          ********************************************************************************
          */
         namespace PRIVATE_ {
-            template <typename TYPE, typename ENABLE_IF_INTISH>
-            constexpr int ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, ENABLE_IF_INTISH*)
+            template <typename TYPE, enable_if_t<is_arithmetic_v<TYPE>>*>
+            constexpr int ThreeWayCompareNormalizer_ (TYPE lhs, TYPE rhs, void*)
             {
                 return lhs - rhs;
             }
