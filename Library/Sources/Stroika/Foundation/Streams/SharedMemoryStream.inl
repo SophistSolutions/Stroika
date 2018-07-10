@@ -293,7 +293,7 @@ namespace Stroika {
                 return New (start, end);
             }
             template <typename ELEMENT_TYPE>
-            template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>>
+            template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
             inline auto SharedMemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
             {
                 return New (blob.begin (), blob.end ());
