@@ -23,7 +23,7 @@ namespace Stroika::Foundation {
          */
         template <typename T>
         template <typename TT>
-        template <typename ARGT, typename USE_T, typename T_IS_ASSIGNABLE>
+        template <typename ARGT, typename USE_T, enable_if_t<is_copy_assignable_v<USE_T>>*>
         inline void Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg)
         {
             if (fEngaged_) {
@@ -36,8 +36,8 @@ namespace Stroika::Foundation {
         }
         template <typename T>
         template <typename TT>
-        template <typename ARGT, typename USE_T, typename T_IS_NOT_ASSIGNABLE>
-        inline void Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE*)
+        template <typename ARGT, typename USE_T, enable_if_t<not is_copy_assignable_v<USE_T>>*>
+        inline void Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg /*, const T_IS_NOT_ASSIGNABLE**/)
         {
             destroy ();
             (void)new (std::addressof (fEngagedValue_)) T (forward<ARGT> (arg));
@@ -148,7 +148,7 @@ namespace Stroika::Foundation {
         }
         template <typename T>
         template <typename TT>
-        template <typename ARGT, typename USE_T, typename T_IS_ASSIGNABLE>
+        template <typename ARGT, typename USE_T, enable_if_t<is_copy_assignable_v<USE_T>>*>
         inline void Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::Assign_ (ARGT&& arg)
         {
             if (fValue_ == nullptr) {
@@ -160,8 +160,8 @@ namespace Stroika::Foundation {
         }
         template <typename T>
         template <typename TT>
-        template <typename ARGT, typename USE_T, typename T_IS_NOT_ASSIGNABLE>
-        inline void Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE*)
+        template <typename ARGT, typename USE_T, enable_if_t<not is_copy_assignable_v<USE_T>>*>
+        inline void Optional_Traits_Inplace_Storage<T>::StorageType_<TT, true>::Assign_ (ARGT&& arg /*, const T_IS_NOT_ASSIGNABLE**/)
         {
             destroy ();
             fValue_ = new (fBuffer_) T (forward<ARGT> (arg));

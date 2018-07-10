@@ -120,10 +120,10 @@ namespace Stroika::Foundation {
                 nonvirtual constexpr const T* peek () const;
 
             private:
-                template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = enable_if_t<std::is_copy_assignable<USE_T>::value>>
+                template <typename ARGT, typename USE_T = T, enable_if_t<is_copy_assignable_v<USE_T>>* = nullptr>
                 nonvirtual void Assign_ (ARGT&& arg);
-                template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = enable_if_t<not std::is_copy_assignable<USE_T>::value>>
-                nonvirtual void Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
+                template <typename ARGT, typename USE_T = T, enable_if_t<not is_copy_assignable_v<USE_T>>* = nullptr>
+                nonvirtual void Assign_ (ARGT&& arg /*, const T_IS_NOT_ASSIGNABLE* = nullptr*/);
             };
             template <typename TT>
             struct StorageType_<TT, true> {
@@ -158,10 +158,10 @@ namespace Stroika::Foundation {
                 nonvirtual const T* peek () const;
 
             private:
-                template <typename ARGT, typename USE_T = T, typename T_IS_ASSIGNABLE = enable_if_t<std::is_copy_assignable<USE_T>::value>>
+                template <typename ARGT, typename USE_T = T, enable_if_t<is_copy_assignable_v<USE_T>>* = nullptr>
                 nonvirtual void Assign_ (ARGT&& arg);
-                template <typename ARGT, typename USE_T = T, typename T_IS_NOT_ASSIGNABLE = enable_if_t<not std::is_copy_assignable<USE_T>::value>>
-                nonvirtual void Assign_ (ARGT&& arg, const T_IS_NOT_ASSIGNABLE* = nullptr);
+                template <typename ARGT, typename USE_T = T, enable_if_t<not is_copy_assignable_v<USE_T>>* = nullptr>
+                nonvirtual void Assign_ (ARGT&& arg /*, const T_IS_NOT_ASSIGNABLE* = nullptr*/);
             };
             using StorageType = StorageType_<T, not is_trivially_destructible<T>::value>;
         };
