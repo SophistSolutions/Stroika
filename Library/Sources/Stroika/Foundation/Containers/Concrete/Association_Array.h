@@ -40,7 +40,7 @@ namespace Stroika {
                      */
                     Association_Array ();
                     Association_Array (const Association_Array& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>*>>>
+                    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_Array<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
                     Association_Array (const CONTAINER_OF_ADDABLE& src);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
                     Association_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

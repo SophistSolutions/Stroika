@@ -195,7 +195,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+                template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
                 inline Association_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Association_LinkedList (const CONTAINER_OF_ADDABLE& src)
                     : Association_LinkedList ()
                 {
