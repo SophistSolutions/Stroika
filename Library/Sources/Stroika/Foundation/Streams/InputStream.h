@@ -399,7 +399,7 @@ namespace Stroika::Foundation {
              *
              *  Blocking read of a single character. Returns a NUL-character on EOF ('\0')
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual Characters::Character ReadCharacter () const;
 
         public:
@@ -413,9 +413,9 @@ namespace Stroika::Foundation {
              *  \note   Only defined on Binary Streams (InputStream<Byte>::Ptr), but POD_TYPE can be any (is_pod) type.
              *  \note   ReadRaw will read exactly the number of records requested, or throw an EOF exception.
              */
-            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int> = 0>
+            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
             nonvirtual POD_TYPE ReadRaw () const;
-            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int> = 0>
+            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
             nonvirtual void ReadRaw (POD_TYPE* start, POD_TYPE* end) const;
 
         public:
@@ -427,7 +427,7 @@ namespace Stroika::Foundation {
              *
              *      \req IsSeekable ()
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual Characters::String ReadLine () const;
 
         public:
@@ -441,7 +441,7 @@ namespace Stroika::Foundation {
              *
              *      \req IsSeekable ()
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual Traversal::Iterable<Characters::String> ReadLines () const;
 
         public:
@@ -478,9 +478,9 @@ namespace Stroika::Foundation {
              *  @todo DOCUMENT EDGE CONDITIONS - like run out of bytes to read full String - or can we return less than requested number (answer yes - but IFF EOF).
              *  @see ReadRaw()
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual Characters::String ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
             nonvirtual Memory::BLOB ReadAll (size_t upTo = numeric_limits<size_t>::max ()) const;
             nonvirtual size_t ReadAll (ElementType* intoStart, ElementType* intoEnd) const;
 

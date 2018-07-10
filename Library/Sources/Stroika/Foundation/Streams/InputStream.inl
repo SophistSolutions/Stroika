@@ -189,7 +189,7 @@ namespace Stroika::Foundation {
             return _GetRepRWRef ().ReadNonBlocking (intoStart, intoEnd);
         }
         template <typename ELEMENT_TYPE>
-        template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int>>
+        template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
         POD_TYPE InputStream<ELEMENT_TYPE>::Ptr::ReadRaw () const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -205,7 +205,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename ELEMENT_TYPE>
-        template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int>>
+        template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
         inline void InputStream<ELEMENT_TYPE>::Ptr::ReadRaw (POD_TYPE* start, POD_TYPE* end) const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
