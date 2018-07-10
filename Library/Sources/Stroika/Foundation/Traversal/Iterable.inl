@@ -206,7 +206,7 @@ namespace Stroika {
                 }
             }
             template <typename T>
-            template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and not is_convertible_v<const CONTAINER_OF_T*, const Iterable<T>*>, int>>
+            template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and not is_convertible_v<const CONTAINER_OF_T*, const Iterable<T>*>>*>
             Iterable<T>::Iterable (const CONTAINER_OF_T& from)
                 : _fRep (mk_ (from)._fRep)
             {

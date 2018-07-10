@@ -260,7 +260,7 @@ namespace Stroika {
                 /**
                  *  Make a copy of the given argument, and treat it as an iterable.
                  */
-                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and not is_convertible_v<const CONTAINER_OF_T*, const Iterable<T>*>, int>  = 0>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and not is_convertible_v<const CONTAINER_OF_T*, const Iterable<T>*>>* = nullptr>
                 explicit Iterable (const CONTAINER_OF_T& from);
 
             public:
