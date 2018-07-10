@@ -102,7 +102,7 @@ namespace Stroika::Foundation {
             : fRep_{move (src.fRep_)}
         {
         }
-        template <typename CONTAINER_OF_BYTE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_BYTE>::value and is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte>>*>
         inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
             : fRep_{move ((std::begin (data) == std::end (data)) ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ())))}
         {
@@ -160,7 +160,7 @@ namespace Stroika::Foundation {
             RequireNotNull (s);
             return Raw (s, s + ::wcslen (s));
         }
-        template <typename CONTAINER_OF_POD_T, typename ENABLE_IF>
+        template <typename CONTAINER_OF_POD_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_POD_T>::value and is_pod_v<typename CONTAINER_OF_POD_T::value_type>, int>>
         inline BLOB BLOB::Raw (const CONTAINER_OF_POD_T& s)
         {
             // note we use .size () instead of s.end () because this funtion requires argument CONTAINER to be contiguous, and thats more likely checked by this (really need some concept check)
