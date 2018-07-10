@@ -88,7 +88,7 @@ namespace Stroika::Foundation {
             Deque (const Deque& src) noexcept = default;
             Deque (Deque&& src) noexcept      = default;
             Deque (const initializer_list<T>& src);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Deque<T>*>>>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Deque<T>*>>* = nullptr>
             Deque (const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             Deque (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
