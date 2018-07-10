@@ -416,7 +416,7 @@ namespace Stroika::Foundation {
              *  the appended items wont necesarily all get appended at once, since other threads could make
              *  changes in between.
              */
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>* = nullptr>
             nonvirtual void AppendAll (const CONTAINER_OF_ADDABLE& s);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void AppendAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

@@ -120,7 +120,7 @@ namespace Stroika::Foundation {
             Queue (const Queue& src) noexcept = default;
             Queue (Queue&& src) noexcept      = default;
             Queue (const initializer_list<T>& src);
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Queue<T>*>>>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Queue<T>*>>* = nullptr>
             Queue (const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             Queue (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
@@ -186,7 +186,7 @@ namespace Stroika::Foundation {
              *
              *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
              */
-            template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>* = nullptr>
             nonvirtual void AddAllToTail (const CONTAINER_OF_ADDABLE& s);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

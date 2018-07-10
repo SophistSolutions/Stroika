@@ -23,8 +23,8 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename EQUALS_COMPARER, typename ENABLE_IF>
-        inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, ENABLE_IF*)
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
+        inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer)
             : inherited (move (Factory::Set_Factory<T, EQUALS_COMPARER> (std::forward<EQUALS_COMPARER> (equalsComparer)) ()))
         {
             static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Set constructor with EQUALS_COMPARER - comparer not valid EqualsComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eEquals, function<bool(T, T)>");
@@ -38,7 +38,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename EQUALS_COMPARER, typename ENABLE_IF>
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
         inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const initializer_list<T>& src)
             : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
         {
@@ -46,7 +46,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>*>
         inline Set<T>::Set (const CONTAINER_OF_ADDABLE& src)
             : Set ()
         {
@@ -54,7 +54,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>*>
         inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
             : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
         {
@@ -74,7 +74,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>*>
         inline Set<T>::Set (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             : Set ()
         {
@@ -82,7 +82,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+        template <typename EQUALS_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>*>
         inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             : Set (std::forward<EQUALS_COMPARER> (equalsComparer))
         {
@@ -155,7 +155,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
         inline void Set<T>::AddAll (const CONTAINER_OF_ADDABLE& s)
         {
             // Note - unlike Collection<T, TRAITS> - we dont need to check for this != &s because if we

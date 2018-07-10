@@ -279,7 +279,7 @@ namespace Stroika::Foundation {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kBadSequenceIndex, &item, &item + 1);
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
         void Sequence<T>::AppendAll (const CONTAINER_OF_ADDABLE& s)
         {
             _SafeReadWriteRepAccessor<_IRep> tmp = {this};
