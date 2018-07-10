@@ -87,27 +87,27 @@ namespace Stroika::Foundation {
             return *this;
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int>>
         inline Synchronized<T, TRAITS>::operator T () const
         {
             return load ();
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int>>
         inline T Synchronized<T, TRAITS>::load () const
         {
             ReadLockType_ fromCritSec{fLock_};
             return fProtectedValue_;
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int>>
         inline void Synchronized<T, TRAITS>::store (const T& v)
         {
             [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
             fProtectedValue_                = v;
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int>>
         inline void Synchronized<T, TRAITS>::store (T&& v)
         {
             [[maybe_unused]] auto&& critSec = lock_guard{fLock_};
@@ -129,7 +129,7 @@ namespace Stroika::Foundation {
             return ReadableReference (&fProtectedValue_, &fLock_);
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks, int>>
         inline void Synchronized<T, TRAITS>::lock_shared () const
         {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -138,7 +138,7 @@ namespace Stroika::Foundation {
             fLock_.lock_shared ();
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks, int>>
         inline void Synchronized<T, TRAITS>::unlock_shared () const
         {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -147,7 +147,7 @@ namespace Stroika::Foundation {
             fLock_.unlock_shared ();
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int>>
         inline void Synchronized<T, TRAITS>::lock () const
         {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -156,7 +156,7 @@ namespace Stroika::Foundation {
             fLock_.lock ();
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int>>
         inline void Synchronized<T, TRAITS>::unlock () const
         {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_
@@ -165,7 +165,7 @@ namespace Stroika::Foundation {
             fLock_.unlock ();
         }
         template <typename T, typename TRAITS>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<TEST_TYPE::kSupportSharedLocks, int>>
         void Synchronized<T, TRAITS>::UpgradeLockNonAtomically ([[maybe_unused]] ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock)
         {
 #if Stroika_Foundation_Execution_Synchronized_USE_NOISY_TRACE_IN_THIS_MODULE_

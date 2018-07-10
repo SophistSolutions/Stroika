@@ -236,7 +236,7 @@ namespace Stroika::Foundation {
              *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
              *          already has a lock (e.g. called rwget ()).
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int> = 0>
             nonvirtual operator T () const;
 
         public:
@@ -259,7 +259,7 @@ namespace Stroika::Foundation {
              *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
              *          already has a lock (e.g. called rwget ()).
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int> = 0>
             nonvirtual T load () const;
 
         public:
@@ -273,9 +273,9 @@ namespace Stroika::Foundation {
              *          The reason this is only defined for recursive mutexes is so that it can be used in a context where this thread
              *          already has a lock (e.g. called rwget ()).
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int> = 0>
             nonvirtual void store (const T& v);
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int> = 0>
             nonvirtual void store (T&& v);
 
         public:
@@ -335,7 +335,7 @@ namespace Stroika::Foundation {
              *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
              *          otherwise.
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks, int> = 0>
             nonvirtual void lock_shared () const;
 
         public:
@@ -346,7 +346,7 @@ namespace Stroika::Foundation {
              *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
              *          otherwise.
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex and TRAITS::kSupportSharedLocks, int> = 0>
             nonvirtual void unlock_shared () const;
 
         public:
@@ -357,7 +357,7 @@ namespace Stroika::Foundation {
              *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
              *          otherwise.
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int> = 0>
             nonvirtual void lock () const;
 
         public:
@@ -368,14 +368,14 @@ namespace Stroika::Foundation {
              *  \note - This is only usable with TRAITS::kIsRecursiveMutex, because there would be no way to access the underlying value
              *          otherwise.
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kIsRecursiveMutex>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kIsRecursiveMutex, int> = 0>
             nonvirtual void unlock () const;
 
         public:
             // @todo - DOCUMENT that this RELEASES the read lock, so whatever values you checked need to be RECHECEKD.
             // @todo - when teh resturned WritableReference reference goes out of scope, this SHOULD (but doesn't yet)
             // RE-LCOK the shared_lock
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks, int> = 0>
             [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] WritableReference Experimental_UnlockUpgradeLock (ReadableReference* readReference)
             {
                 AssertNotNull (readReference);
@@ -409,9 +409,9 @@ namespace Stroika::Foundation {
              *              });
              *          }
              */
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks, int> = 0>
             nonvirtual void UpgradeLockNonAtomically (ReadableReference* lockBeingUpgraded, const function<void(WritableReference&&)>& doWithWriteLock);
-            template <typename TEST_TYPE = TRAITS, typename ENABLE_IF_TEST = enable_if_t<TEST_TYPE::kSupportSharedLocks>>
+            template <typename TEST_TYPE = TRAITS, enable_if_t<TEST_TYPE::kSupportSharedLocks, int> = 0>
             [[deprecated ("use std::equals in version 2.1b3 - use UpgradeLockNonAtomically")]] void Experimental_UpgradeLock2 (const function<void(WritableReference&&)>& doWithWriteLock)
             {
                 fLock_.unlock_shared ();
