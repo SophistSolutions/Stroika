@@ -57,7 +57,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Collection<T>*>>*>
         inline Collection<T>::Collection (const CONTAINER_OF_ADDABLE& src)
             : Collection ()
         {
@@ -95,7 +95,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
         inline void Collection<T>::AddAll (const CONTAINER_OF_ADDABLE& c)
         {
             /*
