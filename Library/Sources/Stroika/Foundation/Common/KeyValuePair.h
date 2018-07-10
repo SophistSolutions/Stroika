@@ -43,7 +43,7 @@ namespace Stroika::Foundation {
             /**
              */
             template <typename K2 = KEY_TYPE, typename V2 = VALUE_TYPE,
-                      enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>>>
+                      enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>, int> = 0>
             constexpr KeyValuePair ();
             KeyValuePair (const KeyValuePair&) = default;
             KeyValuePair (KeyValuePair&&)      = default;

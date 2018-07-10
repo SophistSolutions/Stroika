@@ -20,7 +20,7 @@ namespace Stroika::Foundation {
          */
         template <typename KEY_TYPE, typename VALUE_TYPE>
         template <typename K2, typename V2,
-                  enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>>>
+                  enable_if_t<is_default_constructible_v<K2> and is_default_constructible_v<V2>, int>>
         constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair ()
             : fKey{}
             , fValue{}
@@ -34,7 +34,7 @@ namespace Stroika::Foundation {
                           is_convertible_v<const K2&, K2> and
                           is_convertible_v<const V2&, V2>,
                       int>>
-        inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
+        constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
             : fKey (key)
             , fValue (value)
         {
@@ -47,7 +47,7 @@ namespace Stroika::Foundation {
                           is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and
                           is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>,
                       int>>
-        inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
+        constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
             : fKey (src.first)
             , fValue (src.second)
         {
@@ -59,7 +59,7 @@ namespace Stroika::Foundation {
                           is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&> and
                           not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
                       int>>
-        inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
+        constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src)
             : fKey (src.first)
             , fValue (src.second)
         {
@@ -71,7 +71,7 @@ namespace Stroika::Foundation {
                           is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value and
                           (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
                       int>>
-        inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
+        constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
             : fKey (src.fKey)
             , fValue (src.fValue)
         {
@@ -83,7 +83,7 @@ namespace Stroika::Foundation {
                           is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value and
                           not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>),
                       int>>
-        inline constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
+        constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
             : fKey (src.fKey)
             , fValue (src.fValue)
         {
@@ -108,16 +108,16 @@ namespace Stroika::Foundation {
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         inline KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (pair<KEY_TYPE2, VALUE_TYPE2>&& rhs)
         {
-            fKey   = std::forward<KEY_TYPE2> (rhs.first);
-            fValue = std::forward<VALUE_TYPE2> (rhs.second);
+            fKey   = forward<KEY_TYPE2> (rhs.first);
+            fValue = forward<VALUE_TYPE2> (rhs.second);
             return *this;
         }
         template <typename KEY_TYPE, typename VALUE_TYPE>
         template <typename KEY_TYPE2, typename VALUE_TYPE2>
         inline KeyValuePair<KEY_TYPE, VALUE_TYPE>& KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator= (KeyValuePair<KEY_TYPE2, VALUE_TYPE2>&& rhs)
         {
-            fKey   = std::forward<KEY_TYPE2> (rhs.fKey);
-            fValue = std::forward<VALUE_TYPE2> (rhs.fValue);
+            fKey   = forward<KEY_TYPE2> (rhs.fKey);
+            fValue = forward<VALUE_TYPE2> (rhs.fValue);
             return *this;
         }
         template <typename KEY_TYPE, typename VALUE_TYPE>
