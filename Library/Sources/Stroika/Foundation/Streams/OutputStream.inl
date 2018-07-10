@@ -88,7 +88,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename ELEMENT_TYPE>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int>>
         inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const Memory::BLOB& blob) const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -96,7 +96,7 @@ namespace Stroika::Foundation {
             Write (blob.begin (), blob.end ());
         }
         template <typename ELEMENT_TYPE>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int>>
         inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const wchar_t* cStr) const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -111,19 +111,19 @@ namespace Stroika::Foundation {
             Write (&e, &e + 1);
         }
         template <typename ELEMENT_TYPE>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int>>
         inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const wchar_t* cStr) const
         {
             Write (Characters::String (cStr));
         }
         template <typename ELEMENT_TYPE>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int>>
         inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteLn (const Characters::String& s) const
         {
             Write (s + Characters::GetEOL<wchar_t> ());
         }
         template <typename ELEMENT_TYPE>
-        template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int>>
         inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE& p) const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -131,7 +131,7 @@ namespace Stroika::Foundation {
             WriteRaw (&p, &p + 1);
         }
         template <typename ELEMENT_TYPE>
-        template <typename POD_TYPE, typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename POD_TYPE, typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int>>
         inline void OutputStream<ELEMENT_TYPE>::Ptr::WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const
         {
             shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
