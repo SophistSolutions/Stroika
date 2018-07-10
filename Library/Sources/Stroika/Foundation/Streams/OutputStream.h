@@ -195,22 +195,22 @@ namespace Stroika::Foundation {
              *  \req IsOpen ()
              */
             nonvirtual void Write (const ElementType* start, const ElementType* end) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE,  enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
             nonvirtual void Write (const Memory::BLOB& blob) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual void Write (const wchar_t* start, const wchar_t* end) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual void Write (const wchar_t* cStr) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual void Write (const Characters::String& s) const;
             nonvirtual void Write (const ElementType& e) const;
 
         public:
             /**
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual void WriteLn (const wchar_t* cStr) const;
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual void WriteLn (const Characters::String& s) const;
 
         public:
@@ -232,16 +232,16 @@ namespace Stroika::Foundation {
              *      POD_TYPE    tmp;
              *      Write ((Byte*)&tmp, (Byte*)(&tmp+1));
              */
-            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE,  enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int> = 0>
+            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
             nonvirtual void WriteRaw (const POD_TYPE& p) const;
-            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE,  enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>, int> = 0>
+            template <typename POD_TYPE, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
             nonvirtual void WriteRaw (const POD_TYPE* start, const POD_TYPE* end) const;
 
         public:
             /**
              *  \req IsOpen ()
              */
-            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             nonvirtual void PrintF (const wchar_t* format, ...);
 
         public:
@@ -315,7 +315,7 @@ namespace Stroika::Foundation {
              *
              *  \req IsOpen ()
              */
-            template <typename T, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>, int> = 0>
+            template <typename T, typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>
             const typename OutputStream<ELEMENT_TYPE>::Ptr& operator<< (T write2TextStream) const;
 
         protected:
