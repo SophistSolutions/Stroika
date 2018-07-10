@@ -49,12 +49,12 @@ namespace Stroika::Foundation {
             template <
                 typename VALUE2_TYPE,
                 typename COUNTER2_TYPE,
-                typename ENABLE_IF_TEST = enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>>
+                enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
             CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src);
             template <
                 typename VALUE2_TYPE,
                 typename COUNTER2_TYPE,
-                typename ENABLE_IF_TEST = enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>>
+                enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
             CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
 
         public:
