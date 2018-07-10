@@ -65,7 +65,7 @@ namespace Stroika::Foundation {
         template <typename KEY_TYPE, typename VALUE_TYPE>
         template <typename KEY_TYPE2, typename VALUE_TYPE2,
                   enable_if_t<
-                      (is_constructible<KEY_TYPE, const KEY_TYPE2&>::value and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
+                      (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
         constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
             : fKey (src.fKey)
             , fValue (src.fValue)
@@ -74,7 +74,7 @@ namespace Stroika::Foundation {
         template <typename KEY_TYPE, typename VALUE_TYPE>
         template <typename KEY_TYPE2, typename VALUE_TYPE2,
                   enable_if_t<
-                      (is_constructible<KEY_TYPE, const KEY_TYPE2&>::value and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
+                      (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>*>
         constexpr KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src)
             : fKey (src.fKey)
             , fValue (src.fValue)

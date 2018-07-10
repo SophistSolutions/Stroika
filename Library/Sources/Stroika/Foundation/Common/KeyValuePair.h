@@ -64,13 +64,14 @@ namespace Stroika::Foundation {
                       enable_if_t<
                           (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible_v<VALUE_TYPE, const VALUE_TYPE2&>)and not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
             constexpr explicit KeyValuePair (const pair<KEY_TYPE2, VALUE_TYPE2>& src);
+            // @todo DEBUG why changing below two is_constructible to is_constructible_v breaks on gcc --LGP 2018-07-10
             template <typename KEY_TYPE2, typename VALUE_TYPE2,
                       enable_if_t<
-                          (is_constructible<KEY_TYPE, const KEY_TYPE2&>::value and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
+                          (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and (is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
             constexpr KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src);
             template <typename KEY_TYPE2, typename VALUE_TYPE2,
                       enable_if_t<
-                          (is_constructible<KEY_TYPE, const KEY_TYPE2&>::value and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
+                          (is_constructible_v<KEY_TYPE, const KEY_TYPE2&> and is_constructible<VALUE_TYPE, const VALUE_TYPE2&>::value) and not(is_convertible_v<const KEY_TYPE2&, KEY_TYPE> and is_convertible_v<const VALUE_TYPE2&, VALUE_TYPE>)>* = nullptr>
             constexpr explicit KeyValuePair (const KeyValuePair<KEY_TYPE2, VALUE_TYPE2>& src);
 
         public:
