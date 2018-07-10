@@ -24,13 +24,13 @@ namespace Stroika {
                 : function<void(Message*)>{f}
             {
             }
-            template <typename _Fx, typename COMPILE_IF_IS_CONVERTIBLE_FUNC_MESSAGE>
-            RequestHandler::RequestHandler (_Fx _Func, COMPILE_IF_IS_CONVERTIBLE_FUNC_MESSAGE*)
+            template <typename _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Message*)>>>*>
+            RequestHandler::RequestHandler (_Fx _Func)
                 : RequestHandler (function<void(Message*)>{_Func})
             {
             }
-            template <class _Fx, typename COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP>
-            RequestHandler::RequestHandler (_Fx _Func, COMPILE_IF_IS_CONVERTIBLE_FUNC_REQ_RESP*, [[maybe_unused]] int j)
+            template <class _Fx, enable_if_t<is_convertible_v<_Fx, function<void(Request*, Response*)>>>*>
+            RequestHandler::RequestHandler (_Fx _Func, [[maybe_unused]] int j)
                 : RequestHandler ([_Func](Message* message) { RequireNotNull (message); _Func (message->PeekRequest (), message->PeekResponse ()); })
             {
             }
