@@ -1194,7 +1194,7 @@ namespace {
         {
             const wchar_t*                                 sc = s;
             const wchar_t*                                 ec = e;
-            std::string                                    tmp ((e - s) * kConverter_.max_length (), '\0');
+            string                                    tmp ((e - s) * kConverter_.max_length (), '\0');
             const wchar_t*                                 from_next;
             char*                                          to_next;
             mbstate_t                                      mb{};

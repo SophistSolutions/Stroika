@@ -75,7 +75,7 @@ namespace Stroika {
                  *          http://en.cppreference.com/w/cpp/language/constant_expression
                  *
                  *          Address constant expression is a prvalue core constant expression (after conversions required by context)
-                 *          of type std::nullptr_t or of a pointer type, which points to an object with static storage duration, one past
+                 *          of type nullptr_t or of a pointer type, which points to an object with static storage duration, one past
                  *          the end of an array with static storage duration, to a function, or is a null pointer
                  *
                  *          @todo COULD use UNION to workaround this...
@@ -118,7 +118,7 @@ namespace Stroika {
 
                 inline constexpr size_t BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
                 {
-                    return std::max (static_cast<size_t> (kTargetMallocSize_ / poolElementSize), static_cast<size_t> (10));
+                    return max (static_cast<size_t> (kTargetMallocSize_ / poolElementSize), static_cast<size_t> (10));
                 }
 
                 // This must be included here to keep genclass happy, since the .cc file will not be included
@@ -173,7 +173,7 @@ namespace Stroika {
 // make op new inline for MOST important case
 // were alloc is cheap linked list operation...
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-                    static std::atomic<void*> sHeadLink_;
+                    static atomic<void*> sHeadLink_;
 #else
                     static void* sHeadLink_;
 #endif
@@ -200,7 +200,7 @@ namespace Stroika {
                 void* p = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (p == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
-                    std::this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
+                    this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                     goto again;
                 }
                 // if we got here, p contains the real head, and have a pseudo lock
@@ -250,7 +250,7 @@ namespace Stroika {
                 void* prevHead = sHeadLink_.exchange (Private_::kLockedSentinal_, memory_order_acq_rel);
                 if (prevHead == Private_::kLockedSentinal_) {
                     // we stored and retrieved a sentinal. So no lock. Try again!
-                    std::this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
+                    this_thread::yield (); // nb: until Stroika v2.0a209, this called Execution::Yield (), making this a cancelation point.
                     goto again;
                 }
                 /*
@@ -280,7 +280,7 @@ namespace Stroika {
                 // step one: put all the links into a single, sorted vector
                 const size_t kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);
                 Assert (kChunks >= 1);
-                std::vector<void*> links;
+                vector<void*> links;
                 try {
                     links.reserve (kChunks * 2);
                     void* link = sHeadLink_;
@@ -297,7 +297,7 @@ namespace Stroika {
                     return;
                 }
 
-                std::sort (links.begin (), links.end ());
+                sort (links.begin (), links.end ());
 
                 // now look for unused memory blocks. Since the vector is sorted by pointer value, the first pointer encountered is potentially the start of a block.
                 // Look at the next N vector elements, where N is the amount of elements that would have been alloced (the chunk size). If they are all there, then the
@@ -316,7 +316,7 @@ namespace Stroika {
                         if (canDelete and ((next - prev) != SIZE)) {
                             canDelete = false; // don't break here, as have to find end up this block, which could be further on
                         }
-                        if (static_cast<size_t> (std::abs (next - deleteCandidate) / SIZE) >= kChunks) {
+                        if (static_cast<size_t> (abs (next - deleteCandidate) / SIZE) >= kChunks) {
                             Assert (not canDelete);
                             break;
                         }
@@ -349,7 +349,7 @@ namespace Stroika {
             }
             template <size_t SIZE>
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-            std::atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
+            atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
 #else
             void* Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
 #endif

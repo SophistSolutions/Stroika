@@ -912,30 +912,30 @@ namespace {
             VerifyTestResult (CString::HexString2Int ("     ") == 0);
         }
         {
-            VerifyTestResult (std::isnan (String2Float<double> (String ())));
-            VerifyTestResult (std::isnan (CString::String2Float (string ())));
-            VerifyTestResult (std::isnan (String2Float<double> (wstring ())));
-            VerifyTestResult (std::isnan (CString::String2Float ("")));
-            VerifyTestResult (std::isnan (CString::String2Float (wstring (L""))));
-            VerifyTestResult (std::isnan (String2Float<double> (String ())));
-            VerifyTestResult (std::isnan (CString::String2Float ("     ")));
-            VerifyTestResult (std::isnan (String2Float<double> (L"-1.#INF000000000000"))); // MSFT sometimes generates these but they arent legal INF values!
-            VerifyTestResult (std::isnan (CString::String2Float ("-1.#INF000000000000")));
-            VerifyTestResult (std::isnan (String2Float<double> (L"1.#INF000000000000")));
-            VerifyTestResult (std::isnan (CString::String2Float ("1.#INF000000000000")));
-            VerifyTestResult (std::isinf (String2Float<double> (L"INF")));
-            VerifyTestResult (std::isinf (String2Float<double> (L"INFINITY")));
-            VerifyTestResult (std::isinf (String2Float<double> (L"-INF")));
-            VerifyTestResult (std::isinf (String2Float<double> (L"-INFINITY")));
-            VerifyTestResult (std::isinf (String2Float<double> (L"+INF")));
-            VerifyTestResult (std::isinf (String2Float<double> (L"+INFINITY")));
+            VerifyTestResult (isnan (String2Float<double> (String ())));
+            VerifyTestResult (isnan (CString::String2Float (string ())));
+            VerifyTestResult (isnan (String2Float<double> (wstring ())));
+            VerifyTestResult (isnan (CString::String2Float ("")));
+            VerifyTestResult (isnan (CString::String2Float (wstring (L""))));
+            VerifyTestResult (isnan (String2Float<double> (String ())));
+            VerifyTestResult (isnan (CString::String2Float ("     ")));
+            VerifyTestResult (isnan (String2Float<double> (L"-1.#INF000000000000"))); // MSFT sometimes generates these but they arent legal INF values!
+            VerifyTestResult (isnan (CString::String2Float ("-1.#INF000000000000")));
+            VerifyTestResult (isnan (String2Float<double> (L"1.#INF000000000000")));
+            VerifyTestResult (isnan (CString::String2Float ("1.#INF000000000000")));
+            VerifyTestResult (isinf (String2Float<double> (L"INF")));
+            VerifyTestResult (isinf (String2Float<double> (L"INFINITY")));
+            VerifyTestResult (isinf (String2Float<double> (L"-INF")));
+            VerifyTestResult (isinf (String2Float<double> (L"-INFINITY")));
+            VerifyTestResult (isinf (String2Float<double> (L"+INF")));
+            VerifyTestResult (isinf (String2Float<double> (L"+INFINITY")));
 
-            VerifyTestResult (std::isinf (CString::String2Float (L"INF")));
-            VerifyTestResult (std::isinf (CString::String2Float (L"INFINITY")));
-            VerifyTestResult (std::isinf (CString::String2Float (L"-INF")));
-            VerifyTestResult (std::isinf (CString::String2Float (L"-INFINITY")));
-            VerifyTestResult (std::isinf (CString::String2Float (L"+INF")));
-            VerifyTestResult (std::isinf (CString::String2Float (L"+INFINITY")));
+            VerifyTestResult (isinf (CString::String2Float (L"INF")));
+            VerifyTestResult (isinf (CString::String2Float (L"INFINITY")));
+            VerifyTestResult (isinf (CString::String2Float (L"-INF")));
+            VerifyTestResult (isinf (CString::String2Float (L"-INFINITY")));
+            VerifyTestResult (isinf (CString::String2Float (L"+INF")));
+            VerifyTestResult (isinf (CString::String2Float (L"+INFINITY")));
         }
         {
             // roundtrip lossless

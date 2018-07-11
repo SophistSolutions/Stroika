@@ -53,7 +53,7 @@ namespace Stroika::Foundation {
          *  Its not hard to get/set the one from the OS, but I've found it not well documented,
          *  so this is intended to make it a little easier/more readable.
          */
-        std::locale GetPlatformDefaultLocale ();
+        locale GetPlatformDefaultLocale ();
 
         /**
          *  \brief  Set the operating system locale into the current C++ locale used by locale

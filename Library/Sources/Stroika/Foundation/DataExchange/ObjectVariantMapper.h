@@ -308,7 +308,7 @@ namespace Stroika::Foundation {
              *                      memcpy (buf, start, (end - start) * sizeof (wchar_t));
              *                      buf[(end - start)] = '\0';
              *                      wchar_t* e      = nullptr;
-             *                      auto     result = std::wcstoul (buf, &e, 16);
+             *                      auto     result = wcstoul (buf, &e, 16);
              *                      if (e != buf + 2) {
              *                          Execution::Throw (DataExchange::BadFormatException (L"expected 6 hex bytes"));
              *                      }

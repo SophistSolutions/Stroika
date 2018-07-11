@@ -378,7 +378,7 @@ namespace Stroika::Foundation {
                 typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<T2, TRAITS2>::value and
                     is_constructible_v<T, const T2&> and
-                    is_same_v<typename std::decay<T>::type, typename common_type<T, T2>::type>>>
+                    is_same_v<typename decay<T>::type, typename common_type<T, T2>::type>>>
             Optional (const Optional<T2, TRAITS2>& from);
             template <
                 typename T2,
@@ -386,7 +386,7 @@ namespace Stroika::Foundation {
                 typename SFINAE_UNSAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<T2, TRAITS2>::value and
                     is_constructible_v<T, const T2&> and
-                    not is_same_v<typename std::decay<T>::type, typename common_type<T, T2>::type>>>
+                    not is_same_v<typename decay<T>::type, typename common_type<T, T2>::type>>>
             explicit Optional (const Optional<T2, TRAITS2>& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
             template <
                 typename T2,
@@ -402,7 +402,7 @@ namespace Stroika::Foundation {
                 typename SFINAE_UNSAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<T2, TRAITS2>::value and
                     is_constructible_v<T, T2&&> and
-                    not is_same_v<typename std::decay<T>::type, typename std::common_type<T, T2>::type>>>
+                    not is_same_v<typename decay<T>::type, typename common_type<T, T2>::type>>>
             explicit Optional (Optional<T2, TRAITS2>&& from, SFINAE_UNSAFE_CONVERTIBLE* = nullptr);
             // @todo  more SFINAE checks needed
             template <
@@ -436,8 +436,8 @@ namespace Stroika::Foundation {
                 typename SFINAE_SAFE_CONVERTIBLE = enable_if_t<
                     not Private_::IsOptional_<U, typename U::TraitsType>::value and
                     is_constructible_v<T, U> and
-                    std::is_assignable<T&, U>::value and
-                    (std::is_scalar<T>::value or not is_same_v<std::decay_t<U>, T>)>>
+                    is_assignable<T&, U>::value and
+                    (is_scalar<T>::value or not is_same_v<decay_t<U>, T>)>>
             nonvirtual Optional& operator= (U&& rhs);
 
         public:
@@ -463,7 +463,7 @@ namespace Stroika::Foundation {
             static Optional<T, TRAITS> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
         public:
-            // see if we can do this without getting in troublke with ambiguity - it will help make transiation to using std::optional in
+            // see if we can do this without getting in troublke with ambiguity - it will help make transiation to using optional in
             // Stroika APIs easier.
             template <typename T1>
             /*explicit*/ operator optional<T1> () const
@@ -634,7 +634,7 @@ namespace Stroika::Foundation {
             struct ConstHolder_ {
                 const Optional* fVal;
 #if qDebug
-                std::shared_lock<const MutexBase_> fCritSec_;
+                shared_lock<const MutexBase_> fCritSec_;
 #endif
                 ConstHolder_ (const ConstHolder_&) = delete;
                 ConstHolder_ (const Optional* p);
@@ -648,7 +648,7 @@ namespace Stroika::Foundation {
             struct MutableHolder_ {
                 Optional* fVal;
 #if qDebug
-                std::unique_lock<MutexBase_> fCritSec_;
+                unique_lock<MutexBase_> fCritSec_;
 #endif
                 MutableHolder_ (const MutableHolder_&) = delete;
                 MutableHolder_ (Optional* p);
@@ -723,9 +723,9 @@ namespace Stroika::Foundation {
              *  Return true if *this logically equals rhs. Note if either side 'has_value()'
              *  is different, then they compare as not Equals()
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Equals (const Optional& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Equals (T rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
         public:
@@ -779,9 +779,9 @@ namespace Stroika::Foundation {
          *              std::multiplies{}
          *              std::divides{}
          */
-        template <typename T, typename CONVERTIBLE_TO_T, typename OP = std::plus<T>>
+        template <typename T, typename CONVERTIBLE_TO_T, typename OP = plus<T>>
         void AccumulateIf (optional<T>* lhsOptionalValue, const optional<CONVERTIBLE_TO_T>& rhsOptionalValue, const OP& op = OP{});
-        template <typename T, typename OP = std::plus<T>>
+        template <typename T, typename OP = plus<T>>
         void AccumulateIf (optional<T>* lhsOptionalValue, const T& rhsOptionalValue, const OP& op = OP{});
 
         /**

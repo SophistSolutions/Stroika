@@ -276,8 +276,8 @@ namespace {
             VerifyTestResult ((InternetAddress{"1.2.3.4"}).As<String> () == L"1.2.3.4");
         }
         {
-            VerifyTestResult (std::get<0> (InternetAddress{1, 2, 3, 4}.As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> ()) == 1);
-            VerifyTestResult (std::get<2> (InternetAddress{1, 2, 3, 4}.As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> ()) == 3);
+            VerifyTestResult (get<0> (InternetAddress{1, 2, 3, 4}.As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> ()) == 1);
+            VerifyTestResult (get<2> (InternetAddress{1, 2, 3, 4}.As<tuple<uint8_t, uint8_t, uint8_t, uint8_t>> ()) == 3);
         }
         {
             auto testRoundtrip = [](const String& s) {

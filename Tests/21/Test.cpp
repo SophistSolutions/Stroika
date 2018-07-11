@@ -52,7 +52,7 @@ namespace {
         {
             // From Set<> CTOR docs
             Collection<int>  c;
-            std::vector<int> v;
+            vector<int> v;
 
             Set<int> s1 = {1, 2, 3};
             Set<int> s2 = s1;

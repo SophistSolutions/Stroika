@@ -24,7 +24,7 @@ namespace Stroika {
             inline TimedLockGuard<MUTEX>::TimedLockGuard (MUTEX& m, const Time::Duration& waitUpTo, const FAILURE_EXCEPTION& timeoutException)
                 : fMutex_ (m)
             {
-                // std::timed_mutex::try_lock_for: If timeout_duration is less or equal timeout_duration.zero(), the function behaves like try_lock().
+                // timed_mutex::try_lock_for: If timeout_duration is less or equal timeout_duration.zero(), the function behaves like try_lock().
                 // and we want to throw if told to wait negative time...
                 chrono::duration<double> d = waitUpTo.As<chrono::duration<double>> ();
                 if (d <= 0 or not m.try_lock_for ()) {

@@ -45,7 +45,7 @@ namespace {
     template <typename CONCRETE_CONTAINER>
     void RunTests_ ()
     {
-        RunTests_<CONCRETE_CONTAINER> (std::less<typename CONCRETE_CONTAINER::value_type>{}, []() { return CONCRETE_CONTAINER (); });
+        RunTests_<CONCRETE_CONTAINER> (less<typename CONCRETE_CONTAINER::value_type>{}, []() { return CONCRETE_CONTAINER (); });
     }
 }
 

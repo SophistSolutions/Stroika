@@ -256,7 +256,7 @@ String String::FromUTF8 (const char* from, const char* to)
     return String{buf.begin (), buf.begin () + outCharCnt};
 }
 
-String String::FromUTF8 (const std::string& from)
+String String::FromUTF8 (const string& from)
 {
     return FromUTF8 (from.c_str (), from.c_str () + from.length ());
 }
@@ -314,13 +314,13 @@ String String::FromNarrowSDKString (const string& from)
 String String::FromNarrowString (const char* from, const char* to, const locale& l)
 {
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
-    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, std::mbstate_t>>;
+    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
     Destructible_codecvt_byname cvt{l.name ()};
 
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
     mbstate_t            mbstate{};
     size_t               externalSize = to - from;
-    std::wstring         resultWStr (externalSize, '\0');
+    wstring         resultWStr (externalSize, '\0');
     const char*          from_next;
     wchar_t*             to_next;
     codecvt_base::result result = cvt.in (mbstate, from, to, from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
@@ -616,7 +616,7 @@ optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, [[m
     Require (startAt <= threadSafeCopy.GetLength ());
     Assert (startAt == 0); // else NYI
     wstring      tmp = threadSafeCopy.As<wstring> ();
-    std::wsmatch res;
+    wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     if (res.size () >= 1) {
         return pair<size_t, size_t> (res.position (), res.position () + res.length ());
@@ -640,7 +640,7 @@ vector<pair<size_t, size_t>> String::FindEach (const RegularExpression& regEx) c
     vector<pair<size_t, size_t>> result;
     //@TODO - FIX - IF we get back zero length match
     wstring      tmp{As<wstring> ()};
-    std::wsmatch res;
+    wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     size_t nMatches = res.size ();
     result.reserve (nMatches);
@@ -657,8 +657,8 @@ vector<RegularExpressionMatch> String::FindEachMatch (const RegularExpression& r
 {
     vector<RegularExpressionMatch> result;
     wstring                        tmp{As<wstring> ()};
-    for (std::wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != std::wsregex_iterator (); ++i) {
-        std::wsmatch match{*i};
+    for (wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != wsregex_iterator (); ++i) {
+        wsmatch match{*i};
         Assert (match.size () != 0);
         size_t                       n = match.size ();
         Containers::Sequence<String> s;
@@ -675,11 +675,11 @@ vector<String> String::FindEachString (const RegularExpression& regEx) const
     vector<String> result;
     wstring        tmp{As<wstring> ()};
 #if 1
-    for (std::wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != std::wsregex_iterator (); ++i) {
+    for (wsregex_iterator i = wsregex_iterator (tmp.begin (), tmp.end (), regEx.GetCompiled ()); i != wsregex_iterator (); ++i) {
         result.push_back (String{i->str ()});
     }
 #else
-    std::wsmatch res;
+    wsmatch res;
     if (regex_search (tmp, res, regEx.GetCompiled ())) {
         result.reserve (res.size ());
         for (auto i : res) {
@@ -697,7 +697,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     vector<String>  result;
     wstring tmp     =   As<wstring> ();
     wregex  regExp  =   wregex (string2SearchFor.As<wstring> ());
-    std::wsmatch res;
+    wsmatch res;
     regex_search (tmp, res, regExp);
     result.reserve (res.size ());
     for (auto i = res.begin (); i != res.end (); ++i) {
@@ -1125,7 +1125,7 @@ String String::LimitLength (size_t maxLen, bool keepLeft, const String& ellipsis
 void String::AsNarrowString (const locale& l, string* into) const
 {
     // See http://en.cppreference.com/w/cpp/locale/codecvt/~codecvt
-    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, std::mbstate_t>>;
+    using Destructible_codecvt_byname = deletable_facet_<codecvt_byname<wchar_t, char, mbstate_t>>;
     Destructible_codecvt_byname cvt{l.name ()};
     wstring                     wstr = As<wstring> ();
     // http://en.cppreference.com/w/cpp/locale/codecvt/out

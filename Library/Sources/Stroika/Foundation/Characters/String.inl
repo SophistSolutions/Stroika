@@ -525,7 +525,7 @@ namespace Stroika::Foundation {
             _SafeReadRepAccessor accessor{this};
             size_t               thisLen = accessor._ConstGetRep ()._GetLength ();
             if (from > thisLen) {
-                Execution::Throw (std::out_of_range ("string index out of range"));
+                Execution::Throw (out_of_range ("string index out of range"));
             }
             // @todo
             // Not QUITE correct - due to overflow issues, but pragmaitcally this is probably close enough

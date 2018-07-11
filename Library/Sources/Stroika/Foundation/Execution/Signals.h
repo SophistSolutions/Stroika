@@ -52,7 +52,7 @@ namespace Stroika {
              *      o   other error numbres - for now - generate an assertion error. The function returns
              *          zero if no error
              */
-            errno_t SendSignal (std::thread::native_handle_type target, SignalID signal);
+            errno_t SendSignal (thread::native_handle_type target, SignalID signal);
         }
     }
 }

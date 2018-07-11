@@ -147,7 +147,7 @@ namespace Stroika::Foundation {
         }
         inline bool CodePagesInstalled::IsCodePageAvailable (CodePage cp)
         {
-            return (std::find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
+            return (find (fCodePages_.begin (), fCodePages_.end (), cp) == fCodePages_.end ());
         }
 
         inline void WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult)

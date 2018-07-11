@@ -752,7 +752,7 @@ namespace {
         {
             // From Sequence<> CTOR docs
             Collection<int>  c;
-            std::vector<int> v;
+            vector<int> v;
 
             Sequence<int> s1 = {1, 2, 3};
             Sequence<int> s2 = s1;
@@ -770,8 +770,8 @@ namespace {
 
     void DoRegressionTests_ ()
     {
-        using COMPARE_SIZET       = std::equal_to<size_t>;
-        using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
+        using COMPARE_SIZET       = equal_to<size_t>;
+        using COMPARE_SimpleClass = equal_to<SimpleClass>;
         struct COMPARE_SimpleClassWithoutComparisonOperators {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (value_type v1, value_type v2) const

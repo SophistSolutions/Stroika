@@ -62,7 +62,7 @@ namespace Stroika {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
 #else
-                std::copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
+                copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
 #endif
                 Invariant ();
             }
@@ -73,7 +73,7 @@ namespace Stroika {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
 #else
-                std::copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
+                copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
 #endif
                 Invariant ();
             }
@@ -95,7 +95,7 @@ namespace Stroika {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #else
-                std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
+                copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #endif
                 Invariant ();
                 return *this;
@@ -108,7 +108,7 @@ namespace Stroika {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #else
-                std::copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
+                copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
 #endif
                 Invariant ();
                 return *this;

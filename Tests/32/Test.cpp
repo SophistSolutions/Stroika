@@ -977,8 +977,8 @@ namespace {
                 XML::SAXParse (mkdata_ (), ctx);
                 VerifyTestResult (values.valueMissing == 999);
                 VerifyTestResult (Math::NearlyEquals (values.valueExplicitGood, 3.0));
-                VerifyTestResult (std::isnan (values.valueExplicitNAN1));
-                VerifyTestResult (std::isnan (values.valueExplicitNAN2));
+                VerifyTestResult (isnan (values.valueExplicitNAN1));
+                VerifyTestResult (isnan (values.valueExplicitNAN2));
             }
         }
     }

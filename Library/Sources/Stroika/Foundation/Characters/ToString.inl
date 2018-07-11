@@ -70,7 +70,7 @@ namespace Stroika::Foundation {
                 return static_cast<String> (t);
             }
             template <typename T>
-            inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, const std::exception&>>* = 0)
+            inline String ToString_ (const T& t, enable_if_t<is_convertible_v<T, const exception&>>* = 0)
             {
                 //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
                 //return String_Constant {L"Exception: " } + String::FromNarrowSDKString (t.what ()) + String_Constant {L"}" };

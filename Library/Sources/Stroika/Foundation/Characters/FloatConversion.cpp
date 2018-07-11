@@ -72,11 +72,11 @@ namespace {
     template <typename FLOAT_TYPE>
     inline String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
     {
-        if (std::isnan (f)) {
+        if (isnan (f)) {
             static const String_Constant kNAN_STR_{L"NAN"};
             return kNAN_STR_;
         }
-        else if (std::isinf (f)) {
+        else if (isinf (f)) {
             static const String_Constant kNEG_INF_STR_{L"-INF"};
             static const String_Constant kINF_STR_{L"INF"};
             return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
@@ -98,21 +98,21 @@ namespace {
 
         switch (options.GetFloatFormat ().value_or (Float2StringOptions::FloatFormatType::eDEFAULT)) {
             case Float2StringOptions::FloatFormatType::eScientific:
-                s.setf (std::ios_base::scientific, std::ios_base::floatfield);
+                s.setf (ios_base::scientific, ios_base::floatfield);
                 break;
             case Float2StringOptions::FloatFormatType::eDefaultFloat:
-                s.unsetf (std::ios_base::floatfield); // see std::defaultfloat - not same as std::ios_base::fixed
+                s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
                 break;
             case Float2StringOptions::FloatFormatType::eFixedPoint:
-                s.setf (std::ios_base::fixed, std::ios_base::floatfield);
+                s.setf (ios_base::fixed, ios_base::floatfield);
                 break;
             case Float2StringOptions::FloatFormatType::eAutomatic: {
-                bool useScientificNotation = abs (f) >= std::pow (10, usePrecision / 2) or (f != 0 and abs (f) < std::pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
+                bool useScientificNotation = abs (f) >= pow (10, usePrecision / 2) or (f != 0 and abs (f) < pow (10, -static_cast<int> (usePrecision) / 2)); // scientific preserves more precision - but non-scientific looks better
                 if (useScientificNotation) {
-                    s.setf (std::ios_base::scientific, std::ios_base::floatfield);
+                    s.setf (ios_base::scientific, ios_base::floatfield);
                 }
                 else {
-                    s.unsetf (std::ios_base::floatfield); // see std::defaultfloat - not same as std::ios_base::fixed
+                    s.unsetf (ios_base::floatfield); // see std::defaultfloat - not same as ios_base::fixed
                 }
             } break;
             default:

@@ -131,8 +131,8 @@ namespace Stroika::Foundation {
                 }
                 inline void swap (Envelope_& rhs)
                 {
-                    std::swap (fPtr_, rhs.fPtr_);
-                    std::swap (fCountHolder_, rhs.fCountHolder_);
+                    swap (fPtr_, rhs.fPtr_);
+                    swap (fCountHolder_, rhs.fCountHolder_);
                 }
                 inline T* GetPtr () const noexcept
                 {
@@ -412,7 +412,7 @@ namespace Stroika::Foundation {
         template <typename T>
         inline void SharedPtr<T>::swap (SharedPtr<T>& rhs)
         {
-            std::swap (fEnvelope_, rhs.fEnvelope_);
+            swap (fEnvelope_, rhs.fEnvelope_);
         }
         template <typename T>
         inline typename SharedPtr<T>::ReferenceCountType SharedPtr<T>::CurrentRefCount () const noexcept

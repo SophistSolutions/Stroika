@@ -38,7 +38,7 @@ namespace {
 
         Debug::DropIntoDebuggerIfPresent ();
 
-        std::_Exit (EXIT_FAILURE); // skip
+        _Exit (EXIT_FAILURE); // skip
     }
     void _FatalErrorHandler_ (const Characters::SDKChar* msg)
     {
@@ -48,14 +48,14 @@ namespace {
         cerr << "FAILED: " << msg << endl;
 #endif
         Debug::DropIntoDebuggerIfPresent ();
-        std::_Exit (EXIT_FAILURE); // skip
+        _Exit (EXIT_FAILURE); // skip
     }
     void _FatalSignalHandler_ (Execution::SignalID signal)
     {
         cerr << "FAILED: SIGNAL= " << Execution::SignalToName (signal).AsNarrowSDKString () << endl;
         DbgTrace (L"FAILED: SIGNAL= %s", Execution::SignalToName (signal).c_str ());
         Debug::DropIntoDebuggerIfPresent ();
-        std::_Exit (EXIT_FAILURE); // skip
+        _Exit (EXIT_FAILURE); // skip
     }
 }
 

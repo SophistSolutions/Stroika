@@ -27,14 +27,14 @@ namespace Stroika {
                 static const String_Constant kExceptPefix_{L"Exception: "};
                 static const String_Constant kUnknown_{L"Unknown Exception"};
                 try {
-                    std::rethrow_exception (e);
+                    rethrow_exception (e);
                 }
                 catch (const Execution::StringException& e) {
                     //saying Exception: first produces 'Exception: HTTP exception: status 404 (URL not found)}' - redundant. Not sure about all cases, but try this way.
                     //return kExceptPefix_ + e.As<String> ();
                     return e.As<String> ();
                 }
-                catch (const std::exception& e) {
+                catch (const exception& e) {
                     return kExceptPefix_ + String::FromNarrowSDKString (e.what ());
                 }
                 catch (...) {

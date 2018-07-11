@@ -17,25 +17,25 @@ namespace Stroika::Foundation {
     namespace Characters {
 
         /*
-            ********************************************************************************
-            *********************** Float2StringOptions::Precision *************************
-            ********************************************************************************
-            */
+         ********************************************************************************
+         *********************** Float2StringOptions::Precision *************************
+         ********************************************************************************
+         */
         inline Float2StringOptions::Precision::Precision (unsigned int p)
             : fPrecision (p)
         {
         }
 
         /*
-            ********************************************************************************
-            ****************************** Float2StringOptions *****************************
-            ********************************************************************************
-            */
-        inline Float2StringOptions::Float2StringOptions (const std::locale& l)
+         ********************************************************************************
+         ****************************** Float2StringOptions *****************************
+         ********************************************************************************
+         */
+        inline Float2StringOptions::Float2StringOptions (const locale& l)
             : fUseLocale_ (l)
         {
         }
-        inline Float2StringOptions::Float2StringOptions (std::ios_base::fmtflags fmtFlags)
+        inline Float2StringOptions::Float2StringOptions (ios_base::fmtflags fmtFlags)
             : fFmtFlags_ (fmtFlags)
         {
         }
@@ -73,7 +73,7 @@ namespace Stroika::Foundation {
         {
             return fTrimTrailingZeros_;
         }
-        inline optional<std::locale> Float2StringOptions::GetUseLocale () const
+        inline optional<locale> Float2StringOptions::GetUseLocale () const
         {
             return fUseLocale_;
         }
@@ -81,7 +81,7 @@ namespace Stroika::Foundation {
         {
             return fFloatFormat_;
         }
-        inline optional<std::ios_base::fmtflags> Float2StringOptions::GetIOSFmtFlags () const
+        inline optional<ios_base::fmtflags> Float2StringOptions::GetIOSFmtFlags () const
         {
             return fFmtFlags_;
         }

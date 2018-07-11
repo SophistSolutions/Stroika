@@ -55,8 +55,8 @@ namespace {
         VerifyTestResult (RoundUpTo (2, 2) == 2);
         VerifyTestResult (RoundDownTo (2, 2) == 2);
         VerifyTestResult (Round<int> (2.2) == 2);
-        VerifyTestResult (Round<int> (std::numeric_limits<double>::max () * 1000) == std::numeric_limits<int>::max ());
-        VerifyTestResult (Round<unsigned int> (std::numeric_limits<double>::max () * 1000) == std::numeric_limits<unsigned int>::max ());
+        VerifyTestResult (Round<int> (numeric_limits<double>::max () * 1000) == numeric_limits<int>::max ());
+        VerifyTestResult (Round<unsigned int> (numeric_limits<double>::max () * 1000) == numeric_limits<unsigned int>::max ());
     }
     void Test3_Angle_ ()
     {
@@ -198,7 +198,7 @@ namespace {
                 if (d < 0 or d >= Math::kPi) { // avoid falling off ends of ranges - periodic function
                     return 100.0;
                 }
-                return -std::cos (d);
+                return -cos (d);
             };
             DownhillSimplexMinimization::Results<double> result = DownhillSimplexMinimization::Run (f, {.1});
             VerifyTestResult (Math::NearlyEquals (result.fOptimizedParameters[0], 0.0, 1e-10));
@@ -319,8 +319,8 @@ namespace {
                     double computedWavelength = wavelengthModel (parameters, i.fValue);
                     Assert (computedWavelength > 0);
                     double calibratedWaveLength = WaveNumber2Wavelength_ (i.fKey);
-                    Assert (std::pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength >= 0);
-                    result += std::pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength;
+                    Assert (pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength >= 0);
+                    result += pow (calibratedWaveLength - computedWavelength, 2) / computedWavelength;
                 }
                 return sqrt (result) / nEntries;
             };

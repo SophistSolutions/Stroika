@@ -51,8 +51,8 @@ namespace {
 namespace {
     void DoRegressionTests_ ()
     {
-        using COMPARE_SIZET       = std::equal_to<size_t>;
-        using COMPARE_SimpleClass = std::equal_to<SimpleClass>;
+        using COMPARE_SIZET       = equal_to<size_t>;
+        using COMPARE_SimpleClass = equal_to<SimpleClass>;
         struct COMPARE_SimpleClassWithoutComparisonOperators {
             using value_type = SimpleClassWithoutComparisonOperators;
             bool operator() (value_type v1, value_type v2) const

@@ -105,8 +105,8 @@ namespace Stroika::Foundation {
             Float2StringOptions () = default;
             Float2StringOptions (UseCLocale); // same as default
             Float2StringOptions (UseCurrentLocale);
-            Float2StringOptions (const std::locale& l);
-            Float2StringOptions (std::ios_base::fmtflags fmtFlags);
+            Float2StringOptions (const locale& l);
+            Float2StringOptions (ios_base::fmtflags fmtFlags);
             Float2StringOptions (Precision precision);
             Float2StringOptions (FloatFormatType floatFormat);
             Float2StringOptions (TrimTrailingZerosType trimTrailingZeros);
@@ -121,13 +121,13 @@ namespace Stroika::Foundation {
             nonvirtual optional<bool> GetTrimTrailingZeros () const;
 
         public:
-            nonvirtual optional<std::locale> GetUseLocale () const;
+            nonvirtual optional<locale> GetUseLocale () const;
 
         public:
             nonvirtual optional<FloatFormatType> GetFloatFormat () const;
 
         public:
-            nonvirtual optional<std::ios_base::fmtflags> GetIOSFmtFlags () const;
+            nonvirtual optional<ios_base::fmtflags> GetIOSFmtFlags () const;
 
         public:
             /**

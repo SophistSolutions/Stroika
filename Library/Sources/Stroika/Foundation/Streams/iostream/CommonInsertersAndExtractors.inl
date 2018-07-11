@@ -17,7 +17,7 @@ namespace Stroika {
             namespace iostream {
 
                 template <class charT, typename Traits>
-                std::basic_istream<charT, Traits>& operator>> (std::basic_istream<charT, Traits>& in, String& to)
+                basic_istream<charT, Traits>& operator>> (basic_istream<charT, Traits>& in, String& to)
                 {
                     basic_string<charT, Traits> tmp;
                     in >> tmp;
@@ -25,7 +25,7 @@ namespace Stroika {
                     return in;
                 }
                 template <class charT, typename Traits>
-                std::basic_ostream<charT, Traits>& operator<< (std::basic_ostream<charT, Traits>& out, const String& from)
+                basic_ostream<charT, Traits>& operator<< (basic_ostream<charT, Traits>& out, const String& from)
                 {
                     basic_string<charT, Traits> tmp = from.As<basic_string<charT, Traits>> ();
                     out << tmp;

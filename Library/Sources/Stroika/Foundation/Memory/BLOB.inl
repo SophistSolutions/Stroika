@@ -33,7 +33,7 @@ namespace Stroika::Foundation {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (start, end, fData.begin ());
 #else
-                std::copy (start, end, fData.begin ());
+                copy (start, end, fData.begin ());
 #endif
             }
             BasicRep_ (const Byte* start, const Byte* end)

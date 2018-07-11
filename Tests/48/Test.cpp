@@ -663,15 +663,15 @@ namespace {
         const Duration     k30Seconds = Duration (30.0);
         VerifyTestResult (k30Seconds.As<time_t> () == 30);
         VerifyTestResult (k30Seconds.As<String> () == L"PT30S");
-        VerifyTestResult (k30Seconds.As<std::chrono::duration<double>> () == std::chrono::duration<double> (30.0));
-        VerifyTestResult (Duration (std::chrono::duration<double> (4)).As<time_t> () == 4);
+        VerifyTestResult (k30Seconds.As<chrono::duration<double>> () == chrono::duration<double> (30.0));
+        VerifyTestResult (Duration (chrono::duration<double> (4)).As<time_t> () == 4);
         VerifyTestResult (Math::NearlyEquals (Duration (chrono::milliseconds (50)).As<Time::DurationSecondsType> (), 0.050));
         VerifyTestResult (Math::NearlyEquals (Duration (chrono::microseconds (50)).As<Time::DurationSecondsType> (), 0.000050));
         VerifyTestResult (Math::NearlyEquals (Duration (chrono::nanoseconds (50)).As<Time::DurationSecondsType> (), 0.000000050));
         VerifyTestResult (Math::NearlyEquals (Duration (chrono::nanoseconds (1)).As<Time::DurationSecondsType> (), 0.000000001));
-        VerifyTestResult (Duration (5.0).As<std::chrono::milliseconds> () == chrono::milliseconds (5000));
-        VerifyTestResult (Duration (-5.0).As<std::chrono::milliseconds> () == chrono::milliseconds (-5000));
-        VerifyTestResult (Duration (1.0).As<std::chrono::nanoseconds> () == chrono::nanoseconds (1000 * 1000 * 1000));
+        VerifyTestResult (Duration (5.0).As<chrono::milliseconds> () == chrono::milliseconds (5000));
+        VerifyTestResult (Duration (-5.0).As<chrono::milliseconds> () == chrono::milliseconds (-5000));
+        VerifyTestResult (Duration (1.0).As<chrono::nanoseconds> () == chrono::nanoseconds (1000 * 1000 * 1000));
         VerifyTestResult (Duration (1) == Duration (chrono::seconds (1)));
     }
 }

@@ -21,7 +21,6 @@ namespace Stroika::Foundation {
             template <typename T>
             T String2IntOrUInt_ (const String& s)
             {
-                using std::numeric_limits;
                 if (numeric_limits<T>::is_signed) {
                     long long int l = String2Int_ (s);
                     if (l <= numeric_limits<T>::min ()) {

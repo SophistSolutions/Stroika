@@ -23,7 +23,6 @@ using namespace Stroika::Foundation::Characters;
  */
 unsigned int Characters::HexString2Int (const String& s)
 {
-    using std::numeric_limits;
     unsigned long l = wcstoul (s.c_str (), nullptr, 16);
     if (l >= numeric_limits<unsigned int>::max ()) {
         return numeric_limits<unsigned int>::max ();
@@ -38,7 +37,6 @@ unsigned int Characters::HexString2Int (const String& s)
  */
 long long int Characters::Private_::String2Int_ (const String& s)
 {
-    using std::numeric_limits;
     unsigned long long int l = wcstoll (s.c_str (), nullptr, 10);
     return l;
 }
@@ -50,7 +48,6 @@ long long int Characters::Private_::String2Int_ (const String& s)
  */
 unsigned long long int Characters::Private_::String2UInt_ (const String& s)
 {
-    using std::numeric_limits;
     long long int l = wcstoull (s.c_str (), nullptr, 10);
     return l;
 }

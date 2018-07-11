@@ -30,7 +30,7 @@ namespace Stroika::Foundation {
                 fEngagedValue_ = forward<ARGT> (arg);
             }
             else {
-                (void)new (std::addressof (fEngagedValue_)) T (forward<ARGT> (arg));
+                (void)new (addressof (fEngagedValue_)) T (forward<ARGT> (arg));
                 fEngaged_ = true;
             }
         }
@@ -40,7 +40,7 @@ namespace Stroika::Foundation {
         inline void Optional_Traits_Inplace_Storage<T>::StorageType_<TT, false>::Assign_ (ARGT&& arg /*, const T_IS_NOT_ASSIGNABLE**/)
         {
             destroy ();
-            (void)new (std::addressof (fEngagedValue_)) T (forward<ARGT> (arg));
+            (void)new (addressof (fEngagedValue_)) T (forward<ARGT> (arg));
             fEngaged_ = true;
         }
         template <typename T>
@@ -77,7 +77,7 @@ namespace Stroika::Foundation {
         {
             Require (&src != this); // cannot self-initialize
             if (src.fEngaged_) {
-                (void)new (std::addressof (fEngagedValue_)) T (move (src.fEngagedValue_));
+                (void)new (addressof (fEngagedValue_)) T (move (src.fEngagedValue_));
                 fEngaged_     = true;
                 src.fEngaged_ = false;
             }
