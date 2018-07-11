@@ -458,7 +458,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename T, typename TRAITS>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>* >
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
         void MultiSet<T, TRAITS>::AddAll (const CONTAINER_OF_ADDABLE& src)
         {
             // see https://stroika.atlassian.net/browse/STK-645

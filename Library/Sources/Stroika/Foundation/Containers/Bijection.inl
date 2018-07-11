@@ -68,7 +68,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-        template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection<DOMAIN_TYPE, RANGE_TYPE>*>>* >
+        template <typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection<DOMAIN_TYPE, RANGE_TYPE>*>>*>
         inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
             : Bijection ()
         {
@@ -84,7 +84,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-        template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF>
+        template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>*>
         Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
             : Bijection ()
         {
@@ -310,7 +310,7 @@ namespace Stroika::Foundation {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.first, p.second);
         }
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-        template <typename KEYVALUEPAIR, typename ENABLE_IF_TEST>
+        template <typename KEYVALUEPAIR, enable_if_t<not is_convertible_v<KEYVALUEPAIR, pair<DOMAIN_TYPE, RANGE_TYPE>>>*>
         inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::Add (KEYVALUEPAIR p)
         {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Add (p.fKey, p.fValue);
@@ -324,7 +324,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-        template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF>
+        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>*>
         inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
         {
             // see https://stroika.atlassian.net/browse/STK-645

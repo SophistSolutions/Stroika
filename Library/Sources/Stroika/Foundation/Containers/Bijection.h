@@ -168,7 +168,7 @@ namespace Stroika::Foundation {
             Bijection (const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_SINGLEVALUE_ADD_ARGS, Common::KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_SINGLEVALUE_ADD_ARGS*, const Bijection<DOMAIN_TYPE, RANGE_TYPE>*>>* = nullptr>
             Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src);
-            template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, typename ENABLE_IF = enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>>
+            template <typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>* = nullptr>
             Bijection (COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
             template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>* = nullptr>
             Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end);
@@ -352,14 +352,14 @@ namespace Stroika::Foundation {
              */
             nonvirtual void Add (ArgByValueType<DomainType> key, ArgByValueType<RangeType> newElt);
             nonvirtual void Add (const pair<DomainType, RangeType>& p);
-            template <typename KEYVALUEPAIR, typename ENABLE_IF_TEST = enable_if_t<not is_convertible_v<KEYVALUEPAIR, pair<DomainType, RangeType>>>>
+            template <typename KEYVALUEPAIR, enable_if_t<not is_convertible_v<KEYVALUEPAIR, pair<DOMAIN_TYPE, RANGE_TYPE>>>* = nullptr>
             nonvirtual void Add (KEYVALUEPAIR p);
 
         public:
             /**
              *  \note   AddAll/2 is alias for .net AddRange ()
              */
-            template <typename CONTAINER_OF_KEYVALUE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>>
+            template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>* = nullptr>
             nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
             template <typename COPY_FROM_ITERATOR_KEYVALUE>
             nonvirtual void AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
