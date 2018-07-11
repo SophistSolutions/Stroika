@@ -124,7 +124,7 @@ namespace {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
                     Mapping<String, VariantValue> vv = v.As<Mapping<String, VariantValue>> ();
                     VerifyTestResult (vv.ContainsKey (L"args"));
-                    VerifyTestResult (vv[L"url"] == L"http://httpbin.org/get");
+                    VerifyTestResult (vv[L"url"] == L"http://httpbin.org/get" or vv[L"url"] == L"https://httpbin.org/get");
                 }
             }
             void T2_httpbin_SimplePOST_ (Connection c)
@@ -142,7 +142,26 @@ namespace {
                     }
                     return BLOB (buf.begin (), buf.end ());
                 }();
-                Response r = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
+                optional<Response> optResp;
+                try {
+                    optResp = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
+                }
+#if qHasFeature_LibCurl && qHasFeature_OpenSSL
+                catch (const LibCurlException& lce) {
+                    if (lce.GetCode () == 65) {
+                        DbgTrace ("Warning - ignored  failed since rewinding of the data stream failed' (status 65) - try again ssl link");
+                        c.SetURL (URL::Parse (L"https://httpbin.org/post"));
+                        optResp = c.POST (roundTripTestData, DataExchange::PredefinedInternetMediaType::kOctetStream);
+                    }
+                    else {
+                        Execution::ReThrow ();
+                    }
+                }
+#endif
+                catch (...) {
+                    Execution::ReThrow ();
+                }
+                Response r = *optResp;
                 VerifyTestResult (r.GetSucceeded ());
                 {
                     VariantValue                  v  = Variant::JSON::Reader ().Read (r.GetDataBinaryInputStream ());
