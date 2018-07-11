@@ -138,10 +138,10 @@ namespace Stroika {
                     struct Node : public Memory::UseBlockAllocationIfAppropriate<Node> {
                         Node (const KeyType& key, const ValueType& val);
 
-                        KeyValue           fEntry;
-                        std::vector<Node*> fNext; // for a skiplist, you have an array of next pointers, rather than just one
+                        KeyValue      fEntry;
+                        vector<Node*> fNext; // for a skiplist, you have an array of next pointers, rather than just one
                     };
-                    std::vector<Node*> fHead;
+                    vector<Node*> fHead;
 
                 protected:
                     /*
@@ -158,10 +158,10 @@ namespace Stroika {
 
                     // this is specialized for the case of adding or removing elements, as it caches
                     // all links that will need to be updated for the new element or the element to be removed
-                    nonvirtual Node* FindNearest (KeyType key, std::vector<Node*>& links) const;
+                    nonvirtual Node* FindNearest (KeyType key, vector<Node*>& links) const;
 
-                    nonvirtual void AddNode (Node* n, const std::vector<Node*>& linksToPatch);
-                    nonvirtual void RemoveNode (Node* n, const std::vector<Node*>& linksToPatch);
+                    nonvirtual void AddNode (Node* n, const vector<Node*>& linksToPatch);
+                    nonvirtual void RemoveNode (Node* n, const vector<Node*>& linksToPatch);
 
 #if qDebug
                 protected:

@@ -215,7 +215,7 @@ namespace Stroika::Foundation {
              *
              *  Computational Complexity: O(N)
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Equals (const Queue& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
         protected:

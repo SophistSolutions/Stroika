@@ -135,7 +135,7 @@ namespace Stroika {
                 template <typename T>
                 Vector<T> operator* (T lhs, const Vector<T>& rhs)
                 {
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (T i : rhs.GetItems ()) {
                         tmp.push_back (lhs * i);
                     }
@@ -144,7 +144,7 @@ namespace Stroika {
                 template <typename T>
                 Vector<T> operator* (const Vector<T>& lhs, T rhs)
                 {
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (T i : lhs.GetItems ()) {
                         tmp.push_back (i * rhs);
                     }
@@ -155,7 +155,7 @@ namespace Stroika {
                 Vector<T> operator+ (const Vector<T>& lhs, const Vector<T>& rhs)
                 {
                     Require (lhs.GetDimension () == rhs.GetDimension ());
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (size_t i = 0; i < lhs.GetDimension (); ++i) {
                         tmp.push_back (lhs[i] + rhs[i]);
                     }
@@ -164,7 +164,7 @@ namespace Stroika {
                 template <typename T>
                 Vector<T> operator+ (T lhs, const Vector<T>& rhs)
                 {
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (T i : rhs.GetItems ()) {
                         tmp.push_back (lhs + i);
                     }
@@ -173,7 +173,7 @@ namespace Stroika {
                 template <typename T>
                 Vector<T> operator+ (const Vector<T>& lhs, T rhs)
                 {
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (T i : lhs.GetItems ()) {
                         tmp.push_back (i + rhs);
                     }
@@ -184,7 +184,7 @@ namespace Stroika {
                 Vector<T> operator- (const Vector<T>& lhs, const Vector<T>& rhs)
                 {
                     Require (lhs.GetDimension () == rhs.GetDimension ());
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (size_t i = 0; i < lhs.GetDimension (); ++i) {
                         tmp.push_back (lhs[i] - rhs[i]);
                     }
@@ -193,7 +193,7 @@ namespace Stroika {
                 template <typename T>
                 Vector<T> operator- (T lhs, const Vector<T>& rhs)
                 {
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (T i : rhs.GetItems ()) {
                         tmp.push_back (lhs - i);
                     }
@@ -202,7 +202,7 @@ namespace Stroika {
                 template <typename T>
                 Vector<T> operator- (const Vector<T>& lhs, T rhs)
                 {
-                    std::vector<T> tmp;
+                    vector<T> tmp;
                     for (T i : lhs.GetItems ()) {
                         tmp.push_back (i - rhs);
                     }

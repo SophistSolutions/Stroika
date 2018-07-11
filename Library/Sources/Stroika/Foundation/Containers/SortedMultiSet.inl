@@ -17,7 +17,7 @@ namespace Stroika::Foundation {
          */
         template <typename T, typename TRAITS>
         inline SortedMultiSet<T, TRAITS>::SortedMultiSet ()
-            : SortedMultiSet (std::less<T>{})
+            : SortedMultiSet (less<T>{})
         {
             _AssertRepValidType ();
         }

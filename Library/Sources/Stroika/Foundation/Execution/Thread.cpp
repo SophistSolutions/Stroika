@@ -257,7 +257,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Characters {
             template <>
-            String ToString (const std::thread::id& t)
+            String ToString (const thread::id& t)
             {
                 return String::FromASCII (Execution::FormatThreadID_A (t));
             }
@@ -306,7 +306,7 @@ void Thread::Rep_::DoCreate (const shared_ptr<Rep_>* repSharedPtr)
 
     {
         lock_guard<mutex> critSec{(*repSharedPtr)->fAccessSTDThreadMutex_};
-        (*repSharedPtr)->fThread_ = std::thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
+        (*repSharedPtr)->fThread_ = thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
     }
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the thread has started
@@ -1252,6 +1252,6 @@ void Execution::Yield ()
      *  not importantly
      */
     CheckForThreadInterruption ();
-    std::this_thread::yield ();
+    this_thread::yield ();
     CheckForThreadInterruption ();
 }

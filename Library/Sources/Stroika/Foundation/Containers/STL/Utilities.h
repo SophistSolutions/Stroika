@@ -29,7 +29,7 @@ namespace Stroika {
                 /**
                  *  \note   similar to std::equal () - but takes iterables as arguments, not iterators
                  */
-                template <typename ITERABLE_OF_T, typename T = typename ITERABLE_OF_T::value_type, typename EQUALS_COMPARER = std::equal_to<T>, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+                template <typename ITERABLE_OF_T, typename T = typename ITERABLE_OF_T::value_type, typename EQUALS_COMPARER = equal_to<T>, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
                 bool equal (const ITERABLE_OF_T& lhs, const ITERABLE_OF_T& rhs, EQUALS_COMPARER&& equalsComparer = {});
 
                 /*

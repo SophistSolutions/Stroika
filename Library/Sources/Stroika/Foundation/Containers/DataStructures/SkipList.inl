@@ -88,7 +88,7 @@ namespace Stroika {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
                     Assert (fHead.size () > 0);
 
-                    std::vector<Node*> const* startV = &fHead;
+                    vector<Node*> const* startV = &fHead;
                     for (size_t linkHeight = fHead.size (); linkHeight > 0; --linkHeight) {
                         Node* n = (*startV)[linkHeight - 1];
 
@@ -134,7 +134,7 @@ namespace Stroika {
                 void SkipList<KEY, VALUE, TRAITS>::Add (const KeyType& key, const ValueType& val)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    std::vector<Node*>                                 links;
+                    vector<Node*>                                      links;
 
                     Node* n = FindNearest (key, links);
                     if ((n != nullptr) and (TRAITS::kPolicy & ADT::eDuplicateAddThrowException)) {
@@ -148,14 +148,14 @@ namespace Stroika {
                     Add (keyAndValue, keyAndValue);
                 }
                 template <typename KEY, typename VALUE, typename TRAITS>
-                void SkipList<KEY, VALUE, TRAITS>::AddNode (Node* node, const std::vector<Node*>& links)
+                void SkipList<KEY, VALUE, TRAITS>::AddNode (Node* node, const vector<Node*>& links)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
                     RequireNotNull (node);
                     size_t newLinkHeight = DetermineLinkHeight ();
                     node->fNext.resize (newLinkHeight);
 
-                    size_t linksToPatch = std::min (fHead.size (), newLinkHeight);
+                    size_t linksToPatch = min (fHead.size (), newLinkHeight);
                     for (size_t i = 0; i < linksToPatch; ++i) {
                         Node* nextL = nullptr;
                         if (links[i] == nullptr) {
@@ -182,7 +182,7 @@ namespace Stroika {
                 void SkipList<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
                 {
                     lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                    std::vector<Node*>                                 links;
+                    vector<Node*>                                      links;
                     Node*                                              n = FindNearest (key, links);
                     if (n != nullptr) {
                         RemoveNode (n, links);
@@ -194,7 +194,7 @@ namespace Stroika {
                     }
                 }
                 template <typename KEY, typename VALUE, typename TRAITS>
-                void SkipList<KEY, VALUE, TRAITS>::RemoveNode (Node* n, const std::vector<Node*>& links)
+                void SkipList<KEY, VALUE, TRAITS>::RemoveNode (Node* n, const vector<Node*>& links)
                 {
                     for (auto it = links.begin (); it != links.end (); ++it) {
                         size_t index     = it - links.begin ();
@@ -224,7 +224,7 @@ namespace Stroika {
                     };
 
                     int linkHeight = 1;
-                    int maxHeight  = std::min (fHead.size () + kMaxNewGrowth, size_t (kMaxLinkHeight));
+                    int maxHeight  = min (fHead.size () + kMaxNewGrowth, size_t (kMaxLinkHeight));
                     while ((linkHeight < maxHeight) and (RandomSize_t (1, 100) <= GetLinkHeightProbability ())) {
                         ++linkHeight;
                     }
@@ -266,7 +266,7 @@ namespace Stroika {
                     Ensure (GetLength () == 0);
                 }
                 template <typename KEY, typename VALUE, typename TRAITS>
-                typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::FindNearest (KeyType key, std::vector<Node*>& links) const
+                typename SkipList<KEY, VALUE, TRAITS>::Node* SkipList<KEY, VALUE, TRAITS>::FindNearest (KeyType key, vector<Node*>& links) const
                 {
                     Require (links.size () == 0); // we want to be passed in a totally empty vector
                     Assert (fHead.size () > 0);
@@ -350,7 +350,7 @@ namespace Stroika {
                 template <typename KEY, typename VALUE, typename TRAITS>
                 void SkipList<KEY, VALUE, TRAITS>::Prioritize (const KeyType& key)
                 {
-                    std::vector<Node*> links;
+                    vector<Node*> links;
 
                     Node* node = FindNearest (key, links);
                     if (node != nullptr and node->fNext.size () <= fHead.size ()) {
@@ -451,25 +451,25 @@ namespace Stroika {
                 template <typename KEY, typename VALUE, typename TRAITS>
                 void SkipList<KEY, VALUE, TRAITS>::ListAll () const
                 {
-                    std::cout << "[";
+                    cout << "[";
                     for (size_t i = 0; i < fHead.size (); ++i) {
                         if (fHead[i] == nullptr) {
-                            std::cout << "*"
-                                      << ", ";
+                            cout << "*"
+                                 << ", ";
                         }
                         else {
-                            std::cout << fHead[i]->fEntry.GetValue () << ", ";
+                            cout << fHead[i]->fEntry.GetValue () << ", ";
                         }
                     }
-                    std::cout << "]  ";
+                    cout << "]  ";
 
                     Node* n = fHead[0];
                     while (n != nullptr) {
-                        std::cout << n->fEntry.GetValue () << " (" << n->fNext.size () << "), ";
+                        cout << n->fEntry.GetValue () << " (" << n->fNext.size () << "), ";
                         n = n->fNext[0];
                     }
-                    std::cout << std::endl
-                              << std::flush;
+                    cout << endl
+                         << flush;
                 }
                 template <typename KEY, typename VALUE, typename TRAITS>
                 void SkipList<KEY, VALUE, TRAITS>::ValidateAll () const
@@ -503,7 +503,7 @@ namespace Stroika {
 
                         Node* n = fHead[0];
                         while (n != nullptr) {
-                            maxLinkHeight = std::max (maxLinkHeight, n->fNext.size ());
+                            maxLinkHeight = max (maxLinkHeight, n->fNext.size ());
                             *totalHeight += n->fNext.size ();
                             n = n->fNext[0];
                         }

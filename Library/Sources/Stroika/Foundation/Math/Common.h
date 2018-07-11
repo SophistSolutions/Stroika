@@ -68,13 +68,13 @@ namespace Stroika::Foundation::Math {
      *  But, so that it is more effective with templates, it can also be used with any type,
      *  and becomes require equality (==).
      */
-    template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+    template <typename T1, typename T2, typename TC = typename common_type<T1, T2>::type>
     bool NearlyEquals (T1 l, T2 r, enable_if_t<is_floating_point_v<TC>>* = nullptr);
-    template <typename T1, typename T2, typename EPSILON_TYPE, typename TC = typename std::common_type<T1, T2>::type>
+    template <typename T1, typename T2, typename EPSILON_TYPE, typename TC = typename common_type<T1, T2>::type>
     bool NearlyEquals (T1 l, T2 r, EPSILON_TYPE epsilon, enable_if_t<is_floating_point_v<TC>>* = nullptr);
-    template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+    template <typename T1, typename T2, typename TC = typename common_type<T1, T2>::type>
     bool NearlyEquals (T1 l, T2 r, enable_if_t<is_integral_v<TC>>* = nullptr);
-    template <typename T1, typename T2, typename TC = typename std::common_type<T1, T2>::type>
+    template <typename T1, typename T2, typename TC = typename common_type<T1, T2>::type>
     bool NearlyEquals (T1 l, T2 r, enable_if_t<!is_integral_v<TC> && !is_floating_point_v<TC>>* = nullptr);
 
     /**

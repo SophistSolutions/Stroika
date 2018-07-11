@@ -203,29 +203,29 @@ long double Duration::As () const
 }
 
 template <>
-std::chrono::duration<double> Duration::As () const
+chrono::duration<double> Duration::As () const
 {
-    return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
+    return chrono::duration<double> (ParseTime_ (fDurationRep_));
 }
 template <>
-std::chrono::seconds Duration::As () const
+chrono::seconds Duration::As () const
 {
-    return std::chrono::seconds (static_cast<std::chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
+    return chrono::seconds (static_cast<chrono::seconds::rep> (ParseTime_ (fDurationRep_)));
 }
 template <>
-std::chrono::milliseconds Duration::As () const
+chrono::milliseconds Duration::As () const
 {
-    return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
+    return chrono::milliseconds (static_cast<chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
 }
 template <>
-std::chrono::microseconds Duration::As () const
+chrono::microseconds Duration::As () const
 {
-    return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
+    return chrono::microseconds (static_cast<chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
 }
 template <>
-std::chrono::nanoseconds Duration::As () const
+chrono::nanoseconds Duration::As () const
 {
-    return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
+    return chrono::nanoseconds (static_cast<chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
 }
 template <>
 String Duration::As () const
@@ -253,25 +253,25 @@ namespace {
 template <>
 chrono::seconds Duration::AsPinned () const
 {
-    return DoPin_<std::chrono::seconds> (ParseTime_ (fDurationRep_), 1);
+    return DoPin_<chrono::seconds> (ParseTime_ (fDurationRep_), 1);
 }
 
 template <>
 chrono::milliseconds Duration::AsPinned () const
 {
-    return DoPin_<std::chrono::milliseconds> (ParseTime_ (fDurationRep_), 1000.0);
+    return DoPin_<chrono::milliseconds> (ParseTime_ (fDurationRep_), 1000.0);
 }
 
 template <>
 chrono::microseconds Duration::AsPinned () const
 {
-    return DoPin_<std::chrono::microseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0);
+    return DoPin_<chrono::microseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0);
 }
 
 template <>
 chrono::nanoseconds Duration::AsPinned () const
 {
-    return DoPin_<std::chrono::nanoseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0 * 1000.0);
+    return DoPin_<chrono::nanoseconds> (ParseTime_ (fDurationRep_), 1000.0 * 1000.0 * 1000.0);
 }
 
 namespace {
@@ -686,10 +686,10 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         Assert (nYears > 0.0);
         if (nYears > 0.0) {
             char buf[10 * 1024];
-            (void)std::snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
+            (void)snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
             result += buf;
             timeLeft -= nYears * kSecondsPerYear_;
-            if (std::isinf (timeLeft) or timeLeft < 0) {
+            if (isinf (timeLeft) or timeLeft < 0) {
                 // some date numbers are so large, we cannot compute a number of days, weeks etc
                 // Also, for reasons which elude me (e.g. 32 bit gcc builds) this can go negative.
                 // Not strictly a bug (I don't think). Just roundoff.
@@ -702,7 +702,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         unsigned int nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth_);
         if (nMonths != 0) {
             char buf[1024];
-            (void)std::snprintf (buf, sizeof (buf), "%dM", nMonths);
+            (void)snprintf (buf, sizeof (buf), "%dM", nMonths);
             result += buf;
             timeLeft -= nMonths * kSecondsPerMonth_;
         }
@@ -712,7 +712,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
         unsigned int nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay_);
         if (nDays != 0) {
             char buf[1024];
-            (void)std::snprintf (buf, sizeof (buf), "%dD", nDays);
+            (void)snprintf (buf, sizeof (buf), "%dD", nDays);
             result += buf;
             timeLeft -= nDays * kSecondsPerDay_;
         }
@@ -724,7 +724,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
             unsigned int nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour_);
             if (nHours != 0) {
                 char buf[1024];
-                (void)std::snprintf (buf, sizeof (buf), "%dH", nHours);
+                (void)snprintf (buf, sizeof (buf), "%dH", nHours);
                 result += buf;
                 timeLeft -= nHours * kSecondsPerHour_;
             }
@@ -734,7 +734,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
             unsigned int nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute_);
             if (nMinutes != 0) {
                 char buf[1024];
-                (void)std::snprintf (buf, sizeof (buf), "%dM", nMinutes);
+                (void)snprintf (buf, sizeof (buf), "%dM", nMinutes);
                 result += buf;
                 timeLeft -= nMinutes * kSecondsPerMinute_;
             }
@@ -749,7 +749,7 @@ string Duration::UnParseTime_ (InternalNumericFormatType_ t)
             //
             // Pick a slightly more aggressive number for now, to avoid the bugs/performance cost,
             // and eventually totally rewrite how we handle this.
-            Verify (std::snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
+            Verify (snprintf (buf, sizeof (buf), "%.50f", static_cast<double> (timeLeft)) >= 52);
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
             result += "S";

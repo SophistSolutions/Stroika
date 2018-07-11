@@ -15,7 +15,7 @@ namespace {
     template <class Clock, class Duration>
     inline DurationSecondsType cvt_ (const time_point<Clock, Duration>& tp)
     {
-        return std::chrono::duration<DurationSecondsType>{tp.time_since_epoch ()}.count ();
+        return chrono::duration<DurationSecondsType>{tp.time_since_epoch ()}.count ();
     }
 }
 

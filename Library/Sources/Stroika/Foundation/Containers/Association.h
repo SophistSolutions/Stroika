@@ -59,7 +59,7 @@ namespace Stroika::Foundation {
          *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
          *      if you declare an API with Association<KEY_TYPE,MAPPED_VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
          *
-         *      Similarly for std::initalizer_list.
+         *      Similarly for initalizer_list.
          *
          *  \note   Design Note:
          *      Defined operator[](KEY_TYPE) const - to return MAPPED_VALUE_TYPE, instead of optional<MAPPED_VALUE_TYPE> because
@@ -283,7 +283,7 @@ namespace Stroika::Foundation {
             *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
             *  true if contained. Perhpas not very useful but symetric to ContainsKey().
             */
-            template <typename VALUE_EQUALS_COMPARER = std::equal_to<MAPPED_VALUE_TYPE>>
+            template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
             nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
         public:
@@ -424,7 +424,7 @@ namespace Stroika::Foundation {
             *
             *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
             */
-            template <typename VALUE_EQUALS_COMPARER = std::equal_to<MAPPED_VALUE_TYPE>>
+            template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
             nonvirtual bool Equals (const Association<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
         public:

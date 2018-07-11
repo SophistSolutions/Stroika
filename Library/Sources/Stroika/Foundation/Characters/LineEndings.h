@@ -13,10 +13,6 @@
 namespace Stroika::Foundation {
     namespace Characters {
 
-        using std::basic_string;
-        using std::string;
-        using std::wstring;
-
         /**
          */
         template <typename T>

@@ -69,14 +69,14 @@ namespace Stroika {
                     }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
                     }
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<T>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         size_t i              = fData_.FindFirstThat (doToElement);
@@ -106,7 +106,7 @@ namespace Stroika {
                     }
                     virtual void Add (ArgByValueType<T> item) override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // Appending is fastest
                         fData_.InsertAt (fData_.GetLength (), item);
                     }
@@ -114,22 +114,22 @@ namespace Stroika {
                     {
                         const typename Iterator<T>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                           mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.SetAt (mir.fIterator, newValue);
                     }
                     virtual void Remove (const Iterator<T>& i) override
                     {
                         const typename Iterator<T>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                           mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.RemoveAt (mir.fIterator);
                     }
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif

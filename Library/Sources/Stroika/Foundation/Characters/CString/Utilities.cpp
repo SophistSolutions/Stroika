@@ -49,7 +49,7 @@ string Characters::CString::FormatV (const char* format, va_list argsList)
         va_copy (argListCopy, argsList);
     }
 #else
-    while (std::vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
+    while (vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
         msgBuf.GrowToSize (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
@@ -240,11 +240,11 @@ wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c
  */
 wstring Characters::CString::Float2String (double f)
 {
-    if (std::isnan (f)) {
+    if (isnan (f)) {
         static const wstring kNAN_STR_{L"NAN"};
         return kNAN_STR_;
     }
-    if (std::isinf (f)) {
+    if (isinf (f)) {
         static const wstring kNEG_INF_STR_{L"-INF"};
         static const wstring kINF_STR_{L"INF"};
         return f > 0 ? kINF_STR_ : kNEG_INF_STR_;
@@ -262,7 +262,6 @@ wstring Characters::CString::Float2String (double f)
  */
 unsigned int Characters::CString::HexString2Int (const string& s)
 {
-    using std::numeric_limits;
     unsigned long l = strtoul (s.c_str (), nullptr, 16);
     if (l >= numeric_limits<unsigned int>::max ()) {
         return numeric_limits<unsigned int>::max ();
@@ -272,7 +271,6 @@ unsigned int Characters::CString::HexString2Int (const string& s)
 
 unsigned int Characters::CString::HexString2Int (const wchar_t* s)
 {
-    using std::numeric_limits;
     RequireNotNull (s);
     unsigned long l = wcstoul (s, nullptr, 16);
     if (l >= numeric_limits<unsigned int>::max ()) {
@@ -283,7 +281,6 @@ unsigned int Characters::CString::HexString2Int (const wchar_t* s)
 
 unsigned int Characters::CString::HexString2Int (const wstring& s)
 {
-    using std::numeric_limits;
     unsigned long l = wcstoul (s.c_str (), nullptr, 16);
     if (l >= numeric_limits<unsigned int>::max ()) {
         return numeric_limits<unsigned int>::max ();
@@ -298,14 +295,12 @@ unsigned int Characters::CString::HexString2Int (const wstring& s)
  */
 long long int Characters::CString::Private_::String2Int_ (const string& s)
 {
-    using std::numeric_limits;
     // nothing needed todo to pin the value to min/max
     return strtoll (s.c_str (), nullptr, 10);
 }
 
 long long int Characters::CString::Private_::String2Int_ (const wstring& s)
 {
-    using std::numeric_limits;
     unsigned long long int l = wcstoll (s.c_str (), nullptr, 10);
     return l;
 }
@@ -317,7 +312,6 @@ long long int Characters::CString::Private_::String2Int_ (const wstring& s)
  */
 unsigned long long int Characters::CString::Private_::String2UInt_ (const string& s)
 {
-    using std::numeric_limits;
     // nothing needed todo to pin the value to min/max
     unsigned long long int l = strtoull (s.c_str (), nullptr, 10);
     return l;
@@ -325,7 +319,6 @@ unsigned long long int Characters::CString::Private_::String2UInt_ (const string
 
 unsigned long long int Characters::CString::Private_::String2UInt_ (const wstring& s)
 {
-    using std::numeric_limits;
     long long int l = wcstoull (s.c_str (), nullptr, 10);
     return l;
 }

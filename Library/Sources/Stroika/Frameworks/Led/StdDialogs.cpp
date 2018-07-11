@@ -896,7 +896,7 @@ void LedComboBoxWidget::ShowPopup ()
 {
     if (not PopupShown ()) {
         // Set initial value based on current combo box text
-        vector<Led_tString>::const_iterator i = std::find (fPopupItems.begin (), fPopupItems.end (), GetText ());
+        vector<Led_tString>::const_iterator i = find (fPopupItems.begin (), fPopupItems.end (), GetText ());
         if (i == fPopupItems.end ()) {
             fComboListBoxPopup.SendMessage (LB_SETCURSEL, static_cast<WPARAM> (-1), 0); // none
         }

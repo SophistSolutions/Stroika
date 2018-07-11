@@ -90,7 +90,7 @@ void IdleManager::RemoveIdler (Idler* idler)
 void IdleManager::AddEnterIdler (EnterIdler* enterIdler)
 {
     RequireNotNull (enterIdler);
-    Require (std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler) == fEnterIdlers.end ());
+    Require (find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler) == fEnterIdlers.end ());
     fEnterIdlers.push_back (enterIdler);
     UpdateIdleMgrImplState ();
 }
@@ -98,7 +98,7 @@ void IdleManager::AddEnterIdler (EnterIdler* enterIdler)
 void IdleManager::RemoveEnterIdler (EnterIdler* enterIdler)
 {
     RequireNotNull (enterIdler);
-    vector<EnterIdler*>::iterator i = std::find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler);
+    vector<EnterIdler*>::iterator i = find (fEnterIdlers.begin (), fEnterIdlers.end (), enterIdler);
     Require (i != fEnterIdlers.end ());
     Assert (*i == enterIdler);
     fEnterIdlers.erase (i);

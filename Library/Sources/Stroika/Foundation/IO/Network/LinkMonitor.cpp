@@ -292,10 +292,10 @@ struct LinkMonitor::Rep_ {
         Rep_* rep = reinterpret_cast<Rep_*> (callerContext);
         if (Address != NULL) {
             char ipAddrBuf[1024];
-            (void)std::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
-                                 Address->Address.Ipv4.sin_addr.s_host,
-                                 Address->Address.Ipv4.sin_addr.s_lh,
-                                 Address->Address.Ipv4.sin_addr.s_impno);
+            (void)snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", Address->Address.Ipv4.sin_addr.s_net,
+                            Address->Address.Ipv4.sin_addr.s_host,
+                            Address->Address.Ipv4.sin_addr.s_lh,
+                            Address->Address.Ipv4.sin_addr.s_impno);
             LinkChange lc = (NotificationType == MibDeleteInstance) ? LinkChange::eRemoved : LinkChange::eAdded;
             rep->SendNotifies (lc, String (), String::FromASCII (ipAddrBuf));
         }
@@ -344,7 +344,7 @@ struct LinkMonitor::Rep_ {
                                     if_indextoname (ifa->ifa_index, name);
                                     {
                                         char ipAddrBuf[1024];
-                                        std::snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
+                                        snprintf (ipAddrBuf, NEltsOf (ipAddrBuf), "%d.%d.%d.%d", (ipaddr >> 24) & 0xff, (ipaddr >> 16) & 0xff, (ipaddr >> 8) & 0xff, ipaddr & 0xff);
                                         SendNotifies (LinkChange::eAdded, String::FromNarrowSDKString (name), String::FromASCII (ipAddrBuf));
                                     }
                                 }

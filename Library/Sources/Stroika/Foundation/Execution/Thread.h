@@ -216,14 +216,14 @@ namespace Stroika::Foundation {
             /**
              * Thread::IDType is a portable representation which is a key to currently existing system threads.
              */
-            using IDType = std::thread::id;
+            using IDType = thread::id;
 
         public:
             /**
              *  Thread::native_handle is the type of the underlying handle to a native thread
              *  which can allow for using platform APIs.
              */
-            using NativeHandleType = std::thread::native_handle_type;
+            using NativeHandleType = thread::native_handle_type;
 
         public:
             /**
@@ -979,7 +979,7 @@ namespace Stroika::Foundation::Characters {
     template <typename T>
     String ToString (const T& t);
     template <>
-    String ToString (const std::thread::id& t);
+    String ToString (const thread::id& t);
 }
 
 /*

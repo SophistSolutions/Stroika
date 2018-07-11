@@ -22,11 +22,11 @@ namespace Stroika {
              */
             inline Duration Private_::DurationRangeTraitsType_::GetNext (Duration i)
             {
-                return Duration{std::nextafter (i.As<double> (), std::numeric_limits<double>::max ())};
+                return Duration{nextafter (i.As<double> (), numeric_limits<double>::max ())};
             }
             inline Duration Private_::DurationRangeTraitsType_::GetPrevious (Duration i)
             {
-                return Duration{std::nextafter (i.As<double> (), std::numeric_limits<double>::min ())};
+                return Duration{nextafter (i.As<double> (), numeric_limits<double>::min ())};
             }
 
             namespace Private_ {

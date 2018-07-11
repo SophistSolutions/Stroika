@@ -86,14 +86,14 @@ namespace Stroika {
                     }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
                     }
                     virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         size_t i              = fData_.FindFirstThat (doToElement);
@@ -135,7 +135,7 @@ namespace Stroika {
                     }
                     virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 if (item != nullptr) {
@@ -151,7 +151,7 @@ namespace Stroika {
                     }
                     virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_[it.CurrentIndex ()].fValue = newElt;
@@ -162,7 +162,7 @@ namespace Stroika {
                     }
                     virtual void Remove (ArgByValueType<KEY_TYPE> key) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
@@ -172,7 +172,7 @@ namespace Stroika {
                     }
                     virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock>            critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
                         const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
@@ -181,7 +181,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -204,7 +204,7 @@ namespace Stroika {
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 inline Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_Array ()
-                    : Mapping_Array (std::equal_to<KEY_TYPE>{})
+                    : Mapping_Array (equal_to<KEY_TYPE>{})
                 {
                     AssertRepValidType_ ();
                 }
@@ -235,24 +235,24 @@ namespace Stroika {
                 inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::Compact ()
                 {
                     using _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template _SafeReadWriteRepAccessor<Rep_>;
-                    _SafeReadWriteRepAccessor                                       accessor{this};
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
+                    _SafeReadWriteRepAccessor                                  accessor{this};
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
                     accessor._GetWriteableRep ().fData_.Compact ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 inline size_t Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::GetCapacity () const
                 {
                     using _SafeReadRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template _SafeReadRepAccessor<Rep_>;
-                    _SafeReadRepAccessor                                            accessor{this};
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
+                    _SafeReadRepAccessor                                       accessor{this};
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
                     return accessor._ConstGetRep ().fData_.GetCapacity ();
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 inline void Mapping_Array<KEY_TYPE, MAPPED_VALUE_TYPE>::SetCapacity (size_t slotsAlloced)
                 {
                     using _SafeReadWriteRepAccessor = typename Iterable<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::template _SafeReadWriteRepAccessor<Rep_>;
-                    _SafeReadWriteRepAccessor                                       accessor{this};
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
+                    _SafeReadWriteRepAccessor                                  accessor{this};
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
                     accessor._GetWriteableRep ().fData_.SetCapacity (slotsAlloced);
                 }
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>

@@ -104,7 +104,7 @@ namespace Stroika {
                     }
                     virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = fData_.FindFirstThat (doToElement);
@@ -146,7 +146,7 @@ namespace Stroika {
                     }
                     virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 if (item != nullptr) {
@@ -163,7 +163,7 @@ namespace Stroika {
                     virtual void Add (ArgByValueType<KEY_TYPE> key, ArgByValueType<MAPPED_VALUE_TYPE> newElt) override
                     {
                         using Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_.SetAt (it, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE> (key, newElt));
@@ -175,7 +175,7 @@ namespace Stroika {
                     virtual void Remove (ArgByValueType<KEY_TYPE> key) override
                     {
                         using Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (fKeyEqualsComparer_ (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it);
@@ -185,7 +185,7 @@ namespace Stroika {
                     }
                     virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock>            critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
                         const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
@@ -194,7 +194,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -214,7 +214,7 @@ namespace Stroika {
                  */
                 template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
                 inline Mapping_LinkedList<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping_LinkedList ()
-                    : Mapping_LinkedList (std::equal_to<KEY_TYPE>{})
+                    : Mapping_LinkedList (equal_to<KEY_TYPE>{})
                 {
                     AssertRepValidType_ ();
                 }

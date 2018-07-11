@@ -13,10 +13,10 @@
 #if 0
 namespace std {
     namespace detail {
-        template <class F, class Tuple, std::size_t... I>
-        constexpr decltype (auto) apply_impl (F&& f, Tuple&& t, std::index_sequence<I...>)
+        template <class F, class Tuple, size_t... I>
+        constexpr decltype (auto) apply_impl (F&& f, Tuple&& t, index_sequence<I...>)
         {
-            return std::invoke (forward<F> (f), std::get<I> (forward<Tuple> (t))...);
+            return invoke (forward<F> (f), get<I> (forward<Tuple> (t))...);
         }
     } // namespace detail
 
@@ -25,7 +25,7 @@ namespace std {
     {
         return detail::apply_impl (
             forward<F> (f), forward<Tuple> (t),
-            std::make_index_sequence<std::tuple_size<std::decay_t<Tuple>>::value>{});
+            make_index_sequence<tuple_size<decay_t<Tuple>>::value>{});
     }
 }
 #endif
@@ -57,27 +57,27 @@ namespace Stroika {
                     }
                     namespace {
                         template < typename T, typename... Ts >
-                        auto head (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, std::tuple<T, Ts...> t)
+                        auto head (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, tuple<T, Ts...> t)
                         {
-                            return  std::get<0> (t);
+                            return  get<0> (t);
                         }
-                        template < std::size_t... Ns, typename... Ts >
-                        auto tail_impl (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, std::index_sequence<Ns...>, std::tuple<Ts...> t)
+                        template < size_t... Ns, typename... Ts >
+                        auto tail_impl (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, index_sequence<Ns...>, tuple<Ts...> t)
                         {
-                            return  std::make_tuple (std::get<Ns + 1u> (t)...);
+                            return  make_tuple (get<Ns + 1u> (t)...);
                         }
                         template < typename... Ts >
-                        auto tail (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, std::tuple<Ts...> t)
+                        auto tail (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, tuple<Ts...> t)
                         {
-                            return  tail_impl (std::make_index_sequence<sizeof...(Ts)-1u> (), t);
+                            return  tail_impl (make_index_sequence<sizeof...(Ts)-1u> (), t);
                         }
                         template <typename T, typename... REST_IN_ARGS>
-                        auto ConvertVariantValuesToTypes_x (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, T, std::tuple<T, REST_IN_ARGS...> args)
+                        auto ConvertVariantValuesToTypes_x (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, T, tuple<T, REST_IN_ARGS...> args)
                         {
                             //WRequire (vvs.size () == (sizeof...(args)) + 1);
                             return tuple_cat (tuple<T>{objVarMapper.ToObject<T> (vvs.Nth (0))}, ConvertVariantValuesToTypes_x (vvs.Skip (1), forward<REST_IN_ARGS> (args)...));
                         }
-                        auto ConvertVariantValuesToTypes_x (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, std::tuple<> a)
+                        auto ConvertVariantValuesToTypes_x (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, tuple<> a)
                         {
                             Require (vvs.size () == 0);
                             return tuple_cat ();
@@ -92,20 +92,20 @@ namespace Stroika {
 
                             const function<RETURN_TYPE (Args...)>& f;
 
-                            std::tuple<Args...> params;
+                            tuple<Args...> params;
 
 
-                            template <std::size_t... I>
-                            RETURN_TYPE call_func (std::index_sequence<I...>)
+                            template <size_t... I>
+                            RETURN_TYPE call_func (index_sequence<I...>)
                             {
-                                //return f (ConvertVariantValuesToTypes_ (objVarMapper, vvs, std::get<I> (params)...));
-                            //  using T = decltype (std::get<I> (params)...);
-                                //using T = tuple_element_t<I, std::tuple<Args...>>;
+                                //return f (ConvertVariantValuesToTypes_ (objVarMapper, vvs, get<I> (params)...));
+                            //  using T = decltype (get<I> (params)...);
+                                //using T = tuple_element_t<I, tuple<Args...>>;
                                 return f (objVarMapper.ToObject<tuple_element_t<I..., decltype(params)>> (vvs.Nth (I))...);
                             }
                             RETURN_TYPE delayed_dispatch ()
                             {
-                                return call_func (std::index_sequence_for<Args...>{});
+                                return call_func (index_sequence_for<Args...>{});
                             }
                         };
                     }
@@ -126,7 +126,7 @@ namespace Stroika {
                             save_it_for_later<RETURN_TYPE, IN_ARGS...> aaa{ objVarMapper, vvs, f };
 
                             //tuple<IN_ARGS...> args2Forward = ConvertVariantValuesToTypes_ (objVarMapper, vvs, forward<IN_ARGS...> (junk)...);
-                            //tuple<IN_ARGS...> args2Forward = std::apply (ConvertVariantValuesToTypes_, tuple_cat (objVarMapper, vvs, forward<IN_ARGS> (junk)...));
+                            //tuple<IN_ARGS...> args2Forward = apply (ConvertVariantValuesToTypes_, tuple_cat (objVarMapper, vvs, forward<IN_ARGS> (junk)...));
                             //RETURN_TYPE           response2Send = f (forward<IN_ARGS> (args2Forward)...);
                             RETURN_TYPE response2Send = aaa.delayed_dispatch ();
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (response2Send));

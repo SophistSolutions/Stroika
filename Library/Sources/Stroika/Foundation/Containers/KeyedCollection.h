@@ -46,7 +46,7 @@ namespace Stroika::Foundation {
 
         /**
          */
-        template <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = std::equal_to<KEY_TYPE>>
+        template <typename KEY_TYPE, typename T, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         struct KeyedCollection_DefaultTraits {
             /**
              */
@@ -67,7 +67,7 @@ namespace Stroika::Foundation {
 
         /**
          */
-        template <typename KEY_TYPE, typename T, typename EXTRACTOR, typename KEY_EQUALS_COMPARER = std::equal_to<KEY_TYPE>>
+        template <typename KEY_TYPE, typename T, typename EXTRACTOR, typename KEY_EQUALS_COMPARER = equal_to<KEY_TYPE>>
         struct KeyedCollection_DefaultTraitsWithExtractor : KeyedCollection_DefaultTraits<KEY_TYPE, T, KEY_EQUALS_COMPARER> {
             /**
              */
@@ -240,7 +240,7 @@ namespace Stroika::Foundation {
             /**
              * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Contains (T item) const;
             nonvirtual bool Contains (ArgByValueType<KeyType> item) const;
 
@@ -255,7 +255,7 @@ namespace Stroika::Foundation {
              *
              * The value pointed to by 'i' is removed.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void Remove (T item);
             nonvirtual void Remove (const Iterator<T>& i);
             nonvirtual void Remove (ArgByValueType<KeyType> item);

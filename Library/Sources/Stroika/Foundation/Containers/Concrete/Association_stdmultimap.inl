@@ -70,26 +70,26 @@ namespace Stroika {
                     }
                     virtual size_t GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Invariant ();
                         return fData_.size ();
                     }
                     virtual bool IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Invariant ();
                         return fData_.empty ();
                     }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
                     }
                     virtual Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return this->_FindFirstThat (doToElement, suggestedOwner);
                     }
 
@@ -117,8 +117,8 @@ namespace Stroika {
                     }
                     virtual bool Lookup (ArgByValueType<KEY_TYPE> key, optional<MAPPED_VALUE_TYPE>* item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        auto                                                            i = fData_.find (key);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto                                                       i = fData_.find (key);
                         if (i == fData_.end ()) {
                             if (item != nullptr) {
                                 *item = nullopt;
@@ -166,7 +166,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif

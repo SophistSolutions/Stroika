@@ -123,7 +123,7 @@ sDoInit_x_;
                 DbgTrace ("%s", why);
             }
             DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wunused-result\"")
-            std::terminate ();
+            terminate ();
         }
     }
 
@@ -195,13 +195,13 @@ sDoInit_x_;
     {
         //unclear why this doesn't work....return std::atomic_load_explicit (p, memory_order_acquire);
         // unclear that this is safe (but we do in Thread.cpp code too)
-        return std::atomic_load_explicit (reinterpret_cast<volatile atomic<void*>*> (p), memory_order_acquire);
+        return atomic_load_explicit (reinterpret_cast<volatile atomic<void*>*> (p), memory_order_acquire);
     }
     void MyAtomicStore_ (volatile void** p, void* value)
     {
         //unclear why this doesn't work....std::atomic_store_explicit (p, nullptr, memory_order_release);
         // unclear that this is safe (but we do in Thread.cpp code too)
-        std::atomic_store_explicit (reinterpret_cast<volatile atomic<void*>*> (p), value, memory_order_release);
+        atomic_store_explicit (reinterpret_cast<volatile atomic<void*>*> (p), value, memory_order_release);
     }
     void ClearFromFreeList_ (void* p)
     {

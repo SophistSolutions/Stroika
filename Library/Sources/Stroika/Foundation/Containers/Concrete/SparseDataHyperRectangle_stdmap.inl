@@ -84,7 +84,7 @@ namespace Stroika {
                     }
                     virtual Iterator<tuple<T, INDEXES...>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<tuple<T, INDEXES...>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (
@@ -182,7 +182,7 @@ namespace Stroika {
                             RequireNotNull (result);
                             // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
                             // iterator, and that must be in the thread (so externally synchronized) of the modifier
-                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
+                            shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
                             More_SFINAE_ (result, advance);
                         }
                         virtual bool Equals (const typename Iterator<tuple<T, INDEXES...>>::IRep* rhs) const override
@@ -192,8 +192,8 @@ namespace Stroika {
                             RequireMember (rhs, ActualIterImplType_);
                             const ActualIterImplType_* rrhs = dynamic_cast<const ActualIterImplType_*> (rhs);
                             AssertNotNull (rrhs);
-                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
-                            std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
+                            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
+                            shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
                             return fIterator.Equals (rrhs->fIterator);
                         }
 

@@ -43,7 +43,7 @@ SDKString errno_ErrorException::LookupMessage (Execution::errno_t e)
 #if qPlatform_Windows
         (void)::_stprintf_s (justNumBuf, SDKSTR ("errno: %d"), e);
 #else
-        (void)std::snprintf (justNumBuf, NEltsOf (justNumBuf), SDKSTR ("errno: %d"), e);
+        (void)snprintf (justNumBuf, NEltsOf (justNumBuf), SDKSTR ("errno: %d"), e);
 #endif
         justErrnoNumberMessage = justNumBuf;
     }

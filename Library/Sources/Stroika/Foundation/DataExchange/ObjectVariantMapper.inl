@@ -504,7 +504,7 @@ namespace Stroika::Foundation {
         {
             using Characters::String_Constant;
             static_assert (is_enum_v<ENUM_TYPE>, "MakeCommonSerializer_NamedEnumerations only works for enum types");
-            using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
+            using SerializeAsType = typename underlying_type<ENUM_TYPE>::type;
             static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
             FromObjectMapperType<ENUM_TYPE> fromObjectMapper = [nameMap]([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
                 RequireNotNull (fromObjOfTypeT);
@@ -541,7 +541,7 @@ namespace Stroika::Foundation {
              *  See MakeCommonSerializer_NamedEnumerations
              */
             static_assert (is_enum_v<ENUM_TYPE>, "This only works for enum types");
-            using SerializeAsType = typename std::underlying_type<ENUM_TYPE>::type;
+            using SerializeAsType = typename underlying_type<ENUM_TYPE>::type;
             static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
             FromObjectMapperType<ENUM_TYPE> fromObjectMapper = []([[maybe_unused]] const ObjectVariantMapper& mapper, const ENUM_TYPE* fromObjOfTypeT) -> VariantValue {
                 RequireNotNull (fromObjOfTypeT);

@@ -21,7 +21,7 @@ namespace Stroika::Foundation {
         {
         }
         template <typename KEY, typename VALUE, typename TRAITS>
-        VALUE SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller)
+        VALUE SynchronizedTimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller)
         {
             shared_lock<shared_timed_mutex> lock{fMutex_};
             if (optional<VALUE> o = inherited::Lookup (key)) {

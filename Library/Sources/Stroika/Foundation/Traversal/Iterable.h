@@ -348,7 +348,7 @@ namespace Stroika {
                  *      This algorithm is O(N).
                  *
                  */
-                template <typename EQUALS_COMPARER = std::equal_to<T>>
+                template <typename EQUALS_COMPARER = equal_to<T>>
                 nonvirtual bool Contains (ArgByValueType<T> element, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
@@ -368,7 +368,7 @@ namespace Stroika {
                  *                That's a little better (but at the cost of more RAM usage).
                  *
                  */
-                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = std::equal_to<T>>
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>>
                 nonvirtual bool SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
@@ -380,7 +380,7 @@ namespace Stroika {
                  *  \em Performance:
                  *      This algorithm is O(N^^3)
                  */
-                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = std::equal_to<T>>
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>>
                 nonvirtual bool MultiSetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
@@ -391,7 +391,7 @@ namespace Stroika {
                  *  \em Performance:
                  *      This algorithm is O(N)
                  */
-                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = std::equal_to<T>>
+                template <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = equal_to<T>>
                 nonvirtual bool SequnceEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer = EQUALS_COMPARER{}) const;
 
             public:
@@ -698,7 +698,7 @@ namespace Stroika {
                  *  See:
                  *      @see https://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby(v=vs.110).aspx
                  */
-                template <typename INORDER_COMPARER_TYPE = std::less<T>>
+                template <typename INORDER_COMPARER_TYPE = less<T>>
                 nonvirtual Iterable<T> OrderBy (const INORDER_COMPARER_TYPE& inorderComparer = INORDER_COMPARER_TYPE{}) const;
 
             public:

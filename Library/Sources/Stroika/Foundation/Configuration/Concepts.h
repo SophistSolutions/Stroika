@@ -47,10 +47,10 @@ namespace Stroika::Foundation {
          *  from Stroustrup C++11 book - page 800
          */
         template <typename T>
-        struct substitution_succeeded : std::true_type {
+        struct substitution_succeeded : true_type {
         };
         template <>
-        struct substitution_succeeded<substitution_failure> : std::false_type {
+        struct substitution_succeeded<substitution_failure> : false_type {
         };
 
         /**
@@ -109,8 +109,8 @@ namespace Stroika::Foundation {
         namespace Private_ {
             template <typename ITERABLE_OF_T, typename T>
             struct IsIterableOfT_Impl2_ {
-                template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = is_convertible_v<typename std::iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>>
-                static auto check (const X& x) -> std::conditional_t<
+                template <typename X, typename USE_ITERABLE = ITERABLE_OF_T, bool ITER_RESULT_CONVERTIBLE_TO_T = is_convertible_v<typename iterator_traits<begin_result<USE_ITERABLE>>::value_type, T>>
+                static auto check (const X& x) -> conditional_t<
                     has_beginend<ITERABLE_OF_T>::value and
                         ITER_RESULT_CONVERTIBLE_TO_T,
                     substitution_succeeded<T>,
@@ -123,7 +123,7 @@ namespace Stroika::Foundation {
          *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
          */
         template <typename ITERABLE_OF_T, typename T>
-        using IsIterableOfT = std::integral_constant<bool, not is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
+        using IsIterableOfT = integral_constant<bool, not is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
         /**
          *  See http://en.cppreference.com/w/cpp/concept/Container
@@ -174,7 +174,7 @@ namespace Stroika::Foundation {
             static void f (T);
 
             template <typename F, typename T>
-            static constexpr auto test (int) -> decltype (f (static_cast<T> (std::declval<F> ())), true)
+            static constexpr auto test (int) -> decltype (f (static_cast<T> (declval<F> ())), true)
             {
                 return true;
             }
@@ -196,7 +196,7 @@ namespace Stroika::Foundation {
             static constexpr bool value = false;
         };
         template <typename T>
-        struct is_iterator<T, enable_if_t<!is_same_v<typename std::iterator_traits<T>::value_type, void>>> {
+        struct is_iterator<T, enable_if_t<!is_same_v<typename iterator_traits<T>::value_type, void>>> {
             static constexpr bool value = true;
         };
 

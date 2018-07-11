@@ -119,7 +119,7 @@ namespace Stroika::Foundation {
              *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
              */
             nonvirtual optional<VALUE> Lookup (KEY k, TimeStampType staleIfOlderThan);
-            nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE ()>& cacheFiller);
+            nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
             nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
 
         public:

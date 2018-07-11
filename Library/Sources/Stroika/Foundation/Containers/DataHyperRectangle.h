@@ -126,7 +126,7 @@ namespace Stroika::Foundation {
              *  If == is predefined, you can just call Equals() - but if its not, or if you wish
              *  to compare with an alternative comparer, just pass it as a template parameter.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Equals (const DataHyperRectangle& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
         protected:

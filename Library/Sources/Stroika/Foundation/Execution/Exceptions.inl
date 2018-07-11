@@ -129,7 +129,7 @@ namespace Stroika::Foundation::Execution {
         DbgTrace (L"ReThrow: %s", traceMsg);
 #endif
 #endif
-        std::rethrow_exception (e);
+        rethrow_exception (e);
     }
 
     /*

@@ -296,7 +296,7 @@ namespace Stroika::Foundation {
              *  If operator==(T,T) is predefined, you can just call Equals() - but if its not, or if you wish
              *  to compare with an alternative comparer.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Equals (const Sequence& rhs, const EQUALS_COMPARER& equalsComparer = {}) const;
 
         public:
@@ -357,9 +357,9 @@ namespace Stroika::Foundation {
              *  If not found for the by value overloads, IndexOf () return {};
              *  For the IndexOf(Iterator<T>) - \req it is found/legal iterator 
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual optional<size_t> IndexOf (ArgByValueType<T> i, const EQUALS_COMPARER& equalsComparer = {}) const;
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual optional<size_t> IndexOf (const Sequence<T>& s, const EQUALS_COMPARER& equalsComparer = {}) const;
             template <typename IGNORED = void>
             nonvirtual size_t IndexOf (const Iterator<T>& i) const;

@@ -202,7 +202,7 @@ public:
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
 #if qPlatform_Windows
                 return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (::_lseeki64 (fFD_, offset, SEEK_SET)));

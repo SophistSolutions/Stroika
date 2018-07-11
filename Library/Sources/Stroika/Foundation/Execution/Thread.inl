@@ -90,8 +90,8 @@ namespace Stroika::Foundation {
             // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
             // a pointer. This is that pointer - so another thread can terminate/abort this thread.
             InterruptFlagType_*              fTLSInterruptFlag_{};   // regular interrupt, abort interrupt, or none
-            mutable std::mutex               fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
-            std::thread                      fThread_;
+            mutable mutex                    fAccessSTDThreadMutex_; // rarely needed but to avoid small race as we shutdown thread, while we join in one thread and call GetNativeThread() in another
+            thread                           fThread_;
             atomic<Status>                   fStatus_;
             WaitableEvent                    fRefCountBumpedEvent_;
             WaitableEvent                    fOK2StartEvent_;

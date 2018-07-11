@@ -2572,7 +2572,7 @@ void StyledTextIOWriter_HTML::EmitBodyFontInfoChange (WriterContext& writerConte
             char   sprintfBuffer[1024];
             string cssInfo = "style=\"";
             cssInfo += "font-family: '" + Led_SDKString2ANSI (newOne.GetFontName ()) + "'; ";
-            cssInfo += (std::snprintf (sprintfBuffer, NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
+            cssInfo += (snprintf (sprintfBuffer, NEltsOf (sprintfBuffer), "font-size: %dpt; ", newOne.GetPointSize ()), sprintfBuffer);
             cssInfo += "color: " + PrintColorString (newOne.GetTextColor ());
             cssInfo += "\"";
             WriteOpenTag (writerContext, "span",
@@ -2637,7 +2637,7 @@ string StyledTextIOWriter_HTML::MapOutputTextFromWString (const wstring& text)
         }
         else {
             char buf[1024];
-            (void)std::snprintf (buf, NEltsOf (buf), "&#%d;", static_cast<unsigned int> (*i));
+            (void)snprintf (buf, NEltsOf (buf), "&#%d;", static_cast<unsigned int> (*i));
             result += buf;
         }
     }

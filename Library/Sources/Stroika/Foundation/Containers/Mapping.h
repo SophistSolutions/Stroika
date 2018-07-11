@@ -308,7 +308,7 @@ namespace Stroika::Foundation {
              *  and applies VALUE_EQUALS_COMPARER (defaults to operator==) on each value, and returns
              *  true if contained. Perhpas not very useful but symetric to ContainsKey().
              */
-            template <typename VALUE_EQUALS_COMPARER = std::equal_to<MAPPED_VALUE_TYPE>>
+            template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
             nonvirtual bool ContainsMappedValue (ArgByValueType<mapped_type> v, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
         public:
@@ -449,7 +449,7 @@ namespace Stroika::Foundation {
              *
              *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
              */
-            template <typename VALUE_EQUALS_COMPARER = std::equal_to<MAPPED_VALUE_TYPE>>
+            template <typename VALUE_EQUALS_COMPARER = equal_to<MAPPED_VALUE_TYPE>>
             nonvirtual bool Equals (const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>& rhs, const VALUE_EQUALS_COMPARER& valueEqualsComparer = {}) const;
 
         public:

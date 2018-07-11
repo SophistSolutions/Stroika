@@ -71,12 +71,12 @@ namespace Stroika {
                     }
                     virtual size_t GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.size ();
                     }
                     virtual bool IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.empty ();
                     }
                     virtual Iterator<CountedValue<T>> MakeIterator (IteratorOwnerID suggestedOwner) const override
@@ -90,7 +90,7 @@ namespace Stroika {
                     }
                     virtual Iterator<CountedValue<T>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return this->_FindFirstThat (doToElement, suggestedOwner);
                     }
 
@@ -118,8 +118,8 @@ namespace Stroika {
                     }
                     virtual bool Contains (ArgByValueType<T> item) const override
                     {
-                        CountedValue<T>                                                 tmp (item);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        CountedValue<T>                                            tmp (item);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.find (item) != fData_.end ();
                     }
                     virtual void Add (ArgByValueType<T> item, CounterType count) override
@@ -127,8 +127,8 @@ namespace Stroika {
                         if (count == 0) {
                             return;
                         }
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        auto                                                           i = fData_.find (item);
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto                                                      i = fData_.find (item);
                         if (i == fData_.end ()) {
                             fData_.insert (typename map<T, CounterType>::value_type (item, count));
                         }
@@ -142,8 +142,8 @@ namespace Stroika {
                         if (count == 0) {
                             return;
                         }
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        auto                                                           i = fData_.find (item);
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto                                                      i = fData_.find (item);
                         Require (i != fData_.end ());
                         if (i != fData_.end ()) {
                             Require (i->second >= count);
@@ -157,16 +157,16 @@ namespace Stroika {
                     {
                         const typename Iterator<CountedValue<T>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                          mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         mir.fIterator.RemoveCurrent ();
                     }
                     virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
                     {
                         const typename Iterator<CountedValue<T>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                          mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (newCount == 0) {
                             mir.fIterator.RemoveCurrent ();
                         }
@@ -177,8 +177,8 @@ namespace Stroika {
                     }
                     virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        auto                                                            i = fData_.find (item);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto                                                       i = fData_.find (item);
                         if (i == fData_.end ()) {
                             return 0;
                         }
@@ -195,7 +195,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -222,7 +222,7 @@ namespace Stroika {
                  */
                 template <typename T, typename TRAITS>
                 inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
-                    : SortedMultiSet_stdmap (std::less<T>{})
+                    : SortedMultiSet_stdmap (less<T>{})
                 {
                     AssertRepValidType_ ();
                 }

@@ -28,7 +28,7 @@ struct DefaultFaultInterceptor::Rep_ : Interceptor::_IRep {
         Response* response = m->PeekResponse ();
         try {
             try {
-                std::rethrow_exception (e);
+                rethrow_exception (e);
             }
             catch (const IO::Network::HTTP::Exception& ee) {
                 response->SetStatus (ee.GetStatus (), ee.GetReason ());

@@ -42,8 +42,8 @@ namespace Stroika {
 
                 mutable mutex                             fCurTaskInfo_CritSect_; // needed because VariantValue is not threadsafe
                 Containers::Sequence<ChangedCallbackType> fCallbacks_;
-                std::atomic<bool>                         fCanceled_;
-                std::atomic<ProgressRangeType>            fCurrentProgress_;
+                atomic<bool>                              fCanceled_;
+                atomic<ProgressRangeType>                 fCurrentProgress_;
                 CurrentTaskInfo                           fCurrentTaskInfo_;
                 Thread::Ptr                               fWorkThread_; // optional - ignore if empty
             };

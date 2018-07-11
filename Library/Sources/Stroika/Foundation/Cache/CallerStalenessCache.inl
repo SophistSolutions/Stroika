@@ -72,7 +72,7 @@ namespace Stroika::Foundation {
             return o->fValue;
         }
         template <typename KEY, typename VALUE, typename TIME_TRAITS>
-        VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const std::function<VALUE ()>& cacheFiller)
+        VALUE CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller)
         {
             optional<myVal_> o = fMap_.Lookup (k);
             if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {

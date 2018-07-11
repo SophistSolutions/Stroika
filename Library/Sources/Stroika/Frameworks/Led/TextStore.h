@@ -612,7 +612,7 @@ namespace Stroika {
 #if !qVirtualBaseMixinCallDuringCTORBug
                 Require (owner->PeekAtTextStore () == this);
 #endif
-                Require (std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner) == fMarkerOwners.end ());
+                Require (find (fMarkerOwners.begin (), fMarkerOwners.end (), owner) == fMarkerOwners.end ());
                 //          fMarkerOwners.push_back (owner);
                 PUSH_BACK (fMarkerOwners, owner);
             }
@@ -627,7 +627,7 @@ namespace Stroika {
 #if !qVirtualBaseMixinCallDuringCTORBug
                 Require (owner->PeekAtTextStore () == this);
 #endif
-                vector<MarkerOwner*>::iterator i = std::find (fMarkerOwners.begin (), fMarkerOwners.end (), owner);
+                vector<MarkerOwner*>::iterator i = find (fMarkerOwners.begin (), fMarkerOwners.end (), owner);
                 Assert (i != fMarkerOwners.end ());
                 fMarkerOwners.erase (i);
             }

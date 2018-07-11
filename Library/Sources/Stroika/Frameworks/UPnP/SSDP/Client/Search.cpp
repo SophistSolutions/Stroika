@@ -211,7 +211,7 @@ Search::~Search ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void Search::AddOnFoundCallback (const std::function<void(const SSDP::Advertisement& d)>& callOnFinds)
+void Search::AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }

@@ -23,7 +23,7 @@ namespace Stroika {
                     template <class InputIt, class Size, class ForwardIt>
                     ForwardIt uninitialized_copy_n_MSFT_BWA (InputIt first, Size count, ForwardIt d_first)
                     {
-                        using Value       = typename std::iterator_traits<ForwardIt>::value_type;
+                        using Value       = typename iterator_traits<ForwardIt>::value_type;
                         ForwardIt current = d_first;
                         try {
                             for (; count > 0; ++first, ++current, --count) {
@@ -222,7 +222,7 @@ namespace Stroika {
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
                                     PRIVATE_::uninitialized_copy_n_MSFT_BWA (&_fItems[0], n2Copy, newV);
 #else
-                                    std::uninitialized_copy_n (&_fItems[0], n2Copy, newV);
+                                    uninitialized_copy_n (&_fItems[0], n2Copy, newV);
 #endif
                                 }
                                 catch (...) {

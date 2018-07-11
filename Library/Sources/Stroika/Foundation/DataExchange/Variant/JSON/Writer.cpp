@@ -132,7 +132,7 @@ namespace {
                 default:
                     // JSON rule is Any code point except " or \ or control character. So OK to emit most large unicode chars - just not control chars
                     wchar_t c = *i;
-                    if (std::iswcntrl (c)) {
+                    if (iswcntrl (c)) {
                         wchar_t buf[10];
                         (void)::swprintf (buf, NEltsOf (buf), L"\\u%04x", static_cast<char16_t> (c));
                         sb.Append (buf);

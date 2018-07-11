@@ -40,7 +40,7 @@ namespace Stroika {
                     RequireNotNull (result);
                     // NOTE: the reason this is Debug::AssertExternallySynchronizedLock, is because we only modify data on the newly cloned (breakreferences)
                     // iterator, and that must be in the thread (so externally synchronized) of the modifier
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> lg (*fIterator.GetPatchableContainerHelper ());
                     More_SFINAE_ (result, advance);
                 }
                 template <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR, typename PATCHABLE_CONTAINER_VALUE>
@@ -72,8 +72,8 @@ namespace Stroika {
                     RequireMember (rhs, ActualIterImplType_);
                     const ActualIterImplType_* rrhs = dynamic_cast<const ActualIterImplType_*> (rhs);
                     AssertNotNull (rrhs);
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec1 (*fIterator.GetPatchableContainerHelper ());
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
                     return fIterator.Equals (rrhs->fIterator);
                 }
             }

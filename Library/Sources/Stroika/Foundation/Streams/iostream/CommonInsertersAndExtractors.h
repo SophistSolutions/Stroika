@@ -24,9 +24,9 @@ namespace Stroika {
                 using Characters::String;
 
                 template <class charT, typename Traits>
-                std::basic_istream<charT, Traits>& operator>> (std::basic_istream<charT, Traits>& is, String& to);
+                basic_istream<charT, Traits>& operator>> (basic_istream<charT, Traits>& is, String& to);
                 template <class charT, typename Traits>
-                std::basic_ostream<charT, Traits>& operator<< (std::basic_ostream<charT, Traits>& os, const String& from);
+                basic_ostream<charT, Traits>& operator<< (basic_ostream<charT, Traits>& os, const String& from);
             }
         }
     }

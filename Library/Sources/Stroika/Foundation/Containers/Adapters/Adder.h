@@ -57,7 +57,7 @@ namespace Stroika {
                     template <typename KEY_TYPE, typename VALUE_TYPE>
                     static void Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<value_type> value);
                     template <typename KEY_TYPE, typename VALUE_TYPE>
-                    static void Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<std::pair<KEY_TYPE, VALUE_TYPE>> value);
+                    static void Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<pair<KEY_TYPE, VALUE_TYPE>> value);
                     static void Add_ (set<value_type>* container, Configuration::ArgByValueType<value_type> value);
                     static void Add_ (vector<value_type>* container, Configuration::ArgByValueType<value_type> value);
                     static void Add_ (Sequence<value_type>* container, Configuration::ArgByValueType<value_type> value);

@@ -94,7 +94,7 @@ namespace Stroika {
                     }
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<T>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = fData_.FindFirstThat (doToElement);
@@ -124,15 +124,15 @@ namespace Stroika {
                     }
                     virtual void Add (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         AddWithoutLocks_ (item);
                     }
                     virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
                         const typename Iterator<T>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                          mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // equals might examine a subset of the object and we still want to update the whole object, but
                         // if its not already equal, the sort order could have changed so we must simulate with a remove/add
                         if (Common::mkEqualsComparerAdapter (fInorderComparer_) (mir.fIterator.Current (), newValue)) {
@@ -145,8 +145,8 @@ namespace Stroika {
                     }
                     virtual void Remove (const Iterator<T>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<T>::IRep&                              ir = i.GetRep ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const typename Iterator<T>::IRep&                         ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.RemoveAt (mir.fIterator);
@@ -154,7 +154,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -173,12 +173,12 @@ namespace Stroika {
                     }
                     virtual bool Contains (T item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.Lookup (item, Common::mkEqualsComparerAdapter (fInorderComparer_)) != nullptr;
                     }
                     virtual void Remove (T item) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Remove (item, Common::mkEqualsComparerAdapter (fInorderComparer_));
                     }
 

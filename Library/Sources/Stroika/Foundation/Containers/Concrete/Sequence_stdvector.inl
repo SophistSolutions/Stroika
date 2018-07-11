@@ -62,12 +62,12 @@ namespace Stroika {
                     }
                     virtual size_t GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.size ();
                     }
                     virtual bool IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.empty ();
                     }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
@@ -78,7 +78,7 @@ namespace Stroika {
                     }
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<T>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
@@ -111,7 +111,7 @@ namespace Stroika {
                     {
                         Require (not IsEmpty ());
                         Require (i == _kBadSequenceIndex or i < GetLength ());
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (i == _kBadSequenceIndex) {
                             i = fData_.size () - 1;
                         }
@@ -120,29 +120,29 @@ namespace Stroika {
                     virtual void SetAt (size_t i, ArgByValueType<T> item) override
                     {
                         Require (i < GetLength ());
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_[i] = item;
                     }
                     virtual size_t IndexOf (const Iterator<T>& i) const override
                     {
                         const typename Iterator<T>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                           mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return mir.fIterator.CurrentIndex ();
                     }
                     virtual void Remove (const Iterator<T>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<T>::IRep&                              ir = i.GetRep ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const typename Iterator<T>::IRep&                         ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         mir.fIterator.RemoveCurrent ();
                     }
                     virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<T>::IRep&                              ir = i.GetRep ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const typename Iterator<T>::IRep&                         ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.Invariant ();
@@ -152,7 +152,7 @@ namespace Stroika {
                     virtual void Insert (size_t at, const T* from, const T* to) override
                     {
                         Require (at == _kBadSequenceIndex or at <= GetLength ());
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (at == _kBadSequenceIndex) {
                             at = fData_.size ();
                         }
@@ -176,7 +176,7 @@ namespace Stroika {
                     virtual void Remove (size_t from, size_t to) override
                     {
                         // quickie poor impl (patch once, not multiple times...)
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (size_t i = from; i < to; ++i) {
                             fData_.erase_WithPatching (fData_.begin () + from);
                         }
@@ -184,7 +184,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -236,8 +236,8 @@ namespace Stroika {
                 inline void Sequence_stdvector<T>::Compact ()
                 {
                     using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-                    _SafeReadWriteRepAccessor                                       accessor{this};
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
+                    _SafeReadWriteRepAccessor                                  accessor{this};
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
                     if (accessor._ConstGetRep ().fData_.capacity () != accessor._ConstGetRep ().fData_.size ()) {
                         Memory::SmallStackBuffer<size_t> patchOffsets;
                         accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);
@@ -251,16 +251,16 @@ namespace Stroika {
                 inline size_t Sequence_stdvector<T>::GetCapacity () const
                 {
                     using _SafeReadRepAccessor = typename inherited::template _SafeReadRepAccessor<Rep_>;
-                    _SafeReadRepAccessor                                            accessor{this};
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
+                    _SafeReadRepAccessor                                       accessor{this};
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{accessor._ConstGetRep ().fData_};
                     return accessor._ConstGetRep ().fData_.capacity ();
                 }
                 template <typename T>
                 inline void Sequence_stdvector<T>::SetCapacity (size_t slotsAlloced)
                 {
                     using _SafeReadWriteRepAccessor = typename inherited::template _SafeReadWriteRepAccessor<Rep_>;
-                    _SafeReadWriteRepAccessor                                       accessor{this};
-                    std::shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
+                    _SafeReadWriteRepAccessor                                  accessor{this};
+                    shared_lock<const Debug::AssertExternallySynchronizedLock> lg (accessor._ConstGetRep ().fData_);
                     if (accessor._ConstGetRep ().fData_.capacity () != slotsAlloced) {
                         Memory::SmallStackBuffer<size_t> patchOffsets;
                         accessor._GetWriteableRep ().fData_.TwoPhaseIteratorPatcherAll2FromOffsetsPass1 (&patchOffsets);

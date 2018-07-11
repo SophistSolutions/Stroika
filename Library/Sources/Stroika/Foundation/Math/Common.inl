@@ -145,7 +145,7 @@ namespace Stroika {
             template <typename INT_TYPE, typename FLOAT_TYPE>
             inline INT_TYPE Round (FLOAT_TYPE x)
             {
-                FLOAT_TYPE tmp = std::round (x);
+                FLOAT_TYPE tmp = round (x);
                 if (tmp > 0) {
                     return tmp >= numeric_limits<INT_TYPE>::max () ? numeric_limits<INT_TYPE>::max () : static_cast<INT_TYPE> (tmp);
                 }
@@ -179,35 +179,35 @@ namespace Stroika {
             {
                 Require (epsilon >= 0);
                 TC diff = (l - r);
-                if (std::isnan (diff)) {
+                if (isnan (diff)) {
                     // nan-nan, or inf-inf
                     // maybe other cases shouldnt be considered nearly equals?
-                    return std::fpclassify (l) == std::fpclassify (r);
+                    return fpclassify (l) == fpclassify (r);
                 }
-                if (std::isinf (diff)) {
+                if (isinf (diff)) {
                     static const TC kEpsilon_ = Private_::mkCompareEpsilon_ (numeric_limits<TC>::max (), numeric_limits<TC>::max ());
                     /* 
                      *  Need to use a temporary of type TC, because T1 or T2 maybe a type of a special temporary value which cannot be assigned to (like Sequence<>::TemporaryItem....
                      */
                     TC useL = l;
-                    if (not std::isinf (useL) and std::fabs (useL - numeric_limits<TC>::max ()) <= kEpsilon_) {
+                    if (not isinf (useL) and fabs (useL - numeric_limits<TC>::max ()) <= kEpsilon_) {
                         useL = numeric_limits<TC>::infinity ();
                     }
-                    if (not std::isinf (useL) and std::fabs (useL - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
+                    if (not isinf (useL) and fabs (useL - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
                         useL = -numeric_limits<TC>::infinity ();
                     }
                     TC useR = r;
-                    if (not std::isinf (useR) and std::fabs (useR - numeric_limits<TC>::max ()) <= kEpsilon_) {
+                    if (not isinf (useR) and fabs (useR - numeric_limits<TC>::max ()) <= kEpsilon_) {
                         useR = numeric_limits<TC>::infinity ();
                     }
-                    if (not std::isinf (useR) and std::fabs (useR - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
+                    if (not isinf (useR) and fabs (useR - numeric_limits<TC>::lowest ()) <= kEpsilon_) {
                         useR = -numeric_limits<TC>::infinity ();
                     }
-                    if (std::isinf (useL) and std::isinf (useR)) {
+                    if (isinf (useL) and isinf (useR)) {
                         return (useL > 0) == (useR > 0);
                     }
                 }
-                return std::fabs (diff) <= epsilon;
+                return fabs (diff) <= epsilon;
             }
             template <typename T1, typename T2, typename TC>
             inline bool NearlyEquals (T1 l, T2 r, enable_if_t<is_integral_v<TC>>*)
@@ -303,27 +303,27 @@ namespace Stroika {
             template <>
             inline unsigned int Abs (char v)
             {
-                return std::abs (v);
+                return abs (v);
             }
             template <>
             inline unsigned int Abs (short v)
             {
-                return std::abs (v);
+                return abs (v);
             }
             template <>
             inline unsigned int Abs (int v)
             {
-                return std::abs (v);
+                return abs (v);
             }
             template <>
             inline unsigned long Abs (long v)
             {
-                return std::labs (v);
+                return labs (v);
             }
             template <>
             inline unsigned long long Abs (long long v)
             {
-                return std::llabs (v);
+                return llabs (v);
             }
             template <>
             inline unsigned int Abs (unsigned char v)

@@ -127,9 +127,9 @@ namespace Stroika {
                      *
                      *  Contains(T item) == Lookup (item) != nullptr;
                      */
-                    template <typename EQUALS_COMPARER = std::equal_to<T>>
+                    template <typename EQUALS_COMPARER = equal_to<T>>
                     nonvirtual const T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
-                    template <typename EQUALS_COMPARER = std::equal_to<T>>
+                    template <typename EQUALS_COMPARER = equal_to<T>>
                     nonvirtual T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
 
                 public:

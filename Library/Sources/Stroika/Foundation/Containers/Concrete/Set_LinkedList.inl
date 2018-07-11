@@ -83,24 +83,24 @@ namespace Stroika {
                     }
                     virtual size_t GetLength () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.GetLength ();
                     }
                     virtual bool IsEmpty () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.IsEmpty ();
                     }
                     virtual void Apply (_APPLY_ARGTYPE doToElement) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         // empirically faster (vs2k13) to lock once and apply (even calling stdfunc) than to
                         // use iterator (which currently implies lots of locks) with this->_Apply ()
                         fData_.Apply (doToElement);
                     }
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<T>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = fData_.FindFirstThat (doToElement);
@@ -138,18 +138,18 @@ namespace Stroika {
                     }
                     virtual bool Contains (ArgByValueType<T> item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.Lookup (item, fEqualsComparer_) != nullptr;
                     }
                     virtual optional<T> Lookup (ArgByValueType<T> item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const T*                                                        l = fData_.Lookup (item, fEqualsComparer_);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const T*                                                   l = fData_.Lookup (item, fEqualsComparer_);
                         return (l == nullptr) ? optional<T> () : optional<T> (*l);
                     }
                     virtual void Add (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
                         // safe to use UnpatchedForwardIterator cuz locked and no updates
                         for (typename DataStructureImplType_::UnpatchedForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (fEqualsComparer_ (it.Current (), item)) {
@@ -160,7 +160,7 @@ namespace Stroika {
                     }
                     virtual void Remove (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
                         using Traversal::kUnknownIteratorOwnerID;
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (fEqualsComparer_ (it.Current (), item)) {
@@ -173,14 +173,14 @@ namespace Stroika {
                     {
                         const typename Iterator<T>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                          mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
+                        auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};
                         fData_.RemoveAt (mir.fIterator);
                     }
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -200,7 +200,7 @@ namespace Stroika {
                  */
                 template <typename T>
                 inline Set_LinkedList<T>::Set_LinkedList ()
-                    : Set_LinkedList (std::equal_to<T>{})
+                    : Set_LinkedList (equal_to<T>{})
                 {
                     AssertRepValidType_ ();
                 }

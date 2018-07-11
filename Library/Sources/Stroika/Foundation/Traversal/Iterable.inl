@@ -635,7 +635,7 @@ namespace Stroika {
             template <typename T>
             optional<T> Iterable<T>::Max () const
             {
-                return Accumulate<T> ([](T lhs, T rhs) -> T { return std::max (lhs, rhs); });
+                return Accumulate<T> ([](T lhs, T rhs) -> T { return max (lhs, rhs); });
             }
             template <typename T>
             template <typename RESULT_TYPE>

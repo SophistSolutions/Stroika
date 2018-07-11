@@ -162,7 +162,7 @@ namespace Stroika::Foundation {
             /**
              * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
 
         public:
@@ -206,7 +206,7 @@ namespace Stroika::Foundation {
              *
              * The value pointed to by 'i' is removed.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void Remove (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
             nonvirtual void Remove (const Iterator<T>& i);
 
@@ -219,9 +219,9 @@ namespace Stroika::Foundation {
              *  The no-argument verison Produces an empty bag.
              */
             nonvirtual void RemoveAll ();
-            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end, const EQUALS_COMPARER& equalsComparer = {});
-            template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c, const EQUALS_COMPARER& equalsComparer = {});
 
         public:
@@ -242,7 +242,7 @@ namespace Stroika::Foundation {
             /**
              * \brief STL-ish alias for Remove ().
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void erase (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
             nonvirtual void erase (const Iterator<T>& i);
 

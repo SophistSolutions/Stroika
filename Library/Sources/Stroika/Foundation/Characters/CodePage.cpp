@@ -4017,8 +4017,8 @@ vector<Byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
  */
 namespace {
     // From https://en.wikipedia.org/wiki/ISO/IEC_8859-1 - "ISO-8859-1 was incorporated as the first 256 code points of ISO/IEC 10646 and Unicode.
-    struct codecvt_iso10646_ : std::codecvt<wchar_t, char, std::mbstate_t> {
-        virtual result do_in (std::mbstate_t& _State, const char* _First1, const char* _Last1, const char*& _Mid1, wchar_t* _First2, wchar_t* _Last2, wchar_t*& _Mid2) const
+    struct codecvt_iso10646_ : std::codecvt<wchar_t, char, mbstate_t> {
+        virtual result do_in (mbstate_t& _State, const char* _First1, const char* _Last1, const char*& _Mid1, wchar_t* _First2, wchar_t* _Last2, wchar_t*& _Mid2) const
         {
             // Convert 'bytes' to wchar_t using utf8 converter. Since first 256 code points the same, valid ISO-8859-1 will map to the right unicode
             // @todo - trim badly converted bytes (>256) to errors
@@ -4029,7 +4029,7 @@ namespace {
             }
             return tmp;
         }
-        virtual result do_out (std::mbstate_t& _State, const wchar_t* _First1, const wchar_t* _Last1, const wchar_t*& _Mid1, char* _First2, char* _Last2, char*& _Mid2) const
+        virtual result do_out (mbstate_t& _State, const wchar_t* _First1, const wchar_t* _Last1, const wchar_t*& _Mid1, char* _First2, char* _Last2, char*& _Mid2) const
         {
             result tmp = kUTF82wchar_tConverter_.out (_State, _First1, _Last1, _Mid1, _First2, _Last2, _Mid2);
             // @see https://stroika.atlassian.net/browse/STK-274
@@ -4046,7 +4046,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Characters {
             template <>
-            const std::codecvt<wchar_t, char, std::mbstate_t>& LookupCodeConverter (const String& charset)
+            const codecvt<wchar_t, char, mbstate_t>& LookupCodeConverter (const String& charset)
             {
                 // https://svn.apache.org/repos/asf/stdcxx/trunk/examples/include/codecvte.h almost works for ISO 8859-1 but I cannot use it (license)
                 if (charset.Equals (L"utf-8", CompareOptions::eCaseInsensitive)) {

@@ -357,18 +357,18 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
         Thread::IDType threadID    = Execution::GetCurrentThreadID ();
         string         threadIDStr = FormatThreadID_A (threadID);
         if (sMainThread_ == threadID) {
-            Verify (std::snprintf (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, static_cast<double> (curRelativeTime)) > 0);
+            Verify (snprintf (buf, NEltsOf (buf), "[%sMAIN%s][%08.3f]\t", sThreadPrintDashAdornment_, sThreadPrintDashAdornment_, static_cast<double> (curRelativeTime)) > 0);
             if (not sDidOneTimePrimaryThreadMessage_) {
                 sDidOneTimePrimaryThreadMessage_ = true;
                 char buf2[1024];
-                Verify (std::snprintf (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ()) > 0);
+                Verify (snprintf (buf2, NEltsOf (buf2), "(REAL THREADID=%s)\t", threadIDStr.c_str ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
                 strcat_s (buf, buf2);
 #else
                 strcat (buf, buf2);
 #endif
 #if qPlatform_POSIX
-                Verify (std::snprintf (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
+                Verify (snprintf (buf2, NEltsOf (buf2), "(pthread_self=0x%lx)\t", (unsigned long)pthread_self ()) > 0);
 #if __STDC_WANT_SECURE_LIB__
                 strcat_s (buf, buf2);
 #else
@@ -378,7 +378,7 @@ Emitter::TraceLastBufferedWriteTokenType Emitter::DoEmitMessage_ (size_t bufferL
             }
         }
         else {
-            (void)std::snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), static_cast<double> (curRelativeTime));
+            (void)snprintf (buf, NEltsOf (buf), "[%s][%08.3f]\t", threadIDStr.c_str (), static_cast<double> (curRelativeTime));
         }
         DoEmit_ (buf);
     }

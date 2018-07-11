@@ -217,7 +217,7 @@ namespace Stroika {
                 template <typename TCHAR>
                 basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text)
                 {
-                    std::locale                                  loc1; // default locale
+                    locale                                       loc1; // default locale
                     const ctype<TCHAR>&                          ct = use_facet<ctype<TCHAR>> (loc1);
                     typename basic_string<TCHAR>::const_iterator i  = text.begin ();
                     for (; i != text.end () and ct.is (ctype<TCHAR>::space, *i); ++i)
@@ -227,7 +227,7 @@ namespace Stroika {
                 template <typename TCHAR>
                 basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
                 {
-                    std::locale                                  loc1; // default locale
+                    locale                                       loc1; // default locale
                     const ctype<TCHAR>&                          ct = use_facet<ctype<TCHAR>> (loc1);
                     typename basic_string<TCHAR>::const_iterator i  = text.end ();
                     for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i - 1)); --i)
@@ -274,7 +274,6 @@ namespace Stroika {
                     template <typename T, typename STRING_ARG>
                     T String2IntOrUInt_ (STRING_ARG s)
                     {
-                        using std::numeric_limits;
                         if (numeric_limits<T>::is_signed) {
                             long long int l = String2Int_ (s);
                             if (l <= numeric_limits<T>::min ()) {

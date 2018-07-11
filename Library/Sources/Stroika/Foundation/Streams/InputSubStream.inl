@@ -153,7 +153,7 @@ namespace Stroika::Foundation {
             nonvirtual void ValidateRealOffset_ (SignedSeekOffsetType offset) const
             {
                 if (offset < static_cast<SignedSeekOffsetType> (fOffsetMine2Real_)) {
-                    Execution::Throw (std::range_error ("offset before beginning"));
+                    Execution::Throw (range_error ("offset before beginning"));
                 }
                 if (fForcedEndInReal_) {
                     if (offset > static_cast<SignedSeekOffsetType> (*fForcedEndInReal_)) {

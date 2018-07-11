@@ -105,7 +105,7 @@ namespace Stroika::Foundation {
                         // Simplex iteration
                         unsigned int iters = 0;
                         while (true) {
-                            std::sort (res.begin (), res.end (), [](auto l, auto r) { return l.fScore < r.fScore; });
+                            sort (res.begin (), res.end (), [](auto l, auto r) { return l.fScore < r.fScore; });
                             FLOAT_TYPE best = res[0].fScore;
 
                             // break after max_iter

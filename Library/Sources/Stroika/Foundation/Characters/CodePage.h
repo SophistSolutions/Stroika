@@ -40,9 +40,6 @@
 namespace Stroika::Foundation {
     namespace Characters {
 
-        using std::basic_string;
-        using std::string;
-        using std::wstring;
         class String;
 
         using Memory::Byte;
@@ -349,7 +346,7 @@ namespace Stroika::Foundation {
          *          ISO-8859-1
          */
         template <typename CHAR_TYPE>
-        const std::codecvt<CHAR_TYPE, char, std::mbstate_t>& LookupCodeConverter (const String& charset);
+        const codecvt<CHAR_TYPE, char, mbstate_t>& LookupCodeConverter (const String& charset);
     }
 }
 

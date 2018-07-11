@@ -236,7 +236,7 @@ protected:
         if (n != 0) {
             if (origOffset + n > numeric_limits<size_t>::max ()) {
                 // size_t can be less bits than SeekOffsetType, in which case we cannot cahce all in RAM
-                Execution::Throw (std::range_error ("seek past max size for size_t"));
+                Execution::Throw (range_error ("seek past max size for size_t"));
             }
             size_t newCacheSize = static_cast<size_t> (origOffset + n);
             Assert (fCache_.size () == static_cast<size_t> (origOffset));
@@ -256,7 +256,7 @@ protected:
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 SeekTo_ (static_cast<SeekOffsetType> (offset));
             } break;
@@ -264,7 +264,7 @@ protected:
                 Streams::SeekOffsetType       curOffset = fOffset_;
                 Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                 if (newOffset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                 SeekTo_ (static_cast<size_t> (uNewOffset));
@@ -287,7 +287,7 @@ private:
         while (fOffset_ < offset) {
             Character c;
             if (Read (&c, &c + 1) == 0) {
-                Execution::Throw (std::range_error ("seek"));
+                Execution::Throw (range_error ("seek"));
             }
         }
         Ensure (fOffset_ == offset);
@@ -400,30 +400,30 @@ protected:
         switch (whence) {
             case Whence::eFromStart: {
                 if (offset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 if (static_cast<SeekOffsetType> (offset) > sourceLen) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (offset);
             } break;
             case Whence::eFromCurrent: {
                 Streams::SignedSeekOffsetType tmpOffset = fOffset_ + offset;
                 if (tmpOffset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
             } break;
             case Whence::eFromEnd: {
                 Streams::SignedSeekOffsetType tmpOffset = fSource_.GetLength () + offset;
                 if (tmpOffset < 0) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 if (static_cast<SeekOffsetType> (tmpOffset) > sourceLen) {
-                    Execution::Throw (std::range_error ("seek"));
+                    Execution::Throw (range_error ("seek"));
                 }
                 newOffset = static_cast<SeekOffsetType> (tmpOffset);
             } break;

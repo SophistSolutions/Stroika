@@ -39,10 +39,6 @@ namespace Stroika::Foundation {
          */
         namespace CString {
 
-            using std::basic_string;
-            using std::string;
-            using std::wstring;
-
             /**
              *  \brief  Measure the length of the argument c-string (NUL-terminated string).
              *

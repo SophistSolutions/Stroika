@@ -272,7 +272,7 @@ namespace Stroika::Foundation {
             */
         template <typename T, typename TRAITS>
         MultiSet<T, TRAITS>::MultiSet ()
-            : MultiSet (std::equal_to<T>{})
+            : MultiSet (equal_to<T>{})
         {
             _AssertRepValidType ();
         }

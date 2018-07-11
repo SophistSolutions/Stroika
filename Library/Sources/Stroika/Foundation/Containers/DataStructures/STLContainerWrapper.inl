@@ -99,7 +99,7 @@ namespace Stroika {
                 inline bool STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
                 {
                     shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-                    return std::find_if (this->begin (), this->end (), pred) != this->end ();
+                    return find_if (this->begin (), this->end (), pred) != this->end ();
                 }
                 template <typename STL_CONTAINER_OF_T>
                 inline void STLContainerWrapper<STL_CONTAINER_OF_T>::Invariant () const
@@ -123,7 +123,7 @@ namespace Stroika {
                 {
                     // if erase trick doesn't work - this will - but at a horid cost
                     typename STL_CONTAINER_OF_T::iterator i (c.begin ());
-                    return std::advance (i, std::distance (i, it));
+                    return advance (i, distance (i, it));
                 }
 
                 /*

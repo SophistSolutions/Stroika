@@ -42,7 +42,7 @@ namespace Stroika {
                 }
                 template <typename CONTAINER_TYPE>
                 template <typename KEY_TYPE, typename VALUE_TYPE>
-                inline void Adder<CONTAINER_TYPE>::Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<std::pair<KEY_TYPE, VALUE_TYPE>> value)
+                inline void Adder<CONTAINER_TYPE>::Add_ (Mapping<KEY_TYPE, VALUE_TYPE>* container, Configuration::ArgByValueType<pair<KEY_TYPE, VALUE_TYPE>> value)
                 {
                     RequireNotNull (container);
                     container->Add (value); // SB OK because Common::KeyValuePair has non-explicit CTOR taking pair<>

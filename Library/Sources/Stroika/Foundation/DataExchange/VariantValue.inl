@@ -17,7 +17,7 @@ namespace Stroika::Foundation {
         /*
          *  NB: we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
          */
-        struct VariantValue::IRep_ : public conditional_t<kVariantValueUsesStroikaSharedPtr_, Memory::enable_shared_from_this<VariantValue::IRep_>, std::enable_shared_from_this<VariantValue::IRep_>> {
+        struct VariantValue::IRep_ : public conditional_t<kVariantValueUsesStroikaSharedPtr_, Memory::enable_shared_from_this<VariantValue::IRep_>, enable_shared_from_this<VariantValue::IRep_>> {
             virtual ~IRep_ () {}
             virtual Type GetType () const = 0;
         };

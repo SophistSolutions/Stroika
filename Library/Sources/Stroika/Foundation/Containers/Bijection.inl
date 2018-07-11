@@ -34,7 +34,7 @@ namespace Stroika::Foundation {
          */
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
         inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection ()
-            : Bijection (std::equal_to<DOMAIN_TYPE>{}, std::equal_to<RANGE_TYPE>{})
+            : Bijection (equal_to<DOMAIN_TYPE>{}, equal_to<RANGE_TYPE>{})
         {
             _AssertRepValidType ();
         }

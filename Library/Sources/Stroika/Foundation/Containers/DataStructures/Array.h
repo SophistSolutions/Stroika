@@ -142,7 +142,7 @@ namespace Stroika {
                     nonvirtual void RemoveAt (size_t index);
                     nonvirtual void RemoveAll ();
 
-                    template <typename EQUALS_COMPARER = std::equal_to<T>>
+                    template <typename EQUALS_COMPARER = equal_to<T>>
                     nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const;
 
                     template <typename FUNCTION>

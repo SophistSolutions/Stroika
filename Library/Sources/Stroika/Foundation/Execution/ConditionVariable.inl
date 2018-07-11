@@ -69,9 +69,9 @@ namespace Stroika::Foundation {
                     }
                 }
 #endif
-                std::cv_status tmp = fConditionVariable.wait_for (lock, Time::Duration (remaining).As<std::chrono::milliseconds> ());
+                cv_status tmp = fConditionVariable.wait_for (lock, Time::Duration (remaining).As<chrono::milliseconds> ());
                 Assert (lock.owns_lock ());
-                if (tmp == std::cv_status::timeout) {
+                if (tmp == cv_status::timeout) {
                     /*
                          *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
                          *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
@@ -82,12 +82,12 @@ namespace Stroika::Foundation {
                         if (stillRemaining < 0) {
                             return cv_status::timeout;
                         }
-                        return std::cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
+                        return cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
                     }
                 }
                 else {
-                    Assert (tmp == std::cv_status::no_timeout);
-                    return std::cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
+                    Assert (tmp == cv_status::no_timeout);
+                    return cv_status::no_timeout; // can be spurious wakeup, or real, no way to know
                 }
             }
         }

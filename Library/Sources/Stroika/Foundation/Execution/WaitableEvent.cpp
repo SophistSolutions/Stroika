@@ -60,7 +60,7 @@ bool WaitableEvent::WE_::WaitUntilQuietly (Time::DurationSecondsType timeoutAt)
     Debug::TraceContextBumper ctx (L"WaitableEvent::WE_::WaitUntil", "timeout = %e", timeoutAt);
 #endif
     CheckForThreadInterruption ();
-    std::unique_lock<mutex> lock (fConditionVariable.fMutex);
+    unique_lock<mutex> lock (fConditionVariable.fMutex);
     if (fConditionVariable.wait_until (lock, timeoutAt, [this]() { return fTriggered; })) {
         if (fResetType == eAutoReset) {
             // cannot call Reset () directly because we (may???) already have the lock mutex? Maybe not cuz of cond variable?

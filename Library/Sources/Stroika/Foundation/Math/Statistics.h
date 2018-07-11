@@ -47,7 +47,7 @@ namespace Stroika {
              *  SUPER ROUGH DRAFT
              *  \req not empty
              */
-            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
+            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
             RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
             template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
             RESULT_TYPE Mean (const CONTAINER_OF_T& container);
@@ -56,7 +56,7 @@ namespace Stroika {
              *  SUPER ROUGH DRAFT
              *  \req not empty
              */
-            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
+            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
             RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end);
             template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
             RESULT_TYPE Median (const CONTAINER_OF_T& container);
@@ -67,7 +67,7 @@ namespace Stroika {
              *
              *  \breif Alias: sd, standard-deviation, stddev
              */
-            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename std::iterator_traits<ITERATOR_OF_T>::value_type>
+            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
             RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end);
             template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
             RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container);

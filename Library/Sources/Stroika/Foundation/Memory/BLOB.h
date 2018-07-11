@@ -57,7 +57,7 @@ namespace Stroika::Foundation {
     namespace Memory {
 
         /**
-         *      If kBLOBUsesStroikaSharedPtr is true, use Stroika's SharedPtr<> in place of std::shared_ptr<>. This is an
+         *      If kBLOBUsesStroikaSharedPtr is true, use Stroika's SharedPtr<> in place of shared_ptr<>. This is an
          *      internal implementaiton detail, and may go away as an option.
          *
          *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
@@ -331,7 +331,7 @@ namespace Stroika::Foundation {
          *
          *  \note   we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
          */
-        struct BLOB::_IRep : conditional_t<kBLOBUsesStroikaSharedPtr, Memory::enable_shared_from_this<BLOB::_IRep>, std::enable_shared_from_this<BLOB::_IRep>> {
+        struct BLOB::_IRep : conditional_t<kBLOBUsesStroikaSharedPtr, Memory::enable_shared_from_this<BLOB::_IRep>, enable_shared_from_this<BLOB::_IRep>> {
             _IRep ()                                                  = default;
             _IRep (const _IRep&)                                      = delete;
             virtual ~_IRep ()                                         = default;

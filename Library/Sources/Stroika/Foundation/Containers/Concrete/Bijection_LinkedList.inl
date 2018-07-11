@@ -109,7 +109,7 @@ namespace Stroika {
                     }
                     virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = fData_.FindFirstThat (doToElement);
@@ -159,7 +159,7 @@ namespace Stroika {
                     }
                     virtual bool Lookup (ArgByValueType<DOMAIN_TYPE> key, optional<RANGE_TYPE>* item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (fDomainEqualsComparer_ (it.Current ().first, key)) {
                                 if (item != nullptr) {
@@ -175,7 +175,7 @@ namespace Stroika {
                     }
                     virtual bool InverseLookup (ArgByValueType<RANGE_TYPE> key, optional<DOMAIN_TYPE>* item) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (fRangeEqualsComparer_ (it.Current ().second, key)) {
                                 if (item != nullptr) {
@@ -193,7 +193,7 @@ namespace Stroika {
                     {
                         // @todo check fInjectivityViolationPolicy_
                         using Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         switch (fInjectivityViolationPolicy_) {
                             case Bijection_Base::InjectivityViolationPolicy::eAssertionError: {
 #if qDebug
@@ -226,7 +226,7 @@ namespace Stroika {
                     virtual void RemoveDomainElement (ArgByValueType<DOMAIN_TYPE> d) override
                     {
                         using Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (fDomainEqualsComparer_ (it.Current ().first, d)) {
                                 fData_.RemoveAt (it);
@@ -237,7 +237,7 @@ namespace Stroika {
                     virtual void RemoveRangeElement (ArgByValueType<RANGE_TYPE> r) override
                     {
                         using Traversal::kUnknownIteratorOwnerID;
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (fRangeEqualsComparer_ (it.Current ().second, r)) {
                                 fData_.RemoveAt (it);
@@ -247,8 +247,8 @@ namespace Stroika {
                     }
                     virtual void Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::IRep&  ir = i.GetRep ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock>     critSec{fData_};
+                        const typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.RemoveAt (mir.fIterator);
@@ -256,7 +256,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -275,7 +275,7 @@ namespace Stroika {
                  */
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE>
                 inline Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList ()
-                    : Bijection_LinkedList (std::equal_to<DOMAIN_TYPE>{}, std::equal_to<RANGE_TYPE>{})
+                    : Bijection_LinkedList (equal_to<DOMAIN_TYPE>{}, equal_to<RANGE_TYPE>{})
                 {
                     AssertRepValidType_ ();
                 }

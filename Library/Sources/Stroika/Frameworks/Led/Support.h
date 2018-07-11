@@ -127,7 +127,7 @@ namespace Stroika {
                 or <code>wstring</code> - depending on whether we are using UNICODE or not. It is a <code>basic_string</code>
                 templated on @'Led_tChar'.</p>
             */
-            using Led_tString = std::basic_string<Led_tChar>;
+            using Led_tString = basic_string<Led_tChar>;
 
             /*
             @METHOD:        Led_tStrlen

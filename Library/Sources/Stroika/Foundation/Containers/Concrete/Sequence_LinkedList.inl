@@ -75,7 +75,7 @@ namespace Stroika {
                     }
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<T>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = fData_.FindFirstThat (doToElement);
@@ -107,7 +107,7 @@ namespace Stroika {
                     {
                         Require (not IsEmpty ());
                         Require (i == _kBadSequenceIndex or i < GetLength ());
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (i == _kBadSequenceIndex) {
                             i = GetLength () - 1;
                         }
@@ -116,29 +116,29 @@ namespace Stroika {
                     virtual void SetAt (size_t i, ArgByValueType<T> item) override
                     {
                         Require (i < GetLength ());
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.SetAt (item, i);
                     }
                     virtual size_t IndexOf (const Iterator<T>& i) const override
                     {
                         const typename Iterator<T>::IRep& ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
-                        auto&                                                           mir = dynamic_cast<const IteratorRep_&> (ir);
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return mir.fIterator.CurrentIndex ();
                     }
                     virtual void Remove (const Iterator<T>& i) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<T>::IRep&                              ir = i.GetRep ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const typename Iterator<T>::IRep&                         ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.RemoveAt (mir.fIterator);
                     }
                     virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<T>::IRep&                              ir = i.GetRep ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        const typename Iterator<T>::IRep&                         ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.SetAt (mir.fIterator, newValue);
@@ -147,7 +147,7 @@ namespace Stroika {
                     {
                         using Traversal::kUnknownIteratorOwnerID;
                         Require (at == _kBadSequenceIndex or at <= GetLength ());
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (at == _kBadSequenceIndex) {
                             at = fData_.GetLength ();
                         }
@@ -181,9 +181,9 @@ namespace Stroika {
                         using Traversal::kUnknownIteratorOwnerID;
                         // quickie poor impl
                         // See Stroika v1 - much better - handling cases of remove near start or end of linked list
-                        size_t                                                         index          = from;
-                        size_t                                                         amountToRemove = (to - from);
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        size_t                                                    index          = from;
+                        size_t                                                    amountToRemove = (to - from);
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
@@ -196,7 +196,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif

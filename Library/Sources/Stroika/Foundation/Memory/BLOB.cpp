@@ -245,10 +245,10 @@ namespace {
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         if (offset > (fEnd - fStart)) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         fCur = fStart + offset;
                     } break;
@@ -256,20 +256,20 @@ namespace {
                         Streams::SeekOffsetType       curOffset = fCur - fStart;
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         if (newOffset > (fEnd - fStart)) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         fCur = fStart + newOffset;
                     } break;
                     case Whence::eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = (fEnd - fStart) + offset;
                         if (newOffset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         if (newOffset > (fEnd - fStart)) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         fCur = fStart + newOffset;
                     } break;

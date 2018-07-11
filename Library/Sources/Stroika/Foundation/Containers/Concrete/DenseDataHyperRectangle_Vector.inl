@@ -95,7 +95,7 @@ namespace Stroika {
                         /// NYI
                         return RESULT_TYPE::GetEmptyIterator ();
 #else
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = const_cast<DataStructureImplType_&> (fData_).FindFirstThat (doToElement);
                         if (iLink == fData_.end ()) {
@@ -128,13 +128,13 @@ namespace Stroika {
                     DISABLE_COMPILER_MSC_WARNING_START (4100)
                     virtual T GetAt (INDEXES... indexes) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         /// NYI
                         return T{};
                     }
                     virtual void SetAt ([[maybe_unused]] INDEXES... indexes, [[maybe_unused]] Configuration::ArgByValueType<T> v) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         /// NYI
                         AssertNotImplemented ();
                     }

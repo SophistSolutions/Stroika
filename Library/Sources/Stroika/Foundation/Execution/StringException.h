@@ -26,7 +26,7 @@ namespace Stroika::Foundation {
          *  This takes a 'String' argument, and maps it to the 'what()' in std::exception.
          *  This maps using the default native SDK characterset.
          */
-        class StringException : public std::exception {
+        class StringException : public exception {
         private:
             using inherited = exception;
 

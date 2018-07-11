@@ -81,7 +81,7 @@ namespace Stroika::Foundation {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                     Memory::Private::VC_BWA_std_copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
 #else
-                    std::copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
+                    copy (fReadCursor_, fReadCursor_ + nCopied, intoStart);
 #endif
                     fReadCursor_ = fReadCursor_ + nCopied;
                 }
@@ -116,7 +116,7 @@ namespace Stroika::Foundation {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
                     Memory::Private::VC_BWA_std_copy (start, start + roomRequired, fWriteCursor_);
 #else
-                    std::copy (start, start + roomRequired, fWriteCursor_);
+                    copy (start, start + roomRequired, fWriteCursor_);
 #endif
                     fWriteCursor_ += roomRequired;
                     Assert (fReadCursor_ < fData_.end ()); // < because we wrote at least one byte and that didnt move read cursor
@@ -141,7 +141,7 @@ namespace Stroika::Foundation {
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         SeekOffsetType uOffset = static_cast<SeekOffsetType> (offset);
                         if (uOffset > fData_.size ()) {
@@ -153,7 +153,7 @@ namespace Stroika::Foundation {
                         Streams::SeekOffsetType       curOffset = fReadCursor_ - fData_.begin ();
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                         if (uNewOffset > fData_.size ()) {
@@ -164,7 +164,7 @@ namespace Stroika::Foundation {
                     case Whence::eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         SeekOffsetType uNewOffset = static_cast<SeekOffsetType> (newOffset);
                         if (uNewOffset > fData_.size ()) {
@@ -189,7 +189,7 @@ namespace Stroika::Foundation {
                 switch (whence) {
                     case Whence::eFromStart: {
                         if (offset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         if (static_cast<SeekOffsetType> (offset) > fData_.size ()) {
                             Execution::Throw (EOFException::kThe);
@@ -200,7 +200,7 @@ namespace Stroika::Foundation {
                         Streams::SeekOffsetType       curOffset = fWriteCursor_ - fData_.begin ();
                         Streams::SignedSeekOffsetType newOffset = curOffset + offset;
                         if (newOffset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         if (static_cast<size_t> (newOffset) > fData_.size ()) {
                             Execution::Throw (EOFException::kThe);
@@ -210,7 +210,7 @@ namespace Stroika::Foundation {
                     case Whence::eFromEnd: {
                         Streams::SignedSeekOffsetType newOffset = fData_.size () + offset;
                         if (newOffset < 0) {
-                            Execution::Throw (std::range_error ("seek"));
+                            Execution::Throw (range_error ("seek"));
                         }
                         if (static_cast<size_t> (newOffset) > fData_.size ()) {
                             Execution::Throw (EOFException::kThe);

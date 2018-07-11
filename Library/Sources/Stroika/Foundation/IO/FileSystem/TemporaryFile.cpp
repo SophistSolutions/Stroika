@@ -188,7 +188,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
     while (attempts < 5) {
         wstring s = fn.As<wstring> ();
         char    buf[100];
-        (void)std::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
+        (void)snprintf (buf, NEltsOf (buf), "%d", ::rand ());
         s.insert (suffixStart, NarrowSDKStringToWide (buf));
         if (not IO::FileSystem::Default ().Access (s.c_str ())) {
             HANDLE f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -213,7 +213,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
     while (attempts < 5) {
         String s = fn;
         char   buf[100];
-        (void)std::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
+        (void)snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         s += String::FromASCII (buf);
         if (not Directory (s).Exists ()) {
             CreateDirectory (s, true);
@@ -291,7 +291,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
         while (attempts < 5) {
             wstring s = fn.As<wstring> ();
             char    buf[100];
-            (void)std::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
+            (void)snprintf (buf, NEltsOf (buf), "%d", ::rand ());
             s.insert (suffixStart, NarrowSDKStringToWide (buf));
             if (not FileSystem::FileExists (s.c_str ())) {
                 HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -329,7 +329,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
             {
                 // man page doesn't gaurantee thread-safety of rand ()
                 auto&& critSec = lock_guard{fCriticalSection_};
-                (void)std::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
+                (void)snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
             }
             s.append (NarrowSDKStringToWide  (buf));
             if (not Directory (s).Exists ()) {

@@ -64,8 +64,8 @@ void AssertExternallySynchronizedLock::lock_shared_ () const noexcept
 void AssertExternallySynchronizedLock::unlock_shared_ () const noexcept
 {
     try {
-        lock_guard<mutex>                   sharedLockProtect{GetSharedLockMutexThreads_ ()};
-        multiset<std::thread::id>::iterator tti = fSharedLockThreads_.find (this_thread::get_id ());
+        lock_guard<mutex>              sharedLockProtect{GetSharedLockMutexThreads_ ()};
+        multiset<thread::id>::iterator tti = fSharedLockThreads_.find (this_thread::get_id ());
         Require (tti != fSharedLockThreads_.end ()); // else unbalanced
         fSharedLockThreads_.erase (tti);
     }

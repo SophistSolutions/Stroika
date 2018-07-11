@@ -18,7 +18,7 @@ namespace Stroika {
              */
             template <typename T>
             inline SortedCollection<T>::SortedCollection ()
-                : SortedCollection (std::less<T>{})
+                : SortedCollection (less<T>{})
             {
                 _AssertRepValidType ();
             }

@@ -283,15 +283,9 @@ void SimpleTextStore::RemoveMarkers (Marker* const markerArray[], size_t markerC
         if (marker->fTextStoreHook != nullptr) {
             AssertNotNull (marker->GetOwner ());
             Invariant ();
-#if 1
-            vector<Marker*>::iterator index = std::find (fMarkers.begin (), fMarkers.end (), marker);
+            vector<Marker*>::iterator index = find (fMarkers.begin (), fMarkers.end (), marker);
             Assert (index != fMarkers.end ());
             fMarkers.erase (index);
-#else
-            size_t index = IndexOf (fMarkers, marker);
-            //  fMarkers.RemoveAt (index);
-            fMarkers.erase (fMarkers.begin () + index);
-#endif
             OurStuff (marker)->fOwner = nullptr;
             Invariant ();
             delete marker->fTextStoreHook;

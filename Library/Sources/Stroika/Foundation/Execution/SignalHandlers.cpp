@@ -114,7 +114,7 @@ private:
 #if qConditionVariablesSafeInAsyncSignalHanlders
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         unique_lock<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-        fRecievedSig_.wait_for (lk, std::chrono::seconds (100), [this]() { return fWorkMaybeAvailable_.load (); });
+        fRecievedSig_.wait_for (lk, chrono::seconds (100), [this]() { return fWorkMaybeAvailable_.load (); });
 #else
         fRecievedSig_.Wait ();
 #endif
@@ -125,7 +125,7 @@ private:
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
-            lock_guard<std::mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
+            lock_guard<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
             fWorkMaybeAvailable_ = true;
         }
         fRecievedSig_.notify_one ();
@@ -262,7 +262,7 @@ private:
     atomic<SignalID>     fLastSignalRecieved_{NSIG};
     Thread::Ptr          fBlockingQueuePusherThread_; // no need to synchonize cuz only called from thread which constructs/destroys safetymfg
 private:
-    std::atomic<bool> fWorkMaybeAvailable_{false};
+    atomic<bool> fWorkMaybeAvailable_{false};
 #if qConditionVariablesSafeInAsyncSignalHanlders
     mutex              fRecievedSig_NotSureWhatMutexFor_;
     condition_variable fRecievedSig_;

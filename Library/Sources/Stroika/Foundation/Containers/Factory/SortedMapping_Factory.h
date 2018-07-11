@@ -26,7 +26,7 @@ namespace Stroika {
 
             namespace Factory {
 
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER = std::less<KEY_TYPE>>
+                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_INORDER_COMPARER = less<KEY_TYPE>>
                 class SortedMapping_Factory {
                 private:
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy

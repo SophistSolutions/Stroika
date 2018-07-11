@@ -24,10 +24,6 @@ namespace Stroika::Foundation {
         namespace Platform {
             namespace Windows {
 
-                using std::basic_string;
-                using std::string;
-                using std::wstring;
-
                 using Characters::CodePage;
 
                 void WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);

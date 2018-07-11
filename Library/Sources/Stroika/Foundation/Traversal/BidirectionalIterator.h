@@ -27,7 +27,7 @@ namespace Stroika {
 
             /**
              */
-            template <typename T, typename BASE_STD_ITERATOR = std::iterator<bidirectional_iterator_tag, T>>
+            template <typename T, typename BASE_STD_ITERATOR = iterator<bidirectional_iterator_tag, T>>
             class BidirectionalIterator : public Iterator<T, BASE_STD_ITERATOR> {
             private:
                 using inherited = Iterator<T, BASE_STD_ITERATOR>;

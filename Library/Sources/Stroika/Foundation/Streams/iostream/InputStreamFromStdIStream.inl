@@ -93,7 +93,7 @@ namespace Stroika {
                     virtual optional<size_t> ReadNonBlocking (ELEMENT_TYPE* intoStart, ELEMENT_TYPE* intoEnd) override
                     {
                         Require (IsOpenRead ());
-                        std::streamsize sz = fOriginalStream_.rdbuf ()->in_avail ();
+                        streamsize sz = fOriginalStream_.rdbuf ()->in_avail ();
                         // http://en.cppreference.com/w/cpp/io/basic_streambuf/in_avail
                         if (sz == 0) {
                             return {};

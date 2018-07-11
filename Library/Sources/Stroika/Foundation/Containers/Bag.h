@@ -57,7 +57,7 @@ namespace Stroika::Foundation {
 
                 o   See email 2013-12-27 email dioscission
                 o   Maybe call this BlackBox
-                o   Shake is what std::random_shuffle does. I�d usually prefer the no-argument version to the stl iterator one. Obviously there are performance issues with some backends,  but as long as you always return a new Collection (or other abstract type) with no promise about the backend it should be okay.
+                o   Shake is what std::random_shuffle does. I'd usually prefer the no-argument version to the stl iterator one. Obviously there are performance issues with some backends,  but as long as you always return a new Collection (or other abstract type) with no promise about the backend it should be okay.
 
             *
             *  \note Note About Iterators
@@ -112,7 +112,7 @@ namespace Stroika::Foundation {
             /**
              * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual bool Contains (T item) const;
 
         public:
@@ -156,7 +156,7 @@ namespace Stroika::Foundation {
              *
              * The value pointed to by 'i' is removed.
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void Remove (T item);
             nonvirtual void Remove (const Iterator<T>& i);
 
@@ -169,9 +169,9 @@ namespace Stroika::Foundation {
              *  The no-argument verison Produces an empty bag.
              */
             nonvirtual void RemoveAll ();
-            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void RemoveAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);
-            template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename CONTAINER_OF_ADDABLE, typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void RemoveAll (const CONTAINER_OF_ADDABLE& c);
 
         public:
@@ -192,7 +192,7 @@ namespace Stroika::Foundation {
             /**
              * \brief STL-ish alias for Remove ().
              */
-            template <typename EQUALS_COMPARER = std::equal_to<T>>
+            template <typename EQUALS_COMPARER = equal_to<T>>
             nonvirtual void erase (T item);
             nonvirtual void erase (const Iterator<T>& i);
 

@@ -200,7 +200,7 @@ size_t Connection_LibCurl::Rep_::RequestPayloadReadHandler_ (Byte* buffer, size_
     Debug::TraceContextBumper ctx ("Connection_LibCurl::Rep_::RequestPayloadReadHandler_");
 #endif
     size_t bytes2Copy = fUploadData_.size () - fUploadDataCursor_;
-    bytes2Copy        = std::min (bytes2Copy, bufSize);
+    bytes2Copy        = min (bytes2Copy, bufSize);
     ::memcpy (buffer, Traversal::Iterator2Pointer (begin (fUploadData_)) + fUploadDataCursor_, bytes2Copy);
     fUploadDataCursor_ += bytes2Copy;
 #if USE_NOISY_TRACE_IN_THIS_MODULE_

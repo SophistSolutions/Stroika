@@ -17,7 +17,7 @@ namespace Stroika::Foundation {
          */
         template <typename T>
         inline SortedSet<T>::SortedSet ()
-            : SortedSet (std::less<T>{})
+            : SortedSet (less<T>{})
         {
             _AssertRepValidType ();
         }

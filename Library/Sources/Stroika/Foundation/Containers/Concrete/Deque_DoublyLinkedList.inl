@@ -77,7 +77,7 @@ namespace Stroika {
                     }
                     virtual Iterator<T> FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         using RESULT_TYPE     = Iterator<T>;
                         using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
                         auto iLink            = fData_.FindFirstThat (doToElement);
@@ -107,19 +107,19 @@ namespace Stroika {
                     }
                     virtual void AddTail (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Append (item);
                     }
                     virtual T RemoveHead () override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        T                                                              item = fData_.GetFirst ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        T                                                         item = fData_.GetFirst ();
                         fData_.RemoveFirst ();
                         return item;
                     }
                     virtual optional<T> RemoveHeadIf () override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (fData_.IsEmpty ()) {
                             return optional<T> ();
                         }
@@ -129,12 +129,12 @@ namespace Stroika {
                     }
                     virtual T Head () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.GetFirst ();
                     }
                     virtual optional<T> HeadIf () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         if (fData_.IsEmpty ()) {
                             return optional<T> ();
                         }
@@ -143,7 +143,7 @@ namespace Stroika {
 #if qDebug
                     virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
                     }
 #endif
@@ -152,19 +152,19 @@ namespace Stroika {
                 public:
                     virtual void AddHead (ArgByValueType<T> item) override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         fData_.Append (item);
                     }
                     virtual T RemoveTail () override
                     {
-                        std::lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        T                                                              item = fData_.GetFirst ();
+                        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        T                                                         item = fData_.GetFirst ();
                         fData_.RemoveLast ();
                         return item;
                     }
                     virtual T Tail () const override
                     {
-                        std::shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
+                        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return fData_.GetLast ();
                     }
 

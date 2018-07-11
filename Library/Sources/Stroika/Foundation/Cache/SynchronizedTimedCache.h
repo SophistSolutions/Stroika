@@ -66,7 +66,7 @@ namespace Stroika::Foundation {
              *  Lookup the given value and return it. But if its not found, use argument 'cacheFiller' function to fetch the real value.
              *  This supports (and propagates) exceptions, and is threadsafe (can be called multiple times from different threads safely.
              */
-            nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const std::function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
+            nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
 
         private:
             mutable shared_timed_mutex fMutex_;
