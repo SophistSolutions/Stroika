@@ -227,7 +227,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>*>
                 inline Set_LinkedList<T>::Set_LinkedList (const CONTAINER_OF_T& src)
                     : Set_LinkedList ()
                 {
@@ -235,7 +235,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>*>
                 inline Set_LinkedList<T>::Set_LinkedList (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
                     : Set_LinkedList (equalsComparer)
                 {

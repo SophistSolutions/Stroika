@@ -244,12 +244,6 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Sequence_Array<T>::Sequence_Array (const Sequence_Array<T>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
                 inline Sequence_Array<T>::Sequence_Array (const initializer_list<T>& src)
                     : Sequence_Array ()
                 {
@@ -264,7 +258,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Sequence_Array<T>*>>*>
                 inline Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& src)
                     : Sequence_Array ()
                 {
@@ -278,14 +272,6 @@ namespace Stroika {
                 {
                     this->AppendAll (start, end);
                     AssertRepValidType_ ();
-                }
-                template <typename T>
-                inline Sequence_Array<T>& Sequence_Array<T>::operator= (const Sequence_Array<T>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (rhs);
-                    AssertRepValidType_ ();
-                    return *this;
                 }
                 template <typename T>
                 inline void Sequence_Array<T>::Compact ()

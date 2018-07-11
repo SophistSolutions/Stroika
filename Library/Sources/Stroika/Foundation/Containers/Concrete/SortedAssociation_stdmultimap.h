@@ -44,7 +44,7 @@ namespace Stroika {
                      */
                     SortedAssociation_stdmultimap ();
                     SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and !is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>>
+                    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and !is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
                     SortedAssociation_stdmultimap (const CONTAINER_OF_ADDABLE& src);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
                     SortedAssociation_stdmultimap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

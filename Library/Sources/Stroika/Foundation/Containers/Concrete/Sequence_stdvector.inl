@@ -209,13 +209,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Sequence_stdvector<T>::Sequence_stdvector (const Sequence_stdvector<T>& src)
-                    : inherited (src)
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
-                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>>*>
                 inline Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& src)
                     : Sequence_stdvector ()
                 {

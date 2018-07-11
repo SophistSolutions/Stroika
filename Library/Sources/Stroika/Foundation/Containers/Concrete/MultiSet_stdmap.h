@@ -40,8 +40,8 @@ namespace Stroika {
                      *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
                      */
                     MultiSet_stdmap ();
-                    template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>>
-                    explicit MultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                    template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
+                    explicit MultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
                     template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>>>
                     MultiSet_stdmap (const CONTAINER_OF_T& src);
                     MultiSet_stdmap (const MultiSet_stdmap& src) = default;

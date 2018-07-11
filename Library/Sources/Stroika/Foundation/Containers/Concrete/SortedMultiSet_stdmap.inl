@@ -227,7 +227,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
-                template <typename INORDER_COMPARER, typename ENABLE_IF_IS_COMPARER>
+                template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
                 inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer, ENABLE_IF_IS_COMPARER*)
                     : inherited (inherited::template MakeSharedPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
                 {
@@ -248,7 +248,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
-                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>>*>
                 inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap (const CONTAINER_OF_T& src)
                     : SortedMultiSet_stdmap ()
                 {

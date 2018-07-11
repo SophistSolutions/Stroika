@@ -172,7 +172,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Queue_DoublyLinkedList<T>*>>*>
                 inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const CONTAINER_OF_T& src)
                     : Queue_DoublyLinkedList ()
                 {

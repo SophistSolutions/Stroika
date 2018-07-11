@@ -221,7 +221,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, typename ENABLE_IF>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Sequence_LinkedList<T>*>>*>
                 inline Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& src)
                     : Sequence_LinkedList ()
                 {
@@ -234,12 +234,6 @@ namespace Stroika {
                     : Sequence_LinkedList ()
                 {
                     this->AppendAll (start, end);
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
-                inline Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& src)
-                    : inherited (src)
-                {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
