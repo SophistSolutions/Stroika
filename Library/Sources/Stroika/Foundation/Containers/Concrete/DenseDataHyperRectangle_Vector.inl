@@ -39,7 +39,7 @@ namespace Stroika {
 
                 public:
                     Rep_ (INDEXES... dimensions)
-                        : fDimensions_ (std::forward<INDEXES> (dimensions)...)
+                        : fDimensions_ (forward<INDEXES> (dimensions)...)
                     {
                         //  AssertNotImplemented ();
                     }
@@ -122,7 +122,7 @@ namespace Stroika {
                         else {
                             AssertNotReached ();
                             return nullptr;
-                            ///return Iterable<T>::template MakeSharedPtr<Rep_> (std::forward<INDEXES> (fDimensions_)...);
+                            ///return Iterable<T>::template MakeSharedPtr<Rep_> (forward<INDEXES> (fDimensions_)...);
                         }
                     }
                     DISABLE_COMPILER_MSC_WARNING_START (4100)
@@ -156,7 +156,7 @@ namespace Stroika {
                  */
                 template <typename T, typename... INDEXES>
                 DenseDataHyperRectangle_Vector<T, INDEXES...>::DenseDataHyperRectangle_Vector (INDEXES... dimensions)
-                    : inherited (inherited::template MakeSharedPtr<Rep_> (std::forward<INDEXES> (dimensions)...))
+                    : inherited (inherited::template MakeSharedPtr<Rep_> (forward<INDEXES> (dimensions)...))
                 {
                     AssertRepValidType_ ();
                 }

@@ -36,7 +36,7 @@ namespace Stroika::Foundation {
             EnsureMember (&inherited::_GetRep (), _IRep);
         }
         template <typename T>
-        inline Bag<T>::Bag (const std::initializer_list<T>& src)
+        inline Bag<T>::Bag (const initializer_list<T>& src)
             : Bag ()
         {
             AddAll (src);

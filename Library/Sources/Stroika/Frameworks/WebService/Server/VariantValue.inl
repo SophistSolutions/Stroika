@@ -16,7 +16,7 @@ namespace std {
         template <class F, class Tuple, std::size_t... I>
         constexpr decltype (auto) apply_impl (F&& f, Tuple&& t, std::index_sequence<I...>)
         {
-            return std::invoke (std::forward<F> (f), std::get<I> (std::forward<Tuple> (t))...);
+            return std::invoke (forward<F> (f), std::get<I> (forward<Tuple> (t))...);
         }
     } // namespace detail
 
@@ -24,7 +24,7 @@ namespace std {
     constexpr decltype (auto) apply (F&& f, Tuple&& t)
     {
         return detail::apply_impl (
-            std::forward<F> (f), std::forward<Tuple> (t),
+            forward<F> (f), forward<Tuple> (t),
             std::make_index_sequence<std::tuple_size<std::decay_t<Tuple>>::value>{});
     }
 }
@@ -47,7 +47,7 @@ namespace Stroika {
                         auto ConvertVariantValuesToTypes_ (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, T, REST_IN_ARGS... args)
                         {
                             Require (vvs.size () == (sizeof...(args)) + 1);
-                            return tuple_cat (tuple<T>{objVarMapper.ToObject<T> (vvs.Nth (0))}, ConvertVariantValuesToTypes_ (objVarMapper, vvs.Skip (1), std::forward<REST_IN_ARGS> (args)...));
+                            return tuple_cat (tuple<T>{objVarMapper.ToObject<T> (vvs.Nth (0))}, ConvertVariantValuesToTypes_ (objVarMapper, vvs.Skip (1), forward<REST_IN_ARGS> (args)...));
                         }
                         auto ConvertVariantValuesToTypes_ (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs)
                         {
@@ -75,7 +75,7 @@ namespace Stroika {
                         auto ConvertVariantValuesToTypes_x (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, T, std::tuple<T, REST_IN_ARGS...> args)
                         {
                             //WRequire (vvs.size () == (sizeof...(args)) + 1);
-                            return tuple_cat (tuple<T>{objVarMapper.ToObject<T> (vvs.Nth (0))}, ConvertVariantValuesToTypes_x (vvs.Skip (1), std::forward<REST_IN_ARGS> (args)...));
+                            return tuple_cat (tuple<T>{objVarMapper.ToObject<T> (vvs.Nth (0))}, ConvertVariantValuesToTypes_x (vvs.Skip (1), forward<REST_IN_ARGS> (args)...));
                         }
                         auto ConvertVariantValuesToTypes_x (const DataExchange::ObjectVariantMapper& objVarMapper, const Traversal::Iterable<VariantValue>& vvs, std::tuple<> a)
                         {
@@ -125,9 +125,9 @@ namespace Stroika {
 
                             save_it_for_later<RETURN_TYPE, IN_ARGS...> aaa{ objVarMapper, vvs, f };
 
-                            //tuple<IN_ARGS...> args2Forward = ConvertVariantValuesToTypes_ (objVarMapper, vvs, std::forward<IN_ARGS...> (junk)...);
-                            //tuple<IN_ARGS...> args2Forward = std::apply (ConvertVariantValuesToTypes_, tuple_cat (objVarMapper, vvs, std::forward<IN_ARGS> (junk)...));
-                            //RETURN_TYPE           response2Send = f (std::forward<IN_ARGS> (args2Forward)...);
+                            //tuple<IN_ARGS...> args2Forward = ConvertVariantValuesToTypes_ (objVarMapper, vvs, forward<IN_ARGS...> (junk)...);
+                            //tuple<IN_ARGS...> args2Forward = std::apply (ConvertVariantValuesToTypes_, tuple_cat (objVarMapper, vvs, forward<IN_ARGS> (junk)...));
+                            //RETURN_TYPE           response2Send = f (forward<IN_ARGS> (args2Forward)...);
                             RETURN_TYPE response2Send = aaa.delayed_dispatch ();
                             WriteResponse (m->PeekResponse (), webServiceDescription, objVarMapper.FromObject (response2Send));
                         };
@@ -192,7 +192,7 @@ namespace Stroika {
                         template <typename RETURN_TYPE>
                         inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<!is_same_v<RETURN_TYPE, void>>* = 0)
                         {
-                            WriteResponse (response, webServiceDescription, objVarMapper.FromObject (std::forward<RETURN_TYPE> (f ())));
+                            WriteResponse (response, webServiceDescription, objVarMapper.FromObject (forward<RETURN_TYPE> (f ())));
                         }
                         template <typename RETURN_TYPE>
                         inline void CallFAndWriteConvertedResponse_ (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE ()>& f, enable_if_t<is_same_v<RETURN_TYPE, void>>* = 0)
@@ -204,7 +204,7 @@ namespace Stroika {
                     template <typename RETURN_TYPE, typename... IN_ARGS>
                     inline void CallFAndWriteConvertedResponse (Response* response, const WebServiceMethodDescription& webServiceDescription, const DataExchange::ObjectVariantMapper& objVarMapper, const function<RETURN_TYPE (IN_ARGS...)>& f, IN_ARGS... inArgs)
                     {
-                        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper, function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, std::forward<IN_ARGS> (inArgs)...)});
+                        PRIVATE_::CallFAndWriteConvertedResponse_ (response, webServiceDescription, objVarMapper, function<RETURN_TYPE ()>{bind<RETURN_TYPE> (f, forward<IN_ARGS> (inArgs)...)});
                     }
                     // WORKAROUND FACT I CANNOT GET VARIADIC TEMPLATES WORKING...
                     template <typename RETURN_TYPE, typename ARG_TYPE_COMBINED>

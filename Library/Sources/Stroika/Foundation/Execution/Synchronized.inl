@@ -27,7 +27,7 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         template <typename... ARGUMENT_TYPES>
         inline Synchronized<T, TRAITS>::Synchronized (ARGUMENT_TYPES&&... args)
-            : fProtectedValue_ (std::forward<ARGUMENT_TYPES> (args)...)
+            : fProtectedValue_ (forward<ARGUMENT_TYPES> (args)...)
         {
 #if qStroika_FeatureSupported_Valgrind
             if (TRAITS::kSupportSharedLocks) {

@@ -121,7 +121,7 @@ namespace Stroika::Foundation {
         inline bool ConditionVariable<MUTEX, CONDITION_VARIABLE>::wait_for (LockType& lock, Time::DurationSecondsType timeout, PREDICATE readyToWake)
         {
             Require (lock.owns_lock ());
-            return wait_until (lock, timeout + Time::GetTickCount (), std::move (readyToWake));
+            return wait_until (lock, timeout + Time::GetTickCount (), move (readyToWake));
         }
         template <typename MUTEX, typename CONDITION_VARIABLE>
         template <typename FUNCTION>

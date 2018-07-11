@@ -20,7 +20,7 @@ namespace Stroika {
                     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>
                     template <typename... CONTAINER_EXTRA_ARGS>
                     PatchableContainerHelper<NON_PATCHED_DATA_STRUCTURE_CLASS>::PatchableContainerHelper (_CreateNewConstructorSelector, CONTAINER_EXTRA_ARGS&&... stdContainerArgs)
-                        : inherited (std::forward<CONTAINER_EXTRA_ARGS> (stdContainerArgs)...)
+                        : inherited (forward<CONTAINER_EXTRA_ARGS> (stdContainerArgs)...)
                     {
                     }
                     template <typename NON_PATCHED_DATA_STRUCTURE_CLASS>

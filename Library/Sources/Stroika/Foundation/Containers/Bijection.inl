@@ -62,7 +62,7 @@ namespace Stroika::Foundation {
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> ()>*>
         inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
-            : Bijection (std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
+            : Bijection (forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
         {
             AddAll (src);
             _AssertRepValidType ();
@@ -78,7 +78,7 @@ namespace Stroika::Foundation {
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename CONTAINER_OF_SINGLEVALUE_ADD_ARGS, typename ENABLE_IF>
         inline Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, const CONTAINER_OF_SINGLEVALUE_ADD_ARGS& src)
-            : Bijection (std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
+            : Bijection (forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
         {
             AddAll (src);
             _AssertRepValidType ();
@@ -94,7 +94,7 @@ namespace Stroika::Foundation {
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
         template <typename DOMAIN_EQUALS_COMPARER, typename RANGE_EQUALS_COMPARER, typename COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG, enable_if_t<Common::IsPotentiallyComparerRelation<DOMAIN_TYPE, DOMAIN_EQUALS_COMPARER> () and Common::IsPotentiallyComparerRelation<RANGE_TYPE, RANGE_EQUALS_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG>::value>*>
         Bijection<DOMAIN_TYPE, RANGE_TYPE>::Bijection (DOMAIN_EQUALS_COMPARER&& domainEqualsComparer, RANGE_EQUALS_COMPARER&& rangeEqualsComparer, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG start, COPY_FROM_ITERATOR_SINGLEVALUE_ADD_ARG end)
-            : Bijection (std::forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), std::forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
+            : Bijection (forward<DOMAIN_EQUALS_COMPARER> (domainEqualsComparer), forward<RANGE_EQUALS_COMPARER> (rangeEqualsComparer))
         {
             AddAll (start, end);
             _AssertRepValidType ();

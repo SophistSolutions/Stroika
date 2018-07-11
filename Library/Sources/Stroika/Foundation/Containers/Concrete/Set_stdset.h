@@ -47,8 +47,8 @@ namespace Stroika {
                     template <typename INORDER_COMPARER>
                     explicit Set_stdset (const INORDER_COMPARER& inorderComparer);
                     Set_stdset (const Set_stdset& src) = default;
-                    Set_stdset (const std::initializer_list<T>& src);
-                    Set_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src);
+                    Set_stdset (const initializer_list<T>& src);
+                    Set_stdset (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>* = nullptr>
                     Set_stdset (const CONTAINER_OF_T& src);
                     template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>* = nullptr>

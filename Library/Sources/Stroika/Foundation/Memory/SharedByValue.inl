@@ -105,7 +105,7 @@ namespace Stroika {
             template <typename TRAITS>
             inline SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from) noexcept
                 : fCopier_ (from.fCopier_)
-                , fSharedImpl_ (std::move (from.fSharedImpl_))
+                , fSharedImpl_ (move (from.fSharedImpl_))
             {
             }
             template <typename TRAITS>

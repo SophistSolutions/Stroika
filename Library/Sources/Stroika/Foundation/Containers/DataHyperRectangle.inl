@@ -44,12 +44,12 @@ namespace Stroika::Foundation {
         template <typename T, typename... INDEXES>
         inline T DataHyperRectangle<T, INDEXES...>::GetAt (INDEXES... indexes) const
         {
-            return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (std::forward<INDEXES> (indexes)...);
+            return _SafeReadRepAccessor<_IRep>{this}._ConstGetRep ().GetAt (forward<INDEXES> (indexes)...);
         }
         template <typename T, typename... INDEXES>
         inline void DataHyperRectangle<T, INDEXES...>::SetAt (INDEXES... indexes, Configuration::ArgByValueType<T> v)
         {
-            _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().SetAt (std::forward<INDEXES> (indexes)..., v);
+            _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().SetAt (forward<INDEXES> (indexes)..., v);
         }
         template <typename T, typename... INDEXES>
         template <typename EQUALS_COMPARER>

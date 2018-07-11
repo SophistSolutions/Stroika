@@ -37,7 +37,7 @@ namespace Stroika {
                 {
                 }
                 inline Socket::Ptr::Ptr (shared_ptr<_IRep>&& rep)
-                    : fRep_ (std::move (rep))
+                    : fRep_ (move (rep))
                 {
                 }
                 inline Socket::Ptr& Socket::Ptr::operator= (Ptr&& s)

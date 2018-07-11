@@ -46,8 +46,8 @@ namespace Stroika {
                     MultiSet_Array (const MultiSet_Array& src) = default;
                     MultiSet_Array (MultiSet_Array&& src)      = default;
                     MultiSet_Array (const MultiSet<T, TRAITS>& src);
-                    MultiSet_Array (const std::initializer_list<T>& src);
-                    MultiSet_Array (const std::initializer_list<CountedValue<T>>& src);
+                    MultiSet_Array (const initializer_list<T>& src);
+                    MultiSet_Array (const initializer_list<CountedValue<T>>& src);
                     template <typename COPY_FROM_ITERATOR>
                     MultiSet_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 

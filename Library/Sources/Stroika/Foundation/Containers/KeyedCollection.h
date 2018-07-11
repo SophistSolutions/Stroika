@@ -158,9 +158,9 @@ namespace Stroika::Foundation {
             KeyedCollection (const KeyedCollection<KEY_TYPE, T, TRAITS>& src);
             KeyedCollection (KeyedCollection<KEY_TYPE, T, TRAITS>&& src);
             template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = enable_if_t<is_function_v<typename TraitsType::KeyExtractor>>>
-            KeyedCollection (const std::initializer_list<T>& src);
+            KeyedCollection (const initializer_list<T>& src);
             template <typename SFINAE_ENABLE_IF_HAS_KEY_EXTRACTOR = enable_if_t<not is_function_v<typename TraitsType::KeyExtractor>>>
-            KeyedCollection (const std::initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
+            KeyedCollection (const initializer_list<T>& src, KeyExtractorFunctionType keyExtractor);
             template <typename CONTAINER_OF_ADDABLE, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and !is_convertible_v<const CONTAINER_OF_ADDABLE*, const KeyedCollection<KEY_TYPE, T, TRAITS>*>>>
             explicit KeyedCollection (const CONTAINER_OF_ADDABLE& src, KeyExtractorFunctionType keyExtractor);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>

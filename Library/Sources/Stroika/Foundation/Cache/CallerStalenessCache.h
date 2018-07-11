@@ -133,7 +133,7 @@ namespace Stroika::Foundation {
                 VALUE         fValue;
                 TimeStampType fDataCapturedAt;
                 myVal_ (VALUE&& v, TimeStampType t)
-                    : fValue (std::move (v))
+                    : fValue (move (v))
                     , fDataCapturedAt (t)
                 {
                 }

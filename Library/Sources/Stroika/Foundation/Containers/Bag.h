@@ -88,7 +88,7 @@ namespace Stroika::Foundation {
             Bag ();
             Bag (const Bag& src) = default;
             Bag (Bag&& src)      = default;
-            Bag (const std::initializer_list<T>& src);
+            Bag (const initializer_list<T>& src);
             template <typename CONTAINER_OF_ADDABLE>
             explicit Bag (const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>

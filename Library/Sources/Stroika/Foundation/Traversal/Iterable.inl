@@ -198,7 +198,7 @@ namespace Stroika {
             }
             template <typename T>
             inline Iterable<T>::Iterable (Iterable<T>&& from) noexcept
-                : _fRep (std::move (from._fRep))
+                : _fRep (move (from._fRep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
                 if constexpr (!kIterableUsesStroikaSharedPtr) {
@@ -218,7 +218,7 @@ namespace Stroika {
             }
             template <typename T>
             inline Iterable<T>::Iterable (_IterableRepSharedPtr&& rep) noexcept
-                : _fRep (std::move (rep))
+                : _fRep (move (rep))
             {
                 Require (_fRep.GetSharingState () != Memory::SharedByValue_State::eNull);
                 if constexpr (!kIterableUsesStroikaSharedPtr) {

@@ -24,7 +24,7 @@ namespace Stroika::Foundation {
         template <typename T>
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
         inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inorderComparer)
-            : inherited (move (Factory::SortedSet_Factory<T, INORDER_COMPARER> (std::forward<INORDER_COMPARER> (inorderComparer)) ()))
+            : inherited (move (Factory::SortedSet_Factory<T, INORDER_COMPARER> (forward<INORDER_COMPARER> (inorderComparer)) ()))
         {
             static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
             _AssertRepValidType ();
@@ -52,7 +52,7 @@ namespace Stroika::Foundation {
         template <typename T>
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
         inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, const initializer_list<T>& src)
-            : SortedSet (std::forward<INORDER_COMPARER> (inOrderComparer))
+            : SortedSet (forward<INORDER_COMPARER> (inOrderComparer))
         {
             this->AddAll (src);
             _AssertRepValidType ();
@@ -68,7 +68,7 @@ namespace Stroika::Foundation {
         template <typename T>
         template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedSet<T>*>>*>
         inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, const CONTAINER_OF_ADDABLE& src)
-            : SortedSet (std::forward<INORDER_COMPARER> (inOrderComparer))
+            : SortedSet (forward<INORDER_COMPARER> (inOrderComparer))
         {
             this->AddAll (src);
             _AssertRepValidType ();
@@ -84,7 +84,7 @@ namespace Stroika::Foundation {
         template <typename T>
         template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>*>
         inline SortedSet<T>::SortedSet (INORDER_COMPARER&& inOrderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-            : SortedSet (std::forward<INORDER_COMPARER> (inOrderComparer))
+            : SortedSet (forward<INORDER_COMPARER> (inOrderComparer))
         {
             this->AddAll (start, end);
             _AssertRepValidType ();

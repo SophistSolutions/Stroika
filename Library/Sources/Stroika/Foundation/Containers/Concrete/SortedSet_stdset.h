@@ -50,8 +50,8 @@ namespace Stroika {
                     template <typename INORDER_COMPARER>
                     explicit SortedSet_stdset (const INORDER_COMPARER& inorderComparer);
                     SortedSet_stdset (const SortedSet_stdset& src) = default;
-                    SortedSet_stdset (const std::initializer_list<T>& src);
-                    SortedSet_stdset (const InOrderComparerType& inOrderComparer, const std::initializer_list<T>& src);
+                    SortedSet_stdset (const initializer_list<T>& src);
+                    SortedSet_stdset (const InOrderComparerType& inOrderComparer, const initializer_list<T>& src);
                     template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>* = nullptr>
                     SortedSet_stdset (const CONTAINER_OF_T& src);
                     template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const SortedSet_stdset<T>*>>* = nullptr>

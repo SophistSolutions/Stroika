@@ -85,19 +85,19 @@ namespace Stroika {
             inline void Message::write (ARGS_TYPE&&... args)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fResponse_.write (std::forward<ARGS_TYPE> (args)...);
+                return fResponse_.write (forward<ARGS_TYPE> (args)...);
             }
             template <typename... ARGS_TYPE>
             inline void Message::printf (ARGS_TYPE&&... args)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fResponse_.write (std::forward<ARGS_TYPE> (args)...);
+                return fResponse_.write (forward<ARGS_TYPE> (args)...);
             }
             template <typename... ARGS_TYPE>
             inline void Message::writeln (ARGS_TYPE&&... args)
             {
                 lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-                return fResponse_.write (std::forward<ARGS_TYPE> (args)...);
+                return fResponse_.write (forward<ARGS_TYPE> (args)...);
             }
         }
     }

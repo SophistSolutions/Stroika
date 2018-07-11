@@ -262,7 +262,7 @@ namespace Stroika::Foundation {
         inline ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer (ARGS&&... args)
         {
             const T*           n = nullptr; // arg unused, just for overloading
-            TypeMappingDetails tmp{MakeCommonSerializer_ (n, std::forward<ARGS> (args)...)};
+            TypeMappingDetails tmp{MakeCommonSerializer_ (n, forward<ARGS> (args)...)};
             // NB: beacuse of how we match on MakeCommonSerializer_, the type it sees maybe a base class of T, and we want to actually register the type the user specified.
             return TypeMappingDetails{typeid (T), tmp.fFromObjecttMapper, tmp.fToObjectMapper};
         }

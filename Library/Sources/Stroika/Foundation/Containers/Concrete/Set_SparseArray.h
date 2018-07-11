@@ -45,7 +45,7 @@ namespace Stroika {
                      */
                     Set_SparseArray ();
                     Set_SparseArray (const Set_SparseArray<T, TRAITS>& src);
-                    Set_SparseArray (const std::initializer_list<T>& src);
+                    Set_SparseArray (const initializer_list<T>& src);
                     template <typename CONTAINER_OF_T>
                     explicit Set_SparseArray (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>

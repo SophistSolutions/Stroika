@@ -187,14 +187,14 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Set_stdset<T>::Set_stdset (const std::initializer_list<T>& src)
+                inline Set_stdset<T>::Set_stdset (const initializer_list<T>& src)
                     : Set_stdset ()
                 {
                     this->AddAll (src);
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Set_stdset<T>::Set_stdset (const EqualityComparerType& equalsComparer, const std::initializer_list<T>& src)
+                inline Set_stdset<T>::Set_stdset (const EqualityComparerType& equalsComparer, const initializer_list<T>& src)
                     : Set_stdset (equalsComparer)
                 {
                     this->AddAll (src);

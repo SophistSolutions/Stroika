@@ -538,7 +538,7 @@ namespace Stroika::Foundation {
                 WeakAssert (false); // dont think we want to allow this - so we dont need to check
             }
             else {
-                this->fStorage_ = std::forward<U> (rhs);
+                this->fStorage_ = forward<U> (rhs);
             }
             return *this;
         }

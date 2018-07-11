@@ -24,7 +24,7 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
         inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer)
-            : inherited (move (Factory::SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER> (std::forward<INORDER_COMPARER> (inorderComparer)) ()))
+            : inherited (move (Factory::SortedMultiSet_Factory<T, TRAITS, INORDER_COMPARER> (forward<INORDER_COMPARER> (inorderComparer)) ()))
         {
             static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "SortedMultiSet constructor with INORDER_COMPARER - comparer not valid IsStrictInOrderComparer- see ComparisonRelationDeclaration<Common::ComparisonRelationType::eStrictInOrder, function<bool(T, T)>");
             _AssertRepValidType ();
@@ -52,7 +52,7 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
         SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<T>& src)
-            : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
+            : SortedMultiSet (forward<INORDER_COMPARER> (inorderComparer))
         {
             this->AddAll (src);
             _AssertRepValidType ();
@@ -67,7 +67,7 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>*>
         SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<CountedValue<T>>& src)
-            : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
+            : SortedMultiSet (forward<INORDER_COMPARER> (inorderComparer))
         {
             this->AddAll (src);
             _AssertRepValidType ();
@@ -83,7 +83,7 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>>*>
         inline SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src)
-            : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
+            : SortedMultiSet (forward<INORDER_COMPARER> (inorderComparer))
         {
             this->AddAll (src);
             _AssertRepValidType ();
@@ -99,7 +99,7 @@ namespace Stroika::Foundation {
         template <typename T, typename TRAITS>
         template <typename INORDER_COMPARER, typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>*>
         SortedMultiSet<T, TRAITS>::SortedMultiSet (INORDER_COMPARER&& inorderComparer, COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
-            : SortedMultiSet (std::forward<INORDER_COMPARER> (inorderComparer))
+            : SortedMultiSet (forward<INORDER_COMPARER> (inorderComparer))
         {
             AddAll (start, end);
             _AssertRepValidType ();

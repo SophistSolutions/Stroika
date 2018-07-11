@@ -278,7 +278,7 @@ namespace Stroika::Foundation {
          *                          // any changes during setup/elipogue of Optional handling.
          *
          *  \note   To use Optional with un-copyable things, use:
-         *          Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
+         *          Optional<NotCopyable>   n2 (move (NotCopyable ()));    // use r-value reference to move
          *
          *  \note   \em Design-Note - why not SharedByValue<T>
          *      -   We considered using the SharedByValue<T> template which would be more efficient

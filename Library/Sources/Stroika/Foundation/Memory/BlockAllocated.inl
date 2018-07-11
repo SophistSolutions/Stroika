@@ -35,7 +35,7 @@ namespace Stroika::Foundation {
         }
         template <typename T>
         inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (T&& t)
-            : fValue_ (std::move (t))
+            : fValue_ (move (t))
         {
         }
         template <typename T>

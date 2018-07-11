@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Execution {
     template <typename FUNCTION>
     inline auto Finally (FUNCTION f) -> FinallySentry<FUNCTION>
     {
-        return {std::move (f)};
+        return {move (f)};
     }
 
 }

@@ -42,10 +42,10 @@ namespace Stroika {
                      *  This works more generally (and with hopefully modest enough performance impact).
                      */
                     if (auto f = sFactory_.load ()) {
-                        return f (std::forward<INDEXES> (dimensions)...);
+                        return f (forward<INDEXES> (dimensions)...);
                     }
                     else {
-                        return Default_ (std::forward<INDEXES> (dimensions)...);
+                        return Default_ (forward<INDEXES> (dimensions)...);
                     }
                 }
                 template <typename T, typename... INDEXES>
@@ -56,7 +56,7 @@ namespace Stroika {
                 template <typename T, typename... INDEXES>
                 inline DenseDataHyperRectangle<T, INDEXES...> DenseDataHyperRectangle_Factory<T, INDEXES...>::Default_ (INDEXES... dimensions)
                 {
-                    return Concrete::DenseDataHyperRectangle_Vector<T, INDEXES...>{std::forward<INDEXES> (dimensions)...};
+                    return Concrete::DenseDataHyperRectangle_Vector<T, INDEXES...>{forward<INDEXES> (dimensions)...};
                 }
             }
         }

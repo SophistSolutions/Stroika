@@ -128,7 +128,7 @@ namespace Stroika::Foundation {
         {
         }
         inline BLOB::BLOB (_SharedIRep&& rep)
-            : fRep_ (std::move (rep))
+            : fRep_ (move (rep))
         {
         }
         inline BLOB BLOB::Hex (const char* b)
