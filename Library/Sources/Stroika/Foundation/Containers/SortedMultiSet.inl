@@ -89,7 +89,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T, typename TRAITS>
-        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, typename ENABLE_IF>
+        template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>*>
         SortedMultiSet<T, TRAITS>::SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end)
             : SortedMultiSet ()
         {

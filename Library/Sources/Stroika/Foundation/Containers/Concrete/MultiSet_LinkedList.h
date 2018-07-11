@@ -41,8 +41,8 @@ namespace Stroika {
                      *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
                      */
                     MultiSet_LinkedList ();
-                    template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER = enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>>
-                    explicit MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER* = nullptr);
+                    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+                    explicit MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer);
                     MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
                     MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);
                     MultiSet_LinkedList (const initializer_list<T>& src);

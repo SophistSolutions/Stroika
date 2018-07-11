@@ -281,13 +281,13 @@ namespace Stroika::Foundation {
             }
         }
         template <typename ELEMENT_TYPE>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
         inline auto MemoryStream<ELEMENT_TYPE>::New (const Memory::BLOB& blob) -> Ptr
         {
             return New (blob.begin (), blob.end ());
         }
         template <typename ELEMENT_TYPE>
-        template <typename TEST_TYPE, typename ENABLE_IF_TEST>
+        template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
         inline auto MemoryStream<ELEMENT_TYPE>::New (Execution::InternallySyncrhonized internallySyncrhonized, const Memory::BLOB& blob) -> Ptr
         {
             switch (internallySyncrhonized) {

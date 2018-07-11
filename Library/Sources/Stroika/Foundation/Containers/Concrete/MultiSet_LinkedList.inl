@@ -256,8 +256,8 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T, typename TRAITS>
-                template <typename EQUALS_COMPARER, typename ENABLE_IF_IS_COMPARER>
-                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer, ENABLE_IF_IS_COMPARER*)
+                template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
+                inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer)
                     : inherited (inherited::template MakeSharedPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
                 {
                     AssertRepValidType_ ();

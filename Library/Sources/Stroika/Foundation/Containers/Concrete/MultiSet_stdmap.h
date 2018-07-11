@@ -42,7 +42,7 @@ namespace Stroika {
                     MultiSet_stdmap ();
                     template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
                     explicit MultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
-                    template <typename CONTAINER_OF_T, typename ENABLE_IF = enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>>>
+                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const MultiSet_stdmap<T>*>>* = nullptr>
                     MultiSet_stdmap (const CONTAINER_OF_T& src);
                     MultiSet_stdmap (const MultiSet_stdmap& src) = default;
                     MultiSet_stdmap (const initializer_list<T>& src);
