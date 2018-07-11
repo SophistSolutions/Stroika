@@ -320,7 +320,7 @@ String String::FromNarrowString (const char* from, const char* to, const locale&
     // http://en.cppreference.com/w/cpp/locale/codecvt/in
     mbstate_t            mbstate{};
     size_t               externalSize = to - from;
-    wstring         resultWStr (externalSize, '\0');
+    wstring              resultWStr (externalSize, '\0');
     const char*          from_next;
     wchar_t*             to_next;
     codecvt_base::result result = cvt.in (mbstate, from, to, from_next, &resultWStr[0], &resultWStr[resultWStr.size ()], to_next);
@@ -615,7 +615,7 @@ optional<pair<size_t, size_t>> String::Find (const RegularExpression& regEx, [[m
     const String threadSafeCopy{*this};
     Require (startAt <= threadSafeCopy.GetLength ());
     Assert (startAt == 0); // else NYI
-    wstring      tmp = threadSafeCopy.As<wstring> ();
+    wstring tmp = threadSafeCopy.As<wstring> ();
     wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     if (res.size () >= 1) {
@@ -639,7 +639,7 @@ vector<pair<size_t, size_t>> String::FindEach (const RegularExpression& regEx) c
 {
     vector<pair<size_t, size_t>> result;
     //@TODO - FIX - IF we get back zero length match
-    wstring      tmp{As<wstring> ()};
+    wstring tmp{As<wstring> ()};
     wsmatch res;
     regex_search (tmp, res, regEx.GetCompiled ());
     size_t nMatches = res.size ();

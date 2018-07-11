@@ -151,15 +151,15 @@ namespace Stroika {
                     }
                     virtual bool Contains (ArgByValueType<T> item) const override
                     {
-                        CountedValue<T>                                                 tmp (item);
+                        CountedValue<T>                                            tmp (item);
                         shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
                         return (bool(Find_ (tmp) != kNotFound_));
                     }
                     virtual void Add (ArgByValueType<T> item, CounterType count) override
                     {
                         lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        CountedValue<T>                                                tmp (item, count);
-                        size_t                                                         index = Find_ (tmp);
+                        CountedValue<T>                                           tmp (item, count);
+                        size_t                                                    index = Find_ (tmp);
                         if (index == kNotFound_) {
                             fData_.InsertAt (fData_.GetLength (), tmp);
                         }
@@ -171,8 +171,8 @@ namespace Stroika {
                     virtual void Remove (ArgByValueType<T> item, CounterType count) override
                     {
                         lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        CountedValue<T>                                                tmp (item);
-                        size_t                                                         index = Find_ (tmp);
+                        CountedValue<T>                                           tmp (item);
+                        size_t                                                    index = Find_ (tmp);
                         if (index != kNotFound_) {
                             Assert (index < fData_.GetLength ());
                             Assert (tmp.fCount >= count);
@@ -188,7 +188,7 @@ namespace Stroika {
                     virtual void Remove (const Iterator<CountedValue<T>>& i) override
                     {
                         lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<CountedValue<T>>::IRep&                ir = i.GetRep ();
+                        const typename Iterator<CountedValue<T>>::IRep&           ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         fData_.RemoveAt (mir.fIterator);
@@ -196,7 +196,7 @@ namespace Stroika {
                     virtual void UpdateCount (const Iterator<CountedValue<T>>& i, CounterType newCount) override
                     {
                         lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        const typename Iterator<CountedValue<T>>::IRep&                ir = i.GetRep ();
+                        const typename Iterator<CountedValue<T>>::IRep&           ir = i.GetRep ();
                         AssertMember (&ir, IteratorRep_);
                         auto& mir = dynamic_cast<const IteratorRep_&> (ir);
                         if (newCount == 0) {
@@ -211,8 +211,8 @@ namespace Stroika {
                     virtual CounterType OccurrencesOf (ArgByValueType<T> item) const override
                     {
                         shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-                        CountedValue<T>                                                 tmp (item);
-                        size_t                                                          index = Find_ (tmp);
+                        CountedValue<T>                                            tmp (item);
+                        size_t                                                     index = Find_ (tmp);
                         if (index == kNotFound_) {
                             return 0;
                         }

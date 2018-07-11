@@ -44,8 +44,8 @@ namespace {
         {
             Debug::TraceContextBumper ctx{L"{}::ExampleCTORS_Test_2_"};
             // From Collection<> CTOR docs
-            Sequence<int>    s;
-            vector<int> v;
+            Sequence<int> s;
+            vector<int>   v;
 
             Collection<int> c1 = {1, 2, 3};
             Collection<int> c2 = c1;

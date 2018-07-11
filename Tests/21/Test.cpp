@@ -51,8 +51,8 @@ namespace {
         void DoTest_examples_from_docs_ ()
         {
             // From Set<> CTOR docs
-            Collection<int>  c;
-            vector<int> v;
+            Collection<int> c;
+            vector<int>     v;
 
             Set<int> s1 = {1, 2, 3};
             Set<int> s2 = s1;

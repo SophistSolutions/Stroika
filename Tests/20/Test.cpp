@@ -751,8 +751,8 @@ namespace {
         void DoTest ()
         {
             // From Sequence<> CTOR docs
-            Collection<int>  c;
-            vector<int> v;
+            Collection<int> c;
+            vector<int>     v;
 
             Sequence<int> s1 = {1, 2, 3};
             Sequence<int> s2 = s1;
