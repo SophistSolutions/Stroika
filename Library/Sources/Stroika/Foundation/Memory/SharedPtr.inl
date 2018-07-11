@@ -317,7 +317,7 @@ namespace Stroika::Foundation {
                     }
 #endif
                 }
-                fEnvelope_ = move (rhs.fEnvelope_);      // no need to bump refcounts - moved from one to another
+                fEnvelope_ = move (rhs.fEnvelope_);           // no need to bump refcounts - moved from one to another
                 Assert (rhs.fEnvelope_.GetPtr () == nullptr); // NB: we ONLY gaurantee this if not self-moving
             }
             return *this;
