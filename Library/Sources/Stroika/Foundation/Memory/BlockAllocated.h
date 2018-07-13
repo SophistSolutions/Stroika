@@ -15,12 +15,8 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
- *
  *  @todo   Document why we didnt use BlockAllocated<T> : T ... issue is that wouldnt work for non-class T, such
  *          as int.
- *
- *  @todo   Document how you can use USE_BLOCK_ALLOCATION style usage, or explicit BlockAllocated<T>
- *          usage (as in Memory::Optional).
  *
  *  @todo   We should either add a VARIANT or template parameter to BlockAllocated<> saying whether we
  *          should force block allocation, or ONLY block-allocate if size is appropriate to one of our
@@ -28,27 +24,6 @@
  *
  *          The reason for this option is for better use in templates like LinkedList<> - where we might
  *          want to blockallocate for small sizes of T, but not for ALL.
- *
- *  @todo   Fix all the BlockAllocated<T>::fValue_ code - clean it up, put it in INL file, and
- *          think through more carefully CTORs etc - to make it act more like a "T" type.
- *
- *          Sterl thinks its best to just add a generic solution like:
- *              template <typename T>
- *              struct  AsObject {
- *                  AsObject ()    {    }
- *
- *                  AsObject (T value) :         fValue (value)    {    }
- *
- *                  nonvirtual  operator T () const    {        return fValue;    }
- *                  nonvirtual  operator T ()    {        return fValue;    }
- *
- *                  T fValue;
- *              };
- *
- *          Closely related - document WHY we didn't just have BlockAllocated<T> inherit from T (issue is
- *          when T = int, for example. There maybe some template magic I can use to fix that, and then
- *          thats probably a better solution!
- *
  */
 
 /**
@@ -184,14 +159,12 @@ namespace Stroika::Foundation {
          * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
          * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
          * 
-         * Note also - you can avoid some of the uglines of the overload declarations by using the
-         * DECLARE_USE_BLOCK_ALLOCATION() macro.
-         *
          *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
          *  false (0), this will just default to the global ::new/::delete
+         *
          */
         template <typename T>
-        class AutomaticallyBlockAllocated : public UseBlockAllocationIfAppropriate<T> {
+        [[deprecated ("bad idea - if you use to allocate - must retain type AutomaticallyBlockAllocated<T>* or do wrong delete - deprecated in v2.1d4")]] class AutomaticallyBlockAllocated : public UseBlockAllocationIfAppropriate<T> {
         public:
             /**
              * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
@@ -218,18 +191,15 @@ namespace Stroika::Foundation {
         };
 
         /**
-         *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store,
-         *  but if qAllowBlockAllocation is false (0), this will just default to the global ::new/::delete
-         *  NEW EXPERIMENTAL POSSIBLE REPLACEMNT FOR BlockAllocated<>
-         *  LGP 2014-02-27
-         *
-         *  @todo CLEANUP THIS DOC SECITON
-         *
-         *  maybe just augoemtn - this is where you must save a T* and return that easil. Maybe existing BlockAllocated best for
-         *  when you can afford to hang onto the wrapper BlockAllocated<T>?
-         *
-         *  maybe call this ManuallyBlockAllocated, and the other one AutomaticallyBlockAllocated()??
-         */
+        *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qAllowBlockAllocation defined, this will use block allocation for a given type - at a given call.
+        *
+        *   This is in sharp contrast to struct T : UseBlockAllocationIfAppropriate<T> {};
+        *   If you use UseBlockAllocationIfAppropriate<> - the blockallocation strategy happens automatically for all new creations of objects of that type.
+        *
+        *   Using ManuallyBlockAllocated, only the particular places ManuallyBlockAllocated<T>::New ()/Delete are used will participate in block allocations, and other uses
+        *   of T wont be block allocated. Note that means you MUST BE VERY CAREFUL with this and assure all objects allocated this way are deleted this way, and vice versa, and 
+        *   dont mix with regular free-store.
+        */
         template <typename T>
         class ManuallyBlockAllocated {
         public:
