@@ -20,7 +20,9 @@
  *
  *  @todo   Consider doing GetMem_Util_ code outside of the context of the lock-guard, and if
  *          we get multiple results, just patch them into the linked list. That way in case of
- *          multithreading (when we're paging in freepool) - we'll do less busy waiting.
+ *          multithreading (when we're paging in freepool) - we'll do less busy waiting. But, this would
+ *          be at the cost of possibly allocating too many blocks when two threads both run out of memory
+ *          in the same pool at the same time - though that could be undone).
  *
  *  @todo   Compact() method could be smart enough to move items in free pool that are from
  *          mostly used up pools to the head of the free list, and move mostly unused blocks
@@ -33,10 +35,11 @@
  *          Make sure when we experiment with that - we include it here as one of our first
  *          optimization points!
  *
+ *          There is now a C++ semi-standard for this, and working implementations (I haven't tried). But my current
+ *          lockfree approach maybe better.
+ *
  *  @todo   Maybe use TRAITS on BlockAllocator to define some stuff
  *          about strategies (options) - like how to share pools?
- *
- *  @todo   Comments generally need a thorough review. Many VERY VERY old - from Led days.
  *
  *  @todo   BlockAllocator<>::Compact ()
  *              o   not sure this is useful, or worth the effort, but since
@@ -118,6 +121,10 @@ namespace Stroika::Foundation::Memory {
           * Also - beware - this locks out other threads (from allocation/deallocation) during execution (which can take a while).
           */
         static void Compact ();
+
+    private:
+        // ensure return value is >= sizeof (T), and has legit alignment for T
+        static constexpr size_t AdjustSizeForPool_ ();
     };
 
     /**

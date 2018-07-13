@@ -100,14 +100,6 @@ namespace Stroika::Foundation::Memory {
 
     namespace Private_ {
 
-        // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
-        inline constexpr size_t BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
-        {
-            // when we really fix constexpr usage, we can use the below!
-            //return  Math::RoundUpTo (sizeof(T), sizeof (void*));
-            return (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
-        }
-
         /*
          * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
          * a chunk which memory allocator can do a good job on.
@@ -129,9 +121,7 @@ namespace Stroika::Foundation::Memory {
             Assert (kChunks >= 1);
 
             /*
-             * Please note that the following line is NOT a memory leak. Please look at the
-             * Led FAQ question#29 - "Does Led have any memory leaks?
-             * How does qAllowBlockAllocation affect memory leaks?"
+             * Please note that the following line is NOT a memory leak. @see BlockAllocator<>
              */
 #if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
             void** newLinks = (void**)::malloc (kChunks * sz);
@@ -341,11 +331,10 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     inline void* BlockAllocator<T>::Allocate ([[maybe_unused]] size_t n)
     {
-        using Private_::BlockAllocation_Private_AdjustSizeForPool_;
         using Private_::BlockAllocationPool_;
         Require (n == sizeof (T));
 #if qAllowBlockAllocation
-        void* result = BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Allocate (n);
+        void* result = BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (n);
 #else
         void* result = ::operator new (n);
 #endif
@@ -356,11 +345,10 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     inline void BlockAllocator<T>::Deallocate (void* p) noexcept
     {
-        using Private_::BlockAllocation_Private_AdjustSizeForPool_;
         using Private_::BlockAllocationPool_;
 #if qAllowBlockAllocation
         if (p != nullptr) {
-            BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
+            BlockAllocationPool_<AdjustSizeForPool_ ()>::Deallocate (p);
         }
 #else
         ::               operator delete (p);
@@ -369,12 +357,21 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     void BlockAllocator<T>::Compact ()
     {
-        using Private_::BlockAllocation_Private_AdjustSizeForPool_;
         using Private_::BlockAllocationPool_;
 #if qAllowBlockAllocation
-        BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();
+        BlockAllocationPool_<AdjustSizeForPool_ ()>::Compact ();
 #endif
     }
+    template <typename T>
+    // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
+    constexpr size_t BlockAllocator<T>::AdjustSizeForPool_ ()
+    {
+        size_t n = sizeof (T);
+        // when we really fix constexpr usage, we can use the below!
+        //return  Math::RoundUpTo (sizeof(T), sizeof (void*));
+        return (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
+    }
+
 }
 #if !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 namespace {
