@@ -17,6 +17,7 @@
 #include "../Debug/Valgrind.h"
 #include "../Execution/Common.h"
 #include "../Execution/SpinLock.h"
+#include "../Math/Common.h"
 
 #include "Common.h"
 
@@ -146,9 +147,11 @@ namespace Stroika::Foundation::Memory {
         template <size_t SIZE>
         class BlockAllocationPool_ {
         public:
+            // never returns nullptr - throws if memory exhausted
             static void* Allocate (size_t n);
-            static void  Deallocate (void* p) noexcept;
-            static void  Compact ();
+            // require p != nullptr
+            static void Deallocate (void* p) noexcept;
+            static void Compact ();
 
         private:
             static inline conditional_t<qStroika_Foundation_Memory_BlockAllocator_UseLockFree_, atomic<void*>, void*> sHeadLink_{nullptr};
@@ -334,9 +337,9 @@ namespace Stroika::Foundation::Memory {
         using Private_::BlockAllocationPool_;
         Require (n == sizeof (T));
 #if qAllowBlockAllocation
-        void* result = BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (n);
+        void* result = BlockAllocationPool_<AdjustSizeForPool_ ()>::Allocate (sizeof (T));
 #else
-        void* result = ::operator new (n);
+        void* result = ::operator new (sizeof (T));
 #endif
         EnsureNotNull (result);
         Ensure (reinterpret_cast<ptrdiff_t> (result) % alignof (T) == 0); // see https://stroika.atlassian.net/browse/STK-511 - assure aligned
@@ -366,10 +369,7 @@ namespace Stroika::Foundation::Memory {
     // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
     constexpr size_t BlockAllocator<T>::AdjustSizeForPool_ ()
     {
-        size_t n = sizeof (T);
-        // when we really fix constexpr usage, we can use the below!
-        //return  Math::RoundUpTo (sizeof(T), sizeof (void*));
-        return (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
+        return Math::RoundUpTo (sizeof (T), sizeof (void*));
     }
 
 }
