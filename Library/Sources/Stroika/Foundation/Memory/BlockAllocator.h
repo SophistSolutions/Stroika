@@ -62,11 +62,11 @@ namespace Stroika {
              *
              *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
              *
-             *  For easiser use probably the best approach is to see DECLARE_USE_BLOCK_ALLOCATION
+             *  For easiser use probably the best approach is to @see UseBlockAllocationIfAppropriate
              *
              *  \note   Design Note: alignas / alignemnt of allocated values
              *          https://stroika.atlassian.net/browse/STK-511
-             *          We use sizeof(). We always allocate large blocks which (I htink are always) algined to the largest
+             *          We use sizeof(). We always allocate large blocks which (I htink are always) aligned to the largest
              *          alignemnt required by the system, and we that as an array.
              *
              *          But I think since sizeof(T) is the offset from one elemnet of an array[T] - our allocations will always be aligned
@@ -75,9 +75,6 @@ namespace Stroika {
              *          To double/triple check, we have an Ensure in BlockAllocator<T>::Allocate () to assure aligned allocations
              *
              *  \note
-             *      Until Stroika 2.0a209, allocation and deallocation called Execution::Yield, which made allocation and deallocation a cancelation point.
-             *      This was a SERIOUS BUG with deallocation.
-             *
              *      To make BlockAllocator more of a plug-replacement for the std-c++ free-pool allocator, neither Allocate nor Deallocate () are cancelation
              *      points.
              *
@@ -85,9 +82,8 @@ namespace Stroika {
              *      from a no-except method.
              *
              *  But also see:
-             *      @see AutomaticallyBlockAllocated
              *      @see ManuallyBlockAllocated
-             *      @see DECLARE_USE_BLOCK_ALLOCATION
+             *      @see UseBlockAllocationIfAppropriate
              */
             template <typename T>
             class BlockAllocator {
