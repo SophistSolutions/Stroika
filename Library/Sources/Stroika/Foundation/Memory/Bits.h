@@ -22,12 +22,12 @@ namespace Stroika::Foundation {
          *
          *  \par Example Usage
          *      \code
-         *      VerifyTestResult (Bit (0) == 0x1);
-         *      VerifyTestResult (Bit (1) == 0x2);
-         *      VerifyTestResult (Bit (3) == 0x8);
-         *      VerifyTestResult (Bit (15) == 0x8000);
-         *      VerifyTestResult (Bit<int> (1, 2) == 0x6);
-         *      VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
+         *          VerifyTestResult (Bit (0) == 0x1);
+         *          VerifyTestResult (Bit (1) == 0x2);
+         *          VerifyTestResult (Bit (3) == 0x8);
+         *          VerifyTestResult (Bit (15) == 0x8000);
+         *          VerifyTestResult (Bit<int> (1, 2) == 0x6);
+         *          VerifyTestResult (Bit<int> (1, 2, 15) == 0x8006);
          *      \endcode
          */
         template <typename INT_TYPE = unsigned int>
@@ -43,12 +43,12 @@ namespace Stroika::Foundation {
          *
          *  \par Example Usage
          *      \code
-         *      VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
-         *      VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
-         *      VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
-         *      VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
-         *      VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
-         *      VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
+         *          VerifyTestResult (BitSubstring (0x3, 0, 1) == 1);
+         *          VerifyTestResult (BitSubstring (0x3, 1, 2) == 1);
+         *          VerifyTestResult (BitSubstring (0x3, 2, 3) == 0);
+         *          VerifyTestResult (BitSubstring (0x3, 0, 3) == 0x3);
+         *          VerifyTestResult (BitSubstring (0xff, 0, 8) == 0xff);
+         *          VerifyTestResult (BitSubstring (0xff, 8, 16) == 0x0);
          *      \endcode
          *
          *  \note   The startOffset/endOffset pattern matches that with STL iterators (not including the last item)
