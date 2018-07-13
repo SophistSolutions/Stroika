@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Math {
     /**
      */
     template <typename T>
-    T nan ();
+    constexpr T nan ();
 
     constexpr double kE  = 2.71828182845904523536;
     constexpr double kPi = 3.14159265358979323846;
@@ -40,7 +40,7 @@ namespace Stroika::Foundation::Math {
      *  to this list)
      */
     template <typename T>
-    T RoundUpTo (T x, T toNearest);
+    constexpr T RoundUpTo (T x, T toNearest);
 
     /**
      *  RoundDownTo() - round towards negative infinity.
@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Math {
      *  to this list)
      */
     template <typename T>
-    T RoundDownTo (T x, T toNearest);
+    constexpr T RoundDownTo (T x, T toNearest);
 
     /**
      *  Convert from a floating point value to an integer value - like std::round () - except that round () returns a floating
@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Math {
      *      if the truncated value cannot be represented in the destination type
      */
     template <typename INT_TYPE, typename FLOAT_TYPE>
-    INT_TYPE Round (FLOAT_TYPE x);
+    constexpr INT_TYPE Round (FLOAT_TYPE x);
 
     /**
      *  NearlyEquals() can be used as a utility for floating point comparisons.
@@ -104,7 +104,7 @@ namespace Stroika::Foundation::Math {
      *  @see AtMost
      */
     template <typename T>
-    T PinInRange (T initialValue, T lowerBound, T upperBound);
+    constexpr T PinInRange (T initialValue, T lowerBound, T upperBound);
 
     /**
      *  Return a value at this at least the given value. This is the same as "max" as it turns out,
@@ -114,7 +114,7 @@ namespace Stroika::Foundation::Math {
      *  @see AtLeast
      */
     template <typename T>
-    T AtLeast (T initialValue, T lowerBound);
+    constexpr T AtLeast (T initialValue, T lowerBound);
 
     /**
      *  Return a value at this at no more than the given value. This is the same as "min" as it turns out,
@@ -124,7 +124,7 @@ namespace Stroika::Foundation::Math {
      *  @see AtLeast
      */
     template <typename T>
-    T AtMost (T initialValue, T upperBound);
+    constexpr T AtMost (T initialValue, T upperBound);
 
     /**
      *  This returns the given value, as the new type NEW_T, but if the value wont fit in NEW_T, it returns
@@ -152,13 +152,13 @@ namespace Stroika::Foundation::Math {
     RESULT_TYPE Abs (T v);
 
     /**
-     *  \note - when we port stroika bignum package - this shoudl support those bignums.
+     *  \note - when we port stroika bignum package - this should support those bignums.
      */
     template <typename T>
     bool IsOdd (T v);
 
     /**
-     *  Note - when we port stroika bignum package - this shoudl support those bignums.
+     *  Note - when we port stroika bignum package - this should support those bignums.
      */
     template <typename T>
     bool IsEven (T v);

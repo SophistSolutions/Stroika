@@ -24,7 +24,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            inline T nan ()
+            constexpr T nan ()
             {
                 return numeric_limits<T>::quiet_NaN ();
             }
@@ -36,9 +36,9 @@ namespace Stroika {
              */
             namespace Private {
                 template <typename T>
-                T RoundUpTo_UnSignedHelper_ (T x, T toNearest);
+                constexpr T RoundUpTo_UnSignedHelper_ (T x, T toNearest);
                 template <typename T, typename UNSIGNED_T>
-                inline T RoundUpTo_SignedHelper_ (T x, T toNearest)
+                constexpr T RoundUpTo_SignedHelper_ (T x, T toNearest)
                 {
                     Require (toNearest > 0);
                     if (x < 0) {
@@ -49,12 +49,12 @@ namespace Stroika {
                     }
                 }
                 template <typename T>
-                inline T RoundUpTo_UnSignedHelper_ (T x, T toNearest)
+                constexpr T RoundUpTo_UnSignedHelper_ (T x, T toNearest)
                 {
                     return (((x + toNearest - 1u) / toNearest) * toNearest);
                 }
                 template <typename T, typename UNSIGNED_T>
-                inline T RoundDownTo_SignedHelper_ (T x, T toNearest)
+                constexpr T RoundDownTo_SignedHelper_ (T x, T toNearest)
                 {
                     Require (toNearest > 0);
                     if (x < 0) {
@@ -65,38 +65,38 @@ namespace Stroika {
                     }
                 }
                 template <typename T>
-                inline T RoundDownTo_UnSignedHelper_ (T x, T toNearest)
+                constexpr T RoundDownTo_UnSignedHelper_ (T x, T toNearest)
                 {
                     return ((x / toNearest) * toNearest);
                 }
             }
             template <>
-            inline int RoundUpTo (int x, int toNearest)
+            constexpr int RoundUpTo (int x, int toNearest)
             {
                 return Private::RoundUpTo_SignedHelper_<int, unsigned int> (x, toNearest);
             }
             template <>
-            inline long RoundUpTo (long x, long toNearest)
+            constexpr long RoundUpTo (long x, long toNearest)
             {
                 return Private::RoundUpTo_SignedHelper_<long, unsigned long> (x, toNearest);
             }
             template <>
-            inline long long RoundUpTo (long long x, long long toNearest)
+            constexpr long long RoundUpTo (long long x, long long toNearest)
             {
                 return Private::RoundUpTo_SignedHelper_<long long, unsigned long long> (x, toNearest);
             }
             template <>
-            inline unsigned int RoundUpTo (unsigned int x, unsigned int toNearest)
+            constexpr unsigned int RoundUpTo (unsigned int x, unsigned int toNearest)
             {
                 return Private::RoundUpTo_UnSignedHelper_<unsigned int> (x, toNearest);
             }
             template <>
-            inline unsigned long RoundUpTo (unsigned long x, unsigned long toNearest)
+            constexpr unsigned long RoundUpTo (unsigned long x, unsigned long toNearest)
             {
                 return Private::RoundUpTo_UnSignedHelper_<unsigned long> (x, toNearest);
             }
             template <>
-            inline unsigned long long RoundUpTo (unsigned long long x, unsigned long long toNearest)
+            constexpr unsigned long long RoundUpTo (unsigned long long x, unsigned long long toNearest)
             {
                 return Private::RoundUpTo_UnSignedHelper_<unsigned long long> (x, toNearest);
             }
@@ -107,32 +107,32 @@ namespace Stroika {
              ********************************************************************************
              */
             template <>
-            inline int RoundDownTo (int x, int toNearest)
+            constexpr int RoundDownTo (int x, int toNearest)
             {
                 return Private::RoundDownTo_SignedHelper_<int, unsigned int> (x, toNearest);
             }
             template <>
-            inline long RoundDownTo (long x, long toNearest)
+            constexpr long RoundDownTo (long x, long toNearest)
             {
                 return Private::RoundDownTo_SignedHelper_<long, unsigned long> (x, toNearest);
             }
             template <>
-            inline long long RoundDownTo (long long x, long long toNearest)
+            constexpr long long RoundDownTo (long long x, long long toNearest)
             {
                 return Private::RoundDownTo_SignedHelper_<long long, unsigned long long> (x, toNearest);
             }
             template <>
-            inline unsigned int RoundDownTo (unsigned int x, unsigned int toNearest)
+            constexpr unsigned int RoundDownTo (unsigned int x, unsigned int toNearest)
             {
                 return Private::RoundDownTo_UnSignedHelper_<unsigned int> (x, toNearest);
             }
             template <>
-            inline unsigned long RoundDownTo (unsigned long x, unsigned long toNearest)
+            constexpr unsigned long RoundDownTo (unsigned long x, unsigned long toNearest)
             {
                 return Private::RoundDownTo_UnSignedHelper_<unsigned long> (x, toNearest);
             }
             template <>
-            inline unsigned long long RoundDownTo (unsigned long long x, unsigned long long toNearest)
+            constexpr unsigned long long RoundDownTo (unsigned long long x, unsigned long long toNearest)
             {
                 return Private::RoundDownTo_UnSignedHelper_<unsigned long long> (x, toNearest);
             }
@@ -143,7 +143,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename INT_TYPE, typename FLOAT_TYPE>
-            inline INT_TYPE Round (FLOAT_TYPE x)
+            constexpr INT_TYPE Round (FLOAT_TYPE x)
             {
                 FLOAT_TYPE tmp = round (x);
                 if (tmp > 0) {
@@ -250,7 +250,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            inline T PinInRange (T initialValue, T lowerBound, T upperBound)
+            constexpr T PinInRange (T initialValue, T lowerBound, T upperBound)
             {
                 Require (lowerBound <= upperBound);
                 return max (lowerBound, min (upperBound, initialValue));
@@ -262,7 +262,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            inline T AtLeast (T initialValue, T lowerBound)
+            constexpr T AtLeast (T initialValue, T lowerBound)
             {
                 return max (initialValue, lowerBound);
             }
@@ -273,7 +273,7 @@ namespace Stroika {
              ********************************************************************************
              */
             template <typename T>
-            inline T AtMost (T initialValue, T upperBound)
+            constexpr T AtMost (T initialValue, T upperBound)
             {
                 return min (initialValue, upperBound);
             }
