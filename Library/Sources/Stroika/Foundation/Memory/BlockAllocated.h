@@ -191,15 +191,15 @@ namespace Stroika::Foundation {
         };
 
         /**
-        *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qAllowBlockAllocation defined, this will use block allocation for a given type - at a given call.
-        *
-        *   This is in sharp contrast to struct T : UseBlockAllocationIfAppropriate<T> {};
-        *   If you use UseBlockAllocationIfAppropriate<> - the blockallocation strategy happens automatically for all new creations of objects of that type.
-        *
-        *   Using ManuallyBlockAllocated, only the particular places ManuallyBlockAllocated<T>::New ()/Delete are used will participate in block allocations, and other uses
-        *   of T wont be block allocated. Note that means you MUST BE VERY CAREFUL with this and assure all objects allocated this way are deleted this way, and vice versa, and 
-        *   dont mix with regular free-store.
-        */
+         *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qAllowBlockAllocation defined, this will use block allocation for a given type - at a given call.
+         *
+         *   This is in sharp contrast to struct T : UseBlockAllocationIfAppropriate<T> {};
+         *   If you use UseBlockAllocationIfAppropriate<> - the blockallocation strategy happens automatically for all new creations of objects of that type.
+         *
+         *   Using ManuallyBlockAllocated, only the particular places ManuallyBlockAllocated<T>::New ()/Delete are used will participate in block allocations, and other uses
+         *   of T wont be block allocated. Note that means you MUST BE VERY CAREFUL with this and assure all objects allocated this way are deleted this way, and vice versa, and 
+         *   dont mix with regular free-store.
+         */
         template <typename T>
         class ManuallyBlockAllocated {
         public:

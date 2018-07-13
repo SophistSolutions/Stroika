@@ -129,15 +129,15 @@ namespace Stroika::Foundation::Memory {
             Assert (kChunks >= 1);
 
             /*
-                     * Please note that the following line is NOT a memory leak. Please look at the
-                     * Led FAQ question#29 - "Does Led have any memory leaks?
-                     * How does qAllowBlockAllocation affect memory leaks?"
-                     */
+             * Please note that the following line is NOT a memory leak. Please look at the
+             * Led FAQ question#29 - "Does Led have any memory leaks?
+             * How does qAllowBlockAllocation affect memory leaks?"
+             */
 #if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
             void** newLinks = (void**)::malloc (kChunks * sz);
             Execution::ThrowIfNull (newLinks);
 #else
-            void**       newLinks = (void**)new char[kChunks * sz];
+            void** newLinks = (void**)new char[kChunks * sz];
 #endif
             AssertNotNull (newLinks);
             void** curLink = newLinks;
@@ -150,15 +150,8 @@ namespace Stroika::Foundation::Memory {
         }
 
         /*
-         *       In order to reduce fragmentation, we allocate all chunks of common sizes out of
-         *   the same pool. Assuming the compiler is able to inline the references to these
-         *   below, there is really no cost in adding more. I picked the ones I thought most
-         *   likely to come up, but adding more should be just fine - strictly a win.
-         *
-         *       Don't bother implementing Block_Alloced_sizeof_N_GetMems() cuz flunging will
-         *   genericly give us the same code-sharing effect.
-         *
-         *  <<@todo - update docs -.... VERY OUT OF DATE>>>.
+         *  BlockAllocationPool_ implements the core  logic for allocation/deallocation of a particular pool. These are organized
+         *  by size rather than type to reduce fragmentation.
          */
         template <size_t SIZE>
         class BlockAllocationPool_ {
@@ -168,13 +161,7 @@ namespace Stroika::Foundation::Memory {
             static void  Compact ();
 
         private:
-// make op new inline for MOST important case
-// were alloc is cheap linked list operation...
-#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-            static atomic<void*> sHeadLink_;
-#else
-            static void* sHeadLink_;
-#endif
+            static inline conditional_t<qStroika_Foundation_Memory_BlockAllocator_UseLockFree_, atomic<void*>, void*> sHeadLink_{nullptr};
         };
     }
 
@@ -345,16 +332,10 @@ namespace Stroika::Foundation::Memory {
         }
 #endif
     }
-    template <size_t SIZE>
-#if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-    atomic<void*> Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
-#else
-    void* Private_::BlockAllocationPool_<SIZE>::sHeadLink_{nullptr};
-#endif
 
     /*
      ********************************************************************************
-     ********************************** BlockAllocator<T> ***************************
+     ******************************** BlockAllocator<T> *****************************
      ********************************************************************************
      */
     template <typename T>
@@ -382,7 +363,7 @@ namespace Stroika::Foundation::Memory {
             BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
         }
 #else
-        ::operator delete (p);
+        ::               operator delete (p);
 #endif
     }
     template <typename T>
