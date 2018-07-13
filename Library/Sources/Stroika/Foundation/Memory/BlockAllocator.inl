@@ -56,7 +56,7 @@ namespace Stroika {
                  *  kUseSpinLock_ is probaly best true (empirical tests with the
                  *  performance regression test indicated that this helped considerably).
                  *
-                 *  It should be generally pretty safe because the locks are very narrow (so threads shoudlnt spend much time
+                 *  It should be generally pretty safe because the locks are very narrow (so threads shoudln't spend much time
                  *  spinning. And we could reduce this further during mallocs of new blocks.
                  */
                 constexpr bool kUseSpinLock_ = !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ and Execution::kSpinLock_IsFasterThan_mutex;

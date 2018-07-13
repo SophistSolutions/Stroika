@@ -62,7 +62,7 @@ namespace Stroika {
              *
              *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
              *
-             *  For easiser use probably the best approach is to @see UseBlockAllocationIfAppropriate
+             *  For easiser use, probably the best approach is to @see UseBlockAllocationIfAppropriate
              *
              *  \note   Design Note: alignas / alignemnt of allocated values
              *          https://stroika.atlassian.net/browse/STK-511
@@ -113,7 +113,7 @@ namespace Stroika {
                   * But it might sometimes return memory from a particular data structure (fixed element size pool) to
                   * the general free store.
                   *
-                  * Also - beware - this locks out other threads during execution.
+                  * Also - beware - this locks out other threads (from allocation/deallocation) during execution (which can take a while).
                   */
                 static void Compact ();
             };
