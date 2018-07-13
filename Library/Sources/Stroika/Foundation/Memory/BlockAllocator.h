@@ -50,80 +50,76 @@
  *                  never tested (by me).
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Memory {
+namespace Stroika::Foundation::Memory {
 
-            /**
-             *  Low-level tool to allocate and free memory from a fixed size/element pool. Very high performance since
-             *  no searching or coalescing ever needed, but at the cost of creating some amount of fragmentation.
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
-             *
-             *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
-             *
-             *  For easiser use, probably the best approach is to @see UseBlockAllocationIfAppropriate
-             *
-             *  \note   Design Note: alignas / alignemnt of allocated values
-             *          https://stroika.atlassian.net/browse/STK-511
-             *          We use sizeof(). We always allocate large blocks which (I htink are always) aligned to the largest
-             *          alignemnt required by the system, and we that as an array.
-             *
-             *          But I think since sizeof(T) is the offset from one elemnet of an array[T] - our allocations will always be aligned
-             *          if the first big block is aligned.
-             *
-             *          To double/triple check, we have an Ensure in BlockAllocator<T>::Allocate () to assure aligned allocations
-             *
-             *  \note
-             *      To make BlockAllocator more of a plug-replacement for the std-c++ free-pool allocator, neither Allocate nor Deallocate () are cancelation
-             *      points.
-             *
-             *      Making them cancelation points led to too many subtle bugs were very rarely we would have 'terminate' called due to a memory allocation
-             *      from a no-except method.
-             *
-             *  But also see:
-             *      @see ManuallyBlockAllocated
-             *      @see UseBlockAllocationIfAppropriate
-             */
-            template <typename T>
-            class BlockAllocator {
-            public:
-                /**
-                 *  \req (n == sizeof (T))
-                 *
-                 *  \note - though this can throw due to memory exhaustion, it will not throw Thread::InterupptionException - it is not a cancelation point.
-                 */
-                static void* Allocate (size_t n);
+    /**
+     *  Low-level tool to allocate and free memory from a fixed size/element pool. Very high performance since
+     *  no searching or coalescing ever needed, but at the cost of creating some amount of fragmentation.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *
+     *  This API operates at the level of malloc/free - just allocating fixed sized blocks and freeing them.
+     *
+     *  For easiser use, probably the best approach is to @see UseBlockAllocationIfAppropriate
+     *
+     *  \note   Design Note: alignas / alignemnt of allocated values
+     *          https://stroika.atlassian.net/browse/STK-511
+     *          We use sizeof(). We always allocate large blocks which (I htink are always) aligned to the largest
+     *          alignemnt required by the system, and we that as an array.
+     *
+     *          But I think since sizeof(T) is the offset from one elemnet of an array[T] - our allocations will always be aligned
+     *          if the first big block is aligned.
+     *
+     *          To double/triple check, we have an Ensure in BlockAllocator<T>::Allocate () to assure aligned allocations
+     *
+     *  \note
+     *      To make BlockAllocator more of a plug-replacement for the std-c++ free-pool allocator, neither Allocate nor Deallocate () are cancelation
+     *      points.
+     *
+     *      Making them cancelation points led to too many subtle bugs were very rarely we would have 'terminate' called due to a memory allocation
+     *      from a no-except method.
+     *
+     *  But also see:
+     *      @see ManuallyBlockAllocated
+     *      @see UseBlockAllocationIfAppropriate
+     */
+    template <typename T>
+    class BlockAllocator {
+    public:
+        /**
+         *  \req (n == sizeof (T))
+         *
+         *  \note - though this can throw due to memory exhaustion, it will not throw Thread::InterupptionException - it is not a cancelation point.
+         */
+        static void* Allocate (size_t n);
 
-            public:
-                /**
-                 *  \req (p allocated by BlockAllocator<T>::Allocate ());
-                 *  p can be nullptr
-                 */
-                static void Deallocate (void* p) noexcept;
+    public:
+        /**
+         *  \req (p allocated by BlockAllocator<T>::Allocate ());
+         *  p can be nullptr
+         */
+        static void Deallocate (void* p) noexcept;
 
-            public:
-                /**
-                  * Return to the free store all deallocated blocks whcih can be returned.
-                  *
-                  * This takes O (N), where N is the total number of extant operator new allocations for this size.
-                  *
-                  * It also currently uses a large block of contiguous memory, which could fail.
-                  *
-                  * But it might sometimes return memory from a particular data structure (fixed element size pool) to
-                  * the general free store.
-                  *
-                  * Also - beware - this locks out other threads (from allocation/deallocation) during execution (which can take a while).
-                  */
-                static void Compact ();
-            };
+    public:
+        /**
+          * Return to the free store all deallocated blocks whcih can be returned.
+          *
+          * This takes O (N), where N is the total number of extant operator new allocations for this size.
+          *
+          * It also currently uses a large block of contiguous memory, which could fail.
+          *
+          * But it might sometimes return memory from a particular data structure (fixed element size pool) to
+          * the general free store.
+          *
+          * Also - beware - this locks out other threads (from allocation/deallocation) during execution (which can take a while).
+          */
+        static void Compact ();
+    };
 
-            /**
-             *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
-             */
-            Execution::ModuleDependency MakeModuleDependency_BlockAllocator ();
-        }
-    }
+    /**
+     *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
+     */
+    Execution::ModuleDependency MakeModuleDependency_BlockAllocator ();
 }
 
 /*
