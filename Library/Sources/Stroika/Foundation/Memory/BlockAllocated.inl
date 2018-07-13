@@ -10,84 +10,203 @@
  ********************************************************************************
  */
 
-namespace Stroika::Foundation {
-    namespace Memory {
+namespace Stroika::Foundation::Memory {
 
-        /*
-         ********************************************************************************
-         ********************** AutomaticallyBlockAllocated<T> **************************
-         ********************************************************************************
-         */
-        template <typename T>
-        inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated ()
-            : fValue_ ()
-        {
-        }
-        template <typename T>
-        inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated<T>& t)
-            : fValue_ (t)
-        {
-        }
-        template <typename T>
-        inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const T& t)
-            : fValue_ (t)
-        {
-        }
-        template <typename T>
-        inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (T&& t)
-            : fValue_ (move (t))
-        {
-        }
-        template <typename T>
-        inline const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const AutomaticallyBlockAllocated<T>& t)
-        {
-            fValue_ = t.fValue_;
-            return *this;
-        }
-        template <typename T>
-        inline const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const T& t)
-        {
-            fValue_ = t;
-            return *this;
-        }
-        template <typename T>
-        inline AutomaticallyBlockAllocated<T>::operator T () const
-        {
-            return fValue_;
-        }
-        template <typename T>
-        inline T* AutomaticallyBlockAllocated<T>::get ()
-        {
-            return &fValue_;
-        }
+    /*
+     ********************************************************************************
+     ************************* BlockAllocationUseHelper<T> **************************
+     ********************************************************************************
+     */
+    template <typename T>
+    inline void* BlockAllocationUseHelper<T>::operator new (size_t n)
+    {
+        return BlockAllocator<T>::Allocate (n);
+    }
+    template <typename T>
+    inline void* BlockAllocationUseHelper<T>::operator new (size_t n, int, const char*, int)
+    {
+        return BlockAllocator<T>::Allocate (n);
+    }
+    template <typename T>
+    inline void BlockAllocationUseHelper<T>::operator delete (void* p)
+    {
+        BlockAllocator<T>::Deallocate (p);
+    }
+    template <typename T>
+    inline void BlockAllocationUseHelper<T>::operator delete (void* p, int, const char*, int)
+    {
+        BlockAllocator<T>::Deallocate (p);
+    }
 
-        /*
-         ********************************************************************************
-         *************************** ManuallyBlockAllocated<T> **************************
-         ********************************************************************************
+    /*
+     ********************************************************************************
+     ******************* BlockAllocationUseGlobalAllocatorHelper<T> *****************
+     ********************************************************************************
+     */
+    template <typename T>
+    inline void* BlockAllocationUseGlobalAllocatorHelper<T>::operator new (size_t n)
+    {
+        return ::operator new (n);
+    }
+    template <typename T>
+    inline void* BlockAllocationUseGlobalAllocatorHelper<T>::operator new (size_t n, int, const char*, int)
+    {
+        return ::operator new (n);
+    }
+    template <typename T>
+    inline void BlockAllocationUseGlobalAllocatorHelper<T>::operator delete (void* p)
+    {
+        ::operator delete (p);
+    }
+    template <typename T>
+    inline void BlockAllocationUseGlobalAllocatorHelper<T>::operator delete (void* p, int, const char*, int)
+    {
+        ::operator delete (p);
+    }
+
+    /*
+     ********************************************************************************
+     *************************** ManuallyBlockAllocated<T> **************************
+     ********************************************************************************
+     */
+    template <typename T>
+    template <typename... ARGS>
+    inline T* ManuallyBlockAllocated<T>::New (ARGS&&... args)
+    {
+#if qAllowBlockAllocation
+        return new (BlockAllocator<T>::Allocate (sizeof (T))) T (forward<ARGS> (args)...);
+#else
+        return new T (forward<ARGS> (args)...);
+#endif
+    }
+    template <typename T>
+    inline void ManuallyBlockAllocated<T>::Delete (T* p) noexcept
+    {
+#if qAllowBlockAllocation
+        if (p != nullptr) {
+            (p)->~T ();
+            BlockAllocator<T>::Deallocate (p);
+        }
+#else
+        delete p;
+#endif
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////// DEPRECATED STUFF///////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+         *  \note DEPRECATED - USE UseBlockAllocationIfAppropriate
          */
-        template <typename T>
-        template <typename... ARGS>
-        inline T* ManuallyBlockAllocated<T>::New (ARGS&&... args)
-        {
 #if qAllowBlockAllocation
-            return new (BlockAllocator<T>::Allocate (sizeof (T))) T (forward<ARGS> (args)...);
+#define DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)                                                                                         \
+    static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }                        \
+    static void* operator new (size_t n, int, const char*, int) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); } \
+    static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }                             \
+    static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }
 #else
-            return new T (forward<ARGS> (args)...);
+#define DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)
 #endif
-        }
-        template <typename T>
-        inline void ManuallyBlockAllocated<T>::Delete (T* p) noexcept
-        {
+
+// Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
+#define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS) use = "DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED"
+
+// Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
 #if qAllowBlockAllocation
-            if (p != nullptr) {
-                (p)->~T ();
-                BlockAllocator<T>::Deallocate (p);
-            }
+#define DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)        \
+    static void* operator new (size_t n) { return ::operator new (n); } \
+    static void  operator delete (void* p) { ::operator delete (p); }
 #else
-            delete p;
+#define DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)
 #endif
-        }
+
+// Deprecated in Stroika v2.1d4 - USE BlockAllocationUseGlobalAllocatorHelper
+#define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS) use = "DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED"
+
+    /**
+         * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
+         *
+         * AutomaticallyBlockAllocated<T> is a templated class designed to allow easy use
+         * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
+         * size blocks (with the only problem being the storage is never - or almost never - returned to the
+         * free store - it doesn't leak - but cannot be used for other things. This is often a useful
+         * tradeoff for things you allocate a great number of.
+         *
+         * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
+         * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
+         * 
+         *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
+         *  false (0), this will just default to the global ::new/::delete
+         *
+         */
+    template <typename T>
+    [[deprecated ("bad idea - if you use to allocate - must retain type AutomaticallyBlockAllocated<T>* or do wrong delete - deprecated in v2.1d4")]] class AutomaticallyBlockAllocated : public UseBlockAllocationIfAppropriate<T> {
+    public:
+        /**
+             * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
+             *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
+             *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
+             */
+        AutomaticallyBlockAllocated ();
+        AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated& t);
+        AutomaticallyBlockAllocated (const T& t);
+        AutomaticallyBlockAllocated (T&& t);
+
+    public:
+        nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated& t);
+        nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const T& t);
+
+    public:
+        nonvirtual operator T () const;
+
+    public:
+        nonvirtual T* get ();
+
+    private:
+        T fValue_;
+    };
+
+    template <typename T>
+    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated ()
+        : fValue_ ()
+    {
+    }
+    template <typename T>
+    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated<T>& t)
+        : fValue_ (t)
+    {
+    }
+    template <typename T>
+    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const T& t)
+        : fValue_ (t)
+    {
+    }
+    template <typename T>
+    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (T&& t)
+        : fValue_ (move (t))
+    {
+    }
+    template <typename T>
+    inline const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const AutomaticallyBlockAllocated<T>& t)
+    {
+        fValue_ = t.fValue_;
+        return *this;
+    }
+    template <typename T>
+    inline const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const T& t)
+    {
+        fValue_ = t;
+        return *this;
+    }
+    template <typename T>
+    inline AutomaticallyBlockAllocated<T>::operator T () const
+    {
+        return fValue_;
+    }
+    template <typename T>
+    inline T* AutomaticallyBlockAllocated<T>::get ()
+    {
+        return &fValue_;
     }
 }
 #endif /*_Stroika_Foundation_Memory_BlockAllocated_inl_*/

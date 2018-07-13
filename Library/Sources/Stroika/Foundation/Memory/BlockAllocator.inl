@@ -366,7 +366,6 @@ namespace Stroika::Foundation::Memory {
 #endif
     }
     template <typename T>
-    // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
     constexpr size_t BlockAllocator<T>::AdjustSizeForPool_ ()
     {
         return Math::RoundUpTo (sizeof (T), sizeof (void*));

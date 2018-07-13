@@ -70,21 +70,21 @@ namespace Stroika::Foundation {
          */
         template <typename T>
         struct BlockAllocationUseHelper {
-            static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<T>::Allocate (n)); }
-            static void* operator new (size_t n, int, const char*, int) { return (Stroika::Foundation::Memory::BlockAllocator<T>::Allocate (n)); }
-            static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
-            static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<T>::Deallocate (p); }
+            static void* operator new (size_t n);
+            static void* operator new (size_t n, int, const char*, int);
+            static void  operator delete (void* p);
+            static void  operator delete (void* p, int, const char*, int);
         };
 
         /**
-         *  Use this to undo the effect of BlockAllocationUseHelper<> or UseBlockAllocationIfAppropriate<> for a subclass.
+         *  Use this to (roughly) undo the effect of BlockAllocationUseHelper<> or UseBlockAllocationIfAppropriate<> for a subclass.
          */
         template <typename T>
         struct BlockAllocationUseGlobalAllocatorHelper {
-            static void* operator new (size_t n) { return ::operator new (n); }
-            static void* operator new (size_t n, int, const char*, int) { return ::operator new (n); }
-            static void  operator delete (void* p) { ::operator delete (p); }
-            static void  operator delete (void* p, int, const char*, int) { ::operator delete (p); }
+            static void* operator new (size_t n);
+            static void* operator new (size_t n, int, const char*, int);
+            static void  operator delete (void* p);
+            static void  operator delete (void* p, int, const char*, int);
         };
 
         /**
@@ -118,77 +118,6 @@ namespace Stroika::Foundation {
          */
         template <typename T>
         using UseBlockAllocationIfAppropriate = conditional_t<qAllowBlockAllocation, BlockAllocationUseHelper<T>, Configuration::Empty>;
-
-        /**
-         *  \note DEPRECATED - USE UseBlockAllocationIfAppropriate
-         */
-#if qAllowBlockAllocation
-#define DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)                                                                                         \
-    static void* operator new (size_t n) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }                        \
-    static void* operator new (size_t n, int, const char*, int) { return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); } \
-    static void  operator delete (void* p) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }                             \
-    static void  operator delete (void* p, int, const char*, int) { Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p); }
-#else
-#define DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)
-#endif
-
-// Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
-#define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS) use = "DECLARE_USE_BLOCK_ALLOCATION_DEPRECATED"
-
-// Deprecated in Stroika v2.1d4 - USE UseBlockAllocationIfAppropriate
-#if qAllowBlockAllocation
-#define DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)        \
-    static void* operator new (size_t n) { return ::operator new (n); } \
-    static void  operator delete (void* p) { ::operator delete (p); }
-#else
-#define DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED(THIS_CLASS)
-#endif
-
-// Deprecated in Stroika v2.1d4 - USE BlockAllocationUseGlobalAllocatorHelper
-#define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS) use = "DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED"
-
-        /**
-         * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
-         *
-         * AutomaticallyBlockAllocated<T> is a templated class designed to allow easy use
-         * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
-         * size blocks (with the only problem being the storage is never - or almost never - returned to the
-         * free store - it doesn't leak - but cannot be used for other things. This is often a useful
-         * tradeoff for things you allocate a great number of.
-         *
-         * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
-         * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
-         * 
-         *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
-         *  false (0), this will just default to the global ::new/::delete
-         *
-         */
-        template <typename T>
-        [[deprecated ("bad idea - if you use to allocate - must retain type AutomaticallyBlockAllocated<T>* or do wrong delete - deprecated in v2.1d4")]] class AutomaticallyBlockAllocated : public UseBlockAllocationIfAppropriate<T> {
-        public:
-            /**
-             * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
-             *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
-             *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
-             */
-            AutomaticallyBlockAllocated ();
-            AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated& t);
-            AutomaticallyBlockAllocated (const T& t);
-            AutomaticallyBlockAllocated (T&& t);
-
-        public:
-            nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated& t);
-            nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const T& t);
-
-        public:
-            nonvirtual operator T () const;
-
-        public:
-            nonvirtual T* get ();
-
-        private:
-            T fValue_;
-        };
 
         /**
          *   \brief ManuallyBlockAllocated<T> is a simple wrapper on BlockAllocator<T>. If qAllowBlockAllocation defined, this will use block allocation for a given type - at a given call.
