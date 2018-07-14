@@ -180,7 +180,7 @@ namespace Stroika::Foundation {
             static constexpr bool kIncludeDebugExternalSync = qDebug;
             struct StorageType {
             private:
-                AutomaticallyBlockAllocated<T>* fValue_{nullptr};
+                T* fValue_{nullptr};
 
             public:
                 constexpr StorageType () = default;

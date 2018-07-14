@@ -275,17 +275,17 @@ namespace Stroika::Foundation {
          */
         template <typename T>
         inline Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (const T& src)
-            : fValue_{new AutomaticallyBlockAllocated<T> (src)}
+            : fValue_{ManuallyBlockAllocated<T>::New (src)}
         {
         }
         template <typename T>
         inline Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (T&& src)
-            : fValue_{new AutomaticallyBlockAllocated<T> (move (src))}
+            : fValue_{ManuallyBlockAllocated<T>::New (move (src))}
         {
         }
         template <typename T>
         inline Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::StorageType (const StorageType& src)
-            : fValue_{src.fValue_ == nullptr ? nullptr : new AutomaticallyBlockAllocated<T> (*src.fValue_)}
+            : fValue_{src.fValue_ == nullptr ? nullptr : ManuallyBlockAllocated<T>::New (*src.fValue_)}
         {
         }
         template <typename T>
@@ -302,14 +302,14 @@ namespace Stroika::Foundation {
         template <typename T>
         inline void Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::destroy ()
         {
-            delete fValue_;
+            ManuallyBlockAllocated<T>::Delete (fValue_);
             fValue_ = nullptr;
         }
         template <typename T>
         inline auto Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (const T& rhs) -> StorageType&
         {
             if (fValue_ == nullptr) {
-                fValue_ = new AutomaticallyBlockAllocated<T> (rhs);
+                fValue_ = ManuallyBlockAllocated<T>::New (rhs);
             }
             else {
                 *fValue_ = rhs;
@@ -320,7 +320,7 @@ namespace Stroika::Foundation {
         inline auto Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::operator= (T&& rhs) -> StorageType&
         {
             if (fValue_ == nullptr) {
-                fValue_ = new AutomaticallyBlockAllocated<T> (move (rhs));
+                fValue_ = ManuallyBlockAllocated<T>::New (move (rhs));
             }
             else {
                 *fValue_ = move (rhs);
@@ -348,7 +348,7 @@ namespace Stroika::Foundation {
             }
             else {
                 if (fValue_ == nullptr) {
-                    fValue_ = new AutomaticallyBlockAllocated<T> (*rhs.fValue_);
+                    fValue_ = ManuallyBlockAllocated<T>::New (*rhs.fValue_);
                 }
                 else {
                     *fValue_ = *rhs.fValue_;
@@ -359,12 +359,12 @@ namespace Stroika::Foundation {
         template <typename T>
         inline T* Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::peek ()
         {
-            return fValue_ == nullptr ? nullptr : fValue_->get ();
+            return fValue_;
         }
         template <typename T>
         inline const T* Optional_Traits_Blockallocated_Indirect_Storage<T>::StorageType::peek () const
         {
-            return fValue_ == nullptr ? nullptr : fValue_->get ();
+            return fValue_;
         }
 
         /*
