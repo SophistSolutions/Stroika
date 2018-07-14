@@ -124,89 +124,68 @@ namespace Stroika::Foundation::Memory {
 #define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS) use = "DECLARE_DONT_USE_BLOCK_ALLOCATION_DEPRECATED"
 
     /**
-         * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
-         *
-         * AutomaticallyBlockAllocated<T> is a templated class designed to allow easy use
-         * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
-         * size blocks (with the only problem being the storage is never - or almost never - returned to the
-         * free store - it doesn't leak - but cannot be used for other things. This is often a useful
-         * tradeoff for things you allocate a great number of.
-         *
-         * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
-         * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
-         * 
-         *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
-         *  false (0), this will just default to the global ::new/::delete
-         *
-         */
+     * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
+     *
+     * AutomaticallyBlockAllocated<T> is a templated class designed to allow easy use
+     * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
+     * size blocks (with the only problem being the storage is never - or almost never - returned to the
+     * free store - it doesn't leak - but cannot be used for other things. This is often a useful
+     * tradeoff for things you allocate a great number of.
+     *
+     * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
+     * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
+     * 
+     *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
+     *  false (0), this will just default to the global ::new/::delete
+     *
+     */
     template <typename T>
-    [[deprecated ("bad idea - if you use to allocate - must retain type AutomaticallyBlockAllocated<T>* or do wrong delete - deprecated in v2.1d4")]] class AutomaticallyBlockAllocated : public UseBlockAllocationIfAppropriate<T> {
+    class [[deprecated ("bad idea - if you use to allocate - must retain type AutomaticallyBlockAllocated<T>* or do wrong delete - use UseBlockAllocationIfAppropriate instead- deprecated in v2.1d4")]] AutomaticallyBlockAllocated : public UseBlockAllocationIfAppropriate<T>
+    {
     public:
-        /**
-             * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
-             *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
-             *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
-             */
-        AutomaticallyBlockAllocated ();
-        AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated& t);
-        AutomaticallyBlockAllocated (const T& t);
-        AutomaticallyBlockAllocated (T&& t);
+        AutomaticallyBlockAllocated ()
+            : fValue_ ()
+        {
+        }
+        AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated& t)
+            : fValue_ (t)
+        {
+        }
+        AutomaticallyBlockAllocated (const T& t)
+            : fValue_ (t)
+        {
+        }
+        AutomaticallyBlockAllocated (T && t)
+            : fValue_ (move (t))
+        {
+        }
 
     public:
-        nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated& t);
-        nonvirtual const AutomaticallyBlockAllocated<T>& operator= (const T& t);
+        const AutomaticallyBlockAllocated<T>& operator= (const AutomaticallyBlockAllocated& t)
+        {
+            fValue_ = t.fValue_;
+            return *this;
+        }
+        const AutomaticallyBlockAllocated<T>& operator= (const T& t)
+        {
+            fValue_ = t;
+            return *this;
+        }
 
     public:
-        nonvirtual operator T () const;
+        operator T () const
+        {
+            return fValue_;
+        }
 
     public:
-        nonvirtual T* get ();
+        T* get ()
+        {
+            return &fValue_;
+        }
 
     private:
         T fValue_;
     };
-
-    template <typename T>
-    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated ()
-        : fValue_ ()
-    {
-    }
-    template <typename T>
-    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const AutomaticallyBlockAllocated<T>& t)
-        : fValue_ (t)
-    {
-    }
-    template <typename T>
-    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (const T& t)
-        : fValue_ (t)
-    {
-    }
-    template <typename T>
-    inline AutomaticallyBlockAllocated<T>::AutomaticallyBlockAllocated (T&& t)
-        : fValue_ (move (t))
-    {
-    }
-    template <typename T>
-    inline const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const AutomaticallyBlockAllocated<T>& t)
-    {
-        fValue_ = t.fValue_;
-        return *this;
-    }
-    template <typename T>
-    inline const AutomaticallyBlockAllocated<T>& AutomaticallyBlockAllocated<T>::operator= (const T& t)
-    {
-        fValue_ = t;
-        return *this;
-    }
-    template <typename T>
-    inline AutomaticallyBlockAllocated<T>::operator T () const
-    {
-        return fValue_;
-    }
-    template <typename T>
-    inline T* AutomaticallyBlockAllocated<T>::get ()
-    {
-        return &fValue_;
-    }
 }
 #endif /*_Stroika_Foundation_Memory_BlockAllocated_inl_*/
