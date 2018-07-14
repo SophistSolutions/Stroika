@@ -142,6 +142,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T>
     class [[deprecated ("bad idea - if you use to allocate - must retain type AutomaticallyBlockAllocated<T>* or do wrong delete - use UseBlockAllocationIfAppropriate instead- deprecated in v2.1d4")]] AutomaticallyBlockAllocated : public UseBlockAllocationIfAppropriate<T>
     {
+        DISABLE_COMPILER_GCC_WARNING_START ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
     public:
         AutomaticallyBlockAllocated ()
             : fValue_ ()
@@ -171,6 +172,7 @@ namespace Stroika::Foundation::Memory {
             fValue_ = t;
             return *this;
         }
+        DISABLE_COMPILER_GCC_WARNING_END ("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 
     public:
         operator T () const

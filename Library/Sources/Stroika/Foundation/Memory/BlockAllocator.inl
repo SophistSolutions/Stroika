@@ -43,22 +43,14 @@
 #endif
 
 #if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
-#include "../Execution/Exceptions.h"
 #include <cstdlib>
+
+#include "../Execution/Exceptions.h"
 #endif
 
 namespace Stroika::Foundation::Memory {
 
     namespace Private_ {
-
-        /*
-         *  kUseSpinLock_ is probaly best true (empirical tests with the
-         *  performance regression test indicated that this helped considerably).
-         *
-         *  It should be generally pretty safe because the locks are very narrow (so threads shoudln't spend much time
-         *  spinning. And we could reduce this further during mallocs of new blocks.
-         */
-        constexpr bool kUseSpinLock_ = !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ and Execution::kSpinLock_IsFasterThan_mutex;
 
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
         /**
@@ -81,6 +73,15 @@ namespace Stroika::Foundation::Memory {
          */
         static void* const kLockedSentinal_ = (void*)1; // any invalid pointer
 #else
+        /*
+         *  kUseSpinLock_ is probaly best true (empirical tests with the
+         *  performance regression test indicated that this helped considerably).
+         *
+         *  It should be generally pretty safe because the locks are very narrow (so threads shoudln't spend much time
+         *  spinning. And we could reduce this further during mallocs of new blocks.
+         */
+        constexpr bool kUseSpinLock_ = !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_ and Execution::kSpinLock_IsFasterThan_mutex;
+
         struct BlockAllocator_ModuleInit_ {
             BlockAllocator_ModuleInit_ ();
             ~BlockAllocator_ModuleInit_ ();
@@ -95,51 +96,11 @@ namespace Stroika::Foundation::Memory {
             return *sLock_;
         }
 
-        void DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
+        void                    DoDeleteHandlingLocksExceptionsEtc_ (void* p, void** staticNextLinkP) noexcept;
 #endif
     }
 
     namespace Private_ {
-
-        /*
-         * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
-         * a chunk which memory allocator can do a good job on.
-         */
-        constexpr size_t kTargetMallocSize_ = 16360; // 16384 = 16K - leave a few bytes sluff...
-
-        inline constexpr size_t BlockAllocation_Private_ComputeChunks_ (size_t poolElementSize)
-        {
-            return max (static_cast<size_t> (kTargetMallocSize_ / poolElementSize), static_cast<size_t> (10));
-        }
-
-        // This must be included here to keep genclass happy, since the .cc file will not be included
-        // in the genclassed .cc file....
-        inline void** GetMem_Util_ (size_t sz)
-        {
-            Require (sz >= sizeof (void*));
-
-            const size_t kChunks = BlockAllocation_Private_ComputeChunks_ (sz);
-            Assert (kChunks >= 1);
-
-            /*
-             * Please note that the following line is NOT a memory leak. @see BlockAllocator<>
-             */
-#if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
-            void** newLinks = (void**)::malloc (kChunks * sz);
-            Execution::ThrowIfNull (newLinks);
-#else
-            void** newLinks = (void**)new char[kChunks * sz];
-#endif
-            AssertNotNull (newLinks);
-            void** curLink = newLinks;
-            for (size_t i = 1; i < kChunks; i++) {
-                *curLink = &(((char*)newLinks)[i * sz]);
-                curLink  = (void**)*curLink;
-            }
-            *curLink = nullptr; // nullptr-terminate the link list
-            return newLinks;
-        }
-
         /*
          *  BlockAllocationPool_ implements the core  logic for allocation/deallocation of a particular pool. These are organized
          *  by size rather than type to reduce fragmentation.
@@ -155,6 +116,10 @@ namespace Stroika::Foundation::Memory {
 
         private:
             static inline conditional_t<qStroika_Foundation_Memory_BlockAllocator_UseLockFree_, atomic<void*>, void*> sHeadLink_{nullptr};
+
+        private:
+            static constexpr size_t ComputeChunks_ ();
+            static void**           GetMem_Util_ ();
         };
     }
 
@@ -183,7 +148,7 @@ namespace Stroika::Foundation::Memory {
         }
         // if we got here, p contains the real head, and have a pseudo lock
         if (p == nullptr) {
-            p = GetMem_Util_ (SIZE);
+            p = GetMem_Util_ ();
         }
         void* result = p;
         AssertNotNull (result);
@@ -203,7 +168,7 @@ namespace Stroika::Foundation::Memory {
          * actually alloced, re-use the begining of this as a link pointer.
          */
         if (sHeadLink_ == nullptr) {
-            sHeadLink_ = GetMem_Util_ (SIZE);
+            sHeadLink_ = GetMem_Util_ ();
         }
         void* result = sHeadLink_;
         AssertNotNull (result);
@@ -251,12 +216,12 @@ namespace Stroika::Foundation::Memory {
     void Private_::BlockAllocationPool_<SIZE>::Compact ()
     {
 #if qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
-// cannot compact lock-free - no biggie
+        // cannot compact lock-free - no biggie
 #else
         [[maybe_unused]] auto&& critSec = lock_guard{Private_::GetLock_ ()};
 
         // step one: put all the links into a single, sorted vector
-        const size_t kChunks = BlockAllocation_Private_ComputeChunks_ (SIZE);
+        const size_t kChunks = ComputeChunks_ ();
         Assert (kChunks >= 1);
         vector<void*> links;
         try {
@@ -301,11 +266,12 @@ namespace Stroika::Foundation::Memory {
             }
             if (canDelete) {
                 links.erase (links.begin () + index, links.begin () + index + kChunks);
-#if qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_
-                ::free ((void*)deleteCandidate);
-#else
-                delete static_cast<Byte*> ((void*)deleteCandidate);
-#endif
+                if constexpr (qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_) {
+                    ::free ((void*)deleteCandidate);
+                }
+                else {
+                    delete static_cast<Byte*> ((void*)deleteCandidate);
+                }
             }
             else {
                 index += i;
@@ -324,6 +290,45 @@ namespace Stroika::Foundation::Memory {
             *curLink = nullptr;
         }
 #endif
+    }
+    template <size_t SIZE>
+    constexpr size_t Private_::BlockAllocationPool_<SIZE>::ComputeChunks_ ()
+    {
+        /*
+         * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
+         * a chunk which memory allocator can do a good job on.
+         */
+        constexpr size_t kTargetMallocSize_ = 16360; // 16384 = 16K - leave a few bytes sluff...
+
+        return Math::AtLeast (static_cast<size_t> (kTargetMallocSize_ / SIZE), static_cast<size_t> (10));
+    }
+    template <size_t SIZE>
+    inline void** Private_::BlockAllocationPool_<SIZE>::GetMem_Util_ ()
+    {
+        Require (SIZE >= sizeof (void*));
+
+        const size_t kChunks = ComputeChunks_ ();
+        Assert (kChunks >= 1);
+
+        /*
+         * Please note that the following line is NOT a memory leak. @see BlockAllocator<>
+         */
+        void** newLinks;
+        if constexpr (qStroika_Foundation_Memory_BlockAllocator_UseMallocDirectly_) {
+            newLinks = (void**)::malloc (kChunks * SIZE);
+            Execution::ThrowIfNull (newLinks);
+        }
+        else {
+            newLinks = (void**)new char[kChunks * SIZE];
+        }
+        AssertNotNull (newLinks);
+        void** curLink = newLinks;
+        for (size_t i = 1; i < kChunks; i++) {
+            *curLink = &(((char*)newLinks)[i * SIZE]);
+            curLink  = (void**)*curLink;
+        }
+        *curLink = nullptr; // nullptr-terminate the link list
+        return newLinks;
     }
 
     /*
@@ -370,7 +375,6 @@ namespace Stroika::Foundation::Memory {
     {
         return Math::RoundUpTo (sizeof (T), sizeof (void*));
     }
-
 }
 #if !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 namespace {
