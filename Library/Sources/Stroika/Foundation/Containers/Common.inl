@@ -61,7 +61,7 @@ namespace Stroika::Foundation {
             size_t capacity{targetCapacity};
             capacity *= 6;
             capacity /= 5;
-            capacity = Stroika::Foundation::Math::RoundUpTo (capacity, minChunk);
+            capacity = Math::RoundUpTo (capacity, minChunk);
             return capacity;
         }
 
