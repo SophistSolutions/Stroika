@@ -27,7 +27,7 @@ mkdir -p Tests/HistoricalRegressionTestResults
 
 
 if [ "$(uname -s)" == "Darwin" ] ; then
-	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode9.3"; fi
+	if [ "$USE_TEST_BASENAME" == "" ] ; then USE_TEST_BASENAME="MacOS_XCode10"; fi
     echo "USING MacOS($USE_TEST_BASENAME)..."
     DO_ONLY_DEFAULT_CONFIGURATIONS=1
 fi
@@ -217,13 +217,17 @@ else
 	echo "$PREFIX_OUT_LABEL" "Skipping helgrind test because INCLUDE_VALGRIND_HELGRIND_TESTS=$INCLUDE_VALGRIND_HELGRIND_TESTS" >>$TEST_OUT_FILE 2>&1
 fi
 
-
-SAMPLE_APPS_2_VALGRIND="Samples-SystemPerformanceClient/SystemPerformanceClient" "Samples-Traceroute/Traceroute www.sophists.com" "Samples-WebServer/WebServer --quit-after 10" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip" "Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z"
+SAMPLE_APPS_2_VALGRIND=()
+SAMPLE_APPS_2_VALGRIND+=("Samples-SystemPerformanceClient/SystemPerformanceClient")
+SAMPLE_APPS_2_VALGRIND+=("Samples-Traceroute/Traceroute www.sophists.com")
+SAMPLE_APPS_2_VALGRIND+=("Samples-WebServer/WebServer --quit-after 10")
+SAMPLE_APPS_2_VALGRIND+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/sqlite-amalgamation-*.zip")
+SAMPLE_APPS_2_VALGRIND+=("Samples-ArchiveUtility/ArchiveUtility --list ThirdPartyComponents/Origs-Cache/lzma1604.7z")
 
 #HELGRIND ON SYSPERFORM (experimental - must find better way)
 if [ "$INCLUDE_VALGRIND_HELGRIND_TESTS" -ne 0 ] ; then
 
-	for app in $SAMPLE_APPS_2_VALGRIND ; do 
+	for app in "${SAMPLE_APPS_2_VALGRIND[@]}" ; do 
 		echo -n "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app ..."
 		echo "$PREFIX_OUT_LABEL" "valgrind -q --tool=helgrind --suppressions=Tests/Valgrind-Helgrind-Common.supp --log-file=valgrind-log.tmp Builds/g++-valgrind-release-SSLPurify-NoBlockAlloc/$app..." >>$TEST_OUT_FILE 2>&1
 		STAGE_STARTAT_INT=$(date +%s)
