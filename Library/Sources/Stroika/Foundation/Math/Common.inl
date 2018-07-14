@@ -36,69 +36,70 @@ namespace Stroika {
              */
             namespace Private {
                 template <typename T>
-                constexpr T RoundUpTo_UnSignedHelper_ (T x, T toNearest);
-                template <typename T, typename UNSIGNED_T>
+                constexpr T RoundUpTo_UnSignedHelper_ (T x, T toNearest)
+                {
+                    static_assert (is_unsigned_v<T>);
+                    return (((x + toNearest - 1u) / toNearest) * toNearest);
+                }
+                template <typename T>
+                constexpr T RoundDownTo_UnSignedHelper_ (T x, T toNearest)
+                {
+                    static_assert (is_unsigned_v<T>);
+                    return ((x / toNearest) * toNearest);
+                }
+                template <typename T>
                 constexpr T RoundUpTo_SignedHelper_ (T x, T toNearest)
                 {
+                    static_assert (is_signed_v<T>);
+                    using UNSIGNED_T = make_unsigned_t<T>;
                     Require (toNearest > 0);
                     if (x < 0) {
-                        return (-static_cast<T> (RoundDownTo (static_cast<UNSIGNED_T> (-x), static_cast<UNSIGNED_T> (toNearest))));
+                        return (-static_cast<T> (RoundDownTo_UnSignedHelper_ (static_cast<UNSIGNED_T> (-x), static_cast<UNSIGNED_T> (toNearest))));
                     }
                     else {
                         return static_cast<T> (RoundUpTo_UnSignedHelper_<UNSIGNED_T> (x, toNearest));
                     }
                 }
                 template <typename T>
-                constexpr T RoundUpTo_UnSignedHelper_ (T x, T toNearest)
-                {
-                    return (((x + toNearest - 1u) / toNearest) * toNearest);
-                }
-                template <typename T, typename UNSIGNED_T>
                 constexpr T RoundDownTo_SignedHelper_ (T x, T toNearest)
                 {
+                    static_assert (is_signed_v<T>);
+                    using UNSIGNED_T = make_unsigned_t<T>;
                     Require (toNearest > 0);
                     if (x < 0) {
-                        return (-static_cast<T> (RoundUpTo (static_cast<UNSIGNED_T> (-x), static_cast<UNSIGNED_T> (toNearest))));
+                        return (-static_cast<T> (RoundUpTo_UnSignedHelper_ (static_cast<UNSIGNED_T> (-x), static_cast<UNSIGNED_T> (toNearest))));
                     }
                     else {
-                        return (RoundDownTo (static_cast<UNSIGNED_T> (x), static_cast<UNSIGNED_T> (toNearest)));
+                        return (RoundDownTo_UnSignedHelper_ (static_cast<UNSIGNED_T> (x), static_cast<UNSIGNED_T> (toNearest)));
                     }
                 }
-                template <typename T>
-                constexpr T RoundDownTo_UnSignedHelper_ (T x, T toNearest)
+
+                template <typename T, enable_if_t<is_signed_v<T>>* = nullptr>
+                constexpr T RoundUpTo_ (T x, T toNearest)
                 {
-                    return ((x / toNearest) * toNearest);
+                    return Private::RoundUpTo_SignedHelper_<T> (x, toNearest);
                 }
+                template <typename T, enable_if_t<is_unsigned_v<T>>* = nullptr>
+                constexpr T RoundUpTo_ (T x, T toNearest)
+                {
+                    return Private::RoundUpTo_UnSignedHelper_<T> (x, toNearest);
+                }
+                template <typename T, enable_if_t<is_signed_v<T>>* = nullptr>
+                constexpr T RoundDownTo_ (T x, T toNearest)
+                {
+                    return Private::RoundDownTo_SignedHelper_<T> (x, toNearest);
+                }
+                template <typename T, enable_if_t<is_unsigned_v<T>>* = nullptr>
+                constexpr T RoundDownTo_ (T x, T toNearest)
+                {
+                    return Private::RoundDownTo_UnSignedHelper_<T> (x, toNearest);
+                }
+
             }
-            template <>
-            constexpr int RoundUpTo (int x, int toNearest)
+            template <typename T>
+            constexpr T RoundUpTo (T x, T toNearest)
             {
-                return Private::RoundUpTo_SignedHelper_<int, unsigned int> (x, toNearest);
-            }
-            template <>
-            constexpr long RoundUpTo (long x, long toNearest)
-            {
-                return Private::RoundUpTo_SignedHelper_<long, unsigned long> (x, toNearest);
-            }
-            template <>
-            constexpr long long RoundUpTo (long long x, long long toNearest)
-            {
-                return Private::RoundUpTo_SignedHelper_<long long, unsigned long long> (x, toNearest);
-            }
-            template <>
-            constexpr unsigned int RoundUpTo (unsigned int x, unsigned int toNearest)
-            {
-                return Private::RoundUpTo_UnSignedHelper_<unsigned int> (x, toNearest);
-            }
-            template <>
-            constexpr unsigned long RoundUpTo (unsigned long x, unsigned long toNearest)
-            {
-                return Private::RoundUpTo_UnSignedHelper_<unsigned long> (x, toNearest);
-            }
-            template <>
-            constexpr unsigned long long RoundUpTo (unsigned long long x, unsigned long long toNearest)
-            {
-                return Private::RoundUpTo_UnSignedHelper_<unsigned long long> (x, toNearest);
+                return Private::RoundUpTo_ (x, toNearest);
             }
 
             /*
@@ -106,35 +107,10 @@ namespace Stroika {
              **************************** Math::RoundDownTo *********************************
              ********************************************************************************
              */
-            template <>
-            constexpr int RoundDownTo (int x, int toNearest)
+            template <typename T>
+            constexpr T RoundDownTo (T x, T toNearest)
             {
-                return Private::RoundDownTo_SignedHelper_<int, unsigned int> (x, toNearest);
-            }
-            template <>
-            constexpr long RoundDownTo (long x, long toNearest)
-            {
-                return Private::RoundDownTo_SignedHelper_<long, unsigned long> (x, toNearest);
-            }
-            template <>
-            constexpr long long RoundDownTo (long long x, long long toNearest)
-            {
-                return Private::RoundDownTo_SignedHelper_<long long, unsigned long long> (x, toNearest);
-            }
-            template <>
-            constexpr unsigned int RoundDownTo (unsigned int x, unsigned int toNearest)
-            {
-                return Private::RoundDownTo_UnSignedHelper_<unsigned int> (x, toNearest);
-            }
-            template <>
-            constexpr unsigned long RoundDownTo (unsigned long x, unsigned long toNearest)
-            {
-                return Private::RoundDownTo_UnSignedHelper_<unsigned long> (x, toNearest);
-            }
-            template <>
-            constexpr unsigned long long RoundDownTo (unsigned long long x, unsigned long long toNearest)
-            {
-                return Private::RoundDownTo_UnSignedHelper_<unsigned long long> (x, toNearest);
+                return Private::RoundDownTo_ (x, toNearest);
             }
 
             /*
