@@ -126,6 +126,12 @@ namespace Stroika::Foundation {
         using IsIterableOfT = integral_constant<bool, not is_same<typename Private_::IsIterableOfT_Impl2_<ITERABLE_OF_T, T>::type, substitution_failure>::value>;
 
         /**
+         *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
+         */
+        template <typename ITERABLE_OF_T, typename T>
+        constexpr bool IsIterableOfT_v = IsIterableOfT<ITERABLE_OF_T, T>::value;
+
+        /**
          *  See http://en.cppreference.com/w/cpp/concept/Container
          */
         template <typename T>

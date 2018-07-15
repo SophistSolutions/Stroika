@@ -150,7 +150,7 @@ namespace Stroika::Foundation {
 #endif
             Association (const initializer_list<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
             Association (const initializer_list<pair<KEY_TYPE, MAPPED_VALUE_TYPE>>& src);
-            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
             Association (const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_KEY_T>
             Association (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

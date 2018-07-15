@@ -58,7 +58,7 @@ namespace Stroika {
                     }
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value>*>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_T, T>>*>
                 Vector<T>::Vector (const CONTAINER_OF_T& c)
                     : fRep_ (make_shared<IRep_> ())
                 {

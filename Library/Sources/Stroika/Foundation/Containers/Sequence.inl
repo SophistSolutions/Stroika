@@ -108,7 +108,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>>*>
         inline Sequence<T>::Sequence (const CONTAINER_OF_ADDABLE& src)
             : Sequence ()
         {

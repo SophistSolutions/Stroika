@@ -36,7 +36,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<(Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value or Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value) and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<(Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> or Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, pair<KEY_TYPE, MAPPED_VALUE_TYPE>>)and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
         inline SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedAssociation (const CONTAINER_OF_ADDABLE& src)
             : SortedAssociation ()
         {

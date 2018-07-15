@@ -38,7 +38,7 @@ namespace Stroika {
                     Vector (size_t dimension);
                     Vector (size_t dimension, Configuration::ArgByValueType<T> fillValue);
                     Vector (size_t dimension, const function<T ()>& filler);
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_T, T>::value>* = nullptr>
+                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_T, T>>* = nullptr>
                     Vector (const CONTAINER_OF_T& c);
 
 #if Stroika_Foundation_Math_LinearAlgebra_Vector_ALLOW_MUTATION

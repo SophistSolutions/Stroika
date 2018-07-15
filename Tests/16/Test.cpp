@@ -83,8 +83,8 @@ namespace {
             using namespace xPrivate_;
             Mapping<int, A> from;
 
-            static_assert (Configuration::IsIterableOfT<Mapping<int, A>, KeyValuePair<int, A>>::value);
-            static_assert (Configuration::IsIterableOfT<Mapping<int, B>, KeyValuePair<int, B>>::value);
+            static_assert (Configuration::IsIterableOfT_v<Mapping<int, A>, KeyValuePair<int, A>>);
+            static_assert (Configuration::IsIterableOfT_v<Mapping<int, B>, KeyValuePair<int, B>>);
 
             Mapping<int, B> to1;
             for (auto i : from) {

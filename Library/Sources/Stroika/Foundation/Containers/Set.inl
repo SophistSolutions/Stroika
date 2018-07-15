@@ -46,7 +46,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>*>
         inline Set<T>::Set (const CONTAINER_OF_ADDABLE& src)
             : Set ()
         {
@@ -54,7 +54,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename T>
-        template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>*>
+        template <typename EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Set<T>*>>*>
         inline Set<T>::Set (EQUALS_COMPARER&& equalsComparer, const CONTAINER_OF_ADDABLE& src)
             : Set (forward<EQUALS_COMPARER> (equalsComparer))
         {

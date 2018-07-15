@@ -88,9 +88,9 @@ namespace Stroika::Foundation {
             SortedMultiSet (const initializer_list<CountedValue<T>>& src);
             template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
             SortedMultiSet (INORDER_COMPARER&& inorderComparer, const initializer_list<CountedValue<T>>& src);
-            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>>* = nullptr>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>>* = nullptr>
             SortedMultiSet (const CONTAINER_OF_ADDABLE& src);
-            template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>>* = nullptr>
+            template <typename INORDER_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedMultiSet<T, TRAITS>*>>* = nullptr>
             SortedMultiSet (INORDER_COMPARER&& inorderComparer, const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE, enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_OF_ADDABLE>::value>* = nullptr>
             SortedMultiSet (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

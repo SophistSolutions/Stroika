@@ -53,7 +53,7 @@ namespace Stroika::Foundation {
             _AssertRepValidType ();
         }
         template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
         inline Association<KEY_TYPE, MAPPED_VALUE_TYPE>::Association (const CONTAINER_OF_ADDABLE& src)
             : Association ()
         {

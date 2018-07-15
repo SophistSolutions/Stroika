@@ -250,7 +250,7 @@ namespace Stroika::Foundation {
             Sequence (const Sequence& src) noexcept = default;
             Sequence (Sequence&& src) noexcept      = default;
             Sequence (const initializer_list<T>& src);
-            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, T>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>>* = nullptr>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, T> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Sequence<T>*>>* = nullptr>
             Sequence (const CONTAINER_OF_ADDABLE& src);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             Sequence (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

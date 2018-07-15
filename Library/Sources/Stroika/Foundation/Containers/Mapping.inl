@@ -77,7 +77,7 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
             inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (const CONTAINER_OF_ADDABLE& src)
                 : Mapping ()
             {
@@ -85,7 +85,7 @@ namespace Stroika {
                 _AssertRepValidType ();
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::IsIterableOfT<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
+            template <typename KEY_EQUALS_COMPARER, typename CONTAINER_OF_ADDABLE, enable_if_t<Common::IsPotentiallyComparerRelation<KEY_TYPE, KEY_EQUALS_COMPARER> () and Configuration::IsIterableOfT_v<CONTAINER_OF_ADDABLE, KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>*>>*>
             inline Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::Mapping (KEY_EQUALS_COMPARER&& keyEqualsComparer, const CONTAINER_OF_ADDABLE& src)
                 : Mapping (forward<KEY_EQUALS_COMPARER> (keyEqualsComparer))
             {
