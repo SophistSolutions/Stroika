@@ -73,9 +73,9 @@ namespace Stroika::Foundation {
                 Assert (lock.owns_lock ());
                 if (tmp == cv_status::timeout) {
                     /*
-                         *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
-                         *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
-                         */
+                     *  Cannot quit here because we trim time to wait so we can re-check for thread aborting. No need to pay attention to
+                     *  this timeout value (or any return code) - cuz we re-examine tickcount at the top of the loop.
+                     */
                     {
                         // TEST POSSIBLE FIX/WORKAROUND FOR https://stroika.atlassian.net/browse/STK-629
                         Time::DurationSecondsType stillRemaining = timeoutAt - Time::GetTickCount ();
