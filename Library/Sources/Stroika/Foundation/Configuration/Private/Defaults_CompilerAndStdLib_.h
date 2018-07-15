@@ -943,6 +943,22 @@ NOTE:
 
 #endif
 
+/*
+ *
+ *  LINK : warning C4744: 'static struct std::atomic<void *> Stroika::Foundation::Memory::Private_::BlockAllocationPool_<8>::sHeadLink_' has different type in 'c:\sandbox\stroika\devroot\library\sour
+ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\samples\ssdpclient\sources\ssdpclient.cpp': 'struct (4 bytes)' and '__declspec(align(4)) struct (4 bytes)
+*/
+#ifndef qCompilerAndStdLib_inline_static_align_Buggy
+
+#if defined(_MSC_VER)
+// first seen broken in _MS_VS_2k17_15Pt7Pt5_
+#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt5_)
+#else
+#define qCompilerAndStdLib_inline_static_align_Buggy 0
+#endif
+
+#endif
+
 /**
  // _mkgmtime64 not portable, but seems to be defined everywhere I've tried - add a qSupported if/when needed
  https://msdn.microsoft.com/en-us/library/2093ets1.aspx
