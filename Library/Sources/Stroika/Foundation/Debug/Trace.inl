@@ -7,65 +7,61 @@
 #ifndef _Stroika_Foundation_Debug_Trace_inl_
 #define _Stroika_Foundation_Debug_Trace_inl_ 1
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Debug {
+namespace Stroika::Foundation::Debug {
 
-            /*
-             ********************************************************************************
-             ******************************* Trace::Emitter *********************************
-             ********************************************************************************
-             */
-            template <typename CHARTYPE>
-            inline void Emitter::EmitUnadornedText (const CHARTYPE* p)
-            {
-                DoEmit_ (p);
-            }
+    /*
+     ********************************************************************************
+     ******************************* Trace::Emitter *********************************
+     ********************************************************************************
+     */
+    template <typename CHARTYPE>
+    inline void Emitter::EmitUnadornedText (const CHARTYPE* p)
+    {
+        DoEmit_ (p);
+    }
 
-            /*
-             ********************************************************************************
-             ******************************* TraceContextBumper *****************************
-             ********************************************************************************
-             */
-            inline TraceContextBumper::TraceContextBumper () noexcept
+    /*
+     ********************************************************************************
+     ******************************* TraceContextBumper *****************************
+     ********************************************************************************
+     */
+    inline TraceContextBumper::TraceContextBumper () noexcept
 #if qDefaultTracingOn
-                : fDoEndMarker (false)
+        : fDoEndMarker (false)
 #endif
-            {
+    {
 #if qDefaultTracingOn
-                IncCount_ ();
+        IncCount_ ();
 #endif
-            }
+    }
 #if !qDefaultTracingOn
-            inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept
-            {
-            }
-            inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept
-            {
-            }
-            inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const char* contextName) noexcept
-            {
-            }
-            inline TraceContextBumper::~TraceContextBumper ()
-            {
-            }
+    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName) noexcept
+    {
+    }
+    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const wchar_t* contextName, [[maybe_unused]] const wchar_t* extraFmt, ...) noexcept
+    {
+    }
+    inline TraceContextBumper::TraceContextBumper ([[maybe_unused]] const char* contextName) noexcept
+    {
+    }
+    inline TraceContextBumper::~TraceContextBumper ()
+    {
+    }
 #endif
 
-            Execution::ModuleDependency MakeModuleDependency_Trace ();
+    Execution::ModuleDependency MakeModuleDependency_Trace ();
 
-            namespace Private_ {
-                struct TraceModuleData_ {
-                    TraceModuleData_ ();
-                    ~TraceModuleData_ ();
+    namespace Private_ {
+        struct TraceModuleData_ {
+            TraceModuleData_ ();
+            ~TraceModuleData_ ();
 
-                    Emitter                     fEmitter;
-                    Execution::ModuleDependency fStringDependency;
+            Emitter                     fEmitter;
+            Execution::ModuleDependency fStringDependency;
 #if qTraceToFile
-                    SDKString fTraceFileName;
+            SDKString fTraceFileName;
 #endif
-                };
-            }
-        }
+        };
     }
 }
 

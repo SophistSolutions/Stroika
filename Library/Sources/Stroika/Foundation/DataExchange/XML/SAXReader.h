@@ -25,27 +25,21 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace XML {
+namespace Stroika::Foundation::DataExchange::XML {
 
-                using Characters::String;
-                using Containers::Mapping;
+    using Characters::String;
+    using Containers::Mapping;
 
-                /**
-                 * Parse will throw an exception if it encounters any errors parsing.
-                 *
-                 *  @see ObjectReaderRegistry for examples of one way to use this
-                 */
-                void SAXParse (const Streams::InputStream<Memory::Byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
-                void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
+    /**
+     * Parse will throw an exception if it encounters any errors parsing.
+     *
+     *  @see ObjectReaderRegistry for examples of one way to use this
+     */
+    void SAXParse (const Streams::InputStream<Memory::Byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
+    void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
 
-                //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
-                //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
-            }
-        }
-    }
+    //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
+    //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
 }
 
 /*

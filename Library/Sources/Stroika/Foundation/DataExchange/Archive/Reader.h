@@ -21,61 +21,55 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Archive {
+namespace Stroika::Foundation::DataExchange::Archive {
 
-                using Characters::String;
-                using Containers::Set;
-                using Memory::BLOB;
+    using Characters::String;
+    using Containers::Set;
+    using Memory::BLOB;
 
-                /**
-                 *  Abstraction for Readers that map files or streams to collections of files, like zip files, tar files, etc.
-                 */
-                class Reader {
-                protected:
-                    class _IRep;
+    /**
+     *  Abstraction for Readers that map files or streams to collections of files, like zip files, tar files, etc.
+     */
+    class Reader {
+    protected:
+        class _IRep;
 
-                public:
-                    Reader ()              = delete;
-                    Reader (const Reader&) = delete;
-                    Reader (Reader&& src);
-                    Reader& operator= (const Reader&) = delete;
+    public:
+        Reader ()              = delete;
+        Reader (const Reader&) = delete;
+        Reader (Reader&& src);
+        Reader& operator= (const Reader&) = delete;
 
-                protected:
-                    explicit Reader (const shared_ptr<_IRep>& rep);
+    protected:
+        explicit Reader (const shared_ptr<_IRep>& rep);
 
-                public:
-                    /**
-                     */
-                    nonvirtual Set<String> GetContainedFiles () const;
+    public:
+        /**
+         */
+        nonvirtual Set<String> GetContainedFiles () const;
 
-                public:
-                    /**
-                     *  maybe define iterator/indexes and maybe have return stream
-                     */
-                    nonvirtual BLOB GetData (const String& fileName) const;
+    public:
+        /**
+         *  maybe define iterator/indexes and maybe have return stream
+         */
+        nonvirtual BLOB GetData (const String& fileName) const;
 
-                protected:
-                    nonvirtual _IRep& _GetRep ();
-                    nonvirtual const _IRep& _GetRep () const;
+    protected:
+        nonvirtual _IRep& _GetRep ();
+        nonvirtual const _IRep& _GetRep () const;
 
-                private:
-                    shared_ptr<_IRep> fRep_;
-                };
+    private:
+        shared_ptr<_IRep> fRep_;
+    };
 
-                /**
-                 */
-                class Reader::_IRep {
-                public:
-                    virtual ~_IRep ()                                          = default;
-                    virtual Set<String> GetContainedFiles () const             = 0;
-                    virtual BLOB        GetData (const String& fileName) const = 0;
-                };
-            }
-        }
-    }
+    /**
+     */
+    class Reader::_IRep {
+    public:
+        virtual ~_IRep ()                                          = default;
+        virtual Set<String> GetContainedFiles () const             = 0;
+        virtual BLOB        GetData (const String& fileName) const = 0;
+    };
 }
 
 /*

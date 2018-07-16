@@ -11,26 +11,20 @@
  */
 #include "../../Execution/ModuleInit.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace XML {
+namespace Stroika::Foundation::DataExchange::XML {
 
-                /*
-                ********************************************************************************
-                ****************************** SAXReader_ModuleInit_ ***************************
-                ********************************************************************************
-                */
-                struct SAXReader_ModuleInit_ {
-                    SAXReader_ModuleInit_ ();
-                    ~SAXReader_ModuleInit_ ();
+    /*
+     ********************************************************************************
+     ****************************** SAXReader_ModuleInit_ ***************************
+     ********************************************************************************
+     */
+    struct SAXReader_ModuleInit_ {
+        SAXReader_ModuleInit_ ();
+        ~SAXReader_ModuleInit_ ();
 #if qDefaultTracingOn
-                    Execution::ModuleDependency fDebugTraceDependency;
+        Execution::ModuleDependency fDebugTraceDependency;
 #endif
-                };
-            }
-        }
-    }
+    };
 }
 
 namespace {

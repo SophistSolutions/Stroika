@@ -4042,23 +4042,19 @@ namespace {
     };
     codecvt_utf8<wchar_t> codecvt_iso10646_::kUTF82wchar_tConverter_;
 }
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-            template <>
-            const codecvt<wchar_t, char, mbstate_t>& LookupCodeConverter (const String& charset)
-            {
-                // https://svn.apache.org/repos/asf/stdcxx/trunk/examples/include/codecvte.h almost works for ISO 8859-1 but I cannot use it (license)
-                if (charset.Equals (L"utf-8", CompareOptions::eCaseInsensitive)) {
-                    static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
-                    return kConverter_;
-                }
-                else if (charset.Equals (L"ISO-8859-1", CompareOptions::eCaseInsensitive)) {
-                    static const codecvt_iso10646_ kConverter_; // safe to keep static because only read-only const methods used
-                    return kConverter_;
-                }
-                Execution::Throw (Execution::StringException (L"charset not supported"));
-            }
+namespace Stroika::Foundation::Characters {
+    template <>
+    const codecvt<wchar_t, char, mbstate_t>& LookupCodeConverter (const String& charset)
+    {
+        // https://svn.apache.org/repos/asf/stdcxx/trunk/examples/include/codecvte.h almost works for ISO 8859-1 but I cannot use it (license)
+        if (charset.Equals (L"utf-8", CompareOptions::eCaseInsensitive)) {
+            static const codecvt_utf8<wchar_t> kConverter_; // safe to keep static because only read-only const methods used
+            return kConverter_;
         }
+        else if (charset.Equals (L"ISO-8859-1", CompareOptions::eCaseInsensitive)) {
+            static const codecvt_iso10646_ kConverter_; // safe to keep static because only read-only const methods used
+            return kConverter_;
+        }
+        Execution::Throw (Execution::StringException (L"charset not supported"));
     }
 }

@@ -186,26 +186,22 @@ namespace {
     }
 }
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-            template <>
-            float String2Float (const String& s)
-            {
-                return String2Float_<float> (s, wcstof);
-            }
+namespace Stroika::Foundation::Characters {
+    template <>
+    float String2Float (const String& s)
+    {
+        return String2Float_<float> (s, wcstof);
+    }
 
-            template <>
-            double String2Float (const String& s)
-            {
-                return String2Float_<double> (s, wcstod);
-            }
+    template <>
+    double String2Float (const String& s)
+    {
+        return String2Float_<double> (s, wcstod);
+    }
 
-            template <>
-            long double String2Float (const String& s)
-            {
-                return String2Float_<long double> (s, wcstold);
-            }
-        }
+    template <>
+    long double String2Float (const String& s)
+    {
+        return String2Float_<long double> (s, wcstold);
     }
 }

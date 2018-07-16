@@ -9,12 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace XML {
-            }
-        }
-    }
+namespace Stroika::Foundation::DataExchange::XML {
 }
 #endif /*_Stroika_Foundation_DataExchange_XML_WriterUtils_inl_*/

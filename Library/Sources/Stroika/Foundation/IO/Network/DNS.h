@@ -26,63 +26,57 @@
  *      @todo   Possibly support async lookup - getaddrinfo_a() or Windows variation doing async lookup
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
+namespace Stroika::Foundation::IO::Network {
 
-                using Characters::String;
-                using Containers::Collection;
+    using Characters::String;
+    using Containers::Collection;
 
-                /**
-                 *  DNS (Domain Name Service) Resolver.
-                 */
-                class DNS {
-                public:
-                    /**
-                     *  Returns the default dns resolver.
-                     */
-                    static DNS Default ();
+    /**
+     *  DNS (Domain Name Service) Resolver.
+     */
+    class DNS {
+    public:
+        /**
+         *  Returns the default dns resolver.
+         */
+        static DNS Default ();
 
-                public:
-                    DNS ();
+    public:
+        DNS ();
 
-                public:
-                    /**
-                     */
-                    struct HostEntry {
-                        Collection<InternetAddress> fAddressList;
-                        Collection<String>          fAliases;
-                        String                      fCanonicalName; // aka hostname?
-                    };
+    public:
+        /**
+         */
+        struct HostEntry {
+            Collection<InternetAddress> fAddressList;
+            Collection<String>          fAliases;
+            String                      fCanonicalName; // aka hostname?
+        };
 
-                public:
-                    /**
-                     */
-                    nonvirtual HostEntry GetHostEntry (const String& hostNameOrAddress) const;
+    public:
+        /**
+         */
+        nonvirtual HostEntry GetHostEntry (const String& hostNameOrAddress) const;
 
-                public:
-                    /**
-                    *  Lookup the dns name associated with the given ip address. This uses internet
-                    *  DNS PTR records.
-                    */
-                    nonvirtual optional<String> ReverseLookup (const InternetAddress& address) const;
+    public:
+        /**
+         *  Lookup the dns name associated with the given ip address. This uses internet
+         *  DNS PTR records.
+         */
+        nonvirtual optional<String> ReverseLookup (const InternetAddress& address) const;
 
-                public:
-                    /**
-                     *  Lookup the dns name associated with the given ip address. This uses internet
-                     *  DNS PTR records, but dont through except in extreme (low memory) circumstances. Just return missing.
-                     */
-                    nonvirtual optional<String> QuietReverseLookup (const InternetAddress& address) const;
+    public:
+        /**
+         *  Lookup the dns name associated with the given ip address. This uses internet
+         *  DNS PTR records, but dont through except in extreme (low memory) circumstances. Just return missing.
+         */
+        nonvirtual optional<String> QuietReverseLookup (const InternetAddress& address) const;
 
-                public:
-                    /**
-                     */
-                    nonvirtual Collection<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
-                };
-            }
-        }
-    }
+    public:
+        /**
+         */
+        nonvirtual Collection<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
+    };
 }
 
 /*
