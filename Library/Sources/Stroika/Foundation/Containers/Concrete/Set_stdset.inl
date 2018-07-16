@@ -201,7 +201,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>*>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>*>
                 inline Set_stdset<T>::Set_stdset (const CONTAINER_OF_T& src)
                     : Set_stdset ()
                 {
@@ -209,7 +209,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>*>
+                template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_stdset<T>*>>*>
                 inline Set_stdset<T>::Set_stdset (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src)
                     : Set_stdset (equalsComparer)
                 {

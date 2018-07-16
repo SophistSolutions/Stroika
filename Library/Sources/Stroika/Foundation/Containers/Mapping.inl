@@ -234,7 +234,7 @@ namespace Stroika {
                 }
             }
             template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-            template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>*>
+            template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
             inline void Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*

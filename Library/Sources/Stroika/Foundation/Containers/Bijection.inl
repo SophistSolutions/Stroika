@@ -324,7 +324,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>*>
+        template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>*>
         inline void Bijection<DOMAIN_TYPE, RANGE_TYPE>::AddAll (const CONTAINER_OF_KEYVALUE& items)
         {
             // see https://stroika.atlassian.net/browse/STK-645

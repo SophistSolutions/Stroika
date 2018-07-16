@@ -41,7 +41,7 @@ namespace Stroika {
                      */
                     Sequence_LinkedList ();
                     Sequence_LinkedList (const Sequence_LinkedList& src) = default;
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Sequence_LinkedList<T>*>>* = nullptr>
+                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Sequence_LinkedList<T>*>>* = nullptr>
                     explicit Sequence_LinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

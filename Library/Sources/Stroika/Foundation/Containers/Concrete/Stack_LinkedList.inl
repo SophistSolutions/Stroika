@@ -143,20 +143,6 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename T>
-                inline Stack_LinkedList<T>::Stack_LinkedList (const Stack_LinkedList<T>& src)
-                    : inherited (static_cast<const inherited&> (src))
-                {
-                    AssertRepValidType_ ();
-                }
-                template <typename T>
-                inline Stack_LinkedList<T>& Stack_LinkedList<T>::operator= (const Stack_LinkedList<T>& rhs)
-                {
-                    AssertRepValidType_ ();
-                    inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertRepValidType_ ();
-                    return *this;
-                }
-                template <typename T>
                 inline void Stack_LinkedList<T>::AssertRepValidType_ () const
                 {
 #if qDebug

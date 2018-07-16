@@ -42,7 +42,7 @@ namespace Stroika {
                      */
                     Deque_DoublyLinkedList ();
                     Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& src);
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value && !is_convertible_v<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>>* = nullptr>
+                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Deque_DoublyLinkedList<T>*>>* = nullptr>
                     explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);

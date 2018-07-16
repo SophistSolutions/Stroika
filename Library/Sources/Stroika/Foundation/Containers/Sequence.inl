@@ -250,7 +250,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
         inline void Sequence<T>::InsertAll (size_t i, const CONTAINER_OF_ADDABLE& s)
         {
             Require (i <= this->GetLength ());
@@ -262,7 +262,7 @@ namespace Stroika::Foundation {
             Insert (0, item);
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
         inline void Sequence<T>::PrependAll (const CONTAINER_OF_ADDABLE& s)
         {
             InsertAll (0, s);
@@ -279,7 +279,7 @@ namespace Stroika::Foundation {
             _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().Insert (_IRep::_kBadSequenceIndex, &item, &item + 1);
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
         void Sequence<T>::AppendAll (const CONTAINER_OF_ADDABLE& s)
         {
             _SafeReadWriteRepAccessor<_IRep> tmp = {this};

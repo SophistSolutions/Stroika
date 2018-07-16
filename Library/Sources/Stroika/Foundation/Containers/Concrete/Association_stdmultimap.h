@@ -50,7 +50,7 @@ namespace Stroika {
                      */
                     Association_stdmultimap ();
                     Association_stdmultimap (const Association_stdmultimap& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
+                    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
                     explicit Association_stdmultimap (const CONTAINER_OF_ADDABLE& src);
                     template <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Association_stdmultimap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);

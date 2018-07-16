@@ -155,7 +155,7 @@ namespace Stroika::Foundation {
             }
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
         inline void Set<T>::AddAll (const CONTAINER_OF_ADDABLE& s)
         {
             // Note - unlike Collection<T, TRAITS> - we dont need to check for this != &s because if we

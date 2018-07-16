@@ -329,7 +329,7 @@ namespace Stroika::Foundation {
             /**
              *  \note   AddAll/2 is alias for .net AddRange ()
              */
-            template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_KEYVALUE>::value>* = nullptr>
+            template <typename CONTAINER_OF_KEYVALUE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_KEYVALUE>>* = nullptr>
             nonvirtual void AddAll (const CONTAINER_OF_KEYVALUE& items);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void AddAll (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

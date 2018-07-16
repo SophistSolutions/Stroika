@@ -186,7 +186,7 @@ namespace Stroika::Foundation {
              *
              *  This also implies that ordering will be preserved in iterating over the Queue, or in Dequeing those elements.
              */
-            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>* = nullptr>
+            template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>* = nullptr>
             nonvirtual void AddAllToTail (const CONTAINER_OF_ADDABLE& s);
             template <typename COPY_FROM_ITERATOR_OF_ADDABLE>
             nonvirtual void AddAllToTail (COPY_FROM_ITERATOR_OF_ADDABLE start, COPY_FROM_ITERATOR_OF_ADDABLE end);

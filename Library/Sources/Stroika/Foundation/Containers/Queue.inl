@@ -106,7 +106,7 @@ namespace Stroika::Foundation {
             return _SafeReadWriteRepAccessor<_IRep>{this}._GetWriteableRep ().RemoveHead ();
         }
         template <typename T>
-        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_ADDABLE>::value>*>
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE>>*>
         inline void Queue<T>::AddAllToTail (const CONTAINER_OF_ADDABLE& s)
         {
             _SafeReadWriteRepAccessor<_IRep> tmp{this};

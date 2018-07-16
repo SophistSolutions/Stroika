@@ -120,6 +120,18 @@ namespace Stroika::Foundation {
             };
         }
         /**
+         *  Check if has begin/end methods 
+         */
+        template <typename ITERABLE>
+        using IsIterable = integral_constant<bool, has_beginend<ITERABLE>::value>;
+
+        /**
+         *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
+         */
+        template <typename ITERABLE>
+        constexpr bool IsIterable_v = IsIterable<ITERABLE>::value;
+
+        /**
          *  Check if has begin/end methods (not for subclassing Traversal::Iterable<>)
          */
         template <typename ITERABLE_OF_T, typename T>
@@ -135,7 +147,7 @@ namespace Stroika::Foundation {
          *  See http://en.cppreference.com/w/cpp/concept/Container
          */
         template <typename T>
-        constexpr bool Container ()
+        [[deprecated ("Use IsIterable_v instead - as of v2.1d5")]] constexpr bool Container ()
         {
 #if 1
             // no where near enough, but a start...
@@ -210,9 +222,8 @@ namespace Stroika::Foundation {
         /**
          *  Check T is an interator, but checking if it has iterator_traits...
          */
-        template <typename  T>
+        template <typename T>
         constexpr bool is_iterator_v = is_iterator<T>::value;
-
 
         namespace Private_ {
             // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable

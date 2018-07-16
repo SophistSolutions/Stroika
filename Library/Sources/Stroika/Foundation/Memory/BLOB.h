@@ -87,7 +87,7 @@ namespace Stroika::Foundation {
             BLOB ();
             BLOB (const BLOB& src) = default;
             BLOB (BLOB&& src);
-            template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::has_beginend<CONTAINER_OF_BYTE>::value and is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte>>* = nullptr>
+            template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte>>* = nullptr>
             BLOB (const CONTAINER_OF_BYTE& data);
             BLOB (const Byte* start, const Byte* end);
             BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
@@ -129,7 +129,7 @@ namespace Stroika::Foundation {
             static BLOB Raw (const T* s, size_t sz);
             static BLOB Raw (const char* s);
             static BLOB Raw (const wchar_t* s);
-            template <typename CONTAINER_OF_POD_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_POD_T>::value and is_pod_v<typename CONTAINER_OF_POD_T::value_type>>* = nullptr>
+            template <typename CONTAINER_OF_POD_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_POD_T> and is_pod_v<typename CONTAINER_OF_POD_T::value_type>>* = nullptr>
             static BLOB Raw (const CONTAINER_OF_POD_T& s);
 
         protected:

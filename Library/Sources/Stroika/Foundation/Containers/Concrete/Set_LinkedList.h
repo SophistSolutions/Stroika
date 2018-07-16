@@ -49,9 +49,9 @@ namespace Stroika {
                     Set_LinkedList (const Set_LinkedList& src) = default;
                     Set_LinkedList (const initializer_list<T>& src);
                     Set_LinkedList (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
+                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
                     Set_LinkedList (const CONTAINER_OF_T& src);
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::has_beginend<CONTAINER_OF_T>::value and !is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
+                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
                     Set_LinkedList (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
