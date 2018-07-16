@@ -1192,6 +1192,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\Memoizer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Character.h" />
@@ -1630,6 +1631,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cache\CallerStalenessCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\Makefile" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\Memoizer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\SynchronizedTimedCache.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl" />

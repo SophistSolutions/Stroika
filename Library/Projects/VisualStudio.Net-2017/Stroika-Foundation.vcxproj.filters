@@ -2007,6 +2007,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Empty.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\Memoizer.h">
+      <Filter>Sources\Cache</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -3257,6 +3260,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cache\Memoizer.inl">
+      <Filter>Sources\Cache</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
