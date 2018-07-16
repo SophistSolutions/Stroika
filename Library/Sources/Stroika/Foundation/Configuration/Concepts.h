@@ -77,30 +77,30 @@ namespace Stroika::Foundation {
     };
 
         /*
-            *  BASED ON
-            *      http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3701.pdf
-            *
-            *  But not in standard yet, and these not well documented. So go with definitions in
-            *      http://en.cppreference.com/w/cpp/concept/
-            *  for now
-            *
-            *  Starting to experiment...
-            */
+         *  BASED ON
+         *      http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3701.pdf
+         *
+         *  But not in standard yet, and these not well documented. So go with definitions in
+         *      http://en.cppreference.com/w/cpp/concept/
+         *  for now
+         *
+         *  Starting to experiment...
+         */
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (eq, (x == x));
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (neq, (x != x));
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (lt, (x < x));
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (minus, (x < x));
 
         /*
-            *  has_beginend<T>::value is true iff T has a begin/end method
-            *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
-            */
+         *  has_beginend<T>::value is true iff T has a begin/end method
+         *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
+         */
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (beginend, (std::begin (x) != std::end (x)));
 
         /*
-            *  has_beginend<T>::value is true iff T has a begin/end method
-            *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
-            */
+         *  has_beginend<T>::value is true iff T has a begin/end method
+         *  @todo fix so checks results act more like iterators - subclass from iterator_tag>
+         */
         STROIKA_FOUNDATION_CONFIGURATION_DEFINE_HAS (begin, std::begin (x));
 
         /**
@@ -172,8 +172,8 @@ namespace Stroika::Foundation {
         }
 
         /*
-            * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
-            */
+         * FROM http://stackoverflow.com/questions/16893992/check-if-type-can-be-explicitly-converted
+         */
         template <typename From, typename To>
         struct is_explicitly_convertible {
             template <typename T>
@@ -195,6 +195,7 @@ namespace Stroika::Foundation {
         };
 
         /**
+         *  Check T is an interator, but checking if it has iterator_traits...
          *  from https://stackoverflow.com/questions/12032771/how-to-check-if-an-arbitrary-type-is-an-iterator
          */
         template <typename T, typename = void>
@@ -205,6 +206,13 @@ namespace Stroika::Foundation {
         struct is_iterator<T, enable_if_t<!is_same_v<typename iterator_traits<T>::value_type, void>>> {
             static constexpr bool value = true;
         };
+
+        /**
+         *  Check T is an interator, but checking if it has iterator_traits...
+         */
+        template <typename  T>
+        constexpr bool is_iterator_v = is_iterator<T>::value;
+
 
         namespace Private_ {
             // From https://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable

@@ -300,7 +300,7 @@ namespace Stroika {
                     AssertRepValidType_ ();
                 }
                 template <typename DOMAIN_TYPE, typename RANGE_TYPE>
-                template <typename COPY_FROM_ITERATOR_KVP_T, enable_if_t<Configuration::is_iterator<COPY_FROM_ITERATOR_KVP_T>::value>*>
+                template <typename COPY_FROM_ITERATOR_KVP_T, enable_if_t<Configuration::is_iterator_v<COPY_FROM_ITERATOR_KVP_T>>*>
                 Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE>::Bijection_LinkedList (COPY_FROM_ITERATOR_KVP_T start, COPY_FROM_ITERATOR_KVP_T end)
                     : Bijection_LinkedList ()
                 {
