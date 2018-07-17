@@ -17,59 +17,53 @@
 *  TODO:
 */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Association<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::AssociationTraitsType> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 *  \note   \em Implementation Details
-                 *          This module is essentially identical to SortedAssociation_stdmultimap, but making it dependent on SortedAssociation<> creates
-                 *          problems with circular dependencies - especially give how the default Association CTOR calls the factory class
-                 *          which maps back to the _stdmultimap<> variant.
-                 *
-                 *          There maybe another (better) way, but this works.
-                 */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class Association_stdmultimap : public Association<KEY_TYPE, MAPPED_VALUE_TYPE> {
-                private:
-                    using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
+    /**
+     *  \brief   Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Association<KEY_TYPE, MAPPED_VALUE_TYPE, typename TRAITS::AssociationTraitsType> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     *  \note   \em Implementation Details
+     *          This module is essentially identical to SortedAssociation_stdmultimap, but making it dependent on SortedAssociation<> creates
+     *          problems with circular dependencies - especially give how the default Association CTOR calls the factory class
+     *          which maps back to the _stdmultimap<> variant.
+     *
+     *          There maybe another (better) way, but this works.
+     */
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class Association_stdmultimap : public Association<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    private:
+        using inherited = Association<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
-                public:
-                    /**
-                    */
-                    //using KeyWellOrderCompareFunctionType = typename TraitsType::KeyWellOrderCompareFunctionType;
+    public:
+        /**
+        */
+        //using KeyWellOrderCompareFunctionType = typename TraitsType::KeyWellOrderCompareFunctionType;
 
-                public:
-                    /**
-                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
-                     */
-                    Association_stdmultimap ();
-                    Association_stdmultimap (const Association_stdmultimap& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
-                    explicit Association_stdmultimap (const CONTAINER_OF_ADDABLE& src);
-                    template <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Association_stdmultimap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+    public:
+        /**
+         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         */
+        Association_stdmultimap ();
+        Association_stdmultimap (const Association_stdmultimap& src) = default;
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const Association_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
+        explicit Association_stdmultimap (const CONTAINER_OF_ADDABLE& src);
+        template <typename COPY_FROM_ITERATOR_KEY_T>
+        explicit Association_stdmultimap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-                public:
-                    /**
-                    */
-                    nonvirtual Association_stdmultimap& operator= (const Association_stdmultimap& rhs) = default;
+    public:
+        /**
+        */
+        nonvirtual Association_stdmultimap& operator= (const Association_stdmultimap& rhs) = default;
 
-                private:
-                    class IImplRep_;
-                    class Rep_;
+    private:
+        class IImplRep_;
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*

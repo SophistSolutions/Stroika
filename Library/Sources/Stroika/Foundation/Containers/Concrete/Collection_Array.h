@@ -17,71 +17,66 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 * \brief   Collection_Array<T> is an Array-based concrete implementation of the Collection<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T>
-                class Collection_Array : public Collection<T> {
-                private:
-                    using inherited = Collection<T>;
+    /**
+     * \brief   Collection_Array<T> is an Array-based concrete implementation of the Collection<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T>
+    class Collection_Array : public Collection<T> {
+    private:
+        using inherited = Collection<T>;
 
-                public:
-                    /**
-                     */
-                    Collection_Array ();
-                    Collection_Array (const Collection<T>& src);
-                    Collection_Array (const Collection_Array& src) noexcept = default;
-                    Collection_Array (Collection_Array&& src) noexcept      = default;
-                    Collection_Array (const T* start, const T* end);
+    public:
+        /**
+         */
+        Collection_Array ();
+        Collection_Array (const Collection<T>& src);
+        Collection_Array (const Collection_Array& src) noexcept = default;
+        Collection_Array (Collection_Array&& src) noexcept      = default;
+        Collection_Array (const T* start, const T* end);
 
-                public:
-                    nonvirtual Collection_Array& operator= (const Collection_Array& rhs) = default;
+    public:
+        nonvirtual Collection_Array& operator= (const Collection_Array& rhs) = default;
 
-                public:
-                    /**
-                     *  \brief  Reduce the space used to store the Collection<T> contents.
-                     *
-                     *  This has no semantics, no observable behavior. But depending on the representation of
-                     *  the concrete collection, calling this may save memory.
-                     */
-                    nonvirtual void Compact ();
+    public:
+        /**
+         *  \brief  Reduce the space used to store the Collection<T> contents.
+         *
+         *  This has no semantics, no observable behavior. But depending on the representation of
+         *  the concrete collection, calling this may save memory.
+         */
+        nonvirtual void Compact ();
 
-                public:
-                    /*
-                     * This optional API allows pre-reserving space as an optimization.
-                     */
-                    nonvirtual size_t GetCapacity () const;
-                    nonvirtual void   SetCapacity (size_t slotsAlloced);
+    public:
+        /*
+            * This optional API allows pre-reserving space as an optimization.
+            */
+        nonvirtual size_t GetCapacity () const;
+        nonvirtual void   SetCapacity (size_t slotsAlloced);
 
-                public:
-                    /**
-                     *  STL-ish alias for GetCapacity ();
-                     */
-                    nonvirtual size_t capacity () const;
+    public:
+        /**
+         *  STL-ish alias for GetCapacity ();
+         */
+        nonvirtual size_t capacity () const;
 
-                public:
-                    /**
-                     *  STL-ish alias for SetCapacity ();
-                     */
-                    nonvirtual void reserve (size_t slotsAlloced);
+    public:
+        /**
+         *  STL-ish alias for SetCapacity ();
+         */
+        nonvirtual void reserve (size_t slotsAlloced);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
+
 }
 
 /*

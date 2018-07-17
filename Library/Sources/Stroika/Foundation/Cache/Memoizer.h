@@ -28,7 +28,6 @@
 namespace Stroika::Foundation {
     namespace Cache {
 
-
         /**
          *** maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
          */

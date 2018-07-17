@@ -21,44 +21,39 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief Collection_LinkedList<T> is an LinkedList-based concrete implementation of the Collection<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T>
-                class Collection_LinkedList : public Collection<T> {
-                private:
-                    using inherited = Collection<T>;
+    /**
+     *  \brief Collection_LinkedList<T> is an LinkedList-based concrete implementation of the Collection<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T>
+    class Collection_LinkedList : public Collection<T> {
+    private:
+        using inherited = Collection<T>;
 
-                public:
-                    /**
-                     */
-                    Collection_LinkedList ();
-                    Collection_LinkedList (const T* start, const T* end);
-                    Collection_LinkedList (const Collection<T>& src);
-                    Collection_LinkedList (const Collection_LinkedList& src) noexcept = default;
-                    Collection_LinkedList (Collection_LinkedList&& src) noexcept      = default;
+    public:
+        /**
+         */
+        Collection_LinkedList ();
+        Collection_LinkedList (const T* start, const T* end);
+        Collection_LinkedList (const Collection<T>& src);
+        Collection_LinkedList (const Collection_LinkedList& src) noexcept = default;
+        Collection_LinkedList (Collection_LinkedList&& src) noexcept      = default;
 
-                public:
-                    nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList& rhs) = default;
+    public:
+        nonvirtual Collection_LinkedList& operator= (const Collection_LinkedList& rhs) = default;
 
-                private:
-                    class IImplRep_;
-                    class Rep_;
+    private:
+        class IImplRep_;
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
+
 }
 
 /*

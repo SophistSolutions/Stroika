@@ -16,37 +16,31 @@
  *  TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   DenseDataHyperRectangle_Vector<T, INDEXES...> is an Dense Vector-based concrete implementation of the DenseDataHyperRectangle<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 */
-                template <typename T, typename... INDEXES>
-                class DenseDataHyperRectangle_Vector : public DenseDataHyperRectangle<T, INDEXES...> {
-                private:
-                    using inherited = DenseDataHyperRectangle<T, INDEXES...>;
+    /**
+     *  \brief   DenseDataHyperRectangle_Vector<T, INDEXES...> is an Dense Vector-based concrete implementation of the DenseDataHyperRectangle<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     */
+    template <typename T, typename... INDEXES>
+    class DenseDataHyperRectangle_Vector : public DenseDataHyperRectangle<T, INDEXES...> {
+    private:
+        using inherited = DenseDataHyperRectangle<T, INDEXES...>;
 
-                public:
-                    DenseDataHyperRectangle_Vector (INDEXES... dimensions);
-                    DenseDataHyperRectangle_Vector (const DenseDataHyperRectangle_Vector<T, INDEXES...>& src);
+    public:
+        DenseDataHyperRectangle_Vector (INDEXES... dimensions);
+        DenseDataHyperRectangle_Vector (const DenseDataHyperRectangle_Vector<T, INDEXES...>& src);
 
-                public:
-                    nonvirtual DenseDataHyperRectangle_Vector<T, INDEXES...>& operator= (const DenseDataHyperRectangle_Vector<T, INDEXES...>& rhs);
+    public:
+        nonvirtual DenseDataHyperRectangle_Vector<T, INDEXES...>& operator= (const DenseDataHyperRectangle_Vector<T, INDEXES...>& rhs);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*
