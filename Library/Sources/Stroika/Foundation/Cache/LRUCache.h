@@ -15,6 +15,8 @@
 #include "../Containers/Mapping.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
 
+#include "Statistics.h"
+
 /**
  *      \file
  *
@@ -44,33 +46,9 @@ namespace Stroika::Foundation {
     namespace Cache {
 
         namespace LRUCacheSupport {
-
-            /**
-             *  Helper detail class for analyzing and tuning cache statistics.
-             */
-            struct Stats_Basic {
-                size_t fCachedCollected_Hits{};
-                size_t fCachedCollected_Misses{};
-                void   IncrementHits ();
-                void   IncrementMisses ();
-            };
-
-            /**
-             *  Helper for DefaultTraits - when not collecting stats.
-             */
-            struct Stats_Null {
-                void IncrementHits ();
-                void IncrementMisses ();
-            };
-
-            /**
-             *  Helper for DefaultTraits.
-             */
-            using StatsType_DEFAULT = conditional_t<qDebug, Stats_Basic, Stats_Null>;
-
             /**
              */
-            template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = equal_to<KEY>>
+            template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
             struct DefaultTraits {
                 using KeyType = KEY;
 
@@ -94,7 +72,7 @@ namespace Stroika::Foundation {
 
                 /**
                  */
-                using StatsType = LRUCacheSupport::StatsType_DEFAULT;
+                using StatsType = STATS_TYPE;
 
                 /**
                  */
