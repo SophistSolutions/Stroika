@@ -10,7 +10,7 @@ include $(StroikaRoot)/Library/Projects/Unix/SharedMakeVariables-Default.mk
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	Statistics.o
+	$(ObjDir)Statistics.o
 
 
 all:	$(ObjDir) $(Objs)
