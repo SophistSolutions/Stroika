@@ -1,23 +1,23 @@
-    /*
+/*
     * Copyright(c) Sophist Solutions, Inc. 1990-2018.  All rights reserved
     */
-    #ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_inl_
-    #define _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_inl_
+#define _Stroika_Foundation_Containers_Concrete_Mapping_stdmap_inl_
 
-    /*
+/*
     ********************************************************************************
     ***************************** Implementation Details ***************************
     ********************************************************************************
     */
-    #include <map>
+#include <map>
 
-    #include "../../Memory/BlockAllocated.h"
-    #include "../STL/Compare.h"
+#include "../../Memory/BlockAllocated.h"
+#include "../STL/Compare.h"
 
-    #include "../Private/IteratorImplHelper.h"
-    #include "../Private/PatchingDataStructures/STLContainerWrapper.h"
+#include "../Private/IteratorImplHelper.h"
+#include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 
-    namespace Stroika::Foundation::Containers::Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
     /*
      ********************************************************************************
@@ -29,11 +29,11 @@
     private:
         using inherited = typename Mapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep;
 
-    #if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
+#if qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
     protected:
         using _APPLY_ARGTYPE      = typename inherited::_APPLY_ARGTYPE;
         using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
-    #endif
+#endif
     };
 
     /*
@@ -181,13 +181,13 @@
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);
             mir.fIterator.RemoveCurrent ();
         }
-    #if qDebug
+#if qDebug
         virtual void AssertNoIteratorsReferenceOwner (IteratorOwnerID oBeingDeleted) const override
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             fData_.AssertNoIteratorsReferenceOwner (oBeingDeleted);
         }
-    #endif
+#endif
 
     private:
         using DataStructureImplType_ = Private::PatchingDataStructures::STLContainerWrapper<map<KEY_TYPE, MAPPED_VALUE_TYPE, KEY_INORDER_COMPARER>>;
@@ -234,9 +234,9 @@
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline void Mapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::AssertRepValidType_ () const
     {
-    #if qDebug
+#if qDebug
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
-    #endif
+#endif
     }
 }
 
