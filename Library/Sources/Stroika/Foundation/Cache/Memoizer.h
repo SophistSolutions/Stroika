@@ -25,31 +25,29 @@
  *
  */
 
-namespace Stroika::Foundation {
-    namespace Cache {
+namespace Stroika::Foundation::Cache {
 
-        /**
-         *** maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
-         */
-        template <template CACHE = LRUCache, typename RESULT, typename... ARGS>
-        class Memoizer : private Debug::AssertExternallySynchronizedLock {
+    /**
+     *  maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
+     */
+    template <template CACHE = LRUCache, typename RESULT, typename... ARGS>
+    class Memoizer : private Debug::AssertExternallySynchronizedLock {
 
-        public:
-            Memoizer (function<RESULT (ARGS...)> f, function<Hash (ARGS...)> hash);
-            Memoizer (function<RESULT (ARGS...)> f, function<Hash (ARGS...)> hash, size_t size);
-            Memoizer (const Memoizer& from) = default;
+    public:
+        Memoizer (function<RESULT (ARGS...)> f, function<Hash (ARGS...)> hash);
+        Memoizer (function<RESULT (ARGS...)> f, function<Hash (ARGS...)> hash, size_t size);
+        Memoizer (const Memoizer& from) = default;
 
-        public:
-            nonvirtual const Memoizer& operator= (const Memoizer& rhs) = default;
+    public:
+        nonvirtual const Memoizer& operator= (const Memoizer& rhs) = default;
 
-        public:
-            nonvirtual RESULT Compute (ARGS... args);
+    public:
+        nonvirtual RESULT Compute (ARGS... args);
 
-        private:
-            function<RESULT (ARGS...)>    fFunction_;
-            CACHE<tuple<ARGS...>, RESULT> fCache_;
-        };
-    }
+    private:
+        function<RESULT (ARGS...)>    fFunction_;
+        CACHE<tuple<ARGS...>, RESULT> fCache_;
+    };
 }
 
 /*

@@ -10,7 +10,6 @@
 #include <mutex>
 #include <optional>
 
-#include "../Characters/SDKChar.h"
 #include "../Common/Compare.h"
 #include "../Configuration/Common.h"
 #include "../Configuration/TypeHints.h"
@@ -62,13 +61,10 @@
 
 namespace Stroika::Foundation::Cache {
 
-    using Stroika::Foundation::Characters::SDKChar;
-
     namespace TimedCacheSupport {
-
         /**
-            * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
-            */
+         * The DefaultTraits<> is a simple default traits implementation for building an TimedCache<>.
+         */
         template <typename KEY, typename VALUE, typename STRICT_INORDER_COMPARER = less<KEY>, bool TRACK_READ_ACCESS = false>
         struct DefaultTraits {
             using KeyType    = KEY;
@@ -79,7 +75,7 @@ namespace Stroika::Foundation::Cache {
             static constexpr bool kTrackReadAccess = TRACK_READ_ACCESS;
 
             /**
-                */
+             */
             using InOrderComparerType = STRICT_INORDER_COMPARER;
         };
     }
