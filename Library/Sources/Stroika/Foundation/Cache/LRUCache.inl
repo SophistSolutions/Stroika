@@ -16,7 +16,6 @@
 
 namespace Stroika::Foundation::Cache {
 
-
     /*
      ********************************************************************************
      *** LRUCacheSupport::DefaultTraits<KEY, HASH_TABLE_SIZE, KEY_EQUALS_COMPARER> **
@@ -367,5 +366,5 @@ namespace Stroika::Foundation::Cache {
             return newV;
         }
     }
-  }
+}
 #endif /*_Stroika_Foundation_Cache_LRUCache_inl_*/

@@ -75,6 +75,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cache\Statistics.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Character.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp" />

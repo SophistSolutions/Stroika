@@ -8,11 +8,10 @@
 
 #include <type_traits>
 
+#include "../Characters/String.h"
+
 /**
  *      \file
- *
- * TODO:
- *
  */
 
 namespace Stroika::Foundation::Cache::Statistics {
@@ -25,6 +24,11 @@ namespace Stroika::Foundation::Cache::Statistics {
         size_t fCachedCollected_Misses{};
         void   IncrementHits ();
         void   IncrementMisses ();
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual Characters::String ToString () const;
     };
 
     /**
@@ -33,6 +37,11 @@ namespace Stroika::Foundation::Cache::Statistics {
     struct Stats_Null {
         void IncrementHits ();
         void IncrementMisses ();
+
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual Characters::String ToString () const;
     };
 
     /**

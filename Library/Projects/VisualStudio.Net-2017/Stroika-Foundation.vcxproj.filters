@@ -816,6 +816,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cache\Statistics.cpp">
+      <Filter>Sources\Cache</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
