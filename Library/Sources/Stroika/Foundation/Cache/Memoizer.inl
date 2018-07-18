@@ -22,72 +22,47 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename RESULT, template <typename, typename> class CACHE, typename... ARGS>
-    Memoizer<RESULT, CACHE, ARGS...>::Memoizer (function<RESULT (ARGS...)> f, function<unsigned int(ARGS...)> hash)
+    Memoizer<RESULT, CACHE, ARGS...>::Memoizer (const function<RESULT (ARGS...)>& f, const function<unsigned int(ARGS...)>& hash)
         : Memoizer (f, hash, 101)
     {
     }
     template <typename RESULT, template <typename, typename> class CACHE, typename... ARGS>
-    Memoizer<RESULT, CACHE, ARGS...>::Memoizer (function<RESULT (ARGS...)> f, function<unsigned int(ARGS...)> hash, [[maybe_unused]] size_t size)
+    Memoizer<RESULT, CACHE, ARGS...>::Memoizer (const function<RESULT (ARGS...)>& f, function<unsigned int(ARGS...)> hash, [[maybe_unused]] size_t size)
         : fFunction_ (f)
     {
     }
-    namespace {
+    namespace PRIVATE_ {
+        // @todo - Find a cleaner simpler way to exlode the tuple and call by its members...
         template <int...>
-        struct seq {
+        struct seq_ {
         };
-
         template <int N, int... S>
-        struct gens : gens<N - 1, N - 1, S...> {
+        struct gens_ : gens_<N - 1, N - 1, S...> {
         };
-
         template <int... S>
-        struct gens<0, S...> {
-            typedef seq<S...> type;
+        struct gens_<0, S...> {
+            typedef seq_<S...> type;
         };
-
         template <typename RESULT, typename... Args>
-        struct save_it_for_later {
-            std::tuple<Args...>        params;
+        struct CallWithExplodedTuple_ {
+            tuple<Args...>             params;
             function<RESULT (Args...)> func;
-
-            RESULT delayed_dispatch ()
-            {
-                return callFunc (typename gens<sizeof...(Args)>::type ());
-            }
-
             template <int... S>
-            RESULT callFunc (seq<S...>)
+            RESULT callFunc (seq_<S...>)
             {
-                return func (std::get<S> (params)...);
+                return func (get<S> (params)...);
             }
         };
     }
     template <typename RESULT, template <typename, typename> class CACHE, typename... ARGS>
     RESULT Memoizer<RESULT, CACHE, ARGS...>::Compute (ARGS... args)
     {
-#if 0
-        if (optional<RESULT> o = fCache_.Lookup (make_tuple (args...))) {
-            return *o;
-        }
-        else {
-            RESULT r = fFunction_ (args...);
-            fCache_.Add (make_tuple (args...), r);
-            return r;
-        }
-#elif 0
-        save_it_for_later<RESULT, ARGS...> saved = {make_tuple (args...), fFunction_};
-        return saved.delayed_dispatch ();
-#elif 1
-        save_it_for_later<RESULT, ARGS...> saved = {make_tuple (args...), fFunction_};
         return fCache_.LookupValue (
             make_tuple (args...),
-            [&](const tuple<ARGS...>& t) { return saved.delayed_dispatch (); });
-#else
-
-        return fCache_.LookupValue (
-            make_tuple (args...),
-            [=](const tuple<ARGS...>& t) { return fFunction_ (typename gens<sizeof...(args)>::type ()); });
-#endif
+            [&](const tuple<ARGS...>& t) {
+                using namespace Cache::PRIVATE_;
+                return CallWithExplodedTuple_<RESULT, ARGS...>{t, fFunction_}.callFunc (typename gens_<sizeof...(args)>::type ());
+            });
     }
 }
 #endif /*_Stroika_Foundation_Cache_Memoizer_inl_*/

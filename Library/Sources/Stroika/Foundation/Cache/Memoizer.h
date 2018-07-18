@@ -38,8 +38,8 @@ namespace Stroika::Foundation::Cache {
     class Memoizer : private Debug::AssertExternallySynchronizedLock {
 
     public:
-        Memoizer (function<RESULT (ARGS...)> f, function<unsigned int(ARGS...)> hash);
-        Memoizer (function<RESULT (ARGS...)> f, function<unsigned int(ARGS...)> hash, size_t size);
+        Memoizer (const function<RESULT (ARGS...)>& f, const function<unsigned int(ARGS...)>& hash);
+        Memoizer (const function<RESULT (ARGS...)>& f, function<unsigned int(ARGS...)> hash, size_t size);
         Memoizer (const Memoizer& from) = default;
 
     public:

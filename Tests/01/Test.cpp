@@ -150,7 +150,7 @@ namespace {
         }
         void DoIt ()
         {
-            unsigned int                      totalCallsCount{};
+            unsigned int                                    totalCallsCount{};
             Memoizer<int, Memoizer_DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }, [](int a, int b) { return a + b; }};
             VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
             VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
