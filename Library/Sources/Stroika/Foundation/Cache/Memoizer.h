@@ -27,19 +27,23 @@
 
 namespace Stroika::Foundation::Cache {
 
+    // @todo not sure why this is needed
+    template <typename T1, typename T2>
+    using Memoizer_DEFAULT_CACHE = LRUCache<T1, T2>;
+
     /**
      *  maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
      */
-    template <template CACHE = LRUCache, typename RESULT, typename... ARGS>
+    template <typename RESULT, template <typename, typename> class CACHE = Memoizer_DEFAULT_CACHE, typename... ARGS>
     class Memoizer : private Debug::AssertExternallySynchronizedLock {
 
     public:
-        Memoizer (function<RESULT (ARGS...)> f, function<Hash (ARGS...)> hash);
-        Memoizer (function<RESULT (ARGS...)> f, function<Hash (ARGS...)> hash, size_t size);
+        Memoizer (function<RESULT (ARGS...)> f, function<unsigned int(ARGS...)> hash);
+        Memoizer (function<RESULT (ARGS...)> f, function<unsigned int(ARGS...)> hash, size_t size);
         Memoizer (const Memoizer& from) = default;
 
     public:
-        nonvirtual const Memoizer& operator= (const Memoizer& rhs) = default;
+        nonvirtual Memoizer& operator= (const Memoizer& rhs) = default;
 
     public:
         nonvirtual RESULT Compute (ARGS... args);

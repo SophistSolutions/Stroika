@@ -4,6 +4,7 @@
 //  TEST    Foundation::Caching
 #include "Stroika/Foundation/StroikaPreComp.h"
 
+#include "Stroika/Foundation/Cache/Memoizer.h"
 #include "Stroika/Foundation/Cache/LRUCache.h"
 #include "Stroika/Foundation/Cache/TimedCache.h"
 #include "Stroika/Foundation/Debug/Assertions.h"
@@ -142,6 +143,22 @@ namespace {
     }
 }
 
+
+namespace {
+    namespace Test5_Memoizer_ {
+        // FROM Example Usage in ???
+        namespace Private_ {
+        }
+        void DoIt ()
+        {
+            unsigned int totalCallsCount{};
+            Memoizer< int, LRUCache, int, int> memoizer{ [&totalCallsCount] (int a, int b) { totalCallsCount++;  return a + b;  }, [](int a, int b) { return a + b;  } };
+            VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+            VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+        }
+    }
+}
+
 namespace {
     void DoRegressionTests_ ()
     {
@@ -149,6 +166,7 @@ namespace {
         Test2_LRUCache_ObjWithNoArgCTORs_::DoIt ();
         Test3_LRUCache_Elements::DoIt ();
         Test4_TimedCache_::DoIt ();
+        Test5_Memoizer_::DoIt ();
     }
 }
 
