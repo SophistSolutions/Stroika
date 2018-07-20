@@ -19,61 +19,55 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   Set_LinkedList<T> is an LinkedList-based concrete implementation of the Set<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 */
-                template <typename T>
-                class Set_LinkedList : public Set<T> {
-                private:
-                    using inherited = Set<T>;
+    /**
+     *  \brief   Set_LinkedList<T> is an LinkedList-based concrete implementation of the Set<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     */
+    template <typename T>
+    class Set_LinkedList : public Set<T> {
+    private:
+        using inherited = Set<T>;
 
-                public:
-                    /**
-                     */
-                    using EqualityComparerType = typename inherited::EqualityComparerType;
+    public:
+        /**
+         */
+        using EqualityComparerType = typename inherited::EqualityComparerType;
 
-                public:
-                    /**
-                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
-                     */
-                    Set_LinkedList ();
-                    template <typename EQUALS_COMPARER>
-                    explicit Set_LinkedList (const EQUALS_COMPARER& equalsComparer);
-                    Set_LinkedList (const Set_LinkedList& src) = default;
-                    Set_LinkedList (const initializer_list<T>& src);
-                    Set_LinkedList (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
-                    Set_LinkedList (const CONTAINER_OF_T& src);
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
-                    Set_LinkedList (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
-                    Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
-                    Set_LinkedList (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+    public:
+        /**
+         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         */
+        Set_LinkedList ();
+        template <typename EQUALS_COMPARER>
+        explicit Set_LinkedList (const EQUALS_COMPARER& equalsComparer);
+        Set_LinkedList (const Set_LinkedList& src) = default;
+        Set_LinkedList (const initializer_list<T>& src);
+        Set_LinkedList (const EqualityComparerType& equalsComparer, const initializer_list<T>& src);
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
+        Set_LinkedList (const CONTAINER_OF_T& src);
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Set_LinkedList<T>*>>* = nullptr>
+        Set_LinkedList (const EqualityComparerType& equalsComparer, const CONTAINER_OF_T& src);
+        template <typename COPY_FROM_ITERATOR_OF_T>
+        Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+        template <typename COPY_FROM_ITERATOR_OF_T>
+        Set_LinkedList (const EqualityComparerType& equalsComparer, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                public:
-                    /**
-                     */
-                    nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs) = default;
+    public:
+        /**
+         */
+        nonvirtual Set_LinkedList& operator= (const Set_LinkedList& rhs) = default;
 
-                private:
-                    class IImplRepBase_;
-                    template <typename EQUALS_COMPARER>
-                    class Rep_;
+    private:
+        class IImplRepBase_;
+        template <typename EQUALS_COMPARER>
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*

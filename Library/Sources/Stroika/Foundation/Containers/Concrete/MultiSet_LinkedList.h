@@ -20,50 +20,44 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-                class MultiSet_LinkedList : public MultiSet<T, TRAITS> {
-                private:
-                    using inherited = MultiSet<T, TRAITS>;
+    /**
+     *
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
+    class MultiSet_LinkedList : public MultiSet<T, TRAITS> {
+    private:
+        using inherited = MultiSet<T, TRAITS>;
 
-                public:
-                    /**
-                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
-                     */
-                    MultiSet_LinkedList ();
-                    template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
-                    explicit MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer);
-                    MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
-                    MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);
-                    MultiSet_LinkedList (const initializer_list<T>& src);
-                    MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src);
-                    template <typename COPY_FROM_ITERATOR>
-                    MultiSet_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+    public:
+        /**
+         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         */
+        MultiSet_LinkedList ();
+        template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>* = nullptr>
+        explicit MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer);
+        MultiSet_LinkedList (const MultiSet<T, TRAITS>& src);
+        MultiSet_LinkedList (const MultiSet_LinkedList<T, TRAITS>& src);
+        MultiSet_LinkedList (const initializer_list<T>& src);
+        MultiSet_LinkedList (const initializer_list<CountedValue<T>>& src);
+        template <typename COPY_FROM_ITERATOR>
+        MultiSet_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
-                public:
-                    nonvirtual MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;
+    public:
+        nonvirtual MultiSet_LinkedList<T, TRAITS>& operator= (const MultiSet_LinkedList<T, TRAITS>& rhs) = default;
 
-                private:
-                    class IImplRepBase_;
-                    template <typename EQUALS_COMPARER>
-                    class Rep_;
+    private:
+        class IImplRepBase_;
+        template <typename EQUALS_COMPARER>
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 #include "MultiSet_LinkedList.inl"

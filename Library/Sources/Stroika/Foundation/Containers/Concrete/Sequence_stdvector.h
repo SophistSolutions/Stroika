@@ -24,74 +24,68 @@
  *              any performance overhead with Stroika Sequences.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   Sequence_stdvector<T> is an std::vector-based concrete implementation of the Sequence<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T>
-                class Sequence_stdvector : public Sequence<T> {
-                private:
-                    using inherited = Sequence<T>;
+    /**
+     *  \brief   Sequence_stdvector<T> is an std::vector-based concrete implementation of the Sequence<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T>
+    class Sequence_stdvector : public Sequence<T> {
+    private:
+        using inherited = Sequence<T>;
 
-                public:
-                    /**
-                     */
-                    Sequence_stdvector ();
-                    Sequence_stdvector (const Sequence_stdvector& src) = default;
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>>* = nullptr>
-                    explicit Sequence_stdvector (const CONTAINER_OF_T& src);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+    public:
+        /**
+         */
+        Sequence_stdvector ();
+        Sequence_stdvector (const Sequence_stdvector& src) = default;
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Sequence_stdvector<T>*>>* = nullptr>
+        explicit Sequence_stdvector (const CONTAINER_OF_T& src);
+        template <typename COPY_FROM_ITERATOR_OF_T>
+        explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                public:
-                    /**
-                     */
-                    nonvirtual Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);
+    public:
+        /**
+         */
+        nonvirtual Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);
 
-                public:
-                    /**
-                     *  \brief  Reduce the space used to store the Sequence<T> contents.
-                     *
-                     *  This has no semantics, no observable behavior. But depending on the representation of
-                     *  the concrete sequence, calling this may save memory.
-                     */
-                    nonvirtual void Compact ();
+    public:
+        /**
+         *  \brief  Reduce the space used to store the Sequence<T> contents.
+         *
+         *  This has no semantics, no observable behavior. But depending on the representation of
+         *  the concrete sequence, calling this may save memory.
+         */
+        nonvirtual void Compact ();
 
-                public:
-                    /*
-                     * This optional API allows pre-reserving space as an optimization.
-                     */
-                    nonvirtual size_t GetCapacity () const;
-                    nonvirtual void   SetCapacity (size_t slotsAlloced);
+    public:
+        /*
+            * This optional API allows pre-reserving space as an optimization.
+            */
+        nonvirtual size_t GetCapacity () const;
+        nonvirtual void   SetCapacity (size_t slotsAlloced);
 
-                public:
-                    /**
-                    *   STL-ish alias for GetCapacity ();
-                    */
-                    nonvirtual size_t capacity () const;
+    public:
+        /**
+        *   STL-ish alias for GetCapacity ();
+        */
+        nonvirtual size_t capacity () const;
 
-                public:
-                    /**
-                    *   STL-ish alias for SetCapacity ();
-                    */
-                    nonvirtual void reserve (size_t slotsAlloced);
+    public:
+        /**
+        *   STL-ish alias for SetCapacity ();
+        */
+        nonvirtual void reserve (size_t slotsAlloced);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*

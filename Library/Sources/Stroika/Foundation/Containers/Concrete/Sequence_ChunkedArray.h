@@ -30,50 +30,44 @@
  *              careful about move etc).
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   Sequence_SparseSortedMapping<T> is a sparse-Array-based concrete implementation of the Sequence<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T, size_t CHUNK_SIZE = 4096>
-                class Sequence_ChunckedArray : public Sequence<T> {
-                private:
-                    using inherited = Sequence<T>;
+    /**
+     *  \brief   Sequence_SparseSortedMapping<T> is a sparse-Array-based concrete implementation of the Sequence<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T, size_t CHUNK_SIZE = 4096>
+    class Sequence_ChunckedArray : public Sequence<T> {
+    private:
+        using inherited = Sequence<T>;
 
-                public:
-                    /**
-                     *  The only non-obvious parameter is 'sparseValue'. This is the special value used internally to
-                     *  make for the 'sparse' array. These particular values dont require storage.
-                     *
-                     *  Note - this has no externally visible semantics: it just affects the storage usage, and perhaps
-                     *  performance.
-                     */
-                    Sequence_ChunckedArray ();
-                    Sequence_ChunckedArray (const Sequence_ChunckedArray<T>& s);
-                    template <typename CONTAINER_OF_T>
-                    explicit Sequence_ChunckedArray (const CONTAINER_OF_T& s);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Sequence_ChunckedArray (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+    public:
+        /**
+         *  The only non-obvious parameter is 'sparseValue'. This is the special value used internally to
+         *  make for the 'sparse' array. These particular values dont require storage.
+         *
+         *  Note - this has no externally visible semantics: it just affects the storage usage, and perhaps
+         *  performance.
+         */
+        Sequence_ChunckedArray ();
+        Sequence_ChunckedArray (const Sequence_ChunckedArray<T>& s);
+        template <typename CONTAINER_OF_T>
+        explicit Sequence_ChunckedArray (const CONTAINER_OF_T& s);
+        template <typename COPY_FROM_ITERATOR_OF_T>
+        explicit Sequence_ChunckedArray (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                public:
-                    nonvirtual Sequence_ChunckedArray<T>& operator= (const Sequence_ChunckedArray<T>& rhs);
+    public:
+        nonvirtual Sequence_ChunckedArray<T>& operator= (const Sequence_ChunckedArray<T>& rhs);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    nonvirtual const Rep_& GetRep_ () const;
-                    nonvirtual Rep_& GetRep_ ();
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual const Rep_& GetRep_ () const;
+        nonvirtual Rep_& GetRep_ ();
+    };
 }
 
 /*

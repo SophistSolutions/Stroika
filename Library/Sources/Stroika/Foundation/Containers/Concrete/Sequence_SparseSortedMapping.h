@@ -24,50 +24,44 @@
  *              container.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   Sequence_SparseSortedMapping<T> is a sparse-Array-based concrete implementation of the Sequence<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T>
-                class Sequence_SparseSortedMapping : public Sequence<T> {
-                private:
-                    using inherited = Sequence<T>;
+    /**
+     *  \brief   Sequence_SparseSortedMapping<T> is a sparse-Array-based concrete implementation of the Sequence<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T>
+    class Sequence_SparseSortedMapping : public Sequence<T> {
+    private:
+        using inherited = Sequence<T>;
 
-                public:
-                    /**
-                     *  The only non-obvious parameter is 'sparseValue'. This is the special value used internally to
-                     *  make for the 'sparse' array. These particular values dont require storage.
-                     *
-                     *  Note - this has no externally visible semantics: it just affects the storage usage, and perhaps
-                     *  performance.
-                     */
-                    Sequence_SparseSortedMapping (T sparseValue);
-                    Sequence_SparseSortedMapping (const Sequence_SparseSortedMapping<T>& src);
-                    template <typename CONTAINER_OF_T>
-                    explicit Sequence_SparseSortedMapping (T sparseValue, const CONTAINER_OF_T& src);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Sequence_SparseSortedMapping (T sparseValue, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+    public:
+        /**
+         *  The only non-obvious parameter is 'sparseValue'. This is the special value used internally to
+         *  make for the 'sparse' array. These particular values dont require storage.
+         *
+         *  Note - this has no externally visible semantics: it just affects the storage usage, and perhaps
+         *  performance.
+         */
+        Sequence_SparseSortedMapping (T sparseValue);
+        Sequence_SparseSortedMapping (const Sequence_SparseSortedMapping<T>& src);
+        template <typename CONTAINER_OF_T>
+        explicit Sequence_SparseSortedMapping (T sparseValue, const CONTAINER_OF_T& src);
+        template <typename COPY_FROM_ITERATOR_OF_T>
+        explicit Sequence_SparseSortedMapping (T sparseValue, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                public:
-                    nonvirtual Sequence_SparseSortedMapping<T>& operator= (const Sequence_SparseSortedMapping<T>& s);
+    public:
+        nonvirtual Sequence_SparseSortedMapping<T>& operator= (const Sequence_SparseSortedMapping<T>& s);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    nonvirtual const Rep_& GetRep_ () const;
-                    nonvirtual Rep_& GetRep_ ();
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual const Rep_& GetRep_ () const;
+        nonvirtual Rep_& GetRep_ ();
+    };
 }
 
 /*

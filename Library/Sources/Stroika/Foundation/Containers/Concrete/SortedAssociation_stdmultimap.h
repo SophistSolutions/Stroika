@@ -22,48 +22,42 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   SortedAssociation_stdmultimap<Key,T> is an std::map-based concrete implementation of the SortedAssociation<Key,T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
-                class SortedAssociation_stdmultimap : public SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE> {
-                private:
-                    using inherited = SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>;
+    /**
+     *  \brief   SortedAssociation_stdmultimap<Key,T> is an std::map-based concrete implementation of the SortedAssociation<Key,T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
+    class SortedAssociation_stdmultimap : public SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE> {
+    private:
+        using inherited = SortedAssociation<KEY_TYPE, MAPPED_VALUE_TYPE>;
 
-                public:
-                    /**
-                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
-                     */
-                    SortedAssociation_stdmultimap ();
-                    SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap& src) = default;
-                    template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
-                    SortedAssociation_stdmultimap (const CONTAINER_OF_ADDABLE& src);
-                    template <typename COPY_FROM_ITERATOR_KEY_T>
-                    SortedAssociation_stdmultimap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+    public:
+        /**
+         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         */
+        SortedAssociation_stdmultimap ();
+        SortedAssociation_stdmultimap (const SortedAssociation_stdmultimap& src) = default;
+        template <typename CONTAINER_OF_ADDABLE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_ADDABLE> and not is_convertible_v<const CONTAINER_OF_ADDABLE*, const SortedAssociation_stdmultimap<KEY_TYPE, MAPPED_VALUE_TYPE>*>>* = nullptr>
+        SortedAssociation_stdmultimap (const CONTAINER_OF_ADDABLE& src);
+        template <typename COPY_FROM_ITERATOR_KEY_T>
+        SortedAssociation_stdmultimap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-                public:
-                    /**
-                     */
-                    nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap& rhs) = default;
+    public:
+        /**
+         */
+        nonvirtual SortedAssociation_stdmultimap& operator= (const SortedAssociation_stdmultimap& rhs) = default;
 
-                private:
-                    class IImplRep_;
-                    class Rep_;
+    private:
+        class IImplRep_;
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*
