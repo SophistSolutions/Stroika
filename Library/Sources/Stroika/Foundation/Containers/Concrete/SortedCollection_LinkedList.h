@@ -19,55 +19,49 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief SortedCollection_LinkedList<T> is an LinkedList-based concrete implementation of the SortedCollection<T> container pattern.
-                 *
-                 *  \note   \em Performance
-                 *      SortedCollection_LinkedList<T> is a compact, and reasonable implementation of Collections, so long as the Collection remains quite small
-                 *      (empty or just a few entires). Thats really quite common!
-                 *
-                 *      However, add, contains tests, and removes are O(N) - so quite slow - when the Collection grows.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 */
-                template <typename T>
-                class SortedCollection_LinkedList : public SortedCollection<T> {
-                private:
-                    using inherited = SortedCollection<T>;
+    /**
+     *  \brief SortedCollection_LinkedList<T> is an LinkedList-based concrete implementation of the SortedCollection<T> container pattern.
+     *
+     *  \note   \em Performance
+     *      SortedCollection_LinkedList<T> is a compact, and reasonable implementation of Collections, so long as the Collection remains quite small
+     *      (empty or just a few entires). Thats really quite common!
+     *
+     *      However, add, contains tests, and removes are O(N) - so quite slow - when the Collection grows.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     */
+    template <typename T>
+    class SortedCollection_LinkedList : public SortedCollection<T> {
+    private:
+        using inherited = SortedCollection<T>;
 
-                public:
-                    /**
-                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
-                     */
-                    SortedCollection_LinkedList ();
-                    template <typename INORDER_COMPARER>
-                    explicit SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer);
-                    SortedCollection_LinkedList (const T* start, const T* end);
-                    SortedCollection_LinkedList (const SortedCollection<T>& src);
-                    SortedCollection_LinkedList (const SortedCollection_LinkedList& src) noexcept = default;
-                    SortedCollection_LinkedList (SortedCollection_LinkedList&& src) noexcept      = default;
+    public:
+        /**
+         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         */
+        SortedCollection_LinkedList ();
+        template <typename INORDER_COMPARER>
+        explicit SortedCollection_LinkedList (const INORDER_COMPARER& inorderComparer);
+        SortedCollection_LinkedList (const T* start, const T* end);
+        SortedCollection_LinkedList (const SortedCollection<T>& src);
+        SortedCollection_LinkedList (const SortedCollection_LinkedList& src) noexcept = default;
+        SortedCollection_LinkedList (SortedCollection_LinkedList&& src) noexcept      = default;
 
-                public:
-                    /**
-                     */
-                    nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs) = default;
+    public:
+        /**
+         */
+        nonvirtual SortedCollection_LinkedList& operator= (const SortedCollection_LinkedList& rhs) = default;
 
-                private:
-                    class IImplRepBase_;
-                    template <typename INORDER_COMPARER>
-                    class Rep_;
+    private:
+        class IImplRepBase_;
+        template <typename INORDER_COMPARER>
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*

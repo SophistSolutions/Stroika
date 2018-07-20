@@ -98,206 +98,200 @@
  *              That crap was written around 1990!!!
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace DataStructures {
+namespace Stroika::Foundation::Containers::DataStructures {
 
-                using Configuration::ArgByValueType;
+    using Configuration::ArgByValueType;
 
-                /**
-                 *      This class is the main core of the implementation. It provides
-                 *  an array abstraction, where the size can be set dynamically, and
-                 *  extra sluff is maintained off the end to reduce copying from reallocs.
-                 *  Only items 0..GetLength ()-1 are kept constructed. The rest (GetLength()+1
-                 *  ..fSlotsAlloced) are uninitialized memory. This is important because
-                 *  it means you can count on DTORs of your T being called when you
-                 *  remove them from contains, not when the caches happen to empty.
-                 */
-                template <typename T>
-                class Array : public Debug::AssertExternallySynchronizedLock {
-                public:
-                    using value_type = T;
+    /**
+     *      This class is the main core of the implementation. It provides
+     *  an array abstraction, where the size can be set dynamically, and
+     *  extra sluff is maintained off the end to reduce copying from reallocs.
+     *  Only items 0..GetLength ()-1 are kept constructed. The rest (GetLength()+1
+     *  ..fSlotsAlloced) are uninitialized memory. This is important because
+     *  it means you can count on DTORs of your T being called when you
+     *  remove them from contains, not when the caches happen to empty.
+     */
+    template <typename T>
+    class Array : public Debug::AssertExternallySynchronizedLock {
+    public:
+        using value_type = T;
 
-                public:
-                    Array ();
-                    Array (const Array<T>& from);
+    public:
+        Array ();
+        Array (const Array<T>& from);
 
-                public:
-                    ~Array ();
+    public:
+        ~Array ();
 
-                public:
-                    nonvirtual Array<T>& operator= (const Array<T>& rhs);
+    public:
+        nonvirtual Array<T>& operator= (const Array<T>& rhs);
 
-                public:
-                    nonvirtual T    GetAt (size_t i) const;
-                    nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
-                    nonvirtual T& operator[] (size_t i);
-                    nonvirtual T operator[] (size_t i) const;
+    public:
+        nonvirtual T    GetAt (size_t i) const;
+        nonvirtual void SetAt (size_t i, ArgByValueType<T> item);
+        nonvirtual T& operator[] (size_t i);
+        nonvirtual T operator[] (size_t i) const;
 
-                    nonvirtual size_t GetLength () const;
-                    nonvirtual void   SetLength (size_t newLength, ArgByValueType<T> fillValue);
+        nonvirtual size_t GetLength () const;
+        nonvirtual void   SetLength (size_t newLength, ArgByValueType<T> fillValue);
 
-                    nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
-                    nonvirtual void RemoveAt (size_t index);
-                    nonvirtual void RemoveAll ();
+        nonvirtual void InsertAt (size_t index, ArgByValueType<T> item);
+        nonvirtual void RemoveAt (size_t index);
+        nonvirtual void RemoveAll ();
 
-                    template <typename EQUALS_COMPARER = equal_to<T>>
-                    nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const;
+        template <typename EQUALS_COMPARER = equal_to<T>>
+        nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer) const;
 
-                    template <typename FUNCTION>
-                    nonvirtual void Apply (FUNCTION doToElement) const;
-                    template <typename FUNCTION>
-                    nonvirtual size_t FindFirstThat (FUNCTION doToElement) const;
+        template <typename FUNCTION>
+        nonvirtual void Apply (FUNCTION doToElement) const;
+        template <typename FUNCTION>
+        nonvirtual size_t FindFirstThat (FUNCTION doToElement) const;
 
-                public:
-                    /*
-                     * Memory savings/optimization methods.  Use this to tune useage
-                     * of arrays so that they dont waste time in Realloc's.
-                     */
-                    nonvirtual size_t GetCapacity () const;
-                    nonvirtual void   SetCapacity (size_t slotsAlloced);
+    public:
+        /*
+            * Memory savings/optimization methods.  Use this to tune useage
+            * of arrays so that they dont waste time in Realloc's.
+            */
+        nonvirtual size_t GetCapacity () const;
+        nonvirtual void   SetCapacity (size_t slotsAlloced);
 
-                    nonvirtual void Compact ();
+        nonvirtual void Compact ();
 
-                protected:
-                    class _ArrayIteratorBase;
+    protected:
+        class _ArrayIteratorBase;
 
-                public:
-                    class ForwardIterator;
-                    class BackwardIterator;
+    public:
+        class ForwardIterator;
+        class BackwardIterator;
 
-                public:
-                    /*
-                     *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-                     *  iteartor from 'this' - which points at the same logical position. This requires that this container
-                     *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
-                     *  the container they were iterating over).
-                     */
-                    nonvirtual void MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array* movedFrom);
+    public:
+        /*
+            *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+            *  iteartor from 'this' - which points at the same logical position. This requires that this container
+            *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+            *  the container they were iterating over).
+            */
+        nonvirtual void MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array* movedFrom);
 
-                public:
-                    nonvirtual void RemoveAt (const ForwardIterator& i);
-                    nonvirtual void RemoveAt (const BackwardIterator& i);
+    public:
+        nonvirtual void RemoveAt (const ForwardIterator& i);
+        nonvirtual void RemoveAt (const BackwardIterator& i);
 
-                public:
-                    nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
-                    nonvirtual void SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
+    public:
+        nonvirtual void SetAt (const ForwardIterator& i, ArgByValueType<T> newValue);
+        nonvirtual void SetAt (const BackwardIterator& i, ArgByValueType<T> newValue);
 
-                public:
-                    //  NB: Can be called if done
-                    nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
-                    nonvirtual void AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
+    public:
+        //  NB: Can be called if done
+        nonvirtual void AddBefore (const ForwardIterator& i, ArgByValueType<T> item);
+        nonvirtual void AddBefore (const BackwardIterator& i, ArgByValueType<T> item);
 
-                public:
-                    nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
-                    nonvirtual void AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
+    public:
+        nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> item);
+        nonvirtual void AddAfter (const BackwardIterator& i, ArgByValueType<T> item);
 
-                public:
-                    nonvirtual void Invariant () const;
+    public:
+        nonvirtual void Invariant () const;
 
 #if qDebug
-                protected:
-                    nonvirtual void _Invariant () const;
+    protected:
+        nonvirtual void _Invariant () const;
 #endif
 
-                protected:
-                public:                      /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
-                    size_t _fLength;         // #items advertised/constructed
-                    size_t _fSlotsAllocated; // #items allocated (though not necessarily initialized)
-                    T*     _fItems;
-                };
+    protected:
+    public:                      /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
+        size_t _fLength;         // #items advertised/constructed
+        size_t _fSlotsAllocated; // #items allocated (though not necessarily initialized)
+        T*     _fItems;
+    };
 
-                /**
-                 *      _ArrayIteratorBase<T> is an un-advertised implementation
-                 *  detail designed to help in source-code sharing among various
-                 *  iterator implementations.
-                 */
-                template <typename T>
-                class Array<T>::_ArrayIteratorBase {
-                private:
-                    _ArrayIteratorBase (); // not defined - do not call.
+    /**
+     *      _ArrayIteratorBase<T> is an un-advertised implementation
+     *  detail designed to help in source-code sharing among various
+     *  iterator implementations.
+     */
+    template <typename T>
+    class Array<T>::_ArrayIteratorBase {
+    private:
+        _ArrayIteratorBase (); // not defined - do not call.
 
-                public:
-                    _ArrayIteratorBase (const Array<T>* data);
+    public:
+        _ArrayIteratorBase (const Array<T>* data);
 
 #if qDebug
-                    ~_ArrayIteratorBase ();
+        ~_ArrayIteratorBase ();
 #endif
 
-                public:
-                    nonvirtual T Current () const;           //  Error to call if Done (), otherwise OK
-                    nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
-                    nonvirtual bool   More (T* current, bool advance);
-                    nonvirtual bool   Done () const;
+    public:
+        nonvirtual T Current () const;           //  Error to call if Done (), otherwise OK
+        nonvirtual size_t CurrentIndex () const; //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
+        nonvirtual bool   More (T* current, bool advance);
+        nonvirtual bool   Done () const;
 
-                public:
-                    nonvirtual void SetIndex (size_t i);
+    public:
+        nonvirtual void SetIndex (size_t i);
 
-                public:
-                    nonvirtual bool Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const;
+    public:
+        nonvirtual bool Equals (const typename Array<T>::_ArrayIteratorBase& rhs) const;
 
-                public:
-                    nonvirtual void Invariant () const;
+    public:
+        nonvirtual void Invariant () const;
 
 #if qDebug
-                protected:
-                    virtual void _Invariant () const;
+    protected:
+        virtual void _Invariant () const;
 #endif
 
-                protected:
-                    const Array<T>* _fData;
+    protected:
+        const Array<T>* _fData;
 
-                protected:
-                    const T* _fStart;        // points to FIRST elt
-                    const T* _fEnd;          // points 1 PAST last elt
-                    const T* _fCurrent;      // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
-                    bool     _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
+    protected:
+        const T* _fStart;        // points to FIRST elt
+        const T* _fEnd;          // points 1 PAST last elt
+        const T* _fCurrent;      // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
+        bool     _fSuppressMore; // Indicates if More should do anything, or if were already Mored...
 
-                private:
-                    friend class Array<T>;
-                };
+    private:
+        friend class Array<T>;
+    };
 
-                /**
-                 *      Use this iterator to iterate forwards over the array. Be careful
-                 *  not to add or remove things from the array while using this iterator,
-                 *  since it is not safe. Use ForwardIterator_Patch for those cases.
-                 */
-                template <typename T>
-                class Array<T>::ForwardIterator : public Array<T>::_ArrayIteratorBase {
-                private:
-                    using inherited = typename Array<T>::_ArrayIteratorBase;
+    /**
+     *      Use this iterator to iterate forwards over the array. Be careful
+     *  not to add or remove things from the array while using this iterator,
+     *  since it is not safe. Use ForwardIterator_Patch for those cases.
+     */
+    template <typename T>
+    class Array<T>::ForwardIterator : public Array<T>::_ArrayIteratorBase {
+    private:
+        using inherited = typename Array<T>::_ArrayIteratorBase;
 
-                public:
-                    ForwardIterator (const Array<T>* data);
+    public:
+        ForwardIterator (const Array<T>* data);
 
-                public:
-                    nonvirtual bool More (T* current, bool advance);
-                    nonvirtual void More (optional<T>* result, bool advance);
-                    nonvirtual bool More (nullptr_t, bool advance);
-                };
+    public:
+        nonvirtual bool More (T* current, bool advance);
+        nonvirtual void More (optional<T>* result, bool advance);
+        nonvirtual bool More (nullptr_t, bool advance);
+    };
 
-                /**
-                 *      Use this iterator to iterate backwards over the array. Be careful
-                 *  not to add or remove things from the array while using this iterator,
-                 *  since it is not safe. Use BackwardIterator_Patch for those cases.
-                 */
-                template <typename T>
-                class Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {
-                private:
-                    using inherited = typename Array<T>::_ArrayIteratorBase;
+    /**
+     *      Use this iterator to iterate backwards over the array. Be careful
+     *  not to add or remove things from the array while using this iterator,
+     *  since it is not safe. Use BackwardIterator_Patch for those cases.
+     */
+    template <typename T>
+    class Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {
+    private:
+        using inherited = typename Array<T>::_ArrayIteratorBase;
 
-                public:
-                    BackwardIterator (const Array<T>* data);
+    public:
+        BackwardIterator (const Array<T>* data);
 
-                public:
-                    nonvirtual bool More (T* current, bool advance);
-                    nonvirtual void More (optional<T>* result, bool advance);
-                    nonvirtual bool More (nullptr_t, bool advance);
-                };
-            }
-        }
-    }
+    public:
+        nonvirtual bool More (T* current, bool advance);
+        nonvirtual void More (optional<T>* result, bool advance);
+        nonvirtual bool More (nullptr_t, bool advance);
+    };
 }
 
 /*

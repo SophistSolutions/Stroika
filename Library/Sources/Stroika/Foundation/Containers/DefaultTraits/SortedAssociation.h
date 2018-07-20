@@ -15,27 +15,21 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace DefaultTraits {
+namespace Stroika::Foundation::Containers::DefaultTraits {
 
-                /**
-                 *  Default Association<> Traits
-                 */
-                template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<VALUE_TYPE>, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
-                struct SortedAssociation : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER> {
-                    /**
-                     */
-                    using KeyWellOrderCompareFunctionType = KEY_WELL_ORDER_COMPARER;
+    /**
+     *  Default Association<> Traits
+     */
+    template <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::DefaultEqualsComparerOptionally<VALUE_TYPE>, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
+    struct SortedAssociation : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER> {
+        /**
+         */
+        using KeyWellOrderCompareFunctionType = KEY_WELL_ORDER_COMPARER;
 
-                    /**
-                     */
-                    RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
-                };
-            }
-        }
-    }
+        /**
+         */
+        RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
+    };
 }
 
 /*

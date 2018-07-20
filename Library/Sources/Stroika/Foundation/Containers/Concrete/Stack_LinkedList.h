@@ -21,44 +21,38 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   Stack_LinkedList<T> is an LinkedList-based concrete implementation of the Stack<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T>
-                class Stack_LinkedList : public Stack<T> {
-                private:
-                    using inherited = Stack<T>;
+    /**
+     *  \brief   Stack_LinkedList<T> is an LinkedList-based concrete implementation of the Stack<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T>
+    class Stack_LinkedList : public Stack<T> {
+    private:
+        using inherited = Stack<T>;
 
-                public:
-                    /**
-                     */
-                    Stack_LinkedList ();
-                    Stack_LinkedList (const Stack_LinkedList& src) = default;
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Stack_LinkedList<T>*>>* = nullptr>
-                    explicit Stack_LinkedList (const CONTAINER_OF_T& src);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
-                    explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+    public:
+        /**
+         */
+        Stack_LinkedList ();
+        Stack_LinkedList (const Stack_LinkedList& src) = default;
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const Stack_LinkedList<T>*>>* = nullptr>
+        explicit Stack_LinkedList (const CONTAINER_OF_T& src);
+        template <typename COPY_FROM_ITERATOR_OF_T>
+        explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                public:
-                    nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList& rhs) = default;
+    public:
+        nonvirtual Stack_LinkedList& operator= (const Stack_LinkedList& rhs) = default;
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*

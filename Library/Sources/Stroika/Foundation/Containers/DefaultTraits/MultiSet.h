@@ -17,29 +17,23 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace DefaultTraits {
+namespace Stroika::Foundation::Containers::DefaultTraits {
 
-                /**
-                 *  Default MultiSet<> Traits
-                 */
-                template <typename T>
-                struct MultiSet {
-                    /**
-                     *      \brief
-                     */
-                    using CountedValueType = Common::CountedValue<T>;
+    /**
+     *  Default MultiSet<> Traits
+     */
+    template <typename T>
+    struct MultiSet {
+        /**
+         *      \brief
+         */
+        using CountedValueType = Common::CountedValue<T>;
 
-                    /**
-                     *      \brief
-                     */
-                    using CounterType = typename CountedValueType::CounterType;
-                };
-            }
-        }
-    }
+        /**
+         *      \brief
+         */
+        using CounterType = typename CountedValueType::CounterType;
+    };
 }
 
 /*

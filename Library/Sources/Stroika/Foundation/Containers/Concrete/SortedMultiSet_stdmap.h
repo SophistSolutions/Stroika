@@ -20,53 +20,47 @@
   *      @todo   Correctly implement override of Iterator<T>::IRep::Equals ()
   */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                  *
-                  *
-                  *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                  *
-                  */
-                template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
-                class SortedMultiSet_stdmap : public SortedMultiSet<T, TRAITS> {
-                private:
-                    using inherited = SortedMultiSet<T, TRAITS>;
+    /**
+         *
+         *
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+         *
+         */
+    template <typename T, typename TRAITS = DefaultTraits::MultiSet<T>>
+    class SortedMultiSet_stdmap : public SortedMultiSet<T, TRAITS> {
+    private:
+        using inherited = SortedMultiSet<T, TRAITS>;
 
-                public:
-                    /**
-                     *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
-                     */
-                    SortedMultiSet_stdmap ();
-                    template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
-                    explicit SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
-                    SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) = default;
-                    SortedMultiSet_stdmap (const initializer_list<T>& src);
-                    SortedMultiSet_stdmap (const initializer_list<CountedValue<T>>& src);
-                    template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>>* = nullptr>
-                    SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
-                    template <typename COPY_FROM_ITERATOR_OF_T>
-                    SortedMultiSet_stdmap (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+    public:
+        /**
+         *  @todo - https://stroika.atlassian.net/browse/STK-652 - add COMPARER constructor overloads like the archtype base class
+         */
+        SortedMultiSet_stdmap ();
+        template <typename INORDER_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, INORDER_COMPARER> ()>* = nullptr>
+        explicit SortedMultiSet_stdmap (const INORDER_COMPARER& inorderComparer);
+        SortedMultiSet_stdmap (const SortedMultiSet_stdmap& src) = default;
+        SortedMultiSet_stdmap (const initializer_list<T>& src);
+        SortedMultiSet_stdmap (const initializer_list<CountedValue<T>>& src);
+        template <typename CONTAINER_OF_T, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_T> and not is_convertible_v<const CONTAINER_OF_T*, const SortedMultiSet_stdmap<T, TRAITS>*>>* = nullptr>
+        SortedMultiSet_stdmap (const CONTAINER_OF_T& src);
+        template <typename COPY_FROM_ITERATOR_OF_T>
+        SortedMultiSet_stdmap (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                public:
-                    /**
-                     */
-                    nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap& rhs) = default;
+    public:
+        /**
+         */
+        nonvirtual SortedMultiSet_stdmap& operator= (const SortedMultiSet_stdmap& rhs) = default;
 
-                private:
-                    class IImplRepBase_;
-                    template <typename INORDER_COMPARER>
-                    class Rep_;
+    private:
+        class IImplRepBase_;
+        template <typename INORDER_COMPARER>
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*

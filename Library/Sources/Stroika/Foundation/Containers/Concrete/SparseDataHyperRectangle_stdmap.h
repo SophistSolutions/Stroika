@@ -16,40 +16,34 @@
  *  TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
-                /**
-                 *  \brief   SparseDataHyperRectangle_stdmap<T, INDEXES...> is an Dense Vector-based concrete implementation of the SparseDataHyperRectangle<T> container pattern.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 *
-                 */
-                template <typename T, typename... INDEXES>
-                class SparseDataHyperRectangle_stdmap : public SparseDataHyperRectangle<T, INDEXES...> {
-                private:
-                    using inherited = SparseDataHyperRectangle<T, INDEXES...>;
+    /**
+     *  \brief   SparseDataHyperRectangle_stdmap<T, INDEXES...> is an Dense Vector-based concrete implementation of the SparseDataHyperRectangle<T> container pattern.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     */
+    template <typename T, typename... INDEXES>
+    class SparseDataHyperRectangle_stdmap : public SparseDataHyperRectangle<T, INDEXES...> {
+    private:
+        using inherited = SparseDataHyperRectangle<T, INDEXES...>;
 
-                public:
-                    /**
-                     */
-                    SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem = {});
-                    SparseDataHyperRectangle_stdmap (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& src);
+    public:
+        /**
+         */
+        SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem = {});
+        SparseDataHyperRectangle_stdmap (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& src);
 
-                public:
-                    nonvirtual SparseDataHyperRectangle_stdmap<T, INDEXES...>& operator= (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& rhs);
+    public:
+        nonvirtual SparseDataHyperRectangle_stdmap<T, INDEXES...>& operator= (const SparseDataHyperRectangle_stdmap<T, INDEXES...>& rhs);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    nonvirtual void AssertRepValidType_ () const;
-                };
-            }
-        }
-    }
+    private:
+        nonvirtual void AssertRepValidType_ () const;
+    };
 }
 
 /*
