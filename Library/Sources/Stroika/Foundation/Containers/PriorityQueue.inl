@@ -11,11 +11,7 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-        }
-    }
+namespace Stroika::Foundation::Containers {
 }
 
 #endif /* _Stroika_Foundation_Containers_PriorityQueue_inl_ */

@@ -18,22 +18,22 @@
 #include "../Private/IteratorImplHelper.h"
 #include "../Private/PatchingDataStructures/STLContainerWrapper.h"
 
-namespace namespace Stroika::Foundation::Containers::Concrete {
+namespace Stroika::Foundation::Containers::Concrete {
 
     /*
-        ********************************************************************************
-        ******************** MultiSet_stdmap<T, TRAITS>::IImplRepBase_ *****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** MultiSet_stdmap<T, TRAITS>::IImplRepBase_ *****************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     class MultiSet_stdmap<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
     };
 
     /*
-        ********************************************************************************
-        ********************* MultiSet_stdmap<T, TRAITS>::Rep_ *************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* MultiSet_stdmap<T, TRAITS>::Rep_ *************************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     template <typename INORDER_COMPARER>
     class MultiSet_stdmap<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
@@ -215,10 +215,10 @@ namespace namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ************************ MultiSet_stdmap<T, TRAITS> ****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************ MultiSet_stdmap<T, TRAITS> ****************************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     inline MultiSet_stdmap<T, TRAITS>::MultiSet_stdmap ()
         : MultiSet_stdmap (less<T>{})

@@ -14,50 +14,46 @@
  *  TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
+namespace Stroika::Foundation::Containers {
 
-            template <typename T, typename... INDEXES>
-            class DenseDataHyperRectangle;
+    template <typename T, typename... INDEXES>
+    class DenseDataHyperRectangle;
+}
 
-            namespace Factory {
+namespace Stroika::Foundation::Containers::Factory {
 
-                /**
-                 *  \brief   Singleton factory object - Used to create the default backend implementation of a DenseDataHyperRectangle<> container
-                 *
-                 *  Note - you can override the underlying factory dynamically by calling DenseDataHyperRectangle_Factory<T>::Register (), or
-                 *  replace it statically by template-specializing DenseDataHyperRectangle_Factory<T>::New () - though the later is trickier.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 */
-                template <typename T, typename... INDEXES>
-                class DenseDataHyperRectangle_Factory {
-                private:
+    /**
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a DenseDataHyperRectangle<> container
+     *
+     *  Note - you can override the underlying factory dynamically by calling DenseDataHyperRectangle_Factory<T>::Register (), or
+     *  replace it statically by template-specializing DenseDataHyperRectangle_Factory<T>::New () - though the later is trickier.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     */
+    template <typename T, typename... INDEXES>
+    class DenseDataHyperRectangle_Factory {
+    private:
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-                    static atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> sFactory_;
+        static atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> sFactory_;
 #else
-                    static inline atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> sFactory_{nullptr};
+        static inline atomic<DenseDataHyperRectangle<T, INDEXES...> (*) (INDEXES...)> sFactory_{nullptr};
 #endif
 
-                public:
-                    /**
-                     *  You can call this directly, but there is no need, as the DenseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
-                     */
-                    nonvirtual DenseDataHyperRectangle<T, INDEXES...> operator() (INDEXES... dimensions);
+    public:
+        /**
+         *  You can call this directly, but there is no need, as the DenseDataHyperRectangle<T, INDEXES...> CTOR does so automatically.
+         */
+        nonvirtual DenseDataHyperRectangle<T, INDEXES...> operator() (INDEXES... dimensions);
 
-                public:
-                    /**
-                     *  Register a replacement creator/factory for the given DenseDataHyperRectangle<T, INDEXES...>. Note this is a global change.
-                     */
-                    static void Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...) = nullptr);
+    public:
+        /**
+         *  Register a replacement creator/factory for the given DenseDataHyperRectangle<T, INDEXES...>. Note this is a global change.
+         */
+        static void Register (DenseDataHyperRectangle<T, INDEXES...> (*factory) (INDEXES...) = nullptr);
 
-                private:
-                    static DenseDataHyperRectangle<T, INDEXES...> Default_ (INDEXES... dimensions);
-                };
-            }
-        }
-    }
+    private:
+        static DenseDataHyperRectangle<T, INDEXES...> Default_ (INDEXES... dimensions);
+    };
 }
 
 /*

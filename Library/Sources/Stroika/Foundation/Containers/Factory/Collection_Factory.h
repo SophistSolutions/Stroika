@@ -19,50 +19,46 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
+namespace Stroika::Foundation::Containers {
 
-            template <typename T>
-            class Collection;
+    template <typename T>
+    class Collection;
+}
 
-            namespace Factory {
+namespace Stroika::Foundation::Containers::Factory {
 
-                /**
-                 *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container
-                 *
-                 *  Note - you can override the underlying factory dynamically by calling Collection_Factory<T>::Register (), or
-                 *  replace it statically by template-specializing Collection_Factory<T>::New () - though the later is trickier.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-                 */
-                template <typename T>
-                class Collection_Factory {
-                private:
+    /**
+     *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container
+     *
+     *  Note - you can override the underlying factory dynamically by calling Collection_Factory<T>::Register (), or
+     *  replace it statically by template-specializing Collection_Factory<T>::New () - though the later is trickier.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     */
+    template <typename T>
+    class Collection_Factory {
+    private:
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
-                    static atomic<Collection<T> (*) ()> sFactory_;
+        static atomic<Collection<T> (*) ()> sFactory_;
 #else
-                    static inline atomic<Collection<T> (*) ()> sFactory_{nullptr};
+        static inline atomic<Collection<T> (*) ()> sFactory_{nullptr};
 #endif
 
-                public:
-                    /**
-                     *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
-                     */
-                    nonvirtual Collection<T> operator() () const;
+    public:
+        /**
+         *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
+         */
+        nonvirtual Collection<T> operator() () const;
 
-                public:
-                    /**
-                     *  Register a replacement creator/factory for the given Collection<T>. Note this is a global change.
-                     */
-                    static void Register (Collection<T> (*factory) () = nullptr);
+    public:
+        /**
+         *  Register a replacement creator/factory for the given Collection<T>. Note this is a global change.
+         */
+        static void Register (Collection<T> (*factory) () = nullptr);
 
-                private:
-                    static Collection<T> Default_ ();
-                };
-            }
-        }
-    }
+    private:
+        static Collection<T> Default_ ();
+    };
 }
 
 /*

@@ -6,12 +6,6 @@
 
 #include "../../Debug/Assertions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Containers {
-            namespace LockFreeDataStructures {
-            }
-        }
-    }
+namespace Stroika::Foundation::Containers::LockFreeDataStructures {
 }
 #endif /* _Stroika_Foundation_Containers_LockFreeDataStructures_LinkedList_inl_ */
