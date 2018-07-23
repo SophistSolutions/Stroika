@@ -22,13 +22,9 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename RESULT, template <typename, typename> class CACHE, typename... ARGS>
-    Memoizer<RESULT, CACHE, ARGS...>::Memoizer (const function<RESULT (ARGS...)>& f, const function<unsigned int(ARGS...)>& hash)
-        : Memoizer (f, hash, 101)
-    {
-    }
-    template <typename RESULT, template <typename, typename> class CACHE, typename... ARGS>
-    Memoizer<RESULT, CACHE, ARGS...>::Memoizer (const function<RESULT (ARGS...)>& f, function<unsigned int(ARGS...)> hash, [[maybe_unused]] size_t size)
+    Memoizer<RESULT, CACHE, ARGS...>::Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache)
         : fFunction_ (f)
+        , fCache_ (move (cache))
     {
     }
     namespace PRIVATE_ {
