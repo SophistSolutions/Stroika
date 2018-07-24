@@ -23,31 +23,23 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
-                namespace INI {
+namespace Stroika::Foundation::DataExchange::Variant::INI {
 
-                    /**
-                     */
-                    class Writer : public Variant::Writer {
-                    private:
-                        using inherited = Variant::Writer;
+    /**
+     */
+    class Writer : public Variant::Writer {
+    private:
+        using inherited = Variant::Writer;
 
-                    private:
-                        class Rep_;
+    private:
+        class Rep_;
 
-                    public:
-                        Writer ();
+    public:
+        Writer ();
 
-                    private:
-                        nonvirtual shared_ptr<Rep_> GetRep_ () const;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        nonvirtual shared_ptr<Rep_> GetRep_ () const;
+    };
 }
 
 /*

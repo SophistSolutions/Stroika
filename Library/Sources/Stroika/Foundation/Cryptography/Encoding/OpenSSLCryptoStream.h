@@ -65,121 +65,113 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace Encoding {
+namespace Stroika::Foundation::Cryptography::Encoding {
 
-                using Memory::BLOB;
-                using Memory::Byte;
+    using Memory::BLOB;
+    using Memory::Byte;
 
-                /**
-                 */
-                enum class Direction {
-                    eEncrypt,
-                    eDecrypt,
-                };
+    /**
+     */
+    enum class Direction {
+        eEncrypt,
+        eDecrypt,
+    };
 
 #if qHasFeature_OpenSSL
-                using Cryptography::OpenSSL::CipherAlgorithm;
-                using Cryptography::OpenSSL::DerivedKey;
-                using Cryptography::OpenSSL::DigestAlgorithm;
+    using Cryptography::OpenSSL::CipherAlgorithm;
+    using Cryptography::OpenSSL::DerivedKey;
+    using Cryptography::OpenSSL::DigestAlgorithm;
 #endif
 
 #if qHasFeature_OpenSSL
-                class OpenSSLCryptoParams {
-                public:
-                    // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
-                    OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction d)>& f);
+    class OpenSSLCryptoParams {
+    public:
+        // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
+        OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction d)>& f);
+        // allowed CipherAlgorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
+        OpenSSLCryptoParams (CipherAlgorithm alg, BLOB key, BLOB initialIV);
+        OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey);
 
-                    // allowed CipherAlgorithm's for this CTOR include eAES_*, eBlowfish_*, eRC2'
-                    OpenSSLCryptoParams (CipherAlgorithm alg, BLOB key, BLOB initialIV);
-
-                    OpenSSLCryptoParams (CipherAlgorithm alg, const DerivedKey& derivedKey);
-
-                public:
-                    function<void(EVP_CIPHER_CTX*, Direction)> fInitializer;
-                };
+    public:
+        function<void(EVP_CIPHER_CTX*, Direction)> fInitializer;
+    };
 #endif
 
 #if qHasFeature_OpenSSL
-                /**
-                 *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
-                 *
-                 *  OpenSSLInputStream is a BinaryInputStream which wraps another BinaryInputStream
-                 *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
-                 *
-                 *  Use OpenSSLInputStream is you wish to use the result of encryption in your program, so you prefer to structure
-                 *  your conversion code as a process of reading.
-                 *
-                 *  @see OpenSSLOutputStream
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
-                 */
-                class OpenSSLInputStream : public Streams::InputStream<Byte> {
-                public:
-                    OpenSSLInputStream ()                          = delete;
-                    OpenSSLInputStream (const OpenSSLInputStream&) = delete;
+    /**
+     *  @brief  OpenSSLInputStream is a BinaryInputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
+     *
+     *  OpenSSLInputStream is a BinaryInputStream which wraps another BinaryInputStream
+     *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
+     *
+     *  Use OpenSSLInputStream is you wish to use the result of encryption in your program, so you prefer to structure
+     *  your conversion code as a process of reading.
+     *
+     *  @see OpenSSLOutputStream
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     */
+    class OpenSSLInputStream : public Streams::InputStream<Byte> {
+    public:
+        OpenSSLInputStream ()                          = delete;
+        OpenSSLInputStream (const OpenSSLInputStream&) = delete;
 
-                public:
-                    using typename InputStream<Memory::Byte>::Ptr;
+    public:
+        using typename InputStream<Memory::Byte>::Ptr;
 
-                public:
-                    /**
-                     */
-                    static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
+    public:
+        /**
+         */
+        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
-                };
+    private:
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
+    };
 
 #endif
 
 #if qHasFeature_OpenSSL
-                /**
-                 *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
-                 *
-                 *  OpenSSLOutputStream is a BinaryOutputStream which wraps another BinaryOutputStream
-                 *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
-                 *
-                 *  Use OpenSSLOutputStream is you wish to produce an artifact (e.g. external file) as a result of incrementally writing
-                 *  to a stream.
-                 *
-                 *  @see OpenSSLInputStream
-                 *
-                 *  \note   OpenSSLOutputStream aggregates its owned substream, so that a Close () on OpenSSLOutputStream
-                 *          will Close that substream.
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
-                 */
-                class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
-                public:
-                    OpenSSLOutputStream ()                           = delete;
-                    OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
+    /**
+     *  @brief  OpenSSLOutputStream is a BinaryOutputStream which does OpenSSL-based encryption or decryption (depending on direction arg)
+     *
+     *  OpenSSLOutputStream is a BinaryOutputStream which wraps another BinaryOutputStream
+     *  and does OpenSSL-based  encryption or decryption (depending on direction arg).
+     *
+     *  Use OpenSSLOutputStream is you wish to produce an artifact (e.g. external file) as a result of incrementally writing
+     *  to a stream.
+     *
+     *  @see OpenSSLInputStream
+     *
+     *  \note   OpenSSLOutputStream aggregates its owned substream, so that a Close () on OpenSSLOutputStream
+     *          will Close that substream.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     */
+    class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
+    public:
+        OpenSSLOutputStream ()                           = delete;
+        OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
 
-                public:
-                    using typename OutputStream<Memory::Byte>::Ptr;
+    public:
+        using typename OutputStream<Memory::Byte>::Ptr;
 
-                public:
-                    /**
-                     */
-                    static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
-                    static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
+    public:
+        /**
+         */
+        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
 
-                private:
-                    class Rep_;
+    private:
+        class Rep_;
 
-                private:
-                    using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
-                };
+    private:
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
+    };
 #endif
-            }
-        }
-    }
 }
 
 /*

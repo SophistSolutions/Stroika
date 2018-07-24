@@ -30,15 +30,9 @@
 #error "qHasFeature_OpenSSL should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace SSL {
+namespace Stroika::Foundation::Cryptography::SSL {
 
-                // common defines - like if we are using OPENSSL
-            }
-        }
-    }
+    // common defines - like if we are using OPENSSL
 }
 
 /*

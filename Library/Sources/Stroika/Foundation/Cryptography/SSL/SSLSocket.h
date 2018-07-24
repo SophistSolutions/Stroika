@@ -20,25 +20,19 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace SSL {
+namespace Stroika::Foundation::Cryptography::SSL {
 
 // wrapper calss - real work is in protected REP subclasses from Socket Rep...
 //
 // @todo - probably a mistake - @todo DEPRECATED - probably just do SSLSocketStream - not socket itself. That avoids
 // the issue of running afoul of existing socket object hierarchy.
 #if qHasFeature_OpenSSL
-                class SSLSocket : public IO::Network::Socket {
-                public:
-                private:
-                    class Rep_;
-                };
+    class SSLSocket : public IO::Network::Socket {
+    public:
+    private:
+        class Rep_;
+    };
 #endif
-            }
-        }
-    }
 }
 
 /*

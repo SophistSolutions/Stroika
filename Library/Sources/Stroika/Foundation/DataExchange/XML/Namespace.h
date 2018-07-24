@@ -13,47 +13,41 @@
 #include "../VariantValue.h"
 #include "Common.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace XML {
+namespace Stroika::Foundation::DataExchange::XML {
 
-                struct NamespaceDefinition {
-                    NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring ());
+    struct NamespaceDefinition {
+        NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring ());
 
-                    wstring fURI;    // required non-null
-                    wstring fPrefix; // can be nullptr
-                };
-                // order by URI, but equal requires both equal
-                bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
-                bool operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
+        wstring fURI;    // required non-null
+        wstring fPrefix; // can be nullptr
+    };
+    // order by URI, but equal requires both equal
+    bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
+    bool operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
 
-                class NamespaceDefinitionsList {
-                public:
-                    NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces = vector<NamespaceDefinition> ());
+    class NamespaceDefinitionsList {
+    public:
+        NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces = vector<NamespaceDefinition> ());
 
-                public:
-                    nonvirtual bool empty () const;
+    public:
+        nonvirtual bool empty () const;
 
-                public:
-                    nonvirtual vector<NamespaceDefinition> GetNamespaces () const;
-                    nonvirtual void                        SetNamespaces (const vector<NamespaceDefinition>& namespaces);
+    public:
+        nonvirtual vector<NamespaceDefinition> GetNamespaces () const;
+        nonvirtual void                        SetNamespaces (const vector<NamespaceDefinition>& namespaces);
 
-                public:
-                    nonvirtual void Add (const wstring& uri, const wstring& prefix = wstring ());
+    public:
+        nonvirtual void Add (const wstring& uri, const wstring& prefix = wstring ());
 
-                private:
-                    vector<NamespaceDefinition> fNamespaces;
+    private:
+        vector<NamespaceDefinition> fNamespaces;
 
-                private:
-                    friend bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-                    friend bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-                };
-                bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-                bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
-            }
-        }
-    }
+    private:
+        friend bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+        friend bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+    };
+    bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+    bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
 }
 
 /*

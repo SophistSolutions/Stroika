@@ -21,72 +21,64 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace Encoding {
-                namespace Algorithm {
+namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 
-                    /**
-                     */
-                    enum class AESOptions {
-                        e128_CBC,
-                        e128_ECB,
-                        e128_OFB,
-                        e128_CFB1,
-                        e128_CFB8,
-                        e128_CFB128,
-                        e192_CBC,
-                        e192_ECB,
-                        e192_OFB,
-                        e192_CFB1,
-                        e192_CFB8,
-                        e192_CFB128,
-                        e256_CBC,
-                        e256_ECB,
-                        e256_OFB,
-                        e256_CFB1,
-                        e256_CFB8,
-                        e256_CFB128,
+    /**
+     */
+    enum class AESOptions {
+        e128_CBC,
+        e128_ECB,
+        e128_OFB,
+        e128_CFB1,
+        e128_CFB8,
+        e128_CFB128,
+        e192_CBC,
+        e192_ECB,
+        e192_OFB,
+        e192_CFB1,
+        e192_CFB8,
+        e192_CFB128,
+        e256_CBC,
+        e256_ECB,
+        e256_OFB,
+        e256_CFB1,
+        e256_CFB8,
+        e256_CFB128,
 
-                        eDEFAULT = e256_CBC,
+        eDEFAULT = e256_CBC,
 
-                        Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
-                    };
+        Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
+    };
 
 #if qHasFeature_OpenSSL
-                    /**
-                     */
-                    Streams::InputStream<Memory::Byte>::Ptr DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Memory::Byte>::Ptr& in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB                            DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+    /**
+     */
+    Streams::InputStream<Memory::Byte>::Ptr DecodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Memory::Byte>::Ptr& in, AESOptions options = AESOptions::eDEFAULT);
+    Memory::BLOB                            DecodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 #if qHasFeature_OpenSSL
-                    /**
-                     */
-                    Streams::InputStream<Memory::Byte>::Ptr EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Memory::Byte>::Ptr& in, AESOptions options = AESOptions::eDEFAULT);
-                    Memory::BLOB                            EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
+    /**
+     */
+    Streams::InputStream<Memory::Byte>::Ptr EncodeAES (const OpenSSL::DerivedKey& key, const Streams::InputStream<Memory::Byte>::Ptr& in, AESOptions options = AESOptions::eDEFAULT);
+    Memory::BLOB                            EncodeAES (const OpenSSL::DerivedKey& key, const Memory::BLOB& in, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 #if qHasFeature_OpenSSL
-                    /**
-                     *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
-                     *  to the returned output stream is decrypted before being passed to the argument output stream.
-                     */
-                    Streams::OutputStream<Memory::Byte>::Ptr AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<Memory::Byte>::Ptr& out, AESOptions options = AESOptions::eDEFAULT);
+    /**
+     *  Taken an existing binary output stream, and wrap it with decryption, so that stuff written
+     *  to the returned output stream is decrypted before being passed to the argument output stream.
+     */
+    Streams::OutputStream<Memory::Byte>::Ptr AESDecoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<Memory::Byte>::Ptr& out, AESOptions options = AESOptions::eDEFAULT);
 #endif
 
 #if qHasFeature_OpenSSL
-                    /**
-                     *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
-                     *  to the returned output stream is encrpted before being passed to the argument output stream.
-                     */
-                    Streams::OutputStream<Memory::Byte>::Ptr AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<Memory::Byte>::Ptr& out, AESOptions options = AESOptions::eDEFAULT);
+    /**
+     *  Taken an existing binary output stream, and wrap it with encpytion, so that stuff written
+     *  to the returned output stream is encrpted before being passed to the argument output stream.
+     */
+    Streams::OutputStream<Memory::Byte>::Ptr AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<Memory::Byte>::Ptr& out, AESOptions options = AESOptions::eDEFAULT);
 #endif
-                }
-            }
-        }
-    }
 }
 
 /*

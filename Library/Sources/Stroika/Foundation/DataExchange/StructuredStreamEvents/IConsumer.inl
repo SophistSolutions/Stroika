@@ -10,12 +10,6 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace StructuredStreamEvents {
-            }
-        }
-    }
+namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 }
 #endif /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_IConsumer_inl_*/

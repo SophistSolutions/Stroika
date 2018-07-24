@@ -8,12 +8,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace Digest {
-            }
-        }
-    }
+namespace Stroika::Foundation::Cryptography::Digest {
 }
 #endif /*_Stroika_Foundation_Cryptography_Digest_MD5_inl_*/

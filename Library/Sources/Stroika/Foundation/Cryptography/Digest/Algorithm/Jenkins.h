@@ -24,32 +24,26 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace Digest {
+namespace Stroika::Foundation::Cryptography::Digest {
 
-                namespace Algorithm {
-                    // Just a name to select template implementation
-                    struct Jenkins {
-                    };
-                    template <>
-                    struct DigesterDefaultTraitsForAlgorithm<Jenkins> {
-                        using ReturnType = uint32_t;
-                    };
-                }
-
-                template <>
-                struct Digester<Algorithm::Jenkins, uint32_t> {
-                    using ReturnType = uint32_t;
-
-                    static ReturnType ComputeDigest (const Streams::InputStream<Byte>::Ptr& from);
-                    static ReturnType ComputeDigest (const Byte* from, const Byte* to);
-                    static ReturnType ComputeDigest (const BLOB& from);
-                };
-            }
-        }
+    namespace Algorithm {
+        // Just a name to select template implementation
+        struct Jenkins {
+        };
+        template <>
+        struct DigesterDefaultTraitsForAlgorithm<Jenkins> {
+            using ReturnType = uint32_t;
+        };
     }
+
+    template <>
+    struct Digester<Algorithm::Jenkins, uint32_t> {
+        using ReturnType = uint32_t;
+
+        static ReturnType ComputeDigest (const Streams::InputStream<Byte>::Ptr& from);
+        static ReturnType ComputeDigest (const Byte* from, const Byte* to);
+        static ReturnType ComputeDigest (const BLOB& from);
+    };
 }
 
 /*

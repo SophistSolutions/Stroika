@@ -16,28 +16,20 @@
  * TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Archive {
-                namespace _7z {
+namespace Stroika::Foundation::DataExchange::Archive::_7z {
 
 #if qHasFeature_LZMA
-                    /**
-                     *  @todo add example usage (and docs)
-                     */
-                    class Reader : public DataExchange::Archive::Reader {
-                    public:
-                        Reader (const Streams::InputStream<Memory::Byte>::Ptr& in);
+    /**
+     *  @todo add example usage (and docs)
+     */
+    class Reader : public DataExchange::Archive::Reader {
+    public:
+        Reader (const Streams::InputStream<Memory::Byte>::Ptr& in);
 
-                    private:
-                        class Rep_;
-                    };
+    private:
+        class Rep_;
+    };
 #endif
-                }
-            }
-        }
-    }
 }
 
 /*

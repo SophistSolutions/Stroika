@@ -24,45 +24,37 @@
  *      @todo   fix thread-safety - cloning rep - lock for access config data
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
-                namespace XML {
+namespace Stroika::Foundation::DataExchange::Variant::XML {
 
-                    using DataExchange::XML::SerializationConfiguration;
+    using DataExchange::XML::SerializationConfiguration;
 
-                    /**
-                     *  @todo
-                     * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
-                     *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
+    /**
+     *  @todo
+     * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
+     *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
 
-                     define common struct (shared modeule - in common.h of this I guess? - for serializeation package parmas
-                      like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
-                      do or dont include xml processing instruction
-                     */
-                    class Reader : public Variant::Reader {
-                    private:
-                        using inherited = Variant::Reader;
+        define common struct (shared modeule - in common.h of this I guess? - for serializeation package parmas
+        like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
+        do or dont include xml processing instruction
+        */
+    class Reader : public Variant::Reader {
+    private:
+        using inherited = Variant::Reader;
 
-                    private:
-                        class Rep_;
+    private:
+        class Rep_;
 
-                    public:
-                        Reader (const SerializationConfiguration& config = SerializationConfiguration ());
+    public:
+        Reader (const SerializationConfiguration& config = SerializationConfiguration ());
 
-                    public:
-                        nonvirtual SerializationConfiguration GetConfiguration () const;
-                        nonvirtual void                       SetConfiguration (const SerializationConfiguration& config);
+    public:
+        nonvirtual SerializationConfiguration GetConfiguration () const;
+        nonvirtual void                       SetConfiguration (const SerializationConfiguration& config);
 
-                    private:
-                        nonvirtual const Rep_& GetRep_ () const;
-                        nonvirtual Rep_& GetRep_ ();
-                    };
-                }
-            }
-        }
-    }
+    private:
+        nonvirtual const Rep_& GetRep_ () const;
+        nonvirtual Rep_& GetRep_ ();
+    };
 }
 
 /*

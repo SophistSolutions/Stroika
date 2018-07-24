@@ -19,35 +19,27 @@
  * TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
-                namespace INI {
+namespace Stroika::Foundation::DataExchange::Variant::INI {
 
-                    using Containers::Collection;
-                    using Containers::Mapping;
+    using Containers::Collection;
+    using Containers::Mapping;
 
-                    /**
-                     */
-                    struct Section {
-                        Mapping<String, String> fProperties;
-                    };
+    /**
+     */
+    struct Section {
+        Mapping<String, String> fProperties;
+    };
 
-                    /**
-                     *  @todo maybe have struct with fields - unnamedprofile, and collection of named sections?
-                     */
-                    struct Profile {
-                        Section                  fUnnamedSection;
-                        Mapping<String, Section> fNamedSections;
-                    };
+    /**
+     *  @todo maybe have struct with fields - unnamedprofile, and collection of named sections?
+     */
+    struct Profile {
+        Section                  fUnnamedSection;
+        Mapping<String, Section> fNamedSections;
+    };
 
-                    Profile      Convert (VariantValue v);
-                    VariantValue Convert (Profile p);
-                }
-            }
-        }
-    }
+    Profile      Convert (VariantValue v);
+    VariantValue Convert (Profile p);
 }
 
 /*

@@ -9,36 +9,28 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
-                namespace INI {
+namespace Stroika::Foundation::DataExchange::Variant::INI {
 
-                    /*
-                     ********************************************************************************
-                     ************************************ INI::Reader *******************************
-                     ********************************************************************************
-                     */
-                    inline Profile Reader::ReadProfile (const Streams::InputStream<Memory::Byte>::Ptr& in)
-                    {
-                        return Convert (Read (in));
-                    }
-                    inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in)
-                    {
-                        return Convert (Read (in));
-                    }
-                    inline Profile Reader::ReadProfile (istream& in)
-                    {
-                        return Convert (Read (in));
-                    }
-                    inline Profile Reader::ReadProfile (wistream& in)
-                    {
-                        return Convert (Read (in));
-                    }
-                }
-            }
-        }
+    /*
+     ********************************************************************************
+     ************************************ INI::Reader *******************************
+     ********************************************************************************
+     */
+    inline Profile Reader::ReadProfile (const Streams::InputStream<Memory::Byte>::Ptr& in)
+    {
+        return Convert (Read (in));
+    }
+    inline Profile Reader::ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in)
+    {
+        return Convert (Read (in));
+    }
+    inline Profile Reader::ReadProfile (istream& in)
+    {
+        return Convert (Read (in));
+    }
+    inline Profile Reader::ReadProfile (wistream& in)
+    {
+        return Convert (Read (in));
     }
 }
 #endif /*_Stroika_Foundation_DataExchange_Variant_INI_Reader_inl_*/

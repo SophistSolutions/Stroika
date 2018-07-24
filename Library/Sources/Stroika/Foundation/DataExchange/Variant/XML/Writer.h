@@ -28,55 +28,47 @@
  *      @todo   fix thread-safety - cloning rep - lock for access config data
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
-                namespace XML {
+namespace Stroika::Foundation::DataExchange::Variant::XML {
 
-                    using Characters::String;
+    using Characters::String;
 
-                    using DataExchange::XML::SerializationConfiguration;
+    using DataExchange::XML::SerializationConfiguration;
 
-                    /**
-                     *  @todo
-                     * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
-                     *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
-                     *
-                     * The arguemnt VariantValue must be composed of any combination of these types:
-                     *          o   VariantValue::eBoolean
-                     *          o   VariantValue::eInteger
-                     *          o   VariantValue::eFloat
-                     *          o   VariantValue::eString
-                     *          o   VariantValue::eMap
-                     *          o   VariantValue::eArray
-                     *  or it can be the type:
-                     *          o   VariantValue::eNull
-                     *
-                     *  Other types are illegal an XML and will trigger a 'Require' failure.
-                     */
-                    class Writer : public Variant::Writer {
-                    private:
-                        using inherited = Variant::Writer;
+    /**
+     *  @todo
+     * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
+     *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
+        *
+        * The arguemnt VariantValue must be composed of any combination of these types:
+        *          o   VariantValue::eBoolean
+        *          o   VariantValue::eInteger
+        *          o   VariantValue::eFloat
+        *          o   VariantValue::eString
+        *          o   VariantValue::eMap
+        *          o   VariantValue::eArray
+        *  or it can be the type:
+        *          o   VariantValue::eNull
+        *
+        *  Other types are illegal an XML and will trigger a 'Require' failure.
+        */
+    class Writer : public Variant::Writer {
+    private:
+        using inherited = Variant::Writer;
 
-                    private:
-                        class Rep_;
+    private:
+        class Rep_;
 
-                    public:
-                        Writer (const SerializationConfiguration& config = SerializationConfiguration ());
+    public:
+        Writer (const SerializationConfiguration& config = SerializationConfiguration ());
 
-                    public:
-                        nonvirtual SerializationConfiguration GetConfiguration () const;
-                        nonvirtual void                       SetConfiguration (const SerializationConfiguration& config);
+    public:
+        nonvirtual SerializationConfiguration GetConfiguration () const;
+        nonvirtual void                       SetConfiguration (const SerializationConfiguration& config);
 
-                    private:
-                        nonvirtual const Rep_& GetRep_ () const;
-                        nonvirtual Rep_& GetRep_ ();
-                    };
-                }
-            }
-        }
-    }
+    private:
+        nonvirtual const Rep_& GetRep_ () const;
+        nonvirtual Rep_& GetRep_ ();
+    };
 }
 
 /*

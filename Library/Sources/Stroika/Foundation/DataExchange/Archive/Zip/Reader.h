@@ -16,28 +16,20 @@
  * TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Archive {
-                namespace Zip {
+namespace Stroika::Foundation::DataExchange::Archive::Zip {
 
 #if qHasFeature_ZLib
-                    /**
-                     *  @todo add example usage (and docs)
-                     */
-                    class Reader : public DataExchange::Archive::Reader {
-                    public:
-                        Reader (const Streams::InputStream<Memory::Byte>::Ptr& in);
+    /**
+     *  @todo add example usage (and docs)
+     */
+    class Reader : public DataExchange::Archive::Reader {
+    public:
+        Reader (const Streams::InputStream<Memory::Byte>::Ptr& in);
 
-                    private:
-                        class Rep_;
-                    };
+    private:
+        class Rep_;
+    };
 #endif
-                }
-            }
-        }
-    }
 }
 
 /*

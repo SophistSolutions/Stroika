@@ -28,85 +28,79 @@
  *      first-class support for native STL objects where appropriate).
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
+namespace Stroika::Foundation::DataExchange::Variant {
 
-                /**
-                 *  \brief  abstract class specifying interface for writers VariantValue objects to serialized formats like JSON, CSV, XML, etc
-                 */
-                class Writer {
-                protected:
-                    class _IRep;
+    /**
+     *  \brief  abstract class specifying interface for writers VariantValue objects to serialized formats like JSON, CSV, XML, etc
+     */
+    class Writer {
+    protected:
+        class _IRep;
 
-                protected:
-                    /**
-                     *  \req rep != nullptr
-                     */
-                    explicit Writer (const shared_ptr<_IRep>& rep);
-                    Writer () = delete;
+    protected:
+        /**
+         *  \req rep != nullptr
+         */
+        explicit Writer (const shared_ptr<_IRep>& rep);
+        Writer () = delete;
 
-                public:
-                    /**
-                     */
-                    nonvirtual String GetDefaultFileSuffix () const;
+    public:
+        /**
+         */
+        nonvirtual String GetDefaultFileSuffix () const;
 
-                public:
-                    /**
-                     *  Serialize (according to the subtype of Writer constructed) the argument VariantValue object to the 
-                     *  argument output 'stream' accumulator, or in the /1 case, just return the result as a BLOB (same as WriteAsBLOB).
-                     *
-                     *  @see WriteAsBLOB
-                     *  @see WriteAsString
-                     */
-                    nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out);
-                    nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out);
-                    nonvirtual void Write (const VariantValue& v, ostream& out);
-                    nonvirtual void Write (const VariantValue& v, wostream& out);
-                    nonvirtual Memory::BLOB Write (const VariantValue& v);
+    public:
+        /**
+         *  Serialize (according to the subtype of Writer constructed) the argument VariantValue object to the 
+         *  argument output 'stream' accumulator, or in the /1 case, just return the result as a BLOB (same as WriteAsBLOB).
+         *
+         *  @see WriteAsBLOB
+         *  @see WriteAsString
+         */
+        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out);
+        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out);
+        nonvirtual void Write (const VariantValue& v, ostream& out);
+        nonvirtual void Write (const VariantValue& v, wostream& out);
+        nonvirtual Memory::BLOB Write (const VariantValue& v);
 
-                public:
-                    /**
-                     *  Take the given variant value, and convert it to JSON, and return that JSON as a BLOB.
-                     */
-                    nonvirtual Memory::BLOB WriteAsBLOB (const VariantValue& v);
+    public:
+        /**
+         *  Take the given variant value, and convert it to JSON, and return that JSON as a BLOB.
+         */
+        nonvirtual Memory::BLOB WriteAsBLOB (const VariantValue& v);
 
-                public:
-                    /**
-                     *  Take the given variant value, and Serialize (according to the subtype of Writer constructed), 
-                     *  and return that JSON as a String.
-                     */
-                    nonvirtual String WriteAsString (const VariantValue& v);
+    public:
+        /**
+         *  Take the given variant value, and Serialize (according to the subtype of Writer constructed), 
+         *  and return that JSON as a String.
+         */
+        nonvirtual String WriteAsString (const VariantValue& v);
 
-                protected:
-                    nonvirtual _IRep& _GetRep ();
-                    nonvirtual const _IRep& _GetRep () const;
+    protected:
+        nonvirtual _IRep& _GetRep ();
+        nonvirtual const _IRep& _GetRep () const;
 
-                protected:
-                    using _SharedPtrIRep = shared_ptr<_IRep>;
+    protected:
+        using _SharedPtrIRep = shared_ptr<_IRep>;
 
-                private:
-                    struct _Rep_Cloner {
-                        inline static _SharedPtrIRep Copy (const _IRep& t);
-                    };
-                    using SharedRepByValuePtr_ = Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
+    private:
+        struct _Rep_Cloner {
+            inline static _SharedPtrIRep Copy (const _IRep& t);
+        };
+        using SharedRepByValuePtr_ = Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>;
 
-                private:
-                    SharedRepByValuePtr_ fRep_;
-                };
+    private:
+        SharedRepByValuePtr_ fRep_;
+    };
 
-                class Writer::_IRep {
-                public:
-                    virtual ~_IRep ()                                                                                                  = default;
-                    virtual _SharedPtrIRep Clone () const                                                                              = 0;
-                    virtual String         GetDefaultFileSuffix () const                                                               = 0;
-                    virtual void           Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)          = 0;
-                    virtual void           Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out) = 0;
-                };
-            }
-        }
-    }
+    class Writer::_IRep {
+    public:
+        virtual ~_IRep ()                                                                                                  = default;
+        virtual _SharedPtrIRep Clone () const                                                                              = 0;
+        virtual String         GetDefaultFileSuffix () const                                                               = 0;
+        virtual void           Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)          = 0;
+        virtual void           Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out) = 0;
+    };
 }
 
 /*

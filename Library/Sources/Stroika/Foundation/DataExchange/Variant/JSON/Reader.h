@@ -26,40 +26,32 @@
  *              its basically the same thing... (except for the issue of seekability)
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
-                namespace JSON {
+namespace Stroika::Foundation::DataExchange::Variant::JSON {
 
-                    /**
-                     *  \note   Our definition of the JSON format comes from:
-                     *          http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
-                     *
-                     *          There are several variations. Please also note that http://jsonlint.com/ disallows
-                     *          json top level values other than array or object, but that doesn't appear to follow
-                     *          the standard as specified in ECMA.
-                     *
-                     *  Another good summary is http://json.org/
-                     *
-                     *  \note   Any JSON object can be represented as as VariantValue object, and unambiguously mapped back to the same JSON.
-                     *
-                     *  \note   req inputStream.IsSeekable () - when reading an input stream
-                     */
-                    class Reader : public Variant::Reader {
-                    private:
-                        using inherited = Variant::Reader;
+    /**
+     *  \note   Our definition of the JSON format comes from:
+     *          http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf
+     *
+     *          There are several variations. Please also note that http://jsonlint.com/ disallows
+     *          json top level values other than array or object, but that doesn't appear to follow
+     *          the standard as specified in ECMA.
+     *
+     *  Another good summary is http://json.org/
+     *
+     *  \note   Any JSON object can be represented as as VariantValue object, and unambiguously mapped back to the same JSON.
+     *
+     *  \note   req inputStream.IsSeekable () - when reading an input stream
+     */
+    class Reader : public Variant::Reader {
+    private:
+        using inherited = Variant::Reader;
 
-                    private:
-                        class Rep_;
+    private:
+        class Rep_;
 
-                    public:
-                        Reader ();
-                    };
-                }
-            }
-        }
-    }
+    public:
+        Reader ();
+    };
 }
 
 /*

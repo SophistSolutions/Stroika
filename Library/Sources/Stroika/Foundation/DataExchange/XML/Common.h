@@ -18,12 +18,6 @@
 #error "qHasFeature_Xerces should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace XML {
-            }
-        }
-    }
+namespace Stroika::Foundation::DataExchange::XML {
 }
 #endif /*_Stroika_Foundation_DataExchange_XML_Common_h_*/

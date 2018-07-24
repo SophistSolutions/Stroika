@@ -32,25 +32,17 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace Encoding {
-                namespace Algorithm {
+namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
 
-                    Memory::BLOB DecodeBase64 (const string& s);
-                    Memory::BLOB DecodeBase64 (const Characters::String& s);
-                    void         DecodeBase64 (const string& s, const Streams::OutputStream<Memory::Byte>::Ptr& out);
+    Memory::BLOB DecodeBase64 (const string& s);
+    Memory::BLOB DecodeBase64 (const Characters::String& s);
+    void         DecodeBase64 (const string& s, const Streams::OutputStream<Memory::Byte>::Ptr& out);
 
-                    enum class LineBreak : uint8_t { eLF_LB,
-                                                     eCRLF_LB,
-                                                     eAuto_LB = eCRLF_LB };
-                    string EncodeBase64 (const Streams::InputStream<Memory::Byte>::Ptr& from, LineBreak lb = LineBreak::eAuto_LB);
-                    string EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB);
-                }
-            }
-        }
-    }
+    enum class LineBreak : uint8_t { eLF_LB,
+                                     eCRLF_LB,
+                                     eAuto_LB = eCRLF_LB };
+    string EncodeBase64 (const Streams::InputStream<Memory::Byte>::Ptr& from, LineBreak lb = LineBreak::eAuto_LB);
+    string EncodeBase64 (const Memory::BLOB& from, LineBreak lb = LineBreak::eAuto_LB);
 }
 
 /*

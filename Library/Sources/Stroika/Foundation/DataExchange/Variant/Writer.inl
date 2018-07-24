@@ -9,58 +9,52 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
+namespace Stroika::Foundation::DataExchange::Variant {
 
-                /*
-                 ********************************************************************************
-                 ********************** DataExchange::Writer::_Rep_Cloner ***********************
-                 ********************************************************************************
-                 */
-                inline Writer::_SharedPtrIRep Writer::_Rep_Cloner::Copy (const _IRep& t)
-                {
-                    return t.Clone ();
-                }
+    /*
+        ********************************************************************************
+        ********************** DataExchange::Writer::_Rep_Cloner ***********************
+        ********************************************************************************
+        */
+    inline Writer::_SharedPtrIRep Writer::_Rep_Cloner::Copy (const _IRep& t)
+    {
+        return t.Clone ();
+    }
 
-                /*
-                 ********************************************************************************
-                 ***************************** DataExchange::Writer *****************************
-                 ********************************************************************************
-                 */
-                inline Writer::Writer (const shared_ptr<_IRep>& rep)
-                    : fRep_ (rep)
-                {
-                }
-                inline String Writer::GetDefaultFileSuffix () const
-                {
-                    return fRep_->GetDefaultFileSuffix ();
-                }
-                inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)
-                {
-                    fRep_->Write (v, out);
-                }
-                inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out)
-                {
-                    fRep_->Write (v, out);
-                }
-                inline Writer::_IRep& Writer::_GetRep ()
-                {
-                    EnsureNotNull (fRep_.get ());
-                    return *fRep_;
-                }
-                inline const Writer::_IRep& Writer::_GetRep () const
-                {
-                    EnsureNotNull (fRep_.get ());
-                    return *fRep_;
-                }
-                inline Memory::BLOB Writer::Write (const VariantValue& v)
-                {
-                    return WriteAsBLOB (v);
-                }
-            }
-        }
+    /*
+        ********************************************************************************
+        ***************************** DataExchange::Writer *****************************
+        ********************************************************************************
+        */
+    inline Writer::Writer (const shared_ptr<_IRep>& rep)
+        : fRep_ (rep)
+    {
+    }
+    inline String Writer::GetDefaultFileSuffix () const
+    {
+        return fRep_->GetDefaultFileSuffix ();
+    }
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)
+    {
+        fRep_->Write (v, out);
+    }
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out)
+    {
+        fRep_->Write (v, out);
+    }
+    inline Writer::_IRep& Writer::_GetRep ()
+    {
+        EnsureNotNull (fRep_.get ());
+        return *fRep_;
+    }
+    inline const Writer::_IRep& Writer::_GetRep () const
+    {
+        EnsureNotNull (fRep_.get ());
+        return *fRep_;
+    }
+    inline Memory::BLOB Writer::Write (const VariantValue& v)
+    {
+        return WriteAsBLOB (v);
     }
 }
 #endif /*_Stroika_Foundation_DataExchange_Variant_Writer_inl_*/

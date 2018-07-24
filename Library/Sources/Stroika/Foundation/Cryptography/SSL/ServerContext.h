@@ -12,17 +12,11 @@
 #include "../../Configuration/Common.h"
 #include "Common.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace SSL {
+namespace Stroika::Foundation::Cryptography::SSL {
 
-                // Certs, policies, options etc - for a client trying to open an SSL conneciton
-                class ServerContext {
-                };
-            }
-        }
-    }
+    // Certs, policies, options etc - for a client trying to open an SSL conneciton
+    class ServerContext {
+    };
 }
 
 /*

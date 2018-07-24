@@ -18,33 +18,24 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-609 - Redo the Compression Reader code to use a factory style like used in the rest of Stroika - ::New - instead of Compress methods??? needs some thought...
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Compression {
-                namespace Zip {
-
+namespace Stroika::Foundation::DataExchange::Compression::Zip {
 #if qHasFeature_ZLib
-                    /**
-                     *  \par Example Usage
-                     *      \code
-                     *      Memory::BLOB  kSample1_   =     Memory::BLOB::Hex ("aa1234abcd01010102030405");
-                     *      Memory::BLOB  compressed  =     Compression::Zip::Reader ().Compress (kSample1_);
-                     *      Assert (kSample1_ == Compression::Zip::Reader ().Decompress (compressed));
-                     *      \endcode
-                     */
-                    class Reader : public DataExchange::Compression::Reader {
-                    public:
-                        Reader ();
+    /**
+     *  \par Example Usage
+     *      \code
+     *          Memory::BLOB  kSample1_   =     Memory::BLOB::Hex ("aa1234abcd01010102030405");
+     *          Memory::BLOB  compressed  =     Compression::Zip::Reader ().Compress (kSample1_);
+     *          Assert (kSample1_ == Compression::Zip::Reader ().Decompress (compressed));
+     *      \endcode
+     */
+    class Reader : public DataExchange::Compression::Reader {
+    public:
+        Reader ();
 
-                    private:
-                        class Rep_;
-                    };
+    private:
+        class Rep_;
+    };
 #endif
-                }
-            }
-        }
-    }
 }
 
 /*

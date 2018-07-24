@@ -9,14 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace DataExchange {
-            namespace Variant {
-                namespace INI {
-                }
-            }
-        }
-    }
+namespace Stroika::Foundation::DataExchange::Variant::INI {
 }
 #endif /*_Stroika_Foundation_DataExchange_INI_Profile_inl_*/

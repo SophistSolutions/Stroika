@@ -8,24 +8,19 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace Encoding {
+namespace Stroika::Foundation::Cryptography::Encoding {
 
 #if qHas_OpenSSL
-                /*
-                 ********************************************************************************
-                 ********************* Cryptography::OpenSSLCryptoParams ************************
-                 ********************************************************************************
-                 */
-                inline OpenSSLCryptoParams::OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction)>& f)
-                    : fInitializer (f)
-                {
-                }
-#endif
-            }
-        }
+    /*
+     ********************************************************************************
+     ********************* Cryptography::OpenSSLCryptoParams ************************
+     ********************************************************************************
+     */
+    inline OpenSSLCryptoParams::OpenSSLCryptoParams (const function<void(EVP_CIPHER_CTX*, Direction)>& f)
+        : fInitializer (f)
+    {
     }
+#endif
+
 }
 #endif /*_Stroika_Foundation_Cryptography_OpenSSLCryptoStream_inl_*/

@@ -17,62 +17,56 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace OpenSSL {
+namespace Stroika::Foundation::Cryptography::OpenSSL {
 
 #if qHasFeature_OpenSSL
-                /**
-                 */
-                class Exception : public Execution::StringException {
-                public:
-                    using InternalErrorCodeType = unsigned long;
+    /**
+     */
+    class Exception : public Execution::StringException {
+    public:
+        using InternalErrorCodeType = unsigned long;
 
-                public:
-                    /**
-                     */
-                    Exception (InternalErrorCodeType errorCode);
+    public:
+        /**
+         */
+        Exception (InternalErrorCodeType errorCode);
 
-                public:
-                    /**
-                     */
-                    nonvirtual InternalErrorCodeType GetErrorCode () const;
+    public:
+        /**
+         */
+        nonvirtual InternalErrorCodeType GetErrorCode () const;
 
-                public:
-                    /**
-                     */
-                    static Characters::String GetMessage (InternalErrorCodeType errorCode);
+    public:
+        /**
+         */
+        static Characters::String GetMessage (InternalErrorCodeType errorCode);
 
-                public:
-                    /**
-                     * ThrowLastErrorIfFailed throws if status is not = 1
-                     */
-                    static void ThrowLastErrorIfFailed (int status);
+    public:
+        /**
+         * ThrowLastErrorIfFailed throws if status is not = 1
+         */
+        static void ThrowLastErrorIfFailed (int status);
 
-                public:
-                    /**
-                     * ThrowLastError () throws error in ERR_get_error
-                     */
-                    static void ThrowLastError ();
+    public:
+        /**
+         * ThrowLastError () throws error in ERR_get_error
+         */
+        static void ThrowLastError ();
 
-                public:
-                    /**
-                     */
-                    static bool GetNamesSupported ();
+    public:
+        /**
+         */
+        static bool GetNamesSupported ();
 
-                public:
-                    /**
-                     */
-                    static void SetNamesSupported (bool openSSLStringsSupported);
+    public:
+        /**
+         */
+        static void SetNamesSupported (bool openSSLStringsSupported);
 
-                private:
-                    InternalErrorCodeType fErrorCode_;
-                };
+    private:
+        InternalErrorCodeType fErrorCode_;
+    };
 #endif
-            }
-        }
-    }
 }
 
 /*

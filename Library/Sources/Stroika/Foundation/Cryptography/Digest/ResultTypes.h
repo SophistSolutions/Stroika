@@ -15,16 +15,10 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Cryptography {
-            namespace Digest {
+namespace Stroika::Foundation::Cryptography::Digest {
 
-                using Result128BitType = array<uint8_t, 16>; // 16 bytes, but 128 bits
-                using Result160BitType = array<uint8_t, 20>; // 20 bytes, but 160 bits
-            }
-        }
-    }
+    using Result128BitType = array<uint8_t, 16>; // 16 bytes, but 128 bits
+    using Result160BitType = array<uint8_t, 20>; // 20 bytes, but 160 bits
 }
 
 /*
