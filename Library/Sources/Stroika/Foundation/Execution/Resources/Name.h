@@ -11,62 +11,56 @@
 #include "../../Characters/String.h"
 #include "../../Configuration/Common.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Resources {
+namespace Stroika::Foundation::Execution::Resources {
 
-                using namespace Stroika::Foundation::Characters;
-                using namespace Stroika::Foundation::Configuration;
+    using namespace Stroika::Foundation::Characters;
+    using namespace Stroika::Foundation::Configuration;
 
-                /**
-                 */
+    /**
+     */
 #if qPlatform_Windows
-                // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
-                using ResourceType = LPCTSTR;
+    // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
+    using ResourceType = LPCTSTR;
 #else
-                using ResourceType = int;
+    using ResourceType = int;
 #endif
 
-                namespace PredefinedTypes {
-                    extern const ResourceType kRES; // 'RES' - or default type
-                }
-
-                /**
-                */
-                class Name {
-                public:
-                    Name (const String& name, ResourceType type = PredefinedTypes::kRES);
-#if qPlatform_Windows
-                    Name (const int intResName, ResourceType type = PredefinedTypes::kRES);
-#endif
-
-                public:
-                    /**
-                     *  Just for viewing purposes, and will not necessarily be usable for low level resource calls.
-                     */
-                    nonvirtual String GetPrintName () const;
-
-                public:
-                    /**
-                     *  NOTE - be careful with this - as its not threadsafe, and the lifetime of the SDKString exists
-                     *  only until the next non-const call to (including destruction) of this Name object.
-                     */
-                    const SDKChar* GetSDKString () const;
-
-                public:
-                    nonvirtual ResourceType GetType () const;
-
-                private:
-                    SDKString fName_;
-#if qPlatform_Windows
-                    optional<int> fIntName_;
-#endif
-                    ResourceType fType_;
-                };
-            }
-        }
+    namespace PredefinedTypes {
+        extern const ResourceType kRES; // 'RES' - or default type
     }
+
+    /**
+    */
+    class Name {
+    public:
+        Name (const String& name, ResourceType type = PredefinedTypes::kRES);
+#if qPlatform_Windows
+        Name (const int intResName, ResourceType type = PredefinedTypes::kRES);
+#endif
+
+    public:
+        /**
+         *  Just for viewing purposes, and will not necessarily be usable for low level resource calls.
+         */
+        nonvirtual String GetPrintName () const;
+
+    public:
+        /**
+         *  NOTE - be careful with this - as its not threadsafe, and the lifetime of the SDKString exists
+         *  only until the next non-const call to (including destruction) of this Name object.
+         */
+        const SDKChar* GetSDKString () const;
+
+    public:
+        nonvirtual ResourceType GetType () const;
+
+    private:
+        SDKString fName_;
+#if qPlatform_Windows
+        optional<int> fIntName_;
+#endif
+        ResourceType fType_;
+    };
 }
 
 /*

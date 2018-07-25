@@ -7,24 +7,20 @@
 #define _Stroika_Foundation_Debug_Valgrind_inl_ 1
 
 #if defined(__cplusplus)
-namespace Stroika {
-    namespace Foundation {
-        namespace Debug {
+namespace Stroika::Foundation::Debug {
 
-            /*
-             ********************************************************************************
-             ***************************** IsRunningUnderValgrind ***************************
-             ********************************************************************************
-             */
-            inline bool IsRunningUnderValgrind ()
-            {
+    /*
+     ********************************************************************************
+     ***************************** IsRunningUnderValgrind ***************************
+     ********************************************************************************
+     */
+    inline bool IsRunningUnderValgrind ()
+    {
 #if qStroika_FeatureSupported_Valgrind
-                return RUNNING_ON_VALGRIND;
+        return RUNNING_ON_VALGRIND;
 #else
-                return false;
+        return false;
 #endif
-            }
-        }
     }
 }
 #endif

@@ -10,10 +10,6 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-        }
-    }
+namespace Stroika::Foundation::Execution {
 }
 #endif /*_Stroika_Foundation_Execution_AbortableMutex_inl_*/

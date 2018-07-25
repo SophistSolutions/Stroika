@@ -7,11 +7,7 @@
 #define _Stroika_Foundation_Debug_Sanitizer_inl_ 1
 
 #if defined(__cplusplus)
-namespace Stroika {
-    namespace Foundation {
-        namespace Debug {
-        }
-    }
+namespace Stroika::Foundation::Debug {
 }
 #endif
 

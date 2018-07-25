@@ -8,19 +8,16 @@
 
 #include "SilentException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            /**
-             *  mostly treat the same as SilentException
-             */
-            class UserCanceledException : public SilentException {
-            public:
-                static const UserCanceledException kThe;
-            };
-        }
-    }
+    /**
+     *  mostly treat the same as SilentException
+     */
+    class UserCanceledException : public SilentException {
+    public:
+        static const UserCanceledException kThe;
+    };
+
 }
 
 #endif /*_Stroia_Foundation_Execution_UserCanceledException_h_*/

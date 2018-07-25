@@ -10,23 +10,19 @@
 
 #include "../StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            using Characters::String;
+    using Characters::String;
 
-            class ResourceNotFoundException : public StringException {
-            public:
-                ResourceNotFoundException ();
+    class ResourceNotFoundException : public StringException {
+    public:
+        ResourceNotFoundException ();
 
-            public:
-                /**
-                 */
-                static const ResourceNotFoundException kThe;
-            };
-        }
-    }
+    public:
+        /**
+         */
+        static const ResourceNotFoundException kThe;
+    };
 }
 
 #endif /*_Stroika_Foundation_Execution_Resources_ResourceNotFoundException_h_*/

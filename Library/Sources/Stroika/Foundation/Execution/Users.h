@@ -11,20 +11,17 @@
 
 #include "Exceptions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            enum class UserNameFormat : uint8_t {
-                ePrettyName,
+    enum class UserNameFormat : uint8_t {
+        ePrettyName,
 
-                eDEFAULT = ePrettyName,
+        eDEFAULT = ePrettyName,
 
-                Stroika_Define_Enum_Bounds (ePrettyName, ePrettyName)
-            };
-            Characters::String GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT);
-        }
-    }
+        Stroika_Define_Enum_Bounds (ePrettyName, ePrettyName)
+    };
+    Characters::String GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT);
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Users_h_*/

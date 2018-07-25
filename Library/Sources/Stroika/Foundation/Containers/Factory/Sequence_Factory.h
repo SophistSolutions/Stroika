@@ -19,7 +19,6 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T>
     class Sequence;
 }
@@ -58,6 +57,7 @@ namespace Stroika::Foundation::Containers::Factory {
     private:
         static Sequence<T> Default_ ();
     };
+
 }
 
 /*

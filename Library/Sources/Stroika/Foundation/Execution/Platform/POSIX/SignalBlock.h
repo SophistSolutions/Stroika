@@ -20,36 +20,28 @@
  * TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Platform {
-                namespace POSIX {
+namespace Stroika::Foundation::Execution::Platform::POSIX {
 
-                    /**
-                     *  For the lifetime of this object - save the initial signal block state for thread signals,
-                     *  and then block the given signal (or all for no arg CTOR). Restore on destructor.
-                     *
-                     *  This is similar to sigblock/sigprocmask to resture (in DTOR), but only applying to the current thread,
-                     *  and it takes a signal as argument, not a set/mask.
-                     */
-                    class ScopedBlockCurrentThreadSignal {
-                    public:
-                        ScopedBlockCurrentThreadSignal ();
-                        ScopedBlockCurrentThreadSignal (SignalID signal);
-                        ScopedBlockCurrentThreadSignal (const ScopedBlockCurrentThreadSignal&) = delete;
-                        ~ScopedBlockCurrentThreadSignal ();
+    /**
+     *  For the lifetime of this object - save the initial signal block state for thread signals,
+     *  and then block the given signal (or all for no arg CTOR). Restore on destructor.
+     *
+     *  This is similar to sigblock/sigprocmask to resture (in DTOR), but only applying to the current thread,
+     *  and it takes a signal as argument, not a set/mask.
+     */
+    class ScopedBlockCurrentThreadSignal {
+    public:
+        ScopedBlockCurrentThreadSignal ();
+        ScopedBlockCurrentThreadSignal (SignalID signal);
+        ScopedBlockCurrentThreadSignal (const ScopedBlockCurrentThreadSignal&) = delete;
+        ~ScopedBlockCurrentThreadSignal ();
 
-                    public:
-                        nonvirtual ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
+    public:
+        nonvirtual ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
 
-                    private:
-                        sigset_t fRestoreMask_;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        sigset_t fRestoreMask_;
+    };
 }
 
 /*

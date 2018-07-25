@@ -10,25 +10,21 @@
 
 #include "StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            using Characters::String;
+    using Characters::String;
 
-            class OperationNotSupportedException : public StringException {
-            public:
-                OperationNotSupportedException ();
-                OperationNotSupportedException (const String& operationName);
+    class OperationNotSupportedException : public StringException {
+    public:
+        OperationNotSupportedException ();
+        OperationNotSupportedException (const String& operationName);
 
-            public:
-                nonvirtual Characters::String GetOperationName () const;
+    public:
+        nonvirtual Characters::String GetOperationName () const;
 
-            private:
-                String fOperationName_;
-            };
-        }
-    }
+    private:
+        String fOperationName_;
+    };
 }
 
 #endif /*_Stroika_Foundation_Execution_OperationNotSupportedException_h_*/

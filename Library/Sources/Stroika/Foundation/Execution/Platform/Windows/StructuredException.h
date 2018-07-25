@@ -17,46 +17,40 @@
 #include "../../Exceptions.h"
 #include "../../StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            using Characters::SDKString;
+    using Characters::SDKString;
+}
 
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation::Execution::Platform::Windows {
 
-                    class StructuredException : public StringException {
-                    private:
-                        using inherited = StringException;
+    class StructuredException : public StringException {
+    private:
+        using inherited = StringException;
 
-                    private:
-                        unsigned int fSECode;
+    private:
+        unsigned int fSECode;
 
-                    public:
-                        explicit StructuredException (unsigned int n);
-                        operator unsigned int () const;
+    public:
+        explicit StructuredException (unsigned int n);
+        operator unsigned int () const;
 
-                    public:
-                        static SDKString LookupMessage (unsigned int n);
-                        nonvirtual SDKString LookupMessage () const;
+    public:
+        static SDKString LookupMessage (unsigned int n);
+        nonvirtual SDKString LookupMessage () const;
 
-                    public:
-                        /**
-                         *  Windows generally defaults to having 'structured exceptions' cause the application to crash.
-                         *  This allows translating those exceptions into C++ exceptions (whe
-                         *
-                         *  @see https://msdn.microsoft.com/en-us/library/5z4bw5h5.aspx
-                         */
-                        static void RegisterHandler ();
+    public:
+        /**
+         *  Windows generally defaults to having 'structured exceptions' cause the application to crash.
+         *  This allows translating those exceptions into C++ exceptions (whe
+         *
+         *  @see https://msdn.microsoft.com/en-us/library/5z4bw5h5.aspx
+         */
+        static void RegisterHandler ();
 
-                    private:
-                        static void trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);
-                    };
-                }
-            }
-        }
-    }
+    private:
+        static void trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);
+    };
 }
 
 /*

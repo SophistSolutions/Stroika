@@ -10,21 +10,16 @@
 
 #include "StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            using Characters::String;
+    using Characters::String;
 
-            class FeatureNotSupportedInThisVersionException : public StringException {
-            public:
-                FeatureNotSupportedInThisVersionException (const wstring& feature);
+    class FeatureNotSupportedInThisVersionException : public StringException {
+    public:
+        FeatureNotSupportedInThisVersionException (const wstring& feature);
 
-            public:
-                wstring fFeature;
-            };
-        }
-    }
+    public:
+        wstring fFeature;
+    };
 }
-
 #endif /*_Stroika_Foundation_Execution_FeatureNotSupportedInThisVersionException_h_*/

@@ -9,13 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Resources {
-            }
-        }
-    }
+namespace Stroika::Foundation::Execution::Resources::Concrete {
 }
 
 #endif /*_Stroika_Foundation_Execution_Resources_Concrete_ElfResourceManager_inl_*/

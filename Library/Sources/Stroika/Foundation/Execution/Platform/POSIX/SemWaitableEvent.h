@@ -17,48 +17,40 @@
  * TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Platform {
-                namespace POSIX {
+namespace Stroika::Foundation::Execution::Platform::POSIX {
 
-                    /**
-                     *  Very simplistic wrapper on sem_init/sem_wait/sem_post POSIX semaphore APIs.
-                     *
-                     *  Useful because they work from signal handlers, when most other APIs don't.
-                     */
-                    class SemWaitableEvent {
-                    public:
-                        SemWaitableEvent ();
-                        SemWaitableEvent (const SemWaitableEvent&) = delete;
+    /**
+     *  Very simplistic wrapper on sem_init/sem_wait/sem_post POSIX semaphore APIs.
+     *
+     *  Useful because they work from signal handlers, when most other APIs don't.
+     */
+    class SemWaitableEvent {
+    public:
+        SemWaitableEvent ();
+        SemWaitableEvent (const SemWaitableEvent&) = delete;
 
-                    public:
-                        ~SemWaitableEvent ();
+    public:
+        ~SemWaitableEvent ();
 
-                    public:
-                        /**
-                         *  @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/sem_wait.html
-                         */
-                        nonvirtual void Wait ();
+    public:
+        /**
+         *  @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/sem_wait.html
+         */
+        nonvirtual void Wait ();
 
-                    public:
-                        /**
-                         *  @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/sem_post.html
-                         */
-                        nonvirtual void Set ();
+    public:
+        /**
+         *  @see http://pubs.opengroup.org/onlinepubs/7908799/xsh/sem_post.html
+         */
+        nonvirtual void Set ();
 
-                    private:
+    private:
 #if qCompilerAndStdLib_unnamed_semaphores_Buggy
-                        sem_t* fSem_;
+        sem_t* fSem_;
 #else
-                        sem_t fSem_;
+        sem_t fSem_;
 #endif
-                    };
-                }
-            }
-        }
-    }
+    };
 }
 
 /*

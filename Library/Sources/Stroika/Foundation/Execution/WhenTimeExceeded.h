@@ -12,29 +12,26 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            /**
-             *  \note callIfTakesLongerThan is compared <=, so you can pass in zero to always trigger.
-             *
-             *  \par Example Usage
-             *      \code
-             *      WhenTimeExceeded    whenTimeExceeded (1.0, [] (DurationSecondsType timeTaken) { Logger::Get ().Log (Logger::eWarning, "Took along time  to do 'x'"); });
-             *      \endcode
-             */
-            struct WhenTimeExceeded {
-                WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType)>& f);
-                ~WhenTimeExceeded ();
+    /**
+     *  \note callIfTakesLongerThan is compared <=, so you can pass in zero to always trigger.
+     *
+     *  \par Example Usage
+     *      \code
+     *      WhenTimeExceeded    whenTimeExceeded (1.0, [] (DurationSecondsType timeTaken) { Logger::Get ().Log (Logger::eWarning, "Took along time  to do 'x'"); });
+     *      \endcode
+     */
+    struct WhenTimeExceeded {
+        WhenTimeExceeded (Time::DurationSecondsType callIfTakesLongerThan, const function<void(Time::DurationSecondsType)>& f);
+        ~WhenTimeExceeded ();
 
-            private:
-                Time::DurationSecondsType                 fStartedAt_;
-                Time::DurationSecondsType                 fCallIfTakesLongerThan_;
-                function<void(Time::DurationSecondsType)> fRunIfTakesTooLong;
-            };
-        }
-    }
+    private:
+        Time::DurationSecondsType                 fStartedAt_;
+        Time::DurationSecondsType                 fCallIfTakesLongerThan_;
+        function<void(Time::DurationSecondsType)> fRunIfTakesTooLong;
+    };
+
 }
 
 /*

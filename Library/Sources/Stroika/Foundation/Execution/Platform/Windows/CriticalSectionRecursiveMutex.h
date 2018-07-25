@@ -20,37 +20,29 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation::Execution::Platform::Windows {
 
-                    /**
-                     *  (reason is to test if perofrmance better than msvc mutex)
-                     */
-                    class CriticalSectionRecursiveMutex {
-                    public:
-                        CriticalSectionRecursiveMutex ();
-                        CriticalSectionRecursiveMutex (const CriticalSectionRecursiveMutex&) = delete;
+    /**
+     *  (reason is to test if perofrmance better than msvc mutex)
+     */
+    class CriticalSectionRecursiveMutex {
+    public:
+        CriticalSectionRecursiveMutex ();
+        CriticalSectionRecursiveMutex (const CriticalSectionRecursiveMutex&) = delete;
 
-                    public:
-                        ~CriticalSectionRecursiveMutex ();
+    public:
+        ~CriticalSectionRecursiveMutex ();
 
-                    public:
-                        CriticalSectionRecursiveMutex& operator= (const CriticalSectionRecursiveMutex&) = delete;
+    public:
+        CriticalSectionRecursiveMutex& operator= (const CriticalSectionRecursiveMutex&) = delete;
 
-                    public:
-                        nonvirtual void lock ();
-                        nonvirtual void unlock ();
+    public:
+        nonvirtual void lock ();
+        nonvirtual void unlock ();
 
-                    private:
-                        CRITICAL_SECTION fCritSec_;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        CRITICAL_SECTION fCritSec_;
+    };
 }
 
 /*

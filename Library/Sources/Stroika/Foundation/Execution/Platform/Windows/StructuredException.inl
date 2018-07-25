@@ -9,28 +9,20 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation::Execution::Platform::Windows {
 
-                    /*
-                     ********************************************************************************
-                     **************** Platform::Windows::StructuredException ************************
-                     ********************************************************************************
-                     */
-                    inline StructuredException::operator unsigned int () const
-                    {
-                        return fSECode;
-                    }
-                    inline SDKString StructuredException::LookupMessage () const
-                    {
-                        return LookupMessage (fSECode);
-                    }
-                }
-            }
-        }
+    /*
+     ********************************************************************************
+     **************** Platform::Windows::StructuredException ************************
+     ********************************************************************************
+     */
+    inline StructuredException::operator unsigned int () const
+    {
+        return fSECode;
+    }
+    inline SDKString StructuredException::LookupMessage () const
+    {
+        return LookupMessage (fSECode);
     }
 }
 

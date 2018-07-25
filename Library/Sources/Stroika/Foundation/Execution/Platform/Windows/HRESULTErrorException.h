@@ -17,38 +17,29 @@
 #include "../../Exceptions.h"
 #include "../../StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            using Characters::SDKString;
+    using Characters::SDKString;
+}
 
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation::Execution::Platform::Windows {
 
-                    class HRESULTErrorException : public StringException {
-                    private:
-                        using inherited = StringException;
+    class HRESULTErrorException : public StringException {
+    private:
+        using inherited = StringException;
 
-                    public:
-                        HRESULTErrorException (HRESULT hresult);
+    public:
+        HRESULTErrorException (HRESULT hresult);
 
-                        operator HRESULT () const;
+        operator HRESULT () const;
 
-                    public:
-                        static SDKString LookupMessage (HRESULT hr);
-                        nonvirtual SDKString LookupMessage () const;
+    public:
+        static SDKString LookupMessage (HRESULT hr);
+        nonvirtual SDKString LookupMessage () const;
 
-                    private:
-                        HRESULT fHResult;
-                    };
-
-                    void ThrowIfErrorHRESULT (HRESULT hr);
-                }
-            }
-
-            template <>
-            void ThrowIfNull (const void* p, const HRESULT& hr);
+    private:
+        HRESULT fHResult;
+    };
 
 #define CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION()                                     \
     catch (HRESULT hr)                                                                        \
@@ -71,8 +62,15 @@ namespace Stroika {
     {                                                                                         \
         return DISP_E_EXCEPTION;                                                              \
     }
-        }
-    }
+}
+
+namespace Stroika::Foundation::Execution {
+
+    void ThrowIfErrorHRESULT (HRESULT hr);
+
+    template <>
+    void ThrowIfNull (const void* p, const HRESULT& hr);
+
 }
 
 /*

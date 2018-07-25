@@ -17,25 +17,17 @@
 
 #include "../../Exceptions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Platform {
-                namespace POSIX {
+namespace Stroika::Foundation::Execution::Platform::POSIX {
 
-                    using Characters::String;
+    using Characters::String;
 
-                    uid_t  UserName2UID (const String& name);
-                    String uid_t2UserName (uid_t uid);
+    uid_t  UserName2UID (const String& name);
+    String uid_t2UserName (uid_t uid);
 
-                    // This returns the uid of the actual original user - not the effectvie permissions
-                    uid_t GetUID ();
+    // This returns the uid of the actual original user - not the effectvie permissions
+    uid_t GetUID ();
 
-                    uid_t GetEffectiveUID ();
-                }
-            }
-        }
-    }
+    uid_t GetEffectiveUID ();
 }
 
 #endif /*_Stroika_Foundation_Execution_Platform_POSIX_Users_h_*/

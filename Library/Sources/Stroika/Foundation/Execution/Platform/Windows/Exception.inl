@@ -11,62 +11,56 @@
  */
 #include "../../Exceptions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation::Execution::Platform::Windows {
 
-                    //  class   Exception
-                    inline Exception::operator DWORD () const
-                    {
-                        return fError;
-                    }
-                    inline SDKString Exception::LookupMessage () const
-                    {
-                        return LookupMessage (fError);
-                    }
+    //  class   Exception
+    inline Exception::operator DWORD () const
+    {
+        return fError;
+    }
+    inline SDKString Exception::LookupMessage () const
+    {
+        return LookupMessage (fError);
+    }
 
-                    inline void ThrowIfFalseGetLastError (bool test)
-                    {
-                        if (not test) {
-                            Exception::Throw (::GetLastError ());
-                        }
-                    }
-                    inline void ThrowIfFalseGetLastError (BOOL test)
-                    {
-                        if (not test) {
-                            Exception::Throw (::GetLastError ());
-                        }
-                    }
-                    inline void ThrowIfZeroGetLastError (int test)
-                    {
-                        if (test == 0) {
-                            Exception::Throw (::GetLastError ());
-                        }
-                    }
-                    inline void ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
-                    {
-                        if (win32ErrCode != ERROR_SUCCESS) {
-                            Exception::Throw (win32ErrCode);
-                        }
-                    }
-                    inline void ThrowIfNot_NO_ERROR (DWORD win32ErrCode)
-                    {
-                        if (win32ErrCode != NO_ERROR) {
-                            Exception::Throw (win32ErrCode);
-                        }
-                    }
-                }
-            }
-
-            template <>
-            [[noreturn]] inline void Throw (const Platform::Windows::Exception& e2Throw)
-            {
-                // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
-                Platform::Windows::Exception::Throw (e2Throw);
-            }
+    inline void ThrowIfFalseGetLastError (bool test)
+    {
+        if (not test) {
+            Exception::Throw (::GetLastError ());
         }
+    }
+    inline void ThrowIfFalseGetLastError (BOOL test)
+    {
+        if (not test) {
+            Exception::Throw (::GetLastError ());
+        }
+    }
+    inline void ThrowIfZeroGetLastError (int test)
+    {
+        if (test == 0) {
+            Exception::Throw (::GetLastError ());
+        }
+    }
+    inline void ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
+    {
+        if (win32ErrCode != ERROR_SUCCESS) {
+            Exception::Throw (win32ErrCode);
+        }
+    }
+    inline void ThrowIfNot_NO_ERROR (DWORD win32ErrCode)
+    {
+        if (win32ErrCode != NO_ERROR) {
+            Exception::Throw (win32ErrCode);
+        }
+    }
+}
+
+namespace Stroika::Foundation::Execution {
+    template <>
+    [[noreturn]] inline void Throw (const Platform::Windows::Exception& e2Throw)
+    {
+        // Go directly through class Throw() since that may remap to different kinds of exceptions, and already has trace messages
+        Platform::Windows::Exception::Throw (e2Throw);
     }
 }
 

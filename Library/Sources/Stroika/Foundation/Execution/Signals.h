@@ -23,38 +23,34 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
 #if !qCompilerAndStdLib_Supports_errno_t
-            using errno_t = int;
+    using errno_t = int;
 #endif
 
-            /**
-             */
-            using SignalID = int;
+    /**
+     */
+    using SignalID = int;
 
-            /**
-             */
-            Characters::String SignalToName (SignalID signal);
+    /**
+     */
+    Characters::String SignalToName (SignalID signal);
 
-            /**
-             * Send the given signal to a specific thread (within this process)
-             *
-             *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
-             *
-             *  This function returns an errno error number.
-             *      o   if the error number is ESRCH, this just menans the target thread doesn't
-             *          exist anymore, whcih can easily happen (race) - like if you are sending an abort
-             *          to a thread but it exits first.
-             *
-             *      o   other error numbres - for now - generate an assertion error. The function returns
-             *          zero if no error
-             */
-            errno_t SendSignal (thread::native_handle_type target, SignalID signal);
-        }
-    }
+    /**
+     * Send the given signal to a specific thread (within this process)
+     *
+     *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
+     *
+     *  This function returns an errno error number.
+     *      o   if the error number is ESRCH, this just menans the target thread doesn't
+     *          exist anymore, whcih can easily happen (race) - like if you are sending an abort
+     *          to a thread but it exits first.
+     *
+     *      o   other error numbres - for now - generate an assertion error. The function returns
+     *          zero if no error
+     */
+    errno_t SendSignal (thread::native_handle_type target, SignalID signal);
 }
 
 /*

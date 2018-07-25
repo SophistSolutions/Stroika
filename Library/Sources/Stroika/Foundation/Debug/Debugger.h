@@ -8,12 +8,8 @@
 
 #include "../Configuration/Common.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Debug {
+namespace Stroika::Foundation::Debug {
 
-            void DropIntoDebuggerIfPresent ();
-        }
-    }
+    void DropIntoDebuggerIfPresent ();
 }
 #endif /*_Stroika_Foundation_Debug_Debugger_h_*/

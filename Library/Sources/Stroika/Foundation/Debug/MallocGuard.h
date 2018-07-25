@@ -48,51 +48,47 @@
  *              this (its mostly for situations - such as the one I face at block - where valgrind is coming up lemons.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Debug {
+namespace Stroika::Foundation::Debug {
 
-/**
-             *  If qStroika_Foundation_Debug_MallocGuard defined to 1, wrap malloc(), free () etc, to do extra checking for corruption, double free
-             *  write off the ends, etc.
-             *
-             *  This works in DEBUG or RELEASE builds.
-             *
-             *  This - so far - only works for GCC.
-             *
-             *  This may not work perfectly if you call some wierd malloc variants, or mix __libc_malloc with free (), etc.
-             *
-             *  \note   You can enable this feature with
-             *          ./configure ... --malloc-guard true
-             *
-             *  \note   If you can use ./configure --sanitize=address, that probably works better. Or - possibly - using valgrind.
-             *
-             *  \note   On detected errors, this will call std::terminate ();
-             *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
-             *          and typically a core file - when errors are detected. Though maybe not, since that stuff all allocates memory, and clearly thats
-             *          not working well when we fail...
-             */
+    /**
+     *  If qStroika_Foundation_Debug_MallocGuard defined to 1, wrap malloc(), free () etc, to do extra checking for corruption, double free
+     *  write off the ends, etc.
+     *
+     *  This works in DEBUG or RELEASE builds.
+     *
+     *  This - so far - only works for GCC.
+     *
+     *  This may not work perfectly if you call some wierd malloc variants, or mix __libc_malloc with free (), etc.
+     *
+     *  \note   You can enable this feature with
+     *          ./configure ... --malloc-guard true
+     *
+     *  \note   If you can use ./configure --sanitize=address, that probably works better. Or - possibly - using valgrind.
+     *
+     *  \note   On detected errors, this will call std::terminate ();
+     *          In Debug or Release versions (if you call Debug::RegisterDefaultFatalErrorHandlers ()) - you will get a stack trace dumped
+     *          and typically a core file - when errors are detected. Though maybe not, since that stuff all allocates memory, and clearly thats
+     *          not working well when we fail...
+     */
 #if !defined(qStroika_Foundation_Debug_MallocGuard)
 #define qStroika_Foundation_Debug_MallocGuard 0
 #endif
 
-/**
-             *      qStroika_Foundation_Debug_MallocGuard_GuardSize can be 0, or any integer number greater;
-             *
-             *  \req qStroika_Foundation_Debug_MallocGuard
-             */
+    /**
+     *      qStroika_Foundation_Debug_MallocGuard_GuardSize can be 0, or any integer number greater;
+     *
+     *  \req qStroika_Foundation_Debug_MallocGuard
+     */
 #if !defined(qStroika_Foundation_Debug_MallocGuard_GuardSize)
 #define qStroika_Foundation_Debug_MallocGuard_GuardSize 16
 #endif
-        }
-    }
 }
 
 /*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
+********************************************************************************
+***************************** Implementation Details ***************************
+********************************************************************************
+*/
 #include "MallocGuard.inl"
 
 #endif /*_Stroika_Foundation_Debug_MallocGuard_h_*/

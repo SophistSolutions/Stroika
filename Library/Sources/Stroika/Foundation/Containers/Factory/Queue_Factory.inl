@@ -16,10 +16,10 @@
 namespace Stroika::Foundation::Containers::Factory {
 
     /*
-        ********************************************************************************
-        ******************************* Queue_Factory<T> *******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************* Queue_Factory<T> *******************************
+     ********************************************************************************
+     */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     template <typename T>
     atomic<Queue<T> (*) ()> Queue_Factory<T>::sFactory_ (nullptr);
@@ -42,7 +42,7 @@ namespace Stroika::Foundation::Containers::Factory {
         }
     }
     template <typename T>
-    void Queue_Factory<T>::Register (Queue<T> (*factory) ())
+    inline void Queue_Factory<T>::Register (Queue<T> (*factory) ())
     {
         sFactory_ = factory;
     }

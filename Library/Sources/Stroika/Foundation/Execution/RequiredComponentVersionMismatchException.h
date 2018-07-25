@@ -10,17 +10,13 @@
 
 #include "StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            using Characters::String;
+    using Characters::String;
 
-            class RequiredComponentVersionMismatchException : public StringException {
-            public:
-                RequiredComponentVersionMismatchException (const wstring& component, const wstring& requiredVersion = wstring ());
-            };
-        }
-    }
+    class RequiredComponentVersionMismatchException : public StringException {
+    public:
+        RequiredComponentVersionMismatchException (const wstring& component, const wstring& requiredVersion = wstring ());
+    };
 }
 #endif /*_Stroika_Foundation_Execution_RequiredComponentVersionMismatchException_h_*/

@@ -19,10 +19,10 @@
  */
 
 namespace Stroika::Foundation::Containers {
-
     template <typename T>
     class Queue;
 }
+
 namespace Stroika::Foundation::Containers::Factory {
 
     /**

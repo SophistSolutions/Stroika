@@ -11,24 +11,21 @@
  */
 #include "ThreadPool.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            /*
-             ********************************************************************************
-             *********************************** ThreadPool *********************************
-             ********************************************************************************
-             */
-            inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeout) const
-            {
-                WaitForTasksDoneUntil (tasks, Time::GetTickCount () + timeout);
-            }
-            inline void ThreadPool::WaitForTasksDone (Time::DurationSecondsType timeout) const
-            {
-                WaitForTasksDoneUntil (Time::GetTickCount () + timeout);
-            }
-        }
+    /*
+     ********************************************************************************
+     *********************************** ThreadPool *********************************
+     ********************************************************************************
+     */
+    inline void ThreadPool::WaitForTasksDone (const Traversal::Iterable<TaskType>& tasks, Time::DurationSecondsType timeout) const
+    {
+        WaitForTasksDoneUntil (tasks, Time::GetTickCount () + timeout);
     }
+    inline void ThreadPool::WaitForTasksDone (Time::DurationSecondsType timeout) const
+    {
+        WaitForTasksDoneUntil (Time::GetTickCount () + timeout);
+    }
+
 }
 #endif /*_Stroika_Foundation_Execution_ThreadPool_inl_*/

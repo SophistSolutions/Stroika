@@ -10,10 +10,6 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-        }
-    }
+namespace Stroika::Foundation::Execution::Platform::POSIX {
 }
 #endif /*_Stroika_Foundation_Execution_Platform_POSIX_SignalBlock_inl_*/

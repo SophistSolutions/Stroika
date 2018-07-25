@@ -9,19 +9,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation::Execution::Platform::Windows {
 
-                    inline DWORD Duration2Milliseconds (Time::DurationSecondsType nSeconds)
-                    {
-                        return (nSeconds > numeric_limits<DWORD>::max () / 2) ? INFINITE : static_cast<DWORD> (nSeconds * 1000);
-                    }
-                }
-            }
-        }
+    inline DWORD Duration2Milliseconds (Time::DurationSecondsType nSeconds)
+    {
+        return (nSeconds > numeric_limits<DWORD>::max () / 2) ? INFINITE : static_cast<DWORD> (nSeconds * 1000);
     }
 }
 

@@ -253,15 +253,11 @@ const Thread::AbortException Thread::AbortException::kThe;
  **************************** Characters::ToString ******************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-            template <>
-            String ToString (const thread::id& t)
-            {
-                return String::FromASCII (Execution::FormatThreadID_A (t));
-            }
-        }
+namespace Stroika::Foundation::Characters {
+    template <>
+    String ToString (const thread::id& t)
+    {
+        return String::FromASCII (Execution::FormatThreadID_A (t));
     }
 }
 

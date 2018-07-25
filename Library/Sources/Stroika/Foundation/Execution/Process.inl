@@ -9,21 +9,17 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            inline pid_t GetCurrentProcessID ()
-            {
+    inline pid_t GetCurrentProcessID ()
+    {
 #if qPlatform_Windows
-                return GetCurrentProcessId ();
+        return GetCurrentProcessId ();
 #elif qPlatform_POSIX
-                return getpid ();
+        return getpid ();
 #else
-                AssertNotImplemented ();
+        AssertNotImplemented ();
 #endif
-            }
-        }
     }
 }
 #endif /*_Stroika_Foundation_Execution_Process_inl_*/

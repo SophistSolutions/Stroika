@@ -10,29 +10,24 @@
 
 #include "StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
+    using Characters::String;
 
-            using Characters::String;
+    class RequiredComponentMissingException : public StringException {
+    public:
+        static constexpr wchar_t kJava[]                   = L"Java";
+        static constexpr wchar_t kPDFViewer[]              = L"PDFViewer";
+        static constexpr wchar_t kPDFOCXViewer[]           = L"PDFOCXViewer";
+        static constexpr wchar_t kSAXFactory[]             = L"SAXFactory";
+        static constexpr wchar_t kIONetworkClientFactory[] = L"kIONetworkClientFactory";
+        static constexpr wchar_t kOpenSSL[]                = L"OpenSSL";
 
-            class RequiredComponentMissingException : public StringException {
-            public:
-                static constexpr wchar_t kJava[]                   = L"Java";
-                static constexpr wchar_t kPDFViewer[]              = L"PDFViewer";
-                static constexpr wchar_t kPDFOCXViewer[]           = L"PDFOCXViewer";
-                static constexpr wchar_t kSAXFactory[]             = L"SAXFactory";
-                static constexpr wchar_t kIONetworkClientFactory[] = L"kIONetworkClientFactory";
-                static constexpr wchar_t kOpenSSL[]                = L"OpenSSL";
+    public:
+        RequiredComponentMissingException (const wstring& component);
 
-            public:
-                RequiredComponentMissingException (const wstring& component);
-
-            public:
-                wstring fComponent;
-            };
-        }
-    }
+    public:
+        wstring fComponent;
+    };
 }
 
 #endif /*_Stroika_Foundation_Execution_RequiredComponentMissingException_h_*/

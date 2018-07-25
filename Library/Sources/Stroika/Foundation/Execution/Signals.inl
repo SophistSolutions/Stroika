@@ -11,10 +11,6 @@
  */
 #include "../Debug/Assertions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-        }
-    }
+namespace Stroika::Foundation::Execution {
 }
 #endif /*_Stroika_Foundation_Execution_Signals_inl_*/

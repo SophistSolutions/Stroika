@@ -17,26 +17,18 @@
 
 #include "../Manager.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            namespace Resources {
-                namespace Concrete {
+namespace Stroika::Foundation::Execution::Resources::Concrete {
 
-                    /**
-                     * Provide ResourceManager access to a Windows resource section of a Windows executable.
-                     */
-                    class WindowsResourceManager : public Manager {
-                    public:
-                        WindowsResourceManager (HMODULE hModule);
+    /**
+     * Provide ResourceManager access to a Windows resource section of a Windows executable.
+     */
+    class WindowsResourceManager : public Manager {
+    public:
+        WindowsResourceManager (HMODULE hModule);
 
-                    private:
-                        class Rep_;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        class Rep_;
+    };
 }
 
 /*

@@ -9,37 +9,37 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution::Platform::Windows {
 
-            /*
-             ********************************************************************************
-             ************* Platform::Windows::HRESULTErrorException *************************
-             ********************************************************************************
-             */
-            inline Platform::Windows::HRESULTErrorException::operator HRESULT () const
-            {
-                return fHResult;
-            }
-            inline SDKString Platform::Windows::HRESULTErrorException::LookupMessage () const
-            {
-                return LookupMessage (fHResult);
-            }
+    /*
+     ********************************************************************************
+     **************** Platform::Windows::HRESULTErrorException **********************
+     ********************************************************************************
+     */
+    inline HRESULTErrorException::operator HRESULT () const
+    {
+        return fHResult;
+    }
+    inline SDKString HRESULTErrorException::LookupMessage () const
+    {
+        return LookupMessage (fHResult);
+    }
 
-            inline void ThrowIfErrorHRESULT (HRESULT hr)
-            {
-                if (not SUCCEEDED (hr)) {
-                    Throw (Platform::Windows::HRESULTErrorException (hr));
-                }
-            }
+}
 
-            template <>
-            inline void ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
-            {
-                ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
-            }
+namespace Stroika::Foundation::Execution {
+
+    inline void ThrowIfErrorHRESULT (HRESULT hr)
+    {
+        if (not SUCCEEDED (hr)) {
+            Throw (Platform::Windows::HRESULTErrorException (hr));
         }
+    }
+
+    template <>
+    inline void ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
+    {
+        ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
     }
 }
 

@@ -10,31 +10,28 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-            /*
-             ********************************************************************************
-             ******************* VirtualConstant<BASETYPE, VALUE_GETTER> ********************
-             ********************************************************************************
-             */
-            template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-            inline VirtualConstant<BASETYPE, VALUE_GETTER>::operator const BASETYPE () const
-            {
-                return VALUE_GETTER ();
-            }
-            template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-            inline const BASETYPE VirtualConstant<BASETYPE, VALUE_GETTER>::operator() () const
-            {
-                return VALUE_GETTER ();
-            }
-            template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
-            inline const BASETYPE* VirtualConstant<BASETYPE, VALUE_GETTER>::operator-> () const
-            {
-                return &VALUE_GETTER ();
-            }
-        }
+    /*
+     ********************************************************************************
+     ******************* VirtualConstant<BASETYPE, VALUE_GETTER> ********************
+     ********************************************************************************
+     */
+    template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
+    inline VirtualConstant<BASETYPE, VALUE_GETTER>::operator const BASETYPE () const
+    {
+        return VALUE_GETTER ();
     }
+    template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
+    inline const BASETYPE VirtualConstant<BASETYPE, VALUE_GETTER>::operator() () const
+    {
+        return VALUE_GETTER ();
+    }
+    template <typename BASETYPE, const BASETYPE& (*VALUE_GETTER) ()>
+    inline const BASETYPE* VirtualConstant<BASETYPE, VALUE_GETTER>::operator-> () const
+    {
+        return &VALUE_GETTER ();
+    }
+
 }
 #endif /*_Stroika_Foundation_Execution_VirtualConstant_inl_*/
