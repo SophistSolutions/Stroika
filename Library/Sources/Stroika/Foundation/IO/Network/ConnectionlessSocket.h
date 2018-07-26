@@ -26,6 +26,9 @@ namespace Stroika::Foundation::IO::Network {
         class Ptr;
 
     public:
+        /** 
+         * @see ConnectionlessSocket::New ()
+         */
         ConnectionlessSocket ()                              = delete;
         ConnectionlessSocket (ConnectionlessSocket&& s)      = delete;
         ConnectionlessSocket (const ConnectionlessSocket& s) = delete;
