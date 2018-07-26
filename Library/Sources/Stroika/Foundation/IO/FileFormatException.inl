@@ -9,15 +9,12 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
+namespace Stroika::Foundation::IO {
 
-            inline String FileFormatException::GetFileName () const
-            {
-                return fFileName_;
-            }
-        }
+    inline String FileFormatException::GetFileName () const
+    {
+        return fFileName_;
     }
+
 }
 #endif /*_Stroika_Foundation_IO_FileFormatException_inl_*/

@@ -10,46 +10,39 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
+namespace Stroika::Foundation::IO {
 
-            /*
-             ********************************************************************************
-             ***************************** IO::FileAccessMode *******************************
-             ********************************************************************************
-             */
-            inline FileAccessMode operator& (FileAccessMode l, FileAccessMode r)
-            {
-                return FileAccessMode (static_cast<int> (l) & static_cast<int> (r));
-            }
-            inline FileAccessMode operator| (FileAccessMode l, FileAccessMode r)
-            {
-                return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
-            }
-        }
+    /*
+        ********************************************************************************
+        ***************************** IO::FileAccessMode *******************************
+        ********************************************************************************
+        */
+    inline FileAccessMode operator& (FileAccessMode l, FileAccessMode r)
+    {
+        return FileAccessMode (static_cast<int> (l) & static_cast<int> (r));
     }
+    inline FileAccessMode operator| (FileAccessMode l, FileAccessMode r)
+    {
+        return FileAccessMode (static_cast<int> (l) | static_cast<int> (r));
+    }
+
 }
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            template <>
-            struct DefaultNames<IO::FileAccessMode> : EnumNames<IO::FileAccessMode> {
-                static constexpr EnumNames<IO::FileAccessMode> k{
-                    EnumNames<IO::FileAccessMode>::BasicArrayInitializer{
-                        {
-                            {IO::FileAccessMode::eNoAccess, L"No-Access"},
-                            {IO::FileAccessMode::eRead, L"Read"},
-                            {IO::FileAccessMode::eWrite, L"Write"},
-                            {IO::FileAccessMode::eReadWrite, L"Read-Write"},
-                        }}};
-                DefaultNames ()
-                    : EnumNames<IO::FileAccessMode> (k)
+namespace Stroika::Foundation::Configuration {
+    template <>
+    struct DefaultNames<IO::FileAccessMode> : EnumNames<IO::FileAccessMode> {
+        static constexpr EnumNames<IO::FileAccessMode> k{
+            EnumNames<IO::FileAccessMode>::BasicArrayInitializer{
                 {
-                }
-            };
+                    {IO::FileAccessMode::eNoAccess, L"No-Access"},
+                    {IO::FileAccessMode::eRead, L"Read"},
+                    {IO::FileAccessMode::eWrite, L"Write"},
+                    {IO::FileAccessMode::eReadWrite, L"Read-Write"},
+                }}};
+        DefaultNames ()
+            : EnumNames<IO::FileAccessMode> (k)
+        {
         }
-    }
+    };
 }
 #endif /*_Stroika_Foundation_IO_FileAccessMode_inl_*/

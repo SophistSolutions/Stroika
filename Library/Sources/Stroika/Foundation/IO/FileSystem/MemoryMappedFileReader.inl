@@ -9,30 +9,25 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation::IO::FileSystem {
 
-                /*
-                 ********************************************************************************
-                 ******************* FileSystem::MemoryMappedFileReader *************************
-                 ********************************************************************************
-                 */
-                inline const Byte* MemoryMappedFileReader::begin () const
-                {
-                    return fFileDataStart_;
-                }
-                inline const Byte* MemoryMappedFileReader::end () const
-                {
-                    return fFileDataEnd_;
-                }
-                inline size_t MemoryMappedFileReader::size () const
-                {
-                    return fFileDataEnd_ - fFileDataStart_;
-                }
-            }
-        }
+    /*
+     ********************************************************************************
+     ******************* FileSystem::MemoryMappedFileReader *************************
+     ********************************************************************************
+     */
+    inline const Byte* MemoryMappedFileReader::begin () const
+    {
+        return fFileDataStart_;
     }
+    inline const Byte* MemoryMappedFileReader::end () const
+    {
+        return fFileDataEnd_;
+    }
+    inline size_t MemoryMappedFileReader::size () const
+    {
+        return fFileDataEnd_ - fFileDataStart_;
+    }
+
 }
 #endif /*_Stroika_Foundation_IO_FileSystem_MemoryMappedFileReader_inl_*/

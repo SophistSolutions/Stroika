@@ -9,28 +9,21 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace HTTP {
+namespace Stroika::Foundation::IO::Network::HTTP {
 
-                    /*
-                     ********************************************************************************
-                     ************************************ HTTP::Exception ***************************
-                     ********************************************************************************
-                     */
-                    inline Status Exception::GetStatus () const
-                    {
-                        return fStatus_;
-                    }
-                    inline bool Exception::IsHTTPStatusOK (Status status)
-                    {
-                        return 200 <= status and status <= 299;
-                    }
-                }
-            }
-        }
+    /*
+     ********************************************************************************
+     ************************************ HTTP::Exception ***************************
+     ********************************************************************************
+     */
+    inline Status Exception::GetStatus () const
+    {
+        return fStatus_;
     }
+    inline bool Exception::IsHTTPStatusOK (Status status)
+    {
+        return 200 <= status and status <= 299;
+    }
+
 }
 #endif /*_Stroika_Foundation_IO_Network_HTTP_Exception_inl_*/

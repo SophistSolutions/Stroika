@@ -9,15 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Configuration/Endian.h"
-#include "../../Memory/Bits.h"
-
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-            }
-        }
-    }
+namespace Stroika::Foundation::IO::Network {
 }
 #endif /*_Stroika_Foundation_IO_Network_InternetAddressRange_inl_*/

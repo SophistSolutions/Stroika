@@ -32,131 +32,125 @@
  *      @todo   Fix use of assert - SB exceptions mostly...
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
+namespace Stroika::Foundation::IO::Network {
+    using Characters::String;
 
-                using Characters::String;
-
-                /**
-                 *  Capture details describing a network interface.
-                 */
-                struct Interface {
-                    /**
-                     *      This is a somewhat artificial concept - which is introduced in Stroika. This is only guaranteed
-                     *   unique or the life of one program lifetime (@todo - not even sure we can do that much).
-                     *
-                     *      UNIX:
-                     *          interface name - e.g. eth0 - in the first column reported in ifconfig.
-                     *
-                     *      WINDOWS:
-                     *          IP_ADAPTER_ADDRESSES::fAdapterName
-                     *
-                     *          This is interface AdapterName, which is not particularly printable (usualy a GUID)
-                     */
-                    String fInternalInterfaceID;
+    /**
+     *  Capture details describing a network interface.
+     */
+    struct Interface {
+        /**
+         *      This is a somewhat artificial concept - which is introduced in Stroika. This is only guaranteed
+         *   unique or the life of one program lifetime (@todo - not even sure we can do that much).
+         *
+         *      UNIX:
+         *          interface name - e.g. eth0 - in the first column reported in ifconfig.
+         *
+         *      WINDOWS:
+         *          IP_ADAPTER_ADDRESSES::fAdapterName
+         *
+         *          This is interface AdapterName, which is not particularly printable (usualy a GUID)
+         */
+        String fInternalInterfaceID;
 
 #if qPlatform_POSIX
-                    /**
-                     *  On unix, its the interface name, e.g. eth0, eth1, etc.
-                     *  On Windows, this is concept doesn't really exist.
-                     */
-                    nonvirtual String GetInterfaceName () const;
+        /**
+         *  On unix, its the interface name, e.g. eth0, eth1, etc.
+         *  On Windows, this is concept doesn't really exist.
+         */
+        nonvirtual String GetInterfaceName () const;
 #endif
 
-                    /**
-                     *  This is a generally good display name to describe a network interface.
-                     *
-                     *      WINDOWS:
-                     *          IP_ADAPTER_ADDRESSES::FriendlyName
-                     *
-                     *          A user-friendly name for the adapter. For example: "Local Area Connection 1." This name appears
-                     *          in contexts such as the ipconfig command line program and the Connection folder.
-                     *
-                     *          Note this name is often user-editable
-                     */
-                    String fFriendlyName;
+        /**
+         *  This is a generally good display name to describe a network interface.
+         *
+         *      WINDOWS:
+         *          IP_ADAPTER_ADDRESSES::FriendlyName
+         *
+         *          A user-friendly name for the adapter. For example: "Local Area Connection 1." This name appears
+         *          in contexts such as the ipconfig command line program and the Connection folder.
+         *
+         *          Note this name is often user-editable
+         */
+        String fFriendlyName;
 
-                    /**
-                     *  This description of the adpapter is typically a short string describing the hardware, such as
-                     *      "Intel(R) Dual Band Wireless-AC 7260"
-                     */
-                    optional<String> fDescription;
+        /**
+         *  This description of the adpapter is typically a short string describing the hardware, such as
+         *      "Intel(R) Dual Band Wireless-AC 7260"
+         */
+        optional<String> fDescription;
 
-                    /**
-                     *
-                     *  \note   Configuration::DefaultNames<> supported
-                     */
-                    enum class Type {
-                        eLoopback,
-                        eWiredEthernet,
-                        eWIFI,
-                        eTunnel,
-                        eOther,
+        /**
+         *
+         *  \note   Configuration::DefaultNames<> supported
+         */
+        enum class Type {
+            eLoopback,
+            eWiredEthernet,
+            eWIFI,
+            eTunnel,
+            eOther,
 
-                        Stroika_Define_Enum_Bounds (eLoopback, eOther)
-                    };
+            Stroika_Define_Enum_Bounds (eLoopback, eOther)
+        };
 
-                    /**
-                     */
-                    optional<Type> fType;
+        /**
+         */
+        optional<Type> fType;
 
-                    /**
-                     *  This - if present - is typically an ethernet macaddr (6 bytes in hex separated by :)
-                     */
-                    optional<String> fHardwareAddress;
+        /**
+         *  This - if present - is typically an ethernet macaddr (6 bytes in hex separated by :)
+         */
+        optional<String> fHardwareAddress;
 
-                    /**
-                     *  bits per second
-                     */
-                    optional<uint64_t> fTransmitSpeedBaud;
+        /**
+         *  bits per second
+         */
+        optional<uint64_t> fTransmitSpeedBaud;
 
-                    /**
-                     *  bits per second
-                     */
-                    optional<uint64_t> fReceiveLinkSpeedBaud;
+        /**
+         *  bits per second
+         */
+        optional<uint64_t> fReceiveLinkSpeedBaud;
 
-                    /**
-                     */
-                    Containers::Set<InternetAddress> fBindings; // can be IPv4 or IPv6
+        /**
+         */
+        Containers::Set<InternetAddress> fBindings; // can be IPv4 or IPv6
 
-                    /**
-                     * @todo document these - 'eRunning' == LINUX RUNNING
-                     *
-                     *  \note   Configuration::DefaultNames<> supported
-                     */
-                    enum class Status {
-                        eConnected,
-                        eRunning,
+        /**
+         * @todo document these - 'eRunning' == LINUX RUNNING
+         *
+         *  \note   Configuration::DefaultNames<> supported
+         */
+        enum class Status {
+            eConnected,
+            eRunning,
 
-                        Stroika_Define_Enum_Bounds (eConnected, eRunning)
-                    };
+            Stroika_Define_Enum_Bounds (eConnected, eRunning)
+        };
 
-                    /**
-                     */
-                    optional<Containers::Set<Status>> fStatus;
+        /**
+         */
+        optional<Containers::Set<Status>> fStatus;
 
-                    /**
-                     *  @see Characters::ToString ();
-                     */
-                    nonvirtual String ToString () const;
-                };
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+    };
 
-                /**
-                 *  Collect all the interfaces (and their status) from the operating system.
-                 */
-                Traversal::Iterable<Interface> GetInterfaces ();
+    /**
+     *  Collect all the interfaces (and their status) from the operating system.
+     */
+    Traversal::Iterable<Interface> GetInterfaces ();
 
-                /**
-                 *  Find the interface object with the given ID.
-                 *
-                 *  @see Interface::fInternalInterfaceID
-                 */
-                optional<Interface> GetInterfaceById (const String& internalInterfaceID);
-            }
-        }
-    }
+    /**
+     *  Find the interface object with the given ID.
+     *
+     *  @see Interface::fInternalInterfaceID
+     */
+    optional<Interface> GetInterfaceById (const String& internalInterfaceID);
+
 }
 
 /*

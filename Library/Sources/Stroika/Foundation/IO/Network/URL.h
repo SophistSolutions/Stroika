@@ -63,395 +63,390 @@
  *      @todo   Need LOTS of reg-tests tests!.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
+namespace Stroika::Foundation::IO::Network {
 
-                using Characters::String;
+    using Characters::String;
 
-                /**
-                 *  Probably should define standard protos here - with named constants - like http/ftp/https etc
-                 */
-                optional<uint16_t> GetDefaultPortForScheme (const String& proto);
+    /**
+     *  Probably should define standard protos here - with named constants - like http/ftp/https etc
+     */
+    optional<uint16_t> GetDefaultPortForScheme (const String& proto);
 
-                /**
-                 */
-                class URLQuery {
-                public:
-                    URLQuery (const string& query);
-                    URLQuery (const String& query);
+    /**
+     */
+    class URLQuery {
+    public:
+        URLQuery (const string& query);
+        URLQuery (const String& query);
 
-                public:
-                    nonvirtual const Containers::Mapping<String, String>& GetMap () const;
+    public:
+        nonvirtual const Containers::Mapping<String, String>& GetMap () const;
 
-                public:
-                    nonvirtual String operator() (const string& idx) const;
-                    nonvirtual String operator() (const String& idx) const;
+    public:
+        nonvirtual String operator() (const string& idx) const;
+        nonvirtual String operator() (const String& idx) const;
 
-                public:
-                    nonvirtual bool HasField (const string& idx) const;
-                    nonvirtual bool HasField (const String& idx) const;
+    public:
+        nonvirtual bool HasField (const string& idx) const;
+        nonvirtual bool HasField (const String& idx) const;
 
-                public:
-                    nonvirtual void AddField (const String& idx, const String& value);
+    public:
+        nonvirtual void AddField (const String& idx, const String& value);
 
-                public:
-                    nonvirtual void RemoveFieldIfAny (const string& idx);
-                    nonvirtual void RemoveFieldIfAny (const String& idx);
+    public:
+        nonvirtual void RemoveFieldIfAny (const string& idx);
+        nonvirtual void RemoveFieldIfAny (const String& idx);
 
-                public:
-                    // Return wide string, but all ascii characters
-                    // http://tools.ietf.org/html/rfc3986
-                    nonvirtual String ComputeQueryString () const;
+    public:
+        // Return wide string, but all ascii characters
+        // http://tools.ietf.org/html/rfc3986
+        nonvirtual String ComputeQueryString () const;
 
-                private:
-                    Containers::Mapping<String, String> fMap_;
-                };
+    private:
+        Containers::Mapping<String, String> fMap_;
+    };
 
-                /**
-                 *  Class to help encode/decode the logical parts of an internet URL
-                 *
-                 *  @see http://www.ietf.org/rfc/rfc1738.txt
-                 *
-                 *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-                 *
-                 * TODO:
-                 *      @todo   DOCUMENT and ENFORCE restrictions on values of query string, hostname, and protocol (eg. no : in protocol, etc)
-                 *
-                 *      @todo   Bake in as member the URLQuery object
-                 */
-                class URL {
-                public:
-                    /**
-                     *  From http://www.ietf.org/rfc/rfc1738.txt (section 2.1. The main parts of URLs)
-                     *
-                     *  Scheme names consist of a sequence of characters. The lower case
-                     *  letters "a"--"z", digits, and the characters plus ("+"), period
-                     *  ("."), and hyphen ("-") are allowed. For resiliency, programs
-                     *  interpreting URLs should treat upper case letters as equivalent to
-                     *  lower case in scheme names (e.g., allow "HTTP" as well as "http").
-                     *
-                     *  AKA PROTOCOL.
-                     *
-                     *  \note schemes cannot include a ':' character
-                     */
-                    using SchemeType = String;
+    /**
+     *  Class to help encode/decode the logical parts of an internet URL
+     *
+     *  @see http://www.ietf.org/rfc/rfc1738.txt
+     *
+     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *
+     * TODO:
+     *      @todo   DOCUMENT and ENFORCE restrictions on values of query string, hostname, and protocol (eg. no : in protocol, etc)
+     *
+     *      @todo   Bake in as member the URLQuery object
+     */
+    class URL {
+    public:
+        /**
+         *  From http://www.ietf.org/rfc/rfc1738.txt (section 2.1. The main parts of URLs)
+         *
+         *  Scheme names consist of a sequence of characters. The lower case
+         *  letters "a"--"z", digits, and the characters plus ("+"), period
+         *  ("."), and hyphen ("-") are allowed. For resiliency, programs
+         *  interpreting URLs should treat upper case letters as equivalent to
+         *  lower case in scheme names (e.g., allow "HTTP" as well as "http").
+         *
+         *  AKA PROTOCOL.
+         *
+         *  \note schemes cannot include a ':' character
+         */
+        using SchemeType = String;
 
-                public:
-                    /**
-                     */
-                    using PortType = uint16_t;
+    public:
+        /**
+         */
+        using PortType = uint16_t;
 
-                public:
-                    /**
-                     *      @todo PRELIM!!!!
-                     *              PROABBLY NEED "FORCE_AS_GOOD_VALID_FULL_URL
-                     *              MAYBE FULL_OR_RELATIVE (as in webpage urls)
-                     *
-                     *      Maybe URL has method "IsRelative"?
-                     */
-                    enum ParseOptions {
-                        /*
-                         *  Check for strict url conformance (scheme : data, or http://host/REL)
-                         *  Throws if not http://www.ietf.org/rfc/rfc1738.txt conformant.
-                         *
-                         *  (OR MAYBE USE https://tools.ietf.org/html/rfc3986
-                         *      and see about whcih part - full url)
-                         */
-                        eAsFullURL,
+    public:
+        /**
+         *      @todo PRELIM!!!!
+         *              PROABBLY NEED "FORCE_AS_GOOD_VALID_FULL_URL
+         *              MAYBE FULL_OR_RELATIVE (as in webpage urls)
+         *
+         *      Maybe URL has method "IsRelative"?
+         */
+        enum ParseOptions {
+            /*
+                *  Check for strict url conformance (scheme : data, or http://host/REL)
+                *  Throws if not http://www.ietf.org/rfc/rfc1738.txt conformant.
+                *
+                *  (OR MAYBE USE https://tools.ietf.org/html/rfc3986
+                *      and see about whcih part - full url)
+                */
+            eAsFullURL,
 
-                        /*
-                         *  ???http://tools.ietf.org/html/rfc1808
-                         *
-                         *  (MAYBE USE https://tools.ietf.org/html/rfc3986 and see about whcih part - full url)
-                         */
-                        eAsRelativeURL,
+            /*
+                *  ???http://tools.ietf.org/html/rfc1808
+                *
+                *  (MAYBE USE https://tools.ietf.org/html/rfc3986 and see about whcih part - full url)
+                */
+            eAsRelativeURL,
 
-                        /**
-                         */
-                        eFlexiblyAsUI,
+            /**
+             */
+            eFlexiblyAsUI,
 
-                        /**
-                         *  @todo CLEANUP/FIX
-                         *
-                         *  I THINK The only quirk of this node is that
-                         *      dyn:/foo.html gets parsed as HOST=EMPTY; relativeURL= foo.html; That makes sense
-                         *      but doesn't apper to conform to spec for urls (rfs) above. Research/analyze...
-                         */
-                        eStroikaPre20a50BackCompatMode,
-                    };
+            /**
+             *  @todo CLEANUP/FIX
+             *
+             *  I THINK The only quirk of this node is that
+             *      dyn:/foo.html gets parsed as HOST=EMPTY; relativeURL= foo.html; That makes sense
+             *      but doesn't apper to conform to spec for urls (rfs) above. Research/analyze...
+             */
+            eStroikaPre20a50BackCompatMode,
+        };
 
-                public:
-                    /**
-                     *  See SetScheme () for handling of the 'scheme' parameter.
-                     *  See SetQuery() for setting the query parameter.
-                     *  See SetHostRelativePath for the 'relPath' restrictions.
-                     *  This Requires() its arguments are valid and in range. use
-                     *
-                     *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
-                     */
-                    URL ();
-                    URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber = nullopt, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
-                    URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
-                    URL (const String& urlText, ParseOptions po);
+    public:
+        /**
+         *  See SetScheme () for handling of the 'scheme' parameter.
+         *  See SetQuery() for setting the query parameter.
+         *  See SetHostRelativePath for the 'relPath' restrictions.
+         *  This Requires() its arguments are valid and in range. use
+         *
+         *  EXCEPT for the fullURL CTOR. This will raise exceptions if anything illegal in the URL specification.
+         */
+        URL ();
+        URL (const SchemeType& scheme, const String& host, const optional<PortType>& portNumber = nullopt, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
+        URL (const SchemeType& scheme, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
+        URL (const String& urlText, ParseOptions po);
 
-                public:
-                    /**
-                     */
-                    static URL Parse (const String& urlText, ParseOptions po = eAsFullURL);
+    public:
+        /**
+         */
+        static URL Parse (const String& urlText, ParseOptions po = eAsFullURL);
 
-                private:
-                    static URL ParseHosteStroikaPre20a50BackCompatMode_ (const String& w);
-                    static URL ParseHostRelativeURL_ (const String& w);
+    private:
+        static URL ParseHosteStroikaPre20a50BackCompatMode_ (const String& w);
+        static URL ParseHostRelativeURL_ (const String& w);
 
-                public:
-                    /**
-                     *  Returns if the URL protocol is secure (SSL-based). If the URL scheme is not recognized, this returns false.
-                     */
-                    nonvirtual bool IsSecure () const;
+    public:
+        /**
+         *  Returns if the URL protocol is secure (SSL-based). If the URL scheme is not recognized, this returns false.
+         */
+        nonvirtual bool IsSecure () const;
 
-                public:
-                    /**
-                     *  Returns a String representation of the fully qualified URL.
-                     */
-                    nonvirtual String GetFullURL () const;
+    public:
+        /**
+         *  Returns a String representation of the fully qualified URL.
+         */
+        nonvirtual String GetFullURL () const;
 
-                public:
-                    /**
-                     *      If port# not specified, returns detault given the protocol.
-                     */
-                    nonvirtual PortType GetPortValue (PortType defaultValue = 80) const;
+    public:
+        /**
+         *      If port# not specified, returns detault given the protocol.
+         */
+        nonvirtual PortType GetPortValue (PortType defaultValue = 80) const;
 
-                public:
-                    /**
-                     *  This value overrides the port# used by the protocol. This can be empty, implying the URL refers to the default
-                     *  port for the given URL scheme.
-                     *
-                     *  @see GetPortValue
-                     *  @see SetPortNumber
-                     */
-                    nonvirtual optional<PortType> GetPortNumber () const;
+    public:
+        /**
+         *  This value overrides the port# used by the protocol. This can be empty, implying the URL refers to the default
+         *  port for the given URL scheme.
+         *
+         *  @see GetPortValue
+         *  @see SetPortNumber
+         */
+        nonvirtual optional<PortType> GetPortNumber () const;
 
-                public:
-                    /**
-                     *  @see GetPortNumber ();
-                     */
-                    nonvirtual void SetPortNumber (const optional<PortType>& portNum = nullopt);
+    public:
+        /**
+         *  @see GetPortNumber ();
+         */
+        nonvirtual void SetPortNumber (const optional<PortType>& portNum = nullopt);
 
-                public:
-                    /**
-                     *  NYI
-                     *
-                     *  Presume the given url is the owning webpage. What is the print string for this relative url.
-                     */
-                    nonvirtual String GetRelativeURL (const URL& baseURL) const;
+    public:
+        /**
+         *  NYI
+         *
+         *  Presume the given url is the owning webpage. What is the print string for this relative url.
+         */
+        nonvirtual String GetRelativeURL (const URL& baseURL) const;
 
-                public:
-                    /**
-                     *  this does not do a field by field compare. It returns true iff GetFullURL() on lhs / rhs would return the
-                     *  same string
-                     *
-                     *  @todo   (modulo what should be compared canse instaitivive???) - hostname?
-                     *          PROTOCOL SB case INsensitiatve, and if there is a hostame, that should be comapred case insenswative. But rest is case sensative.
-                     */
-                    nonvirtual bool Equals (const URL& rhs) const;
+    public:
+        /**
+         *  this does not do a field by field compare. It returns true iff GetFullURL() on lhs / rhs would return the
+         *  same string
+         *
+         *  @todo   (modulo what should be compared canse instaitivive???) - hostname?
+         *          PROTOCOL SB case INsensitiatve, and if there is a hostame, that should be comapred case insenswative. But rest is case sensative.
+         */
+        nonvirtual bool Equals (const URL& rhs) const;
 
-                public:
-                    /**
-                     *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                     */
-                    nonvirtual int Compare (const URL& rhs) const;
+    public:
+        /**
+         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+         */
+        nonvirtual int Compare (const URL& rhs) const;
 
-                public:
-                    /**
-                     */
-                    nonvirtual void clear ();
+    public:
+        /**
+         */
+        nonvirtual void clear ();
 
-                public:
-                    /**
-                     *  This is the value created by clear or the no-arg CTOR.
-                     */
-                    nonvirtual bool empty () const;
+    public:
+        /**
+         *  This is the value created by clear or the no-arg CTOR.
+         */
+        nonvirtual bool empty () const;
 
-                public:
-                    /**
-                     *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
-                     */
-                    nonvirtual optional<SchemeType> GetScheme () const;
+    public:
+        /**
+         *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
+         */
+        nonvirtual optional<SchemeType> GetScheme () const;
 
-                public:
-                    /**
-                     *  @see GetScheme, but defaults to (typically) to http. Roughly equivilent to GetScheme ().Value (L"https") - except that we might take other info into acocunt to select another default scheme
-                     */
-                    nonvirtual SchemeType GetSchemeValue () const;
+    public:
+        /**
+         *  @see GetScheme, but defaults to (typically) to http. Roughly equivilent to GetScheme ().Value (L"https") - except that we might take other info into acocunt to select another default scheme
+         */
+        nonvirtual SchemeType GetSchemeValue () const;
 
-                public:
-                    /**
-                     *  Since From http://www.ietf.org/rfc/rfc1738.txt suggests mapping upper case to lower case, this function does that.
-                     *  But other violations in the format of a protocol generate exceptions.
-                     */
-                    nonvirtual void SetScheme (const optional<SchemeType>& scheme);
-                    nonvirtual void SetScheme (const SchemeType& scheme);
+    public:
+        /**
+         *  Since From http://www.ietf.org/rfc/rfc1738.txt suggests mapping upper case to lower case, this function does that.
+         *  But other violations in the format of a protocol generate exceptions.
+         */
+        nonvirtual void SetScheme (const optional<SchemeType>& scheme);
+        nonvirtual void SetScheme (const SchemeType& scheme);
 
-                public:
-                    /**
-                     */
-                    nonvirtual String GetHost () const;
+    public:
+        /**
+         */
+        nonvirtual String GetHost () const;
 
-                public:
-                    /**
-                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
-                     */
-                    nonvirtual void SetHost (const String& host);
+    public:
+        /**
+         @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+            */
+        nonvirtual void SetHost (const String& host);
 
-                public:
-                    /**
-                     *  Note this does NOT contain the '/' separating the hostname from the relative path,
-                     *  so it typically doesn't start with a '/', but frequently contains them. It MAY legally
-                     *  start with a '/' because http://www.ietf.org/rfc/rfc1738.txt doesn't specifically prohibit this.
-                     *
-                     *  \note   This does not include the query string, if any.
-                     *
-                     *  @see GetHostRelURLString ()
-                     */
-                    nonvirtual String GetHostRelativePath () const;
+    public:
+        /**
+         *  Note this does NOT contain the '/' separating the hostname from the relative path,
+         *  so it typically doesn't start with a '/', but frequently contains them. It MAY legally
+         *  start with a '/' because http://www.ietf.org/rfc/rfc1738.txt doesn't specifically prohibit this.
+         *
+         *  \note   This does not include the query string, if any.
+         *
+         *  @see GetHostRelURLString ()
+         */
+        nonvirtual String GetHostRelativePath () const;
 
-                public:
-                    /**
-                     *  @see GetHostRelativePath for format restrictions.
-                     */
-                    nonvirtual void SetHostRelativePath (const String& hostRelativePath);
+    public:
+        /**
+         *  @see GetHostRelativePath for format restrictions.
+         */
+        nonvirtual void SetHostRelativePath (const String& hostRelativePath);
 
-                public:
-                    /**
-                     *   @see GetHostRelativePath for format restrictions. This can be empty.
-                     */
-                    nonvirtual String GetHostRelPathDir () const;
+    public:
+        /**
+         *   @see GetHostRelativePath for format restrictions. This can be empty.
+         */
+        nonvirtual String GetHostRelPathDir () const;
 
-                public:
-                    /**
-                     */
-                    nonvirtual URLQuery GetQuery () const;
+    public:
+        /**
+         */
+        nonvirtual URLQuery GetQuery () const;
 
-                public:
-                    /**
-                     */
-                    nonvirtual void SetQuery (const URLQuery& query);
+    public:
+        /**
+         */
+        nonvirtual void SetQuery (const URLQuery& query);
 
-                public:
-                    /**
-                     *  \note   This returns an empty string if no query.
-                     */
-                    nonvirtual String GetQueryString () const;
+    public:
+        /**
+         *  \note   This returns an empty string if no query.
+         */
+        nonvirtual String GetQueryString () const;
 
-                public:
-                    /**
-                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
-                     */
-                    nonvirtual void SetQueryString (const String& queryString);
+    public:
+        /**
+         @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+            */
+        nonvirtual void SetQueryString (const String& queryString);
 
-                public:
-                    /**
-                     */
-                    nonvirtual String GetFragment () const;
+    public:
+        /**
+         */
+        nonvirtual String GetFragment () const;
 
-                public:
-                    /**
-                     *  @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
-                     */
-                    nonvirtual void SetFragment (const String& frag);
+    public:
+        /**
+         *  @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+         */
+        nonvirtual void SetFragment (const String& frag);
 
-                public:
-                    /**
-                     *   This is the host relative path, plus any optional query(string) plus any optional fragment
-                     *      path[?query][#fragment]
-                     *  This path does NOT include the leading / seperator
-                     *
-                     *  \note   terrible name but I can think of no better
-                     *
-                     *  @see GetHostRelativePath ()
-                     *  @see GetHostRelativePathPlusQuery ()
-                     */
-                    nonvirtual String GetHostRelURLString () const;
+    public:
+        /**
+         *   This is the host relative path, plus any optional query(string) plus any optional fragment
+         *      path[?query][#fragment]
+         *  This path does NOT include the leading / seperator
+         *
+         *  \note   terrible name but I can think of no better
+         *
+         *  @see GetHostRelativePath ()
+         *  @see GetHostRelativePathPlusQuery ()
+         */
+        nonvirtual String GetHostRelURLString () const;
 
-                public:
-                    /**
-                     *   This is the host relative path, plus any optional query(string) plus any optional fragment
-                     *      path[?query]
-                     *  This path does NOT include the leading / seperator
-                     *
-                     *  \note   terrible name but I can think of no better
-                     *
-                     *  @see GetHostRelURLString ()
-                     *  @see GetHostRelativePath ()
-                     */
-                    nonvirtual String GetHostRelativePathPlusQuery () const;
+    public:
+        /**
+         *   This is the host relative path, plus any optional query(string) plus any optional fragment
+         *      path[?query]
+         *  This path does NOT include the leading / seperator
+         *
+         *  \note   terrible name but I can think of no better
+         *
+         *  @see GetHostRelURLString ()
+         *  @see GetHostRelativePath ()
+         */
+        nonvirtual String GetHostRelativePathPlusQuery () const;
 
-                public:
-                    /**
-                     *  For debugging purposes: don't count on the format.
-                     */
-                    nonvirtual String ToString () const;
+    public:
+        /**
+         *  For debugging purposes: don't count on the format.
+         */
+        nonvirtual String ToString () const;
 
-                private:
-                    optional<String>   fScheme_; // aka protocol
-                    String             fHost_;
-                    optional<PortType> fPort_;
-                    String             fRelPath_;
-                    String             fQuery_;
-                    String             fFragment_;
-                };
+    private:
+        optional<String>   fScheme_; // aka protocol
+        String             fHost_;
+        optional<PortType> fPort_;
+        String             fRelPath_;
+        String             fQuery_;
+        String             fFragment_;
+    };
 
-                /**
-                 *  operator indirects to URL::Compare()
-                 */
-                bool operator< (const URL& lhs, const URL& rhs);
+    /**
+     *  operator indirects to URL::Compare()
+     */
+    bool operator< (const URL& lhs, const URL& rhs);
 
-                /**
-                 *  operator indirects to URL::Compare()
-                 */
-                bool operator<= (const URL& lhs, const URL& rhs);
+    /**
+     *  operator indirects to URL::Compare()
+     */
+    bool operator<= (const URL& lhs, const URL& rhs);
 
-                /**
-                 *  operator indirects to URL::Equals ()
-                 */
-                bool operator== (const URL& lhs, const URL& rhs);
+    /**
+     *  operator indirects to URL::Equals ()
+     */
+    bool operator== (const URL& lhs, const URL& rhs);
 
-                /**
-                 *  operator indirects to URL::Equals ()
-                 */
-                bool operator!= (const URL& lhs, const URL& rhs);
+    /**
+     *  operator indirects to URL::Equals ()
+     */
+    bool operator!= (const URL& lhs, const URL& rhs);
 
-                /**
-                 *  operator indirects to URL::Compare()
-                 */
-                bool operator> (const URL& lhs, const URL& rhs);
+    /**
+     *  operator indirects to URL::Compare()
+     */
+    bool operator> (const URL& lhs, const URL& rhs);
 
-                /**
-                 *  operator indirects to URL::Compare()
-                 */
-                bool operator>= (const URL& lhs, const URL& rhs);
+    /**
+     *  operator indirects to URL::Compare()
+     */
+    bool operator>= (const URL& lhs, const URL& rhs);
 
-                /*
-                 *  See http://tools.ietf.org/html/rfc3986
-                 *  This doesn't encode an entire URL, just a particular field
-                 */
-                string EncodeURLQueryStringField (const String& s);
+    /*
+        *  See http://tools.ietf.org/html/rfc3986
+        *  This doesn't encode an entire URL, just a particular field
+        */
+    string EncodeURLQueryStringField (const String& s);
 
-                /**
-                 */
-                class LabeledURL {
-                public:
-                    LabeledURL (const URL& url = URL (), const String& label = String ());
+    /**
+     */
+    class LabeledURL {
+    public:
+        LabeledURL (const URL& url = URL (), const String& label = String ());
 
-                public:
-                    URL    fURL;
-                    String fLabel;
-                };
-            }
-        }
-    }
+    public:
+        URL    fURL;
+        String fLabel;
+    };
+
 }
 
 /*

@@ -18,28 +18,23 @@
  * TODO:
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
+namespace Stroika::Foundation::IO::Network {
 
-                using Characters::String;
+    using Characters::String;
 
-                namespace Private_ {
-                    struct InternetAddressRangeTraits_ : Traversal::RangeTraits::ExplicitRangeTraitsWithoutMinMax<InternetAddress, Traversal::Openness::eClosed, Traversal::Openness::eClosed, int, unsigned int> {
-                        static InternetAddress GetNext (InternetAddress n);
-                        using RangeTraitsType = InternetAddressRangeTraits_;
-                        static const InternetAddress kLowerBound;
-                        static const InternetAddress kUpperBound;
-                    };
-                }
-
-                /**
-                 */
-                using InternetAddressRange = Traversal::DiscreteRange<InternetAddress, Private_::InternetAddressRangeTraits_>;
-            }
-        }
+    namespace Private_ {
+        struct InternetAddressRangeTraits_ : Traversal::RangeTraits::ExplicitRangeTraitsWithoutMinMax<InternetAddress, Traversal::Openness::eClosed, Traversal::Openness::eClosed, int, unsigned int> {
+            static InternetAddress GetNext (InternetAddress n);
+            using RangeTraitsType = InternetAddressRangeTraits_;
+            static const InternetAddress kLowerBound;
+            static const InternetAddress kUpperBound;
+        };
     }
+
+    /**
+     */
+    using InternetAddressRange = Traversal::DiscreteRange<InternetAddress, Private_::InternetAddressRangeTraits_>;
+
 }
 
 /*

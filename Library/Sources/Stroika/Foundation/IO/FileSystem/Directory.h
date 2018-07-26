@@ -33,68 +33,63 @@
  *      (o)     almost TOTALLY un-implemtend - miggrade code from FileUtils to here...
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation::IO::FileSystem {
 
-                using Characters::SDKString;
-                using Characters::String;
-                using Time::DateTime;
+    using Characters::SDKString;
+    using Characters::String;
+    using Time::DateTime;
 
-                /**
-                 * A 'Directory' here refers to a "Directory Name". The methods of Directory operate on the actual filesystem (like Create), but
-                 * this objects lifetime is not connected to the lifetime of any objects with similar names on the filesystem.
-                 */
-                class Directory {
-                public:
-                    // If the argument name is not already '/'-terminated, this CTOR will adjust it
-                    // CTOR does not create or check for the existence of the given directory (no IO)
-                    Directory (const String& fileFullPath);
+    /**
+     * A 'Directory' here refers to a "Directory Name". The methods of Directory operate on the actual filesystem (like Create), but
+     * this objects lifetime is not connected to the lifetime of any objects with similar names on the filesystem.
+     */
+    class Directory {
+    public:
+        // If the argument name is not already '/'-terminated, this CTOR will adjust it
+        // CTOR does not create or check for the existence of the given directory (no IO)
+        Directory (const String& fileFullPath);
 
-                public:
-                    nonvirtual void Create () const; // fails if exists
+    public:
+        nonvirtual void Create () const; // fails if exists
 
-                public:
-                    /**
-                     *  Checks if the directory named in the object CTOR exists. If yes, this has no effect.
-                     *  if no, the directory is created.
-                     *
-                     *  AssureExists fails if doesn't exist at the end, or is not a directory (unclear if its a directry but not accessible)
-                     */
-                    nonvirtual void AssureExists (bool createParentComponentsIfNeeded = true) const;
+    public:
+        /**
+         *  Checks if the directory named in the object CTOR exists. If yes, this has no effect.
+         *  if no, the directory is created.
+         *
+         *  AssureExists fails if doesn't exist at the end, or is not a directory (unclear if its a directry but not accessible)
+         */
+        nonvirtual void AssureExists (bool createParentComponentsIfNeeded = true) const;
 
-                public:
-                    // @todo cleanup / clarify docs (first is from old code second is my guess at new code at one point)
-                    // returns true iff given path exists, is accessible, and is a directory
-                    // returns true iff exsits AND is directory (what about slink?)
-                    nonvirtual bool Exists () const;
+    public:
+        // @todo cleanup / clarify docs (first is from old code second is my guess at new code at one point)
+        // returns true iff given path exists, is accessible, and is a directory
+        // returns true iff exsits AND is directory (what about slink?)
+        nonvirtual bool Exists () const;
 
-                public:
-                    /**
-                     *   fails if exists after the operaotion - Fails if doest exist
-                     */
-                    nonvirtual void Delete () const;
+    public:
+        /**
+         *   fails if exists after the operaotion - Fails if doest exist
+         */
+        nonvirtual void Delete () const;
 
-                public:
-                    nonvirtual void AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
+    public:
+        nonvirtual void AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
 
-                public:
-                    // only works with type
-                    //      wstring
-                    //      String
-                    template <typename T>
-                    nonvirtual T As () const;
+    public:
+        // only works with type
+        //      wstring
+        //      String
+        template <typename T>
+        nonvirtual T As () const;
 
-                public:
-                    nonvirtual SDKString AsSDKString () const;
+    public:
+        nonvirtual SDKString AsSDKString () const;
 
-                private:
-                    String fFileFullPath_;
-                };
-            }
-        }
-    }
+    private:
+        String fFileFullPath_;
+    };
+
 }
 
 /*

@@ -17,23 +17,16 @@
  *                  Maybe ONLY can do once we have compiler constexpr support?
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace HTTP {
+namespace Stroika::Foundation::IO::Network::HTTP {
 
-                    // standard HTTP Versions one might want to access/retrieve
-                    namespace Versions {
+    // standard HTTP Versions one might want to access/retrieve
+    namespace Versions {
 
-                        constexpr wchar_t kOnePointZero[] = L"1.0";
-                        constexpr wchar_t kOnePointOne[]  = L"1.1";
-                        constexpr wchar_t kTwoPointZero[] = L"2.0";
-                    }
-                }
-            }
-        }
+        constexpr wchar_t kOnePointZero[] = L"1.0";
+        constexpr wchar_t kOnePointOne[]  = L"1.1";
+        constexpr wchar_t kTwoPointZero[] = L"2.0";
     }
+
 }
 
 /*

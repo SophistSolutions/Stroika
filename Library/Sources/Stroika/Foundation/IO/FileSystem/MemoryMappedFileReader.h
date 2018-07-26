@@ -23,49 +23,44 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation::IO::FileSystem {
 
-                /**
-                 *  MemoryMappedFileReader is a utility to allow memory mapping of a file.
-                 */
-                class MemoryMappedFileReader {
-                public:
-                    MemoryMappedFileReader (const String& fileName);
-                    MemoryMappedFileReader (const MemoryMappedFileReader&) = delete;
-                    ~MemoryMappedFileReader ();
+    /**
+     *  MemoryMappedFileReader is a utility to allow memory mapping of a file.
+     */
+    class MemoryMappedFileReader {
+    public:
+        MemoryMappedFileReader (const String& fileName);
+        MemoryMappedFileReader (const MemoryMappedFileReader&) = delete;
+        ~MemoryMappedFileReader ();
 
-                public:
-                    nonvirtual const MemoryMappedFileReader& operator= (const MemoryMappedFileReader&) = delete;
+    public:
+        nonvirtual const MemoryMappedFileReader& operator= (const MemoryMappedFileReader&) = delete;
 
-                public:
-                    /**
-                     */
-                    nonvirtual const Byte* begin () const;
+    public:
+        /**
+         */
+        nonvirtual const Byte* begin () const;
 
-                public:
-                    /**
-                     */
-                    nonvirtual const Byte* end () const;
+    public:
+        /**
+         */
+        nonvirtual const Byte* end () const;
 
-                public:
-                    /**
-                     */
-                    nonvirtual size_t size () const;
+    public:
+        /**
+         */
+        nonvirtual size_t size () const;
 
-                private:
-                    const Byte* fFileDataStart_;
-                    const Byte* fFileDataEnd_;
+    private:
+        const Byte* fFileDataStart_;
+        const Byte* fFileDataEnd_;
 #if qPlatform_Windows
-                    HANDLE fFileHandle_;
-                    HANDLE fFileMapping_;
+        HANDLE fFileHandle_;
+        HANDLE fFileMapping_;
 #endif
-                };
-            }
-        }
-    }
+    };
+
 }
 
 /*

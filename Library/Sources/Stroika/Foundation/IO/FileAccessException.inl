@@ -12,24 +12,21 @@
 #include "../Debug/Trace.h"
 #include "../Execution/Exceptions.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
+namespace Stroika::Foundation::IO {
 
-            /*
-             ********************************************************************************
-             ***************************** IO::FileAccessException **************************
-             ********************************************************************************
-             */
-            inline optional<String> FileAccessException::GetFileName () const
-            {
-                return fFileName_;
-            }
-            inline optional<FileAccessMode> FileAccessException::GetFileAccessMode () const
-            {
-                return fFileAccessMode_;
-            }
-        }
+    /*
+     ********************************************************************************
+     ***************************** IO::FileAccessException **************************
+     ********************************************************************************
+     */
+    inline optional<String> FileAccessException::GetFileName () const
+    {
+        return fFileName_;
     }
+    inline optional<FileAccessMode> FileAccessException::GetFileAccessMode () const
+    {
+        return fFileAccessMode_;
+    }
+
 }
 #endif /*_Stroika_Foundation_IO_FileAccessException_inl_*/

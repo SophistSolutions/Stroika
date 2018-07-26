@@ -8,32 +8,28 @@
 
 #include "../Configuration/Enumeration.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
+namespace Stroika::Foundation::IO {
 
-            /**
-             * First draft of access-mode support. Much better stuff in PHRDB permissions security logic.
-             * But this will do for now...
-             *      -- LGP 2009-08-15
-             *
-             *  \note   Configuration::DefaultNames<> supported
-             */
-            enum class FileAccessMode : uint8_t {
-                eNoAccess,
-                eRead  = 0x1,
-                eWrite = 0x2,
+    /**
+     * First draft of access-mode support. Much better stuff in PHRDB permissions security logic.
+     * But this will do for now...
+     *      -- LGP 2009-08-15
+     *
+     *  \note   Configuration::DefaultNames<> supported
+     */
+    enum class FileAccessMode : uint8_t {
+        eNoAccess,
+        eRead  = 0x1,
+        eWrite = 0x2,
 
-                // composite values
-                eReadWrite = eRead | eWrite,
+        // composite values
+        eReadWrite = eRead | eWrite,
 
-                Stroika_Define_Enum_Bounds (eNoAccess, eReadWrite)
-            };
+        Stroika_Define_Enum_Bounds (eNoAccess, eReadWrite)
+    };
 
-            FileAccessMode operator& (FileAccessMode l, FileAccessMode r);
-            FileAccessMode operator| (FileAccessMode l, FileAccessMode r);
-        }
-    }
+    FileAccessMode operator& (FileAccessMode l, FileAccessMode r);
+    FileAccessMode operator| (FileAccessMode l, FileAccessMode r);
 }
 
 /*

@@ -16,24 +16,17 @@
  *      (o)     consider using std::string_view?
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace HTTP {
+namespace Stroika::Foundation::IO::Network::HTTP {
 
-                    // standard HTTP METHODS
-                    namespace Methods {
-                        constexpr wchar_t kGet[]     = L"GET";
-                        constexpr wchar_t kPut[]     = L"PUT";
-                        constexpr wchar_t kPost[]    = L"POST";
-                        constexpr wchar_t kDelete[]  = L"DELETE";
-                        constexpr wchar_t kOptions[] = L"OPTIONS";
-                    }
-                }
-            }
-        }
+    // standard HTTP METHODS
+    namespace Methods {
+        constexpr wchar_t kGet[]     = L"GET";
+        constexpr wchar_t kPut[]     = L"PUT";
+        constexpr wchar_t kPost[]    = L"POST";
+        constexpr wchar_t kDelete[]  = L"DELETE";
+        constexpr wchar_t kOptions[] = L"OPTIONS";
     }
+
 }
 
 /*

@@ -173,19 +173,15 @@ String Socket::Ptr::ToString () const
  ********************************************************************************
  */
 #if qPlatform_Windows
-namespace Stroika {
-    namespace Foundation {
-        namespace Execution {
-            // this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
-            template <>
-            IO::Network::Socket::PlatformNativeHandle ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
-            {
-                if (returnCode == kINVALID_NATIVE_HANDLE_) {
-                    Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
-                }
-                return returnCode;
-            }
+namespace Stroika::Foundation::Execution {
+    // this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
+    template <>
+    IO::Network::Socket::PlatformNativeHandle ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
+    {
+        if (returnCode == kINVALID_NATIVE_HANDLE_) {
+            Execution::Platform::Windows::Exception::Throw (::WSAGetLastError ());
         }
+        return returnCode;
     }
 }
 #endif

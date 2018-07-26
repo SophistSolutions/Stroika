@@ -19,40 +19,35 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation::IO::FileSystem {
 
-                using Characters::String;
+    using Characters::String;
 
-                /**
-                 *  This iterable returns the file names contained in the given argument directory.
-                 *  See @todo.
-                 *
-                 *  See @DirectoryIterator
-                 *
-                 *  \note   DirectoryIterable will NOT return the special values '.' and '..' which would be returned from readdir
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *      Iterable<String> textFilesInSlashTmp = DirectoryIterable (L"/tmp").Where ([] (const String& i) { return i.EndsWith (L".txt"); });
-                 *      \endcode
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
-                 */
-                class DirectoryIterable : public Traversal::Iterable<String> {
-                public:
-                    using IteratorReturnType = DirectoryIterator::IteratorReturnType;
+    /**
+     *  This iterable returns the file names contained in the given argument directory.
+     *  See @todo.
+     *
+     *  See @DirectoryIterator
+     *
+     *  \note   DirectoryIterable will NOT return the special values '.' and '..' which would be returned from readdir
+     *
+     *  \par Example Usage
+     *      \code
+     *      Iterable<String> textFilesInSlashTmp = DirectoryIterable (L"/tmp").Where ([] (const String& i) { return i.EndsWith (L".txt"); });
+     *      \endcode
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     */
+    class DirectoryIterable : public Traversal::Iterable<String> {
+    public:
+        using IteratorReturnType = DirectoryIterator::IteratorReturnType;
 
-                public:
-                    /**
-                     */
-                    DirectoryIterable (const String& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
-                };
-            }
-        }
-    }
+    public:
+        /**
+         */
+        DirectoryIterable (const String& directory, IteratorReturnType iteratorReturns = IteratorReturnType::eDEFAULT);
+    };
+
 }
 
 /*

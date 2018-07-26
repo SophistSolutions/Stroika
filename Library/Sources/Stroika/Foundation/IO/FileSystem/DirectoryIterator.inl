@@ -9,12 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
-            }
-        }
-    }
+namespace Stroika::Foundation::IO::FileSystem {
 }
 #endif /*_Stroika_Foundation_IO_FileSystem_DirectoryIterator_inl_*/

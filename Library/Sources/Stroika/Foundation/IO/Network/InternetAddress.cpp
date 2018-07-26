@@ -151,36 +151,31 @@ InternetAddress::InternetAddress (const String& s, AddressFamily af)
 {
 }
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                template <>
-                String InternetAddress::As<String> () const
-                {
-                    switch (fAddressFamily_) {
-                        case AddressFamily::UNKNOWN: {
-                            return String ();
-                        } break;
-                        case AddressFamily::V4: {
-                            char        buf[INET_ADDRSTRLEN + 1];
-                            const char* result = ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
-                            return result == nullptr ? String () : String::FromUTF8 (result);
-                        } break;
-                        case AddressFamily::V6: {
-                            char        buf[INET6_ADDRSTRLEN + 1];
-                            const char* result = ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
-                            return result == nullptr ? String () : String::FromUTF8 (result);
-                        } break;
-                        default: {
-                            RequireNotReached ();
-                            return String ();
-                        } break;
-                    }
-                }
-            }
+namespace Stroika::Foundation::IO::Network {
+    template <>
+    String InternetAddress::As<String> () const
+    {
+        switch (fAddressFamily_) {
+            case AddressFamily::UNKNOWN: {
+                return String ();
+            } break;
+            case AddressFamily::V4: {
+                char        buf[INET_ADDRSTRLEN + 1];
+                const char* result = ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
+                return result == nullptr ? String () : String::FromUTF8 (result);
+            } break;
+            case AddressFamily::V6: {
+                char        buf[INET6_ADDRSTRLEN + 1];
+                const char* result = ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
+                return result == nullptr ? String () : String::FromUTF8 (result);
+            } break;
+            default: {
+                RequireNotReached ();
+                return String ();
+            } break;
         }
     }
+
 }
 
 bool InternetAddress::IsLocalhostAddress () const

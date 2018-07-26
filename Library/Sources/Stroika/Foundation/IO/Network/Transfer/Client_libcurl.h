@@ -23,47 +23,40 @@
  *              librraries lusing curl (like CurlNetAccessor::initCurl in xerces) do the same thing.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace Transfer {
+namespace Stroika::Foundation::IO::Network::Transfer {
 
 #if qHasFeature_LibCurl
-                    class LibCurlException : public Execution::StringException {
-                    public:
-                        using CURLcode = int; // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
-                    public:
-                        LibCurlException (CURLcode ccode);
+    class LibCurlException : public Execution::StringException {
+    public:
+        using CURLcode = int; // tried directly to reference libcurl CURLcode but tricky cuz its an enum -- LGP 2012-05-08
+    public:
+        LibCurlException (CURLcode ccode);
 
-                    public:
-                        // throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
-                        // but MAY map to any other exception type
-                        static void ThrowIfError (CURLcode status);
+    public:
+        // throw Exception () type iff the status indicates a real exception code. This MAY not throw an exception of type LibCurlException,
+        // but MAY map to any other exception type
+        static void ThrowIfError (CURLcode status);
 
-                    public:
-                        nonvirtual CURLcode GetCode () const;
+    public:
+        nonvirtual CURLcode GetCode () const;
 
-                    private:
-                        CURLcode fCurlCode_;
-                    };
+    private:
+        CURLcode fCurlCode_;
+    };
 #endif
 
 #if qHasFeature_LibCurl
-                    // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
-                    // LibCurl connection rep objects
-                    class Connection_LibCurl : public Connection {
-                    public:
-                        Connection_LibCurl (const Options& options = Options ());
+    // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
+    // LibCurl connection rep objects
+    class Connection_LibCurl : public Connection {
+    public:
+        Connection_LibCurl (const Options& options = Options ());
 
-                    private:
-                        class Rep_;
-                    };
+    private:
+        class Rep_;
+    };
 #endif
-                }
-            }
-        }
-    }
+
 }
 
 /*

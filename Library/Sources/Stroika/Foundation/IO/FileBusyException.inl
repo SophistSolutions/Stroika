@@ -11,14 +11,10 @@
  */
 #include "../Debug/Trace.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            inline String FileBusyException::GetFileName () const
-            {
-                return fFileName_;
-            }
-        }
+namespace Stroika::Foundation::IO {
+    inline String FileBusyException::GetFileName () const
+    {
+        return fFileName_;
     }
 }
 #endif /*_Stroika_Foundation_IO_FileBusyException_inl_*/

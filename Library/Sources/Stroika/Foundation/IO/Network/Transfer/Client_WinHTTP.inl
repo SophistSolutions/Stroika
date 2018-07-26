@@ -9,14 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace Transfer {
-                }
-            }
-        }
-    }
+namespace Stroika::Foundation::IO::Network::Transfer {
 }
 #endif /*_Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_inl_*/

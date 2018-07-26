@@ -9,24 +9,21 @@
 #include "../Characters/String.h"
 #include "../Execution/StringException.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
+namespace Stroika::Foundation::IO {
 
-            using Characters::String;
+    using Characters::String;
 
-            class FileFormatException : public Execution::StringException {
-            public:
-                FileFormatException (const String& fileName);
+    class FileFormatException : public Execution::StringException {
+    public:
+        FileFormatException (const String& fileName);
 
-            public:
-                nonvirtual String GetFileName () const;
+    public:
+        nonvirtual String GetFileName () const;
 
-            private:
-                String fFileName_;
-            };
-        }
-    }
+    private:
+        String fFileName_;
+    };
+
 }
 
 /*

@@ -9,27 +9,22 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace FileSystem {
+namespace Stroika::Foundation::IO::FileSystem {
 
-                template <>
-                inline String Directory::As () const
-                {
-                    return fFileFullPath_;
-                }
-                template <>
-                inline wstring Directory::As () const
-                {
-                    return fFileFullPath_.As<wstring> ();
-                }
-                inline SDKString Directory::AsSDKString () const
-                {
-                    return fFileFullPath_.AsSDKString ();
-                }
-            }
-        }
+    template <>
+    inline String Directory::As () const
+    {
+        return fFileFullPath_;
     }
+    template <>
+    inline wstring Directory::As () const
+    {
+        return fFileFullPath_.As<wstring> ();
+    }
+    inline SDKString Directory::AsSDKString () const
+    {
+        return fFileFullPath_.AsSDKString ();
+    }
+
 }
 #endif /*_Stroika_Foundation_IO_FileSystem_Directory_inl_*/

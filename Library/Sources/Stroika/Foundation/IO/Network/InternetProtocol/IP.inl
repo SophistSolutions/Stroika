@@ -11,25 +11,16 @@
  */
 #include "../HTTP/Exception.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace InternetProtocol {
-                    namespace IP {
+namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
 
-                        inline bool SupportIPV4 (IPVersionSupport flag)
-                        {
-                            return flag == IPVersionSupport::eIPV4Only or flag == IPVersionSupport::eIPV4AndIPV6;
-                        }
-                        inline bool SupportIPV6 (IPVersionSupport flag)
-                        {
-                            return flag == IPVersionSupport::eIPV6Only or flag == IPVersionSupport::eIPV4AndIPV6;
-                        }
-                    }
-                }
-            }
-        }
+    inline bool SupportIPV4 (IPVersionSupport flag)
+    {
+        return flag == IPVersionSupport::eIPV4Only or flag == IPVersionSupport::eIPV4AndIPV6;
     }
+    inline bool SupportIPV6 (IPVersionSupport flag)
+    {
+        return flag == IPVersionSupport::eIPV6Only or flag == IPVersionSupport::eIPV4AndIPV6;
+    }
+
 }
 #endif /*_Stroika_Foundation_IO_Network_InternetProtocol_IP_inl_*/

@@ -8,14 +8,8 @@
 
 #include "ConnectionOrientedStreamSocket.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                typedef ConnectionOrientedStreamSocket ConnectionOrientedSocket [[deprecated ("use ConnectionOrientedStreamSocket in version 2.0a234")]];
-            }
-        }
-    }
+namespace Stroika::Foundation::IO::Network {
+    typedef ConnectionOrientedStreamSocket ConnectionOrientedSocket [[deprecated ("use ConnectionOrientedStreamSocket in version 2.0a234")]];
 }
 
 #endif /*_Stroika_Foundation_IO_Network_ConnectionOrientedSocket_h_*/

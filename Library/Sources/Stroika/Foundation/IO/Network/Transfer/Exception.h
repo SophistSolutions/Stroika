@@ -19,28 +19,21 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace Transfer {
+namespace Stroika::Foundation::IO::Network::Transfer {
 
-                    /**
-                     */
-                    struct Exception : HTTP::Exception {
-                    public:
-                        Exception (const Response& response);
+    /**
+     */
+    struct Exception : HTTP::Exception {
+    public:
+        Exception (const Response& response);
 
-                    public:
-                        nonvirtual Response GetResponse () const;
+    public:
+        nonvirtual Response GetResponse () const;
 
-                    private:
-                        Response fResponse_;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        Response fResponse_;
+    };
+
 }
 
 /*

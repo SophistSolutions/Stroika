@@ -12,30 +12,21 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace Platform {
-                    namespace Windows {
+namespace Stroika::Foundation::IO::Network::Platform::Windows {
 
-                        /**
-                         *  Support single call to WSAStartup () for windows
-                         */
-                        struct WinSock {
-                            static void ForceStartup ();
-                            static void NoteExternallyStarted ();
-                            static bool IsStarted ();
-                            static void AssureStarted ();
+    /**
+     *  Support single call to WSAStartup () for windows
+     */
+    struct WinSock {
+        static void ForceStartup ();
+        static void NoteExternallyStarted ();
+        static bool IsStarted ();
+        static void AssureStarted ();
 
-                        private:
-                            static bool sStarted_;
-                        };
-                    }
-                }
-            }
-        }
-    }
+    private:
+        static bool sStarted_;
+    };
+
 }
 
 /*

@@ -56,21 +56,14 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace IO {
-            namespace Network {
-                namespace Transfer {
+namespace Stroika::Foundation::IO::Network::Transfer {
 
-                    /**
-                     * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
-                     * to construct an unconnected object.
-                     */
-                    Connection CreateConnection (const Connection::Options& options = Connection::Options ());
-                }
-            }
-        }
-    }
+    /**
+     * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
+     * to construct an unconnected object.
+     */
+    Connection CreateConnection (const Connection::Options& options = Connection::Options ());
+
 }
 
 /*
