@@ -40,6 +40,8 @@ namespace Stroika::Foundation::Cache {
     class Memoizer : private Debug::AssertExternallySynchronizedLock {
 
     public:
+        /**
+         */
         Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache = CACHE<tuple<ARGS...>, RESULT>{});
         Memoizer (const Memoizer& from) = default;
 
@@ -47,6 +49,8 @@ namespace Stroika::Foundation::Cache {
         nonvirtual Memoizer& operator= (const Memoizer& rhs) = default;
 
     public:
+        /**
+         */
         nonvirtual RESULT Compute (ARGS... args);
 
     private:

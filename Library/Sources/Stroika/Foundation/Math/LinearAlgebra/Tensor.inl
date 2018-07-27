@@ -10,12 +10,6 @@
 ********************************************************************************
 */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Math {
-            namespace LinearAlgebra {
-            }
-        }
-    }
+namespace Stroika::Foundation::Math::LinearAlgebra {
 }
 #endif /*_Stroika_Foundation_Math_LinearAlgebra_Tensor_inl_*/

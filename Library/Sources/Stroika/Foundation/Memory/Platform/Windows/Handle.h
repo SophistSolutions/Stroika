@@ -15,45 +15,38 @@
 #include "../../../Configuration/Common.h"
 #include "../../../Memory/Common.h"
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Memory {
-            namespace Platform {
-                namespace Windows {
+namespace Stroika::Foundation::Memory::Platform::Windows {
 
-                    using Foundation::Memory::Byte;
+    using Foundation::Memory::Byte;
 
-                    /**
-                     */
-                    class StackBasedHandleLocker {
-                    public:
-                        StackBasedHandleLocker (HANDLE h);
-                        StackBasedHandleLocker (const StackBasedHandleLocker&) = delete;
+    /**
+     */
+    class StackBasedHandleLocker {
+    public:
+        StackBasedHandleLocker (HANDLE h);
+        StackBasedHandleLocker (const StackBasedHandleLocker&) = delete;
 
-                    public:
-                        ~StackBasedHandleLocker ();
+    public:
+        ~StackBasedHandleLocker ();
 
-                    public:
-                        const StackBasedHandleLocker& operator= (const StackBasedHandleLocker&) = delete;
+    public:
+        const StackBasedHandleLocker& operator= (const StackBasedHandleLocker&) = delete;
 
-                    public:
-                        /**
-                         */
-                        nonvirtual Byte* GetPointer () const;
+    public:
+        /**
+         */
+        nonvirtual Byte* GetPointer () const;
 
-                    public:
-                        /**
-                         */
-                        nonvirtual size_t GetSize () const;
+    public:
+        /**
+         */
+        nonvirtual size_t GetSize () const;
 
-                    private:
-                        HANDLE fHandle_;
-                        Byte*  fPointer_;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        HANDLE fHandle_;
+        Byte*  fPointer_;
+    };
+
 }
 
 /*

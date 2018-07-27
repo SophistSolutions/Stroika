@@ -22,10 +22,10 @@
  *              Mean()
  *              Mode()
  *              Median()
- *          If random-accessable iteraotrs, (array etc) – use
+ *          If random-accessable iteraotrs, (array etc) ï¿½ use
  *          http://en.cppreference.com/w/cpp/algorithm/nth_element
  *          else copy to vector<> and then use nth_element?
- *          Just need something quickie…
+ *          Just need something quickieï¿½
  *
  *          Use std::nth_element from <algorithm> which is O(N):
  *          nth_element(a, a + size / 2, a + size);
@@ -39,40 +39,37 @@
  *      @todo   redo templates so can specify larger accumulator type for Mean()
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Math {
+namespace Stroika::Foundation::Math {
 
-            /**
-             *  SUPER ROUGH DRAFT
-             *  \req not empty
-             */
-            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
-            RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
-            template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-            RESULT_TYPE Mean (const CONTAINER_OF_T& container);
+    /**
+     *  SUPER ROUGH DRAFT
+     *  \req not empty
+     */
+    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
+    RESULT_TYPE Mean (ITERATOR_OF_T start, ITERATOR_OF_T end);
+    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
+    RESULT_TYPE Mean (const CONTAINER_OF_T& container);
 
-            /**
-             *  SUPER ROUGH DRAFT
-             *  \req not empty
-             */
-            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
-            RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end);
-            template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-            RESULT_TYPE Median (const CONTAINER_OF_T& container);
+    /**
+     *  SUPER ROUGH DRAFT
+     *  \req not empty
+     */
+    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
+    RESULT_TYPE Median (ITERATOR_OF_T start, ITERATOR_OF_T end);
+    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
+    RESULT_TYPE Median (const CONTAINER_OF_T& container);
 
-            /**
-             *  SUPER ROUGH DRAFT
-             *  \req not empty
-             *
-             *  \breif Alias: sd, standard-deviation, stddev
-             */
-            template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
-            RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end);
-            template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
-            RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container);
-        }
-    }
+    /**
+     *  SUPER ROUGH DRAFT
+     *  \req not empty
+     *
+     *  \breif Alias: sd, standard-deviation, stddev
+     */
+    template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
+    RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end);
+    template <typename CONTAINER_OF_T, typename RESULT_TYPE = typename CONTAINER_OF_T::value_type>
+    RESULT_TYPE StandardDeviation (const CONTAINER_OF_T& container);
+
 }
 
 /*

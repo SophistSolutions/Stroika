@@ -14,15 +14,9 @@
  *   TODO
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Math {
-            namespace LinearAlgebra {
+namespace Stroika::Foundation::Math::LinearAlgebra {
 
-                // @todo something like matrix/vector but using variadic templates to provide the extra dimensions
-            }
-        }
-    }
+    // @todo something like matrix/vector but using variadic templates to provide the extra dimensions
 }
 
 /*
