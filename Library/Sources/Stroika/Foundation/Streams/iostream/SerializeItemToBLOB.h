@@ -15,23 +15,18 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
-            namespace iostream {
+namespace Stroika::Foundation::Streams::iostream {
 
-                /**
-                 *  Handy utility to convert an element to a string representation, and then
-                 *  to a BLOB (for the purpose of encption, or digest or whatever).
-                 *
-                 *  @todo this is NOT well defined (utf8 or wide characters??? - define that it uses
-                 *  stringstream
-                 */
-                template <typename T>
-                Memory::BLOB SerializeItemToBLOB (const T& elt);
-            }
-        }
-    }
+    /**
+     *  Handy utility to convert an element to a string representation, and then
+     *  to a BLOB (for the purpose of encption, or digest or whatever).
+     *
+     *  @todo this is NOT well defined (utf8 or wide characters??? - define that it uses
+     *  stringstream
+     */
+    template <typename T>
+    Memory::BLOB SerializeItemToBLOB (const T& elt);
+
 }
 
 /*

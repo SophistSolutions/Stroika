@@ -16,21 +16,16 @@
  *          utiltiies maybe handy. I'm not sure we will want them long-term however.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
-            namespace iostream {
+namespace Stroika::Foundation::Streams::iostream {
 
-                using Memory::Byte;
+    using Memory::Byte;
 
-                wstring ReadTextStream (istream& in);
-                wstring ReadTextStream (wistream& in);
+    wstring ReadTextStream (istream& in);
+    wstring ReadTextStream (wistream& in);
 
-                vector<Byte> ReadBytes (istream& in);
-                void         WriteBytes (ostream& out, const vector<Byte>& s);
-            }
-        }
-    }
+    vector<Byte> ReadBytes (istream& in);
+    void         WriteBytes (ostream& out, const vector<Byte>& s);
+
 }
 
 #endif /*_Stroika_Foundation_Streams_iostream_Utilities_h_*/

@@ -30,47 +30,44 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Traversal {
+namespace Stroika::Foundation::Traversal {
 
-            /**
-             *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
-             *  std::function lambda closure (with smart pointers).
-             */
-            template <typename T>
-            Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext);
+    /**
+     *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
+     *  std::function lambda closure (with smart pointers).
+     */
+    template <typename T>
+    Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext);
 
-            /**
-             *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
-             *  std::function lambda closure (with smart pointers).
-             *
-             *  \par Example Usage
-             *      \code
-             *      constexpr int kMin = 1;
-             *      constexpr int kMax = 10;
-             *      auto myContext = make_shared<int> (kMin - 1);
-             *      auto getNext = [myContext] () -> optional<int> {
-             *          (*myContext)++;
-             *          if (*myContext > 10)
-             *          {
-             *              return nullopt;
-             *          }
-             *          return *myContext;
-             *      };
-             *
-             *      int sum = 0;
-             *      for (auto i : CreateGenerator<int> (getNext)) {
-             *          VerifyTestResult (1 <= i and i <= 10);
-             *          sum += i;
-             *      }
-             *      VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
-             *      \endcode
-             */
-            template <typename T>
-            Iterable<T> CreateGenerator (const function<optional<T> ()>& getNext);
-        }
-    }
+    /**
+     *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
+     *  std::function lambda closure (with smart pointers).
+     *
+     *  \par Example Usage
+     *      \code
+     *      constexpr int kMin = 1;
+     *      constexpr int kMax = 10;
+     *      auto myContext = make_shared<int> (kMin - 1);
+     *      auto getNext = [myContext] () -> optional<int> {
+     *          (*myContext)++;
+     *          if (*myContext > 10)
+     *          {
+     *              return nullopt;
+     *          }
+     *          return *myContext;
+     *      };
+     *
+     *      int sum = 0;
+     *      for (auto i : CreateGenerator<int> (getNext)) {
+     *          VerifyTestResult (1 <= i and i <= 10);
+     *          sum += i;
+     *      }
+     *      VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
+     *      \endcode
+     */
+    template <typename T>
+    Iterable<T> CreateGenerator (const function<optional<T> ()>& getNext);
+
 }
 
 /*

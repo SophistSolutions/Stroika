@@ -12,22 +12,17 @@
 #include <ostream>
 #include <sstream>
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
-            namespace iostream {
+namespace Stroika::Foundation::Streams::iostream {
 
-                template <typename T>
-                Memory::BLOB SerializeItemToBLOB (const T& elt)
-                {
-                    using Memory::Byte;
-                    stringstream out;
-                    out << elt;
-                    string tmp = out.str ();
-                    return Memory::BLOB (vector<Byte> (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::End (tmp))));
-                }
-            }
-        }
+    template <typename T>
+    Memory::BLOB SerializeItemToBLOB (const T& elt)
+    {
+        using Memory::Byte;
+        stringstream out;
+        out << elt;
+        string tmp = out.str ();
+        return Memory::BLOB (vector<Byte> (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::End (tmp))));
     }
+
 }
 #endif /*_Stroika_Foundation_Streams_iostream_SerializeItemToBLOB_inl_*/

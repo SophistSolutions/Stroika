@@ -22,28 +22,25 @@
  *              If we fix, lose note about kLowerBound/etc on DurationRange type.
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Time {
+namespace Stroika::Foundation::Time {
 
-            namespace Private_ {
-                using namespace Traversal;
-                struct DurationRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Duration, Openness::eClosed, Openness::eClosed, DurationSecondsType, DurationSecondsType> {
-                    static const Duration& kLowerBound;
-                    static const Duration& kUpperBound;
+    namespace Private_ {
+        using namespace Traversal;
+        struct DurationRangeTraitsType_ : RangeTraits::ExplicitRangeTraitsWithoutMinMax<Duration, Openness::eClosed, Openness::eClosed, DurationSecondsType, DurationSecondsType> {
+            static const Duration& kLowerBound;
+            static const Duration& kUpperBound;
 
-                    static Duration GetNext (Duration i);
-                    static Duration GetPrevious (Duration i);
-                };
-            };
+            static Duration GetNext (Duration i);
+            static Duration GetPrevious (Duration i);
+        };
+    };
 
-            /**
-             *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
-             *          static de-initializaiton.
-            */
-            using DurationRange = Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
-        }
-    }
+    /**
+     *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
+     *          static de-initializaiton.
+    */
+    using DurationRange = Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
+
 }
 
 /*

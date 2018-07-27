@@ -16,46 +16,43 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Streams {
+namespace Stroika::Foundation::Streams {
 
-            /**
-             *  A SplitterOutputStream wraps 2 output Streams,and duplicates all writes across the two.
-             *
-             *  This can can be used easily to produce logging for the communications along a stream.
-             *
-             *      \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
-             */
-            template <typename ELEMENT_TYPE>
-            class SplitterOutputStream : public OutputStream<ELEMENT_TYPE> {
-            public:
-                SplitterOutputStream ()                            = delete;
-                SplitterOutputStream (const SplitterOutputStream&) = delete;
+    /**
+     *  A SplitterOutputStream wraps 2 output Streams,and duplicates all writes across the two.
+     *
+     *  This can can be used easily to produce logging for the communications along a stream.
+     *
+     *      \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     */
+    template <typename ELEMENT_TYPE>
+    class SplitterOutputStream : public OutputStream<ELEMENT_TYPE> {
+    public:
+        SplitterOutputStream ()                            = delete;
+        SplitterOutputStream (const SplitterOutputStream&) = delete;
 
-            public:
-                /**
-                 *  There are no special methods to SplitterOutputStreamPtr, so we just re-use the baseclass Ptr smart pointer.
-                 */
-                using typename OutputStream<ELEMENT_TYPE>::Ptr;
+    public:
+        /**
+         *  There are no special methods to SplitterOutputStreamPtr, so we just re-use the baseclass Ptr smart pointer.
+         */
+        using typename OutputStream<ELEMENT_TYPE>::Ptr;
 
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *      \endcode
-                 */
-                static Ptr New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
-                static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
+    public:
+        /**
+         *  \par Example Usage
+         *      \code
+         *      \endcode
+         */
+        static Ptr New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2);
 
-            private:
-                class Rep_;
+    private:
+        class Rep_;
 
-            private:
-                using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream<ELEMENT_TYPE>, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
-            };
-        }
-    }
+    private:
+        using InternalSyncRep_ = InternallySyncrhonizedOutputStream<ELEMENT_TYPE, Streams::SplitterOutputStream<ELEMENT_TYPE>, typename SplitterOutputStream<ELEMENT_TYPE>::Rep_>;
+    };
+
 }
 
 /*

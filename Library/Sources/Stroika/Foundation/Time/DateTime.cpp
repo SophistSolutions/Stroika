@@ -617,15 +617,11 @@ SYSTEMTIME DateTime::As () const
 }
 #endif
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Time {
-            template <>
-            String DateTime::As () const
-            {
-                return Format ();
-            }
-        }
+namespace Stroika::Foundation::Time {
+    template <>
+    String DateTime::As () const
+    {
+        return Format ();
     }
 }
 

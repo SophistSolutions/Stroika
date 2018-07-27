@@ -30,19 +30,16 @@
  *
  */
 
-namespace Stroika {
-    namespace Foundation {
-        namespace Traversal {
+namespace Stroika::Foundation::Traversal {
 
-            /**
-             *  Checks if the given collection of ranges 'cover' an interval, with no overlap (sharing no points).
-             */
-            template <typename RANGETYPE>
-            bool IsPartition (const Iterable<RANGETYPE>& iterable);
-            template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
-            bool IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer);
-        }
-    }
+    /**
+     *  Checks if the given collection of ranges 'cover' an interval, with no overlap (sharing no points).
+     */
+    template <typename RANGETYPE>
+    bool IsPartition (const Iterable<RANGETYPE>& iterable);
+    template <typename RANGETYPE, typename RANGE_ELT_COMPARER>
+    bool IsPartition (const Iterable<RANGETYPE>& iterable, RANGE_ELT_COMPARER comparer);
+
 }
 
 /*

@@ -793,14 +793,10 @@ Duration Time::operator* (long double lhs, const Duration& rhs)
  ******************************** Math::Abs *************************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Foundation {
-        namespace Math {
-            template <>
-            Time::Duration Abs (Time::Duration v)
-            {
-                return (v.As<DurationSecondsType> () < 0) ? -v : v;
-            }
-        }
+namespace Stroika::Foundation::Math {
+    template <>
+    Time::Duration Abs (Time::Duration v)
+    {
+        return (v.As<DurationSecondsType> () < 0) ? -v : v;
     }
 }
