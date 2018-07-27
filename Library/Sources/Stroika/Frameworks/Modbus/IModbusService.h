@@ -16,10 +16,6 @@
  *
  *  \note   This code is basically all based on
  *          http://www.modbus.org/docs/Modbus_Messaging_Implementation_Guide_V1_0b.pdf
- *
- * TODO:
- *
- *      @todo
  */
 
 namespace Stroika {

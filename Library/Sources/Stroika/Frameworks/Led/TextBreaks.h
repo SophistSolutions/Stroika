@@ -69,7 +69,7 @@ namespace Stroika::Frameworks::Led {
                 <p> *wordStartResult and *wordEndResult are zero-based.</p>
         */
         virtual void FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const = 0;
+                                     size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const = 0;
 
     public:
         /*
@@ -82,7 +82,7 @@ namespace Stroika::Frameworks::Led {
             will probably need to change significantly.</p>
         */
         virtual void FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordEndResult, bool* wordReal) const = 0;
+                                     size_t* wordEndResult, bool* wordReal) const = 0;
     };
 
     /*
@@ -100,9 +100,9 @@ namespace Stroika::Frameworks::Led {
 
     public:
         virtual void FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const override;
+                                     size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const override;
         virtual void FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordEndResult, bool* wordReal) const override;
+                                     size_t* wordEndResult, bool* wordReal) const override;
 
     protected:
         enum CharacterClasses {
@@ -187,9 +187,9 @@ namespace Stroika::Frameworks::Led {
         // No word was found - iff *wordStartResult and *wordEndResult are equal.
         // *wordStartResult and *wordEndResult are zero-based.
         virtual void FindWordBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const override;
+                                     size_t* wordStartResult, size_t* wordEndResult, bool* wordReal) const override;
         virtual void FindLineBreaks (const Led_tChar* startOfText, size_t lengthOfText, size_t textOffsetToStartLookingForWord,
-                                        size_t* wordEndResult, bool* wordReal) const override;
+                                     size_t* wordEndResult, bool* wordReal) const override;
     };
 #endif
 

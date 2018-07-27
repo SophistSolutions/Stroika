@@ -416,15 +416,15 @@ namespace Stroika::Frameworks::Led {
 
     public:
         enum CursorMovementDirection { eCursorBack,
-                                        eCursorForward,
-                                        eCursorToStart,
-                                        eCursorToEnd };
+                                       eCursorForward,
+                                       eCursorToStart,
+                                       eCursorToEnd };
         enum CursorMovementUnit { eCursorByChar,
-                                    eCursorByWord,
-                                    eCursorByRow,
-                                    eCursorByLine,
-                                    eCursorByWindow,
-                                    eCursorByBuffer };
+                                  eCursorByWord,
+                                  eCursorByRow,
+                                  eCursorByLine,
+                                  eCursorByWindow,
+                                  eCursorByBuffer };
         virtual size_t ComputeRelativePosition (size_t fromPos, CursorMovementDirection direction, CursorMovementUnit movementUnit);
 
     public:
@@ -455,7 +455,7 @@ namespace Stroika::Frameworks::Led {
                     changes to localized regions of the text occur.</p>
         */
         virtual void GetStableTypingRegionContaingMarkerRange (size_t fromMarkerPos, size_t toMarkerPos,
-                                                                size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const = 0;
+                                                               size_t* expandedFromMarkerPos, size_t* expandedToMarkerPos) const = 0;
 
     public:
         nonvirtual Led_Rect GetTextWindowBoundingRect (size_t fromMarkerPos, size_t toMarkerPos) const;
@@ -703,10 +703,10 @@ namespace Stroika::Frameworks::Led {
                         </p>
         */
         enum DefaultColorIndex { eDefaultTextColor,
-                                    eDefaultBackgroundColor,
-                                    eDefaultSelectedTextColor,
-                                    eDefaultSelectedTextBackgroundColor,
-                                    eMaxDefaultColorIndex };
+                                 eDefaultBackgroundColor,
+                                 eDefaultSelectedTextColor,
+                                 eDefaultSelectedTextBackgroundColor,
+                                 eMaxDefaultColorIndex };
         nonvirtual Led_Color* GetDefaultTextColor (DefaultColorIndex dci) const;
         nonvirtual Led_Color GetEffectiveDefaultTextColor (DefaultColorIndex dci) const;
         nonvirtual void      ClearDefaultTextColor (DefaultColorIndex dci);
@@ -724,11 +724,11 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         virtual void DrawRow (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
-                                const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing);
+                              const TextLayoutBlock& text, size_t rowStart, size_t rowEnd, bool printing);
         virtual void DrawRowSegments (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
-                                        const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
+                                      const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
         virtual void DrawRowHilight (Led_Tablet tablet, const Led_Rect& currentRowRect, const Led_Rect& invalidRowRect,
-                                        const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
+                                     const TextLayoutBlock& text, size_t rowStart, size_t rowEnd);
         virtual void DrawInterLineSpace (Led_Distance interlineSpace, Led_Tablet tablet, Led_Coordinate vPosOfTopOfInterlineSpace, bool segmentHilighted, bool printing);
 
     protected:
@@ -745,13 +745,13 @@ namespace Stroika::Frameworks::Led {
 
     protected:
         virtual void DrawSegment (Led_Tablet tablet,
-                                    size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
-                                    Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn);
+                                  size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, const Led_Rect& invalidRect,
+                                  Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn);
 
     public:
         // Note we REQUIRE that useBaseLine be contained within drawInto
         nonvirtual void DrawSegment_ (Led_Tablet tablet, const Led_FontSpecification& fontSpec,
-                                        size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) const;
+                                      size_t from, size_t to, const TextLayoutBlock& text, const Led_Rect& drawInto, Led_Coordinate useBaseLine, Led_Distance* pixelsDrawn) const;
 
     protected:
         // distanceResults must be an array of (to-from) elements - which is filled in with the widths
@@ -762,12 +762,12 @@ namespace Stroika::Frameworks::Led {
         // is distanceResults[b-from-1] - and of course ZERO if b == from
         //
         virtual void MeasureSegmentWidth (size_t from, size_t to, const Led_tChar* text,
-                                            Led_Distance* distanceResults) const;
+                                          Led_Distance* distanceResults) const;
 
     public:
         nonvirtual void MeasureSegmentWidth_ (const Led_FontSpecification& fontSpec, size_t from, size_t to,
-                                                const Led_tChar* text,
-                                                Led_Distance*    distanceResults) const;
+                                              const Led_tChar* text,
+                                              Led_Distance*    distanceResults) const;
 
     protected:
         virtual Led_Distance MeasureSegmentHeight (size_t from, size_t to) const;
