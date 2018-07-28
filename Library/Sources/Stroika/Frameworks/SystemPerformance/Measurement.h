@@ -20,29 +20,26 @@
  *
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace SystemPerformance {
+namespace Stroika::Frameworks::SystemPerformance {
 
-            using namespace Stroika::Foundation;
-            using Characters::String;
-            using Containers::Collection;
-            using DataExchange::VariantValue;
+    using namespace Stroika::Foundation;
+    using Characters::String;
+    using Containers::Collection;
+    using DataExchange::VariantValue;
 
-            /**
-             *
-             */
-            using MeasurementType = DataExchange::Atom<>;
+    /**
+     *
+     */
+    using MeasurementType = DataExchange::Atom<>;
 
-            /**
-             *
-             */
-            struct Measurement {
-                MeasurementType fType;
-                VariantValue    fValue;
-            };
-        }
-    }
+    /**
+     *
+     */
+    struct Measurement {
+        MeasurementType fType;
+        VariantValue    fValue;
+    };
+
 }
 
 /*

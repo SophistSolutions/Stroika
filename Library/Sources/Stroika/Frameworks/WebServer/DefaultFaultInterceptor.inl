@@ -10,10 +10,6 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebServer {
-        }
-    }
+namespace Stroika::Frameworks::WebServer {
 }
 #endif /*_Stroika_Frameworks_WebServer_DefaultFaultInterceptor_inl_*/

@@ -9,34 +9,31 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Foundation/Containers/Common.h"
+//#include "../../Foundation/Containers/Common.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebServer {
+namespace Stroika::Frameworks::WebServer {
 
-            /*
-             ********************************************************************************
-             ******************************** WebServer::Route ******************************
-             ********************************************************************************
-             */
-            inline Route::Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
-                : fVerbMatch_ (verbMatch)
-                , fPathMatch_ (pathMatch)
-                , fHandler_ (handler)
-            {
-            }
-            inline Route::Route (const RegularExpression& pathMatch, const RequestHandler& handler)
-                : fPathMatch_ (pathMatch)
-                , fHandler_ (handler)
-            {
-            }
-            inline Route::Route (const function<bool(const Request&)>& requestMatcher, const RequestHandler& handler)
-                : fRequestMatch_ (requestMatcher)
-                , fHandler_ (handler)
-            {
-            }
-        }
+    /*
+     ********************************************************************************
+     ******************************** WebServer::Route ******************************
+     ********************************************************************************
+     */
+    inline Route::Route (const RegularExpression& verbMatch, const RegularExpression& pathMatch, const RequestHandler& handler)
+        : fVerbMatch_ (verbMatch)
+        , fPathMatch_ (pathMatch)
+        , fHandler_ (handler)
+    {
     }
+    inline Route::Route (const RegularExpression& pathMatch, const RequestHandler& handler)
+        : fPathMatch_ (pathMatch)
+        , fHandler_ (handler)
+    {
+    }
+    inline Route::Route (const function<bool(const Request&)>& requestMatcher, const RequestHandler& handler)
+        : fRequestMatch_ (requestMatcher)
+        , fHandler_ (handler)
+    {
+    }
+
 }
 #endif /*_Stroika_Frameworks_WebServer_Router_inl_*/

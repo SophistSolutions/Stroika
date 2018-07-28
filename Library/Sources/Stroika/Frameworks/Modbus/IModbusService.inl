@@ -9,12 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Foundation/Execution/Thread.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace Modbus {
-        }
-    }
+namespace Stroika::Frameworks::Modbus {
 }
 #endif /*_Stroika_Frameworks_Modbus_IModbusService_inl_*/

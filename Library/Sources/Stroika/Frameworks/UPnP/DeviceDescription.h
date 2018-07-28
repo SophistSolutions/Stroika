@@ -21,84 +21,81 @@
  *      @todo   Add serviceList support
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
+namespace Stroika::Frameworks::UPnP {
 
-            using namespace Stroika::Foundation;
-            using Characters::String;
-            using Containers::Collection;
-            using DataExchange::InternetMediaType;
-            using IO::Network::URL;
+    using namespace Stroika::Foundation;
+    using Characters::String;
+    using Containers::Collection;
+    using DataExchange::InternetMediaType;
+    using IO::Network::URL;
+
+    /**
+     * high level device description - from ssdp. This is the BASIC device info
+     * whcih appears to the XML file (poitned to by Device location field).
+     */
+    struct DeviceDescription {
+        optional<URL> fPresentationURL;
+        String        fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
+        String        fManufactureName;
+        String        fFriendlyName;
+        optional<URL> fManufacturingURL;
+        String        fModelDescription;
+        String        fModelName;
+        String        fModelNumber;
+        optional<URL> fModelURL;
+        String        fSerialNumber;
+        String        fUPC;
+
+        /**
+         */
+        struct Icon {
+            Icon ();
+
+            InternetMediaType fMimeType;
+            uint16_t          fHorizontalPixels;
+            uint16_t          fVerticalPixels;
+            uint16_t          fColorDepth;
+            URL               fURL; // url to the icon image file
 
             /**
-             * high level device description - from ssdp. This is the BASIC device info
-             * whcih appears to the XML file (poitned to by Device location field).
+             *  @see Characters::ToString ();
              */
-            struct DeviceDescription {
-                optional<URL> fPresentationURL;
-                String        fDeviceType; //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
-                String        fManufactureName;
-                String        fFriendlyName;
-                optional<URL> fManufacturingURL;
-                String        fModelDescription;
-                String        fModelName;
-                String        fModelNumber;
-                optional<URL> fModelURL;
-                String        fSerialNumber;
-                String        fUPC;
+            nonvirtual String ToString () const;
+        };
+        Collection<Icon> fIcons;
 
-                /**
-                 */
-                struct Icon {
-                    Icon ();
+        /**
+         */
+        struct Service {
+            String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v
+            String fServiceID;   // e.g. urn:upnp-org:serviceId:serviceID
+            URL    fSCPDURL;     // URL to service description
+            URL    fControlURL;  // URL to service description
+            URL    fEventSubURL; // URL to service description
 
-                    InternetMediaType fMimeType;
-                    uint16_t          fHorizontalPixels;
-                    uint16_t          fVerticalPixels;
-                    uint16_t          fColorDepth;
-                    URL               fURL; // url to the icon image file
+            /**
+             *  @see Characters::ToString ();
+             */
+            nonvirtual String ToString () const;
+        };
+        Collection<Service> fServices;
 
-                    /**
-                     *  @see Characters::ToString ();
-                     */
-                    nonvirtual String ToString () const;
-                };
-                Collection<Icon> fIcons;
+        DeviceDescription ();
 
-                /**
-                 */
-                struct Service {
-                    String fServiceType; // e.g. urn:schemas-upnp-org:service:serviceType:v
-                    String fServiceID;   // e.g. urn:upnp-org:serviceId:serviceID
-                    URL    fSCPDURL;     // URL to service description
-                    URL    fControlURL;  // URL to service description
-                    URL    fEventSubURL; // URL to service description
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+    };
 
-                    /**
-                     *  @see Characters::ToString ();
-                     */
-                    nonvirtual String ToString () const;
-                };
-                Collection<Service> fServices;
+    /*
+    */
+    Memory::BLOB Serialize (const Device& d, const DeviceDescription& dd);
 
-                DeviceDescription ();
+    /*
+    */
+    DeviceDescription DeSerialize (const Memory::BLOB& b);
 
-                /**
-                 *  @see Characters::ToString ();
-                 */
-                nonvirtual String ToString () const;
-            };
-
-            /*
-            */
-            Memory::BLOB Serialize (const Device& d, const DeviceDescription& dd);
-
-            /*
-            */
-            DeviceDescription DeSerialize (const Memory::BLOB& b);
-        }
-    }
 }
 
 /*

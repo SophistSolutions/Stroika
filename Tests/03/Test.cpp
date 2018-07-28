@@ -61,25 +61,21 @@ namespace {
         };
     }
 }
-namespace Stroika {
-    namespace Foundation {
-        namespace Configuration {
-            template <>
-            struct DefaultNames<Test2_EnumNames_Private_::fooEnum> : EnumNames<Test2_EnumNames_Private_::fooEnum> {
-                static constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> k{
-                    EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{
-                        {
-                            {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
-                            {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
-                        }}};
-                DefaultNames ()
-                    : EnumNames<Test2_EnumNames_Private_::fooEnum> (k)
+namespace Stroika::Foundation::Configuration {
+    template <>
+    struct DefaultNames<Test2_EnumNames_Private_::fooEnum> : EnumNames<Test2_EnumNames_Private_::fooEnum> {
+        static constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> k{
+            EnumNames<Test2_EnumNames_Private_::fooEnum>::BasicArrayInitializer{
                 {
-                }
-            };
-            constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k;
+                    {Test2_EnumNames_Private_::fooEnum::eOne, L"eOne"},
+                    {Test2_EnumNames_Private_::fooEnum::eTwo, L"eTwo"},
+                }}};
+        DefaultNames ()
+            : EnumNames<Test2_EnumNames_Private_::fooEnum> (k)
+        {
         }
-    }
+    };
+    constexpr EnumNames<Test2_EnumNames_Private_::fooEnum> DefaultNames<Test2_EnumNames_Private_::fooEnum>::k;
 }
 namespace {
     void Test2_EnumNames_ ()

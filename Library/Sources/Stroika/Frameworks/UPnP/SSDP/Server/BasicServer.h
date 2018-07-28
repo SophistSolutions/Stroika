@@ -27,37 +27,30 @@
  *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-                namespace Server {
+namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
-                    /*
-                     *  When this object is instantiated, it fires off threads to notify and respond to
-                     *  searches. When it is destroyed, it stops doing that.
-                    */
-                    class BasicServer {
-                    public:
-                        using FrequencyInfo = PeriodicNotifier::FrequencyInfo;
+    /**
+     *  When this object is instantiated, it fires off threads to notify and respond to
+     *  searches. When it is destroyed, it stops doing that.
+     */
+    class BasicServer {
+    public:
+        using FrequencyInfo = PeriodicNotifier::FrequencyInfo;
 
-                    public:
-                        /*
-                         *  if the HOST part of d.fLocation is empty, it will dynamically be populated with the hosts primary IP address
-                         *  see IO::Network::GetPrimaryInternetAddress () - when the server broadcasts it
-                         */
-                        BasicServer (const BasicServer&) = delete;
-                        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi);
-                        const BasicServer& operator= (const BasicServer&) = delete;
+    public:
+        /*
+         *  if the HOST part of d.fLocation is empty, it will dynamically be populated with the hosts primary IP address
+         *  see IO::Network::GetPrimaryInternetAddress () - when the server broadcasts it
+         */
+        BasicServer (const BasicServer&) = delete;
+        BasicServer (const Device& d, const DeviceDescription& dd, const FrequencyInfo& fi);
+        const BasicServer& operator= (const BasicServer&) = delete;
 
-                    private:
-                        class Rep_;
-                        shared_ptr<Rep_> fRep_;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        class Rep_;
+        shared_ptr<Rep_> fRep_;
+    };
+
 }
 
 /*

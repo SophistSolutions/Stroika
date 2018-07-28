@@ -24,43 +24,36 @@
  *      @todo   This is a rough draft implementation. Quite incomplete (and not sure working, untested)
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-                namespace Server {
+namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
-                    using Traversal::Iterable;
+    using Traversal::Iterable;
 
-                    /**
-                     *
-                     */
-                    class SearchResponder {
-                    public:
-                        SearchResponder ();
-                        SearchResponder (const SearchResponder&) = delete;
-                        const SearchResponder operator= (const SearchResponder&) = delete;
-                        ~SearchResponder ()                                      = default;
+    /**
+     *
+     */
+    class SearchResponder {
+    public:
+        SearchResponder ();
+        SearchResponder (const SearchResponder&) = delete;
+        const SearchResponder operator= (const SearchResponder&) = delete;
+        ~SearchResponder ()                                      = default;
 
-                    public:
-                        nonvirtual void Run (const Iterable<Advertisement>& advertisements);
+    public:
+        nonvirtual void Run (const Iterable<Advertisement>& advertisements);
 
 #if 0
-                        //...
-                        //Get/Set supported DeviceEntries ();
+        //...
+        //Get/Set supported DeviceEntries ();
 
-                        //Get/Set Refresh/MaxAge (default is autocompute refresh pace based on maxage)
+        //Get/Set Refresh/MaxAge (default is autocompute refresh pace based on maxage)
 
-                        // smart ptr to one of these - caller keeps it around, it runs in its own
-                        // thread as needed, does responses etc.
+        // smart ptr to one of these - caller keeps it around, it runs in its own
+        // thread as needed, does responses etc.
 #endif
-                    private:
-                        Execution::Thread::CleanupPtr fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-                    };
-                }
-            }
-        }
-    }
+    private:
+        Execution::Thread::CleanupPtr fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    };
+
 }
 
 /*

@@ -24,28 +24,23 @@
  *  Also - http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
+namespace Stroika::Frameworks::UPnP::SSDP {
 
-                namespace V4 {
-                    extern const Foundation::IO::Network::SocketAddress kSocketAddress;
-                }
-                namespace V6 {
-                    extern const Foundation::IO::Network::SocketAddress kSocketAddress;
-                }
-
-                using Foundation::Characters::String;
-                using Foundation::Characters::String_Constant;
-
-                /**
-                 *  MakeServerHeaderValue
-                 */
-                String MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion = Foundation::Configuration::GetSystemConfiguration_OperatingSystem ().fRFC1945CompatProductTokenWithVersion, const String& useUPNPVersion = String_Constant (L"UPnP/1.0"));
-            }
-        }
+    namespace V4 {
+        extern const Foundation::IO::Network::SocketAddress kSocketAddress;
     }
+    namespace V6 {
+        extern const Foundation::IO::Network::SocketAddress kSocketAddress;
+    }
+
+    using Foundation::Characters::String;
+    using Foundation::Characters::String_Constant;
+
+    /**
+     *  MakeServerHeaderValue
+     */
+    String MakeServerHeaderValue (const String& useProductTokenWithVersion, const String& usePlatformTokenAndVersion = Foundation::Configuration::GetSystemConfiguration_OperatingSystem ().fRFC1945CompatProductTokenWithVersion, const String& useUPNPVersion = String_Constant (L"UPnP/1.0"));
+
 }
 
 /*

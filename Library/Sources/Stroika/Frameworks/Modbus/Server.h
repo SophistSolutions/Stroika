@@ -28,64 +28,60 @@
  *
  *      @todo
  */
+namespace Stroika::Frameworks::Modbus {
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace Modbus {
+    using namespace Stroika::Foundation;
 
-            using namespace Stroika::Foundation;
+    /**
+     */
+    struct ServerOptions {
+        /**
+         *  By spec, defaults to 502
+         */
+        optional<uint16_t> fListenPort;
 
-            /**
-             */
-            struct ServerOptions {
-                /**
-                 *  By spec, defaults to 502
-                 */
-                optional<uint16_t> fListenPort;
+        /**
+         *  Logger to write interesting messages to.
+         */
+        optional<Execution::Logger*> fLogger;
 
-                /**
-                 *  Logger to write interesting messages to.
-                 */
-                optional<Execution::Logger*> fLogger;
+        /**
+         *  Often helpful to specify reUseAddr = true, to avoid trouble restarting service
+         */
+        optional<IO::Network::Socket::BindFlags> fBindFlags;
 
-                /**
-                 *  Often helpful to specify reUseAddr = true, to avoid trouble restarting service
-                 */
-                optional<IO::Network::Socket::BindFlags> fBindFlags;
+        /**
+         *  To specify size, provide your own threadpool
+         */
+        shared_ptr<Execution::ThreadPool> fThreadPool;
 
-                /**
-                 *  To specify size, provide your own threadpool
-                 */
-                shared_ptr<Execution::ThreadPool> fThreadPool;
+        /**
+         *  defaults to true iff argument fThreadPool null.
+         *
+         *  \note   Either let this class or caller must shutdown threadpool before exiting app.
+         */
+        optional<bool> fShutdownThreadPool;
+    };
 
-                /**
-                 *  defaults to true iff argument fThreadPool null.
-                 *
-                 *  \note   Either let this class or caller must shutdown threadpool before exiting app.
-                 */
-                optional<bool> fShutdownThreadPool;
-            };
+    /**
+     *  Construct a Modbus TCP Listener which will listen for Modbus connections, run them using
+     *  the optionally provided thread pool (and other configuration options) and send actual handler
+     *  requests to the argument IModbusService handler.
+     *
+     *  Supported Function Codes:
+     *      o   kReadCoils              (#1)
+     *      o   ReadDiscreteInputs      (#2)
+     *      o   ReadHoldingResisters    (#3)
+     *      o   ReadInputRegister       (#4)
+     *      o   WriteSingleCoil         (#5)
+     *
+     *  \req serviceHandler != nullptr
+     */
+    Execution::Thread::Ptr MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions{});
 
-            /**
-             *  Construct a Modbus TCP Listener which will listen for Modbus connections, run them using
-             *  the optionally provided thread pool (and other configuration options) and send actual handler
-             *  requests to the argument IModbusService handler.
-             *
-             *  Supported Function Codes:
-             *      o   kReadCoils              (#1)
-             *      o   ReadDiscreteInputs      (#2)
-             *      o   ReadHoldingResisters    (#3)
-             *      o   ReadInputRegister       (#4)
-             *      o   WriteSingleCoil         (#5)
-             *
-             *  \req serviceHandler != nullptr
-             */
-            Execution::Thread::Ptr MakeModbusTCPServerThread (const shared_ptr<IModbusService>& serviceHandler, const ServerOptions& options = ServerOptions{});
+    template <typename MODBUS_REGISTER_DESCRIPTOR, typename SRC_TYPE>
+    void SplitSrcAcrossOutputs (const SRC_TYPE& s, typename MODBUS_REGISTER_DESCRIPTOR::NameType baseRegister, Containers::Mapping<typename MODBUS_REGISTER_DESCRIPTOR::NameType, typename MODBUS_REGISTER_DESCRIPTOR::ValueType>* update);
 
-            template <typename MODBUS_REGISTER_DESCRIPTOR, typename SRC_TYPE>
-            void SplitSrcAcrossOutputs (const SRC_TYPE& s, typename MODBUS_REGISTER_DESCRIPTOR::NameType baseRegister, Containers::Mapping<typename MODBUS_REGISTER_DESCRIPTOR::NameType, typename MODBUS_REGISTER_DESCRIPTOR::ValueType>* update);
-        }
-    }
 }
 
 /*

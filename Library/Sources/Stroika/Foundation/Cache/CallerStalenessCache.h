@@ -31,118 +31,117 @@
  *
  */
 
-namespace Stroika::Foundation {
-    namespace Cache {
+namespace Stroika::Foundation::Cache {
 
+    /**
+     */
+    struct CallerStalenessCache_Traits_DEFAULT {
+        using TimeStampType = Time::DurationSecondsType; // type must support operator<()
+        static TimeStampType GetCurrentTimestamp ();
+    };
+
+    /**
+     *  The idea behind this cache is to track when something is added, and that the lookup function can avoid
+     *  a costly call to compute something if its been recently enough added.
+     *
+     *  For example, consider a system where memory is stored across a slow bus, and several components need to read data from
+     *  across that bus. But the different components have different tolerance for staleness (e.g. PID loop needs fresh temperature sensor
+     *  data but GUI can use stale data).
+     *
+     *  This CallerStalenessCache will store when the value is updated, and let the caller either return the
+     *  value from cache, or fetch it and update the cache if needed.
+     *
+     *  This differs from other forms of caches in that:
+     *      o   It records the timestamp when a value is last-updated
+     *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
+     *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
+     *
+     *  @see TimedCache
+     */
+    template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
+    class CallerStalenessCache {
+    public:
         /**
          */
-        struct CallerStalenessCache_Traits_DEFAULT {
-            using TimeStampType = Time::DurationSecondsType; // type must support operator<()
-            static TimeStampType GetCurrentTimestamp ();
-        };
+        using TimeStampType = typename TIME_TRAITS::TimeStampType;
 
+    public:
         /**
-         *  The idea behind this cache is to track when something is added, and that the lookup function can avoid
-         *  a costly call to compute something if its been recently enough added.
-         *
-         *  For example, consider a system where memory is stored across a slow bus, and several components need to read data from
-         *  across that bus. But the different components have different tolerance for staleness (e.g. PID loop needs fresh temperature sensor
-         *  data but GUI can use stale data).
-         *
-         *  This CallerStalenessCache will store when the value is updated, and let the caller either return the
-         *  value from cache, or fetch it and update the cache if needed.
-         *
-         *  This differs from other forms of caches in that:
-         *      o   It records the timestamp when a value is last-updated
-         *      o   It doesn't EXPIRE the data ever (except by explicit Clear or ClearOlderThan call)
-         *      o   The lookup caller specifies its tollerance for data staleness, and refreshes the data as needed.
-         *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-         *
-         *  @see TimedCache
          */
-        template <typename KEY, typename VALUE, typename TIME_TRAITS = CallerStalenessCache_Traits_DEFAULT>
-        class CallerStalenessCache {
-        public:
-            /**
-             */
-            using TimeStampType = typename TIME_TRAITS::TimeStampType;
+        static TimeStampType GetCurrentTimestamp ();
 
-        public:
-            /**
-             */
-            static TimeStampType GetCurrentTimestamp ();
+    public:
+        /**
+         *  Return the timestamp backwards the given timestamp.
+         *
+         *  \req backThisTime >= 0
+         *
+         *  \par Example Usage
+         *      \code
+         *      CallerStalenessCache<> cc;
+         *      if (optional<VALUE> v= cc.Lookup (k, cc.Ago (5)) {
+         *          // look key, but throw disregard if older than 5 seconds (from now)
+         *      }
+         *      \endcode
+         */
+        static TimeStampType Ago (TimeStampType backThisTime);
 
-        public:
-            /**
-             *  Return the timestamp backwards the given timestamp.
-             *
-             *  \req backThisTime >= 0
-             *
-             *  \par Example Usage
-             *      \code
-             *      CallerStalenessCache<> cc;
-             *      if (optional<VALUE> v= cc.Lookup (k, cc.Ago (5)) {
-             *          // look key, but throw disregard if older than 5 seconds (from now)
-             *      }
-             *      \endcode
-             */
-            static TimeStampType Ago (TimeStampType backThisTime);
+    public:
+        /**
+         */
+        nonvirtual void ClearOlderThan (TimeStampType t);
 
-        public:
-            /**
-             */
-            nonvirtual void ClearOlderThan (TimeStampType t);
+    public:
+        /**
+         */
+        nonvirtual void Clear ();
+        nonvirtual void Clear (KEY k);
 
-        public:
-            /**
-             */
-            nonvirtual void Clear ();
-            nonvirtual void Clear (KEY k);
+    public:
+        /**
+         *  This not only adds the association of KEY k to VALUE v, but updates the timestamp associated with k.
+         */
+        nonvirtual void Add (KEY k, VALUE v);
 
-        public:
-            /**
-             *  This not only adds the association of KEY k to VALUE v, but updates the timestamp associated with k.
-             */
-            nonvirtual void Add (KEY k, VALUE v);
+    public:
+        /**
+         *  Usually one will use this as
+         *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
+         *
+         *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
+         *  but just see if a value is present.
+         *
+         *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
+         *
+         *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
+         */
+        nonvirtual optional<VALUE> Lookup (KEY k, TimeStampType staleIfOlderThan);
+        nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
+        nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
 
-        public:
-            /**
-             *  Usually one will use this as
-             *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
-             *
-             *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
-             *  but just see if a value is present.
-             *
-             *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
-             *
-             *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
-             */
-            nonvirtual optional<VALUE> Lookup (KEY k, TimeStampType staleIfOlderThan);
-            nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
-            nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
+    public:
+        /**
+         * \brief STL-ish alias for Clear/RemoveAll ().
+         */
+        nonvirtual void clear ();
 
-        public:
-            /**
-             * \brief STL-ish alias for Clear/RemoveAll ().
-             */
-            nonvirtual void clear ();
-
-        private:
-            struct myVal_ {
-                VALUE         fValue;
-                TimeStampType fDataCapturedAt;
-                myVal_ (VALUE&& v, TimeStampType t)
-                    : fValue (move (v))
-                    , fDataCapturedAt (t)
-                {
-                }
-            };
-
-        private:
-            Containers::Mapping<KEY, myVal_> fMap_;
+    private:
+        struct myVal_ {
+            VALUE         fValue;
+            TimeStampType fDataCapturedAt;
+            myVal_ (VALUE&& v, TimeStampType t)
+                : fValue (move (v))
+                , fDataCapturedAt (t)
+            {
+            }
         };
-    }
+
+    private:
+        Containers::Mapping<KEY, myVal_> fMap_;
+    };
+
 }
 
 /*

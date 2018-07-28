@@ -52,16 +52,8 @@ public:
 #endif
 
 #if qLedCheckCompilerFlagsConsistency
-namespace Stroika {
-    namespace Frameworks {
-        namespace Led {
-            namespace Platform {
-                namespace LedCheckCompilerFlags_Led_MFC {
-                    int LedCheckCompilerFlags_ (qMFCRequiresCWndLeftmostBaseClass) = qMFCRequiresCWndLeftmostBaseClass;
-                }
-            }
-        }
-    }
+namespace Stroika::Frameworks::Led::Platform::LedCheckCompilerFlags_Led_MFC {
+    int LedCheckCompilerFlags_ (qMFCRequiresCWndLeftmostBaseClass) = qMFCRequiresCWndLeftmostBaseClass;
 }
 #endif
 

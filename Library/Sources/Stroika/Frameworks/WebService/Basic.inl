@@ -9,10 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebService {
-        }
-    }
+namespace Stroika::Frameworks::WebService {
 }
 #endif /*_Stroika_Framework_WebService_Basic_inl_*/

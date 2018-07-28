@@ -1763,17 +1763,11 @@ bool Led::Led_CasedStringsEqual (const string& lhs, const string& rhs, bool igno
 }
 
 #if qLedCheckCompilerFlagsConsistency
-namespace Stroika {
-    namespace Frameworks {
-        namespace Led {
-            namespace LedCheckCompilerFlags {
-                int LedCheckCompilerFlags_ (qDebug)                = qDebug;
-                int LedCheckCompilerFlags_ (qSingleByteCharacters) = qSingleByteCharacters;
-                int LedCheckCompilerFlags_ (qMultiByteCharacters)  = qMultiByteCharacters;
-                int LedCheckCompilerFlags_ (qWideCharacters)       = qWideCharacters;
-                int LedCheckCompilerFlags_ (qProvideIMESupport)    = qProvideIMESupport;
-            }
-        }
-    }
+namespace Stroika::Frameworks::Led::LedCheckCompilerFlags {
+    int LedCheckCompilerFlags_ (qDebug)                = qDebug;
+    int LedCheckCompilerFlags_ (qSingleByteCharacters) = qSingleByteCharacters;
+    int LedCheckCompilerFlags_ (qMultiByteCharacters)  = qMultiByteCharacters;
+    int LedCheckCompilerFlags_ (qWideCharacters)       = qWideCharacters;
+    int LedCheckCompilerFlags_ (qProvideIMESupport)    = qProvideIMESupport;
 }
 #endif

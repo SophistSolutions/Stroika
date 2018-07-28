@@ -9,12 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Foundation/Containers/Common.h"
-
-namespace Stroika {
-    namespace Frameworks {
-        namespace SystemPerformance {
-        }
-    }
+namespace Stroika::Frameworks::SystemPerformance {
 }
 #endif /*_Stroika_Frameworks_SystemPerformance_Measurement_inl_*/

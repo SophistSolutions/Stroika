@@ -15,50 +15,47 @@
 
 #include "PartitioningTextImager.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace Led {
+namespace Stroika::Frameworks::Led {
 
-            /*
-            @CLASS:         LineBasedPartition
-            @BASES:         virtual @'Partition'
-            @DESCRIPTION:   <p>Partition which implements the partitioning based on NL characters.</p>
-                            <p>As of Led 3.0, it is the only concrete partition supported, and its the overwhelmingly
-                        most likely one you would want to use. But - in some applications (notably LogoVista Translator Assistant) -
-                        it can be quite handy being able to override how this partitioning takes place.</p>
-            */
-            class LineBasedPartition : public Partition {
-            private:
-                using inherited = Partition;
+    /*
+    @CLASS:         LineBasedPartition
+    @BASES:         virtual @'Partition'
+    @DESCRIPTION:   <p>Partition which implements the partitioning based on NL characters.</p>
+                    <p>As of Led 3.0, it is the only concrete partition supported, and its the overwhelmingly
+                most likely one you would want to use. But - in some applications (notably LogoVista Translator Assistant) -
+                it can be quite handy being able to override how this partitioning takes place.</p>
+    */
+    class LineBasedPartition : public Partition {
+    private:
+        using inherited = Partition;
 
-            public:
-                LineBasedPartition (TextStore& textStore);
+    public:
+        LineBasedPartition (TextStore& textStore);
 
-            protected:
-                enum SpecialHackToDisableInit { eSpecialHackToDisableInit };
-                LineBasedPartition (TextStore& textStore, SpecialHackToDisableInit hack);
-                virtual void FinalConstruct () override;
+    protected:
+        enum SpecialHackToDisableInit { eSpecialHackToDisableInit };
+        LineBasedPartition (TextStore& textStore, SpecialHackToDisableInit hack);
+        virtual void FinalConstruct () override;
 
-            public:
-                virtual void UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept override;
+    public:
+        virtual void UpdatePartitions (PartitionMarker* pm, const UpdateInfo& updateInfo) noexcept override;
 
-            protected:
-                virtual void CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept;
-                virtual bool NeedToCoalesce (PartitionMarker* pm) noexcept;
+    protected:
+        virtual void CheckForSplits (PartitionMarker* pm, const UpdateInfo& updateInfo, size_t i) noexcept;
+        virtual bool NeedToCoalesce (PartitionMarker* pm) noexcept;
 
 #if qDebug
-            protected:
-                virtual void Invariant_ () const override;
+    protected:
+        virtual void Invariant_ () const override;
 #endif
-            };
+    };
 
-            /*
-             ********************************************************************************
-             ***************************** Implementation Details ***************************
-             ********************************************************************************
-             */
-        }
-    }
+    /*
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
+
 }
 
 #endif /*_Stroika_Frameworks_Led_LineBasedPartition_h_*/

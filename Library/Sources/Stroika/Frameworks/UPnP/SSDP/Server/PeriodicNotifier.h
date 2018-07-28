@@ -25,51 +25,44 @@
  *      @todo   Did rough draft implementation. Works for some simple cases.
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-                namespace Server {
+namespace Stroika::Frameworks::UPnP::SSDP::Server {
 
-                    using Traversal::Iterable;
+    using Traversal::Iterable;
 
-                    /**
-                     *  A big part of SSDP server functinality is to send periodic notifications of the Device info
-                     *
-                     *
-                     *  Could pass in thread or maybe just keep it hidden
-                     *
-                     */
-                    class PeriodicNotifier {
-                    public:
-                        PeriodicNotifier ()                        = default;
-                        PeriodicNotifier (const PeriodicNotifier&) = delete;
-                        const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
-                        ~PeriodicNotifier ()                                       = default;
+    /**
+     *  A big part of SSDP server functinality is to send periodic notifications of the Device info
+     *
+     *
+     *  Could pass in thread or maybe just keep it hidden
+     *
+     */
+    class PeriodicNotifier {
+    public:
+        PeriodicNotifier ()                        = default;
+        PeriodicNotifier (const PeriodicNotifier&) = delete;
+        const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
+        ~PeriodicNotifier ()                                       = default;
 
-                    public:
-                        // Very primitive definition - should refine - read details on spec on this...
-                        struct FrequencyInfo {
-                            Time::DurationSecondsType fRepeatInterval = 3 * 60.0;
-                        };
-                        nonvirtual void Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
+    public:
+        // Very primitive definition - should refine - read details on spec on this...
+        struct FrequencyInfo {
+            Time::DurationSecondsType fRepeatInterval = 3 * 60.0;
+        };
+        nonvirtual void Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
 
 #if 0
-                        //...
-                        //Get/Set supported DeviceEntries ();
+        //...
+        //Get/Set supported DeviceEntries ();
 
-                        //Get/Set Refresh/MaxAge (default is autocompute refresh pace based on maxage)
+        //Get/Set Refresh/MaxAge (default is autocompute refresh pace based on maxage)
 
-                        // smart ptr to one of these - caller keeps it around, it runs in its own
-                        // thread as needed, does responses etc.
+        // smart ptr to one of these - caller keeps it around, it runs in its own
+        // thread as needed, does responses etc.
 #endif
-                    private:
-                        Execution::Thread::CleanupPtr fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
-                    };
-                }
-            }
-        }
-    }
+    private:
+        Execution::Thread::CleanupPtr fListenThread_{Execution::Thread::CleanupPtr::eAbortBeforeWaiting};
+    };
+
 }
 
 /*

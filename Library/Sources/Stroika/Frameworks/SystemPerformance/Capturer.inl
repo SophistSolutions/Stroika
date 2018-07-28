@@ -11,16 +11,6 @@
  */
 #include "../../Foundation/Containers/Common.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace SystemPerformance {
-
-            /*
-             ********************************************************************************
-             **************** CapturerTraits_::EqualsCompareFunctionType ******************
-             ********************************************************************************
-             */
-        }
-    }
+namespace Stroika::Frameworks::SystemPerformance {
 }
 #endif /*_Stroika_Frameworks_SystemPerformance_Capturer_inl_*/

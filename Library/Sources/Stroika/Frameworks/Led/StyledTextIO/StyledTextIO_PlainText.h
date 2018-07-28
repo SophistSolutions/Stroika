@@ -14,46 +14,41 @@
 
 #include "StyledTextIO.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace Led {
-            namespace StyledTextIO {
+namespace Stroika::Frameworks::Led::StyledTextIO {
 
-                /*
-                @CLASS:         StyledTextIOReader_PlainText
-                @BASES:         @'StyledTextIOReader'
-                @DESCRIPTION:
-                */
-                class StyledTextIOReader_PlainText : public StyledTextIOReader {
-                public:
-                    StyledTextIOReader_PlainText (SrcStream* srcStream, SinkStream* sinkStream);
+    /*
+    @CLASS:         StyledTextIOReader_PlainText
+    @BASES:         @'StyledTextIOReader'
+    @DESCRIPTION:
+    */
+    class StyledTextIOReader_PlainText : public StyledTextIOReader {
+    public:
+        StyledTextIOReader_PlainText (SrcStream* srcStream, SinkStream* sinkStream);
 
-                public:
-                    virtual void Read () override;
-                    virtual bool QuickLookAppearsToBeRightFormat () override;
-                };
+    public:
+        virtual void Read () override;
+        virtual bool QuickLookAppearsToBeRightFormat () override;
+    };
 
-                /*
-                @CLASS:         StyledTextIOWriter_PlainText
-                @BASES:         @'StyledTextIOWriter'
-                @DESCRIPTION:
-                */
-                class StyledTextIOWriter_PlainText : public StyledTextIOWriter {
-                public:
-                    StyledTextIOWriter_PlainText (SrcStream* srcStream, SinkStream* sinkStream);
+    /*
+    @CLASS:         StyledTextIOWriter_PlainText
+    @BASES:         @'StyledTextIOWriter'
+    @DESCRIPTION:
+    */
+    class StyledTextIOWriter_PlainText : public StyledTextIOWriter {
+    public:
+        StyledTextIOWriter_PlainText (SrcStream* srcStream, SinkStream* sinkStream);
 
-                public:
-                    virtual void Write () override;
-                };
+    public:
+        virtual void Write () override;
+    };
 
-                /*
-                 ********************************************************************************
-                 ***************************** Implementation Details ***************************
-                 ********************************************************************************
-                 */
-            }
-        }
-    }
+    /*
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
+
 }
 
 #endif /*_Stroika_Frameworks_Led_StyledTextIO_PlainText_h_*/

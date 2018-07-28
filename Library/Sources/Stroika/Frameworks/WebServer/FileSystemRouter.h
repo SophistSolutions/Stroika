@@ -20,31 +20,28 @@
  *
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebServer {
+namespace Stroika::Frameworks::WebServer {
 
-            using namespace Stroika::Foundation;
+    using namespace Stroika::Foundation;
 
-            using Characters::RegularExpression;
-            using Characters::String;
-            using Containers::Sequence;
-            using IO::Network::URL;
+    using Characters::RegularExpression;
+    using Characters::String;
+    using Containers::Sequence;
+    using IO::Network::URL;
 
-            class Router;
+    class Router;
 
-            /**
-             *  @todo unclear if this should BE a Router or RequestHandler, but I htink Handler, and so rename!
-             */
-            class FileSystemRouter : public RequestHandler {
-            public:
-                /**
-                 *  Any route to apply the handler, must match ALL argument constraints.
-                 */
-                FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
-            };
-        }
-    }
+    /**
+     *  @todo unclear if this should BE a Router or RequestHandler, but I htink Handler, and so rename!
+     */
+    class FileSystemRouter : public RequestHandler {
+    public:
+        /**
+         *  Any route to apply the handler, must match ALL argument constraints.
+         */
+        FileSystemRouter (const String& filesystemRoot, const optional<String>& urlPrefix2Strip, const Sequence<String>& defaultIndexFileNames = {});
+    };
+
 }
 
 /*

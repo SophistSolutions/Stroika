@@ -10,12 +10,6 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-            }
-        }
-    }
+namespace Stroika::Frameworks::UPnP::SSDP {
 }
 #endif /*_Stroika_Frameworks_UPnP_SSDP_Common_inl_*/

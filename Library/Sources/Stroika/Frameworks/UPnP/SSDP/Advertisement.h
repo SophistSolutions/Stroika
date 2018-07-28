@@ -25,58 +25,53 @@
  *  And http://www.upnp-hacks.org/upnp.html for more hints.
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
+namespace Stroika::Frameworks::UPnP::SSDP {
 
-                using Foundation::Characters::String;
-                using Foundation::Characters::String_Constant;
-                using Foundation::Containers::Mapping;
-                using Foundation::IO::Network::URL;
-                using Foundation::Memory::BLOB;
+    using Foundation::Characters::String;
+    using Foundation::Characters::String_Constant;
+    using Foundation::Containers::Mapping;
+    using Foundation::IO::Network::URL;
+    using Foundation::Memory::BLOB;
 
-                /**
-                 */
-                struct Advertisement {
-                    optional<bool>          fAlive; // else Bye notification, or empty if neither
-                    String                  fUSN;
-                    URL                     fLocation;
-                    String                  fServer;
-                    String                  fTarget; // usually ST header (or NT for notify)
-                    Mapping<String, String> fRawHeaders;
+    /**
+     */
+    struct Advertisement {
+        optional<bool>          fAlive; // else Bye notification, or empty if neither
+        String                  fUSN;
+        URL                     fLocation;
+        String                  fServer;
+        String                  fTarget; // usually ST header (or NT for notify)
+        Mapping<String, String> fRawHeaders;
 
-                    /**
-                     *  @see Characters::ToString ();
-                     */
-                    nonvirtual String ToString () const;
-                };
+        /**
+         *  @see Characters::ToString ();
+         */
+        nonvirtual String ToString () const;
+    };
 
-                /**
-                 */
-                static const String_Constant kTarget_UPNPRootDevice{L"upnp:rootdevice"};
+    /**
+     */
+    static const String_Constant kTarget_UPNPRootDevice{L"upnp:rootdevice"};
 
-                /**
-                 */
-                static const String_Constant kTarget_SSDPAll{L"ssdp:all"};
+    /**
+     */
+    static const String_Constant kTarget_SSDPAll{L"ssdp:all"};
 
-                /**
-                 */
-                enum class SearchOrNotify {
-                    SearchResponse,
-                    Notify
-                };
+    /**
+     */
+    enum class SearchOrNotify {
+        SearchResponse,
+        Notify
+    };
 
-                /**
-                 */
-                BLOB Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad);
+    /**
+     */
+    BLOB Serialize (const String& headLine, SearchOrNotify searchOrNotify, const Advertisement& ad);
 
-                /**
-                 */
-                void DeSerialize (const BLOB& b, String* headLine, Advertisement* advertisement);
-            }
-        }
-    }
+    /**
+     */
+    void DeSerialize (const BLOB& b, String* headLine, Advertisement* advertisement);
+
 }
 
 /*

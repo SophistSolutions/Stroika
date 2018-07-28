@@ -9,18 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Foundation/Containers/Common.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebServer {
-
-            /*
-             ********************************************************************************
-             ******************************** WebServer::Route ******************************
-             ********************************************************************************
-             */
-        }
-    }
+namespace Stroika::Frameworks::WebServer {
 }
 #endif /*_Stroika_Frameworks_WebServer_FileSystemRouter_inl_*/

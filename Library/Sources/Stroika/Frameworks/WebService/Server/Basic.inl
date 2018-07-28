@@ -10,12 +10,6 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebService {
-            namespace Server {
-            }
-        }
-    }
+namespace Stroika::Frameworks::WebService::Server {
 }
 #endif /*_Stroika_Framework_WebService_Server_Basic_inl_*/

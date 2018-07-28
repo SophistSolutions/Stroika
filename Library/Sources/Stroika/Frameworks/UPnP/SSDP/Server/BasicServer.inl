@@ -9,14 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-                namespace Server {
-                }
-            }
-        }
-    }
+namespace Stroika::Frameworks::UPnP::SSDP::Server {
 }
 #endif /*_Stroika_Frameworks_UPnP_SSDP_Server_BasicServer_inl_*/

@@ -10,22 +10,17 @@
  ********************************************************************************
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace SystemPerformance {
-            namespace Support {
+namespace Stroika::Frameworks::SystemPerformance::Support {
 
-                /*
-                 ********************************************************************************
-                 ******************** SystemPerformance::Support::WMICollector ******************
-                 ********************************************************************************
-                 */
-                inline Foundation::Time::DurationSecondsType WMICollector::GetTimeOfLastCollection () const
-                {
-                    return fTimeOfLastCollection_;
-                }
-            }
-        }
+    /*
+     ********************************************************************************
+     ******************** SystemPerformance::Support::WMICollector ******************
+     ********************************************************************************
+     */
+    inline Foundation::Time::DurationSecondsType WMICollector::GetTimeOfLastCollection () const
+    {
+        return fTimeOfLastCollection_;
     }
+
 }
 #endif /*_Stroika_Framework_SystemPerformance_Support_WMICollector_inl_*/

@@ -8,21 +8,19 @@
 
 #include "Stroika/Foundation/Configuration/Common.h"
 
-namespace Stroika {
-    namespace TestHarness {
+namespace Stroika::TestHarness {
 
-        struct NotCopyable {
-            NotCopyable ()                   = default;
-            NotCopyable (const NotCopyable&) = delete;
-            NotCopyable (NotCopyable&&)      = default;
+    struct NotCopyable {
+        NotCopyable ()                   = default;
+        NotCopyable (const NotCopyable&) = delete;
+        NotCopyable (NotCopyable&&)      = default;
 
-            nonvirtual NotCopyable& operator= (const NotCopyable&) = delete;
-            nonvirtual NotCopyable& operator= (NotCopyable&&) = default;
+        nonvirtual NotCopyable& operator= (const NotCopyable&) = delete;
+        nonvirtual NotCopyable& operator= (NotCopyable&&) = default;
 
-            void method (){};
-            void const_method () const {};
-        };
-    }
-};
+        void method (){};
+        void const_method () const {};
+    };
+}
 
 #endif /* _Stroika_TestHarness_NotCopyable_h_ */

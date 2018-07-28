@@ -108,40 +108,36 @@ namespace {
 }
 
 // For internal debugging
-namespace Stroika {
-    namespace Foundation {
-        namespace Characters {
-            template <>
-            String ToString (const FunctionCodeType_& f)
-            {
-                switch (f) {
-                    case FunctionCodeType_::kReadCoils_:
-                        return L"Read-Coils";
-                    case FunctionCodeType_::kReadDiscreteInputs_:
-                        return L"Read-Discrete-Inputs";
-                    case FunctionCodeType_::kReadHoldingResisters_:
-                        return L"Read-Holding-Resisters_";
-                    case FunctionCodeType_::kReadInputRegister_:
-                        return L"Read-Input-Register_";
-                    case FunctionCodeType_::kWriteSingleCoil_:
-                        return L"WriteSingleCoil";
-                }
-                return Format (L"%d", f);
-            }
-            template <>
-            String ToString (const MBAPHeaderIsh_& mh)
-            {
-                StringBuilder sb;
-                sb += L"{";
-                sb += L"TransactionID: " + Characters::ToString (mh.fTransactionID) + L", ";
-                sb += L"ProtocolID: " + Characters::ToString (mh.fProtocolID) + L", ";
-                sb += L"Length: " + Characters::ToString (mh.fLength) + L", ";
-                sb += L"UnitID: " + Characters::ToString (mh.fUnitID) + L", ";
-                sb += L"FunctionCode: " + Characters::ToString (mh.fFunctionCode) + L", ";
-                sb += L"}";
-                return sb.str ();
-            }
+namespace Stroika::Foundation::Characters {
+    template <>
+    String ToString (const FunctionCodeType_& f)
+    {
+        switch (f) {
+            case FunctionCodeType_::kReadCoils_:
+                return L"Read-Coils";
+            case FunctionCodeType_::kReadDiscreteInputs_:
+                return L"Read-Discrete-Inputs";
+            case FunctionCodeType_::kReadHoldingResisters_:
+                return L"Read-Holding-Resisters_";
+            case FunctionCodeType_::kReadInputRegister_:
+                return L"Read-Input-Register_";
+            case FunctionCodeType_::kWriteSingleCoil_:
+                return L"WriteSingleCoil";
         }
+        return Format (L"%d", f);
+    }
+    template <>
+    String ToString (const MBAPHeaderIsh_& mh)
+    {
+        StringBuilder sb;
+        sb += L"{";
+        sb += L"TransactionID: " + Characters::ToString (mh.fTransactionID) + L", ";
+        sb += L"ProtocolID: " + Characters::ToString (mh.fProtocolID) + L", ";
+        sb += L"Length: " + Characters::ToString (mh.fLength) + L", ";
+        sb += L"UnitID: " + Characters::ToString (mh.fUnitID) + L", ";
+        sb += L"FunctionCode: " + Characters::ToString (mh.fFunctionCode) + L", ";
+        sb += L"}";
+        return sb.str ();
     }
 }
 

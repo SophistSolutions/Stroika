@@ -16,52 +16,49 @@
  *      @todo
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace SystemPerformance {
+namespace Stroika::Frameworks::SystemPerformance {
 
-            using namespace Stroika::Foundation;
-            using Characters::String;
-            using Containers::Set;
-            using Time::Duration;
+    using namespace Stroika::Foundation;
+    using Characters::String;
+    using Containers::Set;
+    using Time::Duration;
 
-            /**
-             *  This is a collection of instruments (which are in turn sets of measureables) all collected on a common
-             *  time period.
-             */
-            class CaptureSet {
-            public:
-                CaptureSet (const Duration& period = Duration (30.0), const Set<Instrument>& instruments = {});
+    /**
+     *  This is a collection of instruments (which are in turn sets of measureables) all collected on a common
+     *  time period.
+     */
+    class CaptureSet {
+    public:
+        CaptureSet (const Duration& period = Duration (30.0), const Set<Instrument>& instruments = {});
 
-            public:
-                /**
-                 */
-                nonvirtual Duration GetRunPeriod () const;
+    public:
+        /**
+         */
+        nonvirtual Duration GetRunPeriod () const;
 
-            public:
-                /**
-                 */
-                nonvirtual void SetRunPeriod (const Duration& p);
+    public:
+        /**
+         */
+        nonvirtual void SetRunPeriod (const Duration& p);
 
-            public:
-                /**
-                 */
-                nonvirtual Set<Instrument> GetInstrumentSet () const;
+    public:
+        /**
+         */
+        nonvirtual Set<Instrument> GetInstrumentSet () const;
 
-            public:
-                /**
-                 */
-                nonvirtual void SetInstrumentSet (const Set<Instrument>& i);
+    public:
+        /**
+         */
+        nonvirtual void SetInstrumentSet (const Set<Instrument>& i);
 
-            public:
-                nonvirtual void AddInstrument (const Instrument i);
+    public:
+        nonvirtual void AddInstrument (const Instrument i);
 
-            private:
-                Set<Instrument> fInstruments_;
-                Duration        fPeriod_;
-            };
-        }
-    }
+    private:
+        Set<Instrument> fInstruments_;
+        Duration        fPeriod_;
+    };
+
 }
 
 /*

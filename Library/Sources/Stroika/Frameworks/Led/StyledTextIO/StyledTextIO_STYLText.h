@@ -12,29 +12,24 @@
 
 #include "StyledTextIO.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace Led {
-            namespace StyledTextIO {
+namespace Stroika::Frameworks::Led::StyledTextIO {
 
 #if qPlatform_MacOS
-                /*
-                @CLASS:         StyledTextIOReader_STYLText
-                @BASES:         @'StyledTextIOReader'
-                @DESCRIPTION:   <p><b>MacOS ONLY</b></p>
-                */
-                class StyledTextIOReader_STYLText : public StyledTextIOReader {
-                public:
-                    StyledTextIOReader_STYLText (SrcStream* srcStream, SinkStream* sinkStream);
+    /*
+    @CLASS:         StyledTextIOReader_STYLText
+    @BASES:         @'StyledTextIOReader'
+    @DESCRIPTION:   <p><b>MacOS ONLY</b></p>
+    */
+    class StyledTextIOReader_STYLText : public StyledTextIOReader {
+    public:
+        StyledTextIOReader_STYLText (SrcStream* srcStream, SinkStream* sinkStream);
 
-                public:
-                    virtual void Read () override;
-                    virtual bool QuickLookAppearsToBeRightFormat () override;
-                };
+    public:
+        virtual void Read () override;
+        virtual bool QuickLookAppearsToBeRightFormat () override;
+    };
 #endif
-            }
-        }
-    }
+
 }
 
 /*

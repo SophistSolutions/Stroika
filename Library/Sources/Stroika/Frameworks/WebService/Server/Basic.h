@@ -24,42 +24,37 @@
  *
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebService {
-            namespace Server {
+namespace Stroika::Frameworks::WebService::Server {
 
-                using namespace Stroika::Foundation;
+    using namespace Stroika::Foundation;
 
-                using Characters::String;
-                using Containers::Mapping;
-                using Containers::Sequence;
-                using Containers::Set;
-                using Traversal::Iterable;
+    using Characters::String;
+    using Containers::Mapping;
+    using Containers::Sequence;
+    using Containers::Set;
+    using Traversal::Iterable;
 
-                using WebServer::Request;
-                using WebServer::Response;
+    using WebServer::Request;
+    using WebServer::Response;
 
-                /**
-                 */
-                void ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage);
-                void ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription);
+    /**
+     */
+    void ExpectedMethod (const Request& request, const Iterable<String>& methods, const optional<String>& fromInMessage);
+    void ExpectedMethod (const Request& request, const WebServiceMethodDescription& wsMethodDescription);
 
-                /**
-                 */
-                struct DocsOptions {
-                    String                  fH1Text           = L"Operations";
-                    String                  fIntroductoryText = L""; // div section of introductory text about operations
-                    Mapping<String, String> fVariables2Substitute;
-                    String                  fCSSSection = kDefaultCSSSection;
-                    static const String     kDefaultCSSSection;
-                };
-                /**
-                 */
-                void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = DocsOptions{});
-            }
-        }
-    }
+    /**
+     */
+    struct DocsOptions {
+        String                  fH1Text           = L"Operations";
+        String                  fIntroductoryText = L""; // div section of introductory text about operations
+        Mapping<String, String> fVariables2Substitute;
+        String                  fCSSSection = kDefaultCSSSection;
+        static const String     kDefaultCSSSection;
+    };
+    /**
+     */
+    void WriteDocsPage (Response* response, const Sequence<WebServiceMethodDescription>& operations, const DocsOptions& docsOptions = DocsOptions{});
+
 }
 
 /*

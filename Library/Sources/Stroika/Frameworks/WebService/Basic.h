@@ -20,31 +20,28 @@
  *
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebService {
+namespace Stroika::Frameworks::WebService {
 
-            using namespace Stroika::Foundation;
+    using namespace Stroika::Foundation;
 
-            using Characters::String;
-            using Containers::Sequence;
-            using Containers::Set;
-            using DataExchange::InternetMediaType;
+    using Characters::String;
+    using Containers::Sequence;
+    using Containers::Set;
+    using DataExchange::InternetMediaType;
 
-            /**
-             *   ////// SUPER DUPER ROUGH DRAFT
-             */
-            struct WebServiceMethodDescription {
-                String                      fOperation;
-                Set<String>                 fAllowedMethods; // e.g. GET
-                optional<InternetMediaType> fResponseType;   // typically DataExchange::PredefinedInternetMediaType::JSON_CT ()
+    /**
+     *   ////// SUPER DUPER ROUGH DRAFT
+     */
+    struct WebServiceMethodDescription {
+        String                      fOperation;
+        Set<String>                 fAllowedMethods; // e.g. GET
+        optional<InternetMediaType> fResponseType;   // typically DataExchange::PredefinedInternetMediaType::JSON_CT ()
 
-                optional<String>           fOneLineDocs;
-                optional<Sequence<String>> fCurlExample;
-                optional<Sequence<String>> fDetailedDocs;
-            };
-        }
-    }
+        optional<String>           fOneLineDocs;
+        optional<Sequence<String>> fCurlExample;
+        optional<Sequence<String>> fDetailedDocs;
+    };
+
 }
 
 /*

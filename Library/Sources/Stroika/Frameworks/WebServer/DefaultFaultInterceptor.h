@@ -15,28 +15,25 @@
  *
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebServer {
+namespace Stroika::Frameworks::WebServer {
 
-            using namespace Stroika::Foundation;
+    using namespace Stroika::Foundation;
 
-            /**
-             */
-            class DefaultFaultInterceptor : public Interceptor {
-            private:
-                using inherited = Interceptor;
+    /**
+     */
+    class DefaultFaultInterceptor : public Interceptor {
+    private:
+        using inherited = Interceptor;
 
-            public:
-                DefaultFaultInterceptor ();
-                DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&)>& handleFault);
+    public:
+        DefaultFaultInterceptor ();
+        DefaultFaultInterceptor (const function<void(Message*, const exception_ptr&)>& handleFault);
 
-            private:
-                struct Rep_;
-                struct Rep_Explicit_;
-            };
-        }
-    }
+    private:
+        struct Rep_;
+        struct Rep_Explicit_;
+    };
+
 }
 
 /*

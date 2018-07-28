@@ -9,14 +9,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-                namespace Client {
-                }
-            }
-        }
-    }
+namespace Stroika::Frameworks::UPnP::SSDP::Client {
 }
 #endif /*_Stroika_Frameworks_UPnP_SSDP_Client_Search_inl_*/

@@ -16,16 +16,12 @@
  *      @todo
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace SystemPerformance {
+namespace Stroika::Frameworks::SystemPerformance {
 
-            /*
-             *
-             */
-            Set<Instrument> GetAllInstruments ();
-        }
-    }
+    /*
+     *
+     */
+    Set<Instrument> GetAllInstruments ();
 }
 
 /*

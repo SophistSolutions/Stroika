@@ -11,26 +11,23 @@
  */
 #include "../../Foundation/Debug/Assertions.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebServer {
+namespace Stroika::Frameworks::WebServer {
 
-            /*
-             ********************************************************************************
-             ******************************* ClientErrorException ***************************
-             ********************************************************************************
-             */
-            inline ClientErrorException::ClientErrorException (Status httpStatus)
-                : inherited (httpStatus)
-            {
-                Require (400 <= httpStatus and httpStatus < 500);
-            }
-            inline ClientErrorException::ClientErrorException (const String& message, Status httpStatus)
-                : inherited (httpStatus, message)
-            {
-                Require (400 <= httpStatus and httpStatus < 500);
-            }
-        }
+    /*
+     ********************************************************************************
+     ******************************* ClientErrorException ***************************
+     ********************************************************************************
+     */
+    inline ClientErrorException::ClientErrorException (Status httpStatus)
+        : inherited (httpStatus)
+    {
+        Require (400 <= httpStatus and httpStatus < 500);
     }
+    inline ClientErrorException::ClientErrorException (const String& message, Status httpStatus)
+        : inherited (httpStatus, message)
+    {
+        Require (400 <= httpStatus and httpStatus < 500);
+    }
+
 }
 #endif /*_Stroika_Frameworks_WebServer_ClientErrorException_inl_*/

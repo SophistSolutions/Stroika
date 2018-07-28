@@ -9,23 +9,20 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../../Foundation/Containers/Common.h"
+//#include "../../Foundation/Containers/Common.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace WebServer {
+namespace Stroika::Frameworks::WebServer {
 
-            /*
-             ********************************************************************************
-             ***************************** Implementation Details ***************************
-             ********************************************************************************
-             */
-            inline ILogHandler::MessageInstance::MessageInstance (Message* m, Time::DurationSecondsType startedAt)
-                : fMessage (m)
-                , fStartedAt (startedAt)
-            {
-            }
-        }
+    /*
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
+    inline ILogHandler::MessageInstance::MessageInstance (Message* m, Time::DurationSecondsType startedAt)
+        : fMessage (m)
+        , fStartedAt (startedAt)
+    {
     }
+
 }
 #endif /*_Stroika_Frameworks_WebServer_LoggingInterceptor_inl_*/

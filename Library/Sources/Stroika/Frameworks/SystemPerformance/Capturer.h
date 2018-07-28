@@ -39,100 +39,97 @@
  *              would be to re-schedule rest of measurements...
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace SystemPerformance {
+namespace Stroika::Frameworks::SystemPerformance {
 
-            using namespace Stroika::Foundation;
-            using Characters::String;
-            using Containers::Collection;
-            using Containers::Set;
-            using Execution::Function;
-            using Time::Duration;
+    using namespace Stroika::Foundation;
+    using Characters::String;
+    using Containers::Collection;
+    using Containers::Set;
+    using Execution::Function;
+    using Time::Duration;
 
-            /**
-             *  A Capturer is a utility you MAY wish to use the the SystemPerformance framework. It provides some
-             *  fairly handy default mechanisms to manage (possibly multiple) CaptureSets, and either store the last result
-             *  for each, or to run callbacks on those results.
-             *
-             *  This also runs its capturing on a (single) background thread. This has implications for how much its able to
-             *  keep up with and maintain all the measurements in question.
-             *
-             *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
-             *  if its pattern doesn't meet your needs.
-             */
-            class Capturer {
-            public:
-                Capturer ()                = default;
-                Capturer (const Capturer&) = delete;
-                Capturer& operator= (const Capturer&) = delete;
+    /**
+     *  A Capturer is a utility you MAY wish to use the the SystemPerformance framework. It provides some
+     *  fairly handy default mechanisms to manage (possibly multiple) CaptureSets, and either store the last result
+     *  for each, or to run callbacks on those results.
+     *
+     *  This also runs its capturing on a (single) background thread. This has implications for how much its able to
+     *  keep up with and maintain all the measurements in question.
+     *
+     *  Note - there is no reason you cannot use the rest of the SystemPerformance framework without this class,
+     *  if its pattern doesn't meet your needs.
+     */
+    class Capturer {
+    public:
+        Capturer ()                = default;
+        Capturer (const Capturer&) = delete;
+        Capturer& operator= (const Capturer&) = delete;
 
-            public:
-                /**
-                 *  Call this anytime (for example if you dont want to bother with callbacks or if
-                 *  some other process needs to query the latest values from the instrument measurers.
-                 */
-                nonvirtual MeasurementSet GetMostRecentMeasurements () const;
+    public:
+        /**
+         *  Call this anytime (for example if you dont want to bother with callbacks or if
+         *  some other process needs to query the latest values from the instrument measurers.
+         */
+        nonvirtual MeasurementSet GetMostRecentMeasurements () const;
 
-            public:
-                /**
-                 */
-                using NewMeasurementsCallbackType = Function<void(MeasurementSet)>;
+    public:
+        /**
+         */
+        using NewMeasurementsCallbackType = Function<void(MeasurementSet)>;
 
-            public:
-                /**
-                 */
-                nonvirtual Collection<NewMeasurementsCallbackType> GetMeasurementsCallbacks () const;
+    public:
+        /**
+         */
+        nonvirtual Collection<NewMeasurementsCallbackType> GetMeasurementsCallbacks () const;
 
-            public:
-                /**
-                 */
-                nonvirtual void SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
+    public:
+        /**
+         */
+        nonvirtual void SetMeasurementsCallbacks (const Collection<NewMeasurementsCallbackType>& callbacks);
 
-            public:
-                /**
-                 */
-                nonvirtual void AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+    public:
+        /**
+         */
+        nonvirtual void AddMeasurementsCallback (const NewMeasurementsCallbackType& cb);
 
-            public:
-                /**
-                 */
-                nonvirtual void RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb);
+    public:
+        /**
+         */
+        nonvirtual void RemoveMeasurementsCallback (const NewMeasurementsCallbackType& cb);
 
-            public:
-                /**
-                 */
-                nonvirtual Collection<CaptureSet> GetCaptureSets () const;
+    public:
+        /**
+         */
+        nonvirtual Collection<CaptureSet> GetCaptureSets () const;
 
-            public:
-                /**
-                 */
-                nonvirtual void SetCaptureSets (const Collection<CaptureSet>& captureSets);
+    public:
+        /**
+         */
+        nonvirtual void SetCaptureSets (const Collection<CaptureSet>& captureSets);
 
-            public:
-                /**
-                 */
-                nonvirtual void AddCaptureSet (const CaptureSet& cs);
+    public:
+        /**
+         */
+        nonvirtual void AddCaptureSet (const CaptureSet& cs);
 
-            private:
-                nonvirtual void ManageRunner_ (bool on);
+    private:
+        nonvirtual void ManageRunner_ (bool on);
 
-            private:
-                nonvirtual void Runner_ ();
+    private:
+        nonvirtual void Runner_ ();
 
-            private:
-                // FOR NOW - just assign/overwrite the latest measurement set, and call
-                // callbacks as needed
-                nonvirtual void UpdateMeasurementSet_ (const MeasurementSet& ms);
+    private:
+        // FOR NOW - just assign/overwrite the latest measurement set, and call
+        // callbacks as needed
+        nonvirtual void UpdateMeasurementSet_ (const MeasurementSet& ms);
 
-            private:
-                Execution::Synchronized<Collection<CaptureSet>>                  fCaptureSets_;
-                Execution::Synchronized<Collection<NewMeasurementsCallbackType>> fCallbacks_;
-                Execution::Synchronized<MeasurementSet>                          fCurrentMeasurementSet_;
-                Execution::ThreadPool                                            fThreadPool_; // Subtle - construct last so auto-destructed first (shuts down threads)
-            };
-        }
-    }
+    private:
+        Execution::Synchronized<Collection<CaptureSet>>                  fCaptureSets_;
+        Execution::Synchronized<Collection<NewMeasurementsCallbackType>> fCallbacks_;
+        Execution::Synchronized<MeasurementSet>                          fCurrentMeasurementSet_;
+        Execution::ThreadPool                                            fThreadPool_; // Subtle - construct last so auto-destructed first (shuts down threads)
+    };
+
 }
 
 /*

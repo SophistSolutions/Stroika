@@ -34,104 +34,97 @@
  *
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-                namespace Client {
+namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
-                    /**
-                     */
-                    class Search {
-                    public:
-                        /**
-                         * see @see Start () for possible values for initialSearch
-                         */
-                        Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-                        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
-                        Search (const Search&) = delete;
+    /**
+     */
+    class Search {
+    public:
+        /**
+         * see @see Start () for possible values for initialSearch
+         */
+        Search (IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Search (const function<void(const SSDP::Advertisement& d)>& callOnFinds, const String& initialSearch, IO::Network::InternetProtocol::IP::IPVersionSupport ipVersion = IO::Network::InternetProtocol::IP::IPVersionSupport::eDEFAULT);
+        Search (const Search&) = delete;
 
-                    public:
-                        /**
-                         *  Its OK to destroy a searcher while running. It will silently stop the running searcher thread.
-                         */
-                        ~Search ();
+    public:
+        /**
+         *  Its OK to destroy a searcher while running. It will silently stop the running searcher thread.
+         */
+        ~Search ();
 
-                    public:
-                        nonvirtual const Search& operator= (const Search&) = delete;
+    public:
+        nonvirtual const Search& operator= (const Search&) = delete;
 
-                    public:
-                        /**
-                         *  Using std::function, no way to compare for operator==, so no way to remove.
-                         *  @todo    RETHINK!
-                         *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
-                         *  This can be done after the listening has started.
-                         */
-                        void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
+    public:
+        /**
+         *  Using std::function, no way to compare for operator==, so no way to remove.
+         *  @todo    RETHINK!
+         *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
+         *  This can be done after the listening has started.
+         */
+        void AddOnFoundCallback (const function<void(const SSDP::Advertisement& d)>& callOnFinds);
 
-                    public:
-                        /**
-                         *  ssdp:all - possible argument for search string
-                         */
-                        static const String kSSDPAny;
+    public:
+        /**
+         *  ssdp:all - possible argument for search string
+         */
+        static const String kSSDPAny;
 
-                    public:
-                        /**
-                         *  upnp:rootdevice - possible argument for search string
-                         */
-                        static const String kRootDevice;
+    public:
+        /**
+         *  upnp:rootdevice - possible argument for search string
+         */
+        static const String kRootDevice;
 
-                    public:
-                        /**
-                         *  Starts searcher (probably starts a thread).
-                         *  args - ST, strings, uuid etc.
-                         *
-                         *  If already running, this automatically stops an existing search, and restarts it with
-                         *  the given serviceType parameters.
-                         *
-                         *  ssdp:all: Search for all devices and services.
-                         *  \par Example Usage
-                         *      \code
-                         *          Start (L"ssdp:all");                                                // Search for all devices and services
-                         *          Start (kSSDPAny);                                                   // ...
-                         *      \endcode
-                         *
-                         *  \par Example Usage
-                         *      \code
-                         *          Start (L"upnp:rootdevice");                                         // Search for all root devices
-                         *          Start (kRootDevice);                                                // ...
-                         *      \endcode
-                         *
-                         *  \par Example Usage
-                         *      \code
-                         *          Start (L"urn:schemas-wifialliance-org:service:WFAWLANConfig:1");    // Search for all devices of this type
-                         *      \endcode
-                         *
-                         *
-                         *  \par Example Usage
-                         *      \code
-                         *          Start (L"uuid:9cd09dd4-fd8d-5737-abc3-2faa8c11cbdb");               // Search specific device
-                         *      \endcode
-                         *
-                         */
-                        nonvirtual void Start (const String& serviceType);
+    public:
+        /**
+         *  Starts searcher (probably starts a thread).
+         *  args - ST, strings, uuid etc.
+         *
+         *  If already running, this automatically stops an existing search, and restarts it with
+         *  the given serviceType parameters.
+         *
+         *  ssdp:all: Search for all devices and services.
+         *  \par Example Usage
+         *      \code
+         *          Start (L"ssdp:all");                                                // Search for all devices and services
+         *          Start (kSSDPAny);                                                   // ...
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          Start (L"upnp:rootdevice");                                         // Search for all root devices
+         *          Start (kRootDevice);                                                // ...
+         *      \endcode
+         *
+         *  \par Example Usage
+         *      \code
+         *          Start (L"urn:schemas-wifialliance-org:service:WFAWLANConfig:1");    // Search for all devices of this type
+         *      \endcode
+         *
+         *
+         *  \par Example Usage
+         *      \code
+         *          Start (L"uuid:9cd09dd4-fd8d-5737-abc3-2faa8c11cbdb");               // Search specific device
+         *      \endcode
+         *
+         */
+        nonvirtual void Start (const String& serviceType);
 
-                    public:
-                        /**
-                         *  Stop an already running search. Not an error to call if not already started (just does nothing).
-                         *  This will block until the listner is stopped.
-                         */
-                        nonvirtual void Stop ();
+    public:
+        /**
+         *  Stop an already running search. Not an error to call if not already started (just does nothing).
+         *  This will block until the listner is stopped.
+         */
+        nonvirtual void Stop ();
 
-                    private:
-                        class Rep_;
-                        shared_ptr<Rep_> fRep_;
-                    };
-                }
-            }
-        }
-    }
+    private:
+        class Rep_;
+        shared_ptr<Rep_> fRep_;
+    };
+
 }
 
 /*

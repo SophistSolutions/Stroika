@@ -11,49 +11,44 @@
 
 #include "StyledTextIO.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace Led {
-            namespace StyledTextIO {
+namespace Stroika::Frameworks::Led::StyledTextIO {
 
-                /*
-                @CLASS:         StyledTextIOReader_MIMETextEnriched
-                @BASES:         @'StyledTextIOReader'
-                @DESCRIPTION:
-                */
-                class StyledTextIOReader_MIMETextEnriched : public StyledTextIOReader {
-                public:
-                    StyledTextIOReader_MIMETextEnriched (SrcStream* srcStream, SinkStream* sinkStream);
+    /*
+    @CLASS:         StyledTextIOReader_MIMETextEnriched
+    @BASES:         @'StyledTextIOReader'
+    @DESCRIPTION:
+    */
+    class StyledTextIOReader_MIMETextEnriched : public StyledTextIOReader {
+    public:
+        StyledTextIOReader_MIMETextEnriched (SrcStream* srcStream, SinkStream* sinkStream);
 
-                public:
-                    virtual void Read () override;
-                    virtual bool QuickLookAppearsToBeRightFormat () override;
+    public:
+        virtual void Read () override;
+        virtual bool QuickLookAppearsToBeRightFormat () override;
 
-                private:
-                    nonvirtual void SkipWhitespace ();
-                    nonvirtual void SkipOneLine ();
-                    nonvirtual bool ScanFor (const char* matchMe, bool ignoreCase = true);
-                    nonvirtual bool LookingAt (const char* matchMe, bool ignoreCase = true);
+    private:
+        nonvirtual void SkipWhitespace ();
+        nonvirtual void SkipOneLine ();
+        nonvirtual bool ScanFor (const char* matchMe, bool ignoreCase = true);
+        nonvirtual bool LookingAt (const char* matchMe, bool ignoreCase = true);
 
-                private:
-                    nonvirtual Led_FontSpecification GetAdjustedCurrentFontSpec () const;
+    private:
+        nonvirtual Led_FontSpecification GetAdjustedCurrentFontSpec () const;
 
-                    int fBoldMode;       // non-zero means YES - can be nested
-                    int fItalicMode;     // ""
-                    int fUnderlineMode;  // ""
-                    int fFixedWidthMode; // ""
-                    int fFontSizeAdjust; // ""
-                    int fNoFillMode;     // ""
-                };
+        int fBoldMode;       // non-zero means YES - can be nested
+        int fItalicMode;     // ""
+        int fUnderlineMode;  // ""
+        int fFixedWidthMode; // ""
+        int fFontSizeAdjust; // ""
+        int fNoFillMode;     // ""
+    };
 
-                /*
-                 ********************************************************************************
-                 ***************************** Implementation Details ***************************
-                 ********************************************************************************
-                 */
-            }
-        }
-    }
+    /*
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
+
 }
 
 #endif /*_Stroika_Frameworks_Led_StyledTextIO_MIMETextEnriched_h_*/

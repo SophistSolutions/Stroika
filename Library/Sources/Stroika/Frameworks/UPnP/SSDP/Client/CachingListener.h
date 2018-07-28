@@ -12,28 +12,21 @@
  * TODO:
  */
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace UPnP {
-            namespace SSDP {
-                namespace Client {
+namespace Stroika::Frameworks::UPnP::SSDP::Client {
 
-                    /**
-                     *  Add list of found devices, paying attention to aging rules (max-age)
-                     *
-                     *  Unclear how to integrate with search stuff (if we find with search, dont lose it, and if we have other reason to know
-                     *  device still aroudn dont lose it - like open tcp connection to it).
-                     */
-                    class CachingListener : public Listener {
-                        //lambda onChange callback;
-                        //pays attention to max-age falgs;
-                        //maintains list;
-                        //public method to getMatchingEntriesFound()
-                    };
-                }
-            }
-        }
-    }
+    /**
+     *  Add list of found devices, paying attention to aging rules (max-age)
+     *
+     *  Unclear how to integrate with search stuff (if we find with search, dont lose it, and if we have other reason to know
+     *  device still aroudn dont lose it - like open tcp connection to it).
+     */
+    class CachingListener : public Listener {
+        //lambda onChange callback;
+        //pays attention to max-age falgs;
+        //maintains list;
+        //public method to getMatchingEntriesFound()
+    };
+
 }
 
 /*

@@ -35,65 +35,60 @@
 
 #include "StyledTextIO.h"
 
-namespace Stroika {
-    namespace Frameworks {
-        namespace Led {
-            namespace StyledTextIO {
+namespace Stroika::Frameworks::Led::StyledTextIO {
 
-                /*
-                @CLASS:         StyledTextIOReader_LedNativeFileFormat
-                @BASES:         @'StyledTextIOReader'
-                @DESCRIPTION:
-                */
-                class StyledTextIOReader_LedNativeFileFormat : public StyledTextIOReader {
-                public:
-                    StyledTextIOReader_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
+    /*
+    @CLASS:         StyledTextIOReader_LedNativeFileFormat
+    @BASES:         @'StyledTextIOReader'
+    @DESCRIPTION:
+    */
+    class StyledTextIOReader_LedNativeFileFormat : public StyledTextIOReader {
+    public:
+        StyledTextIOReader_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
 
-                public:
-                    virtual void Read () override;
-                    virtual bool QuickLookAppearsToBeRightFormat () override;
+    public:
+        virtual void Read () override;
+        virtual bool QuickLookAppearsToBeRightFormat () override;
 
-                protected:
-                    nonvirtual void Read_Version4 (const char* cookie);
-                    nonvirtual void Read_Version5 (const char* cookie); // Led 2.1 file format
-                    nonvirtual void Read_Version6 (const char* cookie); // Introduced for Led 2.2a2
+    protected:
+        nonvirtual void Read_Version4 (const char* cookie);
+        nonvirtual void Read_Version5 (const char* cookie); // Led 2.1 file format
+        nonvirtual void Read_Version6 (const char* cookie); // Introduced for Led 2.2a2
 
-                    // handles default ones Led knows about. You must override to handle your own private types..
-                protected:
-                    virtual SimpleEmbeddedObjectStyleMarker* InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes);
-                };
+        // handles default ones Led knows about. You must override to handle your own private types..
+    protected:
+        virtual SimpleEmbeddedObjectStyleMarker* InternalizeEmbedding (Led_PrivateEmbeddingTag tag, size_t howManyBytes);
+    };
 
-                /*
-                @CLASS:         StyledTextIOWriter_LedNativeFileFormat
-                @BASES:         @'StyledTextIOWriter'
-                @DESCRIPTION:
-                */
-                class StyledTextIOWriter_LedNativeFileFormat : public StyledTextIOWriter {
-                public:
-                    StyledTextIOWriter_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
+    /*
+    @CLASS:         StyledTextIOWriter_LedNativeFileFormat
+    @BASES:         @'StyledTextIOWriter'
+    @DESCRIPTION:
+    */
+    class StyledTextIOWriter_LedNativeFileFormat : public StyledTextIOWriter {
+    public:
+        StyledTextIOWriter_LedNativeFileFormat (SrcStream* srcStream, SinkStream* sinkStream);
 
-                public:
-                    virtual void Write () override;
+    public:
+        virtual void Write () override;
 
-                protected:
+    protected:
 #if !qWideCharacters
-                    nonvirtual void Write_Version5 (); // Led 2.1 file format
+        nonvirtual void Write_Version5 (); // Led 2.1 file format
 #endif
-                    nonvirtual void Write_Version6 (); // Introduced for Led 2.2a2
+        nonvirtual void Write_Version6 (); // Introduced for Led 2.2a2
 
-                    // handles default ones Led knows about. You must override to handle your own private types..
-                protected:
-                    virtual void ExternalizeEmbedding (SimpleEmbeddedObjectStyleMarker* embedding);
-                };
+        // handles default ones Led knows about. You must override to handle your own private types..
+    protected:
+        virtual void ExternalizeEmbedding (SimpleEmbeddedObjectStyleMarker* embedding);
+    };
 
-                /*
-                 ********************************************************************************
-                 ***************************** Implementation Details ***************************
-                 ********************************************************************************
-                 */
-            }
-        }
-    }
+    /*
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
+
 }
 
 #endif /*_Stroika_Frameworks_Led_StyledTextIO_LedNative_h_*/
