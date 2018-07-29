@@ -34,8 +34,8 @@ namespace Stroika::Frameworks::Modbus {
     template <typename ID_TYPE, typename VALUE_TYPE>
     struct ModbusRegisterDescriptor {
         /*
-            *  AKA address
-            */
+         *  AKA address
+         */
         using NameType = ID_TYPE;
         /**
          */
