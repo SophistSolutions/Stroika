@@ -9,10 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace Characters {
-        namespace Concrete {
-        }
-    }
+
+namespace Stroika::Foundation::Characters::Concrete {
 }
 #endif // _Stroika_Foundation_Characters_String_ExternalMemoryOwnership_StackLifetime_inl_

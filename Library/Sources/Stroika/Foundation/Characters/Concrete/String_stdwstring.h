@@ -23,26 +23,24 @@
  *
  */
 
-namespace Stroika::Foundation {
-    namespace Characters {
+namespace Stroika::Foundation::Characters {
 
 #if 0
-        /**
-         *  NOT YET IMPLEMETNED
-         *
-         *  String_stdwstring is completely compatible with any other String implementation, except that it represents things
-         *  internally using the stdC++ wstring class. The principle advantage of this is that converting TO wstrings
-         *  is much more efficient.
-         *
-         *      (AS OF YET UNCLEAR IF/HOW WE CAN SUPPORT MANIPULATIONS OF A wstring* or wstring& alias to the String rep's owned copy.
-         *      probably won't be allowed, but it would be helpful to some applicaitons if we could)
-         */
-        class   String_stdwstring : public String {
-        public:
-            explicit String_stdwstring (const String& from);
-        };
+    /**
+     *  NOT YET IMPLEMETNED
+     *
+     *  String_stdwstring is completely compatible with any other String implementation, except that it represents things
+     *  internally using the stdC++ wstring class. The principle advantage of this is that converting TO wstrings
+     *  is much more efficient.
+     *
+     *      (AS OF YET UNCLEAR IF/HOW WE CAN SUPPORT MANIPULATIONS OF A wstring* or wstring& alias to the String rep's owned copy.
+     *      probably won't be allowed, but it would be helpful to some applicaitons if we could)
+     */
+    class   String_stdwstring : public String {
+    public:
+        explicit String_stdwstring (const String& from);
+    };
 #endif
-    }
 }
 
 /*

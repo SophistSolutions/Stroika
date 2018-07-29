@@ -9,18 +9,17 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace DataExchange {
+namespace Stroika::Foundation::DataExchange {
 
-        /*
-         ********************************************************************************
-         ************************** InternetMediaTypeRegistry ***************************
-         ********************************************************************************
-         */
-        inline const InternetMediaTypeRegistry InternetMediaTypeRegistry::Default ()
-        {
-            return InternetMediaTypeRegistry{};
-        }
+    /*
+     ********************************************************************************
+     ************************** InternetMediaTypeRegistry ***************************
+     ********************************************************************************
+     */
+    inline const InternetMediaTypeRegistry InternetMediaTypeRegistry::Default ()
+    {
+        return InternetMediaTypeRegistry{};
     }
+
 }
 #endif /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/

@@ -16,28 +16,27 @@
  *  TODO:
  */
 
-namespace Stroika::Foundation {
-    namespace Streams {
+namespace Stroika::Foundation::Streams {
 
+    /**
+     */
+    class EOFException : public Execution::StringException {
+    public:
+        EOFException ();
+        EOFException (bool partialReadCompleted);
+
+    public:
+        nonvirtual bool GetPartialReadCompleted () const;
+
+    public:
         /**
-             */
-        class EOFException : public Execution::StringException {
-        public:
-            EOFException ();
-            EOFException (bool partialReadCompleted);
+         */
+        static const EOFException kThe;
 
-        public:
-            nonvirtual bool GetPartialReadCompleted () const;
+    private:
+        bool fPartialReadCompleted_{false};
+    };
 
-        public:
-            /**
-             */
-            static const EOFException kThe;
-
-        private:
-            bool fPartialReadCompleted_{false};
-        };
-    }
 }
 
 /*
