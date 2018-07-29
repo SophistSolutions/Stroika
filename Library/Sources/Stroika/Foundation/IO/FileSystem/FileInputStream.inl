@@ -9,28 +9,26 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace IO {
-        namespace FileSystem {
+namespace Stroika::Foundation::IO::FileSystem {
 
-            /*
-             ********************************************************************************
-             ********************************** FileInputStream *****************************
-             ********************************************************************************
-             */
-            inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (const String& fileName, BufferFlag bufferFlag)
-            {
-                return New (fileName, SeekableFlag::eDEFAULT, bufferFlag);
-            }
-            inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (FileDescriptorType fd, BufferFlag bufferFlag)
-            {
-                return New (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
-            }
-            inline auto FileInputStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr
-            {
-                return Ptr{s};
-            }
-        }
+    /*
+     ********************************************************************************
+     ********************************** FileInputStream *****************************
+     ********************************************************************************
+     */
+    inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (const String& fileName, BufferFlag bufferFlag)
+    {
+        return New (fileName, SeekableFlag::eDEFAULT, bufferFlag);
     }
+    inline Streams::InputStream<Memory::Byte>::Ptr FileInputStream::New (FileDescriptorType fd, BufferFlag bufferFlag)
+    {
+        return New (fd, AdoptFDPolicy::eDEFAULT, SeekableFlag::eSeekable, bufferFlag);
+    }
+    inline auto FileInputStream::_mkPtr (const shared_ptr<Rep_>& s) -> Ptr
+    {
+        return Ptr{s};
+    }
+
 }
+
 #endif /*_Stroika_Foundation_IO_FileSystem_FileInputStream_inl_*/

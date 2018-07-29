@@ -22,6 +22,7 @@
 namespace Stroika::Foundation {
     using namespace std;
 }
+
 namespace Stroika::Foundation::Math {
 
     /**

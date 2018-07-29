@@ -10,12 +10,10 @@
  ********************************************************************************
  */
 #if defined(__cplusplus)
-namespace Stroika::Foundation {
-    namespace Configuration {
+namespace Stroika::Foundation::Configuration {
 #endif
 
 #if defined(__cplusplus)
-    }
 }
 #endif
 

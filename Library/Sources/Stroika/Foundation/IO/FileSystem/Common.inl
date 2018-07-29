@@ -9,10 +9,7 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace IO {
-        namespace FileSystem {
-        }
-    }
+namespace Stroika::Foundation::IO::FileSystem {
 }
+
 #endif /*_Stroika_Foundation_IO_FileSystem_Common_inl_*/

@@ -9,36 +9,37 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace Configuration {
-
-        /*
-            ********************************************************************************
-            **************** SystemConfiguration::CPU::CoreDetails *************************
-            ********************************************************************************
-            */
-        inline SystemConfiguration::CPU::CoreDetails::CoreDetails (unsigned int socketID, const String& modelName)
-            : fSocketID (socketID)
-            , fModelName (modelName)
-        {
-        }
-
-        /*
-            ********************************************************************************
-            **************************** SystemConfiguration::CPU **************************
-            ********************************************************************************
-            */
-        inline unsigned int SystemConfiguration::CPU::GetNumberOfLogicalCores () const
-        {
-            return static_cast<unsigned int> (fCores.size ());
-        }
-        inline String SystemConfiguration::CPU::GetCPUModelPrintName () const
-        {
-            return fCores.empty () ? String () : fCores[0].fModelName;
-        }
-    }
-}
 namespace Stroika::Foundation::Configuration {
+
+    /*
+     ********************************************************************************
+     **************** SystemConfiguration::CPU::CoreDetails *************************
+     ********************************************************************************
+     */
+    inline SystemConfiguration::CPU::CoreDetails::CoreDetails (unsigned int socketID, const String& modelName)
+        : fSocketID (socketID)
+        , fModelName (modelName)
+    {
+    }
+
+    /*
+     ********************************************************************************
+     **************************** SystemConfiguration::CPU **************************
+     ********************************************************************************
+     */
+    inline unsigned int SystemConfiguration::CPU::GetNumberOfLogicalCores () const
+    {
+        return static_cast<unsigned int> (fCores.size ());
+    }
+    inline String SystemConfiguration::CPU::GetCPUModelPrintName () const
+    {
+        return fCores.empty () ? String () : fCores[0].fModelName;
+    }
+
+}
+
+namespace Stroika::Foundation::Configuration {
+
     template <>
     struct DefaultNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> : EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> {
         static constexpr EnumNames<Configuration::SystemConfiguration::OperatingSystem::InstallerTechnology> k{
@@ -53,5 +54,7 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
+
 }
+
 #endif /*_Stroika_Foundation_Configuration_SystemConfiguration_inl_*/

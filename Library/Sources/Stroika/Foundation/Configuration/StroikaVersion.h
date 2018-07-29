@@ -15,20 +15,15 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
- *
- * TODO:
- *
  */
 
 #if defined(__cplusplus)
-namespace Stroika::Foundation {
-    namespace Configuration {
+namespace Stroika::Foundation::Configuration {
 #endif
 
 #include "Stroika-Current-Version.h"
 
 #if defined(__cplusplus)
-    }
 }
 #endif
 

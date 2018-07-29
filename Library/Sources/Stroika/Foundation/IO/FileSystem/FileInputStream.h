@@ -36,104 +36,101 @@
  *              for reads - if caller does lots of little reads.
  */
 
-namespace Stroika::Foundation {
-    namespace IO {
-        namespace FileSystem {
+namespace Stroika::Foundation::IO::FileSystem {
 
-            using Characters::String;
+    using Characters::String;
 
-            /**
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
-             *
-             *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
-             *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
-             *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
-             *          but then the results are 'on you.
-             */
-            class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStream {
-            public:
-                FileInputStream ()                       = delete;
-                FileInputStream (const FileInputStream&) = delete;
+    /**
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     *
+     *  \note   We considered having a GetFD () method to retrieve the file descriptor, but that opened up too many
+     *          possabilities for bugs (like changing the blocking nature of the IO). If you wish - you can always
+     *          open the file descriptor yourself, track it yourself, and do what you will to it and pass it in,
+     *          but then the results are 'on you.
+     */
+    class FileInputStream : public Streams::InputStream<Memory::Byte>, public FileStream {
+    public:
+        FileInputStream ()                       = delete;
+        FileInputStream (const FileInputStream&) = delete;
 
-            public:
-                enum class BufferFlag {
-                    eBuffered,
-                    eUnbuffered,
+    public:
+        enum class BufferFlag {
+            eBuffered,
+            eUnbuffered,
 
-                    eDEFAULT = eBuffered,
+            eDEFAULT = eBuffered,
 
-                    Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
-                };
-                static constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
-                static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
+            Stroika_Define_Enum_Bounds (eBuffered, eUnbuffered)
+        };
+        static constexpr BufferFlag eBuffered   = BufferFlag::eBuffered;
+        static constexpr BufferFlag eUnbuffered = BufferFlag::eUnbuffered;
 
-            public:
-                class Ptr;
+    public:
+        class Ptr;
 
-            public:
-                /**
-                 *  The static New method is like a constructor, but it constructs a smart pointer of some appropriate subtype defined by its parameters.
-                 *
-                 *  The New overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
-                 *
-                 *  \req fd is a valid file descriptor (for that overload)
-                 *
-                 *  \par Example Usage
-                 *      \code
-                 *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
-                 *      \endcode
-                 */
-                static Ptr                            New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                static Ptr                            New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
-                static InputStream<Memory::Byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
-                static InputStream<Memory::Byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
-                static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
-                static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
+    public:
+        /**
+         *  The static New method is like a constructor, but it constructs a smart pointer of some appropriate subtype defined by its parameters.
+         *
+         *  The New overload with FileDescriptorType does an 'attach' - taking ownership (and thus later closing) the argument file descriptor.
+         *
+         *  \req fd is a valid file descriptor (for that overload)
+         *
+         *  \par Example Usage
+         *      \code
+         *          Ptr stream = FileInputStream::New (kProcCPUInfoFileName_, FileInputStream::eNotSeekable);
+         *      \endcode
+         */
+        static Ptr                            New (const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static Ptr                            New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, const String& fileName, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static Ptr                            New (Execution::InternallySyncrhonized internallySyncrhonized, FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy = AdoptFDPolicy::eDEFAULT, SeekableFlag seekable = SeekableFlag::eDEFAULT);
+        static InputStream<Memory::Byte>::Ptr New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag);
+        static InputStream<Memory::Byte>::Ptr New (const String& fileName, BufferFlag bufferFlag);
+        static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag);
+        static InputStream<Memory::Byte>::Ptr New (FileDescriptorType fd, BufferFlag bufferFlag);
 
-            private:
-                class Rep_;
+    private:
+        class Rep_;
 
-            protected:
-                /**
-                     *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
-                     */
-                static Ptr _mkPtr (const shared_ptr<Rep_>& s);
+    protected:
+        /**
+         *  Utility to create a Ptr wrapper (to avoid having to subclass the Ptr class and access its protected constructor)
+         */
+        static Ptr _mkPtr (const shared_ptr<Rep_>& s);
 
-            private:
-                using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, FileInputStream, FileInputStream::Rep_>;
-            };
+    private:
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, FileInputStream, FileInputStream::Rep_>;
+    };
 
-            /**
-             *  Ptr is a copyable smart pointer to a FileInputStream.
-             */
-            class FileInputStream::Ptr : public Streams::InputStream<Memory::Byte>::Ptr {
-            private:
-                using inherited = Streams::InputStream<Memory::Byte>::Ptr;
+    /**
+     *  Ptr is a copyable smart pointer to a FileInputStream.
+     */
+    class FileInputStream::Ptr : public Streams::InputStream<Memory::Byte>::Ptr {
+    private:
+        using inherited = Streams::InputStream<Memory::Byte>::Ptr;
 
-            public:
-                /**
-                 *  \par Example Usage
-                 *      \code
-                 *          Memory::BLOB b = IO::FileSystem::FileInputStream::Ptr{ IO::FileSystem::FileInputStream (fileName) }.ReadAll ();
-                 *      \endcode
-                 */
-                Ptr ()                = delete;
-                Ptr (const Ptr& from) = default;
+    public:
+        /**
+         *  \par Example Usage
+         *      \code
+         *          Memory::BLOB b = IO::FileSystem::FileInputStream::Ptr{ IO::FileSystem::FileInputStream (fileName) }.ReadAll ();
+         *      \endcode
+         */
+        Ptr ()                = delete;
+        Ptr (const Ptr& from) = default;
 
-            protected:
-                Ptr (const shared_ptr<Rep_>& from);
+    protected:
+        Ptr (const shared_ptr<Rep_>& from);
 
-            public:
-                nonvirtual Ptr& operator= (const Ptr& rhs) = default;
+    public:
+        nonvirtual Ptr& operator= (const Ptr& rhs) = default;
 
-            private:
-                friend class FileInputStream;
-            };
-        }
-    }
+    private:
+        friend class FileInputStream;
+    };
+
 }
 
 /*

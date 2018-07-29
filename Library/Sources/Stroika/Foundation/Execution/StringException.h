@@ -19,47 +19,46 @@
  *                  any base std::exception subclass.
  */
 
-namespace Stroika::Foundation {
-    namespace Execution {
+namespace Stroika::Foundation::Execution {
 
+    /**
+     *  This takes a 'String' argument, and maps it to the 'what()' in std::exception.
+     *  This maps using the default native SDK characterset.
+     */
+    class StringException : public exception {
+    private:
+        using inherited = exception;
+
+    public:
+        StringException (const Characters::String& reasonForError);
+
+    public:
         /**
-         *  This takes a 'String' argument, and maps it to the 'what()' in std::exception.
-         *  This maps using the default native SDK characterset.
+         * Only implemented for
+         *      o   wstring
+         *      o   String
          */
-        class StringException : public exception {
-        private:
-            using inherited = exception;
+        template <typename T>
+        nonvirtual T As () const;
 
-        public:
-            StringException (const Characters::String& reasonForError);
+    public:
+        /**
+         *  Provide a 'c string' variant of the exception message. Convert the UNICODE
+         *  string argument to a narrow-string (multibyte) in the SDK code page.
+         *  @see GetDefaultSDKCodePage()
+         */
+        virtual const char* what () const noexcept override;
 
-        public:
-            /**
-             * Only implemented for
-             *      o   wstring
-             *      o   String
-             */
-            template <typename T>
-            nonvirtual T As () const;
+    private:
+        Characters::String fError_;
+        string             fSDKCharString_;
+    };
 
-        public:
-            /**
-             *  Provide a 'c string' variant of the exception message. Convert the UNICODE
-             *  string argument to a narrow-string (multibyte) in the SDK code page.
-             *  @see GetDefaultSDKCodePage()
-             */
-            virtual const char* what () const noexcept override;
+    template <>
+    wstring StringException::As () const;
+    template <>
+    Characters::String StringException::As () const;
 
-        private:
-            Characters::String fError_;
-            string             fSDKCharString_;
-        };
-
-        template <>
-        wstring StringException::As () const;
-        template <>
-        Characters::String StringException::As () const;
-    }
 }
 
 /*

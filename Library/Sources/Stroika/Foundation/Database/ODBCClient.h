@@ -52,68 +52,67 @@
 #error "qHasLibrary_ODBC should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-namespace Stroika::Foundation {
-    namespace Database {
+namespace Stroika::Foundation::Database {
 
-        using namespace std;
-        using namespace Stroika::Foundation;
-        using namespace Stroika::Foundation::Execution;
-        using namespace Stroika::Foundation::Memory;
+    using namespace std;
+    using namespace Stroika::Foundation;
+    //using namespace Stroika::Foundation::Execution;
+    //using namespace Stroika::Foundation::Memory;
 
-        using Characters::String;
+    using Characters::String;
 
-        class Exception : public StringException {
-        public:
-            Exception (const String& message);
-        };
-        class NoDataException : public Exception {
-        public:
-            NoDataException ();
-        };
+    class Exception : public Execution::StringException {
+    public:
+        Exception (const String& message);
+    };
+    class NoDataException : public Exception {
+    public:
+        NoDataException ();
+    };
 
 #if qHasLibrary_ODBC
-        class DBConnection {
-        private:
-            class Rep;
+    class DBConnection {
+    private:
+        class Rep;
 
-        public:
-            DBConnection (const wstring& dsn);
-            virtual ~DBConnection ();
+    public:
+        DBConnection (const wstring& dsn);
+        virtual ~DBConnection ();
 
-        public:
-            nonvirtual unsigned int GetNestedTransactionCount () const;
+    public:
+        nonvirtual unsigned int GetNestedTransactionCount () const;
 
-        private:
-            shared_ptr<Rep> fRep;
-        };
+    private:
+        shared_ptr<Rep> fRep;
+    };
 #endif
 
 #if qHasLibrary_ODBC
-        // Maybe pattern this more after an 'iterator'?
-        class Query {
-        public:
-            class AbstractColumn;
+    // Maybe pattern this more after an 'iterator'?
+    class Query {
+    public:
+        class AbstractColumn;
 
-        private:
-            class Rep;
+    private:
+        class Rep;
 
-        public:
-            Query (DBConnection database);
+    public:
+        Query (DBConnection database);
 
-        public:
-            void Bind (shared_ptr<AbstractColumn>* columns, size_t numberColumns);
+    public:
+        void Bind (shared_ptr<AbstractColumn>* columns, size_t numberColumns);
 
-        public:
-            void Execute (const wstring& sqlQuery);
+    public:
+        void Execute (const wstring& sqlQuery);
 
-        public:
-            bool FetchRow ();
+    public:
+        bool FetchRow ();
 
-        private:
-            shared_ptr<Rep> fRep;
-        };
+    private:
+        shared_ptr<Rep> fRep;
+    };
 #endif
-    }
+
 }
 
 /*

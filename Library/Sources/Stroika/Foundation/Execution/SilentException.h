@@ -8,17 +8,16 @@
 
 #include "Exceptions.h"
 
-namespace Stroika::Foundation {
-    namespace Execution {
+namespace Stroika::Foundation::Execution {
 
-        /**
-         * Throw this when an error has already been reported - so that it isn't reported again
-         */
-        class SilentException {
-        public:
-            static const SilentException kThe;
-        };
-    }
+    /**
+     * Throw this when an error has already been reported - so that it isn't reported again
+     */
+    class SilentException {
+    public:
+        static const SilentException kThe;
+    };
+
 }
 
 #endif /*_Stroia_Foundation_Execution_SilentException_h_*/
