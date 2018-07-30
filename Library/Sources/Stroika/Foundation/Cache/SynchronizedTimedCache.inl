@@ -10,10 +10,10 @@
 namespace Stroika::Foundation::Cache {
 
     /*
-        ********************************************************************************
-        ************** SynchronizedTimedCache<KEY, VALUE, TRAITS> **********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** SynchronizedTimedCache<KEY, VALUE, TRAITS> **********************
+     ********************************************************************************
+     */
     template <typename KEY, typename VALUE, typename TRAITS>
     SynchronizedTimedCache<KEY, VALUE, TRAITS>::SynchronizedTimedCache (Time::DurationSecondsType timeoutInSeconds)
         : inherited (timeoutInSeconds)

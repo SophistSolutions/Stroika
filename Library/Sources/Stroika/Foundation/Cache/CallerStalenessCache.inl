@@ -12,20 +12,20 @@
 namespace Stroika::Foundation::Cache {
 
     /*
-        ********************************************************************************
-        ********************** CallerStalenessCache_Traits_DEFAULT *********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** CallerStalenessCache_Traits_DEFAULT *********************
+     ********************************************************************************
+     */
     inline CallerStalenessCache_Traits_DEFAULT::TimeStampType CallerStalenessCache_Traits_DEFAULT::GetCurrentTimestamp ()
     {
         return Time::GetTickCount ();
     }
 
     /*
-        ********************************************************************************
-        ****************** CallerStalenessCache<KEY,VALUE,TIME_TRAITS> *****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************** CallerStalenessCache<KEY,VALUE,TIME_TRAITS> *****************
+     ********************************************************************************
+     */
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
     inline typename CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::TimeStampType CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::GetCurrentTimestamp ()
     {

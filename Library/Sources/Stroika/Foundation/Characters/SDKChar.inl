@@ -9,8 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace Characters {
-    }
+
+namespace Stroika::Foundation::Characters {
 }
+
 #endif /*_Stroika_Foundation_Characters_SDKChar_inl_*/

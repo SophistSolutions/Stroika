@@ -13,6 +13,8 @@ namespace Stroika::Foundation::IO {
 
     using Characters::String;
 
+    /**
+     */
     class FileBusyException : public Execution::StringException {
     public:
         FileBusyException (const String& fileName = String ());

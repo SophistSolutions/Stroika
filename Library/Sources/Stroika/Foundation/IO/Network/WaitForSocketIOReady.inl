@@ -13,10 +13,10 @@
 namespace Stroika::Foundation::IO::Network {
 
     /*
-        ********************************************************************************
-        ********************** IO::Network::WaitForSocketIOReady ***********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** IO::Network::WaitForSocketIOReady ***********************
+     ********************************************************************************
+     */
     template <typename SOCKET_SUBTYPE>
     WaitForSocketIOReady<SOCKET_SUBTYPE>::WaitForSocketIOReady (const Traversal::Iterable<SOCKET_SUBTYPE>& sockets, const TypeOfMonitorSet& flags)
         : inherited (sockets.template Select<Socket::PlatformNativeHandle> ([](const Socket::Ptr& s) { return s.GetNativeSocket (); }), flags)
@@ -71,4 +71,5 @@ namespace Stroika::Foundation::IO::Network {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_WaitForSocketIOReady_inl_*/

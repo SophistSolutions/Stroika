@@ -20,4 +20,5 @@ namespace Stroika::Foundation::IO::Network::Transfer {
 #endif
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_Transfer_Client_libcurl_inl_*/

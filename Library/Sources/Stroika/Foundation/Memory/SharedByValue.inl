@@ -15,10 +15,10 @@
 namespace Stroika::Foundation::Memory {
 
     /*
-        ********************************************************************************
-        ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
+     ********************************************************************************
+     */
     template <typename T, typename SHARED_IMLP>
     inline SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&)) noexcept
         : fCopier (copier)
@@ -33,10 +33,10 @@ namespace Stroika::Foundation::Memory {
     }
 
     /*
-        ********************************************************************************
-        *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
+     ********************************************************************************
+     */
     template <typename T, typename SHARED_IMLP>
     inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
     {
@@ -44,10 +44,10 @@ namespace Stroika::Foundation::Memory {
     }
 
     /*
-        ********************************************************************************
-        ****** SharedByValue_CopySharedPtrExternallySynchronized<T,SHARED_IMLP> ********
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****** SharedByValue_CopySharedPtrExternallySynchronized<T,SHARED_IMLP> ********
+     ********************************************************************************
+     */
     template <typename T, typename SHARED_IMLP>
     inline SHARED_IMLP SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
     {
@@ -61,10 +61,10 @@ namespace Stroika::Foundation::Memory {
     }
 
     /*
-        ********************************************************************************
-        ********* SharedByValue_CopySharedPtrAtomicSynchronized<T,SHARED_IMLP> *********
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********* SharedByValue_CopySharedPtrAtomicSynchronized<T,SHARED_IMLP> *********
+     ********************************************************************************
+     */
     template <typename T, typename SHARED_IMLP>
     inline SHARED_IMLP SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
     {
@@ -78,10 +78,10 @@ namespace Stroika::Foundation::Memory {
     }
 
     /*
-        ********************************************************************************
-        ****************************** SharedByValue<TRAITS> ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************************** SharedByValue<TRAITS> ***************************
+     ********************************************************************************
+     */
     template <typename TRAITS>
     inline SharedByValue<TRAITS>::SharedByValue () noexcept
         : fCopier_ (element_copier_type ())
@@ -181,11 +181,11 @@ namespace Stroika::Foundation::Memory {
     {
         element_type* ptr = fSharedImpl_.get ();
         /*
-            * For non-const pointing, we must clone ourselves (if there are
-            * extra referneces). If we are a nullptr pointer, nobody could actually
-            * rereference it anyhow, so don't bother with the Assure1Reference()
-            * in that case.
-            */
+         * For non-const pointing, we must clone ourselves (if there are
+         * extra referneces). If we are a nullptr pointer, nobody could actually
+         * rereference it anyhow, so don't bother with the Assure1Reference()
+         * in that case.
+         */
         if (ptr != nullptr) {
             Assure1Reference (forward<COPY_ARGS> (copyArgs)...);
             ptr = fSharedImpl_.get ();
@@ -219,9 +219,9 @@ namespace Stroika::Foundation::Memory {
     inline typename SharedByValue<TRAITS>::element_type& SharedByValue<TRAITS>::operator* ()
     {
         /*
-            * For non-const dereferencing, we must clone ourselves (if there are
-            * extra referneces).
-            */
+         * For non-const dereferencing, we must clone ourselves (if there are
+         * extra referneces).
+         */
         Assure1Reference ();
         element_type* ptr = get ();
         EnsureNotNull (ptr);
@@ -289,16 +289,16 @@ namespace Stroika::Foundation::Memory {
         element_type* ptr = ptr2Clone.get ();
         RequireNotNull (ptr);
         /*
-            *      For a valid pointer that is reference counted and multiply shared,
-            *  make a copy of that pointer via our fCloner function, and assign
-            *  that cloned reference to this.
-            *
-            *      Note that by doing so, we remove any references to the current
-            *  item, and end up with our having the sole reference to the new copy of fPtr.
-            *
-            *      Since we will be cloning the given pointer, we assume(assert) that
-            *  it is non-nullptr.
-            */
+         *      For a valid pointer that is reference counted and multiply shared,
+         *  make a copy of that pointer via our fCloner function, and assign
+         *  that cloned reference to this.
+         *
+         *      Note that by doing so, we remove any references to the current
+         *  item, and end up with our having the sole reference to the new copy of fPtr.
+         *
+         *      Since we will be cloning the given pointer, we assume(assert) that
+         *  it is non-nullptr.
+         */
         //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
         // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
         // value and it should go away.
@@ -315,4 +315,5 @@ namespace Stroika::Foundation::Memory {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Memory_SharedByValue_inl_*/

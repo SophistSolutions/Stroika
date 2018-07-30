@@ -9,11 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Containers/Common.h"
-#include "../Memory/SmallStackBuffer.h"
 
-namespace Stroika::Foundation {
-    namespace Characters {
-    }
+namespace Stroika::Foundation::Characters {
 }
+
 #endif /*_Stroika_Foundation_Characters_Format_inl_*/

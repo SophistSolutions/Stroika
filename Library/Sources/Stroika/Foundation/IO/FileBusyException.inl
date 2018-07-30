@@ -9,12 +9,19 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Debug/Trace.h"
 
 namespace Stroika::Foundation::IO {
+
+    /*
+     ********************************************************************************
+     ******************************** FileBusyException *****************************
+     ********************************************************************************
+     */
     inline String FileBusyException::GetFileName () const
     {
         return fFileName_;
     }
+
 }
+
 #endif /*_Stroika_Foundation_IO_FileBusyException_inl_*/

@@ -101,4 +101,5 @@ namespace Stroika::Foundation::Math {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Math_Statistics_inl_*/

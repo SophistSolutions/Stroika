@@ -540,4 +540,5 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Containers_MultiSet_inl_ */

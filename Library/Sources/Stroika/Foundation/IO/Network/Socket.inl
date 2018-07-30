@@ -168,4 +168,5 @@ namespace Stroika::Foundation::IO::Network {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_Socket_inl_*/

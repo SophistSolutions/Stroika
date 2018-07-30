@@ -66,10 +66,10 @@ namespace Stroika::Foundation::Characters {
 
     public:
         /*
-            * @todo    NOT SURE WE WANT THIS FOR wchar_t etc - maybe just get rid of this!!! TRICKYYY;
-            *          IF we go with design based on char32_t - then thats all we can ever safely return.
-            *          We need diff API to return up to 2 wchar_t's!!!
-            */
+         * @todo    NOT SURE WE WANT THIS FOR wchar_t etc - maybe just get rid of this!!! TRICKYYY;
+         *          IF we go with design based on char32_t - then thats all we can ever safely return.
+         *          We need diff API to return up to 2 wchar_t's!!!
+         */
         template <typename T>
         nonvirtual T As () const;
 

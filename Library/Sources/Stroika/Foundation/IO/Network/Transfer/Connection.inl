@@ -14,10 +14,10 @@
 namespace Stroika::Foundation::IO::Network::Transfer {
 
     /*
-        ********************************************************************************
-        *********************** Connection::Options::Authentication ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** Connection::Options::Authentication ********************
+     ********************************************************************************
+     */
     inline Connection::Options::Authentication::Authentication (const String& authToken)
         : fOptions_ (Options::eProactivelySendAuthentication)
         , fExplicitAuthToken_ (authToken)
@@ -38,10 +38,10 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     }
 
     /*
-        ********************************************************************************
-        ********************************** Connection **********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** Connection **********************************
+     ********************************************************************************
+     */
     inline Connection::Connection (const shared_ptr<_IRep>& rep)
         : fRep_ (rep)
     {
@@ -73,12 +73,14 @@ namespace Stroika::Foundation::IO::Network::Transfer {
     }
 
 }
+
 /*
-********************************************************************************
-**************************** Configuration::DefaultNames ***********************
-********************************************************************************
-*/
+ ********************************************************************************
+ **************************** Configuration::DefaultNames ***********************
+ ********************************************************************************
+ */
 namespace Stroika::Foundation::Configuration {
+
     template <>
     struct DefaultNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> : EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> {
         static constexpr EnumNames<Foundation::IO::Network::Transfer::Connection::Options::Authentication::Options> k{
@@ -92,5 +94,7 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
+
 }
+
 #endif /*_Stroika_Foundation_IO_Network_Transfer_Connection_inl_*/

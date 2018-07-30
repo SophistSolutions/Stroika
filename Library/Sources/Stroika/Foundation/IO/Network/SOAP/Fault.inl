@@ -11,4 +11,5 @@
  */
 namespace Stroika::Foundation::IO::Network::SOAP {
 }
+
 #endif /*_Stroika_Foundation_IO_Network_SOAP_Fault_inl_*/

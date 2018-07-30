@@ -30,6 +30,7 @@ namespace Stroika::Foundation::IO {
 
     FileAccessMode operator& (FileAccessMode l, FileAccessMode r);
     FileAccessMode operator| (FileAccessMode l, FileAccessMode r);
+
 }
 
 /*

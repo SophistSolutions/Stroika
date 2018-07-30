@@ -67,4 +67,5 @@ namespace Stroika::Foundation::IO::FileSystem {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_FileSystem_TemporaryFile_inl_*/

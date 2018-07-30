@@ -383,6 +383,7 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace std {
+
     /**
      *  overload the std::dynamic_pointer_cast to work with Stroika SharedPtr<> as well.
      *
@@ -406,7 +407,9 @@ namespace std {
     void atomic_store (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o);
     template <typename T>
     void atomic_store_explicit (Stroika::Foundation::Memory::SharedPtr<T>* storeTo, Stroika::Foundation::Memory::SharedPtr<T> o, memory_order);
+
 }
+
 #endif /*_Stroika_Foundation_Memory_SharedPtr_h_*/
 
 /*

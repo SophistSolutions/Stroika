@@ -60,5 +60,7 @@ namespace Stroika::Foundation::Cache {
                 return CallWithExplodedTuple_<RESULT, ARGS...>{t, fFunction_}.callFunc (typename gens_<sizeof...(args)>::type ());
             });
     }
+
 }
+
 #endif /*_Stroika_Foundation_Cache_Memoizer_inl_*/

@@ -13,6 +13,8 @@ namespace Stroika::Foundation::IO {
 
     using Characters::String;
 
+    /**
+     */
     class FileFormatException : public Execution::StringException {
     public:
         FileFormatException (const String& fileName);

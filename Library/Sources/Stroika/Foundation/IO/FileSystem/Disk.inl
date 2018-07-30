@@ -10,7 +10,6 @@
  ********************************************************************************
  */
 namespace Stroika::Foundation::IO::FileSystem {
-
 }
 
 namespace Stroika::Foundation::Configuration {
@@ -32,4 +31,5 @@ namespace Stroika::Foundation::Configuration {
         }
     };
 }
+
 #endif /*_Stroika_Foundation_IO_FileSystem_Disk_inl_*/

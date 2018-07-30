@@ -366,5 +366,7 @@ namespace Stroika::Foundation::Cache {
             return newV;
         }
     }
+
 }
+
 #endif /*_Stroika_Foundation_Cache_LRUCache_inl_*/

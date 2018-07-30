@@ -13,30 +13,30 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace Configuration {
 
-        /*
-         ********************************************************************************
-         *************************** Configuration::GetEndianness ***********************
-         ********************************************************************************
-         */
+namespace Stroika::Foundation::Configuration {
+
+    /*
+     ********************************************************************************
+     *************************** Configuration::GetEndianness ***********************
+     ********************************************************************************
+     */
 #if !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-        namespace Private_ {
-            union EndianTester_ {
-                uint32_t sdat;
-                uint8_t  cdat[4];
-            };
-            static constexpr EndianTester_ kMix_{0x01020304};
-        }
+    namespace Private_ {
+        union EndianTester_ {
+            uint32_t sdat;
+            uint8_t  cdat[4];
+        };
+        static constexpr EndianTester_ kMix_{0x01020304};
+    }
 #endif
-        inline constexpr Endian GetEndianness ()
-        {
+    inline constexpr Endian GetEndianness ()
+    {
 #if !qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy
-            return (Private_::kMix_.cdat[0] == 4) ? Endian::eLittleByte :         // aka little endian
-                       (Private_::kMix_.cdat[0] == 1) ? Endian::eBigByte :        // aka big endian
-                           (Private_::kMix_.cdat[0] == 2) ? Endian::eLittleWord : // aka little PDP
-                               Endian::eBigWord;
+        return (Private_::kMix_.cdat[0] == 4) ? Endian::eLittleByte :         // aka little endian
+                   (Private_::kMix_.cdat[0] == 1) ? Endian::eBigByte :        // aka big endian
+                       (Private_::kMix_.cdat[0] == 2) ? Endian::eLittleWord : // aka little PDP
+                           Endian::eBigWord;
 #else
 #if (defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN) ||             \
     (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || \
@@ -47,7 +47,7 @@ namespace Stroika::Foundation {
     defined(_MIBSEB) ||                                                    \
     defined(__MIBSEB) ||                                                   \
     defined(__MIBSEB__)
-            return Endian::eBigByte;
+        return Endian::eBigByte;
 #endif
 #if (defined(__BYTE_ORDER) && __BYTE_ORDER == __LITTLE_ENDIAN) ||             \
     (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__) || \
@@ -62,42 +62,42 @@ namespace Stroika::Foundation {
     defined(_M_X64) ||                                                        \
     defined(_M_IA64) ||                                                       \
     defined(_M_ARM)
-            return Endian::eLittle;
+        return Endian::eLittle;
 #endif
 #endif
-        }
+    }
 
-        /*
-            ********************************************************************************
-            ************************* Configuration::EndianConverter ***********************
-            ********************************************************************************
-            */
-        template <>
-        inline uint16_t EndianConverter (uint16_t value, Endian from, Endian to)
-        {
-            Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
-            Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented
-            if (from == to) {
-                return value;
-            }
-            else {
-                Assert (sizeof (value) == 2);
-                return ((value & 0xFF) << 8) | ((value >> 8) & 0xFF);
-            }
+    /*
+     ********************************************************************************
+     ************************* Configuration::EndianConverter ***********************
+     ********************************************************************************
+     */
+    template <>
+    inline uint16_t EndianConverter (uint16_t value, Endian from, Endian to)
+    {
+        Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
+        Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented
+        if (from == to) {
+            return value;
         }
-        template <>
-        inline uint32_t EndianConverter (uint32_t value, Endian from, Endian to)
-        {
-            Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
-            Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented
-            if (from == to) {
-                return value;
-            }
-            else {
-                Assert (sizeof (value) == 4);
-                return ((value & 0xFF) << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | ((value >> 24) & 0xFF);
-            }
+        else {
+            Assert (sizeof (value) == 2);
+            return ((value & 0xFF) << 8) | ((value >> 8) & 0xFF);
         }
     }
+    template <>
+    inline uint32_t EndianConverter (uint32_t value, Endian from, Endian to)
+    {
+        Require (from == Endian::eBig or from == Endian::eLittle); // just cuz thats all thats implemented
+        Require (to == Endian::eBig or to == Endian::eLittle);     // just cuz thats all thats implemented
+        if (from == to) {
+            return value;
+        }
+        else {
+            Assert (sizeof (value) == 4);
+            return ((value & 0xFF) << 24) | ((value & 0xFF00) << 8) | ((value >> 8) & 0xFF00) | ((value >> 24) & 0xFF);
+        }
+    }
+
 }
 #endif /*_Stroika_Foundation_Configuration_Endian_inl_*/

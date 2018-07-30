@@ -12,4 +12,5 @@
 
 namespace Stroika::Frameworks::Modbus {
 }
+
 #endif /*_Stroika_Frameworks_Modbus_IModbusService_inl_*/

@@ -29,47 +29,46 @@
  *      @todo   https://stroika.atlassian.net/browse/STK-608 - probbaly be made more efficent in sycn form - using direct mutex
  */
 
-namespace Stroika::Foundation {
-    namespace Streams {
+namespace Stroika::Foundation::Streams {
 
+    /**
+     *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
+     *          This is useful if calls to the underling stream source can be expensive. This class
+     *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+     */
+    template <typename ELEMENT_TYPE>
+    class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
+    public:
+        BufferedInputStream ()                           = delete;
+        BufferedInputStream (const BufferedInputStream&) = delete;
+
+    public:
+        using typename InputStream<ELEMENT_TYPE>::Ptr;
+
+    public:
         /**
-         *  @brief  BufferedInputStream is an InputStream<ELEMENT_TYPE>::Ptr which provides buffered access.
-         *          This is useful if calls to the underling stream source can be expensive. This class
-         *          loads chunks of the stream into memory, and reduces calls to the underlying stream.
+         *  \par Example Usage
+         *      \code
+         *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
+         *      \endcode
          *
-         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
+         *  \par Example Usage
+         *      \code
+         *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
+         *      \endcode
          */
-        template <typename ELEMENT_TYPE>
-        class BufferedInputStream : public InputStream<ELEMENT_TYPE> {
-        public:
-            BufferedInputStream ()                           = delete;
-            BufferedInputStream (const BufferedInputStream&) = delete;
+        static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
 
-        public:
-            using typename InputStream<ELEMENT_TYPE>::Ptr;
+    private:
+        class Rep_;
 
-        public:
-            /**
-             *  \par Example Usage
-             *      \code
-             *          InputStream<Byte>::Ptr in = BufferedInputStream<Byte>::New (fromStream);
-             *      \endcode
-             *
-             *  \par Example Usage
-             *      \code
-             *          CallExpectingBinaryInputStreamPtr (BufferedInputStream<Byte>::New (fromStream))
-             *      \endcode
-             */
-            static Ptr New (const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
-            static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const typename InputStream<ELEMENT_TYPE>::Ptr& realIn);
+    private:
+        using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream<ELEMENT_TYPE>, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
+    };
 
-        private:
-            class Rep_;
-
-        private:
-            using InternalSyncRep_ = InternallySyncrhonizedInputStream<ELEMENT_TYPE, Streams::BufferedInputStream<ELEMENT_TYPE>, typename BufferedInputStream<ELEMENT_TYPE>::Rep_>;
-        };
-    }
 }
 
 /*

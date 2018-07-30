@@ -33,6 +33,7 @@
  */
 
 namespace Stroika::Foundation::IO::Network {
+
     using Characters::String;
 
     /**

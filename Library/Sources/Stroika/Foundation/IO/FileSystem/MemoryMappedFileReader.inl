@@ -30,4 +30,5 @@ namespace Stroika::Foundation::IO::FileSystem {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_FileSystem_MemoryMappedFileReader_inl_*/

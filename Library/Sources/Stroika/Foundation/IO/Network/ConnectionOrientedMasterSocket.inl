@@ -12,10 +12,10 @@
 namespace Stroika::Foundation::IO::Network {
 
     /*
-        ********************************************************************************
-        ********** Foundation::IO::Network::ConnectionOrientedMasterSocket::Ptr ********
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********** Foundation::IO::Network::ConnectionOrientedMasterSocket::Ptr ********
+     ********************************************************************************
+     */
     inline ConnectionOrientedMasterSocket::Ptr::Ptr (nullptr_t)
         : inherited (nullptr)
     {
@@ -55,4 +55,5 @@ namespace Stroika::Foundation::IO::Network {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_ConnectionOrientedMasterSocket_inl_*/

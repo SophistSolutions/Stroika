@@ -60,4 +60,5 @@ namespace Stroika::Foundation::Configuration {
     };
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_Interface_inl_*/

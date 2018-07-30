@@ -11,32 +11,32 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace Configuration {
+namespace Stroika::Foundation::Configuration {
 
-        /*
-         ********************************************************************************
-         **************** Configuration::GetPlatformDefaultLocale ***********************
-         ********************************************************************************
-         */
-        inline std::locale GetPlatformDefaultLocale ()
-        {
-            return std::locale ("");
-        }
-
-        /*
-         ********************************************************************************
-         ********************** Configuration::ScopedUseLocale **************************
-         ********************************************************************************
-         */
-        inline ScopedUseLocale::ScopedUseLocale (const locale& l)
-            : fPrev_{locale::global (l)}
-        {
-        }
-        inline ScopedUseLocale::~ScopedUseLocale ()
-        {
-            IgnoreExceptionsForCall (locale::global (fPrev_));
-        }
+    /*
+     ********************************************************************************
+     **************** Configuration::GetPlatformDefaultLocale ***********************
+     ********************************************************************************
+     */
+    inline std::locale GetPlatformDefaultLocale ()
+    {
+        return std::locale ("");
     }
+
+    /*
+     ********************************************************************************
+     ********************** Configuration::ScopedUseLocale **************************
+     ********************************************************************************
+     */
+    inline ScopedUseLocale::ScopedUseLocale (const locale& l)
+        : fPrev_{locale::global (l)}
+    {
+    }
+    inline ScopedUseLocale::~ScopedUseLocale ()
+    {
+        IgnoreExceptionsForCall (locale::global (fPrev_));
+    }
+
 }
+
 #endif /*_Stroika_Foundation_Configuration_Locale_inl_*/

@@ -9,8 +9,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-namespace Stroika::Foundation {
-    namespace Configuration {
-    }
+
+namespace Stroika::Foundation::Configuration {
 }
+
 #endif /*_Stroika_Foundation_Configuration_Common_inl_*/

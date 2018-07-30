@@ -95,4 +95,5 @@ namespace Stroika::Foundation::IO::Network {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_ConnectionOrientedStreamSocket_inl_*/

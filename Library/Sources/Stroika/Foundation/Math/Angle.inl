@@ -16,10 +16,10 @@
 namespace Stroika::Foundation::Math {
 
     /*
-        ********************************************************************************
-        *********************************** Math::Angle ********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************************** Math::Angle ********************************
+     ********************************************************************************
+     */
     inline constexpr Angle::Angle ()
         : fAngleInRadians_{0}
     {
@@ -71,78 +71,79 @@ namespace Stroika::Foundation::Math {
     }
 
     /*
-        ********************************************************************************
-        ************************* Math::Angle operators ********************************
-        ********************************************************************************
-        */
-    inline bool operator< (const Angle& lhs, const Angle& rhs)
+     ********************************************************************************
+     ************************* Math::Angle operators ********************************
+     ********************************************************************************
+     */
+    constexpr bool operator< (const Angle& lhs, const Angle& rhs)
     {
         return lhs.AsRadians () < rhs.AsRadians ();
     }
-    inline bool operator<= (const Angle& lhs, const Angle& rhs)
+    constexpr bool operator<= (const Angle& lhs, const Angle& rhs)
     {
         return lhs.AsRadians () <= rhs.AsRadians ();
     }
-    inline bool operator== (const Angle& lhs, const Angle& rhs)
+    constexpr bool operator== (const Angle& lhs, const Angle& rhs)
     {
         return lhs.AsRadians () == rhs.AsRadians ();
     }
-    inline bool operator!= (const Angle& lhs, const Angle& rhs)
+    constexpr bool operator!= (const Angle& lhs, const Angle& rhs)
     {
         return lhs.AsRadians () != rhs.AsRadians ();
     }
-    inline bool operator>= (const Angle& lhs, const Angle& rhs)
+    constexpr bool operator>= (const Angle& lhs, const Angle& rhs)
     {
         return lhs.AsRadians () >= rhs.AsRadians ();
     }
-    inline bool operator> (const Angle& lhs, const Angle& rhs)
+    constexpr bool operator> (const Angle& lhs, const Angle& rhs)
     {
         return lhs.AsRadians () > rhs.AsRadians ();
     }
-    inline Angle operator+ (const Angle& lhs, const Angle& rhs)
+    constexpr Angle operator+ (const Angle& lhs, const Angle& rhs)
     {
         return Angle (lhs.AsRadians () + rhs.AsRadians ());
     }
-    inline Angle operator- (const Angle& lhs, const Angle& rhs)
+    constexpr Angle operator- (const Angle& lhs, const Angle& rhs)
     {
         return Angle (lhs.AsRadians () - rhs.AsRadians ());
     }
-    inline Angle operator* (const Angle& lhs, double rhs)
+    constexpr Angle operator* (const Angle& lhs, double rhs)
     {
         return Angle (lhs.AsRadians () * rhs);
     }
-    inline Angle operator/ (const Angle& lhs, double rhs)
+    constexpr Angle operator/ (const Angle& lhs, double rhs)
     {
         return Angle (lhs.AsRadians () / rhs);
     }
-    inline Angle operator* (double lhs, const Angle& rhs)
+    constexpr Angle operator* (double lhs, const Angle& rhs)
     {
         return Angle (lhs * rhs.AsRadians ());
     }
-    inline Angle operator* (const Angle& lhs, const Angle& rhs)
+    constexpr Angle operator* (const Angle& lhs, const Angle& rhs)
     {
         return Angle (lhs.AsRadians () * rhs.AsRadians ());
     }
 
     /*
-        ********************************************************************************
-        *********************************** Math::Min **********************************
-        ********************************************************************************
-        */
-    inline Angle Min (const Angle& a1, const Angle& a2)
+     ********************************************************************************
+     *********************************** Math::Min **********************************
+     ********************************************************************************
+     */
+    constexpr Angle Min (const Angle& a1, const Angle& a2)
     {
         return (a1 < a2) ? a1 : a2;
     }
 
     /*
-        ********************************************************************************
-        *********************************** Math::Max **********************************
-        ********************************************************************************
-        */
-    inline Angle Max (const Angle& a1, const Angle& a2)
+     ********************************************************************************
+     *********************************** Math::Max **********************************
+     ********************************************************************************
+     */
+    constexpr Angle Max (const Angle& a1, const Angle& a2)
     {
         return (a1 > a2) ? a1 : a2;
     }
 
 }
+
 #endif /*_Stroika_Foundation_Math_Angle_inl_*/

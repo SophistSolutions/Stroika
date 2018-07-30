@@ -37,4 +37,5 @@ namespace Stroika::Foundation::IO::Network {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_CIDR_inl_*/

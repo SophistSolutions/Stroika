@@ -11,6 +11,7 @@
  */
 namespace Stroika::Foundation::IO::FileSystem {
 }
+
 namespace Stroika::Foundation::Configuration {
     template <>
     struct DefaultNames<IO::FileSystem::FileStream::SeekableFlag> : EnumNames<IO::FileSystem::FileStream::SeekableFlag> {
@@ -39,4 +40,5 @@ namespace Stroika::Foundation::Configuration {
         }
     };
 }
+
 #endif /*_Stroika_Foundation_IO_FileSystem_FileStream_inl_*/

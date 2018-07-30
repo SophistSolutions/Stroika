@@ -163,4 +163,5 @@ namespace Stroika::Foundation::Characters {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Characters_Character_inl_*/

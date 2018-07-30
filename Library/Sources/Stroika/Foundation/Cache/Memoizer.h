@@ -57,6 +57,7 @@ namespace Stroika::Foundation::Cache {
         function<RESULT (ARGS...)>    fFunction_;
         CACHE<tuple<ARGS...>, RESULT> fCache_;
     };
+
 }
 
 /*

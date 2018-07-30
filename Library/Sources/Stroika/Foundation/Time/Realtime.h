@@ -20,6 +20,7 @@
 namespace Stroika::Foundation {
     using namespace std;
 };
+
 namespace Stroika::Foundation::Time {
 
     using chrono::time_point;

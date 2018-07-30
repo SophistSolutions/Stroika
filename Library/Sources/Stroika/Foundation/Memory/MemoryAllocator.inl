@@ -111,4 +111,5 @@ namespace Stroika::Foundation::Memory {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Memory_MemoryAllocator_inl_*/

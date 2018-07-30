@@ -26,4 +26,5 @@ namespace Stroika::Foundation::IO::Network::HTTP {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_HTTP_Exception_inl_*/

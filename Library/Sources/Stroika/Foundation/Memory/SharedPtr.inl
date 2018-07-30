@@ -582,5 +582,7 @@ namespace std {
     {
         atomic_store_explicit (storeTo, o, memory_order_seq_cst);
     }
+
 }
+
 #endif /*_Stroika_Foundation_Memory_SharedPtr_inl_*/

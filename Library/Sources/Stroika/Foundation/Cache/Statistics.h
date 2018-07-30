@@ -48,6 +48,7 @@ namespace Stroika::Foundation::Cache::Statistics {
      *  Helper for DefaultTraits.
      */
     using StatsType_DEFAULT = conditional_t<qDebug, Stats_Basic, Stats_Null>;
+
 }
 
 /*

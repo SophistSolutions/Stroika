@@ -276,6 +276,7 @@ namespace Stroika::Foundation::Cache {
         using MyMapType_ = map<KEY, MyResult_, typename TRAITS::InOrderComparerType>;
         MyMapType_ fMap_;
     };
+
 }
 
 /*

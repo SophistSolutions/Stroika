@@ -131,6 +131,7 @@ namespace Stroika::Foundation::Memory {
      *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
      */
     Execution::ModuleDependency MakeModuleDependency_BlockAllocator ();
+
 }
 
 /*

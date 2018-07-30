@@ -37,5 +37,7 @@ namespace Stroika::Foundation::Cache::Statistics {
     inline void Stats_Null::IncrementMisses ()
     {
     }
+
 }
+
 #endif /*_Stroika_Foundation_Cache_Statistics_inl_*/

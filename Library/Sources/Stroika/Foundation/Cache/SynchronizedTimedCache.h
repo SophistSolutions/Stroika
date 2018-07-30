@@ -46,18 +46,18 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /*
-            *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
-            *  This is because typically, filling the cache
-            *  will be slow (otherwise you wouldbe us using the SynchronizedTimedCache).
-            *
-            *  But this has the downside, that you could try filling the cache multiple times with the same value.
-            *
-            *  That's perfectly safe, but not speedy.
-            *
-            *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
-            *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
-            *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
-            */
+         *  Note:   We choose to not hold any lock while filling the cache (fHoldWriteLockDuringCacheFill false by default).
+         *  This is because typically, filling the cache
+         *  will be slow (otherwise you wouldbe us using the SynchronizedTimedCache).
+         *
+         *  But this has the downside, that you could try filling the cache multiple times with the same value.
+         *
+         *  That's perfectly safe, but not speedy.
+         *
+         *  Which is better depends on the likihood the caller will make multiple requests for the same non-existent value at
+         *  the same time. If yes, you should set fHoldWriteLockDuringCacheFill. If no (or if you care more about being able to
+         *  read the rest of the data and not having threads block needlessly for other values) set fHoldWriteLockDuringCacheFill false (default).
+         */
         bool fHoldWriteLockDuringCacheFill{false};
 
     public:

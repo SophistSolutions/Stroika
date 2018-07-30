@@ -68,41 +68,41 @@ namespace Stroika::Foundation::Math {
 
     /**
      */
-    bool operator< (const Angle& lhs, const Angle& rhs);
+    constexpr bool operator< (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    bool operator<= (const Angle& lhs, const Angle& rhs);
+    constexpr bool operator<= (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    bool operator== (const Angle& lhs, const Angle& rhs);
+    constexpr bool operator== (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    bool operator!= (const Angle& lhs, const Angle& rhs);
+    constexpr bool operator!= (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    bool operator>= (const Angle& lhs, const Angle& rhs);
+    constexpr bool operator>= (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    bool operator> (const Angle& lhs, const Angle& rhs);
+    constexpr bool operator> (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    Angle operator+ (const Angle& lhs, const Angle& rhs);
+    constexpr Angle operator+ (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    Angle operator- (const Angle& lhs, const Angle& rhs);
+    constexpr Angle operator- (const Angle& lhs, const Angle& rhs);
 
     /**
      */
-    Angle operator* (double lhs, const Angle& rhs);
-    Angle operator* (const Angle& lhs, double rhs);
-    Angle operator* (const Angle& lhs, Angle& rhs);
+    constexpr Angle operator* (double lhs, const Angle& rhs);
+    constexpr Angle operator* (const Angle& lhs, double rhs);
+    constexpr Angle operator* (const Angle& lhs, Angle& rhs);
 
     /**
      */
@@ -110,11 +110,11 @@ namespace Stroika::Foundation::Math {
 
     /**
      */
-    Angle Min (const Angle& a1, const Angle& a2);
+    constexpr Angle Min (const Angle& a1, const Angle& a2);
 
     /**
      */
-    Angle Max (const Angle& a1, const Angle& a2);
+    constexpr Angle Max (const Angle& a1, const Angle& a2);
 
 }
 

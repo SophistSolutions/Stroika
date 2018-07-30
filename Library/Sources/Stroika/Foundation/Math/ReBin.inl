@@ -18,10 +18,10 @@
 namespace Stroika::Foundation::Math::ReBin {
 
     /*
-        ********************************************************************************
-        ********************** Math::ReBin::DataDescriptorBase *************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** Math::ReBin::DataDescriptorBase *************************
+     ********************************************************************************
+     */
     template <typename X_TYPE, typename VALUE_TYPE>
     inline bool DataDescriptorBase<X_TYPE, VALUE_TYPE>::RangeElementsNearlyEqual (XType lhs, XType rhs)
     {
@@ -29,10 +29,10 @@ namespace Stroika::Foundation::Math::ReBin {
     }
 
     /*
-        ********************************************************************************
-        ********************** Math::ReBin::BasicDataDescriptor ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** Math::ReBin::BasicDataDescriptor ************************
+     ********************************************************************************
+     */
     template <typename X_TYPE, typename VALUE_TYPE>
     inline BasicDataDescriptor<X_TYPE, VALUE_TYPE>::BasicDataDescriptor (const ValueType* bucketStart, const ValueType* bucketEnd, XType xStart, XType xEnd)
         : _fBucketDataStart (bucketStart)
@@ -99,10 +99,10 @@ namespace Stroika::Foundation::Math::ReBin {
     }
 
     /*
-        ********************************************************************************
-        ***************** Math::ReBin::UpdatableDataDescriptor *************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************** Math::ReBin::UpdatableDataDescriptor *************************
+     ********************************************************************************
+     */
     template <typename X_TYPE, typename VALUE_TYPE>
     inline UpdatableDataDescriptor<X_TYPE, VALUE_TYPE>::UpdatableDataDescriptor (VALUE_TYPE* bucketStart, VALUE_TYPE* bucketEnd, X_TYPE xStart, X_TYPE xEnd)
         : inherited (bucketStart, bucketEnd, xStart, xEnd)
@@ -125,10 +125,10 @@ namespace Stroika::Foundation::Math::ReBin {
     }
 
     /*
-        ********************************************************************************
-        ************************************* PRIVATE_ *********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************************* PRIVATE_ *********************************
+     ********************************************************************************
+     */
     namespace PRIVATE_ {
         template <typename DATA_DESCRIPTOR_TYPE>
         void CheckRebinDataDescriptorInvariant_ (const DATA_DESCRIPTOR_TYPE& d)
@@ -160,10 +160,10 @@ namespace Stroika::Foundation::Math::ReBin {
     }
 
     /*
-        ********************************************************************************
-        ********************************** Math::ReBin *********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** Math::ReBin *********************************
+     ********************************************************************************
+     */
     template <typename SRC_DATA_DESCRIPTOR, typename TRG_DATA_DESCRIPTOR>
     void ReBin (
         const SRC_DATA_DESCRIPTOR& srcData,
@@ -175,15 +175,15 @@ namespace Stroika::Foundation::Math::ReBin {
         using BucketIndexType = typename SRC_DATA_DESCRIPTOR::BucketIndexType;
 
         /*
-            *  OLD OBSOLETE Algorithm:
-            *      Two iterators - one marking (start/end of target buckets), and one marking current
-            *      src bucket. Iterate over outer buckets. Move contents to new bucket. And adjust new
-            *      iterators. When they overlap and must advance - proportionally add to bucket,
-            *      advance and add rest to next target bucket.
-            *
-            *      This is probably more efficent than the algorithm below, but trickier to generalize
-            *      so we can have differently scaled source buckets.
-            */
+         *  OLD OBSOLETE Algorithm:
+         *      Two iterators - one marking (start/end of target buckets), and one marking current
+         *      src bucket. Iterate over outer buckets. Move contents to new bucket. And adjust new
+         *      iterators. When they overlap and must advance - proportionally add to bucket,
+         *      advance and add rest to next target bucket.
+         *
+         *      This is probably more efficent than the algorithm below, but trickier to generalize
+         *      so we can have differently scaled source buckets.
+         */
 
 #if qDebug
         PRIVATE_::CheckRebinDataDescriptorInvariant_ (srcData);
@@ -191,20 +191,20 @@ namespace Stroika::Foundation::Math::ReBin {
 #endif
 
         /*
-            *  x               0    1    2    3    4    5
-            *
-            *  SRC-BUCKETS:    |    |    |    |    |    |
-            *  TRG-BUCKETS:    |      |      |      |
-            *
-            *  Iterate over each source bucket. It represnts data from its sourceXStart, to srcXEnd (bucket X domain)
-            *  all data spread evently.
-            *
-            *  See where that start x/endx map to in y buckets, and spread it over them. Assume that in the TARGET
-            *  the buckets are contiguous.
-            *
-            *  For each one source bucket, put part into current ti (proportional), and put reset into next
-            *  ti (proportional).
-            */
+         *  x               0    1    2    3    4    5
+         *
+         *  SRC-BUCKETS:    |    |    |    |    |    |
+         *  TRG-BUCKETS:    |      |      |      |
+         *
+         *  Iterate over each source bucket. It represnts data from its sourceXStart, to srcXEnd (bucket X domain)
+         *  all data spread evently.
+         *
+         *  See where that start x/endx map to in y buckets, and spread it over them. Assume that in the TARGET
+         *  the buckets are contiguous.
+         *
+         *  For each one source bucket, put part into current ti (proportional), and put reset into next
+         *  ti (proportional).
+         */
         BucketIndexType srcBucketCount = srcData.GetBucketCount ();
         for (BucketIndexType srcBucketIdx = 0; srcBucketIdx < srcBucketCount; ++srcBucketIdx) {
             Range<typename SRC_DATA_DESCRIPTOR::XType> curSrcBucketX      = srcData.GetBucketRange (srcBucketIdx);

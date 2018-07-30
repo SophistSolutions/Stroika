@@ -104,6 +104,7 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  @todo redo with KeyedCollection - once thats implemented
      */
     Containers::Collection<MountedFilesystemType> GetMountedFilesystems ();
+
 }
 
 /*

@@ -45,5 +45,7 @@ namespace Stroika::Foundation::Memory {
         Require (((endOffset - startOffset) - 1 + startOffset) < (CHAR_BIT * sizeof (INT_TYPE)));
         return (bitField >> startOffset) & ((1 << (endOffset - startOffset)) - 1);
     }
+
 }
+
 #endif /*_Stroika_Foundation_Memory_Bits_inl_*/

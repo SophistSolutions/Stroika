@@ -130,5 +130,7 @@ namespace Stroika::Foundation::Cache {
             }
         }
     }
+
 }
+
 #endif /*_Stroika_Foundation_Cache_TimedCache_inl_*/

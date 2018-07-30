@@ -10,32 +10,31 @@
  ********************************************************************************
  */
 
-namespace Stroika::Foundation {
-    namespace Streams {
+namespace Stroika::Foundation::Streams {
 
-        /*
-         ********************************************************************************
-         *********************************** TextReader::Ptr ****************************
-         ********************************************************************************
-         */
-        inline TextReader::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
-            : inherited (from)
-        {
-        }
-        inline TextReader::Ptr::Ptr (const InputStream<Character>::Ptr& from)
-            : inherited (from)
-        {
-        }
-
-        /*
-         ********************************************************************************
-         *********************************** TextReader *********************************
-         ********************************************************************************
-         */
-        inline auto TextReader::New (const InputStream<Character>::Ptr& src) -> Ptr
-        {
-            return src;
-        }
+    /*
+     ********************************************************************************
+     *********************************** TextReader::Ptr ****************************
+     ********************************************************************************
+     */
+    inline TextReader::Ptr::Ptr (const shared_ptr<InputStream<Character>::_IRep>& from)
+        : inherited (from)
+    {
     }
+    inline TextReader::Ptr::Ptr (const InputStream<Character>::Ptr& from)
+        : inherited (from)
+    {
+    }
+
+    /*
+     ********************************************************************************
+     *********************************** TextReader *********************************
+     ********************************************************************************
+     */
+    inline auto TextReader::New (const InputStream<Character>::Ptr& src) -> Ptr
+    {
+        return src;
+    }
+
 }
 #endif /*_Stroika_Foundation_Streams_TextReader_inl_*/

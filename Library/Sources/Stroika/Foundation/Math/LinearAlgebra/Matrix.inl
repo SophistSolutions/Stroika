@@ -175,4 +175,5 @@ namespace Stroika::Foundation::Math::LinearAlgebra {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Math_LinearAlgebra_Matrix_inl_*/

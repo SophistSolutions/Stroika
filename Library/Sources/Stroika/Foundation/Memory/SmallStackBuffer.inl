@@ -268,4 +268,5 @@ namespace Stroika::Foundation::Memory {
 #endif
 
 }
+
 #endif /*_Stroika_Foundation_Memory_SmallStackBuffer_inl_*/

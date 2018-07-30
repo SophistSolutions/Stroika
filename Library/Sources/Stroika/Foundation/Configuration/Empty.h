@@ -6,15 +6,20 @@
 
 #include "../StroikaPreComp.h"
 
-namespace Stroika::Foundation {
-    namespace Configuration {
+/**
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ */
 
-        /**
-         *  Believe it or not, this is often useful in template metaprogramming.
-         */
-        struct Empty {
-        };
-    }
+namespace Stroika::Foundation::Configuration {
+
+    /**
+     *  Believe it or not, this is often useful in template metaprogramming.
+     */
+    struct Empty {
+    };
+
 }
 
 /*

@@ -14,7 +14,6 @@
  *
  *
  * TODO:
- *
  *      @todo   FIXUP Docs and code so on thrown response, and open stream in the response is replaced by
  *              a FULLY REALIZED STREAM (MEMORY STREAM)
  *

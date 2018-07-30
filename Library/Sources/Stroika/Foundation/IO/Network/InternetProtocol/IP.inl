@@ -23,4 +23,5 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_InternetProtocol_IP_inl_*/

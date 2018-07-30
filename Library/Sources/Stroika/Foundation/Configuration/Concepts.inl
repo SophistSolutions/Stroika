@@ -6,8 +6,7 @@
 
 #include "../Debug/Assertions.h"
 
-namespace Stroika::Foundation {
-    namespace Configuration {
-    }
+namespace Stroika::Foundation::Configuration {
 }
+
 #endif /* _Stroika_Foundation_Configuration_Concept_inl_ */

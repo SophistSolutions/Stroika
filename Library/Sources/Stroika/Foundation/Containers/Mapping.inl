@@ -563,5 +563,7 @@ namespace Stroika::Foundation::Containers {
     {
         return not lhs.Equals (rhs);
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Mapping_inl_ */

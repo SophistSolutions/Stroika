@@ -276,4 +276,5 @@ namespace Stroika::Foundation::Characters {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Characters_LineEndings_inl_*/

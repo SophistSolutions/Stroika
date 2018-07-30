@@ -22,10 +22,10 @@
 namespace Stroika::Foundation::Math::Optimization::DownhillSimplexMinimization {
 
     /*
-        ********************************************************************************
-        ****************** DownhillSimplexMinimization::Options ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************** DownhillSimplexMinimization::Options ************************
+     ********************************************************************************
+     */
     template <typename FLOAT_TYPE>
     Characters::String Options<FLOAT_TYPE>::ToString () const
     {

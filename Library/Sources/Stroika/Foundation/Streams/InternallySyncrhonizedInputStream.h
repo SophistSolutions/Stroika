@@ -22,42 +22,41 @@
  *
  */
 
-namespace Stroika::Foundation {
-    namespace Streams {
+namespace Stroika::Foundation::Streams {
 
+    /**
+     */
+    template <typename ELEMENT_TYPE, typename BASE_CLASS = InputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>
+    class InternallySyncrhonizedInputStream : public BASE_CLASS {
+    private:
+        using inherited = BASE_CLASS;
+
+    public:
         /**
+         *  'InternallySyncrhonizedInputStream' is a quasi-namespace: use Ptr or New () members.
          */
-        template <typename ELEMENT_TYPE, typename BASE_CLASS = InputStream<ELEMENT_TYPE>, typename BASE_REP_TYPE = typename BASE_CLASS::_IRep>
-        class InternallySyncrhonizedInputStream : public BASE_CLASS {
-        private:
-            using inherited = BASE_CLASS;
+        InternallySyncrhonizedInputStream ()                                         = delete;
+        InternallySyncrhonizedInputStream (const InternallySyncrhonizedInputStream&) = delete;
 
-        public:
-            /**
-             *  'InternallySyncrhonizedInputStream' is a quasi-namespace: use Ptr or New () members.
-             */
-            InternallySyncrhonizedInputStream ()                                         = delete;
-            InternallySyncrhonizedInputStream (const InternallySyncrhonizedInputStream&) = delete;
+    public:
+        using typename inherited::Ptr;
 
-        public:
-            using typename inherited::Ptr;
+    public:
+        /**
+         *  \par Example Usage
+         *      \code
+         *          Streams::InputStream<Byte>::Ptr syncStream = Streams::InternallySyncrhonizedInputStream<Byte>::New (otherInputStreamToBeSharedAcrossThread);
+         *      \endcode
+         *
+         *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
+         */
+        template <typename... ARGS>
+        static Ptr New (ARGS&&... args);
 
-        public:
-            /**
-             *  \par Example Usage
-             *      \code
-             *          Streams::InputStream<Byte>::Ptr syncStream = Streams::InternallySyncrhonizedInputStream<Byte>::New (otherInputStreamToBeSharedAcrossThread);
-             *      \endcode
-             *
-             *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Letter-Internally-Synchronized">C++-Standard-Thread-Safety-Letter-Internally-Synchronized</a>
-             */
-            template <typename... ARGS>
-            static Ptr New (ARGS&&... args);
+    private:
+        class Rep_;
+    };
 
-        private:
-            class Rep_;
-        };
-    }
 }
 
 /*

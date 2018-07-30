@@ -18,7 +18,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
  * TODO:
- *
  *      @todo   Use "Value" style hack to deal with optional stuff, and use more of optional class, at least in API.
  *              That way - we capture just what the user said, and only when he askes for info, do we use the Value() variant
  *              that plugs in defaults.
@@ -431,9 +430,9 @@ namespace Stroika::Foundation::IO::Network {
     bool operator>= (const URL& lhs, const URL& rhs);
 
     /*
-        *  See http://tools.ietf.org/html/rfc3986
-        *  This doesn't encode an entire URL, just a particular field
-        */
+     *  See http://tools.ietf.org/html/rfc3986
+     *  This doesn't encode an entire URL, just a particular field
+     */
     string EncodeURLQueryStringField (const String& s);
 
     /**

@@ -77,6 +77,7 @@ namespace Stroika::Foundation::IO::Network {
          */
         nonvirtual Collection<InternetAddress> GetHostAddresses (const String& hostNameOrAddress) const;
     };
+
 }
 
 /*

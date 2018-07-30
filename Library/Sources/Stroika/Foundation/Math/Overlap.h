@@ -37,6 +37,7 @@ namespace Stroika::Foundation::Math {
     constexpr bool Overlaps (const pair<T, T>& i1, const pair<T, T>& i2);
     template <typename T>
     constexpr bool Overlaps (T i1Start, T i1End, T i2Start, T i2End);
+
 }
 
 /*

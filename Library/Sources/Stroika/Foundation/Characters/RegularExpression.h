@@ -16,105 +16,100 @@
  *  \file
  *
  * Description:
- *
  *      o   See http://cpprocks.com/wp-content/uploads/c++11-regex-cheatsheet.pdf for examples
  *
- * TODO:
- *
- *      o   ...
  */
 
-namespace Stroika::Foundation {
-    namespace Characters {
+namespace Stroika::Foundation::Characters {
 
+    /**
+     *  \brief RegularExpression is a compiled regular expression which can be used to match on a String class
+     *
+     *  This class is a simple wrapper on the std::wregex class.
+     */
+    class RegularExpression {
+    public:
         /**
-         *  \brief RegularExpression is a compiled regular expression which can be used to match on a String class
+         *  not sure what these types mean - find out and document clearly
          *
-         *  This class is a simple wrapper on the std::wregex class.
+         *  \note   We chose ECMAScript as a default, to match what stdC++ chose as the default.
          */
-        class RegularExpression {
-        public:
+        enum class SyntaxType {
             /**
-             *  not sure what these types mean - find out and document clearly
-             *
-             *  \note   We chose ECMAScript as a default, to match what stdC++ chose as the default.
+             *  http://en.cppreference.com/w/cpp/regex/ecmascript
              */
-            enum class SyntaxType {
-                /**
-                 *  http://en.cppreference.com/w/cpp/regex/ecmascript
-                 */
-                eECMAScript = regex_constants::ECMAScript,
-                eBasic      = regex_constants::basic,
-                eExtended   = regex_constants::extended,
-                eAwk        = regex_constants::awk,
-                eGrep       = regex_constants::grep,
-                eEGrep      = regex_constants::egrep,
+            eECMAScript = regex_constants::ECMAScript,
+            eBasic      = regex_constants::basic,
+            eExtended   = regex_constants::extended,
+            eAwk        = regex_constants::awk,
+            eGrep       = regex_constants::grep,
+            eEGrep      = regex_constants::egrep,
 
-                eDEFAULT = eECMAScript,
-            };
-            static constexpr SyntaxType eECMAScript = SyntaxType::eECMAScript;
-            static constexpr SyntaxType eBasic      = SyntaxType::eBasic;
-            static constexpr SyntaxType eExtended   = SyntaxType::eExtended;
-            static constexpr SyntaxType eAwk        = SyntaxType::eAwk;
-            static constexpr SyntaxType eGrep       = SyntaxType::eGrep;
-            static constexpr SyntaxType eEGrep      = SyntaxType::eEGrep;
-
-        public:
-            /**
-             *  \note RegularExpression {} creates a special regular expression that matches nothing.
-             *  \note RegularExpression (String re) throws std::regex_error () if provided an invalid regular expression.
-             *  \note The default syntax is ECMAScript.
-             */
-            explicit RegularExpression ();
-            explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = CompareOptions::eWithCase);
-            RegularExpression (const wregex& regEx);
-            RegularExpression (wregex&& regEx);
-
-        public:
-            /**
-             *   Predefined regular expression that matches nothing.
-             *
-             *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
-             *   \note Equivilent to
-             *       \code
-             *           const  RegularExpression   kMatchNone (L"(?!)");   // OR
-             *           const  RegularExpression   kMatchNoneAlternative{};
-             *       \endcode
-             */
-            static const RegularExpression kNONE;
-
-        public:
-            /**
-             *   Predefined regular expression that matches anything.
-             *
-             *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
-             *   \note Equivilent to
-             *       \code
-             *           const  RegularExpression   kAny {L".*"};
-             *       \endcode
-             */
-            static const RegularExpression kAny;
-
-        public:
-            nonvirtual const wregex& GetCompiled () const;
-
-        private:
-            wregex fCompiledRegExp_;
+            eDEFAULT = eECMAScript,
         };
+        static constexpr SyntaxType eECMAScript = SyntaxType::eECMAScript;
+        static constexpr SyntaxType eBasic      = SyntaxType::eBasic;
+        static constexpr SyntaxType eExtended   = SyntaxType::eExtended;
+        static constexpr SyntaxType eAwk        = SyntaxType::eAwk;
+        static constexpr SyntaxType eGrep       = SyntaxType::eGrep;
+        static constexpr SyntaxType eEGrep      = SyntaxType::eEGrep;
 
-        // @todo DRAFT 2015-02-01
-        class RegularExpressionMatch {
-        public:
-            RegularExpressionMatch (const String& fullMatch);
-            RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches);
-            String                       GetFullMatch () const;
-            Containers::Sequence<String> GetSubMatches () const;
+    public:
+        /**
+         *  \note RegularExpression {} creates a special regular expression that matches nothing.
+         *  \note RegularExpression (String re) throws std::regex_error () if provided an invalid regular expression.
+         *  \note The default syntax is ECMAScript.
+         */
+        explicit RegularExpression ();
+        explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = CompareOptions::eWithCase);
+        RegularExpression (const wregex& regEx);
+        RegularExpression (wregex&& regEx);
 
-        private:
-            String                       fFullMatch_;
-            Containers::Sequence<String> fSubMatches_;
-        };
-    }
+    public:
+        /**
+         *   Predefined regular expression that matches nothing.
+         *
+         *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
+         *   \note Equivilent to
+         *       \code
+         *           const  RegularExpression   kMatchNone (L"(?!)");   // OR
+         *           const  RegularExpression   kMatchNoneAlternative{};
+         *       \endcode
+         */
+        static const RegularExpression kNONE;
+
+    public:
+        /**
+         *   Predefined regular expression that matches anything.
+         *
+         *   \note Since this is a static object, bewaware, it cannot be (safely) used before or after main
+         *   \note Equivilent to
+         *       \code
+         *           const  RegularExpression   kAny {L".*"};
+         *       \endcode
+         */
+        static const RegularExpression kAny;
+
+    public:
+        nonvirtual const wregex& GetCompiled () const;
+
+    private:
+        wregex fCompiledRegExp_;
+    };
+
+    // @todo DRAFT 2015-02-01
+    class RegularExpressionMatch {
+    public:
+        RegularExpressionMatch (const String& fullMatch);
+        RegularExpressionMatch (const String& fullMatch, const Containers::Sequence<String>& subMatches);
+        String                       GetFullMatch () const;
+        Containers::Sequence<String> GetSubMatches () const;
+
+    private:
+        String                       fFullMatch_;
+        Containers::Sequence<String> fSubMatches_;
+    };
+
 }
 
 /*

@@ -189,5 +189,7 @@ namespace Stroika::Foundation::Memory {
     private:
         T fValue_;
     };
+
 }
+
 #endif /*_Stroika_Foundation_Memory_BlockAllocated_inl_*/

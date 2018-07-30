@@ -12,10 +12,10 @@
 namespace Stroika::Foundation::IO::Network {
 
     /*
-        ********************************************************************************
-        ************ Foundation::IO::Network::ConnectionlessSocket::Ptr ****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************ Foundation::IO::Network::ConnectionlessSocket::Ptr ****************
+     ********************************************************************************
+     */
     inline ConnectionlessSocket::Ptr::Ptr (nullptr_t)
         : Socket::Ptr (nullptr)
     {
@@ -85,4 +85,5 @@ namespace Stroika::Foundation::IO::Network {
     }
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_ConnectionlessSocket_inl_*/

@@ -60,6 +60,7 @@ namespace Stroika::Foundation::IO::Network::HTTP {
         Status fStatus_;
         String fReason_;
     };
+
 }
 
 /*

@@ -27,23 +27,22 @@
  */
 
 namespace Stroika::Foundation::IO::FileSystem {
-
     using Characters::SDKString;
     using Characters::String;
 }
 
 /**
-     *  These WellKnownLocations routines always return a valid directory (if createIfNotPresent)
-     *  or empty string (if not valid???).
-     *
-     *  If a directory is returned, it is always terminated with FileSystem::kPathComponentSeperator
-     *  so that its unambiguously a directory name.
-     *
-     *  Most of these names/concepts for pathnames come from:
-     *      http://www.pathname.com/fhs/pub/fhs-2.3.html
-     *  and/or
-     *      http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
-     */
+ *  These WellKnownLocations routines always return a valid directory (if createIfNotPresent)
+ *  or empty string (if not valid???).
+ *
+ *  If a directory is returned, it is always terminated with FileSystem::kPathComponentSeperator
+ *  so that its unambiguously a directory name.
+ *
+ *  Most of these names/concepts for pathnames come from:
+ *      http://www.pathname.com/fhs/pub/fhs-2.3.html
+ *  and/or
+ *      http://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard
+ */
 namespace Stroika::Foundation::IO::FileSystem::WellKnownLocations {
 
     /**

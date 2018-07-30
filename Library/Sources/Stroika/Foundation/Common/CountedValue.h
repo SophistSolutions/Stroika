@@ -22,64 +22,63 @@
  *              compiler errors I dont understand. Low pri...
  */
 
-namespace Stroika::Foundation {
-    namespace Common {
+namespace Stroika::Foundation::Common {
 
+    /**
+     *  CountedValue is the same as a value, but with a count as well.
+     *
+     *  Essentially the same as pair<VALUE_TYPE,COUNTER_TYPE> but with more clearly named data elements
+     */
+    template <typename VALUE_TYPE, typename COUNTER_TYPE = unsigned int>
+    struct CountedValue {
+    public:
         /**
-         *  CountedValue is the same as a value, but with a count as well.
-         *
-         *  Essentially the same as pair<VALUE_TYPE,COUNTER_TYPE> but with more clearly named data elements
          */
-        template <typename VALUE_TYPE, typename COUNTER_TYPE = unsigned int>
-        struct CountedValue {
-        public:
-            /**
-             */
-            using ValueType = VALUE_TYPE;
+        using ValueType = VALUE_TYPE;
 
-        public:
-            /**
-             */
-            using CounterType = COUNTER_TYPE;
-
-        public:
-            /**
-             */
-            CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
-            template <
-                typename VALUE2_TYPE,
-                typename COUNTER2_TYPE,
-                enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
-            CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src);
-            template <
-                typename VALUE2_TYPE,
-                typename COUNTER2_TYPE,
-                enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
-            CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
-
-        public:
-            ValueType   fValue;
-            CounterType fCount;
-
-        public:
-            /**
-             * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
-             */
-            nonvirtual bool Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const;
-        };
-
+    public:
         /**
-         *  operator indirects to CountedValue<>::Equals ()
          */
-        template <typename VALUE_TYPE, typename COUNTER_TYPE>
-        bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+        using CounterType = COUNTER_TYPE;
 
+    public:
         /**
-         *  operator indirects to CountedValue<>::Equals ()
          */
-        template <typename VALUE_TYPE, typename COUNTER_TYPE>
-        bool operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
-    }
+        CountedValue (typename Configuration::ArgByValueType<ValueType> value, CounterType count = 1);
+        template <
+            typename VALUE2_TYPE,
+            typename COUNTER2_TYPE,
+            enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
+        CountedValue (pair<VALUE2_TYPE, COUNTER2_TYPE> src);
+        template <
+            typename VALUE2_TYPE,
+            typename COUNTER2_TYPE,
+            enable_if_t<is_convertible_v<VALUE2_TYPE, VALUE_TYPE> and is_convertible_v<COUNTER2_TYPE, COUNTER_TYPE>>* = nullptr>
+        CountedValue (const CountedValue<VALUE2_TYPE, COUNTER2_TYPE>& src);
+
+    public:
+        ValueType   fValue;
+        CounterType fCount;
+
+    public:
+        /**
+         * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
+         */
+        nonvirtual bool Equals (const CountedValue<VALUE_TYPE, COUNTER_TYPE>& rhs) const;
+    };
+
+    /**
+     *  operator indirects to CountedValue<>::Equals ()
+     */
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    bool operator== (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+
+    /**
+     *  operator indirects to CountedValue<>::Equals ()
+     */
+    template <typename VALUE_TYPE, typename COUNTER_TYPE>
+    bool operator!= (typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> lhs, typename Configuration::ArgByValueType<CountedValue<VALUE_TYPE, COUNTER_TYPE>> rhs);
+
 }
 
 /*

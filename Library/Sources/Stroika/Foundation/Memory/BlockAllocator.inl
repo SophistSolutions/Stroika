@@ -380,9 +380,11 @@ namespace Stroika::Foundation::Memory {
         return Math::RoundUpTo (sizeof (T), sizeof (void*));
     }
 }
+
 #if !qStroika_Foundation_Memory_BlockAllocator_UseLockFree_
 namespace {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private_::BlockAllocator_ModuleInit_> _Stroika_Foundation_Memory_BlockAllocator_ModuleInit_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif
+
 #endif /*_Stroika_Foundation_Memory_BlockAllocator_inl_*/

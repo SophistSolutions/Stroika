@@ -11,4 +11,5 @@
  */
 namespace Stroika::Foundation::IO::Network::HTTP {
 }
+
 #endif /*_Stroika_Foundation_IO_Network_HTTP_Methods_inl_*/

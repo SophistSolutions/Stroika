@@ -306,7 +306,6 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Configuration {
-
     template <>
     struct DefaultNames<Execution::Thread::Status> : EnumNames<Execution::Thread::Status> {
         static constexpr EnumNames<Execution::Thread::Status> k{
@@ -323,7 +322,6 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
-
 }
 
 #endif /*_Stroika_Foundation_Execution_Thread_inl_*/

@@ -62,5 +62,7 @@ namespace Stroika::Foundation::Math {
     {
         return Overlaps (pair<T, T> (p1Start, p1End), pair<T, T> (p2Start, p2End));
     }
+
 }
+
 #endif /*_Stroika_Foundation_Math_Overlap_inl_*/

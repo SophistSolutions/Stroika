@@ -447,6 +447,7 @@ namespace Stroika::Foundation::IO::Network {
 
 #if qPlatform_Windows
 namespace Stroika::Foundation::Execution {
+
     template <>
     IO::Network::Socket::PlatformNativeHandle ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
 

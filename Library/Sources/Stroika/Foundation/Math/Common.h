@@ -174,6 +174,7 @@ namespace Stroika::Foundation::Math {
      */
     template <typename T>
     bool IsPrime (T v);
+
 }
 
 /*

@@ -237,4 +237,5 @@ namespace Stroika::Foundation::IO::Network {
 #endif
 
 }
+
 #endif /*_Stroika_Foundation_IO_Network_InternetAddress_inl_*/

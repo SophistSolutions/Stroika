@@ -976,12 +976,10 @@ namespace Stroika::Foundation::Execution {
 }
 
 namespace Stroika::Foundation::Characters {
-
     template <typename T>
     String ToString (const T& t);
     template <>
     String ToString (const thread::id& t);
-
 }
 
 /*
