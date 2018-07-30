@@ -161,6 +161,7 @@ namespace Stroika::Foundation::Debug {
         mutable multiset<thread::id> fSharedLockThreads_;           // multiset not threadsafe, and this class intrinsically tracks thread Ids across threads, so use GetSharedLockMutexThreads_ () to make safe
 #endif
     };
+
 }
 
 /*

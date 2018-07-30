@@ -22,6 +22,7 @@ namespace Stroika::Foundation::Debug {
         return false;
 #endif
     }
+
 }
 #endif
 

@@ -9,4 +9,5 @@
 
 namespace Stroika::Foundation::Debug {
 }
+
 #endif /*_Stroika_Foundation_Debug_MallocGuard_inl_*/

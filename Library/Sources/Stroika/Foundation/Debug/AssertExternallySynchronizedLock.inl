@@ -13,10 +13,10 @@
 namespace Stroika::Foundation::Debug {
 
     /*
-        ********************************************************************************
-        *************** Debug::AssertExternallySynchronizedLock ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *************** Debug::AssertExternallySynchronizedLock ************************
+     ********************************************************************************
+     */
 #if qDebug
     DISABLE_COMPILER_MSC_WARNING_START (4297)
     inline AssertExternallySynchronizedLock::AssertExternallySynchronizedLock () noexcept try : fSharedLockThreads_ () {
@@ -107,5 +107,7 @@ namespace Stroika::Foundation::Debug {
         return sMutex_;
     }
 #endif
+
 }
+
 #endif /*_Stroika_Foundation_Debug_AssertExternallySynchronizedLock_inl_*/

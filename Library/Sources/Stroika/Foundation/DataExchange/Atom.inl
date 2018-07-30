@@ -17,10 +17,10 @@
 namespace Stroika::Foundation::DataExchange {
 
     /*
-        ********************************************************************************
-        ****************************** Atom<ATOM_MANAGER> ******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************************** Atom<ATOM_MANAGER> ******************************
+     ********************************************************************************
+     */
     template <typename ATOM_MANAGER>
     inline constexpr Atom<ATOM_MANAGER>::Atom ()
         : fValue_ (ATOM_MANAGER::kEmpty)
@@ -130,9 +130,11 @@ namespace Stroika::Foundation::DataExchange {
             ~AtomModuleData ();
         };
     }
+
 }
 
 namespace {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::DataExchange::Private_::AtomModuleData> _Stroika_Foundation_DataExchange_Atom_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
+
 #endif /*_Stroika_Foundation_DataExchange_Atom_inl_*/

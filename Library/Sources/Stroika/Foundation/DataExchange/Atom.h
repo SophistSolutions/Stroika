@@ -212,6 +212,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     template <typename ATOM_MANAGER>
     bool operator> (Atom<ATOM_MANAGER> lhs, Atom<ATOM_MANAGER> rhs);
+
 }
 
 /*

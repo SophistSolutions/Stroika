@@ -271,6 +271,7 @@ namespace Stroika::Foundation::DataExchange {
     optional<VariantValue> OptionsFile::Read ();
     template <>
     void OptionsFile::Write (const VariantValue& optionsObject);
+
 }
 
 /*

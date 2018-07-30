@@ -22,4 +22,5 @@ namespace Stroika::Foundation::DataExchange {
     }
 
 }
+
 #endif /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/

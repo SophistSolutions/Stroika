@@ -52,10 +52,10 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     /*
-        ********************************************************************************
-        *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********** DataExchange::ObjectVariantMapper::TypeMappingDetails **************
+     ********************************************************************************
+     */
     inline ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const FromGenericObjectMapperType& fromObjectMapper, const ToGenericObjectMapperType& toObjectMapper)
         : fForType (forTypeInfo)
         , fFromObjecttMapper (fromObjectMapper)
@@ -102,10 +102,10 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     /*
-        ********************************************************************************
-        ************** DataExchange::ObjectVariantMapper::TypesRegistry ****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** DataExchange::ObjectVariantMapper::TypesRegistry ****************
+     ********************************************************************************
+     */
     inline ObjectVariantMapper::TypesRegistry::TypesRegistry (const Mapping<type_index, TypeMappingDetails>& src)
         : fSerializers (src)
     {
@@ -128,10 +128,10 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     /*
-        ********************************************************************************
-        ******************************** ObjectVariantMapper ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** ObjectVariantMapper ***************************
+     ********************************************************************************
+     */
     inline ObjectVariantMapper::TypesRegistry ObjectVariantMapper::GetTypeMappingRegistry () const
     {
         return fTypeMappingRegistry_;
@@ -204,11 +204,11 @@ namespace Stroika::Foundation::DataExchange {
     inline T ObjectVariantMapper::ToObject (const ToObjectMapperType<T>& toObjectMapper, const VariantValue& v) const
     {
         /*
-            *  NOTE: It is because of this line of code (the default CTOR for tmp) - that we ObjectVariantMapper requires
-            *  all its types to have a default constructor. To avoid that dependency, you may provide a template
-            *  specialization of this method, which passes specific (default) args to CLASS, and then they will be filled in/replaced
-            *  by the two argument ToObject.
-            */
+         *  NOTE: It is because of this line of code (the default CTOR for tmp) - that we ObjectVariantMapper requires
+         *  all its types to have a default constructor. To avoid that dependency, you may provide a template
+         *  specialization of this method, which passes specific (default) args to CLASS, and then they will be filled in/replaced
+         *  by the two argument ToObject.
+         */
         T tmp;
         ToObject (toObjectMapper, v, &tmp);
         return tmp;
@@ -477,12 +477,12 @@ namespace Stroika::Foundation::DataExchange {
         auto toObjectMapper = [](const ObjectVariantMapper& mapper, const VariantValue& d, ACTUAL_CONTAINER_TYPE* intoObjOfTypeT) -> void {
             RequireNotNull (intoObjOfTypeT);
             /*
-                *  NB: When you mixup having an array and an object (say because of writing with
-                *  MakeCommonSerializer_ContainerWithStringishKey and reading back with this regular Mapping serializer?) or for other reasons,
-                *  the covnersion to d.As<Sequence<VariantValue>> () can fail with a format exception.
-                *
-                *  This requires you wrote with the above serializer.
-                */
+             *  NB: When you mixup having an array and an object (say because of writing with
+             *  MakeCommonSerializer_ContainerWithStringishKey and reading back with this regular Mapping serializer?) or for other reasons,
+             *  the covnersion to d.As<Sequence<VariantValue>> () can fail with a format exception.
+             *
+             *  This requires you wrote with the above serializer.
+             */
             ToObjectMapperType<KEY_TYPE>   keyMapper{mapper.ToObjectMapper<KEY_TYPE> ()};
             ToObjectMapperType<VALUE_TYPE> valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
             Sequence<VariantValue>         s = d.As<Sequence<VariantValue>> ();
@@ -534,11 +534,11 @@ namespace Stroika::Foundation::DataExchange {
     {
         using Characters::String_Constant;
         /*
-            *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we dont have
-            *  the data, and this is simple and efficient.
-            *
-            *  See MakeCommonSerializer_NamedEnumerations
-            */
+         *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we dont have
+         *  the data, and this is simple and efficient.
+         *
+         *  See MakeCommonSerializer_NamedEnumerations
+         */
         static_assert (is_enum_v<ENUM_TYPE>, "This only works for enum types");
         using SerializeAsType = typename underlying_type<ENUM_TYPE>::type;
         static_assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE), "underlyingtype?");
@@ -670,32 +670,32 @@ namespace Stroika::Foundation::DataExchange {
         }
 #endif
         /*
-            *  @see qCompiler_SanitizerFunctionPtrConversionSuppressionBug
-            *
-            *  @see https://stroika.atlassian.net/browse/STK-601
-            *
-            *  NOTE - we technically call function objects with illegal parameters on each field (data member) of a class.
-            *  Each field has a type 'T' - but in this template, we don't know it. We know its type_info object, but there is
-            *  no way in C++ to map that back to a type for use an a FromObjectMapperType<T>/ToObjectMapperType<T> function object.
-            *
-            *  So we use the saved FromGenericObjectMapperType/ToGenericObjectMapperType values. This works because we are careful
-            *  with our API to not pass or return objects to type T, but just have POINTERS to those types.
-            *
-            *  Still - systems like the 'undefined behavior sanitizer' - may sometimes detect this and report it as an error. So - we must
-            *  suppress these (technically correct) error detections.
-            *
-            *  This applies BOTH to the fromObjectMapper and toObjectMapper below.
-            *
-            *  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("function") was a FAILED attempt to workaround this issue.
-            *  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("vptr") was a FAILED attempt to workaround this issue.
-            *  I also tried similar attributes on each other converter lambda (like the ones in mkSerializerInfo_ in the .cpp file).
-            *
-            *  But so far, all that I've found that disables this detection on clang-4 and clang5 is to set the global
-            *  --no-sanitize function command line flag (or --no-sanitize vptr on macos).
-            *
-            *  -- now since those dont work no matter what and give a warning (unrecognized attribute) on gcc8, using "address"
-            */
-        FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address") -> VariantValue {
+         *  @see qCompiler_SanitizerFunctionPtrConversionSuppressionBug
+         *
+         *  @see https://stroika.atlassian.net/browse/STK-601
+         *
+         *  NOTE - we technically call function objects with illegal parameters on each field (data member) of a class.
+         *  Each field has a type 'T' - but in this template, we don't know it. We know its type_info object, but there is
+         *  no way in C++ to map that back to a type for use an a FromObjectMapperType<T>/ToObjectMapperType<T> function object.
+         *
+         *  So we use the saved FromGenericObjectMapperType/ToGenericObjectMapperType values. This works because we are careful
+         *  with our API to not pass or return objects to type T, but just have POINTERS to those types.
+         *
+         *  Still - systems like the 'undefined behavior sanitizer' - may sometimes detect this and report it as an error. So - we must
+         *  suppress these (technically correct) error detections.
+         *
+         *  This applies BOTH to the fromObjectMapper and toObjectMapper below.
+         *
+         *  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("function") was a FAILED attempt to workaround this issue.
+         *  Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE("vptr") was a FAILED attempt to workaround this issue.
+         *  I also tried similar attributes on each other converter lambda (like the ones in mkSerializerInfo_ in the .cpp file).
+         *
+         *  But so far, all that I've found that disables this detection on clang-4 and clang5 is to set the global
+         *  --no-sanitize function command line flag (or --no-sanitize vptr on macos).
+         *
+         *  -- now since those dont work no matter what and give a warning (unrecognized attribute) on gcc8, using "address"
+         */
+         FromObjectMapperType<CLASS> fromObjectMapper = [fields](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE ("address") -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
@@ -769,7 +769,6 @@ namespace Stroika::Foundation::DataExchange {
             }
         }
 #endif
-
         FromObjectMapperType<CLASS> fromObjectMapper = [fields, baseClassTypeInfo](const ObjectVariantMapper& mapper, const CLASS* fromObjOfTypeT) -> VariantValue {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
             Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
@@ -814,9 +813,9 @@ namespace Stroika::Foundation::DataExchange {
                 }
             }
         };
-
         return TypeMappingDetails{forTypeInfo, fromObjectMapper, toObjectMapper};
     }
 
 }
+
 #endif /*_Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_*/

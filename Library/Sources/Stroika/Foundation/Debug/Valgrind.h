@@ -140,7 +140,6 @@ bool IsRunningUnderValgrind ();
 
 #if defined(__cplusplus)
 namespace Stroika::Foundation::Debug {
-
 #if qStroika_FeatureSupported_Valgrind
     inline void Do_Valgrind_ANNOTATE_HAPPENS_BEFORE_ (const void* p)
     {

@@ -10,6 +10,10 @@
 
 namespace Stroika::Foundation::Debug {
 
+    /**
+     */
     void DropIntoDebuggerIfPresent ();
+
 }
+
 #endif /*_Stroika_Foundation_Debug_Debugger_h_*/

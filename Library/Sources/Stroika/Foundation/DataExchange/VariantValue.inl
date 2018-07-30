@@ -14,18 +14,18 @@
 namespace Stroika::Foundation::DataExchange {
 
     /*
-        *  NB: we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
-        */
+     *  NB: we use enable_shared_from_this<> for performance reasons, not for any semantic purpose
+     */
     struct VariantValue::IRep_ : public conditional_t<kVariantValueUsesStroikaSharedPtr_, Memory::enable_shared_from_this<VariantValue::IRep_>, enable_shared_from_this<VariantValue::IRep_>> {
         virtual ~IRep_ () {}
         virtual Type GetType () const = 0;
     };
 
     /*
-        ********************************************************************************
-        ********************************** VariantValue ********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** VariantValue ********************************
+     ********************************************************************************
+     */
     template <typename T, typename... ARGS_TYPE>
     inline VariantValue::SharedRepImpl_<T> VariantValue::MakeSharedPtr_ (ARGS_TYPE&&... args)
     {
@@ -142,10 +142,10 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     /*
-        ********************************************************************************
-        ************************* VariantValue operators *******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* VariantValue operators *******************************
+     ********************************************************************************
+     */
     inline bool operator< (const VariantValue& lhs, const VariantValue& rhs)
     {
         return lhs.Compare (rhs) < 0;
@@ -174,7 +174,6 @@ namespace Stroika::Foundation::DataExchange {
 }
 
 namespace Stroika::Foundation::Configuration {
-
     template <>
     struct DefaultNames<DataExchange::VariantValue::Type> : EnumNames<DataExchange::VariantValue::Type> {
         static constexpr EnumNames<DataExchange::VariantValue::Type> k{
@@ -197,7 +196,6 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
-
 }
 
 #endif /*_Stroika_Foundation_DataExchange_VariantValue_inl_*/

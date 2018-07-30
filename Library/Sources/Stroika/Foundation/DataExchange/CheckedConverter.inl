@@ -81,5 +81,7 @@ namespace Stroika::Foundation::DataExchange {
         }
         return useVal;
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_CheckedConverter_inl_*/

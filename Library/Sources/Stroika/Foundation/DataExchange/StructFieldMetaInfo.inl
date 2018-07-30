@@ -42,5 +42,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         return lhs.fOffset == rhs.fOffset and lhs.fTypeInfo == rhs.fTypeInfo;
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_StructFieldMetaInfo_inl_*/

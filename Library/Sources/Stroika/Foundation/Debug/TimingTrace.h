@@ -57,6 +57,7 @@ namespace Stroika::Foundation::Debug {
         TimingTrace (const wchar_t* label, Time::DurationSecondsType warnIfLongerThan = 0.0);
         TimingTrace (const Characters::String& label, Time::DurationSecondsType warnIfLongerThan = 0.0);
     };
+
 }
 
 /*

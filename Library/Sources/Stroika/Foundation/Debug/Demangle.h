@@ -16,5 +16,7 @@ namespace Stroika::Foundation::Debug {
      *  symbol or other information.
      */
     Characters::String Demangle (const Characters::String& originalName);
+
 }
+
 #endif /*_Stroika_Foundation_Debug_Demangle_h_*/

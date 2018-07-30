@@ -28,4 +28,5 @@ namespace Stroika::Foundation::Debug {
     void RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const Characters::SDKChar* msg) = nullptr);
 
 }
+
 #endif /*_Stroika_Foundation_Debug_Fatal_h_*/

@@ -258,6 +258,7 @@ namespace Stroika::Foundation::Debug {
 #define DbgTrace _NoOp_
 #endif
 #endif
+
 }
 
 /*

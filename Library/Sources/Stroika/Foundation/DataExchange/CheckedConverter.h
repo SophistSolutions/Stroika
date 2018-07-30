@@ -88,6 +88,7 @@ namespace Stroika::Foundation::DataExchange {
      */
     template <typename RANGE_TYPE>
     typename RANGE_TYPE::ElementType CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& range = RANGE_TYPE::FullRange ());
+
 }
 
 /*

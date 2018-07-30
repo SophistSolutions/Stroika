@@ -32,5 +32,6 @@ namespace Stroika::Foundation::Debug {
         : WhenTimeExceeded (warnIfLongerThan, [=](Time::DurationSecondsType timeTaken) noexcept { DbgTrace (L"%s (timeTaken=%f seconds)", label.c_str (), timeTaken); })
     {
     }
+
 }
 #endif /*_Stroika_Foundation_Debug_TimingTrace_inl_*/

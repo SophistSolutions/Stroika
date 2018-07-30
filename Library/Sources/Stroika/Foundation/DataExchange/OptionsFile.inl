@@ -108,5 +108,7 @@ namespace Stroika::Foundation::DataExchange {
     {
         Write<VariantValue> (fMapper_.FromObject<T> (optionsObject));
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_OptionsFile_inl_*/

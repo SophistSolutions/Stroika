@@ -80,6 +80,7 @@ namespace Stroika::Foundation::DataExchange {
 #define Stroika_Foundation_DataExchange_StructFieldMetaInfo(CLASS, MEMBER) \
     Stroika::Foundation::DataExchange::StructFieldMetaInfo { offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)) }
 #endif
+
 }
 
 /*

@@ -82,6 +82,7 @@ namespace Stroika::Foundation::Debug {
 #if !defined(qStroika_Foundation_Debug_MallocGuard_GuardSize)
 #define qStroika_Foundation_Debug_MallocGuard_GuardSize 16
 #endif
+
 }
 
 /*

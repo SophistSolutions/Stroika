@@ -21,6 +21,7 @@ namespace Stroika::Foundation::Debug {
 #else
 #define Stroika_Foundation_Debug_ATTRIBUTE_NO_SANITIZE(ARGS) [[no_sanitize (ARGS)]]
 #endif
+
 }
 #endif
 

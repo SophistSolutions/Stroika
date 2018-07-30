@@ -106,7 +106,7 @@ namespace Stroika::Foundation::Math {
 
     /**
      */
-    Angle operator/ (const Angle& lhs, double rhs);
+    constexpr Angle operator/ (const Angle& lhs, double rhs);
 
     /**
      */

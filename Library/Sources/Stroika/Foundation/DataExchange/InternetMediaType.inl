@@ -14,10 +14,10 @@
 namespace Stroika::Foundation::DataExchange {
 
     /*
-        ********************************************************************************
-        ******************************** InternetMediaType *****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** InternetMediaType *****************************
+     ********************************************************************************
+     */
     inline InternetMediaType::InternetMediaType (const String& ct)
         : fType_ (ct)
     {
@@ -54,10 +54,10 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     /*
-        ********************************************************************************
-        ********************************** TypeMatchesAny ******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** TypeMatchesAny ******************************
+     ********************************************************************************
+     */
     template <typename CONTAINER>
     bool TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny)
     {
@@ -70,10 +70,10 @@ namespace Stroika::Foundation::DataExchange {
     }
 
     /*
-        ********************************************************************************
-        *********************** InternetMediaType operators ****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** InternetMediaType operators ****************************
+     ********************************************************************************
+     */
     inline bool operator< (const InternetMediaType& lhs, const InternetMediaType& rhs)
     {
         return lhs.Compare (rhs) < 0;
@@ -200,4 +200,5 @@ namespace Stroika::Foundation::DataExchange::PredefinedInternetMediaType {
 
     inline const InternetMediaType& Application_Zip_CT () { return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kApplication_Zip_CT; }
 }
+
 #endif /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/

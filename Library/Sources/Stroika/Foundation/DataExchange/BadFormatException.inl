@@ -12,10 +12,10 @@
 namespace Stroika::Foundation::DataExchange {
 
     /*
-        ********************************************************************************
-        ******************** DataExchange::BadFormatException **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** DataExchange::BadFormatException **************************
+     ********************************************************************************
+     */
     inline Characters::String BadFormatException::GetDetails () const
     {
         return fDetails_;
@@ -34,4 +34,5 @@ namespace Stroika::Foundation::DataExchange {
     }
 
 }
+
 #endif /*_Stroika_Foundation_DataExchange_BadFormatException_inl_*/
