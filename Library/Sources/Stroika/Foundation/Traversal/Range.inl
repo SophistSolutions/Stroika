@@ -54,6 +54,7 @@ namespace Stroika::Foundation::Traversal {
         return static_cast<SIGNED_DIFF_TYPE> (rhs - lhs);
     }
 
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
     /*
      ********************************************************************************
      RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
@@ -63,7 +64,9 @@ namespace Stroika::Foundation::Traversal {
     constexpr T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kLowerBound;
     template <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     constexpr T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kUpperBound;
+#endif
 
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
     /*
      ********************************************************************************
      ****************** RangeTraits::DefaultRangeTraits<T> **************************
@@ -73,6 +76,7 @@ namespace Stroika::Foundation::Traversal {
     constexpr T RangeTraits::DefaultRangeTraits<T>::kLowerBound;
     template <typename T>
     constexpr T RangeTraits::DefaultRangeTraits<T>::kUpperBound;
+#endif
 
     /*
      ********************************************************************************
