@@ -17,11 +17,11 @@
 #include "../../../Execution/StringException.h"
 
 namespace Stroika::Foundation::Execution {
-
     using Characters::SDKString;
 }
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
+
     /**
      */
     class Exception : public Execution::StringException {
@@ -65,6 +65,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
      *  @see https://msdn.microsoft.com/en-us/library/a9yf33zb.aspx
      */
     void RegisterDefaultHandler_invalid_parameter ();
+
 }
 
 /*

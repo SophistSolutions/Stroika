@@ -18,7 +18,6 @@
 #include "../../StringException.h"
 
 namespace Stroika::Foundation::Execution {
-
     using Characters::SDKString;
 }
 
@@ -65,12 +64,10 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
 }
 
 namespace Stroika::Foundation::Execution {
-
     void ThrowIfErrorHRESULT (HRESULT hr);
 
     template <>
     void ThrowIfNull (const void* p, const HRESULT& hr);
-
 }
 
 /*

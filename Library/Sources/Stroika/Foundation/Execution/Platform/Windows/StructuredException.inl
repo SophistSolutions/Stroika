@@ -24,6 +24,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     {
         return LookupMessage (fSECode);
     }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Platform_Windows_StructuredException_inl_*/

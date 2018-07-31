@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     private:
         CRITICAL_SECTION fCritSec_;
     };
+
 }
 
 /*

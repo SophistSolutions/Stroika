@@ -11,7 +11,11 @@
  */
 namespace Stroika::Foundation::Execution::Resources {
 
-    //  class   Accessor
+    /*
+     ********************************************************************************
+     ************************************* Accessor *********************************
+     ********************************************************************************
+     */
     inline Accessor::Accessor (const Byte* start, const Byte* end)
         : fDataStart_ (start)
         , fDataEnd_ (end)
@@ -36,6 +40,7 @@ namespace Stroika::Foundation::Execution::Resources {
     {
         return vector<Byte> (fDataStart_, fDataEnd_);
     }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Resources_Accessor_inl_*/

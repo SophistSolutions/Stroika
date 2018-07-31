@@ -29,6 +29,7 @@ namespace Stroika::Foundation::Execution::Resources::Concrete {
     private:
         class Rep_;
     };
+
 }
 
 /*

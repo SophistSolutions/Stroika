@@ -51,6 +51,7 @@ namespace Stroika::Foundation::Execution::Platform::POSIX {
         sem_t fSem_;
 #endif
     };
+
 }
 
 /*

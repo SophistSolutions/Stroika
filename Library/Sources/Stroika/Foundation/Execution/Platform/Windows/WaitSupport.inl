@@ -15,6 +15,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     {
         return (nSeconds > numeric_limits<DWORD>::max () / 2) ? INFINITE : static_cast<DWORD> (nSeconds * 1000);
     }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_inl_*/

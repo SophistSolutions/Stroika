@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Execution::Resources {
         // Like ReadResource () - but asserts instead  of throwing if resource not found
         nonvirtual Accessor CheckedReadResource (const Name& name) const noexcept;
     };
+
 }
 
 /*

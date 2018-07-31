@@ -42,6 +42,7 @@ namespace Stroika::Foundation::Execution::Platform::POSIX {
     private:
         sigset_t fRestoreMask_;
     };
+
 }
 
 /*

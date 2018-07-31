@@ -112,7 +112,7 @@ namespace {
     /* forward declaration */
     static void Transform (UINT4* buf, UINT4* in);
 
-    static unsigned char PADDING[64] = {
+    constexpr static unsigned char kPADDING_[64] = {
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -218,7 +218,8 @@ namespace {
 
         /* pad out to 56 mod 64 */
         padLen = (mdi < 56) ? (56 - mdi) : (120 - mdi);
-        MD5Update_ (mdContext, PADDING, padLen);
+        Assert (padLen < NEltsOf (kPADDING_));
+        MD5Update_ (mdContext, kPADDING_, padLen);
 
         /* append length in bits and transform */
         for (i = 0, ii = 0; i < 14; i++, ii += 4)

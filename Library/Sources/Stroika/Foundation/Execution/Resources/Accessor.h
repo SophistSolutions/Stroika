@@ -41,6 +41,7 @@ namespace Stroika::Foundation::Execution::Resources {
     private:
         friend class Manager;
     };
+
 }
 
 /*

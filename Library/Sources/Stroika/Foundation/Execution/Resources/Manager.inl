@@ -28,5 +28,6 @@ namespace Stroika::Foundation::Execution::Resources {
     {
         return Accessor (start, end);
     }
+
 }
 #endif /*_Stroika_Foundation_Execution_Resources_Manager_inl_*/

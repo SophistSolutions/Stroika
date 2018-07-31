@@ -22,6 +22,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     using Characters::String;
 
     String SID22UserName (PSID sid);
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Platform_Windows_Users_h_*/

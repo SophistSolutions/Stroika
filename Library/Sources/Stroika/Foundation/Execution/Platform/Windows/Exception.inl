@@ -13,7 +13,11 @@
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 
-    //  class   Exception
+    /*
+     ********************************************************************************
+     ***************************************** Exception ****************************
+     ********************************************************************************
+     */
     inline Exception::operator DWORD () const
     {
         return fError;

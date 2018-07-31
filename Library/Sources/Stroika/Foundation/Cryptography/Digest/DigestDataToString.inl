@@ -20,5 +20,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
     {
         return Format<RESULT_TYPE, typename DIGESTER::ReturnType> (DIGESTER::ComputeDigest (Streams::iostream::SerializeItemToBLOB (t)));
     }
+
 }
+
 #endif /*_Stroika_Foundation_Cryptography_Digest_DigestDataToString_inl_*/

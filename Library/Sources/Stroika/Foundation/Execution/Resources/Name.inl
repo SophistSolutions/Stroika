@@ -15,10 +15,10 @@
 namespace Stroika::Foundation::Execution::Resources {
 
     /*
-    ********************************************************************************
-    ************************************ Resources::Name ***************************
-    ********************************************************************************
-    */
+     ********************************************************************************
+     ************************************ Resources::Name ***************************
+     ********************************************************************************
+     */
     inline Name::Name (const String& name, ResourceType type)
         : fName_ (name.AsSDKString ())
 #if qPlatform_Windows
@@ -57,6 +57,7 @@ namespace Stroika::Foundation::Execution::Resources {
     {
         return fType_;
     }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Resources_Name_inl_*/

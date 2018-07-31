@@ -33,6 +33,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     {
         ::LeaveCriticalSection (&fCritSec_);
     }
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Platform_Windows_CriticalSectionRecursiveMutex_inl_*/

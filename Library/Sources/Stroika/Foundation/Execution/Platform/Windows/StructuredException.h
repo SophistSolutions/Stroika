@@ -18,7 +18,6 @@
 #include "../../StringException.h"
 
 namespace Stroika::Foundation::Execution {
-
     using Characters::SDKString;
 }
 
@@ -51,6 +50,7 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     private:
         static void trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);
     };
+
 }
 
 /*

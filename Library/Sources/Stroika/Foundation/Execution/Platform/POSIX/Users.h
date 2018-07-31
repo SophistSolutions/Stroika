@@ -28,6 +28,7 @@ namespace Stroika::Foundation::Execution::Platform::POSIX {
     uid_t GetUID ();
 
     uid_t GetEffectiveUID ();
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Platform_POSIX_Users_h_*/

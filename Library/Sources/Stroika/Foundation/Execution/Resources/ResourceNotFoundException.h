@@ -23,6 +23,7 @@ namespace Stroika::Foundation::Execution {
          */
         static const ResourceNotFoundException kThe;
     };
+
 }
 
 #endif /*_Stroika_Foundation_Execution_Resources_ResourceNotFoundException_h_*/
