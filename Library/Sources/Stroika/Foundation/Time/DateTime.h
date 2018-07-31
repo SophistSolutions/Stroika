@@ -31,7 +31,6 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *
  *      @todo   Need DefaultNames<> for enums in DateTime module
  *
  *      @todo   Support various 64bit int (epoch time) types - even if time_t is 32-bit (such as on AIX).
@@ -90,31 +89,31 @@ namespace Stroika::Foundation::Time {
     class Duration; // forward declare for Differnce ()
 
     /*
-        *  Description:
-        *
-        *      DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
-        *
-        *      Timezone may be "unknown" (missing), or a Timezone object (@see Timezone).
-        *
-        *      'empty' concept:
-        *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number
-        *          of seconds or days (JulienRep), treat empty as DateTime::kMin. For format routine,
-        *          return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
-        *          This is a bit like the floating point concept of negative infinity.
-        *
-        *          This concept is the same as the Date::empty () concept.
-        *
-        *  <<<CONSIDERING MAYBE REQUIRING>>>
-        *          Also note that if empty () - BOTH the date and timeofday parts of the DateTime must be empty, and
-        *          the value of timezone is undefined. That way, d.empty () iff d == DateTime ()
-        *  <<</CONSIDERING MAYBE REQUIRING>>>
-        *
-        *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
-        *          instead of creating invalid values.
-        *
-        *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
-        *
-        */
+     *  Description:
+     *
+     *      DateTime is more than just a combination of Date, and Time. It also introduces the notion of TIMEZONE.
+     *
+     *      Timezone may be "unknown" (missing), or a Timezone object (@see Timezone).
+     *
+     *      'empty' concept:
+     *          Treat it as DISTINCT from any other DateTime. However, when converting it to a number
+     *          of seconds or days (JulienRep), treat empty as DateTime::kMin. For format routine,
+     *          return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN DateTime::kMin.
+     *          This is a bit like the floating point concept of negative infinity.
+     *
+     *          This concept is the same as the Date::empty () concept.
+     *
+     *  <<<CONSIDERING MAYBE REQUIRING>>>
+     *          Also note that if empty () - BOTH the date and timeofday parts of the DateTime must be empty, and
+     *          the value of timezone is undefined. That way, d.empty () iff d == DateTime ()
+     *  <<</CONSIDERING MAYBE REQUIRING>>>
+     *
+     *  \note   DateTime constructors REQUIRE valid inputs, and any operations which might overflow throw range_error
+     *          instead of creating invalid values.
+     *
+     *  \note   See coding conventions document about operator usage: Compare () and operator<, operator>, etc
+     *
+     */
     class DateTime {
     public:
         /**

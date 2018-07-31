@@ -14,6 +14,8 @@ namespace Stroika::Foundation::Execution {
 
     using Characters::String;
 
+    /**
+     */
     class FeatureNotSupportedInThisVersionException : public StringException {
     public:
         FeatureNotSupportedInThisVersionException (const wstring& feature);
@@ -21,5 +23,6 @@ namespace Stroika::Foundation::Execution {
     public:
         wstring fFeature;
     };
+
 }
 #endif /*_Stroika_Foundation_Execution_FeatureNotSupportedInThisVersionException_h_*/

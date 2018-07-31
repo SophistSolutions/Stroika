@@ -25,6 +25,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         Execution::ModuleDependency fDebugTraceDependency;
 #endif
     };
+
 }
 
 namespace {

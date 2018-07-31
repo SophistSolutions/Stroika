@@ -438,9 +438,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp">
-      <Filter>Sources\Configuration</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
@@ -485,9 +482,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp">
       <Filter>Sources\Time</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp">
-      <Filter>Sources\Configuration</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp">
       <Filter>Sources\Configuration</Filter>
@@ -2045,9 +2039,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl">
       <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
-      <Filter>Sources\Execution</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl">
       <Filter>Sources\Memory\Platform\Windows</Filter>
     </None>
@@ -2134,9 +2125,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl">
       <Filter>Sources\IO\Network\Transfer</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileAccessException.inl">
       <Filter>Sources\IO</Filter>

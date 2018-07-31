@@ -13,11 +13,9 @@
 
 /**
  *
- *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *
  *      @todo   This is NOT safe (annoying offsetof rules). MAYBE possible to do with ptr-to-member, but I dont think
  *              so.
  */
@@ -84,10 +82,10 @@ namespace Stroika::Foundation::DataExchange {
 }
 
 /*
-********************************************************************************
-***************************** Implementation Details ***************************
-********************************************************************************
-*/
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
 #include "StructFieldMetaInfo.inl"
 
 #endif /*_Stroika_Foundation_DataExchange_StructFieldMetaInfo_h_*/

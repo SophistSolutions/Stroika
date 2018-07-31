@@ -9,10 +9,10 @@
 namespace Stroika::Foundation::Traversal {
 
     /*
-        ********************************************************************************
-        *********************** DelegatedIterator<T, EXTRA_DATA>::Rep ******************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** DelegatedIterator<T, EXTRA_DATA>::Rep ******************
+     ********************************************************************************
+     */
     template <typename T, typename EXTRA_DATA>
     DelegatedIterator<T, EXTRA_DATA>::Rep::Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData)
         : fDelegateTo (delegateTo)
@@ -48,10 +48,10 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /*
-        ********************************************************************************
-        *********************** DelegatedIterator<T, EXTRA_DATA> ***********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** DelegatedIterator<T, EXTRA_DATA> ***********************
+     ********************************************************************************
+     */
     template <typename T, typename EXTRA_DATA>
     DelegatedIterator<T, EXTRA_DATA>::DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData)
         : Iterator<T> (Iterator<T>::template MakeSharedPtr<Rep> (delegateTo, extraData))
@@ -59,4 +59,5 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Traversal_DelegatedIterator_inl_ */

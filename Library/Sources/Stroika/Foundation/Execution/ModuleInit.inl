@@ -14,10 +14,10 @@
 namespace Stroika::Foundation::Execution {
 
     /*
-        ********************************************************************************
-        ******************************** ModuleDependency ******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** ModuleDependency ******************************
+     ********************************************************************************
+     */
     inline ModuleDependency::ModuleDependency (void (*start) (), void (*end) ())
         : fEnd_ (end)
     {
@@ -29,10 +29,10 @@ namespace Stroika::Foundation::Execution {
     }
 
     /*
-        ********************************************************************************
-        ************************ ModuleInitializer<MODULE_DATA> ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************ ModuleInitializer<MODULE_DATA> ************************
+     ********************************************************************************
+     */
     template <typename MODULE_DATA>
     inline void ModuleInitializer<MODULE_DATA>::Start ()
     {
@@ -75,5 +75,7 @@ namespace Stroika::Foundation::Execution {
     template <typename MODULE_DATA>
     unsigned short ModuleInitializer<MODULE_DATA>::sInitCnt_;
 #endif
+
 }
+
 #endif /*_Stroika_Foundation_Execution_ModuleInit_inl_*/

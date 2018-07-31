@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Execution {
 
     /*
      ********************************************************************************
-     ***************************** Implementation Details ***************************
+     ***************************** TimedLockGuard<MUTEX> ****************************
      ********************************************************************************
      */
     template <typename MUTEX>
@@ -34,5 +34,7 @@ namespace Stroika::Foundation::Execution {
     {
         fMutex_.unlock ();
     }
+
 }
+
 #endif /*_Stroika_Foundation_Execution_TimedLockGuard_inl_*/

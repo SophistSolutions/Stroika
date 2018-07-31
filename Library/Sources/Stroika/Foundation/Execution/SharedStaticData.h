@@ -48,27 +48,27 @@ namespace Stroika::Foundation::Execution {
      *
      *  \par Example Usage (from HealthFrameWorksServer)
      *      \code
-     *              class   AuditLogSink {
-     *                  ...
-     *                  private:
-     *                      struct SharedData_;
-     *                      Execution::SharedStaticData<SharedData_>    fSharedData_;
-     *              };
-     *              struct  AuditLogSink::SharedData_ {
-     *                  Execution::Thread::Ptr                   fCleanupThread;
+     *          class   AuditLogSink {
+     *              ...
+     *              private:
+     *                  struct SharedData_;
+     *                  Execution::SharedStaticData<SharedData_>    fSharedData_;
+     *          };
+     *          struct  AuditLogSink::SharedData_ {
+     *              Execution::Thread::Ptr                   fCleanupThread;
      *
-     *                  SharedData_ ()
-     *                      : fCleanupThread (Thread::New (&AuditLogSink::SimpleCleanupThread_))
-     *                  {
-     *                      fCleanupThread.SetThreadPriority (Thread::Priority::eLowest);
-     *                      fCleanupThread.SetThreadName (L"AuditTrailCleanupThread");
-     *                      fCleanupThread.Start ();
-     *                  }
-     *                  ~SharedData_ ()
-     *                  {
-     *                      fCleanupThread.AbortAndWaitForDone ();
-     *                  }
-     *              };
+     *              SharedData_ ()
+     *                  : fCleanupThread (Thread::New (&AuditLogSink::SimpleCleanupThread_))
+     *              {
+     *                  fCleanupThread.SetThreadPriority (Thread::Priority::eLowest);
+     *                  fCleanupThread.SetThreadName (L"AuditTrailCleanupThread");
+     *                  fCleanupThread.Start ();
+     *              }
+     *              ~SharedData_ ()
+     *              {
+     *                  fCleanupThread.AbortAndWaitForDone ();
+     *              }
+     *          };
      *      \endcode
      *
      *  So then on the first AuditLogSink construction - we construct the cleanup thread, and on the last the
@@ -115,6 +115,7 @@ namespace Stroika::Foundation::Execution {
 #endif
         //                alignas (alignof (T)) Memory::Byte fOnceObj_Storage_[sizeof (T)]; // avoid actual memory allocation call - since only one of these
     };
+
 }
 
 /*

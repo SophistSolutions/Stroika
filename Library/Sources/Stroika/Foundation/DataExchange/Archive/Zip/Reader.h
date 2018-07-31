@@ -30,6 +30,7 @@ namespace Stroika::Foundation::DataExchange::Archive::Zip {
         class Rep_;
     };
 #endif
+
 }
 
 /*

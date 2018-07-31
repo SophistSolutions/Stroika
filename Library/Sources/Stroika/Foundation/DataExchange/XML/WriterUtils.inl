@@ -11,4 +11,5 @@
  */
 namespace Stroika::Foundation::DataExchange::XML {
 }
+
 #endif /*_Stroika_Foundation_DataExchange_XML_WriterUtils_inl_*/

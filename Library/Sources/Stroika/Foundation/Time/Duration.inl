@@ -14,10 +14,10 @@
 namespace Stroika::Foundation::Time {
 
     /*
-    ********************************************************************************
-    ***************************** Implementation Details ***************************
-    ********************************************************************************
-    */
+     ********************************************************************************
+     ************************************ Duration **********************************
+     ********************************************************************************
+     */
     template <typename DURATION_REP, typename DURATION_PERIOD>
     Duration::Duration (const chrono::duration<DURATION_REP, DURATION_PERIOD>& d)
         : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (chrono::duration<InternalNumericFormatType_> (d).count ())))
@@ -29,10 +29,10 @@ namespace Stroika::Foundation::Time {
     }
 
     /*
-        ********************************************************************************
-        ************************** Duration operators **********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************** Duration operators **********************************
+     ********************************************************************************
+     */
     inline bool operator< (const Duration& lhs, const Duration& rhs)
     {
         return lhs.Compare (rhs) < 0;
@@ -57,10 +57,6 @@ namespace Stroika::Foundation::Time {
     {
         return lhs.Compare (rhs) > 0;
     }
-
-    /**
-     *  Divide the duration by the floating point argument
-     */
     inline Duration operator/ (const Duration& lhs, long double rhs)
     {
         Require (rhs != 0);

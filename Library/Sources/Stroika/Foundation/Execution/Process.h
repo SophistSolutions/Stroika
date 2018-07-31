@@ -44,6 +44,7 @@ namespace Stroika::Foundation::Execution {
      *  \note   This obviously can be a race as processes can come and go quickly
      */
     bool IsProcessRunning (pid_t pid);
+
 }
 
 /*

@@ -59,6 +59,7 @@ namespace Stroika::Foundation::Execution {
     template <typename EXCEPTION>
     void ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw = EXCEPTION ());
     void ThrowIfTimeout (cv_status conditionVariableStatus);
+
 }
 
 /*

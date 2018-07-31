@@ -7,10 +7,10 @@
 namespace Stroika::Foundation::Traversal {
 
     /*
-    ********************************************************************************
-    ********************** DisjointRange<T, RANGE_TYPE> ****************************
-    ********************************************************************************
-    */
+     ********************************************************************************
+     ********************** DisjointRange<T, RANGE_TYPE> ****************************
+     ********************************************************************************
+     */
     template <typename T, typename RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE>::DisjointRange (const RangeType& from)
         : fSubRanges_{}
@@ -335,43 +335,28 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /*
-        ********************************************************************************
-        *********************************** operator+ **********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* DisjointRange<T> Operators ***************************
+     ********************************************************************************
+     */
     template <typename T, typename RANGE_TYPE>
     inline DisjointRange<T, RANGE_TYPE> operator+ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
         return lhs.Union (rhs);
     }
 
-    /*
-        ********************************************************************************
-        *********************************** operator^ **********************************
-        ********************************************************************************
-        */
     template <typename T, typename RANGE_TYPE>
     inline DisjointRange<T, RANGE_TYPE> operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
         return lhs.Intersection (rhs);
     }
 
-    /*
-        ********************************************************************************
-        ********************************** operator== **********************************
-        ********************************************************************************
-        */
     template <typename T, typename RANGE_TYPE>
     inline bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
         return lhs.Equals (rhs);
     }
 
-    /*
-        ********************************************************************************
-        ********************************** operator!= **********************************
-        ********************************************************************************
-        */
     template <typename T, typename RANGE_TYPE>
     inline bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {

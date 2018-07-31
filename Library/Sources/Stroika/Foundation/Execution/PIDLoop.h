@@ -147,6 +147,7 @@ namespace Stroika::Foundation::Execution {
         Synchronized<UpdatableParams_> fUpdatableParams_;
         optional<Thread::Ptr>          fThread_;
     };
+
 }
 
 /*

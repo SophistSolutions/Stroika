@@ -13,10 +13,10 @@
 namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
 
     /*
-        ********************************************************************************
-        *********************** StructuredStreamEvents::Name ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** StructuredStreamEvents::Name ***************************
+     ********************************************************************************
+     */
     inline Name::Name ([[maybe_unused]] NameType type)
         : fType{eValue}
     {
@@ -50,10 +50,10 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     }
 
     /*
-        ********************************************************************************
-        ******************** StructuredStreamEvents::Name operators ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** StructuredStreamEvents::Name operators ********************
+     ********************************************************************************
+     */
     inline bool operator< (const Name& lhs, const Name& rhs)
     {
         if (lhs.fNamespaceURI.has_value () and rhs.fNamespaceURI.has_value ()) {
@@ -129,5 +129,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
     {
         return not(lhs <= rhs);
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_Name_inl_*/

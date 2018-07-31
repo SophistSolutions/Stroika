@@ -59,6 +59,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         String fDocumentElementName_; // internally empty string for missing
         String fArrayElementName_;    // internally empty string for missing
     };
+
 }
 
 /*

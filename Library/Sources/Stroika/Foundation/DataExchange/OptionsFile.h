@@ -24,7 +24,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * TODO:
- *
  *      @todo   eFailedToReadFile should be broken into failed to read, and failed to upgrade.
  *
  *      @todo   Look at http://s11n.net/
@@ -54,27 +53,27 @@ namespace Stroika::Foundation::DataExchange {
      *
      *  \par Example Usage
      *      \code
-     *      struct  MyData_ {
-     *          bool                fEnabled = false;
-     *          DateTime            fLastSynchronizedAt;
-     *      };
-     *      OptionsFile of {
-     *          L"MyModule",
-     *          [] () -> ObjectVariantMapper {
-     *              ObjectVariantMapper mapper;
-     *              mapper.AddClass<MyData_> (initializer_list<StructFieldInfo> {
-     *                  { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
-     *                  { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
-     *              });
-     *              return mapper;
-     *          } (),
-     *          OptionsFile::kDefaultUpgrader,
-     *          [] (const String & moduleName, const String & fileSuffix) -> String {
-     *              return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName;
-     *          }
-     *      };
-     *      MyData_ m = of.Read<MyData_> (MyData_ ());  // will return default values if file not present
-     *      of.Write (m);                               // test writing
+     *         struct  MyData_ {
+     *             bool        fEnabled = false;
+     *             DateTime    fLastSynchronizedAt;
+     *         };
+     *         OptionsFile of {
+     *             L"MyModule",
+     *             [] () -> ObjectVariantMapper {
+     *                 ObjectVariantMapper mapper;
+     *                 mapper.AddClass<MyData_> (initializer_list<StructFieldInfo> {
+     *                     { L"Enabled", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fEnabled) },
+     *                     { L"Last-Synchronized-At", Stroika_Foundation_DataExchange_StructFieldMetaInfo (MyData_, fLastSynchronizedAt) },
+     *                 });
+     *                 return mapper;
+     *             } (),
+     *             OptionsFile::kDefaultUpgrader,
+     *             [] (const String & moduleName, const String & fileSuffix) -> String {
+     *                 return  IO::FileSystem::WellKnownLocations::GetTemporary () + moduleName;
+     *             }
+     *         };
+     *         MyData_ m = of.Read<MyData_> (MyData_ ());  // will return default values if file not present
+     *         of.Write (m);                               // test writing
      *      \endcode
      */
     class OptionsFile {

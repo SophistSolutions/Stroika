@@ -25,10 +25,10 @@
 namespace Stroika::Foundation::DataExchange {
 
     /*
-        ********************************************************************************
-        ********************** ObjectVariantMapper::StructFieldInfo ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** ObjectVariantMapper::StructFieldInfo ********************
+     ********************************************************************************
+     */
     inline ObjectVariantMapper::StructFieldInfo::StructFieldInfo (const String& serializedFieldName, const StructFieldMetaInfo& fieldMetaInfo, const optional<TypeMappingDetails>& overrideTypeMapper, NullFieldHandling nullFields)
         : fFieldMetaInfo (fieldMetaInfo)
         , fSerializedFieldName (serializedFieldName)

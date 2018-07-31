@@ -23,29 +23,29 @@ namespace Stroika::Foundation::Debug {
      *
      *  \par Example Usage
      *      \code
-     *      {
-     *          TimingTrace ttrc;
-     *          do_some_call();
-     *      }
+     *          {
+     *              TimingTrace ttrc;
+     *              do_some_call();
+     *          }
      *      \endcode
      *      \code
-     *      OUTPUT IN TRACELOG:
-     *          (timeTaken=3.4 seconds)
+     *          OUTPUT IN TRACELOG:
+     *              (timeTaken=3.4 seconds)
      *      \endcode
      *
      *  \par Example Usage
      *      \code
-     *      {
-     *          TraceContextBumper ctx ("do_some_call");
-     *          TimingTrace         ttrc;
-     *          do_some_call();
-     *      }
+     *          {
+     *              TraceContextBumper ctx ("do_some_call");
+     *              TimingTrace         ttrc;
+     *              do_some_call();
+     *          }
      *      \endcode
      *      \code
-     *      OUTPUT IN TRACELOG:
-     *          <do_some_call>
-     *              (timeTaken=3.4 seconds)
-     *          </do_some_call>
+     *          OUTPUT IN TRACELOG:
+     *              <do_some_call>
+     *                  (timeTaken=3.4 seconds)
+     *              </do_some_call>
      *      \endcode
      *
      * \note   Aliases Performance Trace, PerforamnceTrace

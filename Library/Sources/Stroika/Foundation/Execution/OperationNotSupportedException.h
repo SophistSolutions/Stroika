@@ -25,6 +25,7 @@ namespace Stroika::Foundation::Execution {
     private:
         String fOperationName_;
     };
+
 }
 
 #endif /*_Stroika_Foundation_Execution_OperationNotSupportedException_h_*/

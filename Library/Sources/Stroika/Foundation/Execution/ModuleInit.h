@@ -158,6 +158,7 @@ namespace Stroika::Foundation::Execution {
         static inline uint16_t sInitCnt_{0};
 #endif
     };
+
 }
 
 /*

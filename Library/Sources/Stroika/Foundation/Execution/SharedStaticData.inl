@@ -20,10 +20,10 @@ namespace Stroika::Foundation::Execution {
     }
 
     /*
-        ********************************************************************************
-        ******************************** SharedStaticData<T> ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** SharedStaticData<T> ***************************
+     ********************************************************************************
+     */
 #if qCompiler_cpp17ExplicitInlineStaticMemberOfTemplate_Buggy
     template <typename T>
     T* SharedStaticData<T>::sOnceObj_;
@@ -73,5 +73,7 @@ namespace Stroika::Foundation::Execution {
         EnsureNotNull (sOnceObj_);
         return *sOnceObj_;
     }
+
 }
+
 #endif /*_Stroika_Foundation_Execution_SharedStaticData_inl_*/

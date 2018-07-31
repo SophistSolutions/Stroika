@@ -13,7 +13,7 @@
 /**
  *  \file
  *
- * TODO:
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  */
 
 namespace Stroika::Foundation::DataExchange::Archive::_7z {
@@ -30,6 +30,7 @@ namespace Stroika::Foundation::DataExchange::Archive::_7z {
         class Rep_;
     };
 #endif
+
 }
 
 /*

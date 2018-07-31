@@ -17,7 +17,6 @@
 
 /**
  * TODO:
- *
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  *      @todo   MAYBE allow copy - but just document its a smart pointer and copy just increments refcount.
@@ -235,6 +234,7 @@ namespace Stroika::Foundation::Execution {
         ProgressRangeType fFromProg_;
         ProgressRangeType fToProg_;
     };
+
 }
 
 /*

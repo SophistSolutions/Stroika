@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Debug {
 ///#define CTC_NAME(NAME,VALUE)  NAME2_HIDDEN(##NAME,VALUE)
 
 /**
-     */
+*/
 #define CompileTimeFlagChecker_HEADER(NAME, VALUE) \
     CompileTimeCheck_HEADER_INTERNAL_ (CompileTimeCheck_##NAME, VALUE)
 #define CompileTimeCheck_HEADER_INTERNAL_(NAME, VALUE)                                      \

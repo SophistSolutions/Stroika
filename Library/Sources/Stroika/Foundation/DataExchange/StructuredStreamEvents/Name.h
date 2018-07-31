@@ -13,7 +13,7 @@
 /**
  *  \file
  *
- * TODO:
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  */
 
@@ -92,6 +92,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
      *  Basic operator> with the obivous meaning
      */
     bool operator> (const Name& lhs, const Name& rhs);
+
 }
 
 /*

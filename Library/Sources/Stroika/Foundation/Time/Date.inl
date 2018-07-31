@@ -247,5 +247,7 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
+
 }
+
 #endif /*_Stroika_Foundation_Time_Date_inl_*/

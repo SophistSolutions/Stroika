@@ -19,10 +19,10 @@
 namespace Stroika::Foundation::Execution {
 
     /*
-        ********************************************************************************
-        ********************* PIDLoop<CONTROL_VAR_TYPE>::ControlParams *****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* PIDLoop<CONTROL_VAR_TYPE>::ControlParams *****************
+     ********************************************************************************
+     */
     template <typename CONTROL_VAR_TYPE>
     inline PIDLoop<CONTROL_VAR_TYPE>::ControlParams::ControlParams (ValueType p, ValueType i, ValueType d)
         : P (p)
@@ -53,10 +53,10 @@ namespace Stroika::Foundation::Execution {
     }
 
     /*
-        ********************************************************************************
-        ************************** PIDLoop<CONTROL_VAR_TYPE> ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************** PIDLoop<CONTROL_VAR_TYPE> ***************************
+     ********************************************************************************
+     */
     template <typename CONTROL_VAR_TYPE>
     PIDLoop<CONTROL_VAR_TYPE>::PIDLoop (const ControlParams& pidParams, Time::DurationSecondsType updatePeriod, const function<ValueType ()>& measureFunction, const function<void(ValueType o)>& outputFunction, ValueType initialSetPoint)
         : fPIDParams_ (pidParams)
@@ -141,5 +141,7 @@ namespace Stroika::Foundation::Execution {
         fThread_ = Thread::New ([this]() { RunDirectly (); }, Thread::eAutoStart);
         return *fThread_;
     }
+
 }
+
 #endif /*_Stroika_Foundation_Execution_PIDLoop_inl_*/

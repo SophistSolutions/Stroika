@@ -251,4 +251,5 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Traversal_DiscreteRange_inl_ */

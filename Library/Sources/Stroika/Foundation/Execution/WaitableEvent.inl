@@ -29,10 +29,10 @@ namespace {
 namespace Stroika::Foundation::Execution {
 
     /*
-        ********************************************************************************
-        ********************** Execution::WaitableEvent::WE_ ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** Execution::WaitableEvent::WE_ ***************************
+     ********************************************************************************
+     */
     inline WaitableEvent::WE_::WE_ (ResetType resetType)
         : fResetType (resetType)
     {
@@ -69,10 +69,10 @@ namespace Stroika::Foundation::Execution {
     }
 
     /*
-        ********************************************************************************
-        *************************** Execution::WaitableEvent ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *************************** Execution::WaitableEvent ***************************
+     ********************************************************************************
+     */
     inline WaitableEvent::WaitableEvent (ResetType resetType)
         : fWE_ (resetType)
     {
@@ -178,13 +178,13 @@ namespace Stroika::Foundation::Execution {
     void WaitableEvent::WaitForAllUntil (ITERATOR_OF_WAITABLE_EVENTS waitableEventsStart, ITERATOR_OF_WAITABLE_EVENTS waitableEventsEnd, Time::DurationSecondsType timeoutAt)
     {
         /*
-            *  Create another WE as shared.
-            *  Stick it onto the list for each waitablevent
-            *  Wait on 'new private fake' enevt (and if it succeeeds, then check orig events and return right now)
-            *  Either way - undo additions
-            *
-            *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
-            */
+         *  Create another WE as shared.
+         *  Stick it onto the list for each waitablevent
+         *  Wait on 'new private fake' enevt (and if it succeeeds, then check orig events and return right now)
+         *  Either way - undo additions
+         *
+         *  <<< @todo DOCUMENT AND EXPLAIN MUTEX >>>
+         */
         shared_ptr<WE_>         we      = make_shared<WE_> (eAutoReset);
         [[maybe_unused]] auto&& cleanup = Finally (
             [ we, waitableEventsStart, waitableEventsEnd ]() noexcept {

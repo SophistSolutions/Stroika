@@ -251,6 +251,7 @@ namespace Stroika::Foundation::Execution {
     private:
         Execution::Synchronized<Containers::Collection<pair<FileDescriptorType, TypeOfMonitorSet>>> fPollData_;
     };
+
 }
 
 /*

@@ -106,4 +106,5 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Traversal_Generator_inl_ */

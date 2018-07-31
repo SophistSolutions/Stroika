@@ -135,4 +135,5 @@ namespace Stroika::Foundation::Time {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Time_Realtime_inl_*/

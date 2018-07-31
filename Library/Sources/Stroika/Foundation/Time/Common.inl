@@ -11,4 +11,5 @@
  */
 namespace Stroika::Foundation::Time {
 }
+
 #endif /*_Stroika_Foundation_Time_Common_inl_*/

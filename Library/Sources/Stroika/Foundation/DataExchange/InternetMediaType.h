@@ -218,7 +218,9 @@ namespace Stroika::Foundation::DataExchange {
          *  application/zip
          */
         constexpr Execution::VirtualConstant<InternetMediaType, PRIVATE_::Application_Zip_CT> kApplication_Zip;
+
     }
+
 }
 
 /*

@@ -166,12 +166,10 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String2Int.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringBuilder.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\ToString.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\SystemConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Digest\Algorithm\CRC32.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Cryptography-Digest-Algorithm-CRC32.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Cryptography-Digest-Algorithm-CRC32.obj</ObjectFileName>
@@ -1852,7 +1850,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Valgrind.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AbortableMutex.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ConditionVariable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
@@ -1861,7 +1858,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Function.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Logger.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Makefile" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleGetterSetter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\NullMutex.inl" />

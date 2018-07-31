@@ -46,5 +46,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     {
         fNamespaces = namespaces;
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_XML_Namespace_inl_*/

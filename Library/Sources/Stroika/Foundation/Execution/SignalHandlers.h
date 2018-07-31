@@ -23,7 +23,6 @@
  *
  *
  * TODO:
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-467 Lose shared_ptr<> with SignalHandlerRegistry::SafeSignalsManager::Rep_
  *              and change semantics - assert or autodelete - safe handlers on destory of safe signal mgr.
  *
@@ -331,6 +330,7 @@ namespace Stroika::Foundation::Execution {
     private:
         friend class SignalHandlerRegistry;
     };
+
 }
 
 /*

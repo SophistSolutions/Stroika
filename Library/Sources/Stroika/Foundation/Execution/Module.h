@@ -66,6 +66,7 @@ namespace Stroika::Foundation::Execution {
      *  Return the full path to the given process
      */
     String GetEXEPath (pid_t processID);
+
 }
 
 /*

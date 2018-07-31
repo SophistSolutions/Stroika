@@ -13,8 +13,9 @@
 /**
  *  \file
  *
- * TODO:
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
+ * TODO:
  *      @todo   https://stroika.atlassian.net/browse/STK-609 - Redo the Compression Reader code to use a factory style like used in the rest of Stroika - ::New - instead of Compress methods??? needs some thought...
  */
 
@@ -36,6 +37,7 @@ namespace Stroika::Foundation::DataExchange::Compression::Zip {
         class Rep_;
     };
 #endif
+
 }
 
 /*

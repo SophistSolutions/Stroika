@@ -309,6 +309,7 @@ namespace Stroika::Foundation::Execution {
         forward_list<shared_ptr<WE_>> fExtraWaitableEvents_;
 #endif
     };
+
 }
 
 /*

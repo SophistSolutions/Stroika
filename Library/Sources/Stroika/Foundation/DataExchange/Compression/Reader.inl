@@ -12,10 +12,10 @@
 namespace Stroika::Foundation::DataExchange::Compression {
 
     /*
-        ********************************************************************************
-        ********************* DataExchange::Compression::Reader ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* DataExchange::Compression::Reader ************************
+     ********************************************************************************
+     */
     inline Reader::Reader (const shared_ptr<_IRep>& rep)
         : fRep_ (rep)
     {
@@ -50,5 +50,7 @@ namespace Stroika::Foundation::DataExchange::Compression {
     {
         return _GetRep ().Decompress (src.As<InputStream<Byte>::Ptr> ()).ReadAll ();
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_Compression_Reader_inl_*/

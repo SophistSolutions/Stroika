@@ -14,10 +14,10 @@
 namespace Stroika::Foundation::Execution {
 
     /*
-             ********************************************************************************
-             ********************************* Logger ***************************************
-             ********************************************************************************
-             */
+     ********************************************************************************
+     ********************************* Logger ***************************************
+     ********************************************************************************
+     */
     inline Logger& Logger::Get ()
     {
         Ensure (sThe_.fRep_ != nullptr); // good but not great since no guarantee about race - that while used doesn't 'go null' in sThe DTOR
@@ -49,6 +49,7 @@ namespace Stroika::Foundation::Execution {
 #endif
 
 }
+
 namespace Stroika::Foundation::Configuration {
     template <>
     struct DefaultNames<Execution::Logger::Priority> : EnumNames<Execution::Logger::Priority> {
@@ -70,4 +71,5 @@ namespace Stroika::Foundation::Configuration {
         }
     };
 }
+
 #endif /*_Stroika_Foundation_Execution_Logger_inl_*/

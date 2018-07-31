@@ -23,6 +23,9 @@
  *      @todo   Redo SAXParse() using factory style - like we have for IO::Networking::Transfer (curl or winhttp)
  *              then have ability to check for registered impl (and select impl) for SAX backend)
  *
+ *      @todo   Add schema support, and overload of SAXParse taking schema, such as
+ *              void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
+ *
  */
 
 namespace Stroika::Foundation::DataExchange::XML {
@@ -38,8 +41,6 @@ namespace Stroika::Foundation::DataExchange::XML {
     void SAXParse (const Streams::InputStream<Memory::Byte>::Ptr& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
     void SAXParse (const Memory::BLOB& in, StructuredStreamEvents::IConsumer& callback, Execution::ProgressMonitor::Updater progress = nullptr);
 
-    //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
-    //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
 }
 
 /*

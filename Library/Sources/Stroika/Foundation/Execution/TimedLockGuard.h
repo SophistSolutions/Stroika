@@ -33,6 +33,7 @@ namespace Stroika::Foundation::Execution {
     private:
         MUTEX& fMutex_;
     };
+
 }
 
 /*

@@ -17,10 +17,10 @@ namespace Stroika::Foundation::Execution {
     void CheckForThreadInterruption ();
 
     /*
-        ********************************************************************************
-        ******************* Execution::ThrowTimeoutExceptionAfter **********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************* Execution::ThrowTimeoutExceptionAfter **********************
+     ********************************************************************************
+     */
     template <typename EXCEPTION>
     inline void ThrowTimeoutExceptionAfter (Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw)
     {
@@ -36,10 +36,10 @@ namespace Stroika::Foundation::Execution {
     }
 
     /*
-        ********************************************************************************
-        ************************* Execution::TryLockUntil ******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* Execution::TryLockUntil ******************************
+     ********************************************************************************
+     */
     template <typename TIMED_MUTEX, typename EXCEPTION>
     inline void TryLockUntil (TIMED_MUTEX& m, Time::DurationSecondsType afterTickCount, const EXCEPTION& exception2Throw)
     {
@@ -55,10 +55,10 @@ namespace Stroika::Foundation::Execution {
     }
 
     /*
-        ********************************************************************************
-        ************************* Execution::ThrowIfTimeout ****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* Execution::ThrowIfTimeout ****************************
+     ********************************************************************************
+     */
     template <typename EXCEPTION>
     inline void ThrowIfTimeout (cv_status conditionVariableStatus, const EXCEPTION& exception2Throw)
     {
@@ -71,5 +71,7 @@ namespace Stroika::Foundation::Execution {
         static const TimeOutException kTO_ = TimeOutException ();
         ThrowIfTimeout (conditionVariableStatus, kTO_);
     }
+
 }
+
 #endif /*_Stroika_Foundation_Execution_TimeOutException_inl_*/

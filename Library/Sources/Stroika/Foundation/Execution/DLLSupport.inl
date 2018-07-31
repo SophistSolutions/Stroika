@@ -58,4 +58,5 @@ namespace Stroika::Foundation::Execution {
 #endif
 
 }
+
 #endif /*_Stroia_Foundation_Execution_DLLSupport_inl_*/

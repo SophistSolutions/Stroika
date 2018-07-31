@@ -42,5 +42,7 @@ namespace Stroika::Foundation::DataExchange::Archive {
     {
         return _GetRep ().GetData (fileName);
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_Archive_Reader_inl_*/

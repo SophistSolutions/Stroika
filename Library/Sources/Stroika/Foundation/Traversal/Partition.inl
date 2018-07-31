@@ -61,4 +61,5 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Traversal_Partition_inl_ */

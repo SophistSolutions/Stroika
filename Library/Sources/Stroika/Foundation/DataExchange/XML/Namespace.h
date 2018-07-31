@@ -15,6 +15,8 @@
 
 namespace Stroika::Foundation::DataExchange::XML {
 
+    /**
+     */
     struct NamespaceDefinition {
         NamespaceDefinition (const wstring& uri, const wstring& prefix = wstring ());
 
@@ -25,6 +27,8 @@ namespace Stroika::Foundation::DataExchange::XML {
     bool operator< (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
     bool operator== (const NamespaceDefinition& lhs, const NamespaceDefinition& rhs);
 
+    /**
+     */
     class NamespaceDefinitionsList {
     public:
         NamespaceDefinitionsList (const vector<NamespaceDefinition>& namespaces = vector<NamespaceDefinition> ());
@@ -48,6 +52,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     };
     bool operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
     bool operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
+
 }
 
 /*

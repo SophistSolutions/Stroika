@@ -26,7 +26,6 @@
  *  \version    <a href="Code-Status.md">Alpha-Late</a>
  *
  * TODO:
- *
  *      @todo   virtualize REP - so we can store natively the original FLOAT or duration object, without
  *              loss of precision.
  *

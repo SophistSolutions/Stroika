@@ -38,7 +38,7 @@ namespace Stroika::Foundation::Time {
     /**
      *  \note   This type properties (kLowerBound/kUpperBound) can only be used after static initialization, and before
      *          static de-initializaiton.
-    */
+     */
     using DurationRange = Traversal::Range<Duration, Time::Private_::DurationRangeTraitsType_>;
 
 }

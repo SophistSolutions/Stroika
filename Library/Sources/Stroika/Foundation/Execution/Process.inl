@@ -11,6 +11,11 @@
  */
 namespace Stroika::Foundation::Execution {
 
+    /*
+     ********************************************************************************
+     ***************************** GetCurrentProcessID ******************************
+     ********************************************************************************
+     */
     inline pid_t GetCurrentProcessID ()
     {
 #if qPlatform_Windows
@@ -21,5 +26,7 @@ namespace Stroika::Foundation::Execution {
         AssertNotImplemented ();
 #endif
     }
+
 }
+
 #endif /*_Stroika_Foundation_Execution_Process_inl_*/

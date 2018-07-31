@@ -19,46 +19,47 @@
  *
  *  \file
  *
- *  @todo   https://stroika.atlassian.net/browse/STK-446 - AssertExternallySynchronizedLock
+ *  TODO
+ *      @todo   https://stroika.atlassian.net/browse/STK-446 - AssertExternallySynchronizedLock
  *
- *  @todo   Consider if we want to make the promise currently defined below in Equals()
- *          about iterating two originally equal iterators. The trouble is - this doesn
- *          work with generators!!! -- REVIEW-- LGP 2013-12-30
+ *      @todo   Consider if we want to make the promise currently defined below in Equals()
+ *              about iterating two originally equal iterators. The trouble is - this doesn
+ *              work with generators!!! -- REVIEW-- LGP 2013-12-30
  *
- *          THIS IS BAD AND MUST BE REWRITEN - NOT WAHT WE WANT - TOO STRONG A PROMISE.
+ *              THIS IS BAD AND MUST BE REWRITEN - NOT WAHT WE WANT - TOO STRONG A PROMISE.
  *
- *  @todo   Consider adding a Refresh() method to iterator. Semantics would be
- *          to recheck the current item, and recheck the done state of the container.
+ *      @todo   Consider adding a Refresh() method to iterator. Semantics would be
+ *              to recheck the current item, and recheck the done state of the container.
  *
- *          Use case is with map/reduce. Consider one process doing the mapping, and
- *          another reading the output (if we have &param version of map). Then the
- *          reader could check if done, and wait a moment, and check again (wait? how that?)
+ *              Use case is with map/reduce. Consider one process doing the mapping, and
+ *              another reading the output (if we have &param version of map). Then the
+ *              reader could check if done, and wait a moment, and check again (wait? how that?)
  *
- *          The key is that with map reduce you have parallel mapping and processing the output.
- *          But if iterating over output, hard (not impossible) to know you are at the end (length).
+ *              The key is that with map reduce you have parallel mapping and processing the output.
+ *              But if iterating over output, hard (not impossible) to know you are at the end (length).
  *
- *          Restartable iterators would be one way.
+ *              Restartable iterators would be one way.
  *
- *  @todo   See if we can replace Rep_Cloner_ stuff with lambda[] inline in type declaration? See if that
- *          has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
- *          for SharedByValue<> template.
+ *      @todo   See if we can replace Rep_Cloner_ stuff with lambda[] inline in type declaration? See if that
+ *              has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
+ *              for SharedByValue<> template.
  *
- *  @todo   CONSIDER using enabled_shared_from_this on ireps? Document why we chose to or not to
- *          (maybe test space). From preliminary testing (VC++2012) - it appears to just make things
- *          bigger, not smaller. Must test other compilers too, and maybe disassemble.
+ *      @todo   CONSIDER using enabled_shared_from_this on ireps? Document why we chose to or not to
+ *              (maybe test space). From preliminary testing (VC++2012) - it appears to just make things
+ *              bigger, not smaller. Must test other compilers too, and maybe disassemble.
  *
- *  @todo   Speed tweeks
+ *      @todo   Speed tweeks
  *
- *          The Major Design limitaiton of this approach to iterators is that it requires a non-inlinable
- *          function call per iteration (roughly). Basically - if you pass a callback into an iterator rep
- *          then to APPLY that function on each iteration requires a non-inlinable (indirect through pointer)
- *          function call, or if you do the reverse, and directly use the iteraotr so no you can inline
- *          apply the function, you must call a virtual function for each iteration to bump the next pointer.
+ *              The Major Design limitaiton of this approach to iterators is that it requires a non-inlinable
+ *              function call per iteration (roughly). Basically - if you pass a callback into an iterator rep
+ *              then to APPLY that function on each iteration requires a non-inlinable (indirect through pointer)
+ *              function call, or if you do the reverse, and directly use the iteraotr so no you can inline
+ *              apply the function, you must call a virtual function for each iteration to bump the next pointer.
  *
- *          Fundementally - you have multiple polypmorphism (on representation of container and thing to apply
- *          at each iteration).
+ *              Fundementally - you have multiple polypmorphism (on representation of container and thing to apply
+ *              at each iteration).
  *
- *          Two tricks:
+ *              Two tricks:
  *              (1)     Paging.
  *                      Read a bunch at a time. This is tricky to implement and doesn't affect overall computational
  *                      complexity (because it reduces number of virtual calls by a constant factor). But if that

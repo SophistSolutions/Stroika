@@ -100,4 +100,5 @@ namespace Stroika::Foundation::Configuration {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Configuration_Endian_inl_*/

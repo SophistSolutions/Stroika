@@ -49,4 +49,5 @@ namespace Stroika::Foundation::Execution {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Execution_WaitForIOReady_inl_*/

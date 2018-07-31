@@ -11,6 +11,7 @@
 #include "StringException.h"
 
 namespace Stroika::Foundation::Execution {
+
     using Characters::String;
 
     class RequiredComponentMissingException : public StringException {
@@ -28,6 +29,7 @@ namespace Stroika::Foundation::Execution {
     public:
         wstring fComponent;
     };
+
 }
 
 #endif /*_Stroika_Foundation_Execution_RequiredComponentMissingException_h_*/

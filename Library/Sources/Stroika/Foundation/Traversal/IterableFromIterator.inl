@@ -145,4 +145,5 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Traversal_IterableFromIterator_inl_ */

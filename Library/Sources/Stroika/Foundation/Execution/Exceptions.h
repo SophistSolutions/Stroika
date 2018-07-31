@@ -16,6 +16,8 @@
 #include "../Debug/Trace.h"
 
 /**
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
  *  TODO:
  *      @todo   Review new <system_error> stuff
  *              like http://en.cppreference.com/w/cpp/error/error_condition

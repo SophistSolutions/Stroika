@@ -34,4 +34,5 @@ namespace Stroika::Foundation::Debug {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Debug_TimingTrace_inl_*/

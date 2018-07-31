@@ -22,7 +22,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
- *
  *      @todo   ThreadPool::WaitForTask () is a very sloppy inefficient implementation.
  *
  *      @todo   See if I can simplify use of critical sections with Synchronized!!!

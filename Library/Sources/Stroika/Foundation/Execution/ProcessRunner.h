@@ -21,7 +21,6 @@
 
 /**
  *  TODO:
- *
  *      @todo   Cleanup ProcessRunner::CreateRunnable_ () to use more Finally {} based cleanup, instead
  *              of more redundant try/catch style.
  *
@@ -369,6 +368,7 @@ namespace Stroika::Foundation::Execution {
      */
     pid_t DetachedProcessRunner (const String& commandLine);
     pid_t DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args);
+
 }
 
 /*

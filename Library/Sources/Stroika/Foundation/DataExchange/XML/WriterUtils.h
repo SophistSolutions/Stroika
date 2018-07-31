@@ -17,15 +17,14 @@
 #include "Common.h"
 
 /*
-* TODO:
-*
-*       @todo   Short term- convert to using only Stroika string class (but make easy to still leverage from HF -
-*               think this out carefully befor change)
-*
-*       @todo   Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
-*               Maybe add optional params for some types (control enums).
-*               Support dates, and VariantValue, and optional, etc...
-*/
+ * TODO:
+ *       @todo   Short term- convert to using only Stroika string class (but make easy to still leverage from HF -
+ *               think this out carefully befor change)
+ *
+ *       @todo   Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
+ *               Maybe add optional params for some types (control enums).
+ *               Support dates, and VariantValue, and optional, etc...
+ */
 
 namespace Stroika::Foundation::DataExchange::XML {
 
@@ -79,6 +78,7 @@ namespace Stroika::Foundation::DataExchange::XML {
     string Format4XML (bool v);
     //string    Format4XML (Time::Date v);      NYI
     //string    Format4XML (Time::DateTime v);
+
 }
 
 /*

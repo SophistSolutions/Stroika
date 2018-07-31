@@ -376,7 +376,7 @@ namespace Stroika::Foundation::Traversal {
 
     /*
      ********************************************************************************
-     *********************************** operator+ **********************************
+     *************************** Range<T,TRAITS> Operators **************************
      ********************************************************************************
      */
     template <typename T, typename TRAITS>
@@ -385,33 +385,18 @@ namespace Stroika::Foundation::Traversal {
         return lhs.Union (rhs);
     }
 
-    /*
-     ********************************************************************************
-     *********************************** operator^ **********************************
-     ********************************************************************************
-     */
     template <typename T, typename TRAITS>
     inline Range<T, TRAITS> operator^ (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Intersection (rhs);
     }
 
-    /*
-     ********************************************************************************
-     ********************************** operator== **********************************
-     ********************************************************************************
-     */
     template <typename T, typename TRAITS>
     inline bool operator== (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
         return lhs.Equals (rhs);
     }
 
-    /*
-     ********************************************************************************
-     ********************************** operator!= **********************************
-     ********************************************************************************
-     */
     template <typename T, typename TRAITS>
     inline bool operator!= (const Range<T, TRAITS>& lhs, const Range<T, TRAITS>& rhs)
     {
@@ -435,4 +420,5 @@ namespace Stroika::Foundation::Configuration {
         }
     };
 }
+
 #endif /* _Stroika_Foundation_Traversal_Range_inl_ */

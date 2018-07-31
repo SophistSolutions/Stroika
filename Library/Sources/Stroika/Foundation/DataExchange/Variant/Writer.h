@@ -15,6 +15,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
  *  \em Design Note:
  *      One question was whether or not to natively include support for istream sources or not.
  *      Its easy todo if not supported, by just using BinaryInputStreamFromIStreamAdapter. However,
@@ -101,6 +103,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         virtual void           Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)          = 0;
         virtual void           Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out) = 0;
     };
+
 }
 
 /*

@@ -9,10 +9,10 @@
 namespace Stroika::Foundation::Traversal {
 
     /*
-        ********************************************************************************
-        ************* DisjointDiscreteRange<T, RANGE_TYPE>::FindHints ******************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************* DisjointDiscreteRange<T, RANGE_TYPE>::FindHints ******************
+     ********************************************************************************
+     */
     template <typename T, typename RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::FindHints::FindHints (value_type seedPosition, bool forwardFirst)
         : fSeedPosition (seedPosition)
@@ -21,10 +21,10 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /*
-        ********************************************************************************
-        ********************* DisjointDiscreteRange<T, RANGE_TYPE> *********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* DisjointDiscreteRange<T, RANGE_TYPE> *********************
+     ********************************************************************************
+     */
     template <typename T, typename RANGE_TYPE>
     inline DisjointDiscreteRange<T, RANGE_TYPE>::DisjointDiscreteRange (const RangeType& from)
         : inherited (from)
@@ -312,4 +312,5 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Traversal_DisjointDiscreteRange_inl_ */

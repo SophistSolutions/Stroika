@@ -18,10 +18,10 @@
 namespace Stroika::Foundation::Traversal {
 
     /*
-        ********************************************************************************
-        ********************************* IterableBase *********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************* IterableBase *********************************
+     ********************************************************************************
+     */
     template <typename SHARED_T, typename... ARGS_TYPE>
     inline auto IterableBase::MakeSharedPtr (ARGS_TYPE&&... args) -> SharedPtrImplementationTemplate<SHARED_T>
     {
@@ -34,10 +34,10 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /*
-        ********************************************************************************
-        *************************** Iterable<T>::_IRep *********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *************************** Iterable<T>::_IRep *********************************
+     ********************************************************************************
+     */
     template <typename T>
     inline bool Iterable<T>::_IRep::_IsEmpty () const
     {
@@ -64,10 +64,10 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /*
-        ********************************************************************************
-        ******************* Iterable<T>::_SafeReadRepAccessor **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************* Iterable<T>::_SafeReadRepAccessor **************************
+     ********************************************************************************
+     */
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadRepAccessor<REP_SUB_TYPE>::_SafeReadRepAccessor (const Iterable<T>* it) noexcept
@@ -129,10 +129,10 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /*
-        ********************************************************************************
-        ************* Iterable<CONTAINER_OF_T, T>::_SafeReadWriteRepAccessor ***********
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************* Iterable<CONTAINER_OF_T, T>::_SafeReadWriteRepAccessor ***********
+     ********************************************************************************
+     */
     template <typename T>
     template <typename REP_SUB_TYPE>
     inline Iterable<T>::_SafeReadWriteRepAccessor<REP_SUB_TYPE>::_SafeReadWriteRepAccessor (Iterable<T>* iterableEnvelope)
@@ -178,10 +178,10 @@ namespace Stroika::Foundation::Traversal {
     }
 
     /*
-        ********************************************************************************
-        ********************************** Iterable<T> *********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** Iterable<T> *********************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Iterable<T>::Iterable (const _IterableRepSharedPtr& rep) noexcept
         : _fRep (rep)
@@ -292,9 +292,9 @@ namespace Stroika::Foundation::Traversal {
     bool Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs, const EQUALS_COMPARER& equalsComparer) const
     {
         /*
-            *  An extremely in-efficient but space-constant implementation. N^2 and check
-            *  a contains b and b contains a
-            */
+         *  An extremely in-efficient but space-constant implementation. N^2 and check
+         *  a contains b and b contains a
+         */
         for (auto ti : *this) {
             bool contained = false;
             for (auto ri : rhs) {
@@ -786,4 +786,5 @@ namespace Stroika::Foundation::Traversal {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Traversal_Iterable_inl_ */

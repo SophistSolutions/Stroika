@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Debug {
 #endif
     };
 
-/**
+    /**
      * \def Stroika_Foundation_Debug_OptionalizeTraceArgs
      *
      *   This is meant to be used with the 2+ argument Debug::TraceContextBumper constructor, to optionally suppress side-effects
@@ -240,7 +240,7 @@ namespace Stroika::Foundation::Debug {
 #define Stroika_Foundation_Debug_OptionalizeTraceArgs(...)
 #endif
 
-/**
+    /**
      * \def DbgTrace
      *
      *   This function either does NOTHING (trying to not even evaluate its arguments)

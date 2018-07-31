@@ -54,7 +54,9 @@ namespace Stroika::Foundation::Execution {
             return fType_ < rhs.fType_;
         }
     }
+
 }
+
 namespace Stroika::Foundation::Configuration {
     template <>
     struct DefaultNames<Execution::SignalHandler::Type> : EnumNames<Execution::SignalHandler::Type> {
@@ -70,4 +72,5 @@ namespace Stroika::Foundation::Configuration {
         }
     };
 }
+
 #endif /*_Stroika_Foundation_Execution_SignalHandlers_inl_*/

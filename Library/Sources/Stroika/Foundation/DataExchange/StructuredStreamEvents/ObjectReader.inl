@@ -934,5 +934,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
         return MakeCommonReader_ (n, forward<ARGS> (args)...);
         DISABLE_COMPILER_MSC_WARNING_END (6011)
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_StructuredStreamEvents_ObjectReader_inl_*/

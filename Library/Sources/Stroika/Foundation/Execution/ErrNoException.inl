@@ -92,6 +92,7 @@ namespace Stroika::Foundation::Execution {
             errno_ErrorException::Throw (e);
         }
     }
+
 }
 
 #endif /*_Stroia_Foundation_Execution_ErrNoException_inl_*/

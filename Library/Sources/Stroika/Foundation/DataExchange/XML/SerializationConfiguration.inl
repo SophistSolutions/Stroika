@@ -34,5 +34,7 @@ namespace Stroika::Foundation::DataExchange::XML {
         Require (not n.has_value () or not(*n).empty ()); // should validate legit xml elt name
         fArrayElementName_ = n.has_value () ? *n : String ();
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_XML_SerializationConfiguration_inl_*/

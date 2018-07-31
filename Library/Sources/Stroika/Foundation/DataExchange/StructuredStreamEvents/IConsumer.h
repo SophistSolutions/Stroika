@@ -14,7 +14,7 @@
 /**
  *  \file
  *
- * TODO:
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  */
 
@@ -82,6 +82,7 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents {
          */
         virtual void TextInsideElement (const String& text);
     };
+
 }
 
 /*

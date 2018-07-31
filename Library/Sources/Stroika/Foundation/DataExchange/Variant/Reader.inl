@@ -52,5 +52,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         EnsureNotNull (fRep_.get ());
         return *fRep_;
     }
+
 }
+
 #endif /*_Stroika_Foundation_DataExchange_Variant_Reader_inl_*/

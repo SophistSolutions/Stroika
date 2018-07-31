@@ -29,7 +29,6 @@ namespace Stroika::Foundation::IO {
 }
 
 namespace Stroika::Foundation::Configuration {
-
     template <>
     struct DefaultNames<IO::FileAccessMode> : EnumNames<IO::FileAccessMode> {
         static constexpr EnumNames<IO::FileAccessMode> k{
@@ -45,7 +44,6 @@ namespace Stroika::Foundation::Configuration {
         {
         }
     };
-
 }
 
 #endif /*_Stroika_Foundation_IO_FileAccessMode_inl_*/
