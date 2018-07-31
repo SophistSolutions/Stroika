@@ -15,6 +15,7 @@
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
+ *  TODO:
  *      @todo   FLESH OUT HIGHLY EXPERIEMNTAL AND INCOMPLETE SHARED_IMPL_COPIER (HOPEFULLY WILL BE PART OF
  *              ENVELOPE THREAD SAFETY FIX). AND DOCUMENT!!!!
  *
@@ -38,17 +39,6 @@
  */
 
 namespace Stroika::Foundation::Memory {
-
-    /**
-     *  EXPERIMENTAL -- LGP 2014-03-23 (v2.0a22x)
-     *
-     *  Turn back OFF (at least to experiment) - 2015-06-21 (v2.0a95). High overhead and we want to just require
-     *  this for code that use Synchronized<> now. Note - according to C++ spec, perfrectly OK to ahve two
-     *  readers read from the same shared_ptr<> unsynchronized.
-     */
-#ifndef qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
-#define qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ 0
-#endif
 
     /**
      *  \brief  SharedByValue_CopyByFunction is used a template parameter for copying SharedByValue
@@ -102,13 +92,8 @@ namespace Stroika::Foundation::Memory {
 
     /**
      */
-#if qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_
-    template <typename T, typename SHARED_IMLP>
-    using SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>;
-#else
     template <typename T, typename SHARED_IMLP>
     using SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
-#endif
 
     /**
      *  \brief  SharedByValue_Traits is a utilitity struct to provide parameterized support
@@ -148,8 +133,6 @@ namespace Stroika::Foundation::Memory {
      *  This class template was originally called CopyOnWrite.
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
-     *
-     *          (since qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ turned off - 2015-06-21 (v2.0a95))
      */
     template <typename TRAITS>
     class SharedByValue {
