@@ -13,4 +13,5 @@
 
 namespace Stroika::Frameworks::SystemPerformance {
 }
+
 #endif /*_Stroika_Frameworks_SystemPerformance_Capturer_inl_*/

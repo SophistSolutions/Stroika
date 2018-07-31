@@ -12,10 +12,10 @@
 namespace Stroika::Frameworks::WebServer {
 
     /*
-        ********************************************************************************
-        ******************************** ConnectionManager *****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** ConnectionManager *****************************
+     ********************************************************************************
+     */
     inline optional<String> ConnectionManager::GetServerHeader () const
     {
         return fServerHeader_;
@@ -58,4 +58,5 @@ namespace Stroika::Frameworks::WebServer {
     }
 
 }
+
 #endif /*_Stroika_Frameworks_WebServer_ConnectionManager_inl_*/

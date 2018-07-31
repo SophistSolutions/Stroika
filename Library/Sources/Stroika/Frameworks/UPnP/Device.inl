@@ -12,4 +12,5 @@
 
 namespace Stroika::Frameworks::UPnP {
 }
+
 #endif /*_Stroika_Frameworks_UPnP_Device_inl_*/

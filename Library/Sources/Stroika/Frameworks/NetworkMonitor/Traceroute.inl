@@ -10,10 +10,7 @@
  ********************************************************************************
  */
 
-namespace Stroika::Frameworks {
-    namespace NetworkMonitor {
-        namespace Traceroute {
-        }
-    }
+namespace Stroika::Frameworks::NetworkMonitor::Traceroute {
 }
+
 #endif /*_Stroika_Frameworks_NetworkMonitor_Traceroute_inl_*/

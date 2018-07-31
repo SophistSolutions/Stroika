@@ -95,5 +95,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
     {
     }
 #endif
+
 }
+
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_DerivedKey_inl_*/

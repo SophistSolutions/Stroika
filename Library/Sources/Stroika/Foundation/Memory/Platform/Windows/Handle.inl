@@ -41,4 +41,5 @@ namespace Stroika::Foundation::Memory::Platform::Windows {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Memory_OS_Win32_Handle_inl_*/

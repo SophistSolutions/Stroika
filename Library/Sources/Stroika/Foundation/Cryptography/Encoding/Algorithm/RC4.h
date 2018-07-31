@@ -49,6 +49,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
      */
     Streams::OutputStream<Memory::Byte>::Ptr RC4Encoder (const Memory::BLOB& key, const Streams::OutputStream<Memory::Byte>::Ptr& out);
 #endif
+
 }
 
 /*

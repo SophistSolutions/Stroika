@@ -333,4 +333,5 @@ namespace Stroika::Foundation::Streams {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_SharedMemoryStream_inl_*/

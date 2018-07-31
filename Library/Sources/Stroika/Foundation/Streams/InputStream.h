@@ -559,8 +559,8 @@ namespace Stroika::Foundation::Streams {
 
     public:
         /*
-            *  \req IsSeekable ()
-            */
+         *  \req IsSeekable ()
+         */
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) = 0;
 
     public:

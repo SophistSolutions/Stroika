@@ -170,6 +170,7 @@ namespace Stroika::Frameworks {
             SampleResults Sample (const InternetAddress& addr, const SampleOptions& sampleOptions = {}, const Options& options = {});
         }
     }
+
 }
 
 /*

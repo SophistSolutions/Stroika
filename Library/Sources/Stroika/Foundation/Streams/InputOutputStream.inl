@@ -13,10 +13,10 @@
 namespace Stroika::Foundation::Streams {
 
     /*
-        ********************************************************************************
-        **************** InputStInputOutputStreamream<ELEMENT_TYPE> ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     **************** InputStInputOutputStreamream<ELEMENT_TYPE> ********************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     inline auto InputOutputStream<ELEMENT_TYPE>::_mkPtr (const _SharedIRep& s) -> Ptr
     {
@@ -24,10 +24,10 @@ namespace Stroika::Foundation::Streams {
     }
 
     /*
-        ********************************************************************************
-        ***************** InputOutputStream<ELEMENT_TYPE>::Ptr *************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************** InputOutputStream<ELEMENT_TYPE>::Ptr *************************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     inline InputOutputStream<ELEMENT_TYPE>::Ptr::Ptr (const _SharedIRep& rep)
         : InputStream<ELEMENT_TYPE>::Ptr (rep)
@@ -153,4 +153,5 @@ namespace Stroika::Foundation::Streams {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_InputOutputStream_inl_*/

@@ -15,10 +15,10 @@
 namespace Stroika::Foundation::Streams {
 
     /*
-        ********************************************************************************
-        ******************** Streams::SplitterOutputStream::Rep_ ***********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** Streams::SplitterOutputStream::Rep_ ***********************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     class SplitterOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
     public:
@@ -84,10 +84,10 @@ namespace Stroika::Foundation::Streams {
     };
 
     /*
-        ********************************************************************************
-        ************************* Streams::SplitterOutputStream ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* Streams::SplitterOutputStream ************************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     inline auto SplitterOutputStream<ELEMENT_TYPE>::New (const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut1, const typename OutputStream<ELEMENT_TYPE>::Ptr& realOut2) -> Ptr
     {
@@ -108,4 +108,5 @@ namespace Stroika::Foundation::Streams {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_SplitterOutputStream_inl_*/

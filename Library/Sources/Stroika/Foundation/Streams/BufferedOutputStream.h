@@ -18,6 +18,7 @@
  *
  *  \version    <a href="Code-Status.md#Alpha-Late">Alpha-Late</a>
  *
+ *  TODO:
  *      @todo   Properly handle seekability based on underlying stream seekability, and/or param/flag on construction (we can always make it seekable by buffering).
  *
  *              BufferedOutputStream NOW must properly support SEEKABLE! if arg

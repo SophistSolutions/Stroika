@@ -100,9 +100,6 @@ static HRESULT UnRegisterCLSIDInCategory (REFCLSID clsid, CATID catid)
  ********************************************************************************
  */
 #include <atlbase.h>
-#if _MSC_VER < _MSVC70_VER_
-#include <atlimpl.cpp>
-#endif
 
 namespace {
     class ActiveLedItModule : public CAtlMfcModule { /*CAtlDllModuleT <ActiveLedItModule>*/

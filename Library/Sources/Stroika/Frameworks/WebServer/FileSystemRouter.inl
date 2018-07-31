@@ -12,4 +12,5 @@
 
 namespace Stroika::Frameworks::WebServer {
 }
+
 #endif /*_Stroika_Frameworks_WebServer_FileSystemRouter_inl_*/

@@ -23,4 +23,5 @@ namespace Stroika::Foundation::Cryptography::Encoding {
 #endif
 
 }
+
 #endif /*_Stroika_Foundation_Cryptography_OpenSSLCryptoStream_inl_*/

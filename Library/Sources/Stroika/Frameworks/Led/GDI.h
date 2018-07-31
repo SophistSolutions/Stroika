@@ -4896,7 +4896,7 @@ namespace Stroika::Frameworks::Led {
 // This is OK because sThe is set in the Led_IME::CTOR
 #pragma warning(suppress : 6011)
 #endif
-        return (*sThe);
+        return *sThe;
     }
     inline void Led_IME::Enable ()
     {

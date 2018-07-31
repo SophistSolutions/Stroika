@@ -10,4 +10,5 @@
  */
 namespace Stroika::Foundation::Cryptography::Digest {
 }
+
 #endif /*_Stroika_Foundation_Cryptography_Digest_Jenkins_inl_*/

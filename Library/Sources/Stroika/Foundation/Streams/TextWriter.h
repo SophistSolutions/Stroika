@@ -13,7 +13,6 @@
  *  \file
  *
  *  TODO:
- *
  *      @todo   Sterl comments:
  *          class   TextOutputStreamBinaryAdapter : public TextOutputStream {
  *          public:

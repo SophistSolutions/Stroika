@@ -53,8 +53,8 @@ namespace Stroika::Frameworks::WebServer {
     using Memory::Byte;
 
     /*
-        * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
-        */
+     * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
+     */
     class Response : private Debug::AssertExternallySynchronizedLock {
     public:
         Response ()                = delete;
@@ -71,28 +71,28 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /*
-            * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
-            * with the characterset appended.
-            *
-            * SetContentType () requires GetState () == eInProgress
-            */
+         * Note - this refers to an HTTP "Content-Type" - which is really potentially more than just a InternetMediaType, often
+         * with the characterset appended.
+         *
+         * SetContentType () requires GetState () == eInProgress
+         */
         nonvirtual InternetMediaType GetContentType () const;
         nonvirtual void              SetContentType (const InternetMediaType& contentType);
 
     public:
         /*
-            * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
-            * For ContentTypes
-            *      o   text/*
-            *      o   application/json
-            *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
-            *          "text/html; charset=UTF-8"
-            *
-            * SetCodePage ()
-            *      REQUIRES:
-            *          GetState () == eInProgress
-            *          TotalBytesWritten == 0
-            */
+         * Note - the code page is only applied to string/text conversions and content-types which are know text-based content types.
+         * For ContentTypes
+         *      o   text/*
+         *      o   application/json
+         *  and any other content type that returns true to InternetMediaType::IsTextFormat () the codepage is added to the content-type as in:
+         *          "text/html; charset=UTF-8"
+         *
+         * SetCodePage ()
+         *      REQUIRES:
+         *          GetState () == eInProgress
+         *          TotalBytesWritten == 0
+         */
         nonvirtual Characters::CodePage GetCodePage () const;
         nonvirtual void                 SetCodePage (Characters::CodePage codePage);
 
@@ -116,11 +116,11 @@ namespace Stroika::Frameworks::WebServer {
         };
         nonvirtual ContentSizePolicy GetContentSizePolicy () const;
         /*
-            * The 1 arg overload requires csp == NONE or AutoCompute. The 2-arg variant requires
-            * its argument is Exact_CSP.
-            *
-            * Also - SetContentSizePolicy () requires GetState () == eInProgress
-            */
+         * The 1 arg overload requires csp == NONE or AutoCompute. The 2-arg variant requires
+         * its argument is Exact_CSP.
+         *
+         * Also - SetContentSizePolicy () requires GetState () == eInProgress
+         */
         nonvirtual void SetContentSizePolicy (ContentSizePolicy csp);
         nonvirtual void SetContentSizePolicy (ContentSizePolicy csp, uint64_t size);
 
@@ -202,36 +202,38 @@ namespace Stroika::Frameworks::WebServer {
 
     public:
         /*
-            * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
-            */
+         * The Default Status is 200 IO::Network::HTTP::StatusCodes::kOK.
+         */
         nonvirtual Status GetStatus () const;
+
+    public:
         /*
-            * It is only legal to call SetStatus with state == eInProgress.
-            *
-            * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
-            * be automatically generated based on the status.
-            */
+         * It is only legal to call SetStatus with state == eInProgress.
+         *
+         * The overrideReason - if specified (not empty) will be used associated with the given status in the HTTP response, and otherwise one will
+         * be automatically generated based on the status.
+         */
         nonvirtual void SetStatus (Status newStatus, const String& overrideReason = wstring ());
 
     public:
         /*
-            *  Add the given 'non-special' header to the list of headers to be associated with this reponse.
-            *  Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
-            *  that cannot be specified here include:
-            *      o   IO::Network::HTTP::HeaderName::kContentLength
-            *
-            * It is legal to call anytime before FLush. Illegal to call after flush. 
-            * It is legal to call to replace existing headers values.
-            */
+         *  Add the given 'non-special' header to the list of headers to be associated with this reponse.
+         *  Certain SPECIAL headers are handled differently, via other attributes of the request. The special headers
+         *  that cannot be specified here include:
+         *      o   IO::Network::HTTP::HeaderName::kContentLength
+         *
+         * It is legal to call anytime before FLush. Illegal to call after flush. 
+         * It is legal to call to replace existing headers values.
+         */
         nonvirtual void AddHeader (const String& headerName, const String& value);
 
     public:
         /*
-            *  For headers whose value is a comma separated list (e.g. HTTP::HeaderName::kAccessControlAllowHeaders), 
-            *  append the given value, taking care of commas as needed.
-            *
-            *  Get the given header, and if non-empty, append ",". Either way append value, and then set the header named by 'headerName' to the resulting value.
-            */
+         *  For headers whose value is a comma separated list (e.g. HTTP::HeaderName::kAccessControlAllowHeaders), 
+         *  append the given value, taking care of commas as needed.
+         *
+         *  Get the given header, and if non-empty, append ",". Either way append value, and then set the header named by 'headerName' to the resulting value.
+         */
         nonvirtual void AppendToCommaSeperatedHeader (const String& headerName, const String& value);
 
     public:

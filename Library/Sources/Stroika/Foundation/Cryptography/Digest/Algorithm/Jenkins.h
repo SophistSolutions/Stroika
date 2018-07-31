@@ -44,6 +44,7 @@ namespace Stroika::Foundation::Cryptography::Digest {
         static ReturnType ComputeDigest (const Byte* from, const Byte* to);
         static ReturnType ComputeDigest (const BLOB& from);
     };
+
 }
 
 /*

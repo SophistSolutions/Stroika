@@ -15,10 +15,10 @@
 namespace Stroika::Foundation ::Streams {
 
     /*
-        ********************************************************************************
-        ************************ Streams::BufferedOutputStream *************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************ Streams::BufferedOutputStream *************************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     class BufferedOutputStream<ELEMENT_TYPE>::Rep_ : public OutputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
         static const size_t kMinBufSize_     = 1 * 1024;

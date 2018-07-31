@@ -10,4 +10,5 @@
  */
 namespace Stroika::Foundation::Cryptography::OpenSSL {
 }
+
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_Exception_inl_*/

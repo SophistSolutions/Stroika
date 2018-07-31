@@ -15,12 +15,6 @@
 
 static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC_WordProcessor code requires the ATLMFC feature to be set true");
 
-#if _MSC_VER == 1200
-//A bit of a hack for MSVC60, cuz this needs to be done before including <set> - otherwise we get
-// lots of needless warnigns - regardless of what is done later -- LGP 980925
-#pragma warning(4 : 4786)
-#endif
-
 #include <afxole.h>
 #include <afxwin.h>
 #include <oleidl.h>
@@ -31,16 +25,17 @@ static_assert (qHasFeature_ATLMFC, "Error: Stroika::Framework::Led::Platform MFC
 #include "../WordProcessor.h"
 #include "MFC.h"
 
+namespace Stroika::Frameworks::Led::Platform {
+
+    /*
+ **************** MFC/WordProcessor specific Configuration variables **************
+ */
+
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// silence inherits 'Stroika::Frameworks::Led::WordProcessor::Stroika::Frameworks::Led::WordProcessor::HookLosingTextStore' via dominance
 #pragma warning(push)
 #pragma warning(disable : 4250)
 #endif
-
-namespace Stroika::Frameworks::Led::Platform {
-
-/*
-        **************** MFC/WordProcessor specific Configuration variables **************
-        */
 
 /*
     @CONFIGVAR:     qSupportOLEControlEmbedding
@@ -287,6 +282,7 @@ namespace Stroika::Frameworks::Led::Platform {
         using TheBaseClass = BASECLASS;
 
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
+// warning C4407: cast between different pointer to member representations, compiler may generate incorrect code
 #pragma warning(push)
 #pragma warning(disable : 4407) // Not sure this is safe to ignore but I think it is due to qMFCRequiresCWndLeftmostBaseClass
 #endif
@@ -369,11 +365,10 @@ namespace Stroika::Frameworks::Led::Platform {
         return sDoc;
     }
 #endif
-
-}
-
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(pop)
 #endif
+
+}
 
 #endif /*_Stroika_Frameworks_Led_Platform_MFC_WordProcessor_h_*/

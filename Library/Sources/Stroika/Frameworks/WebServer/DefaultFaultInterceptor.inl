@@ -12,4 +12,5 @@
 
 namespace Stroika::Frameworks::WebServer {
 }
+
 #endif /*_Stroika_Frameworks_WebServer_DefaultFaultInterceptor_inl_*/

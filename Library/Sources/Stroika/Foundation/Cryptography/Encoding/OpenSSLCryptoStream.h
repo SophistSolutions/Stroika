@@ -172,6 +172,7 @@ namespace Stroika::Foundation::Cryptography::Encoding {
         using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
     };
 #endif
+
 }
 
 /*

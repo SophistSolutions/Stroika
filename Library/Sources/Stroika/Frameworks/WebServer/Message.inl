@@ -14,10 +14,10 @@
 namespace Stroika::Frameworks::WebServer {
 
     /*
-        ********************************************************************************
-        ******************************** WebServer::Message ****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** WebServer::Message ****************************
+     ********************************************************************************
+     */
     inline Message::Message (Request&& request, Response&& response, const optional<IO::Network::SocketAddress>& peerAddress)
         : fPeerAddress_ (peerAddress)
         , fRequest_ (move (request))
@@ -99,4 +99,5 @@ namespace Stroika::Frameworks::WebServer {
     }
 
 }
+
 #endif /*_Stroika_Frameworks_WebServer_Message_inl_*/

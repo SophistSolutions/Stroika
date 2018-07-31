@@ -139,4 +139,5 @@ namespace Stroika::Foundation::Streams::iostream {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_iostream_OutputStreamFromStdOStream_inl_*/

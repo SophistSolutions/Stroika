@@ -15,10 +15,10 @@
 namespace Stroika::Foundation::Streams {
 
     /*
-        ********************************************************************************
-        ************** Streams::ExternallyOwnedMemoryInputStream::Rep_ *****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** Streams::ExternallyOwnedMemoryInputStream::Rep_ *****************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     class ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
     public:
@@ -129,10 +129,10 @@ namespace Stroika::Foundation::Streams {
     };
 
     /*
-        ********************************************************************************
-        ********** Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> *************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********** Streams::ExternallyOwnedMemoryInputStream<ELEMENT_TYPE> *************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE>
     inline auto ExternallyOwnedMemoryInputStream<ELEMENT_TYPE>::New (const ELEMENT_TYPE* start, const ELEMENT_TYPE* end) -> Ptr
     {

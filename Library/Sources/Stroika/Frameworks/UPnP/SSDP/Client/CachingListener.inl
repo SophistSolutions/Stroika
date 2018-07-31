@@ -11,4 +11,5 @@
  */
 namespace Stroika::Frameworks::UPnP::SSDP::Client {
 }
+
 #endif /*_Stroika_Frameworks_UPnP_SSDP_Client_CachingListener_inl_*/

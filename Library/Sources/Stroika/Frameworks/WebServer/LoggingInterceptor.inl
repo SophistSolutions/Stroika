@@ -25,4 +25,5 @@ namespace Stroika::Frameworks::WebServer {
     }
 
 }
+
 #endif /*_Stroika_Frameworks_WebServer_LoggingInterceptor_inl_*/

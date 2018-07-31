@@ -38,6 +38,7 @@ namespace Stroika::Foundation::Streams::iostream {
      */
     ofstream& OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
     ofstream& OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
+
 }
 
 #endif /*_Stroika_Foundation_Streams_iostream_FStreamSupport_h_*/

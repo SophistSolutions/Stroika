@@ -79,6 +79,7 @@ namespace Stroika::Foundation::Cryptography::Encoding::Algorithm {
      */
     Streams::OutputStream<Memory::Byte>::Ptr AESEncoder (const OpenSSL::DerivedKey& key, const Streams::OutputStream<Memory::Byte>::Ptr& out, AESOptions options = AESOptions::eDEFAULT);
 #endif
+
 }
 
 /*

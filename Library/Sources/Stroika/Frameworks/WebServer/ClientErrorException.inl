@@ -30,4 +30,5 @@ namespace Stroika::Frameworks::WebServer {
     }
 
 }
+
 #endif /*_Stroika_Frameworks_WebServer_ClientErrorException_inl_*/

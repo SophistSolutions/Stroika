@@ -25,4 +25,5 @@ namespace Stroika::Foundation::Streams::iostream {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_iostream_SerializeItemToBLOB_inl_*/

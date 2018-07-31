@@ -67,6 +67,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
         InternalErrorCodeType fErrorCode_;
     };
 #endif
+
 }
 
 /*

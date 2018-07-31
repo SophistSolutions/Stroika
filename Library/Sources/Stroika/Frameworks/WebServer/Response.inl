@@ -9,15 +9,14 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-//#include "../../Foundation/Containers/Common.h"
 
 namespace Stroika::Frameworks::WebServer {
 
     /*
-        ********************************************************************************
-        ********************* Framework::WebServer::Response ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* Framework::WebServer::Response ***************************
+     ********************************************************************************
+     */
     inline Response::State Response::GetState () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
@@ -111,4 +110,5 @@ namespace Stroika::Foundation::Configuration {
         }
     };
 }
+
 #endif /*_Stroika_Frameworks_WebServer_Response_inl_*/

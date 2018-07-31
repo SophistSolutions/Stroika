@@ -19,10 +19,10 @@
 namespace Stroika::Foundation::Streams::iostream {
 
     /*
-        ********************************************************************************
-        **************** InputStreamFromStdIStream<ELEMENT_TYPE>::Rep_ *****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     **************** InputStreamFromStdIStream<ELEMENT_TYPE>::Rep_ *****************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE, typename TRAITS>
     class InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Rep_ : public InputStream<ELEMENT_TYPE>::_IRep, private Debug::AssertExternallySynchronizedLock {
     private:
@@ -132,10 +132,10 @@ namespace Stroika::Foundation::Streams::iostream {
     };
 
     /*
-        ********************************************************************************
-        ********************* InputStreamFromStdIStream<ELEMENT_TYPE> ******************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* InputStreamFromStdIStream<ELEMENT_TYPE> ******************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE, typename TRAITS>
     inline auto InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::New (IStreamType& originalStream) -> Ptr
     {
@@ -174,10 +174,10 @@ namespace Stroika::Foundation::Streams::iostream {
     }
 
     /*
-        ********************************************************************************
-        *********** InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr ***************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********** InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr ***************
+     ********************************************************************************
+     */
     template <typename ELEMENT_TYPE, typename TRAITS>
     inline InputStreamFromStdIStream<ELEMENT_TYPE, TRAITS>::Ptr::Ptr (const shared_ptr<Rep_>& from)
         : inherited (from)
@@ -185,4 +185,5 @@ namespace Stroika::Foundation::Streams::iostream {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_iostream_InputStreamFromStdIStream_inl_*/

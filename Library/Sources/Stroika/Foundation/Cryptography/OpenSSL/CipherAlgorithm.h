@@ -75,6 +75,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      */
     const EVP_CIPHER* Convert2OpenSSL (CipherAlgorithm hashAlg);
 #endif
+
 }
 
 /*

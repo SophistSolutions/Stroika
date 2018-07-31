@@ -11,4 +11,5 @@
  */
 namespace Stroika::Frameworks::SystemPerformance {
 }
+
 #endif /*_Stroika_Frameworks_SystemPerformance_Measurement_inl_*/

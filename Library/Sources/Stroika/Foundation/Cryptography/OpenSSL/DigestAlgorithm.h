@@ -50,6 +50,7 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
      */
     const EVP_MD* Convert2OpenSSL (DigestAlgorithm digestAlgorithm);
 #endif
+
 }
 
 /*
@@ -78,4 +79,5 @@ namespace Stroika::Foundation::Configuration {
     };
 }
 #endif
+
 #endif /*_Stroika_Foundation_Cryptography_OpenSSL_DigestAlgorithm_h_*/

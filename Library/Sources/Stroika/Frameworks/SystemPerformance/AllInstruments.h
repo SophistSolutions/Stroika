@@ -22,6 +22,7 @@ namespace Stroika::Frameworks::SystemPerformance {
      *
      */
     Set<Instrument> GetAllInstruments ();
+
 }
 
 /*

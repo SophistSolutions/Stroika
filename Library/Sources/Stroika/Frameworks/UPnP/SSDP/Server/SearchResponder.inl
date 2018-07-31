@@ -11,4 +11,5 @@
  */
 namespace Stroika::Frameworks::UPnP::SSDP::Server {
 }
+
 #endif /*_Stroika_Frameworks_UPnP_SSDP_Server_SearchResponder_inl_*/

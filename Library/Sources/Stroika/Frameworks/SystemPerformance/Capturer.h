@@ -18,7 +18,6 @@
 
 /*
  * TODO:
- *
  *      @todo   Somehow make captrueset comparable, so that we can use it as a KEY with mreasumrnes
  *              and then store latest for each captureset.
  *

@@ -83,4 +83,5 @@ namespace Stroika::Foundation::Streams {
     }
 
 }
+
 #endif /*_Stroika_Foundation_Streams_InternallySyncrhonizedOutputStream_inl_*/
