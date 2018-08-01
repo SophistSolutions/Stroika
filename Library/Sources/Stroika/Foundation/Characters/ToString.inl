@@ -143,6 +143,13 @@ namespace Stroika {
                 {
                     return (pt == nullptr) ? L"nullptr" : ToString (*pt);
                 }
+#if qCompilerAndStdLib_Supports_stdoptional || qCompilerAndStdLib_Supports_stdexperimentaloptional
+                template <typename T>
+                inline String ToString_ (const optional<T>& o)
+                {
+                    return o.has_value () ? Characters::ToString (*o) : L"[missing]";
+                }
+#endif
             }
 
             template <typename T>

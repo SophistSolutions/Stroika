@@ -479,6 +479,17 @@ namespace Stroika {
                 template <typename RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, typename SFINAE_SAFE_CONVERTIBLE = typename std::enable_if<Configuration::is_explicitly_convertible<RHS_CONVERTIBLE_TO_OPTIONAL_OF_T, T>::value>::type>
                 static Optional<T, TRAITS> OptionalFromNullable (const RHS_CONVERTIBLE_TO_OPTIONAL_OF_T* from);
 
+#if qCompilerAndStdLib_Supports_stdoptional || qCompilerAndStdLib_Supports_stdexperimentaloptional
+            public:
+                // see if we can do this without getting in troublke with ambiguity - it will help make transiation to using optional in
+                // Stroika APIs easier.
+                template <typename T1>
+                /*explicit*/ operator optional<T1> () const
+                {
+                    return has_value () ? value () : optional<T1>{};
+                }
+#endif
+
             public:
                 /**
                  *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
