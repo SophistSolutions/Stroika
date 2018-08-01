@@ -205,7 +205,7 @@ namespace Stroika::Foundation::Execution {
 
     public:
         /**
-         *  \breif Run the given external command/process (set by constructor) - with the given arguments, and block until that completes and return the results
+         *  \brief Run the given external command/process (set by constructor) - with the given arguments, and block until that completes and return the results
          *
          *  Run the given external command/process (set by constructor) - with the given arguments, and block until
          *  that completes and return the results.

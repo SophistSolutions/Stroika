@@ -63,7 +63,7 @@ namespace Stroika::Foundation::Math {
      *  SUPER ROUGH DRAFT
      *  \req not empty
      *
-     *  \breif Alias: sd, standard-deviation, stddev
+     *  \brief Alias: sd, standard-deviation, stddev
      */
     template <typename ITERATOR_OF_T, typename RESULT_TYPE = typename iterator_traits<ITERATOR_OF_T>::value_type>
     RESULT_TYPE StandardDeviation (ITERATOR_OF_T start, ITERATOR_OF_T end);

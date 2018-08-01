@@ -156,7 +156,7 @@ namespace Stroika::Frameworks::NetworkMonitor::Ping {
     };
 
     /**
-     *  \breif Send network packets to the argument internet address (govered by sample Options and optins) - and return the sampled results (e.g. averages)
+     *  \brief Send network packets to the argument internet address (govered by sample Options and optins) - and return the sampled results (e.g. averages)
      *
      *  'options' govern how the pinging is done.
      *
