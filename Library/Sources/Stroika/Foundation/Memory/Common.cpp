@@ -9,8 +9,6 @@
 #include <Psapi.h>
 #endif
 
-//#include    <new>
-
 #include "../Debug/Trace.h"
 
 #include "Common.h"
