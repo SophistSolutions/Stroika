@@ -38,6 +38,6 @@ USE_TEST_BASENAME=Windows_VS2k17 \
    * Checkin results:
 
 ~~~
-VER=2.0a231 sh -c \
+VER=2.1d5 sh -c \
     'git add Tests/*TestResults/REGRESSION-TESTS-*-$VER-OUT.txt Tests/*TestResults/PerformanceDump-*-$VER.txt'
 ~~~

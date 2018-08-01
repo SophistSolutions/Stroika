@@ -22,13 +22,16 @@
  *  \version    <a href="Code-Status.md#Pre-Alpha-Maybe">Pre-Alpha-Maybe</a>
  *
  * TODO:
+ *      @todo   See why DEFAULT_CACHE<> template is needed. Issue is LRUCache takes three params. No way to convert to
+ *              a two arg template without introducing new template?
  *
+ *      @todo   Investigate if better arg order for template or instantiation guide might reduce number of explicit 
+ *              args needed for template
  */
 
 namespace Stroika::Foundation::Cache {
 
     namespace MemoizerSupport {
-        // @todo not sure why this is needed
         template <typename T1, typename T2>
         using DEFAULT_CACHE = LRUCache<T1, T2>;
     }
