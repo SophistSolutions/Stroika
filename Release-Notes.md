@@ -22,7 +22,70 @@ History
   
 
 <tr>
-<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d3">v2.1d4</a><br/>2018-07-13</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d5">v2.1d5</a><br/>2018-08-01</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d4...v2.1d5</li>
+		<li>Compile bug workarounds
+			<ul>
+				<li>wrap a couple more uses in qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy</li>
+			</ul>
+		</li>
+		<li>More type traits cleanups
+			<ul>
+				<li>added helper (Configuration::IsIterableOfT_v<> and used in place of Configuraiton::IsIterableOfT<>::value</li>
+				<li>for Configuration::is_iterator<>::value, use Configuration::is_iterator_v<></li>
+				<li>Deprecated function Configuration::Container() and added IsIterable/IsIterable_v as inline constexpr variables, to do basically the same thing and sihckes calls to has_beginend to use IsIterable_v</li>
+			</ul>
+		</li>
+		<li>BlockAllocation
+			<ul>
+				<li>slight refactor of BlockLAllocator code - adding BlockAllocator<T>::AdjustSizeForPool_ ()</li>
+				<li>deprecated AutomaticallyBlockAllocated<T></li>
+				<li>use ManuallyBlockAllocated<T> instead of AutomaticallyBlockAllocated<T> in Optional</li>
+			</ul>
+		</li>
+		<li>Cleanup file formatting - using namespace a::b::c { instead of namespace a { namespace b {namespace c {; 
+		regualrizing spacing around headers and namespaces (space before/after blocks that contain comments and none of they have no function header comments)</li>
+		<li>Documentation</li>
+		<li>Some more constexpr function usage (Math::AtLeast etc)</li>
+		<li>lose qStroika_Foundation_Memory_SharedByValue_DefaultToThreadsafeEnvelope_ define - not compatible with current threading policy - but leave in logic to support localized use of SharedByValue with syncronized load/store (not sure good idea but maybe)</li>
+		<li>lose unneeded Enumeration.cpp and VersionDefs.cpp, Cryptography/Digest/DigestDataToString.cpp</li>
+		<li>fixed regression test issue - had hardwired canonical name of website that changed</li>
+		<li>refactor - move Stats code from LRUCache to its own module in Cache code; Added ToString() support to Cache::Statistics objects; then can use Statisitcs (shared) objects in Cache/TimedCache module</li>
+		<li>Draft Memoizer cache utility/function and regression tests</li>
+		<li>qCompilerAndStdLib_inline_static_align_Buggy   bug define and workaround</li>
+		<li>fixed run valgrind on samples - regressiontest script</li>
+		<li>Significant rewrite teo RoundupTo/RoundDownTo () - little tested</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d5.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1804_x86_64,MacOS_XCode10}-2.1d5-OUT.txt</li>
+				<li>vc++2k17  (15.7.5)</li>
+				<li>MacOS, XCode 10 (beta)</li>
+				<li>gcc 7</li>
+				<li>gcc 8</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc7, gcc8</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
+
+
+
+  
+
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.1d4">v2.1d4</a><br/>2018-07-13</td>
 <td>
 	<ul>
 		<li>https://github.com/SophistSolutions/Stroika/compare/v2.1d3...v2.1d4</li>
