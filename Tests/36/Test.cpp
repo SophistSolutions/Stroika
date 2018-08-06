@@ -379,7 +379,7 @@ namespace {
         {
             {
                 DNS::HostEntry e = DNS::Default ().GetHostEntry (L"www.sophists.com");
-                VerifyTestResult (e.fCanonicalName == L"outer5.sophists.com");
+                VerifyTestResult (e.fCanonicalName.Contains (L".sophists.com"));
                 VerifyTestResult (e.fAddressList.size () >= 1);
             }
             {
