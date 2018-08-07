@@ -90,14 +90,21 @@ namespace Stroika::Foundation::Execution {
     [[noreturn]] void ReThrow (const exception_ptr& e, const wchar_t* traceMsg);
 
     /**
+     *  If the first argument is null, throw the second argument exception (or if none, throw bad_alloc)
      */
     template <typename E>
     void ThrowIfNull (const void* p, const E& e = E ());
     void ThrowIfNull (const void* p);
     template <typename T>
+    void ThrowIfNull (const unique_ptr<T>& p);
+    template <typename T>
     void ThrowIfNull (const shared_ptr<T>& p);
 
-    /**
+    /** 
+     *  \def IgnoreExceptionsForCall - ignore all exceptions for the given argument call (evaluate arg)
+     *
+     *      @see IgnoreExceptionsExceptThreadAbortForCall
+     *      @see IgnoreExceptionsExceptThreadInterruptForCall
      */
 #define IgnoreExceptionsForCall(theCode) \
     try {                                \
@@ -107,6 +114,10 @@ namespace Stroika::Foundation::Execution {
     }
 
     /**
+     *  \def IgnoreExceptionsExceptThreadAbortForCall - ignore all exceptions (except thread abort) for the given argument call (evaluate arg)
+     *
+     *      @see IgnoreExceptionsForCall
+     *      @see IgnoreExceptionsExceptThreadInterruptForCall
      */
 #define IgnoreExceptionsExceptThreadAbortForCall(theCode)                   \
     try {                                                                   \
@@ -116,6 +127,22 @@ namespace Stroika::Foundation::Execution {
         Execution::ReThrow ();                                              \
     }                                                                       \
     catch (...) {                                                           \
+    }
+
+    /**
+     *  \def IgnoreExceptionsExceptThreadInterruptForCall - ignore all exceptions (except thread interruot or thread abort) for the given argument call (evaluate arg)
+     *
+     *      @see IgnoreExceptionsForCall
+     *      @see IgnoreExceptionsExceptThreadAbortForCall
+     */
+#define IgnoreExceptionsExceptThreadInterruptForCall(theCode)                   \
+    try {                                                                       \
+        theCode;                                                                \
+    }                                                                           \
+    catch (const Stroika::Foundation::Execution::Thread::InterruptException&) { \
+        Execution::ReThrow ();                                                  \
+    }                                                                           \
+    catch (...) {                                                               \
     }
 
 }

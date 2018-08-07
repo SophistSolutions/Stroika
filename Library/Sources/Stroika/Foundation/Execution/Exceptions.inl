@@ -151,6 +151,13 @@ namespace Stroika::Foundation::Execution {
         }
     }
     template <typename T>
+    inline void ThrowIfNull (const unique_ptr<T>& p)
+    {
+        if (p.get () == nullptr) {
+            Throw (bad_alloc (), "ThrowIfNull (unique_ptr<> (nullptr)) - throwing bad_alloc");
+        }
+    }
+    template <typename T>
     inline void ThrowIfNull (const shared_ptr<T>& p)
     {
         if (p.get () == nullptr) {
