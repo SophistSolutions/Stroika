@@ -49,7 +49,7 @@
 namespace Stroika::Foundation::Execution {
 
     /**
-     *  This is equivilemnt to std::mutex, except that when a thread is blocked in a lock() call
+     *  This is equivalent to std::mutex, except that when a thread is blocked in a lock() call
      *  it can still be interrupted by Thread::Abort ().
      *
      *  This is not generally necessary for quick mutexes, but for any mutex use where you could
@@ -59,7 +59,6 @@ namespace Stroika::Foundation::Execution {
     class AbortableMutex {
     public:
         /**
-         *
          *  \note   ***Cancelation Point***
          */
         nonvirtual void lock ();
