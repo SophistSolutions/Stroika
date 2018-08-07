@@ -23,6 +23,8 @@ namespace Stroika::Foundation::Execution {
 
 namespace Stroika::Foundation::Execution::Platform::Windows {
 
+    /**
+    */
     class HRESULTErrorException : public StringException {
     private:
         using inherited = StringException;
@@ -40,6 +42,8 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
         HRESULT fHResult;
     };
 
+    /**
+    */
 #define CATCH_AND_HANDLE_EXCEPTIONS_IN_HRESULT_FUNCTION()                                     \
     catch (HRESULT hr)                                                                        \
     {                                                                                         \
@@ -61,13 +65,22 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
     {                                                                                         \
         return DISP_E_EXCEPTION;                                                              \
     }
+
+    /**
+     *  if hr did not SUCCCEED, then throw HRESULTErrorException 
+     */
+    void ThrowIfErrorHRESULT (HRESULT hr);
+
 }
 
 namespace Stroika::Foundation::Execution {
-    void ThrowIfErrorHRESULT (HRESULT hr);
 
+    /**
+     * \brief   Template specialization for ThrowIfNull (), for thing being thrown HRESULT - really throw HRESULTErrorException
+     */
     template <>
     void ThrowIfNull (const void* p, const HRESULT& hr);
+
 }
 
 /*

@@ -25,21 +25,25 @@ namespace Stroika::Foundation::Execution::Platform::Windows {
         return LookupMessage (fHResult);
     }
 
-}
-
-namespace Stroika::Foundation::Execution {
-
+    /*
+     ********************************************************************************
+     ****************** Platform::Windows::ThrowIfErrorHRESULT **********************
+     ********************************************************************************
+     */
     inline void ThrowIfErrorHRESULT (HRESULT hr)
     {
         if (not SUCCEEDED (hr)) {
-            Throw (Platform::Windows::HRESULTErrorException (hr));
+            Throw (Platform::Windows::HRESULTErrorException{hr});
         }
     }
 
+}
+
+namespace Stroika::Foundation::Execution {
     template <>
     inline void ThrowIfNull<HRESULT> (const void* p, const HRESULT& hr)
     {
-        ThrowIfNull (p, Platform::Windows::HRESULTErrorException (hr));
+        ThrowIfNull (p, Platform::Windows::HRESULTErrorException{hr});
     }
 }
 

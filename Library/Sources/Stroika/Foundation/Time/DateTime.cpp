@@ -344,6 +344,7 @@ DateTime DateTime::Parse (const String& rep, LCID lcid)
     }
     DATE d{};
     try {
+        using namespace Execution::Platform::Windows;
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, 0, &d));
     }
     catch (...) {

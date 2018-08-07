@@ -330,6 +330,7 @@ TimeOfDay TimeOfDay::Parse (const String& rep, const locale& l)
 #if qPlatform_Windows
 TimeOfDay TimeOfDay::Parse (const String& rep, LCID lcid)
 {
+    using namespace Execution::Platform::Windows;
     if (rep.empty ()) {
         return TimeOfDay ();
     }

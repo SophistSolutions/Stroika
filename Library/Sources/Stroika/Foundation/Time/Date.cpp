@@ -253,6 +253,7 @@ Date Date::Parse (const String& rep, LCID lcid)
     }
     DATE d{};
     try {
+        using namespace Execution::Platform::Windows;
         ThrowIfErrorHRESULT (::VarDateFromStr (Characters::Platform::Windows::SmartBSTR (rep.c_str ()), lcid, VAR_DATEVALUEONLY, &d));
     }
     catch (...) {
