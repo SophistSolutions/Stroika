@@ -87,7 +87,7 @@ namespace Stroika::Foundation::Memory {
      *
      *  @see VariantValue
      */
-    class [[deprecated ("This class is essentially the same as std::any; there are a few things it does better (e.g. IfAs) - but not worth the extra class - deprecate as of Stroika v2.1d1")]] AnyVariantValue
+    class [[deprecated ("This class is essentially the same as std::any; not worth the extra class - deprecate as of Stroika v2.1d1")]] AnyVariantValue
     {
     public:
         /**
@@ -136,7 +136,7 @@ namespace Stroika::Foundation::Memory {
          *      \endcode
          */
         template <typename RETURNTYPE>
-        nonvirtual optional<RETURNTYPE> IfAs () const;
+        [[deprecated ("use any_cast<>")]] nonvirtual optional<RETURNTYPE> IfAs () const;
 
     private:
         struct IRep_;
