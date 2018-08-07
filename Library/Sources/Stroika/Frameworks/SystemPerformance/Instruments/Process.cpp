@@ -657,7 +657,7 @@ namespace {
         optional<T> OptionallyReadIfFileExists_ (const String& fullPath, const function<T (const Streams::InputStream<Byte>::Ptr&)>& reader)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadInterruptForCall (return reader (FileInputStream::New (fullPath, FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
@@ -717,7 +717,7 @@ namespace {
                 }
             };
             if (IO::FileSystem::Default ().Access (fullPath2CmdLineFile)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileString_ (FileInputStream::New (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
+                IgnoreExceptionsExceptThreadInterruptForCall (return ReadFileString_ (FileInputStream::New (fullPath2CmdLineFile, FileInputStream::eNotSeekable)));
             }
             return nullopt;
         }
@@ -725,14 +725,14 @@ namespace {
         optional<String> OptionallyResolveShortcut_ (const String& shortcutPath)
         {
             if (IO::FileSystem::Default ().Access (shortcutPath)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return IO::FileSystem::Default ().ResolveShortcut (shortcutPath));
+                IgnoreExceptionsExceptThreadInterruptForCall (return IO::FileSystem::Default ().ResolveShortcut (shortcutPath));
             }
             return nullopt;
         }
         optional<Mapping<String, String>> OptionallyReadFileStringsMap_ (const String& fullPath)
         {
             if (IO::FileSystem::Default ().Access (fullPath)) {
-                IgnoreExceptionsExceptThreadAbortForCall (return ReadFileStringsMap_ (fullPath));
+                IgnoreExceptionsExceptThreadInterruptForCall (return ReadFileStringsMap_ (fullPath));
             }
             return nullopt;
         }

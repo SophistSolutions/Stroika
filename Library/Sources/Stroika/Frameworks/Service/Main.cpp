@@ -536,7 +536,7 @@ void Main::RunTilIdleService::_RunAsService ()
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
     float timeTilIdleHack = 3.0;
-    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone (timeTilIdleHack)); //tmphack - as
+    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone (timeTilIdleHack)); //tmphack - as
 }
 
 void Main::RunTilIdleService::_RunDirectly ()
@@ -548,7 +548,7 @@ void Main::RunTilIdleService::_RunDirectly ()
             appRep->MainLoop ([]() {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
-    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
+    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone ());
 }
 
 void Main::RunTilIdleService::_Start ([[maybe_unused]] Time::DurationSecondsType timeout)
@@ -1015,7 +1015,7 @@ void Main::WindowsService::_RunDirectly ()
             appRep->MainLoop ([]() {});
         },
         Execution::Thread::eAutoStart, kServiceRunThreadName_);
-    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
+    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone ());
     fRunThread_.ThrowIfDoneWithException ();
 }
 
@@ -1171,7 +1171,7 @@ void Main::WindowsService::ServiceMain_ ([[maybe_unused]] DWORD dwArgc, [[maybe_
     //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);
 
-    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ()); //tmphack - as
+    IgnoreExceptionsExceptThreadInterruptForCall (fRunThread_.WaitForDone ()); //tmphack - as
     fServiceStatus_.dwWin32ExitCode = 0;
 
     //Logger::Get ().Log (Logger::Priority::eInfo, "Service stopped");
