@@ -8,6 +8,15 @@
 
 #include <cstdint>
 
+/**
+ *  \file
+ *
+ *  \version    <a href="Code-Status.md#Beta">Beta</a>
+ *
+ * TODO:
+ *      @todo   Use new stdc++17 endian feature
+ */
+
 namespace Stroika::Foundation::Configuration {
 
     /**
