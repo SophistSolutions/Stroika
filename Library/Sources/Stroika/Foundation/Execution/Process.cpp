@@ -3,6 +3,8 @@
  */
 #include "../StroikaPreComp.h"
 
+#include "Finally.h"
+
 #include "Process.h"
 
 using namespace Stroika::Foundation;
@@ -18,7 +20,7 @@ using namespace Stroika::Foundation::Execution;
  ********************************************************************************
  */
 
-bool Execution::IsProcessRunning ([[maybe_unused]] pid_t pid)
+bool Execution::IsProcessRunning (pid_t pid)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper traceCtx (L"Stroika::Foundation::Execution::IsProcessRunning", L"pid=%d", pid);
@@ -32,6 +34,24 @@ bool Execution::IsProcessRunning ([[maybe_unused]] pid_t pid)
     DbgTrace (L"getpgid (pid=%d) -> %d, with ernno=%d", pid, tmp, errno);
 #endif
     return tmp > 0;
+#elif qPlatform_Windows
+    HANDLE process = ::OpenProcess (SYNCHRONIZE, FALSE, pid);
+    if (process == nullptr) {
+        // This can fail for a variety of reasons, including permissions, and because the process died a long time ago.
+        // Probably best answer here is just to return no, that its not running
+        return false;
+    }
+    [[maybe_unused]] auto&& cleanup = Execution::Finally ([&]() {
+        ::CloseHandle (process);
+    });
+    constexpr bool          kUseGetExitCodeProcess_{false}; // GetExitCodeProcess can get confused by bad error code so WFSO probably better
+    if constexpr (kUseGetExitCodeProcess_) {
+        DWORD exitCode{};
+        return ::GetExitCodeProcess (process, &exitCode) and exitCode == STILL_ACTIVE;
+    }
+    else {
+        return ::WaitForSingleObject (process, 0) == WAIT_TIMEOUT;
+    }
 #else
     AssertNotImplemented ();
     return false;
