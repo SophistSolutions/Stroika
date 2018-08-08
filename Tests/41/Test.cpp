@@ -40,7 +40,7 @@ namespace {
     DISABLE_COMPILER_MSC_WARNING_START (6262)
     void OLD_Cracker_ (const String& w, String* protocol, String* host, [[maybe_unused]] String* port, String* relPath, String* query)
     {
-        using Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
+        using Stroika::Foundation::Execution::Platform::Windows::ThrowIfErrorHRESULT;
         RequireNotNull (protocol);
         RequireNotNull (host);
         RequireNotNull (relPath);
