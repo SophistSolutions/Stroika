@@ -29,7 +29,7 @@ VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
 VERSION_WITH_2DOTS=$(VERSION_WITH_DOTS)
 ZIPPEDFILE=../Origs-Cache/boost_$(VERSION).tar.gz
 ###tmphack for pre-release 1.67 release
-VERSION_WITH_2DOTS=1.67.0
+#VERSION_WITH_2DOTS=1.67.0
 
 
 # Needed for $(PRODUCED_OUTPUT_ARTIFACTS): rule (is there a simple way to disable parallel for just that one rule)?
