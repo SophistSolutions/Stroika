@@ -62,22 +62,22 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual void Compact ();
 
     public:
-        /*
-            * This optional API allows pre-reserving space as an optimization.
-            */
+        /**
+         * This optional API allows pre-reserving space as an optimization.
+         */
         nonvirtual size_t GetCapacity () const;
         nonvirtual void   SetCapacity (size_t slotsAlloced);
 
     public:
         /**
-        *   STL-ish alias for GetCapacity ();
-        */
+         *   STL-ish alias for GetCapacity ();
+         */
         nonvirtual size_t capacity () const;
 
     public:
         /**
-        *   STL-ish alias for SetCapacity ();
-        */
+         *   STL-ish alias for SetCapacity ();
+         */
         nonvirtual void reserve (size_t slotsAlloced);
 
     private:

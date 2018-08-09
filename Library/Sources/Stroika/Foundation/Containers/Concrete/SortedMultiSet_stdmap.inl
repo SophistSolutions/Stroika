@@ -213,10 +213,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ************************ SortedMultiSet_stdmap<T, TRAITS> **********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************ SortedMultiSet_stdmap<T, TRAITS> **********************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     inline SortedMultiSet_stdmap<T, TRAITS>::SortedMultiSet_stdmap ()
         : SortedMultiSet_stdmap (less<T>{})
@@ -267,5 +267,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_SortedMultiSet_stdmap_inl_ */

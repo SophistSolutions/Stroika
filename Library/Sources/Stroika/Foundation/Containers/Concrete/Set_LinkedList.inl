@@ -18,8 +18,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     using Traversal::IteratorOwnerID;
 
-    /*
-        */
+    /**
+     */
     template <typename T>
     class Set_LinkedList<T>::IImplRepBase_ : public Set<T>::_IRep {
     private:
@@ -31,8 +31,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         using _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
     };
 
-    /*
-        */
+    /**
+     */
     template <typename T>
     template <typename EQUALS_COMPARER>
     class Set_LinkedList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
@@ -191,10 +191,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ******************************** Set_LinkedList<T> *****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** Set_LinkedList<T> *****************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Set_LinkedList<T>::Set_LinkedList ()
         : Set_LinkedList (equal_to<T>{})
@@ -262,5 +262,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_Set_LinkedList_inl_ */

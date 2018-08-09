@@ -207,10 +207,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        **************************** Sequence_LinkedList<T> ****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     **************************** Sequence_LinkedList<T> ****************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Sequence_LinkedList<T>::Sequence_LinkedList ()
         : inherited (inherited::template MakeSharedPtr<Rep_> ())
@@ -240,6 +240,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Sequence_LinkedList_inl_ */

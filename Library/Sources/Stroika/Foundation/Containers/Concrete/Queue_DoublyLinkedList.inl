@@ -152,10 +152,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        **************************** Queue_DoublyLinkedList<T> *************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     **************************** Queue_DoublyLinkedList<T> *************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList ()
         : inherited (inherited::template MakeSharedPtr<Rep_> ())
@@ -192,6 +192,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Queue_DoublyLinkedList_inl_ */

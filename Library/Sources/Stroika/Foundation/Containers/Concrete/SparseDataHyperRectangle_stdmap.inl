@@ -21,10 +21,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     using Traversal::IteratorOwnerID;
 
     /*
-        ********************************************************************************
-        *********** SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ ***************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********** SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ ***************
+     ********************************************************************************
+     */
     template <typename T, typename... INDEXES>
     class SparseDataHyperRectangle_stdmap<T, INDEXES...>::Rep_ : public DataHyperRectangle<T, INDEXES...>::_IRep, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
@@ -196,9 +196,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
         private:
             /*
-                *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
-                *  a temporary, and to copy.
-                */
+             *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
+             *  a temporary, and to copy.
+             */
             template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
             nonvirtual void More_SFINAE_ (optional<tuple<T, INDEXES...>>* result, bool advance, enable_if_t<is_same_v<T, CHECK_KEY>>* = 0)
             {
@@ -233,10 +233,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ************** SparseDataHyperRectangle_stdmap<T, INDEXES...> ******************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** SparseDataHyperRectangle_stdmap<T, INDEXES...> ******************
+     ********************************************************************************
+     */
     template <typename T, typename... INDEXES>
     SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem)
         : inherited (inherited::template MakeSharedPtr<Rep_> (defaultItem))
@@ -264,5 +264,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_SparseDataHyperRectangle_stdmap_inl_ */

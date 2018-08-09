@@ -166,10 +166,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ********************************** Set_setset<T> *******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** Set_setset<T> *******************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Set_stdset<T>::Set_stdset ()
         : Set_stdset (less<T>{})
@@ -236,6 +236,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Set_stdset_inl_ */

@@ -17,19 +17,19 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /*
-        ********************************************************************************
-        ******************** MultiSet_LinkedList<T, TRAITS>::IImplRepBase_ *************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** MultiSet_LinkedList<T, TRAITS>::IImplRepBase_ *************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     class MultiSet_LinkedList<T, TRAITS>::IImplRepBase_ : public MultiSet<T, TRAITS>::_IRep {
     };
 
     /*
-        ********************************************************************************
-        ********************** MultiSet_LinkedList<T, TRAITS>::Rep_ ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** MultiSet_LinkedList<T, TRAITS>::Rep_ ********************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER>
     class MultiSet_LinkedList<T, TRAITS>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<EQUALS_COMPARER>> {
@@ -242,10 +242,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ************************ MultiSet_LinkedList<T, TRAITS> ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************ MultiSet_LinkedList<T, TRAITS> ************************
+     ********************************************************************************
+     */
     template <typename T, typename TRAITS>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList ()
         : MultiSet_LinkedList (equal_to<T>{})
@@ -301,6 +301,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_MultiSet_LinkedList_inl_ */

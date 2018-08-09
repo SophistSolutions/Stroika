@@ -21,10 +21,10 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /*
-        ********************************************************************************
-        ******* SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ *******
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******* SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ *******
+     ********************************************************************************
+     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::IImplRepBase_ : public SortedMapping<KEY_TYPE, MAPPED_VALUE_TYPE>::_IRep {
     private:
@@ -43,10 +43,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ********** SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ *************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********** SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ *************
+     ********************************************************************************
+     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     template <typename KEY_INORDER_COMPARER>
     class SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<KEY_INORDER_COMPARER>> {
@@ -211,10 +211,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ************* SortedMapping_stdmap<KEY_TYPE,MAPPED_VALUE_TYPE> *****************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************* SortedMapping_stdmap<KEY_TYPE,MAPPED_VALUE_TYPE> *****************
+     ********************************************************************************
+     */
     template <typename KEY_TYPE, typename MAPPED_VALUE_TYPE>
     inline SortedMapping_stdmap<KEY_TYPE, MAPPED_VALUE_TYPE>::SortedMapping_stdmap ()
         : SortedMapping_stdmap (less<KEY_TYPE>{})
@@ -251,6 +251,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_ */

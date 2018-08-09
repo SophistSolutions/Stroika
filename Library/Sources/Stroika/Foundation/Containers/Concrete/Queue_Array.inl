@@ -151,10 +151,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ********************************** Queue_Array<T> ******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************** Queue_Array<T> ******************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Queue_Array<T>::Queue_Array ()
         : inherited (inherited::template MakeSharedPtr<Rep_> ())
@@ -222,6 +222,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Queue_Array_inl_ */

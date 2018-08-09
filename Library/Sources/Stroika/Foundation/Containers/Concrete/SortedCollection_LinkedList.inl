@@ -17,19 +17,19 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /*
-        ********************************************************************************
-        ****************** SortedCollection_LinkedList<T>::IImplRepBase_ ***************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************** SortedCollection_LinkedList<T>::IImplRepBase_ ***************
+     ********************************************************************************
+     */
     template <typename T>
     class SortedCollection_LinkedList<T>::IImplRepBase_ : public SortedCollection<T>::_IRep {
     };
 
     /*
-        ********************************************************************************
-        *********************** SortedCollection_LinkedList<T>::Rep_ *******************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** SortedCollection_LinkedList<T>::Rep_ *******************
+     ********************************************************************************
+     */
     template <typename T>
     template <typename INORDER_COMPARER>
     class SortedCollection_LinkedList<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
@@ -200,10 +200,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ********************* SortedCollection_LinkedList<T> ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* SortedCollection_LinkedList<T> ***************************
+     ********************************************************************************
+     */
     template <typename T>
     inline SortedCollection_LinkedList<T>::SortedCollection_LinkedList ()
         : SortedCollection_LinkedList (less<T>{})
@@ -240,6 +240,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_inl_ */

@@ -20,19 +20,19 @@
 namespace Stroika::Foundation::Containers::Concrete {
 
     /*
-        ********************************************************************************
-        *********************** SortedSet_stdset<T>::IImplRepBase_ *********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************** SortedSet_stdset<T>::IImplRepBase_ *********************
+     ********************************************************************************
+     */
     template <typename T>
     class SortedSet_stdset<T>::IImplRepBase_ : public SortedSet<T>::_IRep {
     };
 
     /*
-        ********************************************************************************
-        *************************** SortedSet_stdset<T>::Rep_ **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *************************** SortedSet_stdset<T>::Rep_ **************************
+     ********************************************************************************
+     */
     template <typename T>
     template <typename INORDER_COMPARER>
     class SortedSet_stdset<T>::Rep_ : public IImplRepBase_, public Memory::UseBlockAllocationIfAppropriate<Rep_<INORDER_COMPARER>> {
@@ -179,10 +179,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ****************************** SortedSet_stdset<T> *****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************************** SortedSet_stdset<T> *****************************
+     ********************************************************************************
+     */
     template <typename T>
     inline SortedSet_stdset<T>::SortedSet_stdset ()
         : SortedSet_stdset (less<T>{})
@@ -250,5 +250,6 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRepBase_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedSet_stdset_inl_ */

@@ -60,6 +60,7 @@ namespace Stroika::Foundation::Containers::Adapters {
         static void Add_ (Sequence<value_type>* container, Configuration::ArgByValueType<value_type> value);
         static void Add_ (Collection<value_type>* container, Configuration::ArgByValueType<value_type> value);
     };
+
 }
 
 /*

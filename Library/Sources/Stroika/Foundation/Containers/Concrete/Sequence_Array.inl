@@ -20,8 +20,8 @@ namespace Stroika::Foundation::Containers::Concrete {
 
     using Traversal::IteratorOwnerID;
 
-    /*
-        */
+    /**
+     */
     template <typename T>
     class Sequence_Array<T>::IImplRep_ : public Sequence<T>::_IRep {
     private:
@@ -33,8 +33,8 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void   SetCapacity (size_t slotsAlloced) = 0;
     };
 
-    /*
-        */
+    /**
+     */
     template <typename T>
     class Sequence_Array<T>::Rep_ : public Sequence_Array<T>::IImplRep_, public Memory::UseBlockAllocationIfAppropriate<Rep_> {
     private:
@@ -230,10 +230,10 @@ namespace Stroika::Foundation::Containers::Concrete {
     };
 
     /*
-        ********************************************************************************
-        ****************************** Sequence_Array<T> *******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ****************************** Sequence_Array<T> *******************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Sequence_Array<T>::Sequence_Array ()
         : inherited (inherited::template MakeSharedPtr<Rep_> ())
@@ -302,6 +302,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<IImplRep_> tmp{this}; // for side-effect of AssertMemeber
 #endif
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Concrete_Sequence_Array_inl_ */

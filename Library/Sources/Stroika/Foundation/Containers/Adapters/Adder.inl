@@ -68,5 +68,6 @@ namespace Stroika::Foundation::Containers::Adapters {
         RequireNotNull (container);
         container->Add (value);
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_Adapters_Adder_inl_ */
