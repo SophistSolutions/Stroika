@@ -48,14 +48,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     using Configuration::ArgByValueType;
 
     /*
-        *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation.
-        *  It keeps a length count so access to its length is rapid. We provide
-        *  no public means to access the links themselves.
-        *
-        *      Since this class provides no patching support, it is not generally
-        *  used - more likely you want to use PatchingDataStructures::LinkedList<T>. Use this if you
-        *  will manage all patching, or know that none is necessary.
-        */
+     *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation.
+     *  It keeps a length count so access to its length is rapid. We provide
+     *  no public means to access the links themselves.
+     *
+     *      Since this class provides no patching support, it is not generally
+     *  used - more likely you want to use PatchingDataStructures::LinkedList<T>. Use this if you
+     *  will manage all patching, or know that none is necessary.
+     */
     template <typename T>
     class LinkedList : public Debug::AssertExternallySynchronizedLock {
     public:
@@ -77,11 +77,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-            *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-            *  iteartor from 'this' - which points at the same logical position. This requires that this container
-            *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
-            *  the container they were iterating over).
-            */
+         *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iteartor from 'this' - which points at the same logical position. This requires that this container
+         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  the container they were iterating over).
+         */
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const LinkedList<T>* movedFrom);
 
     public:
@@ -115,23 +115,23 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void RemoveFirst ();
 
     public:
-        /*
-            *  Performance:
-            *      Worst Case: O(N)
-            *      Average Case: O(N)
-            *
-            *  Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
-            *
-            *  Contains(T item) == Lookup (item) != nullptr;
-            */
+        /**
+         *  Performance:
+         *      Worst Case: O(N)
+         *      Average Case: O(N)
+         *
+         *  Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
+         *
+         *  Contains(T item) == Lookup (item) != nullptr;
+         */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual const T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual T* Lookup (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {});
 
     public:
-        /*
-            */
+        /**
+         */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
         template <typename FUNCTION>
@@ -191,24 +191,24 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-            *  Performance:
-            *      Worst Case: O(N)
-            *      Average Case: O(N)
-            *
-            *      Not alot of point in having these, as they are terribly slow,
-            *  but the could be convienient.
-            */
+         *  Performance:
+         *      Worst Case: O(N)
+         *      Average Case: O(N)
+         *
+         *      Not alot of point in having these, as they are terribly slow,
+         *  but the could be convienient.
+         */
         nonvirtual T GetAt (size_t i) const;
 
     public:
         /*
-            *  Performance:
-            *      Worst Case: O(N)
-            *      Average Case: O(N)
-            *
-            *      Not alot of point in having these, as they are terribly slow,
-            *  but the could be convienient.
-            */
+         *  Performance:
+         *      Worst Case: O(N)
+         *      Average Case: O(N)
+         *
+         *      Not alot of point in having these, as they are terribly slow,
+         *  but the could be convienient.
+         */
         nonvirtual void SetAt (T item, size_t i);
 
     public:
@@ -238,11 +238,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
     };
 
     /*
-        *      ForwardIterator<T> allows you to iterate over a LinkedList<T,TRAITS>. Its API
-        *  is designed to make easy implementations of subclasses of IteratorRep<T>.
-        *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
-        *  for that.
-        */
+     *      ForwardIterator<T> allows you to iterate over a LinkedList<T,TRAITS>. Its API
+     *  is designed to make easy implementations of subclasses of IteratorRep<T>.
+     *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
+     *  for that.
+     */
     template <typename T>
     class LinkedList<T>::ForwardIterator {
     public:
@@ -290,6 +290,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         friend class LinkedList<T>;
     };
+
 }
 
 /*

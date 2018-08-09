@@ -195,10 +195,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 #endif /*qDebug*/
 
     /*
-        ********************************************************************************
-        ************* PatchingDataStructures::Array<T>::_ArrayIteratorBase *************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************* PatchingDataStructures::Array<T>::_ArrayIteratorBase *************
+     ********************************************************************************
+     */
     template <typename T>
     inline Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array<T>* data)
         : inherited_DataStructure (data)
@@ -224,9 +224,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void Array<T>::_ArrayIteratorBase::PatchAdd (size_t index)
     {
         /*
-            *      NB: We cannot call invariants here because this is called after the add
-            *  and the PatchRealloc has not yet happened.
-            */
+         *      NB: We cannot call invariants here because this is called after the add
+         *  and the PatchRealloc has not yet happened.
+         */
         Require (index >= 0);
 
         this->_fEnd++;
@@ -234,24 +234,24 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         AssertNotNull (this->_fData);
 
         /*
-            *      If we added an item to the right of our cursor, it has no effect
-            *  on our - by index - addressing, and so ignore it. We will eventually
-            *  reach that new item.
-            *
-            *      On the other hand, if we add the item to the left of our cursor,
-            *  things are more complex:
-            *
-            *      If we added an item left of the cursor, then we are now pointing to
-            *  the item before the one we used to, and so incrementing (ie Next)
-            *  would cause us to revisit (in the forwards case, or skip one in the
-            *  reverse case). To correct our index, we must increment it so that
-            *  it.Current () refers to the same entity.
-            *
-            *      Note that this should indeed by <=, since (as opposed to <) since
-            *  if we are a direct hit, and someone tries to insert something at
-            *  the position we are at, the same argument as before applies - we
-            *  would be revisiting, or skipping forwards an item.
-            */
+         *      If we added an item to the right of our cursor, it has no effect
+         *  on our - by index - addressing, and so ignore it. We will eventually
+         *  reach that new item.
+         *
+         *      On the other hand, if we add the item to the left of our cursor,
+         *  things are more complex:
+         *
+         *      If we added an item left of the cursor, then we are now pointing to
+         *  the item before the one we used to, and so incrementing (ie Next)
+         *  would cause us to revisit (in the forwards case, or skip one in the
+         *  reverse case). To correct our index, we must increment it so that
+         *  it.Current () refers to the same entity.
+         *
+         *      Note that this should indeed by <=, since (as opposed to <) since
+         *  if we are a direct hit, and someone tries to insert something at
+         *  the position we are at, the same argument as before applies - we
+         *  would be revisiting, or skipping forwards an item.
+         */
 
         Require ((this->_fEnd >= this->_fStart) and (index <= size_t (this->_fEnd - this->_fStart)));
         if (&this->_fStart[index] <= this->_fCurrent) { // index <= CurrentIndex () - only faster
@@ -337,10 +337,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 #endif /*qDebug*/
 
     /*
-        ********************************************************************************
-        ************** PatchingDataStructures::Array<T>::ForwardIterator ***************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************** PatchingDataStructures::Array<T>::ForwardIterator ***************
+     ********************************************************************************
+     */
     template <typename T>
     inline Array<T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const Array<T>* data)
         : inherited (ownerID, data)

@@ -16,10 +16,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        ******************* STLContainerWrapper<STL_CONTAINER_OF_T> ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************* STLContainerWrapper<STL_CONTAINER_OF_T> ********************
+     ********************************************************************************
+     */
     template <typename STL_CONTAINER_OF_T>
     template <typename... EXTRA_ARGS>
     inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (EXTRA_ARGS&&... args)
@@ -124,10 +124,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
     /*
-        ********************************************************************************
-        *********** STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator ***********
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********** STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator ***********
+     ********************************************************************************
+     */
     template <typename STL_CONTAINER_OF_T>
     inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const STLContainerWrapper<STL_CONTAINER_OF_T>* data)
         : fData (const_cast<STLContainerWrapper<STL_CONTAINER_OF_T>*> (data))
@@ -213,5 +213,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*fData};
         return fStdIterator == rhs.fStdIterator;
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_DataStructures_STLContainerWrapper_inl_ */

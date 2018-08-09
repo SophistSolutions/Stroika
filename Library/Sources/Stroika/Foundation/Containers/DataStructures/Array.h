@@ -70,7 +70,6 @@
  *
  *
  *  TODO:
- *
  *      @todo   Improve perofrmance/cleanup memory allocation. ALREADY got rid of  realloc().
  *              but celanup safety/use uninitalized_copy and stl destroy funcitons.
  *
@@ -149,12 +148,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-            * Memory savings/optimization methods.  Use this to tune useage
-            * of arrays so that they dont waste time in Realloc's.
-            */
+         * Memory savings/optimization methods.  Use this to tune useage
+         * of arrays so that they dont waste time in Realloc's.
+         */
         nonvirtual size_t GetCapacity () const;
         nonvirtual void   SetCapacity (size_t slotsAlloced);
 
+    public:
         nonvirtual void Compact ();
 
     protected:
@@ -166,11 +166,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-            *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-            *  iteartor from 'this' - which points at the same logical position. This requires that this container
-            *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
-            *  the container they were iterating over).
-            */
+         *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iteartor from 'this' - which points at the same logical position. This requires that this container
+         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  the container they were iterating over).
+         */
         nonvirtual void MoveIteratorHereAfterClone (_ArrayIteratorBase* pi, const Array* movedFrom);
 
     public:
@@ -292,6 +292,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
         nonvirtual void More (optional<T>* result, bool advance);
         nonvirtual bool More (nullptr_t, bool advance);
     };
+
 }
 
 /*

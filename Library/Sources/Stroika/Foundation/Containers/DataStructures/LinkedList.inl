@@ -16,10 +16,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        ********************** LinkedList<T,TRAITS>::Link ******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** LinkedList<T,TRAITS>::Link ******************************
+     ********************************************************************************
+     */
     template <typename T>
     inline LinkedList<T>::Link::Link (T item, Link* next)
         : fItem (item)
@@ -28,10 +28,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
     /*
-        ********************************************************************************
-        ************************** LinkedList<T,TRAITS> ********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************** LinkedList<T,TRAITS> ********************************
+     ********************************************************************************
+     */
     template <typename T>
     inline LinkedList<T>::LinkedList ()
         : _fHead (nullptr)
@@ -43,12 +43,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         : _fHead (nullptr)
     {
         /*
-            *      Copy the link list by keeping a point to the new current and new
-            *  previous, and sliding them along in parallel as we construct the
-            *  new list. Only do this if we have at least one element - then we
-            *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
-            *  case is handled outside, before the loop.
-            */
+         *      Copy the link list by keeping a point to the new current and new
+         *  previous, and sliding them along in parallel as we construct the
+         *  new list. Only do this if we have at least one element - then we
+         *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
+         *  case is handled outside, before the loop.
+         */
         if (from._fHead != nullptr) {
             _fHead       = new Link (from._fHead->fItem, nullptr);
             Link* newCur = _fHead;
@@ -65,13 +65,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline LinkedList<T>::~LinkedList ()
     {
         /*
-            * This could be a little cheaper - we could avoid setting fLength field,
-            * and _fHead pointer, but we must worry more about codeSize/re-use.
-            * That would involve a new function that COULD NOT BE INLINED.
-            *
-            * < I guess  I could add a hack method - unadvertised - but has to be
-            *   at least protected - and call it here to do what I've mentioned above >
-            */
+         * This could be a little cheaper - we could avoid setting fLength field,
+         * and _fHead pointer, but we must worry more about codeSize/re-use.
+         * That would involve a new function that COULD NOT BE INLINED.
+         *
+         * < I guess  I could add a hack method - unadvertised - but has to be
+         *   at least protected - and call it here to do what I've mentioned above >
+         */
         Invariant ();
         RemoveAll ();
         Invariant ();
@@ -86,12 +86,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
             RemoveAll ();
 
             /*
-                *      Copy the link list by keeping a point to the new current and new
-                *  previous, and sliding them along in parallel as we construct the
-                *  new list. Only do this if we have at least one element - then we
-                *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
-                *  case is handled outside, before the loop.
-                */
+             *      Copy the link list by keeping a point to the new current and new
+             *  previous, and sliding them along in parallel as we construct the
+             *  new list. Only do this if we have at least one element - then we
+             *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
+             *  case is handled outside, before the loop.
+             */
             if (list._fHead != nullptr) {
                 _fHead       = new Link (list._fHead->fItem, nullptr);
                 Link* newCur = _fHead;
@@ -220,8 +220,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         /*
-            * NB: This code works fine, even if we are done!!!
-            */
+         * NB: This code works fine, even if we are done!!!
+         */
         Invariant ();
         i.Invariant ();
 
@@ -263,11 +263,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link* victim = const_cast<Link*> (i._fCurrent);
 
         /*
-            *      At this point we need the fPrev pointer. But it may have been lost
-            *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-            *  _fCurrent == fData->_fHead). If it is nullptr, recompute. Be careful if it
-            *  is still nullptr, that means update _fHead.
-            */
+         *      At this point we need the fPrev pointer. But it may have been lost
+         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
+         *  _fCurrent == fData->_fHead). If it is nullptr, recompute. Be careful if it
+         *  is still nullptr, that means update _fHead.
+         */
         Link* prevLink = nullptr;
         if (this->_fHead != victim) {
             AssertNotNull (this->_fHead); // cuz there must be something to remove current
@@ -408,8 +408,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
 #endif
         /*
-            * Check we are properly linked together.
-            */
+         * Check we are properly linked together.
+         */
         for (Link* i = _fHead; i != nullptr; i = i->fNext) {
             // at least make sure no currupted links and no infinite loops
         }
@@ -417,10 +417,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        ********************* LinkedList<T,TRAITS>::ForwardIterator ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************* LinkedList<T,TRAITS>::ForwardIterator ********************
+     ********************************************************************************
+     */
     template <typename T>
     inline LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList<T>* data)
         //: fCachedPrev (nullptr)
@@ -467,9 +467,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         if (advance) {
             /*
-                * We could already be done since after the last Done() call, we could
-                * have done a removeall.
-                */
+             * We could already be done since after the last Done() call, we could
+             * have done a removeall.
+             */
             if (not _fSuppressMore and _fCurrent != nullptr) {
                 _fCurrent = _fCurrent->fNext;
             }
@@ -493,9 +493,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
             else {
                 /*
-                    * We could already be done since after the last Done() call, we could
-                    * have done a removeall.
-                    */
+                 * We could already be done since after the last Done() call, we could
+                 * have done a removeall.
+                 */
                 if (_fCurrent != nullptr) {
                     _fCurrent = _fCurrent->fNext;
                 }
@@ -555,5 +555,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
 #endif
+
 }
 #endif /* _Stroika_Foundation_Containers_DataStructures_LinkedList_inl_ */

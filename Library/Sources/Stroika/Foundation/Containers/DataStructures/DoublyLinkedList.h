@@ -23,7 +23,6 @@
  *
  *
  * TODO:
- *
  *      @todo   Major changes to actually support double-links - on 2017-06-06 (old stroika had this not sure how
  *              I messed up in translation to new stroika).
  *
@@ -127,18 +126,18 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-            *  Performance:
-            *      Worst Case: O(N)
-            *      Average Case: O(N)
-            *
-            *  Utility to search the list for the given item using EQUALS_COMPARER
-            */
+         *  Performance:
+         *      Worst Case: O(N)
+         *      Average Case: O(N)
+         *
+         *  Utility to search the list for the given item using EQUALS_COMPARER
+         */
         template <typename EQUALS_COMPARER = equal_to<T>>
         nonvirtual bool Contains (ArgByValueType<T> item, const EQUALS_COMPARER& equalsComparer = {}) const;
 
     public:
-        /*
-            */
+        /**
+         */
         template <typename FUNCTION>
         nonvirtual void Apply (FUNCTION doToElement) const;
         template <typename FUNCTION>
@@ -184,11 +183,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
     public:
         /*
-            *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
-            *  iteartor from 'this' - which points at the same logical position. This requires that this container
-            *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
-            *  the container they were iterating over).
-            */
+         *  Take iteartor 'pi' which is originally a valid iterator from 'movedFrom' - and replace *pi with a valid
+         *  iteartor from 'this' - which points at the same logical position. This requires that this container
+         *  was just 'copied' from 'movedFrom' - and is used to produce an eqivilennt iterator (since iterators are tied to
+         *  the container they were iterating over).
+         */
         nonvirtual void MoveIteratorHereAfterClone (ForwardIterator* pi, const DoublyLinkedList<T>* movedFrom);
 
     public:
@@ -303,6 +302,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
     private:
         friend class DoublyLinkedList<T>;
     };
+
 }
 
 /*

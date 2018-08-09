@@ -14,10 +14,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        ***************************** DoublyLinkedList<T>::Link ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** DoublyLinkedList<T>::Link ************************
+     ********************************************************************************
+     */
     template <typename T>
     inline DoublyLinkedList<T>::Link::Link (ArgByValueType<T> item, Link* prev, Link* next)
         : fItem (item)
@@ -27,10 +27,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
     /*
-        ********************************************************************************
-        ********************************* DoublyLinkedList<T> **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************************* DoublyLinkedList<T> **************************
+     ********************************************************************************
+     */
     template <typename T>
     inline DoublyLinkedList<T>::DoublyLinkedList ()
     {
@@ -40,8 +40,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList<T>& from)
     {
         /*
-            *      @todo - this could be a bit more efficient
-            */
+         *      @todo - this could be a bit more efficient
+         */
         for (const Link* cur = from._fHead; cur != nullptr; cur = cur->fNext) {
             Append (cur->fItem);
         }
@@ -51,13 +51,13 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline DoublyLinkedList<T>::~DoublyLinkedList ()
     {
         /*
-            * This could be a little cheaper - we could avoid setting _fHead pointer,
-            *  but we must worry more about codeSize/re-use.
-            *  That would involve a new function that COULD NOT BE INLINED.
-            *
-            * < I guess  I could add a hack method - unadvertised - but has to be
-            *   at least protected - and call it here to do what I've mentioned above >
-            */
+         * This could be a little cheaper - we could avoid setting _fHead pointer,
+         *  but we must worry more about codeSize/re-use.
+         *  That would involve a new function that COULD NOT BE INLINED.
+         *
+         * < I guess  I could add a hack method - unadvertised - but has to be
+         *   at least protected - and call it here to do what I've mentioned above >
+         */
         Invariant ();
         RemoveAll ();
         Invariant ();
@@ -143,20 +143,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link* victim = _fHead;
         Assert (victim->fPrev == nullptr); // cuz it was first..
         /*
-            * Before:
-            *  |        |      |        |      |        |
-            *  |    V   |      |    B   |      |   C    |
-            *  | <-prev |      | <-prev |      | <-prev | ...
-            *  | next-> |      | next-> |      | next-> |
-            *  |        |      |        |      |        |
-            *
-            * After:
-            *  |        |      |        |
-            *  |   B    |      |    C   |
-            *  | <-prev |      | <-prev | ...
-            *  | next-> |      | next-> |
-            *  |        |      |        |
-            */
+         * Before:
+         *  |        |      |        |      |        |
+         *  |    V   |      |    B   |      |   C    |
+         *  | <-prev |      | <-prev |      | <-prev | ...
+         *  | next-> |      | next-> |      | next-> |
+         *  |        |      |        |      |        |
+         *
+         * After:
+         *  |        |      |        |
+         *  |   B    |      |    C   |
+         *  | <-prev |      | <-prev | ...
+         *  | next-> |      | next-> |
+         *  |        |      |        |
+         */
         _fHead = victim->fNext; // First points to B
         if (_fHead == nullptr) {
             Assert (victim == _fTail);
@@ -178,20 +178,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link* victim = _fTail;
         Assert (victim->fNext == nullptr); // cuz it was last..
         /*
-            * Before:
-            *      |        |      |        |      |        |
-            *      |    A   |      |    B   |      |   V    |
-            *  ... | <-prev |      | <-prev |      | <-prev |
-            *      | next-> |      | next-> |      | next-> |
-            *      |        |      |        |      |        |
-            *
-            * After:
-            *      |        |      |        |
-            *      |   A    |      |    B   |
-            *  ... | <-prev |      | <-prev |
-            *      | next-> |      | next-> |
-            *      |        |      |        |
-            */
+         * Before:
+         *      |        |      |        |      |        |
+         *      |    A   |      |    B   |      |   V    |
+         *  ... | <-prev |      | <-prev |      | <-prev |
+         *      | next-> |      | next-> |      | next-> |
+         *      |        |      |        |      |        |
+         *
+         * After:
+         *      |        |      |        |
+         *      |   A    |      |    B   |
+         *  ... | <-prev |      | <-prev |
+         *      | next-> |      | next-> |
+         *      |        |      |        |
+         */
         _fTail = victim->fPrev; // new last item
         if (_fTail == nullptr) {
             Assert (_fHead == victim);
@@ -211,12 +211,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
         RemoveAll ();
         /*
-            *      Copy the link list by keeping a point to the new current and new
-            *  previous, and sliding them along in parallel as we construct the
-            *  new list. Only do this if we have at least one element - then we
-            *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
-            *  case is handled outside, before the loop.
-            */
+         *      Copy the link list by keeping a point to the new current and new
+         *  previous, and sliding them along in parallel as we construct the
+         *  new list. Only do this if we have at least one element - then we
+         *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
+         *  case is handled outside, before the loop.
+         */
         if (rhs._fHead != nullptr) {
             _fHead       = new Link (rhs._fHead->fItem, nullptr);
             Link* newCur = _fHead;
@@ -358,20 +358,20 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Link* victim = const_cast<Link*> (i._fCurrent);
         AssertNotNull (victim); // cuz not done
         /*
-            * Before:
-            *      |        |      |        |      |        |
-            *      |    A   |      |    V   |      |   C    |
-            *  ... | <-prev |      | <-prev |      | <-prev |  ...
-            *      | next-> |      | next-> |      | next-> |
-            *      |        |      |        |      |        |
-            *
-            * After:
-            *      |        |      |        |
-            *      |   A    |      |    C   |
-            *  ... | <-prev |      | <-prev | ...
-            *      | next-> |      | next-> |
-            *      |        |      |        |
-            */
+         * Before:
+         *      |        |      |        |      |        |
+         *      |    A   |      |    V   |      |   C    |
+         *  ... | <-prev |      | <-prev |      | <-prev |  ...
+         *      | next-> |      | next-> |      | next-> |
+         *      |        |      |        |      |        |
+         *
+         * After:
+         *      |        |      |        |
+         *      |   A    |      |    C   |
+         *  ... | <-prev |      | <-prev | ...
+         *      | next-> |      | next-> |
+         *      |        |      |        |
+         */
         if (victim->fPrev == nullptr) {
             // In this case 'A' does not exist - it is Nil...
             Assert (_fHead == victim);
@@ -402,11 +402,11 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #else
         Link* victim = const_cast<Link*> (i._fCurrent);
         /*
-            *      At this point we need the fPrev pointer. But it may have been lost
-            *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-            *  _fCurrent == fData->_fHead). If it is nullptr, recompute. Be careful if it
-            *  is still nullptr, that means update _fHead.
-            */
+         *      At this point we need the fPrev pointer. But it may have been lost
+         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
+         *  _fCurrent == fData->_fHead). If it is nullptr, recompute. Be careful if it
+         *  is still nullptr, that means update _fHead.
+         */
         Link* prev = nullptr;
         if (this->_fHead != victim) {
             AssertNotNull (this->_fHead); // cuz there must be something to remove current
@@ -439,14 +439,14 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         /*
-            * NB: This code works fine, even if we are done!!!
-            */
+         * NB: This code works fine, even if we are done!!!
+         */
         this->Invariant ();
         if (i._fCurrent == nullptr) {
             /*
-                *      NB: If I am past the last item on the list, AddBefore() is equivilent
-                *  to Appending to the list.
-                */
+             *      NB: If I am past the last item on the list, AddBefore() is equivilent
+             *  to Appending to the list.
+             */
             Assert (i.Done ());
             Append (newValue);
             Assert (i.Done ()); // what is done, cannot be undone!!!
@@ -458,12 +458,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
             else {
                 /*
-                    *      |        |      |        |      |        |
-                    *      |   PREV |      |  NEW   |      |   CUR  |
-                    *  ... | <-prev |      | <-prev |      | <-prev |  ...
-                    *      | next-> |      | next-> |      | next-> |
-                    *      |        |      |        |      |        |
-                    */
+                 *      |        |      |        |      |        |
+                 *      |   PREV |      |  NEW   |      |   CUR  |
+                 *  ... | <-prev |      | <-prev |      | <-prev |  ...
+                 *      | next-> |      | next-> |      | next-> |
+                 *      |        |      |        |      |        |
+                 */
                 Assert (prev->fNext == i._fCurrent);
                 Link* iteratorCurLink = const_cast<Link*> (i._fCurrent);
                 prev->fNext           = new Link (newValue, prev, iteratorCurLink);
@@ -484,12 +484,12 @@ namespace Stroika::Foundation::Containers::DataStructures {
         AssertNotNull (i._fCurrent); // since not done...
         Assert (_fHead != nullptr);
         /*
-            *      |        |      |        |
-            *      |  CUR   |      |   NEW  |
-            *  ... | <-prev |      | <-prev |  ...
-            *      | next-> |      | next-> |
-            *      |        |      |        |
-            */
+         *      |        |      |        |
+         *      |  CUR   |      |   NEW  |
+         *  ... | <-prev |      | <-prev |  ...
+         *      | next-> |      | next-> |
+         *      |        |      |        |
+         */
         Link* iteratorCurLink  = const_cast<Link*> (i._fCurrent);
         Link* newLink          = new Link (newValue, iteratorCurLink, iteratorCurLink->fNext);
         iteratorCurLink->fNext = newLink;
@@ -533,8 +533,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Assert (_fTail == nullptr or _fTail->fNext == nullptr);
 
         /*
-            * Check we are properly linked together.
-            */
+         * Check we are properly linked together.
+         */
         size_t forwardCounter = 0;
         for (Link* i = _fHead; i != nullptr; i = i->fNext) {
             Assert (i->fNext == nullptr or i->fNext->fPrev == i); //  adjacent nodes point at each other
@@ -550,10 +550,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        ********************** DoublyLinkedList<T>::ForwardIterator ********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ********************** DoublyLinkedList<T>::ForwardIterator ********************
+     ********************************************************************************
+     */
     template <typename T>
     inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T>* data)
         : _fData (data)
@@ -628,9 +628,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
             else {
                 /*
-                    * We could already be done since after the last Done() call, we could
-                    * have done a removeall.
-                    */
+                 * We could already be done since after the last Done() call, we could
+                 * have done a removeall.
+                 */
                 if (_fCurrent != nullptr) {
                     _fCurrent = _fCurrent->fNext;
                 }
@@ -694,5 +694,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
     }
 #endif
+
 }
 #endif /* _Stroika_Foundation_Containers_DataStructures_DoublyLinkedList_inl_ */

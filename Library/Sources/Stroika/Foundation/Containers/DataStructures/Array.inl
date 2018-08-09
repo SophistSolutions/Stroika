@@ -39,10 +39,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        *********************************** Array<T> ***********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *********************************** Array<T> ***********************************
+     ********************************************************************************
+     */
     template <typename T>
     inline void Array<T>::Invariant () const
     {
@@ -67,8 +67,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         SetCapacity (from.GetLength ());
 
         /*
-            *  Construct the new items in-place into the new memory.
-            */
+         *  Construct the new items in-place into the new memory.
+         */
         size_t newLength = from.GetLength ();
         if (newLength > 0) {
             T*       lhs = &_fItems[0];
@@ -90,9 +90,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
 
         /*
-            * Delicate matter so that we assure ctors/dtors/op= called at
-            * right time.
-            */
+         * Delicate matter so that we assure ctors/dtors/op= called at
+         * right time.
+         */
         SetLength (_fLength + 1, item); //  Add space for extra item
         size_t oldLength = _fLength - 1;
         if (index < oldLength) {
@@ -123,8 +123,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
 
         if (index < _fLength - 1) {
             /*
-                * Slide items down.
-                */
+             * Slide items down.
+             */
             T* lhs = &_fItems[index];
             T* rhs = &_fItems[index + 1];
             // We tried getting rid of index var and using ptr compare but
@@ -202,9 +202,9 @@ namespace Stroika::Foundation::Containers::DataStructures {
             }
             else {
                 /*
-                    * We should consider getting rid of use of realloc since it prohibits
-                    * internal pointers. For example, we cannot have an array of patchable_arrays.
-                    */
+                 * We should consider getting rid of use of realloc since it prohibits
+                 * internal pointers. For example, we cannot have an array of patchable_arrays.
+                 */
                 if (_fItems == nullptr) {
                     _fItems = (T*)new char[sizeof (T) * slotsAlloced];
                 }
@@ -251,15 +251,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t newLength = list.GetLength ();
 
         /*
-            *      In case user already set this, we should not unset,
-            *  but must be sure we are big enuf. Do this before we store any pointers
-            *  cuz it could invalidate them.
-            */
+         *      In case user already set this, we should not unset,
+         *  but must be sure we are big enuf. Do this before we store any pointers
+         *  cuz it could invalidate them.
+         */
         SetCapacity (max (GetCapacity (), newLength));
 
         /*
-            * Copy array elements where both sides where constructed.
-            */
+         * Copy array elements where both sides where constructed.
+         */
         size_t commonLength = Stroika::Foundation::min (_fLength, newLength);
         T*     lhs          = &_fItems[0];
         T*     rhs          = &list._fItems[0];
@@ -268,15 +268,15 @@ namespace Stroika::Foundation::Containers::DataStructures {
         }
 
         /*
-            * Now if new length smaller, we must destroy entries at the end, and
-            * otherwise we must copy in new entries.
-            */
+         * Now if new length smaller, we must destroy entries at the end, and
+         * otherwise we must copy in new entries.
+         */
         Assert (lhs == &_fItems[commonLength]); // point 1 past first guy to destroy/overwrite
         if (_fLength > newLength) {
             T* end = &_fItems[_fLength]; // point 1 past last old guy
             /*
-                * Then we must destruct entries at the end.
-                */
+             * Then we must destruct entries at the end.
+             */
             Assert (lhs < end);
             do {
                 lhs->T::~T ();
@@ -300,44 +300,44 @@ namespace Stroika::Foundation::Containers::DataStructures {
         Invariant ();
 
         /*
-            * Safe to grow the memory, but not to shrink it here, since
-            * we may need to destruct guys in the shrinking case.
-            */
+         * Safe to grow the memory, but not to shrink it here, since
+         * we may need to destruct guys in the shrinking case.
+         */
         if (newLength > _fSlotsAllocated) {
             /*
-                *      Bump up Slots alloced to be at least big enuf for our
-                * new length. We could be minimalistic here, and just bump up
-                * exactly, but this function can be expensive because it calls
-                * realloc which could cause lots of memory copying. There are two
-                * plausible strategies for bumping up memory in big chunks-
-                * rounding up, and scaling up.
-                *
-                *      Rounding up works well at small scales - total memory
-                *  waste is small (bounded). It is simple, and it helps speed up
-                *  loops like while condition { append (); } considerably.
-                *
-                *      Scaling up has the advantage that for large n, we get
-                *  logn reallocs (rather than n/IncSize in the roundup case).
-                *  This is much better long-term large-size performance.
-                *  The only trouble with this approach is that in order to keep
-                *  memory waste small, we must scale by a small number (here 1.1)
-                *  and so we need array sizes > 100 before we start seeing any real
-                *  benefit at all. Such cases do happen, but we want to be able to
-                *  optimize the much more common, small array cases too.
-                *
-                *      So the compromise is to use a roundup-like strategy for
-                *  small n, and a scaling approach as n gets larger.
-                *
-                *      Also, we really should be more careful about overflow here...
-                *
-                *      Some math:
-                *          k*n = n + 64/sizeof (T) and so
-                *          n = (64/sizeof (T))/(k-1)
-                *      If we assume k = 1.1 and sizeof(T) = 4 then n = 160. This is
-                *  the value for length where we start scaling up by 10% as opposed to
-                *  our arithmetic + 16.
-                *
-                */
+             *      Bump up Slots alloced to be at least big enuf for our
+             * new length. We could be minimalistic here, and just bump up
+             * exactly, but this function can be expensive because it calls
+             * realloc which could cause lots of memory copying. There are two
+             * plausible strategies for bumping up memory in big chunks-
+             * rounding up, and scaling up.
+             *
+             *      Rounding up works well at small scales - total memory
+             *  waste is small (bounded). It is simple, and it helps speed up
+             *  loops like while condition { append (); } considerably.
+             *
+             *      Scaling up has the advantage that for large n, we get
+             *  logn reallocs (rather than n/IncSize in the roundup case).
+             *  This is much better long-term large-size performance.
+             *  The only trouble with this approach is that in order to keep
+             *  memory waste small, we must scale by a small number (here 1.1)
+             *  and so we need array sizes > 100 before we start seeing any real
+             *  benefit at all. Such cases do happen, but we want to be able to
+             *  optimize the much more common, small array cases too.
+             *
+             *      So the compromise is to use a roundup-like strategy for
+             *  small n, and a scaling approach as n gets larger.
+             *
+             *      Also, we really should be more careful about overflow here...
+             *
+             *      Some math:
+             *          k*n = n + 64/sizeof (T) and so
+             *          n = (64/sizeof (T))/(k-1)
+             *      If we assume k = 1.1 and sizeof(T) = 4 then n = 160. This is
+             *  the value for length where we start scaling up by 10% as opposed to
+             *  our arithmetic + 16.
+             *
+             */
             //SetCapacity (Max (newLength+(64/sizeof (T)), size_t (newLength*1.1)));
             // Based on the above arithmatic, we can take a shortcut...
             SetCapacity ((newLength > 160) ? size_t (newLength * 1.1) : (newLength + (64 / sizeof (T))));
@@ -498,10 +498,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
     /*
-        ********************************************************************************
-        ************************* Array<>::_ArrayIteratorBase **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* Array<>::_ArrayIteratorBase **************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T>* data)
         : _fData (data)
@@ -515,8 +515,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         _fCurrent = nullptr; // more likely to cause bugs...
 #endif
         /*
-            * Cannot call invariant () here since _fCurrent not yet setup.
-            */
+         * Cannot call invariant () here since _fCurrent not yet setup.
+         */
     }
 #if qDebug
     template <typename T>
@@ -608,10 +608,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        *************************** Array<T>::ForwardIterator **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     *************************** Array<T>::ForwardIterator **************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Array<T>::ForwardIterator::ForwardIterator (const Array<T>* data)
         : inherited (data)
@@ -664,10 +664,10 @@ namespace Stroika::Foundation::Containers::DataStructures {
     }
 
     /*
-        ********************************************************************************
-        **************************** Array<T>::BackwardIterator ************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     **************************** Array<T>::BackwardIterator ************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Array<T>::BackwardIterator::BackwardIterator (const Array<T>* data)
         : inherited (data)
@@ -735,5 +735,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         return More (static_cast<T*> (nullptr), advance);
     }
+
 }
 #endif /* _Stroika_Foundation_Containers_DataStructures_Array_inl_ */
