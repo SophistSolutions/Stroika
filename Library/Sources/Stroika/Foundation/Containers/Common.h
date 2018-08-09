@@ -14,7 +14,8 @@ namespace Stroika::Foundation::Containers {
 
 // https://stroika.atlassian.net/browse/STK-535
 #ifndef qIterationOnCopiedContainer_ThreadSafety_Buggy
-#define qIterationOnCopiedContainer_ThreadSafety_Buggy 1
+//#define qIterationOnCopiedContainer_ThreadSafety_Buggy 1
+#define qIterationOnCopiedContainer_ThreadSafety_Buggy 0
 #endif
 
     /**
