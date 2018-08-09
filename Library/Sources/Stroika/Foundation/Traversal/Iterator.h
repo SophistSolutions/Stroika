@@ -284,7 +284,7 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          *  \brief  reference = typename ITERATOR_TRAITS::reference;
-        */
+         */
         using reference = typename ITERATOR_TRAITS::reference;
 
     public:
@@ -315,8 +315,8 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         /*
-            *  Mostly internal type to select a constructor for the special END iterator.
-            */
+         *  Mostly internal type to select a constructor for the special END iterator.
+         */
         enum ConstructionFlagForceAtEnd_ {
             ForceAtEnd
         };
@@ -408,29 +408,29 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /*
-            *  \req operator++ can be called 'i' times (on a copy of this), and the result returned.
-            *
-            *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
-            *  \note   similar to std::advance, but allows for simpler usage (i + n)
-            */
+         *  \req operator++ can be called 'i' times (on a copy of this), and the result returned.
+         *
+         *  \note   dont use unsigned 'i' because that works less well with overloads and ambiguity.
+         *  \note   similar to std::advance, but allows for simpler usage (i + n)
+         */
         nonvirtual Iterator operator+ (int i) const;
 
     public:
         /*
-            *      \brief  return not Done ()
-            *
-            *  \em Design Note:
-            *      I HATE type punning - which this is. And I may want to lose this.
-            *
-            *      However, this API works beatifully with Iterable<>::FindFirstThat - and perhaps other things that
-            *      return iterators.
-            *
-            *      also, it allows
-            *          Iterator<T> n = ...;
-            *          while (n) {
-            *          }
-            *          not sure thats better than while (not n.Done ())???
-            */
+         *      \brief  return not Done ()
+         *
+         *  \em Design Note:
+         *      I HATE type punning - which this is. And I may want to lose this.
+         *
+         *      However, this API works beatifully with Iterable<>::FindFirstThat - and perhaps other things that
+         *      return iterators.
+         *
+         *      also, it allows
+         *          Iterator<T> n = ...;
+         *          while (n) {
+         *          }
+         *          not sure thats better than while (not n.Done ())???
+         */
         nonvirtual explicit operator bool () const;
 
     public:
