@@ -85,7 +85,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
             // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
-            return RESULT_TYPE (resultRep);
+            return RESULT_TYPE (move (resultRep));
         }
 
         // Queue<T>::_IRep overrides

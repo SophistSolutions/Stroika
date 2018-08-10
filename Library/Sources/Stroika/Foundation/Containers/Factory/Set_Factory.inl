@@ -56,8 +56,8 @@ namespace Stroika::Foundation::Containers::Factory {
     inline Set<T> Set_Factory<T, EQUALS_COMPARER>::Default_ (const EQUALS_COMPARER& equalsComparer)
     {
         /*
-            *  Use SFINAE to select best default implementation.
-            */
+         *  Use SFINAE to select best default implementation.
+         */
         return Default_SFINAE_ (equalsComparer, static_cast<T*> (nullptr));
     }
     template <typename T, typename EQUALS_COMPARER>

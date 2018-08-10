@@ -88,7 +88,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
                 tmpRep               = Iterator<CountedValue<T>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             }
-            return Iterator<CountedValue<T>> (tmpRep);
+            return Iterator<CountedValue<T>> (move (tmpRep));
         }
         virtual void Apply (_APPLY_ARGTYPE doToElement) const override
         {
