@@ -16,14 +16,19 @@ namespace Stroika::Foundation::Traversal {
     template <typename SHARED_T, typename... ARGS_TYPE>
     inline auto IteratorBase::MakeSharedPtr (ARGS_TYPE&&... args) -> SharedPtrImplementationTemplate<SHARED_T>
     {
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         if constexpr (kIteratorUsesStroikaSharedPtr) {
             return Memory::MakeSharedPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
         }
         else {
             return make_shared<SHARED_T> (forward<ARGS_TYPE> (args)...);
         }
+#else
+        return make_unique<SHARED_T> (forward<ARGS_TYPE> (args)...);
+#endif
     }
 
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     /*
      ********************************************************************************
      ****************** Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_ *******************
@@ -34,12 +39,14 @@ namespace Stroika::Foundation::Traversal {
     {
         return Iterator<T, ITERATOR_TRAITS>::Clone_ (t);
     }
+#endif
 
     /*
      ********************************************************************************
      *************************** Iterator<T, ITERATOR_TRAITS> ***********************
      ********************************************************************************
      */
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (const IteratorRepSharedPtr& rep)
         : fIterator_ (rep)
@@ -49,6 +56,7 @@ namespace Stroika::Foundation::Traversal {
         // Reason for cast stuff is to avoid Clone if unneeded.
         const_cast<IRep*> (rep.get ())->More (&fCurrent_, false);
     }
+#endif
     template <typename T, typename ITERATOR_TRAITS>
     inline Iterator<T, ITERATOR_TRAITS>::Iterator (IteratorRepSharedPtr&& rep)
         : fIterator_ (move (rep))
@@ -181,8 +189,13 @@ namespace Stroika::Foundation::Traversal {
         }
         Assert (not lDone and not rDone);
         // assigning to local variables to ensure const version called
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = fIterator_.cget ();
         const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.cget ();
+#else
+        const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = fIterator_.get ();
+        const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.get ();
+#endif
         Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
         return lhsRep->Equals (rhsRep);
     }
@@ -227,7 +240,6 @@ namespace Stroika::Foundation::Traversal {
         // note Traversal::Iterator2Pointer (s.end ()) generally crashes in debug mode - windows - _ITERATOR_DEBUG_LEVEL >= 1, but I can find no better way which is portable
         return &*i;
     }
-
 }
 
 #endif /* _Stroika_Foundation_Traversal_Iterator_inl_ */

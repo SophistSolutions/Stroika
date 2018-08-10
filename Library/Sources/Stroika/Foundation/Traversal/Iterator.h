@@ -87,6 +87,12 @@
 
 namespace Stroika::Foundation::Traversal {
 
+#ifndef qStroika_Foundation_Traversal_Iterator_UseSharedByValue
+#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 1
+//#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 0
+#endif
+
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     /**
      *  You can configure this to always use shared_ptr using ./configure, but by default
      *  kIteratorUsesStroikaSharedPtr uses whichever implementation is faster.
@@ -94,6 +100,7 @@ namespace Stroika::Foundation::Traversal {
      *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
      */
     constexpr bool kIteratorUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
+#endif
 
     /**
      *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
@@ -124,16 +131,24 @@ namespace Stroika::Foundation::Traversal {
          *      Experimental, so dont use directly (yet) - til stablized.
          *          -- LGP 2014-02-23
          */
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         template <typename SHARED_T>
         using SharedPtrImplementationTemplate = conditional_t<kIteratorUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
+#else
+        template <typename SHARED_T>
+        using SharedPtrImplementationTemplate = unique_ptr<SHARED_T>;
+#endif
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
         static SharedPtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
 
     public:
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue && 0
         template <typename SHARED_T>
         using enable_shared_from_this_SharedPtrImplementationTemplate = conditional_t<kIteratorUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
+        template <
+#endif
     };
 
     /**
@@ -301,17 +316,21 @@ namespace Stroika::Foundation::Traversal {
          */
         using IteratorRepSharedPtr = SharedPtrImplementationTemplate<IRep>;
 
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     private:
         struct Rep_Cloner_ {
             static IteratorRepSharedPtr Copy (const IRep& t);
         };
+#endif
 
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     public:
         /**
          *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
          *          by users).
          */
         using SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, IteratorRepSharedPtr, Rep_Cloner_>>;
+#endif
 
     private:
         /*
@@ -333,9 +352,19 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \req RequireNotNull (rep.get ())
          */
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         explicit Iterator (const IteratorRepSharedPtr& rep);
+#endif
         explicit Iterator (IteratorRepSharedPtr&& rep);
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         Iterator (const Iterator& src) = default;
+#else
+        Iterator (const Iterator& src)
+            : fIterator_ (src.fIterator_ == nullptr ? nullptr : Clone_ (*src.fIterator_))
+            , fCurrent_ (src.fCurrent_)
+        {
+        }
+#endif
         constexpr Iterator (nullptr_t);
         Iterator () = delete;
 
@@ -346,7 +375,18 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \brief  Iterators are safely copyable, preserving their current position.
          */
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         nonvirtual Iterator& operator= (const Iterator& rhs) = default;
+#else
+        nonvirtual Iterator& operator= (const Iterator& rhs)
+        {
+            if (&rhs != this) {
+                fIterator_ = rhs.fIterator_ == nullptr ? nullptr : Clone_ (*rhs.fIterator_);
+                fCurrent_  = rhs.fCurrent_;
+            }
+            return *this;
+        }
+#endif
 
     public:
         /**
@@ -616,7 +656,11 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual const IRep& ConstGetRep () const;
 
     private:
+#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         SharedByValueRepType fIterator_;
+#else
+        unique_ptr<IRep> fIterator_;
+#endif
 
     private:
         optional<T> fCurrent_;
