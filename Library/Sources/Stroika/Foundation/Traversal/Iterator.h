@@ -88,8 +88,8 @@
 namespace Stroika::Foundation::Traversal {
 
 #ifndef qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 1
-//#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 0
+//#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 1
+#define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 0
 #endif
 
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
