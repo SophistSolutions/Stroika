@@ -231,7 +231,12 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename TRAITS>
     Iterator<T> DiscreteRange<T, TRAITS>::begin () const
     {
-        return this->empty () ? Iterator<T>::GetEmptyIterator () : Iterator<T> (Iterator<T>::template MakeSharedPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ()));
+        if (this->empty ()) {
+            return Iterator<T>::GetEmptyIterator ();
+        }
+        else {
+            return Iterator<T> (Iterator<T>::template MakeSharedPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ()));
+        }
     }
     template <typename T, typename TRAITS>
     inline Iterator<T> DiscreteRange<T, TRAITS>::end () const
@@ -249,7 +254,6 @@ namespace Stroika::Foundation::Traversal {
     {
         return lhs.Intersection (rhs);
     }
-
 }
 
 #endif /* _Stroika_Foundation_Traversal_DiscreteRange_inl_ */

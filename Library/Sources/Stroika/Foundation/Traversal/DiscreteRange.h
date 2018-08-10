@@ -191,13 +191,13 @@ namespace Stroika::Foundation::Traversal {
         nonvirtual Iterable<T> Elements () const;
 
     public:
-        /**EXPERIEMNTAL as of 2.0a73
+        /**
         */
         operator Iterable<T> () const;
-        /**EXPERIEMNTAL as of 2.0a73
+        /**
         */
         Iterator<T> begin () const;
-        /**EXPERIEMNTAL as of 2.0a73
+        /**
         */
         Iterator<T> end () const;
 
