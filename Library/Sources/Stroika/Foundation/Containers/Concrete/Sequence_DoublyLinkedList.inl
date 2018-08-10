@@ -121,7 +121,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual size_t IndexOf (const Iterator<T>& i) const override
         {
-            const typename Iterator<T>::IRep& ir = i.GetRep ();
+            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
             auto&                                                      mir = dynamic_cast<const IteratorRep_&> (ir);
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
@@ -130,7 +130,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<T>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.GetRep ();
+            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);
             fData_.RemoveAt (mir.fIterator);
@@ -138,7 +138,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Update (const Iterator<T>& i, ArgByValueType<T> newValue) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
-            const typename Iterator<T>::IRep&                         ir = i.GetRep ();
+            const typename Iterator<T>::IRep&                         ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);
             fData_.SetAt (mir.fIterator, newValue);

@@ -39,10 +39,10 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename EXTRA_DATA>
     bool DelegatedIterator<T, EXTRA_DATA>::Rep::Equals (const IRep* rhs) const
     {
-        return fDelegateTo.GetRep ().Equals (rhs);
+        return fDelegateTo.ConstGetRep ().Equals (rhs);
     }
     template <typename T>
-    DelegatedIterator<T, void>::Rep::Rep (const Iterator<T>& delegateTo)
+    inline DelegatedIterator<T, void>::Rep::Rep (const Iterator<T>& delegateTo)
         : fDelegateTo (delegateTo)
     {
     }

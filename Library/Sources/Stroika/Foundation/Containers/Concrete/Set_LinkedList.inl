@@ -168,7 +168,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
         virtual void Remove (const Iterator<T>& i) override
         {
-            const typename Iterator<T>::IRep& ir = i.GetRep ();
+            const typename Iterator<T>::IRep& ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
             auto&                                                     mir = dynamic_cast<const IteratorRep_&> (ir);
             lock_guard<const Debug::AssertExternallySynchronizedLock> lg{fData_};

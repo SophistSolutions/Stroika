@@ -598,9 +598,22 @@ namespace Stroika::Foundation::Traversal {
          *
          *  Get a reference to the IRep owned by the iterator.
          *  This is an implementation detail, mainly intended for implementors.
+         *
+         *  \note BACKWARDS COMPATABILITY: the const method ConstGetRep () used to be overloaded with GetRep() (same name), but was
+         *        broken out as a separate name in Stroika v2.1d6
          */
         nonvirtual IRep& GetRep ();
-        nonvirtual const IRep& GetRep () const;
+
+    public:
+        /**
+         *  \brief
+         *      Get a reference to the IRep owned by the iterator. This is an implementation detail,
+         *      mainly intended for implementors.
+         *
+         *  Get a reference to the IRep owned by the iterator.
+         *  This is an implementation detail, mainly intended for implementors.
+         */
+        nonvirtual const IRep& ConstGetRep () const;
 
     private:
         SharedByValueRepType fIterator_;

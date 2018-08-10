@@ -77,7 +77,7 @@ namespace Stroika::Foundation::Traversal {
         return *fIterator_;
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline const typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::GetRep () const
+    inline const typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::ConstGetRep () const
     {
         EnsureNotNull (fIterator_);
         return *fIterator_;

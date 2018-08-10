@@ -182,7 +182,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual void Remove (const Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>& i) override
         {
             lock_guard<const Debug::AssertExternallySynchronizedLock>                 critSec{fData_};
-            const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.GetRep ();
+            const typename Iterator<KeyValuePair<KEY_TYPE, MAPPED_VALUE_TYPE>>::IRep& ir = i.ConstGetRep ();
             AssertMember (&ir, IteratorRep_);
             auto& mir = dynamic_cast<const IteratorRep_&> (ir);
             mir.fIterator.RemoveCurrent ();
