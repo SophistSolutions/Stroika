@@ -50,6 +50,15 @@ namespace Stroika::Foundation::Traversal {
         const_cast<IRep*> (rep.get ())->More (&fCurrent_, false);
     }
     template <typename T, typename ITERATOR_TRAITS>
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (IteratorRepSharedPtr&& rep)
+        : fIterator_ (move (rep))
+        , fCurrent_ ()
+    {
+        RequireNotNull (fIterator_);
+        // Reason for cast stuff is to avoid Clone if unneeded.
+        const_cast<IRep*> (fIterator_.get ())->More (&fCurrent_, false);
+    }
+    template <typename T, typename ITERATOR_TRAITS>
     constexpr Iterator<T, ITERATOR_TRAITS>::Iterator (nullptr_t)
         : Iterator (ConstructionFlagForceAtEnd_::ForceAtEnd)
     {

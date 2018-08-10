@@ -334,6 +334,7 @@ namespace Stroika::Foundation::Traversal {
          *  \req RequireNotNull (rep.get ())
          */
         explicit Iterator (const IteratorRepSharedPtr& rep);
+        explicit Iterator (IteratorRepSharedPtr&& rep);
         Iterator (const Iterator& src) = default;
         constexpr Iterator (nullptr_t);
         Iterator () = delete;
