@@ -64,7 +64,7 @@ namespace Stroika::Foundation::Traversal {
         }
         virtual typename inherited::RepSmartPtr Clone () const override
         {
-            Traversal::IteratorBase::SharedPtrImplementationTemplate<MyIteratorRep_> tmp{new MyIteratorRep_ (fCur, fEnd)};
+            Traversal::IteratorBase::PtrImplementationTemplate<MyIteratorRep_> tmp{new MyIteratorRep_ (fCur, fEnd)};
             tmp->fAtEnd = fAtEnd;
             return tmp;
         }

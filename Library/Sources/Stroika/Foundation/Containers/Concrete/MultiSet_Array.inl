@@ -116,7 +116,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{fData_};
             using RESULT_TYPE     = Iterator<CountedValue<T>>;
-            using SHARED_REP_TYPE = Traversal::IteratorBase::SharedPtrImplementationTemplate<IteratorRep_>;
+            using SHARED_REP_TYPE = Traversal::IteratorBase::PtrImplementationTemplate<IteratorRep_>;
             size_t i              = fData_.FindFirstThat (doToElement);
             if (i == fData_.GetLength ()) {
                 return RESULT_TYPE::GetEmptyIterator ();
