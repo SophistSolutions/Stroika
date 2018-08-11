@@ -21,9 +21,9 @@ namespace Stroika::Foundation::Traversal {
     }
 #if !qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
     template <typename T, typename EXTRA_DATA>
-    typename Iterator<T>::IteratorRepSharedPtr DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const
+    typename Iterator<T>::RepSmartPtr DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const
     {
-        return IteratorRepSharedPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
+        return RepSmartPtr (Iterator<T>::template MakeSmartPtr<Rep> (*this));
     }
 #endif
     template <typename T, typename EXTRA_DATA>
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename EXTRA_DATA>
     DelegatedIterator<T, EXTRA_DATA>::DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData)
-        : Iterator<T> (Iterator<T>::template MakeSharedPtr<Rep> (delegateTo, extraData))
+        : Iterator<T> (Iterator<T>::template MakeSmartPtr<Rep> (delegateTo, extraData))
     {
     }
 

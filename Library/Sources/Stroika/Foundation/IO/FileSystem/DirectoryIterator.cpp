@@ -197,7 +197,7 @@ public:
         return fHandle_ == rrhs.fHandle_;
 #endif
     }
-    virtual IteratorRepSharedPtr Clone () const override
+    virtual RepSmartPtr Clone () const override
     {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
         Debug::TraceContextBumper ctx (L"Entering DirectoryIterator::Rep_::Clone");
@@ -234,9 +234,9 @@ public:
          *  This above didn't work on macos, so use the (actually simpler) approach of just opening the dir again, and scanning til we
          *  find the same inode. Not perfect (in case that is deleted) - but not sure there is a guaranteed way then.
          */
-        return IteratorRepSharedPtr (MakeSharedPtr<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_));
+        return RepSmartPtr (MakeSmartPtr<Rep_> (fDirName_, fCur_ == nullptr ? optional<ino_t>{} : fCur_->d_ino, fIteratorReturnType_));
 #elif qPlatform_Windows
-        return IteratorRepSharedPtr (MakeSharedPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
+        return RepSmartPtr (MakeSmartPtr<Rep_> (fDirName_, fHandle_ == INVALID_HANDLE_VALUE ? optional<String>{} : String::FromSDKString (fFindFileData_.cFileName), fIteratorReturnType_));
 #endif
     }
     virtual IteratorOwnerID GetOwner () const override
@@ -270,6 +270,6 @@ private:
  ********************************************************************************
  */
 DirectoryIterator::DirectoryIterator (const String& directoryName, IteratorReturnType iteratorReturns)
-    : Iterator<String> (MakeSharedPtr<Rep_> (directoryName, iteratorReturns))
+    : Iterator<String> (MakeSmartPtr<Rep_> (directoryName, iteratorReturns))
 {
 }

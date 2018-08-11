@@ -43,7 +43,7 @@ namespace Stroika::Foundation::Containers::Private {
         using inherited = typename Iterator<T>::IRep;
 
     public:
-        using IteratorRepSharedPtr        = typename Iterator<T>::IteratorRepSharedPtr;
+        using RepSmartPtr                 = typename Iterator<T>::RepSmartPtr;
         using DataStructureImplValueType_ = PATCHABLE_CONTAINER_VALUE;
 
     public:
@@ -56,10 +56,10 @@ namespace Stroika::Foundation::Containers::Private {
 
         // Iterator<T>::IRep
     public:
-        virtual IteratorRepSharedPtr Clone () const override;
-        virtual IteratorOwnerID      GetOwner () const override;
-        virtual void                 More (optional<T>* result, bool advance) override;
-        virtual bool                 Equals (const typename Iterator<T>::IRep* rhs) const override;
+        virtual RepSmartPtr     Clone () const override;
+        virtual IteratorOwnerID GetOwner () const override;
+        virtual void            More (optional<T>* result, bool advance) override;
+        virtual bool            Equals (const typename Iterator<T>::IRep* rhs) const override;
 
     private:
         /*

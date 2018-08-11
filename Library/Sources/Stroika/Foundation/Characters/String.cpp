@@ -124,9 +124,9 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
         {
             Require (fCurIdx <= fStr->_GetLength ());
         }
-        virtual Iterator<Character>::IteratorRepSharedPtr Clone () const override
+        virtual Iterator<Character>::RepSmartPtr Clone () const override
         {
-            return Iterator<Character>::MakeSharedPtr<MyIterRep_> (fStr, fCurIdx);
+            return Iterator<Character>::MakeSmartPtr<MyIterRep_> (fStr, fCurIdx);
         }
         virtual IteratorOwnerID GetOwner () const override
         {
@@ -160,9 +160,9 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
 // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
 // ignore suggested IteratorOwnerID - which explains the arg to Clone () below
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-    return Iterator<Character> (Iterator<Character>::MakeSharedPtr<MyIterRep_> (dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ())));
+    return Iterator<Character> (Iterator<Character>::MakeSmartPtr<MyIterRep_> (dynamic_pointer_cast<_SharedPtrIRep::element_type> (const_cast<String::_IRep*> (this)->shared_from_this ())));
 #else
-    return Iterator<Character> (Iterator<Character>::MakeSharedPtr<MyIterRep_> (const_cast<String::_IRep*> (this)->shared_from_this ()));
+    return Iterator<Character> (Iterator<Character>::MakeSmartPtr<MyIterRep_> (const_cast<String::_IRep*> (this)->shared_from_this ()));
 #endif
 }
 

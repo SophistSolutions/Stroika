@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Traversal {
             AssertNotImplemented ();
             return false;
         }
-        virtual typename inherited::IteratorRepSharedPtr Clone () const override
+        virtual typename inherited::RepSmartPtr Clone () const override
         {
             Traversal::IteratorBase::SharedPtrImplementationTemplate<MyIteratorRep_> tmp{new MyIteratorRep_ (fCur, fEnd)};
             tmp->fAtEnd = fAtEnd;
@@ -106,10 +106,10 @@ namespace Stroika::Foundation::Traversal {
             {
                 // DiscreteRange doesn't track specific 'envelope' owner
                 if (fForcedEnd) {
-                    return Iterator<T> (Iterator<T>::template MakeSharedPtr<DiscreteRange<T, TRAITS>::MyIteratorRep_> ());
+                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange<T, TRAITS>::MyIteratorRep_> ());
                 }
                 else {
-                    return Iterator<T> (Iterator<T>::template MakeSharedPtr<DiscreteRange<T, TRAITS>::MyIteratorRep_> (fStart, fEnd));
+                    return Iterator<T> (Iterator<T>::template MakeSmartPtr<DiscreteRange<T, TRAITS>::MyIteratorRep_> (fStart, fEnd));
                 }
             }
             virtual size_t GetLength () const
@@ -235,7 +235,7 @@ namespace Stroika::Foundation::Traversal {
             return Iterator<T>::GetEmptyIterator ();
         }
         else {
-            return Iterator<T> (Iterator<T>::template MakeSharedPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ()));
+            return Iterator<T> (Iterator<T>::template MakeSmartPtr<MyIteratorRep_> (this->GetLowerBound (), this->GetUpperBound ()));
         }
     }
     template <typename T, typename TRAITS>

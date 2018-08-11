@@ -54,9 +54,9 @@ namespace Stroika::Foundation::Traversal {
                 const GenItWrapper_& rrhs = *dynamic_cast<const GenItWrapper_*> (rhs);
                 return fAtEnd_ == rrhs.fAtEnd_;
             }
-            virtual typename Iterator<T>::IteratorRepSharedPtr Clone () const override
+            virtual typename Iterator<T>::RepSmartPtr Clone () const override
             {
-                return Iterator<T>::template MakeSharedPtr<GenItWrapper_> (*this);
+                return Iterator<T>::template MakeSmartPtr<GenItWrapper_> (*this);
             }
             virtual IteratorOwnerID GetOwner () const override
             {
@@ -73,7 +73,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     Iterator<T> CreateGeneratorIterator (const function<optional<T> ()>& getNext)
     {
-        return Iterator<T> (Iterator<T>::template MakeSharedPtr<Private_::GenItWrapper_<T>> (getNext));
+        return Iterator<T> (Iterator<T>::template MakeSmartPtr<Private_::GenItWrapper_<T>> (getNext));
     }
 
     /**

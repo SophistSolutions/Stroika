@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
         }
         virtual size_t GetLength () const override
         {
@@ -92,7 +92,7 @@ namespace Stroika::Foundation::Containers::Concrete {
                 return RESULT_TYPE::GetEmptyIterator ();
             }
             Rep_*           NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
+            SHARED_REP_TYPE resultRep      = Iterator<T>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_);
             resultRep->fIterator.SetCurrentLink (iLink);
             // because Iterator<T> locks rep (non recursive mutex) - this CTOR needs to happen outside CONTAINER_LOCK_HELPER_START()
             return RESULT_TYPE (move (resultRep));
@@ -148,7 +148,7 @@ namespace Stroika::Foundation::Containers::Concrete {
             using inherited = typename Iterator<tuple<T, INDEXES...>>::IRep;
 
         public:
-            using IteratorRepSharedPtr = typename Iterator<tuple<T, INDEXES...>>::IteratorRepSharedPtr;
+            using RepSmartPtr = typename Iterator<tuple<T, INDEXES...>>::RepSmartPtr;
 
         public:
             MyIteratorImplHelper_ ()                             = delete;
@@ -166,9 +166,9 @@ namespace Stroika::Foundation::Containers::Concrete {
 
             // Iterator<tuple<T, INDEXES...>>::IRep
         public:
-            virtual IteratorRepSharedPtr Clone () const override
+            virtual RepSmartPtr Clone () const override
             {
-                return Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<MyIteratorImplHelper_> (*this);
+                return Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<MyIteratorImplHelper_> (*this);
             }
             virtual IteratorOwnerID GetOwner () const override
             {

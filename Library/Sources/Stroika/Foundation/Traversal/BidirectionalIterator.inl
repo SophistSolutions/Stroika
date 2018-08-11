@@ -184,7 +184,7 @@ namespace Stroika::Foundation::Traversal {
         return not Equals (rhs);
     }
     template    <typename T>
-    inline  typename Iterator<T>::IteratorRepSharedPtr   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
+    inline  typename Iterator<T>::RepSmartPtr   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
     {
         return rep.Clone ();
     }

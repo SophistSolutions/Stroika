@@ -29,18 +29,18 @@ namespace Stroika::Foundation::Traversal {
     class DelegatedIterator : public Iterator<T> {
     public:
         struct Rep : Iterator<T>::IRep {
-            using IteratorRepSharedPtr = typename Iterator<T>::IteratorRepSharedPtr;
-            using IRep                 = typename Iterator<T>::IRep;
+            using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
+            using IRep        = typename Iterator<T>::IRep;
             Iterator<T> fDelegateTo;
             EXTRA_DATA  fExtraData;
             Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
 #if qCompilerAndStdLib_TemplateIteratorOutOfLineTemplate_Buggy
-            virtual IteratorRepSharedPtr Clone () const override
+            virtual RepSmartPtr Clone () const override
             {
-                return IteratorRepSharedPtr (Iterator<T>::template MakeSharedPtr<Rep> (*this));
+                return RepSmartPtr (Iterator<T>::template MakeSmartPtr<Rep> (*this));
             }
 #else
-            virtual IteratorRepSharedPtr Clone () const override;
+            virtual RepSmartPtr Clone () const override;
 #endif
             virtual IteratorOwnerID GetOwner () const override;
             virtual void            More (optional<T>* result, bool advance) override;
@@ -52,14 +52,14 @@ namespace Stroika::Foundation::Traversal {
     class DelegatedIterator<T, void> : public Iterator<T> {
     public:
         struct Rep : Iterator<T>::IRep {
-            using IteratorRepSharedPtr = typename Iterator<T>::IteratorRepSharedPtr;
-            using IRep                 = typename Iterator<T>::IRep;
+            using RepSmartPtr = typename Iterator<T>::RepSmartPtr;
+            using IRep        = typename Iterator<T>::IRep;
             Iterator<T> fDelegateTo;
             Rep (const Iterator<T>& delegateTo);
-            virtual IteratorRepSharedPtr Clone () const override;
-            virtual IteratorOwnerID      GetOwner () const override;
-            virtual void                 More (optional<T>* result, bool advance) override;
-            virtual bool                 Equals (const IRep* rhs) const override;
+            virtual RepSmartPtr     Clone () const override;
+            virtual IteratorOwnerID GetOwner () const override;
+            virtual void            More (optional<T>* result, bool advance) override;
+            virtual bool            Equals (const IRep* rhs) const override;
         };
     };
 

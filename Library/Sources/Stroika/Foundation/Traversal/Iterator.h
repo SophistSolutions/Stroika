@@ -92,15 +92,13 @@ namespace Stroika::Foundation::Traversal {
 #define qStroika_Foundation_Traversal_Iterator_UseSharedByValue 0
 #endif
 
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     /**
      *  You can configure this to always use shared_ptr using ./configure, but by default
      *  kIteratorUsesStroikaSharedPtr uses whichever implementation is faster.
      *
      *      This defaults to @see Memory::kSharedPtr_IsFasterThan_shared_ptr
      */
-    constexpr bool kIteratorUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr;
-#endif
+    constexpr bool kIteratorUsesStroikaSharedPtr = Memory::kSharedPtr_IsFasterThan_shared_ptr and qStroika_Foundation_Traversal_Iterator_UseSharedByValue;
 
     /**
      *  An IteratorOwnerID may be any pointer value, or kUnknownIteratorOwnerID.
@@ -131,24 +129,23 @@ namespace Stroika::Foundation::Traversal {
          *      Experimental, so dont use directly (yet) - til stablized.
          *          -- LGP 2014-02-23
          */
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         template <typename SHARED_T>
-        using SharedPtrImplementationTemplate = conditional_t<kIteratorUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
-#else
-        template <typename SHARED_T>
-        using SharedPtrImplementationTemplate = unique_ptr<SHARED_T>;
-#endif
+        using PtrImplementationTemplate = conditional_t<qStroika_Foundation_Traversal_Iterator_UseSharedByValue, conditional_t<kIteratorUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>, unique_ptr<SHARED_T>>;
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
-        static SharedPtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
+        static PtrImplementationTemplate<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
 
     public:
-#if qStroika_Foundation_Traversal_Iterator_UseSharedByValue && 0
         template <typename SHARED_T>
-        using enable_shared_from_this_SharedPtrImplementationTemplate = conditional_t<kIteratorUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
-        template <
-#endif
+        [[deprecated ("use PtrImplementationTemplate since version 2.1b6")]] using SharedPtrImplementationTemplate = PtrImplementationTemplate<SHARED_T>;
+
+    public:
+        template <typename SHARED_T, typename... ARGS_TYPE>
+        [[deprecated ("use MakeSmartPtr since version 2.1b6")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
+        {
+            return MakeSmartPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
+        }
     };
 
     /**
@@ -314,12 +311,17 @@ namespace Stroika::Foundation::Traversal {
     public:
         /**
          */
-        using IteratorRepSharedPtr = SharedPtrImplementationTemplate<IRep>;
+        using RepSmartPtr = PtrImplementationTemplate<IRep>;
+
+    public:
+        /**
+         */
+        [[deprecated ("use IteratorRepSmartPtr since version 2.1b6")]] typedef RepSmartPtr IteratorRepSharedPtr;
 
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     private:
         struct Rep_Cloner_ {
-            static IteratorRepSharedPtr Copy (const IRep& t);
+            static RepSmartPtr Copy (const IRep& t);
         };
 #endif
 
@@ -329,7 +331,7 @@ namespace Stroika::Foundation::Traversal {
          *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored
          *          by users).
          */
-        using SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, IteratorRepSharedPtr, Rep_Cloner_>>;
+        using SharedByValueRepType = Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, RepSmartPtr, Rep_Cloner_>>;
 #endif
 
     private:
@@ -353,17 +355,13 @@ namespace Stroika::Foundation::Traversal {
          *  \req RequireNotNull (rep.get ())
          */
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
-        explicit Iterator (const IteratorRepSharedPtr& rep);
+        explicit Iterator (const RepSmartPtr& rep);
 #endif
-        explicit Iterator (IteratorRepSharedPtr&& rep);
+        explicit Iterator (RepSmartPtr&& rep);
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         Iterator (const Iterator& src) = default;
 #else
-        Iterator (const Iterator& src)
-            : fIterator_ (src.fIterator_ == nullptr ? nullptr : Clone_ (*src.fIterator_))
-            , fCurrent_ (src.fCurrent_)
-        {
-        }
+        Iterator (const Iterator& src);
 #endif
         constexpr Iterator (nullptr_t);
         Iterator () = delete;
@@ -378,14 +376,7 @@ namespace Stroika::Foundation::Traversal {
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         nonvirtual Iterator& operator= (const Iterator& rhs) = default;
 #else
-        nonvirtual Iterator& operator= (const Iterator& rhs)
-        {
-            if (&rhs != this) {
-                fIterator_ = rhs.fIterator_ == nullptr ? nullptr : Clone_ (*rhs.fIterator_);
-                fCurrent_  = rhs.fCurrent_;
-            }
-            return *this;
-        }
+        nonvirtual Iterator& operator= (const Iterator& rhs);
 #endif
 
     public:
@@ -659,14 +650,14 @@ namespace Stroika::Foundation::Traversal {
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         SharedByValueRepType fIterator_;
 #else
-        unique_ptr<IRep> fIterator_;
+        unique_ptr<IRep>     fIterator_;
 #endif
 
     private:
         optional<T> fCurrent_;
 
     private:
-        static IteratorRepSharedPtr Clone_ (const IRep& rep);
+        static RepSmartPtr Clone_ (const IRep& rep);
     };
 
     /**
@@ -701,14 +692,14 @@ namespace Stroika::Foundation::Traversal {
         virtual ~IRep () = default;
 
     public:
-        using IteratorRepSharedPtr = typename Iterator<T, ITERATOR_TRAITS>::IteratorRepSharedPtr;
+        using RepSmartPtr = typename Iterator<T, ITERATOR_TRAITS>::RepSmartPtr;
 
     public:
         /**
          * Clone() makes a copy of the state of this iterator, which can separately be tracked with Equals ()
          * and/or More() to get values and move forward through the iteration.
          */
-        virtual IteratorRepSharedPtr Clone () const = 0;
+        virtual RepSmartPtr Clone () const = 0;
         /**
          *  @see Iterator<T>::GetOwner
          */
@@ -764,7 +755,6 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename ITERATOR>
     typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
-
 }
 
 /*

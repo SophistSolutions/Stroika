@@ -14,7 +14,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename SHARED_T, typename... ARGS_TYPE>
-    inline auto IteratorBase::MakeSharedPtr (ARGS_TYPE&&... args) -> SharedPtrImplementationTemplate<SHARED_T>
+    inline auto IteratorBase::MakeSmartPtr (ARGS_TYPE&&... args) -> PtrImplementationTemplate<SHARED_T>
     {
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         if constexpr (kIteratorUsesStroikaSharedPtr) {
@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename ITERATOR_TRAITS>
-    inline typename IteratorBase::SharedPtrImplementationTemplate<typename Iterator<T, ITERATOR_TRAITS>::IRep> Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_::Copy (const IRep& t)
+    inline typename IteratorBase::PtrImplementationTemplate<typename Iterator<T, ITERATOR_TRAITS>::IRep> Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_::Copy (const IRep& t)
     {
         return Iterator<T, ITERATOR_TRAITS>::Clone_ (t);
     }
@@ -48,7 +48,7 @@ namespace Stroika::Foundation::Traversal {
      */
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const IteratorRepSharedPtr& rep)
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (const RepSmartPtr& rep)
         : fIterator_ (rep)
         , fCurrent_ ()
     {
@@ -57,8 +57,16 @@ namespace Stroika::Foundation::Traversal {
         const_cast<IRep*> (rep.get ())->More (&fCurrent_, false);
     }
 #endif
+#if !qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     template <typename T, typename ITERATOR_TRAITS>
-    inline Iterator<T, ITERATOR_TRAITS>::Iterator (IteratorRepSharedPtr&& rep)
+    Iterator<T, ITERATOR_TRAITS>::Iterator (const Iterator& src)
+        : fIterator_ (src.fIterator_ == nullptr ? nullptr : Clone_ (*src.fIterator_))
+        , fCurrent_ (src.fCurrent_)
+    {
+    }
+#endif
+    template <typename T, typename ITERATOR_TRAITS>
+    inline Iterator<T, ITERATOR_TRAITS>::Iterator (RepSmartPtr&& rep)
         : fIterator_ (move (rep))
         , fCurrent_ ()
     {
@@ -78,6 +86,17 @@ namespace Stroika::Foundation::Traversal {
     {
         Assert (Done ());
     }
+#if !qStroika_Foundation_Traversal_Iterator_UseSharedByValue
+    template <typename T, typename ITERATOR_TRAITS>
+    Iterator<T, ITERATOR_TRAITS>& Iterator<T, ITERATOR_TRAITS>::operator= (const Iterator& rhs)
+    {
+        if (&rhs != this) {
+            fIterator_ = rhs.fIterator_ == nullptr ? nullptr : Clone_ (*rhs.fIterator_);
+            fCurrent_  = rhs.fCurrent_;
+        }
+        return *this;
+    }
+#endif
     template <typename T, typename ITERATOR_TRAITS>
     inline typename Iterator<T, ITERATOR_TRAITS>::IRep& Iterator<T, ITERATOR_TRAITS>::GetRep ()
     {
@@ -200,7 +219,7 @@ namespace Stroika::Foundation::Traversal {
         return lhsRep->Equals (rhsRep);
     }
     template <typename T, typename ITERATOR_TRAITS>
-    inline typename Iterator<T, ITERATOR_TRAITS>::IteratorRepSharedPtr Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep)
+    inline typename Iterator<T, ITERATOR_TRAITS>::RepSmartPtr Iterator<T, ITERATOR_TRAITS>::Clone_ (const typename Iterator<T, ITERATOR_TRAITS>::IRep& rep)
     {
         return rep.Clone ();
     }
