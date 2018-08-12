@@ -283,8 +283,8 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         //inherited_PatchHelper::Invariant_ ();
 
         /*
-            *  fPrev could be nullptr, but if it isn't then its next must be _fCurrent.
-            */
+         *  fPrev could be nullptr, but if it isn't then its next must be _fCurrent.
+         */
         //Assert ((fPrev == nullptr) or (fPrev->fNext == this->_fCurrent));
     }
 #endif
