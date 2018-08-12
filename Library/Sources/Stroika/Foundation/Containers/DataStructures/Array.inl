@@ -565,8 +565,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
         /*
-            * NB: This can be called if we are done - if so, it returns GetLength().
-            */
+         * NB: This can be called if we are done - if so, it returns GetLength().
+         */
         Invariant ();
         return _fCurrent - _fStart;
     }
