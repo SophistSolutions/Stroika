@@ -125,9 +125,6 @@ namespace Stroika::Foundation::Traversal {
     struct IteratorBase {
     public:
         /**
-         *      Temporary name/define - for what SharedPtr/shared_ptr impl we are using.
-         *      Experimental, so dont use directly (yet) - til stablized.
-         *          -- LGP 2014-02-23
          */
         template <typename SHARED_T>
         using PtrImplementationTemplate = conditional_t<qStroika_Foundation_Traversal_Iterator_UseSharedByValue, conditional_t<kIteratorUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>, unique_ptr<SHARED_T>>;
