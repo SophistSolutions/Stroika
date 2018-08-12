@@ -63,9 +63,9 @@ namespace Stroika::Foundation::Containers::Private {
 
     private:
         /*
-            *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
-            *  a temporary, and to copy.
-            */
+         *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
+         *  a temporary, and to copy.
+         */
         template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
         nonvirtual void More_SFINAE_ (optional<T>* result, bool advance, enable_if_t<is_same_v<T, CHECK_KEY>>* = 0);
         template <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>

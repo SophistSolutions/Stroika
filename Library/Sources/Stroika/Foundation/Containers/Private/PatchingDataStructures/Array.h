@@ -29,18 +29,18 @@
 namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     /*
-        *  Patching Support:
-        *
-        *      This class wraps a basic container (in this case DataStructures::Array)
-        *  and adds in patching support (tracking a list of iterators - and managing thier
-        *  patching when appropriately wrapped changes are made to the data structure container.
-        *
-        *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
-        *
-        *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
-        *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
-        *  the source to copy from and the newOwnerID to copy INTO.
-        */
+     *  Patching Support:
+     *
+     *      This class wraps a basic container (in this case DataStructures::Array)
+     *  and adds in patching support (tracking a list of iterators - and managing thier
+     *  patching when appropriately wrapped changes are made to the data structure container.
+     *
+     *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
+     *
+     *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
+     *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
+     *  the source to copy from and the newOwnerID to copy INTO.
+     */
     template <typename T>
     class Array : public PatchableContainerHelper<DataStructures::Array<T>> {
     private:
