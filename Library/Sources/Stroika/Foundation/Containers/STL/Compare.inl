@@ -10,11 +10,12 @@
 #include "../../Debug/Assertions.h"
 
 namespace Stroika::Foundation::Containers::STL {
+
     /*
-        ********************************************************************************
-        ******************************** STL::Equals ***********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** STL::Equals ***********************************
+     ********************************************************************************
+     */
     template <typename STROIKA_EQUALS_COMPARER, typename ITERATOR_OF_T>
     bool Equals (ITERATOR_OF_T lhsStart, ITERATOR_OF_T lhsEnd, ITERATOR_OF_T rhsStart, ITERATOR_OF_T rhsEnd)
     {
@@ -39,5 +40,7 @@ namespace Stroika::Foundation::Containers::STL {
         //return Equals<STROIKA_EQUALS_COMPARER, typename CONTAINER_OF_T::const_iterator> (lhs.begin (), lhs.end (), rhs.begin (), rhs.end ());
         return Equals<STROIKA_EQUALS_COMPARER> (lhs.begin (), lhs.end (), rhs.begin (), rhs.end ());
     }
+
 }
+
 #endif /*_Stroika_Foundation_Containers_STL_Compare_inl_*/

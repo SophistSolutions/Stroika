@@ -58,9 +58,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         nonvirtual Array<T>& operator= (const Array<T>& rhs) = delete;
 
         /*
-            * Methods to do the patching yourself. Iterate over all the iterators and
-            * perform patching.
-            */
+         * Methods to do the patching yourself. Iterate over all the iterators and
+         * perform patching.
+         */
     public:
         nonvirtual void PatchViewsAdd (size_t index) const;    //  call after add
         nonvirtual void PatchViewsRemove (size_t index) const; //  call before remove
@@ -79,10 +79,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         using UnpatchedBackwardIterator = typename inherited::BackwardIterator;
 
         /*
-            * Methods we shadow so that patching is done. If you want to circumvent the
-            * patching, thats fine - use scope resolution operator to call this's base
-            * class version.
-            */
+         * Methods we shadow so that patching is done. If you want to circumvent the
+         * patching, thats fine - use scope resolution operator to call this's base
+         * class version.
+         */
     public:
         nonvirtual void SetLength (size_t newLength, T fillValue);
         nonvirtual void InsertAt (size_t index, T item);
@@ -110,12 +110,12 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     };
 
     /*
-        *      _ArrayIteratorBase<T> is a private utility class designed
-        *  to promote source code sharing among the patched iterator implementations.
-        *
-        *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
-        *          and removed before destruction of other bases
-        */
+     *      _ArrayIteratorBase<T> is a private utility class designed
+     *  to promote source code sharing among the patched iterator implementations.
+     *
+     *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
+     *          and removed before destruction of other bases
+     */
     template <typename T>
     class Array<T>::_ArrayIteratorBase
         : public DataStructures::Array<T>::_ArrayIteratorBase,
@@ -153,12 +153,12 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     };
 
     /*
-        *      Array<T,TRAITS>::ForwardIterator is forwards iterator that can be used
-        *  while modifing its owned array. It can only be used with Array<T,TRAITS>
-        *  since the classes know about each other, and keep track of each other.
-        *  This is intended to be a convienience in implementing concrete container
-        *  mixins.
-        */
+     *      Array<T,TRAITS>::ForwardIterator is forwards iterator that can be used
+     *  while modifing its owned array. It can only be used with Array<T,TRAITS>
+     *  since the classes know about each other, and keep track of each other.
+     *  This is intended to be a convienience in implementing concrete container
+     *  mixins.
+     */
     template <typename T>
     class Array<T>::ForwardIterator : public Array<T>::_ArrayIteratorBase {
     private:
@@ -177,12 +177,12 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     };
 
     /*
-        *      Array<T,TRAITS>::BackwardIterator is backwards iterator that can be used
-        *  while modifing its owned array. It can only be used with Array<T,TRAITS>
-        *  since the classes know about each other, and keep track of each other.
-        *  This is intended to be a convienience in implementing concrete container
-        *  mixins.
-        */
+     *      Array<T,TRAITS>::BackwardIterator is backwards iterator that can be used
+     *  while modifing its owned array. It can only be used with Array<T,TRAITS>
+     *  since the classes know about each other, and keep track of each other.
+     *  This is intended to be a convienience in implementing concrete container
+     *  mixins.
+     */
     template <typename T>
     class Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {
     private:
@@ -199,6 +199,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     protected:
         virtual void PatchRemoveCurrent () override;
     };
+
 }
 
 /*

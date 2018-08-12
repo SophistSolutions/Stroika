@@ -9,10 +9,10 @@
 namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     /*
-        ********************************************************************************
-        ************************************ LinkedList<T> *****************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************************ LinkedList<T> *****************************
+     ********************************************************************************
+     */
     template <typename T>
     inline LinkedList<T>::LinkedList ()
         : inherited ()
@@ -118,12 +118,12 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void LinkedList<T>::Remove (T item, const EQUALS_COMPARER& equalsComparer)
     {
         /*
-            *  Base class impl is fine, but doesn't do patching, and doesn't
-            *  provide the hooks so I can do the patching from here.
-            *
-            *  @todo   We may want to correct that (see STL container impl -
-            *  returning ptr to next node would do it).
-            */
+         *  Base class impl is fine, but doesn't do patching, and doesn't
+         *  provide the hooks so I can do the patching from here.
+         *
+         *  @todo   We may want to correct that (see STL container impl -
+         *  returning ptr to next node would do it).
+         */
         Invariant ();
         optional<T> current;
         for (ForwardIterator it (Traversal::kUnknownIteratorOwnerID, this); it.More (&current, true), current.has_value ();) {
@@ -213,10 +213,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        ************************* LinkedList<T>::ForwardIterator ***********************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************* LinkedList<T>::ForwardIterator ***********************
+     ********************************************************************************
+     */
     template <typename T>
     inline LinkedList<T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T>* data)
         : inherited_DataStructure (data)
@@ -260,19 +260,19 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         RequireNotNull (link);
 
         /*
-            *  There are basicly three cases:
-            *
-            *  (1)     We remove the current. In this case, we just advance current to the next
-            *          item (prev is already all set), and set _fSuppressMore since we are advanced
-            *          to the next item.
-            *  (2)     We remove our previous. Technically this poses no problems, except then
-            *          our previos pointer is invalid. We could recompute it, but that would
-            *          involve rescanning the list from the beginning - slow. And we probably
-            *          will never need the next pointer (unless we get a remove current call).
-            *          So just set it to nullptr, which conventionally means no valid value.
-            *          It will be recomputed if needed.
-            *  (3)     We are deleting some other value. No probs.
-            */
+         *  There are basicly three cases:
+         *
+         *  (1)     We remove the current. In this case, we just advance current to the next
+         *          item (prev is already all set), and set _fSuppressMore since we are advanced
+         *          to the next item.
+         *  (2)     We remove our previous. Technically this poses no problems, except then
+         *          our previos pointer is invalid. We could recompute it, but that would
+         *          involve rescanning the list from the beginning - slow. And we probably
+         *          will never need the next pointer (unless we get a remove current call).
+         *          So just set it to nullptr, which conventionally means no valid value.
+         *          It will be recomputed if needed.
+         *  (3)     We are deleting some other value. No probs.
+         */
         if (this->_fCurrent == link) {
             this->_fCurrent = this->_fCurrent->fNext;
             // fPrev remains the same - right now it points to a bad item, since
@@ -317,5 +317,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         //Assert ((fPrev == nullptr) or (fPrev->fNext == this->_fCurrent));
     }
 #endif
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Private_PatchingDataStructures_LinkedList_inl_ */

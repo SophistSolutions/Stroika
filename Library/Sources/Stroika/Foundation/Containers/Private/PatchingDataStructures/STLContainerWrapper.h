@@ -74,10 +74,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     public:
         /*
-            *  ONLY use for VECTOR types!
-            *
-            *  This updates ALL iterators based on prior and new offset.
-            */
+         *  ONLY use for VECTOR types!
+         *
+         *  This updates ALL iterators based on prior and new offset.
+         */
         template <typename INSERT_VALUE_TYPE>
         nonvirtual void insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v);
 
@@ -150,8 +150,8 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     private:
         /*
-            * OK to be private cuz CONTAINER_TYPE is a friend.
-            */
+         * OK to be private cuz CONTAINER_TYPE is a friend.
+         */
         nonvirtual void TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
         nonvirtual void TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
 
@@ -165,6 +165,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend CONTAINER_TYPE;
     };
+
 }
 
 /*

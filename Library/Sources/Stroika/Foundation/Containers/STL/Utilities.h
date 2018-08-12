@@ -30,17 +30,17 @@ namespace Stroika::Foundation::Containers::STL {
     bool equal (const ITERABLE_OF_T& lhs, const ITERABLE_OF_T& rhs, EQUALS_COMPARER&& equalsComparer = {});
 
     /*
-        *  STL container constructors take a begin/end combo, but no CONTAINER ctor (except for same as starting).
-        *  So to convert from set<T> to vector<T> is a pain (if you have a function returning set<>). To do pretty
-        *  easily with STL, you need a named temporary. Thats basically all this helper function does.
-        *
-        *  So instead of:
-        *          set<T>  tmp = funCall_returning_set();
-        *          vector<T>   realAnswer = vector<T> (tmp.begin (), tmp.end ());
-        *
-        *  You can write:
-        *      vector<T>   realAnswer = STL::Make<vector<T>> (funCall_returning_set());
-        */
+     *  STL container constructors take a begin/end combo, but no CONTAINER ctor (except for same as starting).
+     *  So to convert from set<T> to vector<T> is a pain (if you have a function returning set<>). To do pretty
+     *  easily with STL, you need a named temporary. Thats basically all this helper function does.
+     *
+     *  So instead of:
+     *          set<T>  tmp = funCall_returning_set();
+     *          vector<T>   realAnswer = vector<T> (tmp.begin (), tmp.end ());
+     *
+     *  You can write:
+     *      vector<T>   realAnswer = STL::Make<vector<T>> (funCall_returning_set());
+     */
     template <typename CREATE_CONTAINER_TYPE, typename FROM_CONTAINER_TYPE>
     CREATE_CONTAINER_TYPE Make (const FROM_CONTAINER_TYPE& rhs);
 
@@ -106,6 +106,7 @@ namespace Stroika::Foundation::Containers::STL {
     void Difference (set<T>* s1, const FROMCONTAINER& s2);
     template <typename T, typename FROMCONTAINER>
     set<T> Difference (const set<T>& s1, const FROMCONTAINER& s2);
+
 }
 
 /*

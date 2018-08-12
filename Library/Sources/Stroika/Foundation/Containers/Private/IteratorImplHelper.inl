@@ -73,6 +73,7 @@ namespace Stroika::Foundation::Containers::Private {
         shared_lock<const Debug::AssertExternallySynchronizedLock> critSec2 (*rrhs->fIterator.GetPatchableContainerHelper ());
         return fIterator.Equals (rrhs->fIterator);
     }
+
 }
 
 #endif /* _Stroika_Foundation_Containers_Private_IteratorImplHelper_inl_ */

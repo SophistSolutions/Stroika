@@ -18,6 +18,7 @@ namespace Stroika::Foundation::Containers::STL {
     [[deprecated ("use std::equals in version 2.1b1")]] bool Equals (ITERATOR_OF_T lhsStart, ITERATOR_OF_T lhsEnd, ITERATOR_OF_T rhsStart, ITERATOR_OF_T rhsEnd);
     template <typename STROIKA_EQUALS_COMPARER, typename CONTAINER_OF_T>
     [[deprecated ("use std::equals in version 2.1b1")]] bool Equals (const CONTAINER_OF_T& lhs, const CONTAINER_OF_T& rhs);
+
 }
 
 /*

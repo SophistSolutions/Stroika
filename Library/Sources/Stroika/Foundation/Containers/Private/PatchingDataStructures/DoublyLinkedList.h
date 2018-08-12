@@ -24,18 +24,18 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     using Traversal::IteratorOwnerID;
 
     /*
-        *  Patching Support:
-        *
-        *      This class wraps a basic container (in this case DataStructures::DoublyLinkedList)
-        *  and adds in patching support (tracking a list of iterators - and managing thier
-        *  patching when appropriately wrapped changes are made to the data structure container.
-        *
-        *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
-        *
-        *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
-        *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
-        *  the source to copy from and the newOwnerID to copy INTO.
-        */
+     *  Patching Support:
+     *
+     *      This class wraps a basic container (in this case DataStructures::DoublyLinkedList)
+     *  and adds in patching support (tracking a list of iterators - and managing thier
+     *  patching when appropriately wrapped changes are made to the data structure container.
+     *
+     *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
+     *
+     *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
+     *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
+     *  the source to copy from and the newOwnerID to copy INTO.
+     */
     template <typename T>
     class DoublyLinkedList : public PatchableContainerHelper<DataStructures::DoublyLinkedList<T>> {
     private:
@@ -59,10 +59,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         using UnpatchedForwardIterator = typename inherited::ForwardIterator;
 
         /*
-            * Methods we shadow so that patching is done. If you want to circumvent the
-            * patching, thats fine - use scope resolution operator to call this's base
-            * class version.
-            */
+         * Methods we shadow so that patching is done. If you want to circumvent the
+         * patching, thats fine - use scope resolution operator to call this's base
+         * class version.
+         */
     public:
         nonvirtual void Append (ArgByValueType<T> item);
         nonvirtual void Prepend (ArgByValueType<T> item);
@@ -77,9 +77,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         nonvirtual void AddAfter (const ForwardIterator& i, ArgByValueType<T> newValue);
 
         /*
-            * Methods to do the patching yourself. Iterate over all the iterators and
-            * perfrom patching.
-            */
+         * Methods to do the patching yourself. Iterate over all the iterators and
+         * perfrom patching.
+         */
     public:
         nonvirtual void PatchViewsAdd (const Link* link) const;    //  call after add
         nonvirtual void PatchViewsRemove (const Link* link) const; //  call before remove
@@ -91,8 +91,8 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     public:
         /*
-            *  Check Invariants for this class, and all the iterators we own.
-            */
+         *  Check Invariants for this class, and all the iterators we own.
+         */
         nonvirtual void Invariant () const;
 
 #if qDebug
@@ -106,14 +106,14 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     };
 
     /*
-        *      ForwardIterator is a .... that allows
-        *  for updates to the DoublyLinkedList<T> to be dealt with properly. It maintains a
-        *  link list of iterators headed by the DoublyLinkedList<T>, and takes care
-        *  of all patching details.
-        *
-        *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
-        *          and removed before destruction of other bases
-        */
+     *      ForwardIterator is a .... that allows
+     *  for updates to the DoublyLinkedList<T> to be dealt with properly. It maintains a
+     *  link list of iterators headed by the DoublyLinkedList<T>, and takes care
+     *  of all patching details.
+     *
+     *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
+     *          and removed before destruction of other bases
+     */
     template <typename T>
     class DoublyLinkedList<T>::ForwardIterator : public DataStructures::DoublyLinkedList<T>::ForwardIterator,
                                                  public PatchableContainerHelper<DataStructures::DoublyLinkedList<T>>::PatchableIteratorMixIn {
@@ -151,6 +151,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend class DoublyLinkedList<T>;
     };
+
 }
 
 /*

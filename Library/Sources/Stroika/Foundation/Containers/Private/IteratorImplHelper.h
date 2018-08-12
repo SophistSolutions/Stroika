@@ -74,6 +74,7 @@ namespace Stroika::Foundation::Containers::Private {
     public:
         mutable PATCHABLE_CONTAINER_ITERATOR fIterator;
     };
+
 }
 
 /*

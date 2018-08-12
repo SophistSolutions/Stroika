@@ -9,10 +9,10 @@
 namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     /*
-        ********************************************************************************
-        ******************** PatchingDataStructures::Array<T> **************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** PatchingDataStructures::Array<T> **************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Array<T>::Array ()
         : inherited ()
@@ -36,9 +36,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void Array<T>::PatchViewsAdd (size_t index) const
     {
         /*
-            *      Must call PatchRealloc before PatchAdd() since the test of currentIndex
-            *  depends on things being properly adjusted.
-            */
+         *      Must call PatchRealloc before PatchAdd() since the test of currentIndex
+         *  depends on things being properly adjusted.
+         */
         this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([index](_ArrayIteratorBase* ai) {
             ai->PatchRealloc ();
             ai->PatchAdd (index);
@@ -180,13 +180,13 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     {
         inherited::_Invariant ();
         /*
-            *      Be sure each iterator points back to us. Thats about all we can test from
-            *  here since we cannot call each iterators Invariant(). That would be
-            *  nice, but sadly when this Invariant_ () is called from Array<T,TRAITS> the
-            *  iterators themselves may not have been patched, so they'll be out of
-            *  date. Instead, so that in local shadow of Invariant() done in Array<T,TRAITS>
-            *  so only called when WE call Invariant().
-            */
+         *      Be sure each iterator points back to us. Thats about all we can test from
+         *  here since we cannot call each iterators Invariant(). That would be
+         *  nice, but sadly when this Invariant_ () is called from Array<T,TRAITS> the
+         *  iterators themselves may not have been patched, so they'll be out of
+         *  date. Instead, so that in local shadow of Invariant() done in Array<T,TRAITS>
+         *  so only called when WE call Invariant().
+         */
         this->template _ApplyToEachOwnedIterator<_ArrayIteratorBase> ([this](_ArrayIteratorBase* ai) {
             Assert (ai->_fData == this);
             ai->Invariant ();
@@ -267,23 +267,23 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         Require (index < this->_fData->GetLength ());
 
         /*
-            *      If we are removing an item from the right of our cursor, it has no effect
-            *  on our - by index - addressing, and so ignore it.
-            *
-            *      On the other hand, if we are removing the item from the left of our cursor,
-            *  things are more complex:
-            *
-            *      If we are removing an item from the left of the cursor, then we are now
-            *  pointing to the item after the one we used to, and so decrementing (ie Next)
-            *  would cause us to skip one. To correct our index, we must decrement it so that
-            *  it.Current () refers to the same entity.
-            *
-            *      In the case where we are directly hit, just set _fSuppressMore
-            *  to true. If we are going forwards, are are already pointing where
-            *  we should be (and this works for repeat deletions). If we are
-            *  going backwards, then _fSuppressMore will be ignored, but for the
-            *  sake of code sharing, its tough to do much about that waste.
-            */
+         *      If we are removing an item from the right of our cursor, it has no effect
+         *  on our - by index - addressing, and so ignore it.
+         *
+         *      On the other hand, if we are removing the item from the left of our cursor,
+         *  things are more complex:
+         *
+         *      If we are removing an item from the left of the cursor, then we are now
+         *  pointing to the item after the one we used to, and so decrementing (ie Next)
+         *  would cause us to skip one. To correct our index, we must decrement it so that
+         *  it.Current () refers to the same entity.
+         *
+         *      In the case where we are directly hit, just set _fSuppressMore
+         *  to true. If we are going forwards, are are already pointing where
+         *  we should be (and this works for repeat deletions). If we are
+         *  going backwards, then _fSuppressMore will be ignored, but for the
+         *  sake of code sharing, its tough to do much about that waste.
+         */
         Assert ((&this->_fStart[index] <= this->_fCurrent) == (index <= this->CurrentIndex ()));
         if (&this->_fStart[index] < this->_fCurrent) {
             Assert (this->CurrentIndex () >= 1);
@@ -318,9 +318,9 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void Array<T>::_ArrayIteratorBase::PatchRealloc ()
     {
         /*
-            *      NB: We can only call invariant after we've fixed things up, since realloc
-            * has happened by now, but things don't point to the right places yet.
-            */
+         *      NB: We can only call invariant after we've fixed things up, since realloc
+         * has happened by now, but things don't point to the right places yet.
+         */
         if (this->_fStart != this->_fData->_fItems) {
             const T* oldStart = this->_fStart;
             this->_fStart     = this->_fData->_fItems;
@@ -400,10 +400,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     }
 
     /*
-        ********************************************************************************
-        ************* PatchingDataStructures::Array<T>::BackwardIterator ***************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************* PatchingDataStructures::Array<T>::BackwardIterator ***************
+     ********************************************************************************
+     */
     template <typename T>
     inline Array<T>::BackwardIterator::BackwardIterator (IteratorOwnerID ownerID, const Array<T>* data)
         : inherited (ownerID, data)
@@ -497,5 +497,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         }
         this->_fSuppressMore = true;
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Private_PatchingDataStructures_Array_inl_ */

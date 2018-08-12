@@ -25,21 +25,21 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     using Traversal::IteratorOwnerID;
 
     /*
-        *  Patching Support:
-        *
-        *      This class wraps a basic container (in this case DataStructures::LinkedList)
-        *  and adds in patching support (tracking a list of iterators - and managing thier
-        *  patching when appropriately wrapped changes are made to the data structure container.
-        *
-        *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
-        *
-        *      This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
-        *  DOES provide 'deletion'/update safety.
-        *
-        *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
-        *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
-        *  the source to copy from and the newOwnerID to copy INTO.
-        */
+     *  Patching Support:
+     *
+     *      This class wraps a basic container (in this case DataStructures::LinkedList)
+     *  and adds in patching support (tracking a list of iterators - and managing thier
+     *  patching when appropriately wrapped changes are made to the data structure container.
+     *
+     *      This code leverages PatchableContainerHelper<> to do alot of the book-keeping.
+     *
+     *      This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
+     *  DOES provide 'deletion'/update safety.
+     *
+     *      Note: Disallow X(const X&), and operator=() (copy constructor/assignement operator), and
+     *  instead require use of X(X*,IteratorOwnerID) for copying - so we always get both values -
+     *  the source to copy from and the newOwnerID to copy INTO.
+     */
     template <typename T>
     class LinkedList : public PatchableContainerHelper<DataStructures::LinkedList<T>> {
     private:
@@ -76,10 +76,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         nonvirtual void TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const;
 
         /*
-            * Methods we shadow so that patching is done. If you want to circumvent the
-            * patching, thats fine - use scope resolution operator to call this's base
-            * class version.
-            */
+         * Methods we shadow so that patching is done. If you want to circumvent the
+         * patching, thats fine - use scope resolution operator to call this's base
+         * class version.
+         */
     public:
         nonvirtual void Prepend (T item);
         template <typename EQUALS_COMPARER>
@@ -93,8 +93,8 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     public:
         /*
-            *  Check Invariants for this class, and all the iterators we own.
-            */
+         *  Check Invariants for this class, and all the iterators we own.
+         */
         nonvirtual void Invariant () const;
 
 #if qDebug
@@ -108,14 +108,14 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     };
 
     /*
-        *      LinkedList<T>::ForwardIterator is a ForwardIterator that allows
-        *  for updates to the LinkedList<T,TRAITS> to be dealt with properly. It maintains a
-        *  link list of iterators headed by the LinkedList<T>, and takes care
-        *  of all patching details.
-        *
-        *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
-        *          and removed before destruction of other bases
-        */
+     *      LinkedList<T>::ForwardIterator is a ForwardIterator that allows
+     *  for updates to the LinkedList<T,TRAITS> to be dealt with properly. It maintains a
+     *  link list of iterators headed by the LinkedList<T>, and takes care
+     *  of all patching details.
+     *
+     *  \note   Subtle - but PatchableIteratorMixIn must come last in bases so it gets constructed (added to list of patchable stuff) after
+     *          and removed before destruction of other bases
+     */
     template <typename T>
     class LinkedList<T>::ForwardIterator
         : public DataStructures::LinkedList<T>::ForwardIterator,
@@ -140,8 +140,8 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     public:
         /*
-            * Shadow more to keep track of prev.
-            */
+         * Shadow more to keep track of prev.
+         */
         nonvirtual void PatchAdd (const Link* link);    //  call after add
         nonvirtual void PatchRemove (const Link* link); //  call before remove
         nonvirtual void PatchRemoveAll ();              //  call after removeall
@@ -162,6 +162,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     private:
         friend class LinkedList<T>;
     };
+
 }
 
 /*

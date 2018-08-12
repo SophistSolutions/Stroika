@@ -9,10 +9,10 @@
 namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     /*
-        ********************************************************************************
-        ******************** PatchingDataStructures::DoublyLinkedList<T> ***************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** PatchingDataStructures::DoublyLinkedList<T> ***************
+     ********************************************************************************
+     */
     template <typename T>
     inline DoublyLinkedList<T>::DoublyLinkedList ()
         : inherited ()
@@ -184,10 +184,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        **** PatchingDataStructures::DoublyLinkedList<T>::ForwardIterator ******
-        ********************************************************************************
-        */
+     ********************************************************************************
+     **** PatchingDataStructures::DoublyLinkedList<T>::ForwardIterator ******
+     ********************************************************************************
+     */
     template <typename T>
     inline DoublyLinkedList<T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T>* data)
         : inherited_DataStructure (data)
@@ -213,11 +213,11 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
     inline void DoublyLinkedList<T>::ForwardIterator::PatchAdd (const Link* link)
     {
         /*
-            *      link is the new link just added. If it was just after current, then
-            *  there is no problem - we will soon hit it. If it was well before current
-            *  (ie before prev) then there is still no problem. If it is the new
-            *  previous, we just adjust our previous.
-            */
+         *      link is the new link just added. If it was just after current, then
+         *  there is no problem - we will soon hit it. If it was well before current
+         *  (ie before prev) then there is still no problem. If it is the new
+         *  previous, we just adjust our previous.
+         */
         RequireNotNull (link);
         if (link->fNext == this->_fCurrent) {
             //fPrev = link;
@@ -229,19 +229,19 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         RequireNotNull (link);
 
         /*
-            *  There are basicly three cases:
-            *
-            *  (1)     We remove the current. In this case, we just advance current to the next
-            *          item (prev is already all set), and set _fSuppressMore since we are advanced
-            *          to the next item.
-            *  (2)     We remove our previous. Technically this poses no problems, except then
-            *          our previos pointer is invalid. We could recompute it, but that would
-            *          involve rescanning the list from the beginning - slow. And we probably
-            *          will never need the next pointer (unless we get a remove current call).
-            *          So just set it to nullptr, which conventionally means no valid value.
-            *          It will be recomputed if needed.
-            *  (3)     We are deleting some other value. No probs.
-            */
+         *  There are basicly three cases:
+         *
+         *  (1)     We remove the current. In this case, we just advance current to the next
+         *          item (prev is already all set), and set _fSuppressMore since we are advanced
+         *          to the next item.
+         *  (2)     We remove our previous. Technically this poses no problems, except then
+         *          our previos pointer is invalid. We could recompute it, but that would
+         *          involve rescanning the list from the beginning - slow. And we probably
+         *          will never need the next pointer (unless we get a remove current call).
+         *          So just set it to nullptr, which conventionally means no valid  value.
+         *          It will be recomputed if needed. 
+         *  (3)     We are deleting some other value. No probs.
+         */
         if (this->_fCurrent == link) {
             this->_fCurrent = this->_fCurrent->fNext;
             // fPrev remains the same - right now it points to a bad item, since
@@ -288,5 +288,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         //Assert ((fPrev == nullptr) or (fPrev->fNext == this->_fCurrent));
     }
 #endif
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Private_PatchingDataStructures_DoublyLinkedList_inl_ */

@@ -11,10 +11,10 @@
 namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 
     /*
-        ********************************************************************************
-        ******* PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> ********
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******* PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> ********
+     ********************************************************************************
+     */
     template <typename STL_CONTAINER_OF_T>
     template <typename... CONTAINER_EXTRA_ARGS>
     inline STLContainerWrapper<STL_CONTAINER_OF_T>::STLContainerWrapper (CONTAINER_EXTRA_ARGS&&... stdContainerArgs)
@@ -124,10 +124,10 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
 #endif
 
     /*
-        ********************************************************************************
-        * PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator *
-        ********************************************************************************
-        */
+     ********************************************************************************
+     * PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator *
+     ********************************************************************************
+     */
     template <typename STL_CONTAINER_OF_T>
     inline STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
         : inherited_DataStructure (data)
@@ -185,5 +185,7 @@ namespace Stroika::Foundation::Containers::Private::PatchingDataStructures {
         //Assert ((fCurrent >= fStart) and (fCurrent <= fEnd));   // ANSI C requires this is always TRUE
     }
 #endif
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Private_PatchingDataStructures_STLContainerWrapper_inl_ */
