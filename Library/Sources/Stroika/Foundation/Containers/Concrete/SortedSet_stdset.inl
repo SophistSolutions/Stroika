@@ -68,7 +68,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
         virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
@@ -109,12 +109,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             if (fData_.HasActiveIterators ()) {
                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                auto r = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                 r->fData_.clear_WithPatching ();
                 return r;
             }
             else {
-                return Iterable<T>::template MakeSharedPtr<Rep_> (fData_.key_comp ());
+                return Iterable<T>::template MakeSmartPtr<Rep_> (fData_.key_comp ());
             }
         }
         virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
@@ -192,7 +192,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename INORDER_COMPARER>
     inline SortedSet_stdset<T>::SortedSet_stdset (const INORDER_COMPARER& inorderComparer)
-        : inherited (inherited::template MakeSharedPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
+        : inherited (inherited::template MakeSmartPtr<Rep_<INORDER_COMPARER>> (inorderComparer))
     {
         static_assert (Common::IsStrictInOrderComparer<INORDER_COMPARER> (), "StrictInOrder comparer required with SortedSet");
         AssertRepValidType_ ();

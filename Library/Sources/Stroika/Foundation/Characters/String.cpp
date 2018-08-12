@@ -59,7 +59,7 @@ namespace {
             AssertNotReached (); // Since Strings now immutable, this should never be called
             // Because of 'Design Choice - Iterable<T> / Iterator<T> behavior' in String class docs - we
             // ignore suggested IteratorOwnerID
-            return String::MakeSharedPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
+            return String::MakeSmartPtr<String_BufferedArray_Rep_> (_fStart, _fEnd);
         }
     };
 }
@@ -87,7 +87,7 @@ namespace   {
             virtual  _IterableRepSharedPtr   Clone (IteratorOwnerID forIterableEnvelope) const override
             {
                 AssertNotReached ();    // Since Strings now immutable, this should never be called
-                return String_Substring_::MakeSharedPtr<MyRep_> (*this);
+                return String_Substring_::MakeSmartPtr<MyRep_> (*this);
             }
         private:
             _SafeReadRepAccessor  fSaved_;
@@ -382,7 +382,7 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start, const wchar_t* end)
     RequireNotNull (start);
     RequireNotNull (end);
     Require (start <= end);
-    return MakeSharedPtr<String_BufferedArray_Rep_> (start, end);
+    return MakeSmartPtr<String_BufferedArray_Rep_> (start, end);
 }
 
 String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, const wchar_t* start2, const wchar_t* end2)
@@ -394,7 +394,7 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, 
     RequireNotNull (end2);
     Require (start2 <= end2);
     size_t len1 = end1 - start1;
-    auto   sRep = MakeSharedPtr<String_BufferedArray_Rep_> (start1, end1, (end2 - start2));
+    auto   sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, (end2 - start2));
     if (start2 != end2) {
         sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
     }
@@ -507,7 +507,7 @@ String String::InsertAt (const Character* from, const Character* to, size_t at) 
     }
     _SafeReadRepAccessor                     copyAccessor{this};
     pair<const Character*, const Character*> d    = copyAccessor._ConstGetRep ().GetData ();
-    auto                                     sRep = MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
+    auto                                     sRep = MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (d.first), reinterpret_cast<const wchar_t*> (d.second), (to - from));
     sRep->InsertAt (from, to, at);
     return String (move (sRep));
 }
@@ -1270,7 +1270,7 @@ String Characters::operator+ (const wchar_t* lhs, const String& rhs)
     pair<const Character*, const Character*> rhsD     = rhsAccessor._ConstGetRep ().GetData ();
     size_t                                   lhsLen   = ::wcslen (lhs);
     size_t                                   totalLen = lhsLen + (rhsD.second - rhsD.first);
-    auto                                     sRep     = String::MakeSharedPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
+    auto                                     sRep     = String::MakeSmartPtr<String_BufferedArray_Rep_> (reinterpret_cast<const wchar_t*> (lhs), reinterpret_cast<const wchar_t*> (lhs + lhsLen), totalLen);
     if (rhsD.first != rhsD.second) {
         sRep->InsertAt (rhsD.first, rhsD.second, lhsLen);
     }

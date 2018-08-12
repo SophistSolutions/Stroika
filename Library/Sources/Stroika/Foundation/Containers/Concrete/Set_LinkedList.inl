@@ -71,7 +71,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
         virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
@@ -121,12 +121,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             if (fData_.HasActiveIterators ()) {
                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                auto r = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                 r->fData_.RemoveAll ();
                 return r;
             }
             else {
-                return Iterable<T>::template MakeSharedPtr<Rep_> (fEqualsComparer_);
+                return Iterable<T>::template MakeSmartPtr<Rep_> (fEqualsComparer_);
             }
         }
         virtual bool Equals (const typename Set<T>::_IRep& rhs) const override
@@ -204,7 +204,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T>
     template <typename EQUALS_COMPARER>
     inline Set_LinkedList<T>::Set_LinkedList (const EQUALS_COMPARER& equalsComparer)
-        : inherited (inherited::template MakeSharedPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
+        : inherited (inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
     {
         static_assert (Common::IsEqualsComparer<EQUALS_COMPARER> (), "Equals comparer required with Set_LinkedList");
         AssertRepValidType_ ();

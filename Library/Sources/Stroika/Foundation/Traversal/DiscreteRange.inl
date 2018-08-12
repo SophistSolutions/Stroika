@@ -100,7 +100,7 @@ namespace Stroika::Foundation::Traversal {
             virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const
             {
                 // DiscreteRange doesn't track specific 'envelope' owner
-                return Iterable<T>::template MakeSharedPtr<MyRep_> (*this);
+                return Iterable<T>::template MakeSmartPtr<MyRep_> (*this);
             }
             virtual Iterator<T> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const
             {
@@ -142,11 +142,11 @@ namespace Stroika::Foundation::Traversal {
             }
         };
         MyIterable_ ()
-            : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyRep_> ())
+            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyRep_> ())
         {
         }
         MyIterable_ (T start, T end)
-            : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyRep_> (start, end))
+            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyRep_> (start, end))
         {
         }
     };

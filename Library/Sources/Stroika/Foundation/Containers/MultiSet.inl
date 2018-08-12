@@ -132,11 +132,11 @@ namespace Stroika::Foundation::Containers {
             }
             virtual typename Iterable<T>::_IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
             {
-                return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
+                return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
             }
         };
         _ElementsIterableHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& iterateOverMultiSet)
-            : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyIterableRep_> (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator (iterateOverMultiSet.get ()))))
+            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (ElementsIteratorHelperContext_ (iterateOverMultiSet, iterateOverMultiSet->MakeIterator (iterateOverMultiSet.get ()))))
         {
         }
     };
@@ -221,11 +221,11 @@ namespace Stroika::Foundation::Containers {
             }
             virtual typename Iterable<T>::_IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
             {
-                return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
+                return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
             }
         };
         _UniqueElementsHelper (const typename Iterable<CountedValue<T>>::_IterableRepSharedPtr& tally)
-            : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ()))))
+            : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ()))))
         {
         }
     };

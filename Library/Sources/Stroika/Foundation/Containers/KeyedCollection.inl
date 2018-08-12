@@ -416,11 +416,11 @@ namespace Stroika::Foundation::Containers {
                     virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                     {
                         // For now - ignore forIterableEnvelope
-                        return Iterable<VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
+                        return Iterable<VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                     }
                 };
                 MyIterable_ (const MyMapping_& map)
-                    : Iterable<KEY_TYPE> (Iterable<VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (map)))
+                    : Iterable<KEY_TYPE> (Iterable<VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (map)))
                 {
                 }
             };
@@ -465,11 +465,11 @@ namespace Stroika::Foundation::Containers {
                     virtual _SharedPtrIRep Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                     {
                         // For now - ignore forIterableEnvelope
-                        return Iterable<VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
+                        return Iterable<VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                     }
                 };
                 MyIterable_ (const MyMapping_& map)
-                    : Iterable<VALUE_TYPE> (Iterable<VALUE_TYPE>::template MakeSharedPtr<MyIterableRep_> (map)))
+                    : Iterable<VALUE_TYPE> (Iterable<VALUE_TYPE>::template MakeSmartPtr<MyIterableRep_> (map)))
                 {
                 }
             };

@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
@@ -104,12 +104,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             if (fData_.HasActiveIterators ()) {
                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                 r->fData_.clear ();
                 return r;
             }
             else {
-                return Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (fDefaultValue_);
+                return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (fDefaultValue_);
             }
         }
         virtual T GetAt (INDEXES... indexes) const override
@@ -239,7 +239,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename... INDEXES>
     SparseDataHyperRectangle_stdmap<T, INDEXES...>::SparseDataHyperRectangle_stdmap (Configuration::ArgByValueType<T> defaultItem)
-        : inherited (inherited::template MakeSharedPtr<Rep_> (defaultItem))
+        : inherited (inherited::template MakeSmartPtr<Rep_> (defaultItem))
     {
         AssertRepValidType_ ();
     }

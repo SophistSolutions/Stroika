@@ -92,15 +92,27 @@ namespace Stroika::Foundation::Traversal {
     struct IterableBase {
     public:
         template <typename SHARED_T>
-        using SharedPtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
+        using PtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::SharedPtr<SHARED_T>, shared_ptr<SHARED_T>>;
 
     public:
         template <typename SHARED_T, typename... ARGS_TYPE>
-        static SharedPtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args);
+        static PtrImplementationTemplate<SHARED_T> MakeSmartPtr (ARGS_TYPE&&... args);
 
     public:
         template <typename SHARED_T>
-        using enable_shared_from_this_SharedPtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
+        using enable_shared_from_this_PtrImplementationTemplate = conditional_t<kIterableUsesStroikaSharedPtr, Memory::enable_shared_from_this<SHARED_T>, std::enable_shared_from_this<SHARED_T>>;
+
+    public:
+        // SharedPtrImplementationTemplate deprecated - Stroika v2.1b6
+        template <typename SHARED_T>
+        using SharedPtrImplementationTemplate = PtrImplementationTemplate<SHARED_T>;
+
+    public:
+        template <typename SHARED_T, typename... ARGS_TYPE>
+        [[deprecated ("use MakeSmartPtr since version 2.1b6")]] static PtrImplementationTemplate<SHARED_T> MakeSharedPtr (ARGS_TYPE&&... args)
+        {
+            return MakeSmartPtr<SHARED_T> (forward<ARGS_TYPE> (args)...);
+        }
     };
 
     /**
@@ -732,8 +744,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *      VerifyTestResult (c.FirstValue () == 3);
+         *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+         *          VerifyTestResult (c.FirstValue () == 3);
          *      \endcode
          *
          *  \note
@@ -748,9 +760,9 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 3, 5, 9, 38, 3, 5 };
-         *      VerifyTestResult (*c.Last () == 5);
-         *      VerifyTestResult (*c.Last ([](int i){ return i % 2 == 0;}) == 38);
+         *          Iterable<int> c { 3, 5, 9, 38, 3, 5 };
+         *          VerifyTestResult (*c.Last () == 5);
+         *          VerifyTestResult (*c.Last ([](int i){ return i % 2 == 0;}) == 38);
          *      \endcode
          *
          *  \note
@@ -785,8 +797,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *      VerifyTestResult (c.Accumulate ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
+         *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+         *          VerifyTestResult (c.Accumulate ([] (T lhs, T rhs) { return lhs + rhs; }) == 24);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -813,8 +825,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *      VerifyTestResult (c.Min () == 1);
+         *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+         *          VerifyTestResult (c.Min () == 1);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -841,8 +853,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  EXAMPLE:
          *      \code
-         *      Iterable<int> c { 1, 2, 3, 4, 5, 6 };
-         *      VerifyTestResult (c.Max () == 6);
+         *          Iterable<int> c { 1, 2, 3, 4, 5, 6 };
+         *          VerifyTestResult (c.Max () == 6);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -869,8 +881,8 @@ namespace Stroika::Foundation::Traversal {
          *
          *  \par Example Usage
          *      \code
-         *      Iterable<int> c { 1, 2, 3, 4, 5, 9 };
-         *      VerifyTestResult (c.Mean () == 4);
+         *          Iterable<int> c { 1, 2, 3, 4, 5, 9 };
+         *          VerifyTestResult (c.Mean () == 4);
          *      \endcode
          *
          *  \note   returns nullopt if empty list
@@ -1110,7 +1122,7 @@ namespace Stroika::Foundation::Traversal {
     template <typename T>
     class Iterable<T>::_IRep
 #if qStroika_Foundation_Traveral_IterableUsesSharedFromThis_
-        : public IterableBase::enable_shared_from_this_SharedPtrImplementationTemplate<typename Iterable<T>::_IRep>
+        : public IterableBase::enable_shared_from_this_PtrImplementationTemplate<typename Iterable<T>::_IRep>
 #endif
     {
     protected:

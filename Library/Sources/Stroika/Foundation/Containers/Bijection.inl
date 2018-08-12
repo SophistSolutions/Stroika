@@ -442,11 +442,11 @@ namespace Stroika::Foundation::Containers {
                 virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                 {
                     // For now - ignore forIterableEnvelope
-                    return Iterable<DOMAIN_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
+                    return Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
             MyIterable_ (const MyBijection_& b)
-                : Iterable<DOMAIN_TYPE> (Iterable<DOMAIN_TYPE>::template MakeSharedPtr<MyIterableRep_> (b))
+                : Iterable<DOMAIN_TYPE> (Iterable<DOMAIN_TYPE>::template MakeSmartPtr<MyIterableRep_> (b))
             {
             }
         };
@@ -489,11 +489,11 @@ namespace Stroika::Foundation::Containers {
                 virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                 {
                     // For now - ignore forIterableEnvelope
-                    return Iterable<RANGE_TYPE>::template MakeSharedPtr<MyIterableRep_> (*this);
+                    return Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
             MyIterable_ (const MyBijection_& b)
-                : Iterable<RANGE_TYPE> (Iterable<RANGE_TYPE>::template MakeSharedPtr<MyIterableRep_> (b))
+                : Iterable<RANGE_TYPE> (Iterable<RANGE_TYPE>::template MakeSmartPtr<MyIterableRep_> (b))
             {
             }
         };

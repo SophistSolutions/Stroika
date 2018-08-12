@@ -133,11 +133,11 @@ namespace Stroika::Foundation::Traversal {
                 }
                 virtual _IterableRepSharedPtr Clone ([[maybe_unused]] IteratorOwnerID forIterableEnvelope) const override
                 {
-                    return Iterable<T>::template MakeSharedPtr<Rep> (*this);
+                    return Iterable<T>::template MakeSmartPtr<Rep> (*this);
                 }
             };
             MyIterable_ (const Iterator<T>& originalIterator)
-                : Iterable<T> (Iterable<T>::template MakeSharedPtr<Rep> (originalIterator))
+                : Iterable<T> (Iterable<T>::template MakeSmartPtr<Rep> (originalIterator))
             {
             }
         };

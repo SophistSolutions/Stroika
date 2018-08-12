@@ -94,11 +94,11 @@ namespace Stroika::Foundation::Traversal {
                 virtual _IterableRepSharedPtr Clone (IteratorOwnerID /*forIterableEnvelope*/) const override
                 {
                     // For now - generators have no owner, so we ignore forIterableEnvelope
-                    return Iterable<T>::template MakeSharedPtr<MyIterableRep_> (*this);
+                    return Iterable<T>::template MakeSmartPtr<MyIterableRep_> (*this);
                 }
             };
             MyIterable_ (const function<optional<T> ()>& getNext)
-                : Iterable<T> (Iterable<T>::template MakeSharedPtr<MyIterableRep_> (getNext))
+                : Iterable<T> (Iterable<T>::template MakeSmartPtr<MyIterableRep_> (getNext))
             {
             }
         };

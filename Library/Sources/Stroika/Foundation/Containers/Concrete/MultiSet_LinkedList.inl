@@ -69,7 +69,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
         virtual size_t GetLength () const override
         {
@@ -116,12 +116,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             if (fData_.HasActiveIterators ()) {
                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                auto r = Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                 r->fData_.RemoveAll ();
                 return r;
             }
             else {
-                return Iterable<CountedValue<T>>::template MakeSharedPtr<Rep_> (fEqualsComparer_);
+                return Iterable<CountedValue<T>>::template MakeSmartPtr<Rep_> (fEqualsComparer_);
             }
         }
         virtual bool Equals (const typename MultiSet<T, TRAITS>::_IRep& rhs) const override
@@ -255,7 +255,7 @@ namespace Stroika::Foundation::Containers::Concrete {
     template <typename T, typename TRAITS>
     template <typename EQUALS_COMPARER, enable_if_t<Common::IsPotentiallyComparerRelation<T, EQUALS_COMPARER> ()>*>
     inline MultiSet_LinkedList<T, TRAITS>::MultiSet_LinkedList (const EQUALS_COMPARER& equalsComparer)
-        : inherited (inherited::template MakeSharedPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
+        : inherited (inherited::template MakeSmartPtr<Rep_<EQUALS_COMPARER>> (equalsComparer))
     {
         AssertRepValidType_ ();
     }

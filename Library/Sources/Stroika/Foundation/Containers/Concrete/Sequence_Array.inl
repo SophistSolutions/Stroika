@@ -67,7 +67,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
         virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const override
         {
@@ -110,12 +110,12 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             if (fData_.HasActiveIterators ()) {
                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<T>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                auto r = Iterable<T>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                 r->fData_.RemoveAll ();
                 return r;
             }
             else {
-                return Iterable<T>::template MakeSharedPtr<Rep_> ();
+                return Iterable<T>::template MakeSmartPtr<Rep_> ();
             }
         }
         virtual T GetAt (size_t i) const override
@@ -236,7 +236,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T>
     inline Sequence_Array<T>::Sequence_Array ()
-        : inherited (inherited::template MakeSharedPtr<Rep_> ())
+        : inherited (inherited::template MakeSmartPtr<Rep_> ())
     {
         AssertRepValidType_ ();
     }

@@ -56,14 +56,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const override
         {
             // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-            return Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+            return Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
         }
         virtual Iterator<tuple<T, INDEXES...>> MakeIterator ([[maybe_unused]] IteratorOwnerID suggestedOwner) const override
         {
 /// NYI
 #if 0
             Rep_* NON_CONST_THIS = const_cast<Rep_*> (this); // logically const, but non-const cast cuz re-using iterator API
-            return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSharedPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
+            return Iterator<tuple<T, INDEXES...>> (Iterator<tuple<T, INDEXES...>>::template MakeSmartPtr<IteratorRep_> (suggestedOwner, &NON_CONST_THIS->fData_));
 #endif
             using RESULT_TYPE = Iterator<tuple<T, INDEXES...>>;
             return RESULT_TYPE::GetEmptyIterator ();
@@ -112,14 +112,14 @@ namespace Stroika::Foundation::Containers::Concrete {
         {
             if (fData_.HasActiveIterators ()) {
                 // const cast because though cloning LOGICALLY makes no changes in reality we have to patch iterator lists
-                auto r = Iterable<tuple<T, INDEXES...>>::template MakeSharedPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
+                auto r = Iterable<tuple<T, INDEXES...>>::template MakeSmartPtr<Rep_> (const_cast<Rep_*> (this), forIterableEnvelope);
                 r->fData_.clear (); //wrong - must checkjust zero out elts
                 return r;
             }
             else {
                 AssertNotReached ();
                 return nullptr;
-                ///return Iterable<T>::template MakeSharedPtr<Rep_> (forward<INDEXES> (fDimensions_)...);
+                ///return Iterable<T>::template MakeSmartPtr<Rep_> (forward<INDEXES> (fDimensions_)...);
             }
         }
         DISABLE_COMPILER_MSC_WARNING_START (4100)
@@ -153,7 +153,7 @@ namespace Stroika::Foundation::Containers::Concrete {
      */
     template <typename T, typename... INDEXES>
     DenseDataHyperRectangle_Vector<T, INDEXES...>::DenseDataHyperRectangle_Vector (INDEXES... dimensions)
-        : inherited (inherited::template MakeSharedPtr<Rep_> (forward<INDEXES> (dimensions)...))
+        : inherited (inherited::template MakeSmartPtr<Rep_> (forward<INDEXES> (dimensions)...))
     {
         AssertRepValidType_ ();
     }
