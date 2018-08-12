@@ -19,7 +19,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     template <typename SFINAE>
-    inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_integral_v<SFINAE>>*)
+    constexpr T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetNext (value_type i, enable_if_t<is_integral_v<SFINAE>>*)
     {
         return i == numeric_limits<value_type>::max () ? i : static_cast<value_type> (i + 1);
     }
@@ -31,7 +31,7 @@ namespace Stroika::Foundation::Traversal {
     }
     template <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
     template <typename SFINAE>
-    inline T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE>>*)
+    constexpr T RangeTraits::ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE>>*)
     {
         return i == numeric_limits<value_type>::min () ? i : static_cast<value_type> (i - 1);
     }

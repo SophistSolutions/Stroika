@@ -753,6 +753,7 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename ITERATOR>
     typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);
+
 }
 
 /*

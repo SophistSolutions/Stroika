@@ -80,17 +80,21 @@ namespace Stroika::Foundation::Traversal {
 
             /**
              *  Return the Next possible value, or if already at the end of the range, the same value.
+             *
+             *  \note its hard todo GetNext() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
             template <typename SFINAE = value_type>
-            static value_type GetNext (value_type i, enable_if_t<is_integral_v<SFINAE>>* = nullptr);
+            static constexpr value_type GetNext (value_type i, enable_if_t<is_integral_v<SFINAE>>* = nullptr);
             template <typename SFINAE = value_type>
             static value_type GetNext (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
 
             /**
              *  Return the Previous possible value, or if already at the end of the range, the same value.
+             *
+             *  \note its hard todo GetPrevious() for floating point as constexpr because underlying function in cmath not yet constexpr (as of C++17)
              */
             template <typename SFINAE = value_type>
-            static value_type GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE>>* = nullptr);
+            static constexpr value_type GetPrevious (value_type i, enable_if_t<is_integral_v<SFINAE>>* = nullptr);
             template <typename SFINAE = value_type>
             static value_type GetPrevious (value_type i, enable_if_t<is_floating_point_v<SFINAE>>* = nullptr);
 

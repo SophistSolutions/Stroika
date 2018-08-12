@@ -132,14 +132,12 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-        ***NYI
-            */
+         */
         nonvirtual DisjointRange Union (const DisjointRange& rhs) const;
 
     public:
         /**
-        ***NYI
-            */
+         */
         nonvirtual RangeType UnionBounds (const DisjointRange& rhs) const;
 
     public:

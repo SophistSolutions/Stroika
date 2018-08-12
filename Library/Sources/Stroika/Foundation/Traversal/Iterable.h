@@ -1141,19 +1141,19 @@ namespace Stroika::Foundation::Traversal {
     public:
         virtual _IterableRepSharedPtr Clone (IteratorOwnerID forIterableEnvelope) const = 0;
         /*
-            *  NB - the suggestedOwnerID argument to MakeIterator() may be used, or ignored by particular subtypes
-            *  of iterator/iterable. There is no gaurantee about the resulting GetOwner() result from the
-            *  iterator returned.
-            *
-            *  \em Design Note
-            *      It might have been better design to make the argument to Iterable<T>::Rep::MakeIterator ()
-            *      be owner instead of suggestedOwner, and then require that it get tracked. But that would
-            *      have imposed a memory (and copying) overhead on each iterator, and the current
-            *      use cases for iterators dont warrant that.
-            *
-            *      I think its good enough that particular subtypes - where tracking an owner makes sense and
-            *      is useful, we be done. And when not useful, it can be optimized away.
-            */
+         *  NB - the suggestedOwnerID argument to MakeIterator() may be used, or ignored by particular subtypes
+         *  of iterator/iterable. There is no gaurantee about the resulting GetOwner() result from the
+         *  iterator returned.
+         *
+         *  \em Design Note
+         *      It might have been better design to make the argument to Iterable<T>::Rep::MakeIterator ()
+         *      be owner instead of suggestedOwner, and then require that it get tracked. But that would
+         *      have imposed a memory (and copying) overhead on each iterator, and the current
+         *      use cases for iterators dont warrant that.
+         *
+         *      I think its good enough that particular subtypes - where tracking an owner makes sense and
+         *      is useful, we be done. And when not useful, it can be optimized away.
+         */
         virtual Iterator<T> MakeIterator (IteratorOwnerID suggestedOwner) const                       = 0;
         virtual size_t      GetLength () const                                                        = 0;
         virtual bool        IsEmpty () const                                                          = 0;
@@ -1162,9 +1162,9 @@ namespace Stroika::Foundation::Traversal {
 
     protected:
         /*
-            * Helper functions to simplify implementation of above public APIs. These MAY or MAY NOT be used in
-            * actual subclasses.
-            */
+         * Helper functions to simplify implementation of above public APIs. These MAY or MAY NOT be used in
+         * actual subclasses.
+         */
         nonvirtual bool _IsEmpty () const;
         nonvirtual void _Apply (_APPLY_ARGTYPE doToElement) const;
         nonvirtual Iterator<T> _FindFirstThat (_APPLYUNTIL_ARGTYPE doToElement, IteratorOwnerID suggestedOwner) const;

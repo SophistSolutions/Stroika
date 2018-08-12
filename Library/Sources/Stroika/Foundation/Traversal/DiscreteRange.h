@@ -54,7 +54,7 @@ namespace Stroika::Foundation::Traversal {
          */
         template <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
         struct ExplicitDiscreteRangeTraits : ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-            static T GetNext (T n)
+            static constexpr T GetNext (T n)
             {
                 return static_cast<T> (static_cast<int> (n) + 1);
             }
@@ -78,29 +78,31 @@ namespace Stroika::Foundation::Traversal {
         /**
          */
         template <typename T>
-        using DefaultDiscreteRangeTraits = conditional_t<is_enum_v<T>, DefaultDiscreteRangeTraits_Enum<T>, DefaultDiscreteRangeTraits_Integral<T>>;
+        struct DefaultDiscreteRangeTraits : conditional_t<is_enum_v<T>, DefaultDiscreteRangeTraits_Enum<T>, DefaultDiscreteRangeTraits_Integral<T>> {
+        };
+
     }
 
     /**
      *  \par Example Usage
      *      \code
-     *      vector<int> v = DiscreteRange<int> (1,10).Elements ().As<vector<int>> ();
-     *      // equiv to vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+     *          vector<int> v = DiscreteRange<int> (1,10).Elements ().As<vector<int>> ();
+     *          // equiv to vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
      *      \endcode
      *
      *  \par OR
      *      \code
-     *      for (auto i : DiscreteRange<int> (1,10)) {
-     *          ...i = 1..10
-     *      }
+     *          for (auto i : DiscreteRange<int> (1,10)) {
+     *              ...i = 1..10
+     *          }
      *      \endcode
      *
      *  \par OR
      *      \code
-     *      enum class Color { red, blue, green,  Stroika_Define_Enum_Bounds (red, green) };
-     *      for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
-     *          // iterate over each color - red, green, blue
-     *      }
+     *          enum class Color { red, blue, green,  Stroika_Define_Enum_Bounds (red, green) };
+     *          for (auto i : DiscreteRange<Color>::FullRange ().Elements ()) {
+     *              // iterate over each color - red, green, blue
+     *          }
      *      \endcode
      *
      *  \note   Since the default traits for an enum with Stroika type anotation (Stroika_Define_Enum_Bounds)
@@ -180,9 +182,9 @@ namespace Stroika::Foundation::Traversal {
         /**
          *  \par Example Usage
          *      \code
-         *      DisjointDiscreteRange<DiscreteRange<int>> t;
-         *      for (T i : t.Elements ()) {
-         *      }
+         *          DisjointDiscreteRange<DiscreteRange<int>> t;
+         *          for (T i : t.Elements ()) {
+         *          }
          *      \endcode
          *
          *  Elements () makes no guarantess about whether or not modifications to the underlying DisjointDiscreteRange<> will
@@ -192,14 +194,18 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         /**
-        */
-        operator Iterable<T> () const;
+         */
+        nonvirtual operator Iterable<T> () const;
+
+    public:
         /**
-        */
-        Iterator<T> begin () const;
+         */
+        nonvirtual Iterator<T> begin () const;
+
+    public:
         /**
-        */
-        Iterator<T> end () const;
+         */
+        nonvirtual Iterator<T> end () const;
 
     private:
         struct MyIterable_;

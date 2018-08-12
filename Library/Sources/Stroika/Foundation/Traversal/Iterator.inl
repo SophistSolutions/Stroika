@@ -259,6 +259,7 @@ namespace Stroika::Foundation::Traversal {
         // note Traversal::Iterator2Pointer (s.end ()) generally crashes in debug mode - windows - _ITERATOR_DEBUG_LEVEL >= 1, but I can find no better way which is portable
         return &*i;
     }
+
 }
 
 #endif /* _Stroika_Foundation_Traversal_Iterator_inl_ */

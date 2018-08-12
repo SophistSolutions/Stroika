@@ -13,7 +13,6 @@ namespace Stroika::Foundation::Traversal {
      */
     template <typename T, typename RANGE_TYPE>
     DisjointRange<T, RANGE_TYPE>::DisjointRange (const RangeType& from)
-        : fSubRanges_{}
     {
         MergeIn_ (from);
     }
@@ -31,7 +30,6 @@ namespace Stroika::Foundation::Traversal {
     template <typename T, typename RANGE_TYPE>
     template <typename COPY_FROM_ITERATOR_OF_RANGE_OF_T>
     DisjointRange<T, RANGE_TYPE>::DisjointRange (COPY_FROM_ITERATOR_OF_RANGE_OF_T start, COPY_FROM_ITERATOR_OF_RANGE_OF_T end)
-        : fSubRanges_{}
     {
         for (auto i = start; i != end; ++i) {
             MergeIn_ (*i);
@@ -183,22 +181,22 @@ namespace Stroika::Foundation::Traversal {
             }
             else {
                 /*
-                    *         [XXXXXX]      [XXX]             [XXXXXXXXXXXX]
-                    *  EX 1 ^                                    ^
-                    *  BECOMES:
-                    *       [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX]
-                    *
-                    *         [XXXXXX]      [XXX]             [XXXXXXXXXXXX]
-                    *  EX 2               ^                          ^
-                    *  BECOMES:
-                    *         [XXXXXX]    [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX]
-                    *
-                    *  Find first range to the right of LEFT-ANCHOR, and adjusting it to the LEFT based on rStart,
-                    *  and stretch it to the left (if needed).
-                    *
-                    *  Then grab the last block on the right (starting before rEnd) of the defined range,
-                    *  and stetch its right side to the right. Then delete all those in between.
-                    */
+                 *         [XXXXXX]      [XXX]             [XXXXXXXXXXXX]
+                 *  EX 1 ^                                    ^
+                 *  BECOMES:
+                 *       [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX]
+                 *
+                 *         [XXXXXX]      [XXX]             [XXXXXXXXXXXX]
+                 *  EX 2               ^                          ^
+                 *  BECOMES:
+                 *         [XXXXXX]    [XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX]
+                 *
+                 *  Find first range to the right of LEFT-ANCHOR, and adjusting it to the LEFT based on rStart,
+                 *  and stretch it to the left (if needed).
+                 *
+                 *  Then grab the last block on the right (starting before rEnd) of the defined range,
+                 *  and stetch its right side to the right. Then delete all those in between.
+                 */
                 Assert (fSubRanges_.size () >= 1);
 
                 // tmphack - need random-access iterators !!! for sequence at least!
@@ -259,8 +257,8 @@ namespace Stroika::Foundation::Traversal {
                 }
 
                 /*
-                    *  Next adjust RHS of rhs-most element.
-                    */
+                 *  Next adjust RHS of rhs-most element.
+                 */
                 Iterator<RangeType> endI = prevOfIterator (fSubRanges_.FindFirstThat (startI, [rEnd](const RangeType& r) -> bool { return rEnd < r.GetLowerBound (); }));
                 if (endI == fSubRanges_.end ()) {
                     endI = prevOfIterator (fSubRanges_.end ());
@@ -344,19 +342,16 @@ namespace Stroika::Foundation::Traversal {
     {
         return lhs.Union (rhs);
     }
-
     template <typename T, typename RANGE_TYPE>
     inline DisjointRange<T, RANGE_TYPE> operator^ (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
         return lhs.Intersection (rhs);
     }
-
     template <typename T, typename RANGE_TYPE>
     inline bool operator== (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {
         return lhs.Equals (rhs);
     }
-
     template <typename T, typename RANGE_TYPE>
     inline bool operator!= (const DisjointRange<T, RANGE_TYPE>& lhs, const DisjointRange<T, RANGE_TYPE>& rhs)
     {

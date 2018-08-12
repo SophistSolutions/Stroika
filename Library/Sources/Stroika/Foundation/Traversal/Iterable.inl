@@ -335,9 +335,9 @@ namespace Stroika::Foundation::Traversal {
             return total;
         };
         /*
-            *  An extremely in-efficient but space-constant implementation. N^3 and check
-            *  a contains b and b contains a
-            */
+         *  An extremely in-efficient but space-constant implementation. N^3 and check
+         *  a contains b and b contains a
+         */
         for (auto ti : *this) {
             if (tallyOf (*this, ti) != tallyOf (rhs, ti)) {
                 return false;
