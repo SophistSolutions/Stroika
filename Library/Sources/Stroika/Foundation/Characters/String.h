@@ -26,7 +26,6 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  * Description:
- *
  *      This family of classes using something akin to the Letter/Envelope paradigm
  *      described in Copliens "Advanced C++ Programming Styles and Idioms").
  *
@@ -55,7 +54,6 @@
  *              o   String_AsciiOnlyOptimized
  *
  * TODO:
- *
  *      @todo   PROBALY get rid of
  *                                      nonvirtual  void        SetCharAt (Character c, size_t i);
  *              and fofrce people to use StringBUilder. I think that maybe only mutator except operator+= which is
@@ -547,18 +545,18 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *      String tmp { L"This is good" };
-         *      Assert (tmp.SubString (5) == L"is good");
+         *          String tmp { L"This is good" };
+         *          Assert (tmp.SubString (5) == L"is good");
          *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *      const String_Constant kTest_ { L"a=b" };
-         *      const String_Constant kLbl2LookFor_ { L"a=" };
-         *      if (resultLine.Find (kLbl2LookFor_)) {
-         *          String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
-         *      }
-         *      Assert (tmp == L"b");
+         *          const String_Constant kTest_ { L"a=b" };
+         *          const String_Constant kLbl2LookFor_ { L"a=" };
+         *          if (resultLine.Find (kLbl2LookFor_)) {
+         *              String  tmp { resultLine.SubString (kLbl2LookFor_.length ()) };
+         *          }
+         *          Assert (tmp == L"b");
          *      \endcode
          *
          *  OVERLOADS WITH ptrdiff_t:
@@ -675,10 +673,10 @@ namespace Stroika::Foundation::Characters {
          *
          *  \par Example Usage
          *      \code
-         *      Assert (String (L"abc").Match (L"abc"));
-         *      Assert (not (String (L"abc").Match (L"bc")));
-         *      Assert (String (L"abc").Match (L".*bc"));
-         *      Assert (not String (L"abc").Match (L"b.*c"));
+         *          Assert (String (L"abc").Match (L"abc"));
+         *          Assert (not (String (L"abc").Match (L"bc")));
+         *          Assert (String (L"abc").Match (L".*bc"));
+         *          Assert (not String (L"abc").Match (L"b.*c"));
          *      \endcode
          *
          *  Details on the regular expression language/format can be found at:
