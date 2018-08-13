@@ -345,9 +345,21 @@ namespace {
     namespace Test9_SmallStackBuffer_ {
         void DoTest ()
         {
-            SmallStackBuffer<int> x0{0};
-            SmallStackBuffer<int> x1{x0};
-            x0 = x1;
+            {
+                SmallStackBuffer<int> x0{0};
+                SmallStackBuffer<int> x1{x0};
+                x0 = x1;
+            }
+            {
+                // Test using String elements, since those will test construction/reserve logic
+                using Characters::String;
+                SmallStackBuffer<String> buf1{3};
+                for (int i = 0; i < 1000; i++) {
+                    buf1.push_back (String{L"hi mom"});
+                }
+                SmallStackBuffer<String> buf2{buf1};
+                buf1.resize (0);
+            }
         }
     }
 }

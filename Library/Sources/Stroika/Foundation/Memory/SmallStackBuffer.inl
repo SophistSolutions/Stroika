@@ -120,6 +120,7 @@ namespace Stroika::Foundation::Memory {
     inline void SmallStackBuffer<T, BUF_SIZE>::resize (size_t nElements)
     {
         if (nElements > fSize_) {
+            // Growing
             if (nElements > capacity ()) {
                 /*
                  *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
@@ -130,6 +131,7 @@ namespace Stroika::Foundation::Memory {
             fSize_ = nElements;
         }
         else if (nElements < fSize_) {
+            // Shrinking
             DestroyElts_ (this->begin () + nElements, this->end ());
             fSize_ = nElements;
         }
@@ -331,6 +333,7 @@ namespace Stroika::Foundation::Memory {
             ::free (bytes);
         }
     }
+
 }
 
 #endif /*_Stroika_Foundation_Memory_SmallStackBuffer_inl_*/
