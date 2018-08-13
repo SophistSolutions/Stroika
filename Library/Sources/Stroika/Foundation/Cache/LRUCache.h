@@ -21,7 +21,6 @@
  *      \file
  *
  * TODO:
- *
  *      @todo   Possible get rid of intermediate LRUCache_ object.
  *
  *      @todo   Find some reasonable/simple way to get
@@ -67,7 +66,7 @@ namespace Stroika::Foundation::Cache {
             static size_t Hash (typename Configuration::ArgByValueType<KEY> e);
 
             /**
-            */
+             */
             using KeyEqualsCompareFunctionType = KEY_EQUALS_COMPARER;
 
             /**
@@ -90,7 +89,7 @@ namespace Stroika::Foundation::Cache {
      *
      *  \par Example Usage
      *      \code
-     *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
+     *          Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>

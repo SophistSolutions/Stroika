@@ -41,7 +41,6 @@ namespace Stroika::Foundation::Cache {
      */
     template <typename RESULT, template <typename, typename> class CACHE = MemoizerSupport::DEFAULT_CACHE, typename... ARGS>
     class Memoizer : private Debug::AssertExternallySynchronizedLock {
-
     public:
         /**
          */
