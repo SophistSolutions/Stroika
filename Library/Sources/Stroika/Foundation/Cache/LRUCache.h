@@ -21,8 +21,6 @@
  *      \file
  *
  * TODO:
- *      @todo   Possible get rid of intermediate LRUCache_ object.
- *
  *      @todo   Find some reasonable/simple way to get
  *              LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
  *              Working with ONE T argument
@@ -77,7 +75,6 @@ namespace Stroika::Foundation::Cache {
              */
             using OptionalValueType = optional<VALUE>;
         };
-
     }
 
     /**
@@ -96,7 +93,7 @@ namespace Stroika::Foundation::Cache {
      *
      */
     template <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY, VALUE>>
-    class LRUCache : private Debug::AssertExternallySynchronizedLock {
+    class LRUCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
     public:
         using TraitsType = TRAITS;
 
@@ -151,6 +148,7 @@ namespace Stroika::Foundation::Cache {
          *  LookupValue () finds the value in the cache, and returns it, or if not present, uses the argument valueFetcher to retrieve it.
          *
          *  So LookupValue (v) is equivilent to:
+         *      \code
          *          if (auto o = Lookup (k)) {
          *              return o;
          *          }
@@ -159,24 +157,25 @@ namespace Stroika::Foundation::Cache {
          *              Add (k, v);
          *              return v;
          *          }
+         *      \endcode
          *
          *  \par Example Usage
          *      \code
-         *      struct Details_ {
-         *      };
-         *      using DetailsID = int;
-         *      Details_ ReadDetailsFromFile_ (DetailsID id);
+         *          struct Details_ {
+         *          };
+         *          using DetailsID = int;
+         *          Details_ ReadDetailsFromFile_ (DetailsID id);
          *
-         *      Execution::Synchronized<LRUCache<DetailsID, Details_>>      fDetailsCache_; // caches often helpful in multithreaded situations
+         *          Execution::Synchronized<LRUCache<DetailsID, Details_>>      fDetailsCache_; // caches often helpful in multithreaded situations
          *
-         *      // returns the value from LRUCache, or automatically pages it in from file
-         *      Details_    GetDetails (DetailsID id) {
-         *          return
-         *              fDetailsCache_->LookupValue (
-         *                  id,
-         *                  [] (DetailsID id) -> Details_ { return ReadDetailsFromFile_ (id); }
-         *              );
-         *      }
+         *          // returns the value from LRUCache, or automatically pages it in from file
+         *          Details_    GetDetails (DetailsID id) {
+         *              return
+         *                  fDetailsCache_->LookupValue (
+         *                      id,
+         *                      [] (DetailsID id) -> Details_ { return ReadDetailsFromFile_ (id); }
+         *                  );
+         *          }
          *      \endcode
          */
         nonvirtual VALUE LookupValue (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& valueFetcher);
@@ -196,58 +195,45 @@ namespace Stroika::Foundation::Cache {
             KEY   fKey;
             VALUE fValue;
         };
-        using OptKeyValuePair_ = optional<KeyValuePair_>;
 
         template <typename SFINAE = KEY>
         static size_t H_ (typename Configuration::ArgByValueType<SFINAE> k);
         static size_t Hash_ (typename Configuration::ArgByValueType<KEY> e);
 
     private:
-        // nb: inherit from TraitsType::StatsType for zero-size base class sub-object rule
-        struct LRUCache_ : TraitsType::StatsType {
-            LRUCache_ (size_t maxCacheSize);
-            LRUCache_ ()                  = delete;
-            LRUCache_ (const LRUCache_&)  = delete;
-            nonvirtual LRUCache_& operator= (const LRUCache_&) = delete;
+        KeyEqualsCompareFunctionType fKeyEqualsComparer_;
 
-            KeyEqualsCompareFunctionType fKeyEqualsComparer_;
+        struct CacheElement_;
+        struct CacheIterator_;
 
-            nonvirtual size_t GetMaxCacheSize () const;
-            nonvirtual void   SetMaxCacheSize (size_t maxCacheSize);
+        nonvirtual CacheIterator_ begin_ () const;
+        nonvirtual CacheIterator_ end_ () const;
 
-            struct CacheElement_;
-            struct CacheIterator;
+        nonvirtual void ClearCache_ ();
 
-            nonvirtual CacheIterator begin ();
-            nonvirtual CacheIterator end ();
+        /*
+         *  Create a new LRUCache_ element (potentially bumping some old element out of the cache). This new element
+         *  will be considered most recently used. Note that this routine re-orders the cache so that the most recently looked
+         *  up element is first, and because of this re-ordering, its illegal to do a Lookup while
+         *  a @'LRUCache_<ELEMENT>::CacheIterator_' exists for this LRUCache_.</p>
+         */
+        nonvirtual optional<KeyValuePair_>* AddNew_ (typename Configuration::ArgByValueType<KeyType> item);
 
-            nonvirtual void ClearCache ();
+        /*
+         * Check and see if the given element is in the cache. Return that element if its there, and nullptr otherwise.
+         * Note that this routine re-orders the cache so that the most recently looked up element is first, and because
+         * of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator_' exists
+         *       for this LRUCache_.
+         */
+        nonvirtual optional<KeyValuePair_>* LookupElement_ (typename Configuration::ArgByValueType<KeyType> item) const;
 
-            /*
-             *  Create a new LRUCache_ element (potentially bumping some old element out of the cache). This new element
-             *  will be considered most recently used. Note that this routine re-orders the cache so that the most recently looked
-             *  up element is first, and because of this re-ordering, its illegal to do a Lookup while
-             *  a @'LRUCache_<ELEMENT>::CacheIterator' exists for this LRUCache_.</p>
-             */
-            nonvirtual OptKeyValuePair_* AddNew (typename Configuration::ArgByValueType<KeyType> item);
+        /*
+         */
+        nonvirtual void ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
 
-            /*
-             * Check and see if the given element is in the cache. Return that element if its there, and nullptr otherwise.
-             * Note that this routine re-orders the cache so that the most recently looked up element is first, and because
-             * of this re-ordering, its illegal to do a Lookup while a @'LRUCache_<ELEMENT>::CacheIterator' exists
-             *       for this LRUCache_.
-             */
-            nonvirtual OptKeyValuePair_* LookupElement (typename Configuration::ArgByValueType<KeyType> item);
-
-            vector<CacheElement_> fCachedElts_BUF_[TRAITS::kHashTableSize]; // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-            CacheElement_*        fCachedElts_First_[TRAITS::kHashTableSize] = {};
-            CacheElement_*        fCachedElts_Last_[TRAITS::kHashTableSize]  = {};
-
-            nonvirtual void ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
-        };
-
-    private:
-        mutable LRUCache_ fRealCache_;
+        vector<CacheElement_> fCachedElts_BUF_[TRAITS::kHashTableSize]; // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
+        CacheElement_*        fCachedElts_First_[TRAITS::kHashTableSize] = {};
+        CacheElement_*        fCachedElts_Last_[TRAITS::kHashTableSize]  = {};
     };
 
 }
