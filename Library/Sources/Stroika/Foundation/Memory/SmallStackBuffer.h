@@ -7,6 +7,8 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
+#include "../Configuration/TypeHints.h"
+
 #include "Common.h"
 
 /**
@@ -132,7 +134,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  @see capacity
          *
-         *  \note @todo - current implementation never really shrinks - for no good reason. Fix that.
+         *  \ens  ((nElements <= BUF_SIZE && capacity () == BUF_SIZE) or (nElements > BUF_SIZE and nElements == capacity ()));
          */
         nonvirtual void reserve (size_t newCapacity);
 
@@ -181,11 +183,11 @@ namespace Stroika::Foundation::Memory {
          */
         nonvirtual void GrowToSize (size_t nElements);
 
+    public:
+        nonvirtual void push_back (Configuration::ArgByValueType<T> e);
+
     private:
         nonvirtual void reserve_ (size_t nElements);
-
-    public:
-        nonvirtual void push_back (const T& e);
 
 #if qDebug
     private:
@@ -253,11 +255,11 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     private:
-        nonvirtual T*    BufferAsT_ ();
-        nonvirtual const T* BufferAsT_ () const;
+        nonvirtual T*    BufferAsT_ () noexcept;
+        nonvirtual const T* BufferAsT_ () const noexcept;
 
     private:
-        static void DestroyElts_ (T* start, T* end);
+        static void DestroyElts_ (T* start, T* end) noexcept;
     };
 }
 

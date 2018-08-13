@@ -140,28 +140,39 @@ namespace Stroika::Foundation::Memory {
     void SmallStackBuffer<T, BUF_SIZE>::reserve_ (size_t nElements)
     {
         Invariant ();
-        //
-        // note - we currently only GROW the capacity. That is probably a mistake, but in practice not a real problem.
-        //      -- LGP 2017-04-13
-        //
         size_t oldEltCount = capacity ();
-        if (nElements > oldEltCount) {
-            Assert (nElements > BUF_SIZE); // because capacity is always at least BUF_SIZE
-            Memory::Byte* newPtr = Allocate_ (SizeInBytes_ (nElements));
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-            Configuration::uninitialized_copy_MSFT_BWA (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
-#else
-            uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
-#endif
-            DestroyElts_ (this->begin (), this->end ()); // no change to fSize_!!!!
-            if (fLiveData_ != BufferAsT_ ()) {
-                // we must have used the heap...
-                Deallocate_ (LiveDataAsAllocatedBytes_ ());
-            }
-            fLiveData_ = reinterpret_cast<T*> (newPtr);
+        if (nElements != oldEltCount) {
+            bool oldInPlaceBuffer = oldEltCount <= BUF_SIZE;
+            bool newInPlaceBuffer = nElements <= BUF_SIZE;
+            // Only if we changed if using inplace buffer, or if was and is using ramBuffer, and eltCount changed do we need to do anything
+            if (oldInPlaceBuffer != newInPlaceBuffer or (not newInPlaceBuffer)) {
+                bool          memoryAllocationNeeded = not newInPlaceBuffer;
+                Memory::Byte* newPtr                 = memoryAllocationNeeded ? Allocate_ (SizeInBytes_ (nElements)) : std::begin (fInlinePreallocatedBuffer_);
 
-            fCapacityOfFreeStoreAllocation_ = nElements;
+                // Initialize new memory from old
+                Assert (this->begin () != reinterpret_cast<T*> (newPtr));
+#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+                Configuration::uninitialized_copy_MSFT_BWA (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
+#else
+                uninitialized_copy (this->begin (), this->end (), reinterpret_cast<T*> (newPtr));
+#endif
+
+                // destroy objects in old memory
+                DestroyElts_ (this->begin (), this->end ());
+
+                // free old memory if needed
+                if (not oldInPlaceBuffer) {
+                    Assert (fLiveData_ != BufferAsT_ ());
+                    Deallocate_ (LiveDataAsAllocatedBytes_ ());
+                }
+
+                fLiveData_ = reinterpret_cast<T*> (newPtr);
+                if (not newInPlaceBuffer) {
+                    fCapacityOfFreeStoreAllocation_ = nElements;
+                }
+            }
         }
+        Ensure ((nElements <= BUF_SIZE && capacity () == BUF_SIZE) or (nElements > BUF_SIZE and nElements == capacity ()));
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
@@ -226,7 +237,7 @@ namespace Stroika::Foundation::Memory {
         return *(fLiveData_ + i);
     }
     template <typename T, size_t BUF_SIZE>
-    inline void SmallStackBuffer<T, BUF_SIZE>::push_back (const T& e)
+    inline void SmallStackBuffer<T, BUF_SIZE>::push_back (Configuration::ArgByValueType<T> e)
     {
         size_t s = size ();
         if (s < capacity ()) {
@@ -282,17 +293,17 @@ namespace Stroika::Foundation::Memory {
     }
 #endif
     template <typename T, size_t BUF_SIZE>
-    inline T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ ()
+    inline T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ () noexcept
     {
         return reinterpret_cast<T*> (&fInlinePreallocatedBuffer_[0]);
     }
     template <typename T, size_t BUF_SIZE>
-    inline const T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ () const
+    inline const T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ () const noexcept
     {
         return reinterpret_cast<const T*> (&fInlinePreallocatedBuffer_[0]);
     }
     template <typename T, size_t BUF_SIZE>
-    inline void SmallStackBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end)
+    inline void SmallStackBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end) noexcept
     {
         for (auto i = start; i != end; ++i) {
             i->~T ();
@@ -307,7 +318,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline Memory::Byte* SmallStackBuffer<T, BUF_SIZE>::Allocate_ (size_t bytes)
     {
-        void* p = malloc (bytes);
+        void* p = ::malloc (bytes);
         Execution::ThrowIfNull (p);
         return reinterpret_cast<Memory::Byte*> (p);
     }
@@ -315,10 +326,9 @@ namespace Stroika::Foundation::Memory {
     inline void SmallStackBuffer<T, BUF_SIZE>::Deallocate_ (Memory::Byte* bytes)
     {
         if (bytes != nullptr) {
-            free (bytes);
+            ::free (bytes);
         }
     }
-
 }
 
 #endif /*_Stroika_Foundation_Memory_SmallStackBuffer_inl_*/
