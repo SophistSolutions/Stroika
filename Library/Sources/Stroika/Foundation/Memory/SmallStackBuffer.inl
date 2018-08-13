@@ -69,7 +69,6 @@ namespace Stroika::Foundation::Memory {
     {
         Invariant ();
         DestroyElts_ (this->begin (), this->end ());
-        this->fSize_ = 0;
         if (fLiveData_ != BufferAsT_ ()) {
             // we must have used the heap...
             Deallocate_ (LiveDataAsAllocatedBytes_ ());
@@ -161,8 +160,7 @@ namespace Stroika::Foundation::Memory {
             }
             fLiveData_ = reinterpret_cast<T*> (newPtr);
 
-            // since we are using the heap, we can store the capacity in our fInlinePreallocatedBuffer_
-            *reinterpret_cast<size_t*> (BufferAsT_ ()) = nElements;
+            fCapacityOfFreeStoreAllocation_ = nElements;
         }
         Invariant ();
     }
@@ -189,7 +187,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline size_t SmallStackBuffer<T, BUF_SIZE>::capacity () const
     {
-        return (fLiveData_ == BufferAsT_ ()) ? BUF_SIZE : *reinterpret_cast<const size_t*> (BufferAsT_ ()); // @see class Design Note
+        return (fLiveData_ == BufferAsT_ ()) ? BUF_SIZE : fCapacityOfFreeStoreAllocation_; // @see class Design Note
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
@@ -231,8 +229,18 @@ namespace Stroika::Foundation::Memory {
     inline void SmallStackBuffer<T, BUF_SIZE>::push_back (const T& e)
     {
         size_t s = size ();
-        resize (s + 1);
-        fLiveData_[s] = e;
+        if (s < capacity ()) {
+#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+            Configuration::uninitialized_copy_MSFT_BWA (&e, &e + 1, this->end ());
+#else
+            uninitialized_copy (&e, &e + 1, this->end ());
+#endif
+            this->fSize_++;
+        }
+        else {
+            resize (s + 1);
+            fLiveData_[s] = e;
+        }
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::operator T* ()

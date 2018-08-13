@@ -13,10 +13,6 @@
  *  \file
  *
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
- *
- *  TODO:
- *      @todo   Minor - but we could do better than alignas(size_t) by just adjusting the offset of the size pointer in the buff, and just assure
- *              buf already large enuf (ptr + alignof(size_t) - 1) % alignof(size_t)) + ptr;
  */
 
 namespace Stroika::Foundation::Memory {
@@ -43,12 +39,16 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
+     *  \note   SmallStackBuffer<T> can roughly be used as a replacement for vector<> - behiing similarly, except that its optimized
+     *          for the case where its used as an automatic variable with a template specifying the right size on the stack for the buffer.
+     *
+     *          The objects CAN be copied, and will properly construct/destruct array members as they are added/removed.
+     *          (new feature as of Stroika v2.1b6).
+     *
      *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
      *
-     *  \note   Implementation Note - we store the store the 'capacity' in the fInlinePreallocatedBuffer_ if its > BUF_SIZE, and pin it at the minimum
+     *  \note   Implementation Note - we store the store the 'capacity' in a union (fCapacityOfFreeStoreAllocation_) overlapping with fInlinePreallocatedBuffer_ if its > BUF_SIZE, and pin it at the minimum
      *          to BUF_SIZE
-     *
-     *  \note   Like std::vector<> - this only 'constructs' the first - size - member objects, not based on capacity.
      *
      */
     template <typename T, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
@@ -214,9 +214,7 @@ namespace Stroika::Foundation::Memory {
     private:
         static constexpr size_t SizeInBytes_ (size_t nElts)
         {
-            return max (sizeof (T[1]), sizeof (size_t)) * nElts;
-            //return sizeof (alignas (T) alignas (size_t) T[1]) * nElts;
-            //return sizeof (alignas (T) alignas (size_t) T[1]);
+            return sizeof (T[1]) * nElts; // not sure why return sizeof (T[nElts]); fails on vs2k17?
         }
 
     private:
@@ -233,7 +231,13 @@ namespace Stroika::Foundation::Memory {
 #if qDebug
         Byte fGuard1_[sizeof (kGuard1_)];
 #endif
-        alignas (T) alignas (size_t) Memory::Byte fInlinePreallocatedBuffer_[SizeInBytes_ (BUF_SIZE)]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
+        DISABLE_COMPILER_MSC_WARNING_START (4324)
+        union {
+            size_t fCapacityOfFreeStoreAllocation_;                                       // only valid if fLiveData_ != &fInlinePreallocatedBuffer_[0]
+            alignas (T) Memory::Byte fInlinePreallocatedBuffer_[SizeInBytes_ (BUF_SIZE)]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
+        };
+        DISABLE_COMPILER_MSC_WARNING_END (4324)
+
 #if qDebug
         Byte fGuard2_[sizeof (kGuard2_)];
 #endif
@@ -254,9 +258,6 @@ namespace Stroika::Foundation::Memory {
 
     private:
         static void DestroyElts_ (T* start, T* end);
-
-    public:
-        static_assert (sizeof (SmallStackBuffer::fInlinePreallocatedBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
     };
 }
 
