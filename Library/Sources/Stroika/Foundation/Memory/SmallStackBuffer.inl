@@ -63,6 +63,8 @@ namespace Stroika::Foundation::Memory {
     inline SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
     {
         Invariant ();
+        DestroyElts_ (this->begin (), this->end ());
+        this->fSize_ = 0;
         if (fLiveData_ != BufferAsT_ ()) {
             // we must have used the heap...
             delete[] fLiveData_;
@@ -73,12 +75,11 @@ namespace Stroika::Foundation::Memory {
     SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs)
     {
         Invariant ();
+        // sloppy but simple
+        DestroyElts_ (this->begin (), this->end ());
+        fSize_ = 0;
         ReserveAtLeast (rhs.size ());
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
-#else
-        copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
-#endif
+        uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
         Invariant ();
         return *this;
     }
@@ -86,12 +87,11 @@ namespace Stroika::Foundation::Memory {
     SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer& rhs)
     {
         Invariant ();
+        // sloppy but simple
+        DestroyElts_ (this->begin (), this->end ());
+        fSize_ = 0;
         ReserveAtLeast (rhs.size ());
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
-#else
-        copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
-#endif
+        uninitialized_copy (rhs.begin (), rhs.end (), this->begin ());
         Invariant ();
         return *this;
     }
@@ -111,13 +111,24 @@ namespace Stroika::Foundation::Memory {
              */
             reserve (max (nElements, capacity () * 2));
         }
-        fSize_ = nElements;
+        if (nElements > fSize_) {
+            //@todo
+            // initialize extra elts
+            fSize_ = nElements;
+        }
+        else if (nElements < fSize_) {
+            //@todo
+            fSize_ = nElements;
+        }
+        Assert (fSize_ == nElements);
         Ensure (size () <= capacity ());
     }
     template <typename T, size_t BUF_SIZE>
     void SmallStackBuffer<T, BUF_SIZE>::reserve_ (size_t nElements)
     {
         Invariant ();
+        //@todo
+
         //
         // note - we currently only GROW the capacity. That is probably a mistake, but in practice not a real problem.
         //      -- LGP 2017-04-13
@@ -265,7 +276,7 @@ namespace Stroika::Foundation::Memory {
     inline void SmallStackBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end)
     {
         for (auto i = start; i != end; ++i) {
-            i->~Value ();
+            i->~T ();
         }
     }
 
