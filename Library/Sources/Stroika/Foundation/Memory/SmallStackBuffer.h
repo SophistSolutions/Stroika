@@ -88,8 +88,8 @@ namespace Stroika::Foundation::Memory {
         SmallStackBuffer (size_t nElements);
         template <size_t FROM_BUF_SIZE>
         SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from);
-        SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
-        SmallStackBuffer (SmallStackBuffer<T, BUF_SIZE>&&) = delete;
+        SmallStackBuffer (const SmallStackBuffer& from);
+        SmallStackBuffer (SmallStackBuffer&&) = delete;
         template <typename ITERATOR_OF_T>
         SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
         ~SmallStackBuffer ();
@@ -98,9 +98,9 @@ namespace Stroika::Foundation::Memory {
         /** 
          */
         template <size_t FROM_BUF_SIZE>
-        nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs);
-        nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);
-        nonvirtual SmallStackBuffer<T, BUF_SIZE>& operator= (SmallStackBuffer<T, BUF_SIZE>&&) = delete;
+        nonvirtual SmallStackBuffer& operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs);
+        nonvirtual SmallStackBuffer& operator= (const SmallStackBuffer& rhs);
+        nonvirtual SmallStackBuffer& operator= (SmallStackBuffer&&) = delete;
 
     public:
         // @todo - lift these restrictions - closely related to https://stroika.atlassian.net/browse/STK-159
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual const T* BufferAsT_ () const;
 
     public:
-        static_assert (sizeof (SmallStackBuffer<T, BUF_SIZE>::fBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
+        static_assert (sizeof (SmallStackBuffer::fBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
     };
 
 }

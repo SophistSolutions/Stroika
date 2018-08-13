@@ -65,7 +65,7 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
+    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer& from)
         : SmallStackBuffer (from.size ())
     {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
@@ -99,7 +99,7 @@ namespace Stroika::Foundation::Memory {
         return *this;
     }
     template <typename T, size_t BUF_SIZE>
-    SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs)
+    SmallStackBuffer<T, BUF_SIZE>& SmallStackBuffer<T, BUF_SIZE>::operator= (const SmallStackBuffer& rhs)
     {
         Invariant ();
         ReserveAtLeast (rhs.size ());
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Memory {
         //
         size_t oldEltCount = capacity ();
         if (nElements > oldEltCount) {
-            Assert (nElements > (BUF_SIZE)); // because capacity is always at least BUF_SIZE
+            Assert (nElements > BUF_SIZE); // because capacity is always at least BUF_SIZE
             // @todo note this is wrong because it CONSTRUCTS too many elements - we want to only construct fSize elements.
             // BUt OK cuz for now we only use on POD data
             T* newPtr = new T[nElements]; // NB: We are careful not to update our size field til this has succeeded (exception safety)
