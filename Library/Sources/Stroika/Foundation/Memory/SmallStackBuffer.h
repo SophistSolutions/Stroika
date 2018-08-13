@@ -56,7 +56,7 @@ namespace Stroika::Foundation::Memory {
      *
      *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
      *
-     *  \note   Implementation Note - we store the store the 'capacity' in the fBuffer_ if its > BUF_SIZE, and pin it at the minimum
+     *  \note   Implementation Note - we store the store the 'capacity' in the fInlinePreallocatedBuffer_ if its > BUF_SIZE, and pin it at the minimum
      *          to BUF_SIZE
      *
      */
@@ -233,11 +233,11 @@ namespace Stroika::Foundation::Memory {
 #if qDebug
         Byte fGuard1_[sizeof (kGuard1_)];
 #endif
-        alignas (T) alignas (size_t) Memory::Byte fBuffer_[sizeof (T[BUF_SIZE])]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
+        alignas (T) alignas (size_t) Memory::Byte fInlinePreallocatedBuffer_[sizeof (T[BUF_SIZE])]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
 #if qDebug
         Byte fGuard2_[sizeof (kGuard2_)];
 #endif
-        T* fPointer_{};
+        T* fLiveData_{};
 
     public:
         nonvirtual void Invariant () const;
@@ -253,7 +253,7 @@ namespace Stroika::Foundation::Memory {
         nonvirtual const T* BufferAsT_ () const;
 
     public:
-        static_assert (sizeof (SmallStackBuffer::fBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
+        static_assert (sizeof (SmallStackBuffer::fInlinePreallocatedBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
     };
 
 }

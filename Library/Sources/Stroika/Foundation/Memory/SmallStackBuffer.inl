@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
         : fSize_ (0)
-        , fPointer_ (BufferAsT_ ())
+        , fLiveData_ (BufferAsT_ ())
     {
 #if qDebug
         ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
@@ -58,9 +58,9 @@ namespace Stroika::Foundation::Memory {
         : SmallStackBuffer (from.size ())
     {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
+        Memory::Private::VC_BWA_std_copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
 #else
-        copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
+        copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
 #endif
         Invariant ();
     }
@@ -69,9 +69,9 @@ namespace Stroika::Foundation::Memory {
         : SmallStackBuffer (from.size ())
     {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
+        Memory::Private::VC_BWA_std_copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
 #else
-        copy (from.fPointer_, from.fPointer_ + from.size (), fPointer_);
+        copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
 #endif
         Invariant ();
     }
@@ -79,9 +79,9 @@ namespace Stroika::Foundation::Memory {
     inline SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
     {
         Invariant ();
-        if (fPointer_ != BufferAsT_ ()) {
+        if (fLiveData_ != BufferAsT_ ()) {
             // we must have used the heap...
-            delete[] fPointer_;
+            delete[] fLiveData_;
         }
     }
     template <typename T, size_t BUF_SIZE>
@@ -91,9 +91,9 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
         ReserveAtLeast (rhs.size ());
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
+        Memory::Private::VC_BWA_std_copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
 #else
-        copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
+        copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
 #endif
         Invariant ();
         return *this;
@@ -104,9 +104,9 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
         ReserveAtLeast (rhs.size ());
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
+        Memory::Private::VC_BWA_std_copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
 #else
-        copy (rhs.fPointer_, rhs.fPointer_ + rhs.size (), fPointer_);
+        copy (rhs.fLiveData_, rhs.fLiveData_ + rhs.size (), fLiveData_);
 #endif
         Invariant ();
         return *this;
@@ -148,14 +148,14 @@ namespace Stroika::Foundation::Memory {
             // Not totally safe for T with CTOR/DTOR/Op= ... Don't use this class in that case!!!
             // No idea how many to copy!!! - do worst case(maybe should keep old size if this ever
             // bus errors???)
-            (void)::memcpy (newPtr, fPointer_, fSize_ * sizeof (T));
-            if (fPointer_ != BufferAsT_ ()) {
+            (void)::memcpy (newPtr, fLiveData_, fSize_ * sizeof (T));
+            if (fLiveData_ != BufferAsT_ ()) {
                 // we must have used the heap...
-                delete[] fPointer_;
+                delete[] fLiveData_;
             }
-            fPointer_ = newPtr;
+            fLiveData_ = newPtr;
 
-            // since we are using the heap, we can store the size in our fBuffer_
+            // since we are using the heap, we can store the size in our fInlinePreallocatedBuffer_
             *reinterpret_cast<size_t*> (BufferAsT_ ()) = nElements;
         }
         Invariant ();
@@ -163,27 +163,27 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline typename SmallStackBuffer<T, BUF_SIZE>::iterator SmallStackBuffer<T, BUF_SIZE>::begin ()
     {
-        return fPointer_;
+        return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
     inline typename SmallStackBuffer<T, BUF_SIZE>::iterator SmallStackBuffer<T, BUF_SIZE>::end ()
     {
-        return fPointer_ + fSize_;
+        return fLiveData_ + fSize_;
     }
     template <typename T, size_t BUF_SIZE>
     inline typename SmallStackBuffer<T, BUF_SIZE>::const_iterator SmallStackBuffer<T, BUF_SIZE>::begin () const
     {
-        return fPointer_;
+        return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
     inline typename SmallStackBuffer<T, BUF_SIZE>::const_iterator SmallStackBuffer<T, BUF_SIZE>::end () const
     {
-        return fPointer_ + fSize_;
+        return fLiveData_ + fSize_;
     }
     template <typename T, size_t BUF_SIZE>
     inline size_t SmallStackBuffer<T, BUF_SIZE>::capacity () const
     {
-        return (fPointer_ == BufferAsT_ ()) ? BUF_SIZE : *reinterpret_cast<const size_t*> (BufferAsT_ ()); // @see class Design Note
+        return (fLiveData_ == BufferAsT_ ()) ? BUF_SIZE : *reinterpret_cast<const size_t*> (BufferAsT_ ()); // @see class Design Note
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
@@ -213,32 +213,32 @@ namespace Stroika::Foundation::Memory {
     inline typename SmallStackBuffer<T, BUF_SIZE>::reference SmallStackBuffer<T, BUF_SIZE>::at (size_t i)
     {
         Require (i < fSize_);
-        return *(fPointer_ + i);
+        return *(fLiveData_ + i);
     }
     template <typename T, size_t BUF_SIZE>
     inline typename SmallStackBuffer<T, BUF_SIZE>::const_reference SmallStackBuffer<T, BUF_SIZE>::at (size_t i) const
     {
         Require (i < fSize_);
-        return *(fPointer_ + i);
+        return *(fLiveData_ + i);
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::push_back (const T& e)
     {
         size_t s = size ();
         resize (s + 1);
-        fPointer_[s] = e;
+        fLiveData_[s] = e;
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::operator T* ()
     {
-        AssertNotNull (fPointer_);
-        return fPointer_;
+        AssertNotNull (fLiveData_);
+        return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::operator const T* () const
     {
-        AssertNotNull (fPointer_);
-        return fPointer_;
+        AssertNotNull (fLiveData_);
+        return fLiveData_;
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::Invariant () const
@@ -254,10 +254,12 @@ namespace Stroika::Foundation::Memory {
         Assert (capacity () >= size ());
         ValidateGuards_ ();
     }
+#if qCompiler_cpp17InlineStaticMemberOfTemplateLinkerUndefined_Buggy
     template <typename T, size_t BUF_SIZE>
     constexpr Byte SmallStackBuffer<T, BUF_SIZE>::kGuard1_[8];
     template <typename T, size_t BUF_SIZE>
     constexpr Byte SmallStackBuffer<T, BUF_SIZE>::kGuard2_[8];
+#endif
     template <typename T, size_t BUF_SIZE>
     void SmallStackBuffer<T, BUF_SIZE>::ValidateGuards_ () const
     {
@@ -268,12 +270,12 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ ()
     {
-        return reinterpret_cast<T*> (&fBuffer_[0]);
+        return reinterpret_cast<T*> (&fInlinePreallocatedBuffer_[0]);
     }
     template <typename T, size_t BUF_SIZE>
     inline const T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ () const
     {
-        return reinterpret_cast<const T*> (&fBuffer_[0]);
+        return reinterpret_cast<const T*> (&fInlinePreallocatedBuffer_[0]);
     }
 
 }
