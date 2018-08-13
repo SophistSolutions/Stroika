@@ -139,6 +139,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     void SmallStackBuffer<T, BUF_SIZE>::reserve_ (size_t nElements)
     {
+        Assert (nElements >= size ());
         Invariant ();
         size_t oldEltCount = capacity ();
         if (nElements != oldEltCount) {
@@ -203,6 +204,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
     {
+        Require (newCapacity >= size ());
         reserve_ (newCapacity);
     }
     template <typename T, size_t BUF_SIZE>

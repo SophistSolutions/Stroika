@@ -134,6 +134,7 @@ namespace Stroika::Foundation::Memory {
          *
          *  @see capacity
          *
+         *  \req  (newCapacity >= size ());
          *  \ens  ((nElements <= BUF_SIZE && capacity () == BUF_SIZE) or (nElements > BUF_SIZE and nElements == capacity ()));
          */
         nonvirtual void reserve (size_t newCapacity);
