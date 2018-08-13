@@ -17,13 +17,6 @@
  *  TODO:
  *      @todo   Minor - but we could do better than alignas(size_t) by just adjusting the offset of the size pointer in the buff, and just assure
  *              buf already large enuf (ptr + alignof(size_t) - 1) % alignof(size_t)) + ptr;
- *
- *  Long-Term TOD:
- *      @todo   https://stroika.atlassian.net/browse/STK-159
- *              Support non-POD type 'T' values properly.
- *              IE Lose \req std::is_trivially_constructible<T>::value,
- *              std::is_trivially_destructible<T>::value,
- *              std::is_trivially_copyable<T>::value
  */
 
 namespace Stroika::Foundation::Memory {
@@ -48,16 +41,14 @@ namespace Stroika::Foundation::Memory {
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      *
-     *  \req std::is_trivially_constructible<T>::value -- @see https://stroika.atlassian.net/browse/STK-159
-     *  \req std::is_trivially_destructible<T>::value
-     *  \req std::is_trivially_copyable<T>::value
-     *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   We do not provide an operator[] overload because this creates ambiguity with the operator* overload.
      *
      *  \note   Implementation Note - we store the store the 'capacity' in the fInlinePreallocatedBuffer_ if its > BUF_SIZE, and pin it at the minimum
      *          to BUF_SIZE
+     *
+     *  \note   Like std::vector<> - this only 'constructs' the first - size - member objects, not based on capacity.
      *
      */
     template <typename T, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
@@ -101,12 +92,6 @@ namespace Stroika::Foundation::Memory {
         nonvirtual SmallStackBuffer& operator= (const SmallStackBuffer<T, FROM_BUF_SIZE>& rhs);
         nonvirtual SmallStackBuffer& operator= (const SmallStackBuffer& rhs);
         nonvirtual SmallStackBuffer& operator= (SmallStackBuffer&&) = delete;
-
-    public:
-        // @todo - lift these restrictions - closely related to https://stroika.atlassian.net/browse/STK-159
-        static_assert (is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
-        static_assert (is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
-        static_assert (is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
 
     public:
         /**
@@ -183,8 +168,6 @@ namespace Stroika::Foundation::Memory {
          *  Grow or shrink the buffer. The 'size' is the number of constructed elements, and this function automatically
          *  assures the capacity is maintained at least as large as the size.
          *
-         *  \note @todo TBD what happens with newly created elements. Initializing is safest, but most costly.
-         *
          *  \ensure GetSize () <= capacity ();
          */
         nonvirtual void resize (size_t nElements);
@@ -229,11 +212,28 @@ namespace Stroika::Foundation::Memory {
 #endif
 
     private:
+        static constexpr size_t SizeInBytes_ (size_t nElts)
+        {
+            return max (sizeof (T[1]), sizeof (size_t)) * nElts;
+            //return sizeof (alignas (T) alignas (size_t) T[1]) * nElts;
+            //return sizeof (alignas (T) alignas (size_t) T[1]);
+        }
+
+    private:
+        nonvirtual Memory::Byte* LiveDataAsAllocatedBytes_ ();
+
+    private:
+        static Memory::Byte* Allocate_ (size_t bytes);
+
+    private:
+        static void Deallocate_ (Memory::Byte* bytes);
+
+    private:
         size_t fSize_{};
 #if qDebug
         Byte fGuard1_[sizeof (kGuard1_)];
 #endif
-        alignas (T) alignas (size_t) Memory::Byte fInlinePreallocatedBuffer_[sizeof (T[BUF_SIZE])]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
+        alignas (T) alignas (size_t) Memory::Byte fInlinePreallocatedBuffer_[SizeInBytes_ (BUF_SIZE)]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
 #if qDebug
         Byte fGuard2_[sizeof (kGuard2_)];
 #endif
@@ -258,7 +258,6 @@ namespace Stroika::Foundation::Memory {
     public:
         static_assert (sizeof (SmallStackBuffer::fInlinePreallocatedBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
     };
-
 }
 
 /*
