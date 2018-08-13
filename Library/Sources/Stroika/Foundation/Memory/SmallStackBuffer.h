@@ -252,6 +252,9 @@ namespace Stroika::Foundation::Memory {
         nonvirtual T*    BufferAsT_ ();
         nonvirtual const T* BufferAsT_ () const;
 
+    private:
+        static void DestroyElts_ (T* start, T* end);
+
     public:
         static_assert (sizeof (SmallStackBuffer::fInlinePreallocatedBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");
     };

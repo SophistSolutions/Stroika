@@ -25,8 +25,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
-        : fSize_ (0)
-        , fLiveData_ (BufferAsT_ ())
+        : fLiveData_ (BufferAsT_ ())
     {
 #if qDebug
         ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
@@ -46,34 +45,19 @@ namespace Stroika::Foundation::Memory {
     SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end)
         : SmallStackBuffer (distance (start, end))
     {
-        T* outI = this->begin ();
-        for (ITERATOR_OF_T i = start; i != end; ++i, ++outI) {
-            *outI = *i;
-        }
+        uninitialized_copy (start, end, this->begin ());
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
     template <size_t FROM_BUF_SIZE>
     SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from)
-        : SmallStackBuffer (from.size ())
+        : SmallStackBuffer (from.begin (), from.end ())
     {
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
-#else
-        copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
-#endif
-        Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (const SmallStackBuffer& from)
-        : SmallStackBuffer (from.size ())
+        : SmallStackBuffer (from.begin (), from.end ())
     {
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-        Memory::Private::VC_BWA_std_copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
-#else
-        copy (from.fLiveData_, from.fLiveData_ + from.size (), fLiveData_);
-#endif
-        Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
@@ -276,6 +260,13 @@ namespace Stroika::Foundation::Memory {
     inline const T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ () const
     {
         return reinterpret_cast<const T*> (&fInlinePreallocatedBuffer_[0]);
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline void SmallStackBuffer<T, BUF_SIZE>::DestroyElts_ (T* start, T* end)
+    {
+        for (auto i = start; i != end; ++i) {
+            i->~Value ();
+        }
     }
 
 }
