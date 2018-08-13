@@ -233,7 +233,7 @@ namespace Stroika::Foundation::Memory {
 #if qDebug
         Byte fGuard1_[sizeof (kGuard1_)];
 #endif
-        alignas (T) alignas (size_t) T fBuffer_[BUF_SIZE]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
+        alignas (T) alignas (size_t) Memory::Byte fBuffer_[sizeof (T[BUF_SIZE])]; // alignas both since sometimes accessed as array of T, and sometimes as size_t
 #if qDebug
         Byte fGuard2_[sizeof (kGuard2_)];
 #endif
@@ -247,6 +247,10 @@ namespace Stroika::Foundation::Memory {
         nonvirtual void Invariant_ () const;
         nonvirtual void ValidateGuards_ () const;
 #endif
+
+    private:
+        nonvirtual T*    BufferAsT_ ();
+        nonvirtual const T* BufferAsT_ () const;
 
     public:
         static_assert (sizeof (SmallStackBuffer<T, BUF_SIZE>::fBuffer_) >= sizeof (size_t), "When fPointer == fBuffer, then capacity is whole thing, and if we malloced, save size in unused buffer (so make sure big enuf).");

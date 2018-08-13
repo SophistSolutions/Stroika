@@ -26,7 +26,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer ()
         : fSize_ (0)
-        , fPointer_ (fBuffer_)
+        , fPointer_ (BufferAsT_ ())
     {
 #if qDebug
         ::memcpy (fGuard1_, kGuard1_, sizeof (kGuard1_));
@@ -79,7 +79,7 @@ namespace Stroika::Foundation::Memory {
     inline SmallStackBuffer<T, BUF_SIZE>::~SmallStackBuffer ()
     {
         Invariant ();
-        if (fPointer_ != fBuffer_) {
+        if (fPointer_ != BufferAsT_ ()) {
             // we must have used the heap...
             delete[] fPointer_;
         }
@@ -123,8 +123,8 @@ namespace Stroika::Foundation::Memory {
     {
         if (nElements > capacity ()) {
             /*
-                *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
-                */
+             *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+             */
             reserve (max (nElements, capacity () * 2));
         }
         fSize_ = nElements;
@@ -140,7 +140,7 @@ namespace Stroika::Foundation::Memory {
         //
         size_t oldEltCount = capacity ();
         if (nElements > oldEltCount) {
-            Assert (nElements > (NEltsOf (fBuffer_))); // because capacity is always at least NEltsOf (fBuffer_)
+            Assert (nElements > (BUF_SIZE)); // because capacity is always at least BUF_SIZE
             // @todo note this is wrong because it CONSTRUCTS too many elements - we want to only construct fSize elements.
             // BUt OK cuz for now we only use on POD data
             T* newPtr = new T[nElements]; // NB: We are careful not to update our size field til this has succeeded (exception safety)
@@ -149,14 +149,14 @@ namespace Stroika::Foundation::Memory {
             // No idea how many to copy!!! - do worst case(maybe should keep old size if this ever
             // bus errors???)
             (void)::memcpy (newPtr, fPointer_, fSize_ * sizeof (T));
-            if (fPointer_ != fBuffer_) {
+            if (fPointer_ != BufferAsT_ ()) {
                 // we must have used the heap...
                 delete[] fPointer_;
             }
             fPointer_ = newPtr;
 
             // since we are using the heap, we can store the size in our fBuffer_
-            *(size_t*)&fBuffer_ = nElements;
+            *reinterpret_cast<size_t*> (BufferAsT_ ()) = nElements;
         }
         Invariant ();
     }
@@ -183,8 +183,7 @@ namespace Stroika::Foundation::Memory {
     template <typename T, size_t BUF_SIZE>
     inline size_t SmallStackBuffer<T, BUF_SIZE>::capacity () const
     {
-        Assert (NEltsOf (fBuffer_) == BUF_SIZE);
-        return (fPointer_ == fBuffer_) ? NEltsOf (fBuffer_) : *(size_t*)&fBuffer_; // @see class Design Note
+        return (fPointer_ == BufferAsT_ ()) ? BUF_SIZE : *reinterpret_cast<const size_t*> (BufferAsT_ ()); // @see class Design Note
     }
     template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::reserve (size_t newCapacity)
@@ -266,6 +265,16 @@ namespace Stroika::Foundation::Memory {
         Assert (::memcmp (kGuard2_, fGuard2_, sizeof (kGuard2_)) == 0);
     }
 #endif
+    template <typename T, size_t BUF_SIZE>
+    inline T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ ()
+    {
+        return reinterpret_cast<T*> (&fBuffer_[0]);
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline const T* SmallStackBuffer<T, BUF_SIZE>::BufferAsT_ () const
+    {
+        return reinterpret_cast<const T*> (&fBuffer_[0]);
+    }
 
 }
 
