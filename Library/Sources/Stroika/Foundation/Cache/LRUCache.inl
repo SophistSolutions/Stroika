@@ -180,7 +180,7 @@ namespace Stroika::Foundation::Cache {
     void LRUCache<KEY, VALUE, TRAITS>::clear ()
     {
         lock_guard<AssertExternallySynchronizedLock> critSec{*this};
-        ClearCache ();
+        ClearCache_ ();
     }
     template <typename KEY, typename VALUE, typename TRAITS>
     void LRUCache<KEY, VALUE, TRAITS>::clear (typename Configuration::ArgByValueType<KEY> key)
