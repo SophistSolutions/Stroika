@@ -1254,6 +1254,49 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #define Stroika_Foundation_Configuration_STRUCT_PACKED(...) __VA_ARGS__ __attribute__ ((__packed__))
 #endif
 
+#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
+namespace Stroika::Foundation::Configuration {
+    template <class InputIt, class Size, class ForwardIt>
+    ForwardIt uninitialized_copy_n_MSFT_BWA (InputIt first, Size count, ForwardIt d_first)
+    {
+        // @see https://en.cppreference.com/w/cpp/memory/uninitialized_copy_n
+        typedef typename std::iterator_traits<ForwardIt>::value_type Value;
+        ForwardIt                                                    current = d_first;
+        try {
+            for (; count > 0; ++first, (void)++current, --count) {
+                ::new (static_cast<void*> (std::addressof (*current))) Value (*first);
+            }
+        }
+        catch (...) {
+            for (; d_first != current; ++d_first) {
+                d_first->~Value ();
+            }
+            throw;
+        }
+        return current;
+    }
+    template <class InputIt, class ForwardIt>
+    ForwardIt uninitialized_copy_MSFT_BWA (InputIt first, InputIt last, ForwardIt d_first)
+    {
+        // @see https://en.cppreference.com/w/cpp/memory/uninitialized_copy
+        typedef typename std::iterator_traits<ForwardIt>::value_type Value;
+        ForwardIt                                                    current = d_first;
+        try {
+            for (; first != last; ++first, (void)++current) {
+                ::new (static_cast<void*> (std::addressof (*current))) Value (*first);
+            }
+            return current;
+        }
+        catch (...) {
+            for (; d_first != current; ++d_first) {
+                d_first->~Value ();
+            }
+            throw;
+        }
+    }
+}
+#endif
+
 #endif /*defined(__cplusplus)*/
 
 #endif /*_Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_*/

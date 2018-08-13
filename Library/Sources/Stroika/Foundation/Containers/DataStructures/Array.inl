@@ -15,29 +15,6 @@ namespace Stroika::Foundation::Containers::DataStructures {
 #define qStroika_Foundation_Containers_DataStructures_Array_IncludeSlowDebugChecks_ 0
 #endif
 
-#if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-    namespace PRIVATE_ {
-        template <class InputIt, class Size, class ForwardIt>
-        ForwardIt uninitialized_copy_n_MSFT_BWA (InputIt first, Size count, ForwardIt d_first)
-        {
-            using Value       = typename iterator_traits<ForwardIt>::value_type;
-            ForwardIt current = d_first;
-            try {
-                for (; count > 0; ++first, ++current, --count) {
-                    ::new (static_cast<void*> (Traversal::Iterator2Pointer (current))) Value (*first);
-                }
-            }
-            catch (...) {
-                for (; d_first != current; ++d_first) {
-                    d_first->~Value ();
-                }
-                throw;
-            }
-            return current;
-        }
-    }
-#endif
-
     /*
      ********************************************************************************
      *********************************** Array<T> ***********************************
@@ -217,7 +194,7 @@ namespace Stroika::Foundation::Containers::DataStructures {
                     try {
                         size_t n2Copy = min (_fSlotsAllocated, slotsAlloced);
 #if qCompilerAndStdLib_uninitialized_copy_n_Warning_Buggy
-                        PRIVATE_::uninitialized_copy_n_MSFT_BWA (&_fItems[0], n2Copy, newV);
+                        Configuration::uninitialized_copy_n_MSFT_BWA (&_fItems[0], n2Copy, newV);
 #else
                         uninitialized_copy_n (&_fItems[0], n2Copy, newV);
 #endif
