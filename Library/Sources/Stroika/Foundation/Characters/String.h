@@ -1374,7 +1374,17 @@ namespace Stroika::Foundation::Characters {
      *  This can be referenced in your ModuleInitializer<> to force correct inter-module construction order.
      */
     Execution::ModuleDependency MakeModuleDependency_String ();
+}
 
+namespace std {
+    template <>
+    class hash<Stroika::Foundation::Characters::String> {
+    public:
+        size_t operator() (const Stroika::Foundation::Characters::String& arg) const
+        {
+            return hash<wstring> () (arg.As<wstring> ());
+        }
+    };
 }
 
 /*
