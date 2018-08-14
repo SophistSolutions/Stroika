@@ -86,17 +86,7 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize, const KeyEqualsCompareFunctionType& keyEqualsComparer)
-        : fHashtableSize_{1}
-        , fKeyEqualsComparer_ (keyEqualsComparer)
-        , fCachedElts_BUF_{fHashtableSize_}
-        , fCachedElts_First_{fHashtableSize_}
-        , fCachedElts_Last_{fHashtableSize_}
-    {
-        SetMaxCacheSize (maxCacheSize);
-    }
-    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize, const KeyEqualsCompareFunctionType& keyEqualsComparer, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
+    LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize, const KeyEqualsCompareFunctionType& keyEqualsComparer, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
         : fHashtableSize_{hashTableSize}
         , fKeyEqualsComparer_ (keyEqualsComparer)
         , fHashFunction_ (hashFunction)
@@ -105,17 +95,21 @@ namespace Stroika::Foundation::Cache {
         , fCachedElts_Last_{fHashtableSize_}
     {
         SetMaxCacheSize (maxCacheSize);
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, const KeyEqualsCompareFunctionType& keyEqualsComparer, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
+        : LRUCache (maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction)
+    {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
-        : fHashtableSize_{hashTableSize}
-        , fKeyEqualsComparer_ (KEY_EQUALS_COMPARER{})
-        , fHashFunction_ (hashFunction)
-        , fCachedElts_BUF_{fHashtableSize_}
-        , fCachedElts_First_{fHashtableSize_}
-        , fCachedElts_Last_{fHashtableSize_}
+        : LRUCache (maxCacheSize, KEY_EQUALS_COMPARER{}, hashTableSize, hashFunction)
     {
-        SetMaxCacheSize (maxCacheSize);
+    }
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
+    inline LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction)
+        : LRUCache (maxCacheSize, hashTableSize, hashFunction)
+    {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)

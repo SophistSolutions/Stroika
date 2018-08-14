@@ -41,7 +41,7 @@
 namespace Stroika::Foundation::Cache {
 
     /**
-     *  LRUCache is NOT threadsafe (checks usage with Debug::AssertExternallySynchronizedLock), so typical uses would use Execution::Synchronized.
+     *  \brief LRUCache implements a simple least-recently-used caching strategy, with optional (key) hashing to make it faster.
      *
      *  \note   LRUCache destroys objects when they are cleared from the cache. This guarantee is
      *          relevant only in case where the objects use significant resources, or where their lifetime has
@@ -49,7 +49,27 @@ namespace Stroika::Foundation::Cache {
      *
      *  \par Example Usage
      *      \code
-     *          Execution::Synchronized<LRUCache<DetailsID, Details_>>      sDetailsCache_; // caches often helpful in multithreaded situations
+     *          LRUCache<string, string> tmp (3);
+     *          tmp.Add ("a", "1");
+     *          tmp.Add ("b", "2");
+     *          tmp.Add ("c", "3");
+     *          tmp.Add ("d", "4");
+     *          VerifyTestResult (not tmp.Lookup ("a").has_value ());
+     *          VerifyTestResult (tmp.Lookup ("b") == "2");
+     *          VerifyTestResult (tmp.Lookup ("d") == "4");
+     *      \endcode
+     *
+     *  \par Example Usage
+     *      \code
+     *          // using C++17 deduction guides, and hash table of size 10
+     *          LRUCache tmp (pair<string, string>{}, 3, 10, hash<string>{});
+     *          tmp.Add ("a", "1");
+     *          tmp.Add ("b", "2");
+     *          tmp.Add ("c", "3");
+     *          tmp.Add ("d", "4");
+     *          VerifyTestResult (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
+     *          VerifyTestResult (tmp.Lookup ("b") == "2");
+     *          VerifyTestResult (tmp.Lookup ("d") == "4");
      *      \endcode
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
@@ -68,10 +88,13 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  \note the overloads taking pair<KEY,VALUE> as the first argument are just tricks to allow deduction guides to work (because
+         *        you cannot specify some template parameters and then have deduction guides take effect).
          */
-        LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {});
-        LRUCache (size_t maxCacheSize, const KeyEqualsCompareFunctionType& keyEqualsComparer, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
+        LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
+        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{});
         LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
+        LRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
         LRUCache (const LRUCache& from);
 
     public:
@@ -204,15 +227,10 @@ namespace Stroika::Foundation::Cache {
 
         static constexpr size_t                                                      kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
         Memory::SmallStackBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
-        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
+        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_fCachedElts_First_{};
         Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
 
-    // additional deduction guide
-#if 0
-    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>>
-    LRUCache (size_t size, const KEY_EQUALS_COMPARER& keyEqualsComparer)->LRUCache<KEY, VALUE, equal_to<KEY>, Statistics::StatsType_DEFAULT, nullptr_t>;
-#endif
 }
 
 /*

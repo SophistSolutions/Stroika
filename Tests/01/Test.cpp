@@ -56,11 +56,30 @@ namespace {
                 VerifyTestResult (tmp2.Lookup ("b") == "2");
                 VerifyTestResult (tmp2.Lookup ("d") == "4");
             }
+            void T3_ ()
+            {
+                // using C++17 deduction guides
+                LRUCache tmp (pair<string, string>{}, 3, 10, hash<string>{});
+                tmp.Add ("a", "1");
+                tmp.Add ("b", "2");
+                tmp.Add ("c", "3");
+                tmp.Add ("d", "4");
+
+                VerifyTestResult (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
+                VerifyTestResult (tmp.Lookup ("b") == "2");
+                VerifyTestResult (tmp.Lookup ("d") == "4");
+
+                LRUCache tmp2 = tmp;
+                VerifyTestResult (not tmp2.Lookup ("a").has_value () or *tmp2.Lookup ("a") == "1"); // could be missing or found but if found same value
+                VerifyTestResult (tmp2.Lookup ("b") == "2");
+                VerifyTestResult (tmp2.Lookup ("d") == "4");
+            }
         }
         void DoIt ()
         {
             Private_::T1_ ();
             Private_::T2_ ();
+            Private_::T3_ ();
         }
     }
 }
