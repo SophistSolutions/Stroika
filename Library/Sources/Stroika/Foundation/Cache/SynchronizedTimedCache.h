@@ -27,6 +27,8 @@ namespace Stroika::Foundation::Cache {
      *  @see TimedCache but internally syncrhonized. You could use Syncrhonized<TimedCache>, but this is simpler to use and
      *  performs better, due to not write locking until the last minute needed (you expect a cache to mostly be read
      *  from and have writes - cache misses - expensive/slow but not slow the rest of the cache (hits).
+     *
+     *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class SynchronizedTimedCache : public TimedCache<KEY, VALUE, TRAITS> {

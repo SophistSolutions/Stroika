@@ -22,7 +22,6 @@ namespace Stroika::Foundation::Cache {
      ********************************************************************************
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-
     struct LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::CacheIterator_ {
         explicit CacheIterator_ (CacheElement_** start, CacheElement_** end)
             : fCurV (start)
@@ -90,9 +89,9 @@ namespace Stroika::Foundation::Cache {
         : fHashtableSize_{hashTableSize}
         , fKeyEqualsComparer_ (keyEqualsComparer)
         , fHashFunction_ (hashFunction)
-        , fCachedElts_BUF_{fHashtableSize_}
-        , fCachedElts_First_{fHashtableSize_}
-        , fCachedElts_Last_{fHashtableSize_}
+        , fCachedElts_BUF_{hashTableSize}
+        , fCachedElts_First_{hashTableSize}
+        , fCachedElts_Last_{hashTableSize}
     {
         SetMaxCacheSize (maxCacheSize);
     }
@@ -113,10 +112,8 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)
-        : LRUCache (from.GetMaxCacheSize (), from.fKeyEqualsComparer_)
+        : LRUCache (from.GetMaxCacheSize (), from.fKeyEqualsComparer_, from.fHashtableSize_, from.fHashFunction_)
     {
-        fHashFunction_ = from.fHashFunction_;
-
         lock_guard<const Debug::AssertExternallySynchronizedLock> fromCritSec{from}; // after above getMaxCacheSize to avoid recursive access
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {

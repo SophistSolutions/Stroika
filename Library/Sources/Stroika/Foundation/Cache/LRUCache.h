@@ -227,7 +227,7 @@ namespace Stroika::Foundation::Cache {
 
         static constexpr size_t                                                      kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
         Memory::SmallStackBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
-        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_fCachedElts_First_{};
+        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
         Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
 
