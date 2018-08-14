@@ -86,6 +86,7 @@
 #elif defined(_MSC_VER)
 
 #define _MS_VS_2k17_VER_ 1910
+
 #define _MS_VS_2k17_15Pt1_ 191025019
 #define _MS_VS_2k17_15Pt3Pt2_ 191125507
 #define _MS_VS_2k17_15Pt5Pt0_ 191225830
@@ -101,6 +102,10 @@
 // _MSC_VER=1914
 #define _MS_VS_2k17_15Pt7Pt6_ 191426433
 #define _MSC_VER_2k17_15Pt7_ 1914
+
+// _MSC_VER=1915
+#define _MSC_VER_2k17_15Pt8_ 1915
+#define _MS_VS_2k17_15Pt8Pt0_ 191526726
 
 #if _MSC_VER < 1910
 #define _STROIKA_CONFIGURATION_WARNING_ "Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2017"
@@ -784,6 +789,31 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 #define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
 #else
 #define qCompilerAndStdLib_MaybeUnusedIgnoredInLambdas_Buggy 0
+#endif
+
+#endif
+
+/*
+ *
+ *  c:\sandbox\stroika\devroot-v2.0\library\sources\stroika\foundation\containers\sortedmapping.h(100): fatal error C1001
+: An internal error has occurred in the compiler. [C:\Sandbox\Stroika\DevRoot-v2.0\Library\Projects\VisualStudio.Net-
+2017\Stroika-Foundation.vcxproj]
+
+BREAKS
+        using _SetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+
+WORKAROUND:
+        using _SetRepSharedPtr = Memory::SharedPtr<_IRep>;
+
+    Error reported is elsewhere where the typedef is used. Happens about 15 times in Stroika.
+*/
+#ifndef qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+
+#if defined(_MSC_VER)
+// first broken in _MSC_VER_2k17_15Pt8_  (_MS_VS_2k17_15Pt8Pt0_)
+#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER_2k17_15Pt8_ <= _MSC_VER && _MSC_VER <= _MSC_VER_2k17_15Pt8_)
+#else
+#define qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy 0
 #endif
 
 #endif
