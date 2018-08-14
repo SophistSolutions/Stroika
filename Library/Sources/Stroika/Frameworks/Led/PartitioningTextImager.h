@@ -330,15 +330,13 @@ namespace Stroika::Frameworks::Led {
         };
 
     private:
-        struct CacheEltLRUCacheTraits_ : Foundation::Cache::LRUCacheSupport::DefaultTraits<CacheElt::COMPARE_ITEM, CacheElt> {
-            struct KeyEqualsCompareFunctionType {
+            struct CacheElt_COMPARE_ITEM_KeyEqualsCompareFunctionType_ {
                 bool operator() (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs) const
                 {
                     return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
                 };
             };
-        };
-        mutable Foundation::Cache::LRUCache<CacheElt::COMPARE_ITEM, CacheElt, CacheEltLRUCacheTraits_> fCache;
+        mutable Foundation::Cache::LRUCache<CacheElt::COMPARE_ITEM, CacheElt, CacheElt_COMPARE_ITEM_KeyEqualsCompareFunctionType_> fCache;
 
     public:
         nonvirtual void ClearAll ();
