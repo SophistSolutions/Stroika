@@ -330,12 +330,12 @@ namespace Stroika::Frameworks::Led {
         };
 
     private:
-            struct CacheElt_COMPARE_ITEM_KeyEqualsCompareFunctionType_ {
-                bool operator() (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs) const
-                {
-                    return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
-                };
+        struct CacheElt_COMPARE_ITEM_KeyEqualsCompareFunctionType_ {
+            bool operator() (const CacheElt::COMPARE_ITEM& lhs, const CacheElt::COMPARE_ITEM& rhs) const
+            {
+                return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
             };
+        };
         mutable Foundation::Cache::LRUCache<CacheElt::COMPARE_ITEM, CacheElt, CacheElt_COMPARE_ITEM_KeyEqualsCompareFunctionType_> fCache;
 
     public:
@@ -350,10 +350,10 @@ namespace Stroika::Frameworks::Led {
 #endif
 
     /*
-        ********************************************************************************
-        ***************************** Implementation Details ***************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ***************************** Implementation Details ***************************
+     ********************************************************************************
+     */
     //  class   Partition::PartitionMarker;
     inline Partition::PartitionMarker::PartitionMarker (Partition& owner, PartitionMarker* insertAfterMe)
         : inherited ()
