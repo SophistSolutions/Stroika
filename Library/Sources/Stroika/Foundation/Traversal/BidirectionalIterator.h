@@ -34,7 +34,11 @@ namespace Stroika::Foundation::Traversal {
         class IRep;
 
     public:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+        using BidirectionalIteratorRepSharedPtr = Memory::SharedPtr<IRep>;
+#else
         using BidirectionalIteratorRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
+#endif
 
     public:
         /**
@@ -51,9 +55,9 @@ namespace Stroika::Foundation::Traversal {
         BidirectionalIterator () = delete;
 
     private:
-        /*
-            *  Mostly internal type to select a constructor for the special END iterator.
-            */
+        /**
+         *  Mostly internal type to select a constructor for the special END iterator.
+         */
         enum ConstructionFlagForceAtEnd_ {
             ForceAtEnd
         };

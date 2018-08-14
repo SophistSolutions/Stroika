@@ -32,7 +32,13 @@ namespace Stroika::Foundation::Traversal {
 
     public:
         class IRep;
+
+    public:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+        using RandomAccessIteratorRepSharedPtr = Memory::SharedPtr<IRep>;
+#else
         using RandomAccessIteratorRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
+#endif
 
     public:
         /**
@@ -49,9 +55,9 @@ namespace Stroika::Foundation::Traversal {
         RandomAccessIterator () = delete;
 
     private:
-        /*
-            *  Mostly internal type to select a constructor for the special END iterator.
-            */
+        /**
+         *  Mostly internal type to select a constructor for the special END iterator.
+         */
         enum ConstructionFlagForceAtEnd_ {
             ForceAtEnd
         };

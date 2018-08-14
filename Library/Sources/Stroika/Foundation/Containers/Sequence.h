@@ -208,7 +208,11 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+        using _SequenceRepSharedPtr = Memory::SharedPtr<_IRep>;
+#else
         using _SequenceRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+#endif
 
     public:
         /**
@@ -604,7 +608,6 @@ namespace Stroika::Foundation::Containers {
      */
     template <typename T>
     bool operator> (const Sequence<T>& lhs, const Sequence<T>& rhs);
-
 }
 
 /*

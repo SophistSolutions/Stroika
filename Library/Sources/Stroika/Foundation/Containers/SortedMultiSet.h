@@ -58,7 +58,11 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+        using _SortedMultiSetRepSharedPtr = Memory::SharedPtr<_IRep>;
+#else
         using _SortedMultiSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+#endif
 
     public:
         /**
@@ -142,7 +146,6 @@ namespace Stroika::Foundation::Containers {
     public:
         virtual InOrderComparerType GetInOrderComparer () const = 0;
     };
-
 }
 
 /*
