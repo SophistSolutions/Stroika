@@ -14,6 +14,7 @@
 #include "../Configuration/TypeHints.h"
 #include "../Containers/Mapping.h"
 #include "../Debug/AssertExternallySynchronizedLock.h"
+#include "../Memory/SmallStackBuffer.h"
 
 #include "Statistics.h"
 
@@ -25,8 +26,6 @@
  *              LRUCache<PHRShortcutSpec, PHRShortcutSpec, PHRShortcutSpecNoAuthCacheTraits_>   sRecentlyUsedCache (kMaxEltsInReceltlyUsedCache_);
  *              Working with ONE T argument
  *              Add(elt2cache).
- *
- *      @todo   Hash_SFINAE_<> IS HORRIBLE HACK!!!! CLEANUP!!! Tricky... SFINAE -- SEE SerializeForHash1_
  *
  *      @todo   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
  *              has first/last, or do our own storage managemnet with secondary array? - we do the mallocs/frees.
@@ -40,42 +39,6 @@
  */
 
 namespace Stroika::Foundation::Cache {
-
-    namespace LRUCacheSupport {
-
-        /**
-         */
-        template <typename KEY, typename VALUE, size_t HASH_TABLE_SIZE = 1, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
-        struct DefaultTraits {
-            using KeyType = KEY;
-
-            /**
-             *  HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-             */
-            static constexpr size_t kHashTableSize = HASH_TABLE_SIZE;
-
-            static_assert (kHashTableSize >= 1, "HASH_TABLE_SIZE template parameter must be >= 1");
-
-            //tmphack - SHOULD do smarter defaults!!!!
-            template <typename SFINAE>
-            static size_t Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, enable_if_t<is_arithmetic_v<SFINAE> or is_convertible_v<SFINAE, string> or is_convertible_v<SFINAE, Characters::String>, void>* = nullptr);
-            template <typename SFINAE>
-            static size_t Hash_SFINAE_ (typename Configuration::ArgByValueType<KEY> e, enable_if_t<not(is_arithmetic_v<SFINAE> or is_convertible_v<SFINAE, string> or is_convertible_v<SFINAE, Characters::String>), void>* = nullptr);
-            static size_t Hash (typename Configuration::ArgByValueType<KEY> e);
-
-            /**
-             */
-            using KeyEqualsCompareFunctionType = KEY_EQUALS_COMPARER;
-
-            /**
-             */
-            using StatsType = STATS_TYPE;
-
-            /**
-             */
-            using OptionalValueType = optional<VALUE>;
-        };
-    }
 
     /**
      *  LRUCache is NOT threadsafe (checks usage with Debug::AssertExternallySynchronizedLock), so typical uses would use Execution::Synchronized.
@@ -92,22 +55,23 @@ namespace Stroika::Foundation::Cache {
      *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
      *
      */
-    template <typename KEY, typename VALUE, typename TRAITS = LRUCacheSupport::DefaultTraits<KEY, VALUE>>
-    class LRUCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
-    public:
-        using TraitsType = TRAITS;
-
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>
+    class LRUCache : private Debug::AssertExternallySynchronizedLock, private STATS_TYPE {
     public:
         using KeyType = KEY;
 
     public:
-        using KeyEqualsCompareFunctionType = typename TRAITS::KeyEqualsCompareFunctionType;
+        using KeyEqualsCompareFunctionType = KEY_EQUALS_COMPARER;
 
     public:
-        using OptionalValueType = typename TRAITS::OptionalValueType;
+        using StatsType = STATS_TYPE;
 
     public:
-        LRUCache (size_t size = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {});
+        /**
+         */
+        LRUCache (size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {});
+        LRUCache (size_t maxCacheSize, const KeyEqualsCompareFunctionType& keyEqualsComparer, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
+        LRUCache (size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{});
         LRUCache (const LRUCache& from);
 
     public:
@@ -126,10 +90,11 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
-        nonvirtual typename TRAITS::StatsType GetStats () const;
+        nonvirtual StatsType GetStats () const;
 
     public:
         /**
+         *  Clear all, or just the given elements from the cache.
          */
         nonvirtual void clear ();
         nonvirtual void clear (typename Configuration::ArgByValueType<KEY> key);
@@ -141,7 +106,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  @see LookupValue ()
          */
-        nonvirtual OptionalValueType Lookup (typename Configuration::ArgByValueType<KEY> key) const;
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key) const;
 
     public:
         /**
@@ -182,13 +147,18 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  Add the given value to the cache. This is rarely directly used.
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
 
     public:
         /**
+         *  Collect all the elements of the cache, where mapping KEY and VALUE correspond to cache KEY and VALUE.
          */
         nonvirtual Containers::Mapping<KEY, VALUE> Elements () const;
+
+    private:
+        const size_t fHashtableSize_{1};
 
     private:
         struct KeyValuePair_ {
@@ -196,12 +166,13 @@ namespace Stroika::Foundation::Cache {
             VALUE fValue;
         };
 
-        template <typename SFINAE = KEY>
-        static size_t H_ (typename Configuration::ArgByValueType<SFINAE> k);
-        static size_t Hash_ (typename Configuration::ArgByValueType<KEY> e);
+    private:
+        // invoke selected hash function, and return number 0..fHashtableSize_
+        nonvirtual size_t H_ (typename Configuration::ArgByValueType<KEY> k) const;
 
     private:
         KeyEqualsCompareFunctionType fKeyEqualsComparer_;
+        KEY_HASH_FUNCTION            fHashFunction_;
 
         struct CacheElement_;
         struct CacheIterator_;
@@ -231,11 +202,17 @@ namespace Stroika::Foundation::Cache {
          */
         nonvirtual void ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
 
-        vector<CacheElement_> fCachedElts_BUF_[TRAITS::kHashTableSize]; // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-        CacheElement_*        fCachedElts_First_[TRAITS::kHashTableSize] = {};
-        CacheElement_*        fCachedElts_Last_[TRAITS::kHashTableSize]  = {};
+        static constexpr size_t                                                      kPreallocatedHashtableSize_ = 5; // size where no memory allocation overhead for lrucache
+        Memory::SmallStackBuffer<vector<CacheElement_>, kPreallocatedHashtableSize_> fCachedElts_BUF_{};
+        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_First_{};
+        Memory::SmallStackBuffer<CacheElement_*, kPreallocatedHashtableSize_>        fCachedElts_Last_{};
     };
 
+    // additional deduction guide
+#if 0
+    template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>>
+    LRUCache (size_t size, const KEY_EQUALS_COMPARER& keyEqualsComparer)->LRUCache<KEY, VALUE, equal_to<KEY>, Statistics::StatsType_DEFAULT, nullptr_t>;
+#endif
 }
 
 /*

@@ -40,12 +40,13 @@ namespace {
             }
             void T2_ ()
             {
-                using CACHE = LRUCache<string, string, LRUCacheSupport::DefaultTraits<string, string, 10>>;
-                CACHE tmp (3);
+                using CACHE = LRUCache<string, string, equal_to<string>, hash<string>>;
+                CACHE tmp (3, equal_to<string>{}, 10);
                 tmp.Add ("a", "1");
                 tmp.Add ("b", "2");
                 tmp.Add ("c", "3");
                 tmp.Add ("d", "4");
+
                 VerifyTestResult (not tmp.Lookup ("a").has_value () or *tmp.Lookup ("a") == "1"); // could be missing or found but if found same value
                 VerifyTestResult (tmp.Lookup ("b") == "2");
                 VerifyTestResult (tmp.Lookup ("d") == "4");
@@ -69,8 +70,7 @@ namespace {
         namespace Private_ {
             struct TNoCTOR_ {
                 TNoCTOR_ (int) {}
-                TNoCTOR_ (){} /*= delete*/;
-                //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
+                TNoCTOR_ () = delete;
                 bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const { return true; }
             };
         }
@@ -78,8 +78,8 @@ namespace {
         {
             using Private_::TNoCTOR_;
             LRUCache<TNoCTOR_, TNoCTOR_> test (10);
-            test.Add (TNoCTOR_ (), TNoCTOR_ ());
-            (void)test.Lookup (TNoCTOR_ ());
+            test.Add (TNoCTOR_ (1), TNoCTOR_ (1));
+            (void)test.Lookup (TNoCTOR_ (1));
         }
     }
 }
@@ -89,8 +89,7 @@ namespace {
         namespace Private_ {
             struct TNoCTOR_ {
                 TNoCTOR_ (int) {}
-                TNoCTOR_ (){} /*= delete*/;
-                //TNoCTOR_&  operator= (TNoCTOR_&) = delete;    // not sure we care about this
+                TNoCTOR_ () = delete;
                 bool operator== ([[maybe_unused]] const TNoCTOR_& rhs) const { return true; }
             };
         }
