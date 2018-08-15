@@ -73,7 +73,7 @@ namespace {
             response->writeln (L"<li>curl http://localhost:8080/ OR</li>");
             response->writeln (L"<li>curl http://localhost:8080/FRED OR      (to see error handling)</li>");
             response->writeln (L"<li>curl -H \"Content-Type: application/json\" -X POST -d '{\"AppState\":\"Start\"}' http://localhost:8080/SetAppState</li>");
-            response->writeln (L"<li>curl http://localhost:8080/Files/foo.html -v</li>");
+            response->writeln (L"<li>curl http://localhost:8080/Files/index.html -v</li>");
             response->writeln (L"</ul>");
             response->writeln (L"</body></html>");
 
