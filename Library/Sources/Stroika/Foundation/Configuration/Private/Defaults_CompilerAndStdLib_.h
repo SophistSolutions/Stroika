@@ -113,6 +113,13 @@
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version ( #_MSC_FULL_VER ) of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
 #endif
+#elif _MSC_VER <= _MSC_VER_2k17_15Pt8_
+// check which sub-version of MSVC2k17
+#if _MSC_FULL_VER > _MS_VS_2k17_15Pt8Pt0_
+// @todo figure out how to add arg to message
+#define _STROIKA_CONFIGURATION_WARNING_ "Info: This version ( #_MSC_FULL_VER ) - (>15.8) - of Stroika is untested with this Update of of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
+#define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
+#endif
 #else
 #define _STROIKA_CONFIGURATION_WARNING_ "Info: This version of Stroika is untested with this release of Microsoft Visual Studio.net / Visual C++ - USING PREVIOUS COMPILER VERSION BUG DEFINES"
 #define CompilerAndStdLib_AssumeBuggyIfNewerCheck_(X) 1
@@ -255,7 +262,8 @@ ABORTING...
 // assume broken in _MS_VS_2k17_15Pt7Pt2_
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
+// verified still broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_std_get_time_pctx_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_std_get_time_pctx_Buggy 0
 #endif
@@ -280,7 +288,8 @@ ABORTING...
 // assume broken in _MS_VS_2k17_15Pt7Pt2_
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
+// still broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_constexpr_stdinitializer_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_constexpr_stdinitializer_Buggy 0
 #endif
@@ -501,7 +510,8 @@ that doesn't work (duplicate definitions - works in a single file but not across
 // assume broken in _MS_VS_2k17_15Pt7Pt2_
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
+// verified broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy 0
 #endif
@@ -561,7 +571,8 @@ In file included from ./../../IO/Network/InternetAddress.h:392:
 // assume broken in _MS_VS_2k17_15Pt7Pt2_
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
+// verified still broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_constexpr_union_variants_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_constexpr_union_variants_Buggy 0
 #endif
@@ -727,7 +738,8 @@ See <https://gcc.gnu.org/bugs/> for instructions.
 // assume broken in _MS_VS_2k17_15Pt7Pt2_
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
+// still broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_cplusplus_macro_value_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_cplusplus_macro_value_Buggy 0
 #endif
@@ -909,7 +921,8 @@ error C2975: '_Test': invalid template argument for 'std::conditional', expected
 // assume still broken in _MS_VS_2k17_15Pt7Pt2_
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
+// verified still broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_constexpr_union_enter_one_use_other_Buggy 0
 #endif
@@ -1043,6 +1056,10 @@ Compiling regtests for Median/OrderBy...
 
 #endif
 
+
+/***
+1>c:\sandbox\stroika\devroot-v2.0\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(55): error C2146: syntax error: missing ';' before identifier '_APPLY_ARGTYPE' (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
+ */
 #ifndef qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy
 
 #if defined(_MSC_VER)
@@ -1050,7 +1067,8 @@ Compiling regtests for Median/OrderBy...
 // still broken in _MS_VS_2k17_15Pt7Pt2_
 // assume broken in _MS_VS_2k17_15Pt7Pt4_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_FULL_VER <= _MS_VS_2k17_15Pt7Pt6_)
+// verified broken in _MSC_VER_2k17_15Pt8_
+#define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MS_VS_2k17_15Pt7Pt1_ <= _MSC_FULL_VER && _MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_TemplateTypenameReferenceToBaseOfBaseClassMemberNotFound_Buggy 0
 #endif
