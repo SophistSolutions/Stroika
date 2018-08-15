@@ -34,7 +34,11 @@ namespace Stroika {
                 class IRep;
 
             public:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+                using BidirectionalIteratorRepSharedPtr = Memory::SharedPtr<IRep>;
+#else
                 using BidirectionalIteratorRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
+#endif
 
             public:
                 /**

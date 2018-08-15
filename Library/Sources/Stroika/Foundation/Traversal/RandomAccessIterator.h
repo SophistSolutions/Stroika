@@ -32,7 +32,13 @@ namespace Stroika {
 
             public:
                 class IRep;
+
+            public:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+                using RandomAccessIteratorRepSharedPtr = Memory::SharedPtr<IRep>;
+#else
                 using RandomAccessIteratorRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
+#endif
 
             public:
                 /**
