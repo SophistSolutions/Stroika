@@ -32,7 +32,6 @@ using Characters::String;
 using Containers::Sequence;
 using Memory::BLOB;
 using Memory::Byte;
-using Memory::Optional;
 
 namespace {
     struct Options_ {
@@ -42,8 +41,8 @@ namespace {
                                eUpdate };
         Operation                  fOperation;
         String                     fArchiveFileName;
-        Optional<String>           fOutputDirectory; // applies only if extract
-        Optional<Sequence<String>> fFiles2Add;
+        optional<String>           fOutputDirectory; // applies only if extract
+        optional<Sequence<String>> fFiles2Add;
     };
     void Usage_ ()
     {
@@ -57,19 +56,19 @@ namespace {
         cerr << "    ARCHIVENAME can be the single character - to designate stdin" << endl; // NYI
     }
     // Emits errors to stderr, and Usage, etc, if needed, and not Optional<> has_value()
-    Optional<Options_> ParseOptions_ (int argc, const char* argv[])
+    optional<Options_> ParseOptions_ (int argc, const char* argv[])
     {
         Options_                      result{};
         Sequence<String>              args = Execution::ParseCommandLine (argc, argv);
-        Optional<Options_::Operation> operation;
-        Optional<String>              archiveName;
+        optional<Options_::Operation> operation;
+        optional<String>              archiveName;
         for (auto argi = args.begin (); argi != args.end (); ++argi) {
             if (argi == args.begin ()) {
                 continue; // skip argv[0] - command name
             }
             if (Execution::MatchesCommandLineArgument (*argi, L"h") or Execution::MatchesCommandLineArgument (*argi, L"help")) {
                 Usage_ ();
-                return Optional<Options_>{};
+                return optional<Options_>{};
             }
             else if (Execution::MatchesCommandLineArgument (*argi, L"list")) {
                 operation = Options_::Operation::eList;
@@ -91,12 +90,12 @@ namespace {
         if (not archiveName) {
             cerr << "Missing name of archive" << endl;
             Usage_ ();
-            return Optional<Options_>{};
+            return optional<Options_>{};
         }
         if (not operation) {
             cerr << "Missing operation" << endl;
             Usage_ ();
-            return Optional<Options_>{};
+            return optional<Options_>{};
         }
         result.fOperation       = *operation;
         result.fArchiveFileName = *archiveName;
@@ -156,7 +155,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    if (Optional<Options_> o = ParseOptions_ (argc, argv)) {
+    if (optional<Options_> o = ParseOptions_ (argc, argv)) {
         try {
             switch (o->fOperation) {
                 case Options_::Operation::eList:
