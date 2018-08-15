@@ -95,7 +95,7 @@ namespace Stroika::Foundation::Containers {
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
         using _SetRepSharedPtr = Memory::SharedPtr<_IRep>;
 #else
-        using _SetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+        using _SetRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:

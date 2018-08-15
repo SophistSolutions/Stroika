@@ -211,7 +211,7 @@ namespace Stroika::Foundation::Containers {
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
         using _SequenceRepSharedPtr = Memory::SharedPtr<_IRep>;
 #else
-        using _SequenceRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+        using _SequenceRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:

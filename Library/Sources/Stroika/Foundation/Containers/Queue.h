@@ -98,7 +98,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _QueueRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+        using _QueueRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**

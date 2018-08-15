@@ -37,7 +37,7 @@ namespace Stroika::Foundation::Traversal {
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
         using RandomAccessIteratorRepSharedPtr = Memory::SharedPtr<IRep>;
 #else
-        using RandomAccessIteratorRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<IRep>;
+        using RandomAccessIteratorRepSharedPtr = typename inherited::template PtrImplementationTemplate<IRep>;
 #endif
 
     public:

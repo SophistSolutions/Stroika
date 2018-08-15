@@ -72,7 +72,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _SortedCollectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+        using _SortedCollectionRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**

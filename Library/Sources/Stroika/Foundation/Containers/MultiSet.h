@@ -132,7 +132,7 @@ namespace Stroika::Foundation::Containers {
         class _IRep;
 
     protected:
-        using _MultiSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+        using _MultiSetRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 
     public:
         /**

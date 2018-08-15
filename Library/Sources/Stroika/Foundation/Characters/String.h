@@ -333,7 +333,7 @@ namespace Stroika::Foundation::Characters {
         using _IterableRepSharedPtr = Iterable<Character>::_IterableRepSharedPtr;
 
     protected:
-        using _SharedPtrIRep = SharedPtrImplementationTemplate<_IRep>;
+        using _SharedPtrIRep = PtrImplementationTemplate<_IRep>;
 
     protected:
         /**

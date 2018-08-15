@@ -252,7 +252,7 @@ namespace Stroika::Foundation::Traversal {
          *  _IterableRepSharedPtr is logically shared_ptr<_IRep>. However, we may use alternative 'shared ptr' implementations,
          *  so use this type to assure compatability with the approppriate shared ptr implementation.
          */
-        using _IterableRepSharedPtr = SharedPtrImplementationTemplate<_IRep>;
+        using _IterableRepSharedPtr = PtrImplementationTemplate<_IRep>;
 
     protected:
         /**
@@ -990,7 +990,7 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         struct Rep_Cloner_ {
-            inline static SharedPtrImplementationTemplate<_IRep> Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
+            inline static PtrImplementationTemplate<_IRep> Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
             {
                 return Iterable<T>::Clone_ (t, forIterableEnvelope);
             }

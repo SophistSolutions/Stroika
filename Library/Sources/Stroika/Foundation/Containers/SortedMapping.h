@@ -57,7 +57,7 @@ namespace Stroika::Foundation::Containers {
 #if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
         using _SortedMappingRepSharedPtr = Memory::SharedPtr<_IRep>;
 #else
-        using _SortedMappingRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+        using _SortedMappingRepSharedPtr = typename inherited::template PtrImplementationTemplate<_IRep>;
 #endif
 
     public:

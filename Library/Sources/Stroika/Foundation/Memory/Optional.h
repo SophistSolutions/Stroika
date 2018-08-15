@@ -128,6 +128,7 @@ namespace Stroika::Foundation::Memory {
         struct StorageType_<TT, true> {
         private:
             T* fValue_{nullptr};
+            DISABLE_COMPILER_MSC_WARNING_START (4324) // structure was padded due to alignment specifier
             union {
                 Configuration::Empty fEmpty_;
 
@@ -138,6 +139,7 @@ namespace Stroika::Foundation::Memory {
 #endif
                 Memory::Byte fBuffer_[sizeof (T)]; // intentionally uninitialized
             };
+             DISABLE_COMPILER_MSC_WARNING_END (4324)
 
         public:
             constexpr StorageType_ () noexcept;
