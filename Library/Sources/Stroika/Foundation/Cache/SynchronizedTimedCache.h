@@ -29,9 +29,12 @@ namespace Stroika::Foundation::Cache {
      *  from and have writes - cache misses - expensive/slow but not slow the rest of the cache (hits).
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
+     *
+     *  @see TimedCache<> - for unsynchonized implementation
+     *
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
-    class SynchronizedTimedCache : public TimedCache<KEY, VALUE, TRAITS> {
+    class SynchronizedTimedCache : private TimedCache<KEY, VALUE, TRAITS> {
         using inherited = TimedCache<KEY, VALUE, TRAITS>;
 
     public:
@@ -64,10 +67,40 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Lookup the given value and return it. But if its not found, use argument 'cacheFiller' function to fetch the real value.
-         *  This supports (and propagates) exceptions, and is threadsafe (can be called multiple times from different threads safely.
+          * @see TimedCache::SetTimeout
+          */
+        nonvirtual void SetTimeout (Time::DurationSecondsType timeoutInSeconds);
+
+    public:
+        /**
+          * @see TimedCache::Lookup
          */
+        nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
         nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
+
+    public:
+        /**
+          * @see TimedCache::Add
+         */
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> result);
+
+    public:
+        /**
+          * @see TimedCache::Remove
+         */
+        nonvirtual void Remove (typename Configuration::ArgByValueType<KEY> key);
+
+    public:
+        /**
+          * @see TimedCache::clear
+         */
+        nonvirtual void clear ();
+
+    public:
+        /**
+         * @see TimedCache::DoBookkeeping
+         */
+        nonvirtual void DoBookkeeping ();
 
     private:
         mutable shared_timed_mutex fMutex_;

@@ -27,6 +27,8 @@ namespace Stroika::Foundation::Cache {
      *  \brief simple wrapper on LRUCache (with the same API) - but internally syncrhonized in a way that is
      *         more performant than using RWSyncrhonzied<>
      *
+     *  @see LRUCache<> - for unsynchonized base version
+     *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#Internally-Synchronized-Thread-Safety">Internally-Synchronized-Thread-Safety</a>
      */
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER = equal_to<KEY>, typename KEY_HASH_FUNCTION = nullptr_t, typename STATS_TYPE = Statistics::StatsType_DEFAULT>

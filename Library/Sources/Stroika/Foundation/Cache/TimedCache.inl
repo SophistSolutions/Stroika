@@ -42,12 +42,19 @@ namespace Stroika::Foundation::Cache {
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         ClearIfNeeded_ ();
-        typename MyMapType_::iterator i = fMap_.find (key);
+        typename MyMapType_::iterator i   = fMap_.find (key);
+        Time::DurationSecondsType     now = Time::GetTickCount ();
         if (i == fMap_.end ()) {
             this->IncrementMisses ();
             return nullopt;
         }
         else {
+            Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
+            if (i->second.fLastAccessedAt < lastAccessThreshold) {
+                i = fMap_.erase (i);
+                this->IncrementMisses ();
+                return nullopt;
+            }
             if (TraitsType::kTrackReadAccess) {
                 i->second.fLastAccessedAt = Time::GetTickCount ();
             }
@@ -65,16 +72,6 @@ namespace Stroika::Foundation::Cache {
             VALUE v = cacheFiller (key);
             Add (key, v);
             return move (v);
-        }
-    }
-    template <typename KEY, typename VALUE, typename TRAITS>
-    inline VALUE TimedCache<KEY, VALUE, TRAITS>::Lookup (typename Configuration::ArgByValueType<KEY> key, const VALUE& defaultValue)
-    {
-        if (optional<VALUE> o = Lookup (key)) {
-            return *o;
-        }
-        else {
-            return defaultValue;
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
@@ -119,7 +116,7 @@ namespace Stroika::Foundation::Cache {
     void TimedCache<KEY, VALUE, TRAITS>::ClearOld_ ()
     {
         Stroika::Foundation::Time::DurationSecondsType now                 = Time::GetTickCount ();
-        fNextAutoClearAt_                                                  = now + fTimeout_ / 2.0f; // somewhat arbitrary how far into the future we do this...
+        fNextAutoClearAt_                                                  = now + fTimeout_ * 0.75; // somewhat arbitrary how far into the future we do this...
         Stroika::Foundation::Time::DurationSecondsType lastAccessThreshold = now - fTimeout_;
         for (typename MyMapType_::iterator i = fMap_.begin (); i != fMap_.end ();) {
             if (i->second.fLastAccessedAt < lastAccessThreshold) {

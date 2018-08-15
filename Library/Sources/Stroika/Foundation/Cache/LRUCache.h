@@ -72,6 +72,8 @@ namespace Stroika::Foundation::Cache {
      *          VerifyTestResult (tmp.Lookup ("d") == "4");
      *      \endcode
      *
+     *  @see SynchronizedLRUCache<> - internally synchronized version
+     *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
      *
      */

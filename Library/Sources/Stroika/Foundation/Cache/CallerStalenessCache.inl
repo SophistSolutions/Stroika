@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Cache {
         fMap_.Add (k, myVal_ (move (v), GetCurrentTimestamp ()));
     }
     template <typename KEY, typename VALUE, typename TIME_TRAITS>
-    optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan)
+    inline optional<VALUE> CallerStalenessCache<KEY, VALUE, TIME_TRAITS>::Lookup (KEY k, TimeStampType staleIfOlderThan) const
     {
         optional<myVal_> o = fMap_.Lookup (k);
         if (not o.has_value () or o->fDataCapturedAt < staleIfOlderThan) {

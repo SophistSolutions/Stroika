@@ -25,7 +25,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
- *
  *      @todo   fNextAutoclearAt is HORRIBLE mechnism to figure out if we need to walk list and
  *              clear. Use a time value (max age), and time last checked or something like that).
  *
@@ -72,6 +71,10 @@ namespace Stroika::Foundation::Cache {
 
             using StatsType = Statistics::StatsType_DEFAULT;
 
+            /**
+             * This may make sense to be true for things where you are combining a staleness of data cache with an LRU-style cache
+             * - to track objects where you want to keep the most recent around. This is like LRUCache + explicit timeout.
+             */
             static constexpr bool kTrackReadAccess = TRACK_READ_ACCESS;
 
             /**
@@ -82,11 +85,13 @@ namespace Stroika::Foundation::Cache {
 
     /**
      *  Keeps track of all items - indexed by Key - but throws away items which are any more
-     *  stale than given by the TIMEOUT
+     *  stale than given by the TIMEOUT. Staleness is defined as time since item was added.
      *
      *  \note   Note - this class doesn't employ a thread to throw away old items, so if you count on that
      *          happening (e.g. because the VALUE object DTOR has a side-effect like closing a file), then
      *          you may call DoBookkeeping () peridocially.
+     *
+     *          This does check the staleness on lookup however, to assure proper staleness semantics.
      *
      *  \par Example Usage
      *      Use TimedCache to avoid needlessly redundant lookups
@@ -185,11 +190,12 @@ namespace Stroika::Foundation::Cache {
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#ExternallySynchronized">ExternallySynchronized</a>
      *
+     *  @see SyncrhonizedTimedCache<> - for internally ynchonized implementation
+     *
      *  \note   Implementation Note: inherit from TRAITS::StatsType to take advantage of zero-sized base object rule.
      *
      *  @see CallerStatenessCache
      *  @see LRUCache
-     *  @see SyncrhonizedTimedCache
      */
     template <typename KEY, typename VALUE, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, VALUE>>
     class TimedCache : private Debug::AssertExternallySynchronizedLock, private TRAITS::StatsType {
@@ -215,19 +221,20 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Usually one will use this as
-         *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
+         *  Usually one will use this as (cacheFiller overload):
+         *      \code
+         *          VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
+         *      \endcode
          *
          *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
          *  but just see if a value is present.
          *
-         *  Both the overload with cacheFiller, and defaultValue will update the 'time stored' for the argument key.
+         *  The overload with cacheFiller, will update the 'time stored' for the argument key if a new value is fetched.
          *
          *  \note   if TraitsType::kTrackReadAccess is true (defaults false), this will also update the last-accessed date
          */
         nonvirtual optional<VALUE> Lookup (typename Configuration::ArgByValueType<KEY> key);
         nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const function<VALUE (typename Configuration::ArgByValueType<KEY>)>& cacheFiller);
-        nonvirtual VALUE Lookup (typename Configuration::ArgByValueType<KEY> key, const VALUE& defaultValue);
 
     public:
         /**

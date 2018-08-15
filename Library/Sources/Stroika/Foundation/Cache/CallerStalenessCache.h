@@ -15,7 +15,6 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
- *
  *      @todo   https://stroika.atlassian.net/browse/STK-449 and Cache::CallerStalenessCache should support
  *              second template argument VALUE=void
  *
@@ -80,10 +79,10 @@ namespace Stroika::Foundation::Cache {
          *
          *  \par Example Usage
          *      \code
-         *      CallerStalenessCache<> cc;
-         *      if (optional<VALUE> v= cc.Lookup (k, cc.Ago (5)) {
-         *          // look key, but throw disregard if older than 5 seconds (from now)
-         *      }
+         *          CallerStalenessCache<> cc;
+         *          if (optional<VALUE> v= cc.Lookup (k, cc.Ago (5)) {
+         *              // look key, but throw disregard if older than 5 seconds (from now)
+         *          }
          *      \endcode
          */
         static TimeStampType Ago (TimeStampType backThisTime);
@@ -107,7 +106,7 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
-         *  Usually one will use this as
+         *  Usually one will use this as (cache fillter overload):
          *      VALUE v = cache.Lookup (key, ts, [this] () -> VALUE {return this->realLookup(key); });
          *
          *  However, the overload returing an optional is occasionally useful, if you dont want to fill the cache
@@ -117,7 +116,7 @@ namespace Stroika::Foundation::Cache {
          *
          *  \note   These Lookup () methods are not const intentionally - as they DO generally modify the cache.
          */
-        nonvirtual optional<VALUE> Lookup (KEY k, TimeStampType staleIfOlderThan);
+        nonvirtual optional<VALUE> Lookup (KEY k, TimeStampType staleIfOlderThan) const;
         nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const function<VALUE ()>& cacheFiller);
         nonvirtual VALUE Lookup (KEY k, TimeStampType staleIfOlderThan, const VALUE& defaultValue);
 
