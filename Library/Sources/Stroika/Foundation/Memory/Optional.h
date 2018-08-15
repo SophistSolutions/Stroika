@@ -139,7 +139,7 @@ namespace Stroika::Foundation::Memory {
 #endif
                 Memory::Byte fBuffer_[sizeof (T)]; // intentionally uninitialized
             };
-             DISABLE_COMPILER_MSC_WARNING_END (4324)
+            DISABLE_COMPILER_MSC_WARNING_END (4324)
 
         public:
             constexpr StorageType_ () noexcept;
