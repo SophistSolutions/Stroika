@@ -8,25 +8,27 @@ what items are cached.
 
 Cache Types:
 
-	>	BloomFilter
-		(NYI)
+  -  BloomFilter
+	 
+	 (NYI)
 
-	>	LRUCache
-		This cache stores a fixed amount of data, and as you access the data from the cache
-		throws away old data when its not been accessed in a while.
+  -  CallerStalenessCache
+	 
+	 Track when something is added to the cache, and then the lookup function can avoid a costly call to compute something if its been recently enough added. Like TimedCache, except there is no global TTL on data, but the TTL is specified on each call to lookup.
 
-		This is well implemented, but the API will likely evolve before release (more Iterator<T> like
-		etc).
+  -  LRUCache
 
-	>	TimedCache
-		...This is implemented and used, but again, very imature at this point -- LGP 2013-02-26
+     This cache stores a fixed amount of data, and as you access the data from the cache throws away old data when its not been accessed in a while.
 
+  -  TimedCache
+     
+	 Keeps track of all items - indexed by Key - but throws away items which are any more stale than given by the TIMEOUT. Staleness is defined as time since item was added.
+
+Other:
+  -  Memoizer
+     
+	 Cache (expensive) computation results transparently, using any one of the Stroika cache types as a backend/plugin.
 
 TODO:
-	>	Add some sort of 'memoize' module
-		Think about memcached. To some extent, however, LRUCache and TimedCache
-		already replicate this functionality.
 
-	>	Maybe just document a pattern for memoizing using these cache techniques?
-
-	>	PROBABLY add a front-end to memcached!!! Maybe it look like a stroika cache object!
+  -  PROBABLY add a front-end to memcached, redis!!! Maybe it look like a stroika cache object!

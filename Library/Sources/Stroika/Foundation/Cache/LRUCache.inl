@@ -93,6 +93,8 @@ namespace Stroika::Foundation::Cache {
         , fCachedElts_First_{hashTableSize}
         , fCachedElts_Last_{hashTableSize}
     {
+        Require (hashTableSize >= 1);
+        Require (maxCacheSize >= 1);
         SetMaxCacheSize (maxCacheSize);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
@@ -347,7 +349,6 @@ namespace Stroika::Foundation::Cache {
         ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
         return &fCachedElts_First_[chainIdx]->fElement;
     }
-
 }
 
 #endif /*_Stroika_Foundation_Cache_LRUCache_inl_*/

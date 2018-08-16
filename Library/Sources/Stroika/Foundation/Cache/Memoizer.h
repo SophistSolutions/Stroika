@@ -37,6 +37,10 @@ namespace Stroika::Foundation::Cache {
     }
 
     /**
+     * \brief Cache the results of expensive computations transparently
+     *
+     *  @see https://en.wikipedia.org/wiki/Memoization
+     *
      *  maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
      */
     template <typename RESULT, template <typename, typename> class CACHE = MemoizerSupport::DEFAULT_CACHE, typename... ARGS>
