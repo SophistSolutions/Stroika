@@ -115,7 +115,22 @@ namespace Stroika::Foundation::Cache {
     public:
         /**
          */
+        nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsCompareFunction () const;
+
+    public:
+        /**
+         */
         nonvirtual StatsType GetStats () const;
+
+    public:
+        /**
+         */
+        nonvirtual size_t GetHashTableSize () const;
+
+    public:
+        /**
+         */
+        nonvirtual KEY_HASH_FUNCTION GetKeyHashFunction () const;
 
     public:
         /**

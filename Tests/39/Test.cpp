@@ -6,7 +6,8 @@
 
 #include <mutex>
 
-#include "Stroika/Foundation/Characters/String.h"
+#include "Stroika/Foundation/Cache/SynchronizedLRUCache.h"
+#include "Stroika/Foundation/Cache/SynchronizedTimedCache.h"
 #include "Stroika/Foundation/Containers/Bijection.h"
 #include "Stroika/Foundation/Containers/Collection.h"
 #include "Stroika/Foundation/Containers/Deque.h"
@@ -717,6 +718,63 @@ namespace {
 }
 
 namespace {
+    namespace Test11_SyncrhonizedCaches_ {
+        namespace Private_ {
+            static const size_t kIOverallRepeatCount_ = (qDebug and Debug::IsRunningUnderValgrind ()) ? 10 : ((qDebug or Debug::IsRunningUnderValgrind ()) ? 50 : 1000);
+            void                SyncLRUCacheT1_ ()
+            {
+                using namespace Cache;
+                SynchronizedLRUCache cache (pair<string, string>{}, 3, 10, hash<string>{});
+                Thread::Ptr          writerThread = Thread::New (
+                    [&cache]() {
+                        for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
+                            cache.Add ("a", "1");
+                            cache.Add ("b", "2");
+                            cache.Add ("c", "3");
+                            cache.Add ("d", "4");
+                            auto oa = cache.Lookup ("a");
+                            VerifyTestResult (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
+                            auto ob = cache.Lookup ("b");
+                            VerifyTestResult (not ob.has_value () or ob == "2"); // ""
+                            auto od = cache.Lookup ("d");
+                            VerifyTestResult (od == "4");
+                        }
+                    },
+                    String{L"writerThread"});
+                Thread::Ptr copierThread = Thread::New (
+                    [&cache]() {
+                        for (size_t i = 1; i < kIOverallRepeatCount_; ++i) {
+                            {
+                                auto oa = cache.Lookup ("a");
+                                VerifyTestResult (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
+                                auto ob = cache.Lookup ("b");
+                                VerifyTestResult (not ob.has_value () or ob == "2"); // ""
+                                auto od = cache.Lookup ("d");
+                                VerifyTestResult (not od.has_value () or od == "4"); // ""
+                            }
+                            SynchronizedLRUCache tmp2 = cache;
+                            auto                 oa   = tmp2.Lookup ("a");
+                            VerifyTestResult (not oa.has_value () or oa == "1"); // could be missing or found but if found same value
+                            auto ob = tmp2.Lookup ("b");
+                            VerifyTestResult (not ob.has_value () or ob == "2"); // ""
+                            auto od = tmp2.Lookup ("d");
+                            VerifyTestResult (not od.has_value () or od == "4"); // ""
+                        }
+                    },
+                    String{L"copierThread"});
+                Thread::Start ({writerThread, copierThread});
+                Thread::WaitForDone ({writerThread, copierThread});
+            }
+        }
+        void DoIt ()
+        {
+            Debug::TraceContextBumper traceCtx ("{}Test11_SyncrhonizedCaches_...");
+            Private_::SyncLRUCacheT1_ ();
+        }
+    }
+}
+
+namespace {
     void DoRegressionTests_ ()
     {
 #if qStroika_Foundation_Exection_Thread_SupportThreadStatistics
@@ -739,6 +797,7 @@ namespace {
         Test8_AssertExternallySynchronized_::DoIt ();
         Test9_MutlipleThreadsReadingUnsynchronizedContainer_::DoIt ();
         Test10_MutlipleThreadsReadingOneUpdateUsingSynchronizedContainer_::DoIt ();
+        Test11_SyncrhonizedCaches_::DoIt ();
     }
 }
 

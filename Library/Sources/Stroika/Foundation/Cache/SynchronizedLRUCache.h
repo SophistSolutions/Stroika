@@ -17,8 +17,12 @@
  *  \version    <a href="Code-Status.md#Alpha-Early">Alpha-Early</a>
  *
  * TODO:
+ *      @todo   Get rid of copied/cloned CTORs (just for deduction guides) - and get the explicit deduction guides working
+ *
  *      @todo   Add 'overrides' for Add/Remove methods - so those are safe too!
  *              and add more overloads (from base class) of Lookup
+ *
+ *      @todo   Copy CTOR should copy Stats as well (lopri)
  */
 
 namespace Stroika::Foundation::Cache {
@@ -41,11 +45,21 @@ namespace Stroika::Foundation::Cache {
          */
         template <typename... ARGS>
         SynchronizedLRUCache (ARGS... args);
-        // support eventually, but not trivial
-        SynchronizedLRUCache (const SynchronizedLRUCache&) = delete;
+        SynchronizedLRUCache (const SynchronizedLRUCache& src);
+
+        //tmphack - really just for deduction guide - but cannot get working below
+        SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KeyEqualsCompareFunctionType& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{})
+            : inherited (maxCacheSize, keyEqualsComparer, hashTableSize, hashFunction)
+        {
+        }
+        //tmphack - really just for deduction guide - but cannot get working below
+        SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{})
+            : inherited (maxCacheSize, hashTableSize, hashFunction)
+        {
+        }
 
     public:
-        // support eventually, but not trivial
+        // @todo support - sb easy
         nonvirtual SynchronizedLRUCache& operator= (const SynchronizedLRUCache&) = delete;
 
     public:
@@ -84,6 +98,24 @@ namespace Stroika::Foundation::Cache {
 
     public:
         /**
+         *  @see LRUCache::GetKeyEqualsCompareFunction ()
+         */
+        nonvirtual KeyEqualsCompareFunctionType GetKeyEqualsCompareFunction () const;
+
+    public:
+        /**
+         *  @see LRUCache::GetHashTableSize ()
+         */
+        nonvirtual size_t GetHashTableSize () const;
+
+    public:
+        /**
+         *  @see LRUCache::GetKeyHashFunction ()
+         */
+        nonvirtual KEY_HASH_FUNCTION GetKeyHashFunction () const;
+
+    public:
+        /**
          *  @see LRUCache::clear ()
          */
         nonvirtual void clear ();
@@ -118,6 +150,13 @@ namespace Stroika::Foundation::Cache {
         mutable shared_timed_mutex fMutex_;
     };
 
+#if 0
+    // didn't work
+     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION , typename STATS_TYPE >
+     SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize = 1, const KEY_EQUALS_COMPARER& keyEqualsComparer = {}, size_t hashTableSize = 1, KEY_HASH_FUNCTION hashFunction = KEY_HASH_FUNCTION{}) -> SynchronizedLRUCache<KEY,VALUE,KEY_EQUALS_COMPARER,KEY_HASH_FUNCTION,Statistics::StatsType_DEFAULT>;
+     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION , typename STATS_TYPE >
+    SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{})->  SynchronizedLRUCache<KEY,VALUE,KEY_EQUALS_COMPARER,KEY_HASH_FUNCTION,Statistics::StatsType_DEFAULT>;
+#endif
 }
 
 /*
