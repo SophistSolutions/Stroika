@@ -1012,8 +1012,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #if defined(_MSC_VER)
 // first seen broken in _MS_VS_2k17_15Pt7Pt5_
 // assume broken in _MS_VS_2k17_15Pt7Pt6_
-// verified FIXED in _MSC_VER_2k17_15Pt8_
-#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt7_)
+// verified BROKEN _MSC_VER_2k17_15Pt8_ (OK in debug build, but broken in Release-U-32)
+#define qCompilerAndStdLib_inline_static_align_Buggy CompilerAndStdLib_AssumeBuggyIfNewerCheck_ (_MSC_VER <= _MSC_VER_2k17_15Pt8_)
 #else
 #define qCompilerAndStdLib_inline_static_align_Buggy 0
 #endif
