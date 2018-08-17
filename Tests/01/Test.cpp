@@ -168,10 +168,21 @@ namespace {
         }
         void DoIt ()
         {
-            unsigned int                                            totalCallsCount{};
-            Memoizer<int, MemoizerSupport::DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
-            VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
-            VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+            {
+                unsigned int                                            totalCallsCount{};
+                Memoizer<int, MemoizerSupport::DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+            }
+#if 0
+            {
+                // trying to figure out how to do...
+                unsigned int totalCallsCount{};
+                Memoizer     memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+                VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+            }
+#endif
         }
     }
 }

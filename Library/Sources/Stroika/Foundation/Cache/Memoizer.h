@@ -19,11 +19,13 @@
 /**
  *      \file
  *
- *  \version    <a href="Code-Status.md#Pre-Alpha-Maybe">Pre-Alpha-Maybe</a>
+ *  \version    <a href="Code-Status.md#Alpha">Alpha</a>
  *
  * TODO:
  *      @todo   See why DEFAULT_CACHE<> template is needed. Issue is LRUCache takes three params. No way to convert to
  *              a two arg template without introducing new template?
+ *
+ *      @todo   maybe allow passing in Cache object as CTOR parameter as a way to specify the hash function etc (for LRUCache with hash)
  *
  *      @todo   Investigate if better arg order for template or instantiation guide might reduce number of explicit 
  *              args needed for template
@@ -41,7 +43,11 @@ namespace Stroika::Foundation::Cache {
      *
      *  @see https://en.wikipedia.org/wiki/Memoization
      *
-     *  maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
+     *  TODO:
+     *      o   @todo   Asked https://softwareengineering.stackexchange.com/questions/377020/c-templates-combining-deduction-with-default-template-arguments 
+     *                  to see how to improve
+     *
+     *      o   @todo   maybe update https://softwareengineering.stackexchange.com/questions/375257/how-can-i-aggregate-this-large-data-set-to-reduce-the-overhead-of-calculating-th/375303#375303 with this... if/when I get it working well...
      */
     template <typename RESULT, template <typename, typename> class CACHE = MemoizerSupport::DEFAULT_CACHE, typename... ARGS>
     class Memoizer : private Debug::AssertExternallySynchronizedLock {
