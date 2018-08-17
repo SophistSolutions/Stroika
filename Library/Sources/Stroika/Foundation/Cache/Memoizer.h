@@ -47,6 +47,13 @@ namespace Stroika::Foundation::Cache {
     class Memoizer : private Debug::AssertExternallySynchronizedLock {
     public:
         /**
+         *  \par Example Usage
+         *      \code
+         *          unsigned int                                            totalCallsCount{};
+         *          Memoizer<int, MemoizerSupport::DEFAULT_CACHE, int, int> memoizer{[&totalCallsCount](int a, int b) { totalCallsCount++;  return a + b; }};
+         *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+         *          VerifyTestResult (memoizer.Compute (1, 1) == 2 and totalCallsCount == 1);
+         *      \endcode
          */
         Memoizer (const function<RESULT (ARGS...)>& f, CACHE<tuple<ARGS...>, RESULT>&& cache = CACHE<tuple<ARGS...>, RESULT>{});
         Memoizer (const Memoizer& from) = default;
