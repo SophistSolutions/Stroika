@@ -48,9 +48,19 @@ namespace Stroika::Foundation::Memory {
      *  copy function. But its very simple and usually adequate.
      */
     template <typename T, typename SHARED_IMLP = shared_ptr<T>>
-    struct SharedByValue_CopyByFunction {
-        SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP { return SHARED_IMLP (new T (t)); }) noexcept;
-        nonvirtual SHARED_IMLP Copy (const T& t) const;
+    struct [[deprecated ("use std::function<> or just any functor with operator() - since in version 2.1d6")]] SharedByValue_CopyByFunction
+    {
+        SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP { return SHARED_IMLP (new T (t)); }) noexcept
+            : fCopier (copier)
+        {
+            //RequireNotNull (copier);
+        }
+        nonvirtual SHARED_IMLP operator() (const T& t) const
+        {
+            // AssertNotNull (fCopier);
+            return (*fCopier) (t);
+        }
+
         SHARED_IMLP (*fCopier)
         (const T&);
     };
@@ -63,7 +73,7 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename T, typename SHARED_IMLP = shared_ptr<T>>
     struct SharedByValue_CopyByDefault {
-        static SHARED_IMLP Copy (const T& t);
+        nonvirtual SHARED_IMLP operator() (const T& t) const;
     };
 
     /**
@@ -271,7 +281,6 @@ namespace Stroika::Foundation::Memory {
         template <typename... COPY_ARGS>
         nonvirtual void BreakReferences_ (COPY_ARGS&&... copyArgs);
     };
-
 }
 
 /*

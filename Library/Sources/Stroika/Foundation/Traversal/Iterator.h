@@ -319,7 +319,7 @@ namespace Stroika::Foundation::Traversal {
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
     private:
         struct Rep_Cloner_ {
-            static RepSmartPtr Copy (const IRep& t);
+            RepSmartPtr operator() (const IRep& t) const;
         };
 #endif
 

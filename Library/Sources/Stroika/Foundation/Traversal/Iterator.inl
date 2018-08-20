@@ -35,7 +35,7 @@ namespace Stroika::Foundation::Traversal {
      ********************************************************************************
      */
     template <typename T, typename ITERATOR_TRAITS>
-    inline typename IteratorBase::PtrImplementationTemplate<typename Iterator<T, ITERATOR_TRAITS>::IRep> Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_::Copy (const IRep& t)
+    inline typename IteratorBase::PtrImplementationTemplate<typename Iterator<T, ITERATOR_TRAITS>::IRep> Iterator<T, ITERATOR_TRAITS>::Rep_Cloner_::operator() (const IRep& t) const
     {
         return Iterator<T, ITERATOR_TRAITS>::Clone_ (t);
     }

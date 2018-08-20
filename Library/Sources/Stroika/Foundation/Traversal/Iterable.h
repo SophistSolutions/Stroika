@@ -990,7 +990,7 @@ namespace Stroika::Foundation::Traversal {
 
     private:
         struct Rep_Cloner_ {
-            inline static PtrImplementationTemplate<_IRep> Copy (const _IRep& t, IteratorOwnerID forIterableEnvelope)
+            inline PtrImplementationTemplate<_IRep> operator() (const _IRep& t, IteratorOwnerID forIterableEnvelope) const
             {
                 return Iterable<T>::Clone_ (t, forIterableEnvelope);
             }

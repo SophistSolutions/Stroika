@@ -16,29 +16,11 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ************** SharedByValue_CopyByFunction<T,SHARED_IMLP> *********************
-     ********************************************************************************
-     */
-    template <typename T, typename SHARED_IMLP>
-    inline SharedByValue_CopyByFunction<T, SHARED_IMLP>::SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&)) noexcept
-        : fCopier (copier)
-    {
-        RequireNotNull (copier);
-    }
-    template <typename T, typename SHARED_IMLP>
-    inline SHARED_IMLP SharedByValue_CopyByFunction<T, SHARED_IMLP>::Copy (const T& t) const
-    {
-        AssertNotNull (fCopier);
-        return (*fCopier) (t);
-    }
-
-    /*
-     ********************************************************************************
      *************** SharedByValue_CopyByDefault<T,SHARED_IMLP> *********************
      ********************************************************************************
      */
     template <typename T, typename SHARED_IMLP>
-    inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::Copy (const T& t)
+    inline SHARED_IMLP SharedByValue_CopyByDefault<T, SHARED_IMLP>::operator() (const T& t) const
     {
         return SHARED_IMLP (new T (t));
     }
@@ -84,13 +66,13 @@ namespace Stroika::Foundation::Memory {
      */
     template <typename TRAITS>
     inline SharedByValue<TRAITS>::SharedByValue () noexcept
-        : fCopier_ (element_copier_type ())
+        : fCopier_ (element_copier_type{})
         , fSharedImpl_ ()
     {
     }
     template <typename TRAITS>
     inline SharedByValue<TRAITS>::SharedByValue ([[maybe_unused]] nullptr_t n) noexcept
-        : fCopier_ (element_copier_type ())
+        : fCopier_ (element_copier_type{})
         , fSharedImpl_ ()
     {
     }
@@ -302,7 +284,7 @@ namespace Stroika::Foundation::Memory {
         //Require (!SHARED_IMLP::unique ());    This is not NECESSARILY so. Another thread could have just released this pointer, in which case
         // the creation of a new object was pointless, but harmless, as the assignemnt should decrement to zero the old
         // value and it should go away.
-        *this = SharedByValue<TRAITS> (fCopier_.Copy (*ptr, forward<COPY_ARGS> (copyArgs)...), fCopier_);
+        *this = SharedByValue<TRAITS> (fCopier_ (*ptr, forward<COPY_ARGS> (copyArgs)...), fCopier_);
 
 #if qDebug
         //Ensure (fSharedImpl_.unique ());

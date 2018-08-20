@@ -16,7 +16,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
      ********************* Variant::Reader::_Rep_Cloner *****************************
      ********************************************************************************
      */
-    inline Reader::_SharedPtrIRep Reader::_Rep_Cloner::Copy (const _IRep& t)
+    inline Reader::_SharedPtrIRep Reader::_Rep_Cloner::operator() (const _IRep& t) const
     {
         return t.Clone ();
     }
