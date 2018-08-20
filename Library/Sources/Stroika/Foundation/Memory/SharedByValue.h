@@ -16,6 +16,9 @@
  *  \version    <a href="Code-Status.md#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   Get rid of SharedByValue_CopySharedPtrDefaultSynchronization, and related stuff (deprecated unused one
+ *              in 2.1d6). Instead just directly to copy/load/store (using operators) - simplify code.
+ *
  *      @todo   FLESH OUT HIGHLY EXPERIEMNTAL AND INCOMPLETE SHARED_IMPL_COPIER (HOPEFULLY WILL BE PART OF
  *              ENVELOPE THREAD SAFETY FIX). AND DOCUMENT!!!!
  *
@@ -94,7 +97,7 @@ namespace Stroika::Foundation::Memory {
      *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
      *  copy-by-value (COW) envelope thread safety.
      */
-    template <typename T, typename SHARED_IMLP>
+    [[deprecated ("synchonize SharedByValue object, not using this trick - since in version 2.1d6")]] template <typename T, typename SHARED_IMLP>
     struct SharedByValue_CopySharedPtrAtomicSynchronized {
         static SHARED_IMLP Load (const SHARED_IMLP& copyFrom);
         static void        Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
