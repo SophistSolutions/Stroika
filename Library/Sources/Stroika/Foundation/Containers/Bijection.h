@@ -106,7 +106,11 @@ namespace Stroika {
                 class _IRep;
 
             protected:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+                using _BijectionRepSharedPtr = Memory::SharedPtr<_IRep>;
+#else
                 using _BijectionRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+#endif
 
             public:
                 /**

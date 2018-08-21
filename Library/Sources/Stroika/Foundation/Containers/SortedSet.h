@@ -65,7 +65,11 @@ namespace Stroika {
                 class _IRep;
 
             protected:
+#if qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy
+                using _SortedSetRepSharedPtr = Memory::SharedPtr<_IRep>;
+#else
                 using _SortedSetRepSharedPtr = typename inherited::template SharedPtrImplementationTemplate<_IRep>;
+#endif
 
             public:
                 /**
