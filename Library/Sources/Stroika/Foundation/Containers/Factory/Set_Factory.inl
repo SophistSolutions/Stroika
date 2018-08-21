@@ -82,5 +82,7 @@ namespace Stroika::Foundation::Containers::Factory {
             */
         return Concrete::Set_LinkedList<T> (equalsComparer);
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_Set_Factory_inl_ */

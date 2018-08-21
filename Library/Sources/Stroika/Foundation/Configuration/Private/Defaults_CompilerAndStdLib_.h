@@ -1276,6 +1276,20 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
     _Pragma (STRINGIFY (message##DEPRECATED##MESSAGE))
 #endif
 
+/*
+ * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
+ * https://en.cppreference.com/w/cpp/language/attributes/no_unique_address
+ */
+#if defined(__has_cpp_attribute)
+#if __has_cpp_attribute(no_unique_address)
+#define NO_UNIQUE_ADDRESS_ATTR no_unique_address
+#else
+#define NO_UNIQUE_ADDRESS_ATTR
+#endif
+#else
+#define NO_UNIQUE_ADDRESS_ATTR
+#endif
+
 /**
  *  \def Stroika_Foundation_Configuration_STRUCT_PACKED
  *

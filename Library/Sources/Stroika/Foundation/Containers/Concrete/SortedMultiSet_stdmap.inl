@@ -269,4 +269,5 @@ namespace Stroika::Foundation::Containers::Concrete {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Containers_SortedMultiSet_stdmap_inl_ */

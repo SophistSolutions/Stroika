@@ -146,5 +146,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         typename inherited::template _SafeReadRepAccessor<Rep_> tmp{this}; // for side-effect of AssertMember
 #endif
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_Stack_LinkedList_inl_ */

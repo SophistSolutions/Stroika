@@ -51,7 +51,7 @@ namespace Stroika::Foundation::Containers::Factory {
         nonvirtual SortedSet<T> operator() () const;
 
     private:
-        const INORDER_COMPARER fInorderComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const INORDER_COMPARER fInorderComparer_;
 
     public:
         /**

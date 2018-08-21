@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         }
 
     private:
-        EQUALS_COMPARER fEqualsComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] EQUALS_COMPARER fEqualsComparer_;
 
     public:
         nonvirtual Rep_& operator= (const Rep_&) = delete;

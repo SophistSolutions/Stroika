@@ -62,7 +62,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        const EQUALS_COMPARER fEqualsComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const EQUALS_COMPARER fEqualsComparer_;
 
         // Iterable<T>::_IRep overrides
     public:

@@ -59,7 +59,7 @@ namespace Stroika::Foundation::Containers::Factory {
         static void Register (SortedCollection<T> (*factory) (const INORDER_COMPARER&) = nullptr);
 
     private:
-        const INORDER_COMPARER fInorderComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const INORDER_COMPARER fInorderComparer_;
 
     private:
         static SortedCollection<T> Default_ (const INORDER_COMPARER& inorderComparer);

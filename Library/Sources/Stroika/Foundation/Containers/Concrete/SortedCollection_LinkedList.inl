@@ -61,7 +61,7 @@ namespace Stroika::Foundation::Containers::Concrete {
         nonvirtual Rep_& operator= (const Rep_&) = delete;
 
     private:
-        const INORDER_COMPARER fInorderComparer_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] const INORDER_COMPARER fInorderComparer_;
 
         // Iterable<T>::_IRep overrides
     public:

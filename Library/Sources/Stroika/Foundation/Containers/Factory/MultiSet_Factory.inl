@@ -56,5 +56,7 @@ namespace Stroika::Foundation::Containers::Factory {
     {
         return Concrete::MultiSet_Array<T, TRAITS> (equalsComparer);
     }
+
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_MultiSet_Factory_inl_ */
