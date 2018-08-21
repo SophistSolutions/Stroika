@@ -291,7 +291,12 @@ namespace Stroika::Foundation::Memory {
             this->fSize_++;
         }
         else {
-            resize (s + 1);
+            if constexpr (is_trivially_default_constructible_v<T>) {
+                resize_uninitialized (s + 1);
+            }
+            else {
+                resize (s + 1);
+            }
             fLiveData_[s] = e;
         }
     }
