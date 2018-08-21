@@ -92,18 +92,6 @@ namespace Stroika::Foundation::Memory {
     };
 
     /**
-     *  \brief  SharedByValue_CopySharedPtrDefault is the default template parameter for copying SharedByValue
-     *
-     *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
-     *  copy-by-value (COW) envelope thread safety.
-     */
-    [[deprecated ("synchonize SharedByValue object, not using this trick - since in version 2.1d6")]] template <typename T, typename SHARED_IMLP>
-    struct SharedByValue_CopySharedPtrAtomicSynchronized {
-        static SHARED_IMLP Load (const SHARED_IMLP& copyFrom);
-        static void        Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o);
-    };
-
-    /**
      */
     template <typename T, typename SHARED_IMLP>
     using SharedByValue_CopySharedPtrDefaultSynchronization = SharedByValue_CopySharedPtrExternallySynchronized<T, SHARED_IMLP>;
@@ -269,8 +257,8 @@ namespace Stroika::Foundation::Memory {
         nonvirtual unsigned int use_count () const;
 
     private:
-        element_copier_type fCopier_;
-        shared_ptr_type     fSharedImpl_;
+        [[NO_UNIQUE_ADDRESS_ATTR]] element_copier_type fCopier_;
+        shared_ptr_type                                fSharedImpl_;
 
     public:
         /**
@@ -284,6 +272,7 @@ namespace Stroika::Foundation::Memory {
         template <typename... COPY_ARGS>
         nonvirtual void BreakReferences_ (COPY_ARGS&&... copyArgs);
     };
+
 }
 
 /*

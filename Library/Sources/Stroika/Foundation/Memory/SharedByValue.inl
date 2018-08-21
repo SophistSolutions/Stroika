@@ -44,23 +44,6 @@ namespace Stroika::Foundation::Memory {
 
     /*
      ********************************************************************************
-     ********* SharedByValue_CopySharedPtrAtomicSynchronized<T,SHARED_IMLP> *********
-     ********************************************************************************
-     */
-    template <typename T, typename SHARED_IMLP>
-    inline SHARED_IMLP SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Load (const SHARED_IMLP& copyFrom)
-    {
-        return atomic_load (&copyFrom);
-    }
-    template <typename T, typename SHARED_IMLP>
-    inline void SharedByValue_CopySharedPtrAtomicSynchronized<T, SHARED_IMLP>::Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
-    {
-        RequireNotNull (storeTo);
-        atomic_store (storeTo, o);
-    }
-
-    /*
-     ********************************************************************************
      ****************************** SharedByValue<TRAITS> ***************************
      ********************************************************************************
      */
@@ -296,6 +279,22 @@ namespace Stroika::Foundation::Memory {
 #endif
     }
 
+    /**
+     *  \brief  SharedByValue_CopySharedPtrDefault is the default template parameter for copying SharedByValue
+     *
+     *  THIS IS HIGHLY EXPERIMENTAL AS OF v2.0a22 (2014-03-23) but intended to provide a useful basis for threadsafe
+     *  copy-by-value (COW) envelope thread safety.
+     */
+    template <typename T, typename SHARED_IMLP>
+    struct [[deprecated ("synchronize SharedByValue object, not using this trick - since in version 2.1d6")]] SharedByValue_CopySharedPtrAtomicSynchronized{
+        static SHARED_IMLP Load (const SHARED_IMLP& copyFrom){return atomic_load (&copyFrom);
+}
+static void Store (SHARED_IMLP* storeTo, const SHARED_IMLP& o)
+{ /*RequireNotNull (storeTo);*/
+    atomic_store (storeTo, o);
+}
+}
+;
 }
 
 #endif /*_Stroika_Foundation_Memory_SharedByValue_inl_*/
