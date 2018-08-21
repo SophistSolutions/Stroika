@@ -25,7 +25,7 @@ endif
 # CHECK FOR UPDATED VERSIONS https://www.openssl.org/source/
 #
 
-VERSION=1.1.1-pre8
+VERSION=1.1.1-pre9
 #VERSION=1.1.0g
 #VERSION=1.1.0f
 #VERSION=1.1.0e
