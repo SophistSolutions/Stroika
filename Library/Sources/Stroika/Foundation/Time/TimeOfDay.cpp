@@ -40,7 +40,7 @@ namespace {
     String GetLocaleInfo_ (LCID Locale, LCTYPE LCType)
     {
         int                       sizeNeeded = ::GetLocaleInfoW (Locale, LCType, nullptr, 0);
-        SmallStackBuffer<wchar_t> buf (sizeNeeded + 1);
+        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, sizeNeeded + 1);
         Verify (::GetLocaleInfoW (Locale, LCType, buf, sizeNeeded + 1));
         return String (buf);
     }

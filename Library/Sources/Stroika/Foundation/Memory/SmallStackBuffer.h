@@ -7,6 +7,7 @@
 #include "../StroikaPreComp.h"
 
 #include "../Configuration/Common.h"
+#include "../Configuration/Concepts.h"
 #include "../Configuration/TypeHints.h"
 
 #include "Common.h"
@@ -20,8 +21,18 @@
 namespace Stroika::Foundation::Memory {
 
     /**
+     */
+    class SmallStackBufferCommon {
+    public:
+        enum UninitializedConstructorFlag { eUninitialized };
+    };
+
+    /**
      *  SmallStackBuffer<> combines the performance of using a stack buffer to store arrays with
      *  the safety and flexability of using the free store (malloc).
+     *
+     *  Think of it as a hybrid between std::vector<> and std::array - with functionality like
+     *  std::vector, but performance more like std::array.
      *
      *  In steps <code>SmallStackBuffer&ltT&gt</code>. Just declare one of these, and it
      *  automaticlly uses the stack for the buffer if it will fit, and silently allocates heap memory
@@ -34,7 +45,12 @@ namespace Stroika::Foundation::Memory {
      *  \par Example Usage
      *      @see Samples/SimpleService project
      *      \code
-     *          Memory::SmallStackBuffer<Byte> useKey{keyLen};
+     *          Memory::SmallStackBuffer<Byte> useKey{keyLen};  // no need to default initialize cuz done automatically
+     *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
+     *      \endcode
+     * OR
+     *      \code
+     *          Memory::SmallStackBuffer<Byte> useKey{Memory::SmallStackBuffer::eUninitiialized, keyLen};
      *          (void)::memset (useKey.begin (), 0, keyLen);
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
@@ -54,7 +70,7 @@ namespace Stroika::Foundation::Memory {
      *
      */
     template <typename T, size_t BUF_SIZE = ((4096 / sizeof (T)) == 0 ? 1 : (4096 / sizeof (T)))>
-    class SmallStackBuffer {
+    class SmallStackBuffer : public SmallStackBufferCommon {
     public:
         /**
          */
@@ -79,11 +95,12 @@ namespace Stroika::Foundation::Memory {
          */
         SmallStackBuffer ();
         SmallStackBuffer (size_t nElements);
+        SmallStackBuffer (UninitializedConstructorFlag, size_t nElements);
         template <size_t FROM_BUF_SIZE>
         SmallStackBuffer (const SmallStackBuffer<T, FROM_BUF_SIZE>& from);
         SmallStackBuffer (const SmallStackBuffer& from);
         SmallStackBuffer (SmallStackBuffer&&) = delete;
-        template <typename ITERATOR_OF_T>
+        template <typename ITERATOR_OF_T, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_T>, char>* = nullptr>
         SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end);
         ~SmallStackBuffer ();
 
@@ -177,12 +194,30 @@ namespace Stroika::Foundation::Memory {
 
     public:
         /**
+         * \brief same as resize (), except leaves newly created elements uninitialized (requires is_trivially_default_constructible_v<T>) 
+         *
+         *  \req is_trivially_default_constructible_v<T>
+         *  \ensure GetSize () <= capacity ();
+         */
+        nonvirtual void resize_uninitialized (size_t nElements);
+
+    public:
+        /**
          *  Grow the buffer to at least nElements in size (wont shrink). The 'size' is the number of constructed elements,
          *  and this function automatically assures the capacity is maintained at least as large as the size.
          *
          *  \ensure GetSize () <= capacity ();
          */
         nonvirtual void GrowToSize (size_t nElements);
+
+    public:
+        /**
+         * \brief same as GrowToSize (), except leaves newly created elements uninitialized (requires is_trivially_default_constructible_v<T>)
+         *
+         *  \req is_trivially_default_constructible_v<T>
+         *  \ensure GetSize () <= capacity ();
+         */
+        nonvirtual void GrowToSize_uninitialized (size_t nElements);
 
     public:
         nonvirtual void push_back (Configuration::ArgByValueType<T> e);
@@ -262,7 +297,6 @@ namespace Stroika::Foundation::Memory {
     private:
         static void DestroyElts_ (T* start, T* end) noexcept;
     };
-
 }
 
 /*

@@ -24,6 +24,9 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
 
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
+
 #if qHasFeature_LZMA
 namespace {
     struct InitOnce_ {
@@ -121,8 +124,8 @@ public:
                 if (nameLen < 1) {
                     break;
                 }
-                Memory::SmallStackBuffer<char16_t> fileName (nameLen);
-                [[maybe_unused]] size_t            z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
+                SmallStackBuffer<char16_t> fileName (SmallStackBufferCommon::eUninitialized, nameLen);
+                [[maybe_unused]] size_t    z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
                 result.Add (String (&fileName[0]));
             }
         }
@@ -159,8 +162,8 @@ public:
                 if (nameLen < 1) {
                     break;
                 }
-                Memory::SmallStackBuffer<char16_t> fileName (nameLen);
-                [[maybe_unused]] size_t            z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
+                SmallStackBuffer<char16_t> fileName (SmallStackBufferCommon::eUninitialized, nameLen);
+                [[maybe_unused]] size_t    z = ::SzArEx_GetFileNameUtf16 (&fDB_, i, reinterpret_cast<UInt16*> (&fileName[0]));
                 if (String (&fileName[0]) == fn) {
                     return i;
                 }

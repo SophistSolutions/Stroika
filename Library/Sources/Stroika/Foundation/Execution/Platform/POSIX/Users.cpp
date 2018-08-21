@@ -17,6 +17,8 @@ using namespace Stroika::Foundation::Execution::Platform::POSIX;
 
 using Characters::String;
 using Characters::String_Constant;
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
 
 /*
  ********************************************************************************
@@ -29,7 +31,7 @@ uid_t Platform::POSIX::UserName2UID (const String& name)
     if (bufsize == -1) { /* Value was indeterminate */
         bufsize = 16384; /* Should be more than enough */
     }
-    Memory::SmallStackBuffer<char> buf (bufsize);
+    SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, bufsize);
 
     struct passwd pwd {
     };
@@ -55,7 +57,7 @@ String Platform::POSIX::uid_t2UserName (uid_t uid)
     if (bufsize == -1) { /* Value was indeterminate */
         bufsize = 16384; /* Should be more than enough */
     }
-    Memory::SmallStackBuffer<char> buf (bufsize);
+    SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, bufsize);
 
     struct passwd pwd {
     };

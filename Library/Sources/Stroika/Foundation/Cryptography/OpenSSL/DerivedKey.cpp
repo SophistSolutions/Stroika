@@ -239,8 +239,8 @@ namespace {
     pair<BLOB, BLOB> mkEVP_BytesToKey_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
         Require (nRounds >= 1);
-        SmallStackBuffer<Byte> useKey{keyLen};
-        SmallStackBuffer<Byte> useIV{ivLen};
+        SmallStackBuffer<Byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
+        SmallStackBuffer<Byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
         if (salt and salt->GetSize () != 8) {
             // Could truncate and fill to adapt to differnt sized salt...
             Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
@@ -267,7 +267,7 @@ EVP_BytesToKey::EVP_BytesToKey (size_t keyLen, size_t ivLen, DigestAlgorithm dig
 namespace {
     pair<BLOB, BLOB> mkPKCS5_PBKDF2_HMAC_ (size_t keyLen, size_t ivLen, DigestAlgorithm digestAlgorithm, const BLOB& passwd, unsigned int nRounds, const optional<BLOB>& salt)
     {
-        SmallStackBuffer<Byte> outBuf{keyLen + ivLen};
+        SmallStackBuffer<Byte> outBuf{SmallStackBufferCommon::eUninitialized, keyLen + ivLen};
         Assert (keyLen + ivLen < size_t (numeric_limits<int>::max ())); // for static cast below
         int a = ::PKCS5_PBKDF2_HMAC (
             reinterpret_cast<const char*> (passwd.begin ()),

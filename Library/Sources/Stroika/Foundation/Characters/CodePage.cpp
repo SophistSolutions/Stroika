@@ -1126,7 +1126,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
     // Assure my baked tables (and UTF8 converters) perform the same as the builtin Win32 API
     {
         size_t                    tstCharCnt = *outCharCnt;
-        SmallStackBuffer<wchar_t> tstBuf (*outCharCnt);
+        SmallStackBuffer<wchar_t> tstBuf (SmallStackBufferCommon::eUninitialized, *outCharCnt);
         Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapToUNICODE (inMBChars, inMBCharCnt, tstBuf, &tstCharCnt);
         Assert (tstCharCnt == *outCharCnt);
         Assert (memcmp (tstBuf, outChars, sizeof (wchar_t) * tstCharCnt) == 0);
@@ -1137,7 +1137,7 @@ void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt,
 void CodePageConverter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const
 {
     // Not really right - but hopefully adquate for starters -- LGP 2011-09-06
-    SmallStackBuffer<char16_t> tmpBuf (*outCharCnt);
+    SmallStackBuffer<char16_t> tmpBuf{SmallStackBufferCommon::eUninitialized, *outCharCnt};
     MapToUNICODE (inMBChars, inMBCharCnt, tmpBuf, outCharCnt);
     for (size_t i = 0; i < *outCharCnt; ++i) {
         outChars[i] = tmpBuf[i];
@@ -1286,7 +1286,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
     // Assure my baked tables perform the same as the builtin Win32 API
     {
         size_t                 win32TstCharCnt = outBufferSize;
-        SmallStackBuffer<char> win32TstBuf (win32TstCharCnt);
+        SmallStackBuffer<char> win32TstBuf (SmallStackBufferCommon::eUninitialized, win32TstCharCnt);
 
         Characters::Platform::Windows::PlatformCodePageConverter (fCodePage).MapFromUNICODE (SAFE_WIN_WCHART_CAST_ (inChars), inCharCnt, win32TstBuf, &win32TstCharCnt);
 
@@ -1302,7 +1302,7 @@ void CodePageConverter::MapFromUNICODE (const char16_t* inChars, size_t inCharCn
 void CodePageConverter::MapFromUNICODE (const char32_t* inChars, size_t inCharCnt, char* outChars, size_t* outCharCnt) const
 {
     // Not really right - but hopefully adquate for starters -- LGP 2011-09-06
-    SmallStackBuffer<char16_t> tmpBuf (*outCharCnt);
+    SmallStackBuffer<char16_t> tmpBuf (SmallStackBufferCommon::eUninitialized, *outCharCnt);
     for (size_t i = 0; i < inCharCnt; ++i) {
         tmpBuf[i] = inChars[i];
     }
@@ -3980,7 +3980,7 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
     }
     else {
         size_t                    outBufSize = end - start;
-        SmallStackBuffer<wchar_t> wideBuf (outBufSize);
+        SmallStackBuffer<wchar_t> wideBuf (SmallStackBufferCommon::eUninitialized, outBufSize);
         size_t                    outCharCount = outBufSize;
         MapSBUnicodeTextWithMaybeBOMToUNICODE (start, end - start, wideBuf, &outCharCount);
         Assert (outCharCount <= outBufSize);
@@ -4004,7 +4004,7 @@ vector<Byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start,
 {
     CodePageConverter      cpc (useCP, CodePageConverter::eHandleBOM);
     size_t                 outCharCount = cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end - start);
-    SmallStackBuffer<char> buf (outCharCount);
+    SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, outCharCount);
     cpc.MapFromUNICODE (start, end - start, buf, &outCharCount);
     const Byte* bs = reinterpret_cast<const Byte*> (static_cast<const char*> (buf));
     return vector<Byte> (bs, bs + outCharCount);

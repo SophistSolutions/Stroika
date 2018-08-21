@@ -144,7 +144,7 @@ Memory::BLOB Algorithm::DecodeBase64 (const string& s)
         return Memory::BLOB ();
     }
     size_t                 dataSize1 = s.length ();
-    SmallStackBuffer<Byte> buf1 (dataSize1); // MUCH more than big enuf
+    SmallStackBuffer<Byte> buf1 (SmallStackBufferCommon::eUninitialized, dataSize1); // MUCH more than big enuf
     base64_decodestate_    state;
     size_t                 r = base64_decode_block_ (reinterpret_cast<const signed char*> (Containers::Start (s)), s.length (), buf1.begin (), &state);
     Assert (r <= dataSize1);
@@ -290,7 +290,7 @@ string Algorithm::EncodeBase64 (const Streams::InputStream<Byte>::Ptr& from, Lin
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<signed char> data (bufSize);
+    SmallStackBuffer<signed char> data (SmallStackBufferCommon::eUninitialized, bufSize);
     size_t                        mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t                        extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
     size_t                        totalBytes      = mostBytesCopied + extraBytes;
@@ -304,7 +304,7 @@ string Algorithm::EncodeBase64 (const Streams::InputStream<Byte>::Ptr& from, Lin
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<char> data (bufSize);
+    SmallStackBuffer<char> data (SmallStackBufferCommon::eUninitialized, bufSize);
     size_t                 mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t                 extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
     size_t                 totalBytes      = mostBytesCopied + extraBytes;
@@ -323,7 +323,7 @@ string Algorithm::EncodeBase64 (const Memory::BLOB& from, LineBreak lb)
     size_t             srcLen  = end - start;
     size_t             bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen); // no overflow!
-    SmallStackBuffer<signed char> data (bufSize);
+    SmallStackBuffer<signed char> data (SmallStackBufferCommon::eUninitialized, bufSize);
     size_t                        mostBytesCopied = base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t                        extraBytes      = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
     size_t                        totalBytes      = mostBytesCopied + extraBytes;

@@ -42,7 +42,15 @@ namespace Stroika::Foundation::Memory {
         Invariant ();
     }
     template <typename T, size_t BUF_SIZE>
-    template <typename ITERATOR_OF_T>
+    inline SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (UninitializedConstructorFlag, size_t nElements)
+        : SmallStackBuffer ()
+    {
+        static_assert (is_trivially_default_constructible_v<T>);
+        resize_uninitialized (nElements);
+        Invariant ();
+    }
+    template <typename T, size_t BUF_SIZE>
+    template <typename ITERATOR_OF_T, enable_if_t<Configuration::is_iterator_v<ITERATOR_OF_T>, char>*>
     SmallStackBuffer<T, BUF_SIZE>::SmallStackBuffer (ITERATOR_OF_T start, ITERATOR_OF_T end)
         : SmallStackBuffer (distance (start, end))
     {
@@ -117,6 +125,14 @@ namespace Stroika::Foundation::Memory {
         }
     }
     template <typename T, size_t BUF_SIZE>
+    inline void SmallStackBuffer<T, BUF_SIZE>::GrowToSize_uninitialized (size_t nElements)
+    {
+        static_assert (is_trivially_default_constructible_v<T>);
+        if (nElements > size ()) {
+            resize_uninitialized (nElements);
+        }
+    }
+    template <typename T, size_t BUF_SIZE>
     inline void SmallStackBuffer<T, BUF_SIZE>::resize (size_t nElements)
     {
         if (nElements > fSize_) {
@@ -128,6 +144,28 @@ namespace Stroika::Foundation::Memory {
                 reserve (max (nElements, capacity () * 2));
             }
             uninitialized_fill (this->begin () + fSize_, this->begin () + nElements, T{});
+            fSize_ = nElements;
+        }
+        else if (nElements < fSize_) {
+            // Shrinking
+            DestroyElts_ (this->begin () + nElements, this->end ());
+            fSize_ = nElements;
+        }
+        Assert (fSize_ == nElements);
+        Ensure (size () <= capacity ());
+    }
+    template <typename T, size_t BUF_SIZE>
+    inline void SmallStackBuffer<T, BUF_SIZE>::resize_uninitialized (size_t nElements)
+    {
+        static_assert (is_trivially_default_constructible_v<T>);
+        if (nElements > fSize_) {
+            // Growing
+            if (nElements > capacity ()) {
+                /*
+                 *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+                 */
+                reserve (max (nElements, capacity () * 2));
+            }
             fSize_ = nElements;
         }
         else if (nElements < fSize_) {
@@ -333,7 +371,6 @@ namespace Stroika::Foundation::Memory {
             ::free (bytes);
         }
     }
-
 }
 
 #endif /*_Stroika_Foundation_Memory_SmallStackBuffer_inl_*/

@@ -52,6 +52,9 @@ using Execution::Platform::Windows::ThrowIfFalseGetLastError;
 using Execution::Platform::Windows::ThrowIfZeroGetLastError;
 #endif
 
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
+
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define USE_NOISY_TRACE_IN_THIS_MODULE_ 1
 
@@ -144,10 +147,10 @@ String IO::FileSystem::Ptr::ResolveShortcut (const String& path2FileOrShortcut)
 {
     try {
 #if qPlatform_POSIX
-        Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
-        ssize_t                                       n;
+        SmallStackBuffer<Characters::SDKChar> buf (SmallStackBufferCommon::eUninitialized, 1024);
+        ssize_t                               n;
         while ((n = ::readlink (path2FileOrShortcut.AsSDKString ().c_str (), buf, buf.GetSize ())) == buf.GetSize ()) {
-            buf.GrowToSize (buf.GetSize () * 2);
+            buf.GrowToSize_uninitialized (buf.GetSize () * 2);
         }
         if (n < 0) {
             auto e = errno;
@@ -324,8 +327,8 @@ String IO::FileSystem::Ptr::GetFullPathName (const String& pathName)
     if (not name2Use.StartsWith (kAnySizePrefix_)) {
         name2Use = kAnySizePrefix_ + name2Use;
     }
-    DWORD                             sz = ::GetFullPathNameW (name2Use.c_str (), 0, nullptr, nullptr);
-    Memory::SmallStackBuffer<wchar_t> buf (sz + 1);
+    DWORD                     sz = ::GetFullPathNameW (name2Use.c_str (), 0, nullptr, nullptr);
+    SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, sz + 1);
     Execution::Platform::Windows::ThrowIfZeroGetLastError (::GetFullPathNameW (name2Use.c_str (), static_cast<DWORD> (buf.GetSize ()), buf.begin (), nullptr));
     return buf.begin ();
 #endif

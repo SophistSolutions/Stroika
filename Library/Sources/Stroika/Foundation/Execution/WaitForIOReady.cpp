@@ -103,7 +103,7 @@ auto WaitForIOReady::WaitQuietlyUntil (Time::DurationSecondsType timeoutAt) -> C
     {
         auto   lockedPollData = fPollData_.cget ();
         size_t sz             = lockedPollData->size ();
-        pollData.GrowToSize (sz);
+        pollData.GrowToSize_uninitialized (sz);
         size_t idx = 0;
         for (auto i : lockedPollData.cref ()) {
             short events = 0;

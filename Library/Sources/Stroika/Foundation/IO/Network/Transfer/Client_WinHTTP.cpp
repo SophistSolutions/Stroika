@@ -43,6 +43,7 @@ using namespace Stroika::Foundation::Time;
 using Stroika::Foundation::Execution::Platform::Windows::ThrowIfFalseGetLastError;
 #endif
 using Stroika::Foundation::Memory::SmallStackBuffer;
+using Stroika::Foundation::Memory::SmallStackBufferCommon;
 
 /*
  *  TODO:
@@ -121,7 +122,7 @@ namespace {
         (void)::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, WINHTTP_NO_OUTPUT_BUFFER, &size, lpdwIndex);
         DWORD error = GetLastError ();
         if (error == ERROR_INSUFFICIENT_BUFFER) {
-            SmallStackBuffer<wchar_t> buf (size + 1);
+            SmallStackBuffer<wchar_t> buf (SmallStackBuffer<wchar_t>::eUninitialized, size + 1);
             (void)::memset (buf, 0, buf.GetSize ());
             ThrowIfFalseGetLastError (::WinHttpQueryHeaders (hRequest, dwInfoLevel, pwszName, buf, &size, lpdwIndex));
             return buf.begin ();
@@ -310,7 +311,7 @@ RetryWithAuth:
             // Check for available data.
             dwSize = 0;
             ThrowIfFalseGetLastError (::WinHttpQueryDataAvailable (hRequest, &dwSize));
-            SmallStackBuffer<Byte> outBuffer (dwSize);
+            SmallStackBuffer<Byte> outBuffer (SmallStackBufferCommon::eUninitialized, dwSize);
             memset (outBuffer, 0, dwSize);
             DWORD dwDownloaded = 0;
             ThrowIfFalseGetLastError (::WinHttpReadData (hRequest, outBuffer, dwSize, &dwDownloaded));
@@ -325,8 +326,8 @@ RetryWithAuth:
     //
     // probably should check header content-type for codepage, but this SB OK for now...
     {
-        Memory::SmallStackBuffer<Byte> bytesArray (totalBytes);
-        size_t                         iii = 0;
+        SmallStackBuffer<Byte> bytesArray (SmallStackBufferCommon::eUninitialized, totalBytes);
+        size_t                 iii = 0;
         for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
             auto v2 = *i;
             for (auto ii = v2.begin (); ii != v2.end (); ++ii) {

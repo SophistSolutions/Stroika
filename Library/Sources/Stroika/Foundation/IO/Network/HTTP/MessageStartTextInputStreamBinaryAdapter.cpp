@@ -167,7 +167,7 @@ protected:
             size_t roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
             if (roomLeftInBuf == 0) {
                 // should be quite rare
-                fAllDataReadBuf_.GrowToSize (fBufferFilledUpValidBytes_ + kDefaultBufSize_);
+                fAllDataReadBuf_.GrowToSize_uninitialized (fBufferFilledUpValidBytes_ + kDefaultBufSize_);
                 roomLeftInBuf = fAllDataReadBuf_.GetSize () - fBufferFilledUpValidBytes_;
             }
             Assert (roomLeftInBuf > 0);

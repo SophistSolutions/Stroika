@@ -27,7 +27,7 @@ namespace Stroika::Foundation::Memory {
 
         template <typename BYTE_ITERATOR>
         BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
-            : fData (end - start)
+            : fData (SmallStackBufferCommon::eUninitialized, end - start)
         {
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
             Memory::Private::VC_BWA_std_copy (start, end, fData.begin ());
@@ -36,7 +36,7 @@ namespace Stroika::Foundation::Memory {
 #endif
         }
         BasicRep_ (const Byte* start, const Byte* end)
-            : fData (end - start)
+            : fData (SmallStackBufferCommon::eUninitialized, end - start)
         {
             (void)::memcpy (fData.begin (), start, end - start);
         }

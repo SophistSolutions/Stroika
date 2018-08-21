@@ -31,6 +31,8 @@
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
 using Traversal::Iterator;
 using Traversal::IteratorOwnerID;
 
@@ -251,11 +253,11 @@ String String::FromUTF8 (const char* from, const char* to)
     RequireNotNull (from);
     RequireNotNull (to);
     Require (from <= to);
-    size_t                            fromLen = to - from;
-    UTF8Converter                     cvt;
-    size_t                            cvtBufSize = cvt.MapToUNICODE_QuickComputeOutBufSize (from, fromLen);
-    Memory::SmallStackBuffer<wchar_t> buf{cvtBufSize};
-    size_t                            outCharCnt = cvtBufSize;
+    size_t                    fromLen = to - from;
+    UTF8Converter             cvt;
+    size_t                    cvtBufSize = cvt.MapToUNICODE_QuickComputeOutBufSize (from, fromLen);
+    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, cvtBufSize};
+    size_t                    outCharCnt = cvtBufSize;
     cvt.MapToUNICODE (from, fromLen, buf, &outCharCnt);
     return String{buf.begin (), buf.begin () + outCharCnt};
 }
@@ -364,10 +366,10 @@ String String::FromISOLatin1 (const char* start, const char* end)
      *  From http://unicodebook.readthedocs.io/encodings.html
      *      "For example, ISO-8859-1 are the first 256 Unicode code points (U+0000-U+00FF)."
      */
-    const char*                       s = start;
-    const char*                       e = end;
-    Memory::SmallStackBuffer<wchar_t> buf{static_cast<size_t> (e - s)};
-    wchar_t*                          pOut = buf.begin ();
+    const char*               s = start;
+    const char*               e = end;
+    SmallStackBuffer<wchar_t> buf{SmallStackBufferCommon::eUninitialized, static_cast<size_t> (e - s)};
+    wchar_t*                  pOut = buf.begin ();
     for (const char* i = s; i != e; ++i, pOut++) {
         *pOut = *i;
     }
@@ -418,8 +420,8 @@ String::_SharedPtrIRep String::mk_ (const char16_t* from, const char16_t* to)
     else {
         // @todo https://stroika.atlassian.net/browse/STK-506
         Assert (sizeof (char16_t) != sizeof (wchar_t));
-        Memory::SmallStackBuffer<wchar_t> buf (to - from);
-        size_t                            len{0};
+        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, to - from);
+        size_t                    len{0};
 
         // @todo FIX - WRONG but adequate for now
         wchar_t* outI = buf.begin ();
@@ -442,8 +444,8 @@ String::_SharedPtrIRep String::mk_ (const char32_t* from, const char32_t* to)
     else {
         // @todo https://stroika.atlassian.net/browse/STK-506
         Assert (sizeof (char32_t) != sizeof (wchar_t));
-        Memory::SmallStackBuffer<wchar_t> buf (2 * (to - from));
-        size_t                            len{0};
+        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, 2 * (to - from));
+        size_t                    len{0};
         // @todo FIX - WRONG but adequate for now
         wchar_t* outI = buf.begin ();
         for (const char32_t* i = from; i != to;) {

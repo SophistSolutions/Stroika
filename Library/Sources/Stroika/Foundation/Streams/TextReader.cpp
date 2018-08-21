@@ -19,6 +19,8 @@ using namespace Stroika::Foundation::Streams;
 using Characters::String;
 using Characters::String_Constant;
 using Memory::Byte;
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
 
 namespace {
     using MyWCharTConverterType_ = codecvt<wchar_t, char, mbstate_t>;
@@ -70,12 +72,12 @@ protected:
          *
          *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
          */
-        Memory::SmallStackBuffer<wchar_t>                  outBuf{size_t (intoEnd - intoStart)};
+        SmallStackBuffer<wchar_t>                          outBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)};
         wchar_t*                                           outCursor = begin (outBuf);
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         {
-            Memory::SmallStackBuffer<Byte> inBuf{size_t (intoEnd - intoStart)}; // wag at size
-            size_t                         inBytes = fSource_.Read (begin (inBuf), end (inBuf));
+            SmallStackBuffer<Byte> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
+            size_t                 inBytes = fSource_.Read (begin (inBuf), end (inBuf));
         again:
             const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
             const char* endB   = firstB + inBytes;
@@ -93,7 +95,7 @@ protected:
 // see if we can read more from binary source
 #if qMaintainingMBShiftStateNotWorking_
                     size_t prevInBufSize = inBuf.size ();
-                    inBuf.GrowToSize (prevInBufSize + 1);
+                    inBuf.GrowToSize_uninitialized (prevInBufSize + 1);
                     size_t thisReadNBytes = fSource_.Read (begin (inBuf) + prevInBufSize, end (inBuf));
                     if (thisReadNBytes != 0) {
                         outCursor = begin (outBuf);
@@ -136,8 +138,8 @@ protected:
         //      o   save existing decode state
         //      o   decode and see if at least one character
         //      o   fall through to _ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream
-        Memory::SmallStackBuffer<Byte> inBuf{10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
-        optional<size_t>               inBytes = fSource_.ReadNonBlocking (begin (inBuf), end (inBuf));
+        SmallStackBuffer<Byte> inBuf{SmallStackBufferCommon::eUninitialized, 10}; // enuf to get at least one charcter decoded (wag at number - but enuf for BOM+one char)
+        optional<size_t>       inBytes = fSource_.ReadNonBlocking (begin (inBuf), end (inBuf));
         if (inBytes) {
             if (*inBytes == 0) {
                 return 0; // EOF - other than zero read bytes COULD mean unknown if EOF or not

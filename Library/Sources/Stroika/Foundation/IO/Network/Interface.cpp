@@ -325,7 +325,7 @@ Again:
         }
     }
     else if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
-        buf.GrowToSize (ulOutBufLen);
+        buf.GrowToSize_uninitialized (ulOutBufLen);
         goto Again;
     }
     else if (dwRetVal == ERROR_NO_DATA) {

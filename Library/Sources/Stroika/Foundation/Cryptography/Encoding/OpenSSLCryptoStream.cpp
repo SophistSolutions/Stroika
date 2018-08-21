@@ -22,8 +22,6 @@ using namespace Stroika::Foundation::Cryptography::Encoding;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
-using Memory::BLOB;
-
 // @todo examine/test https://github.com/saju/misc/blob/master/misc/openssl_aes.c
 
 #if qHasFeature_OpenSSL && defined(_MSC_VER)
@@ -164,7 +162,7 @@ public:
                 fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
             }
             else {
-                fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
                 size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
                 Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                 if (nBytesInOutBuf == 0) {
@@ -207,7 +205,7 @@ public:
                 fOutBufEnd_   = fOutBufStart_ + nBytesInOutBuf;
             }
             else {
-                fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                fOutBuf_.GrowToSize_uninitialized (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
                 size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + *n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
                 Assert (nBytesInOutBuf <= fOutBuf_.GetSize ());
                 if (nBytesInOutBuf == 0) {
@@ -286,9 +284,9 @@ public:
     {
         Require (start < end); // for OutputStream<Byte> - this funciton requires non-empty write
         Require (IsOpenWrite ());
-        Memory::SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (_GetMinOutBufSize (end - start));
-        [[maybe_unused]] auto&&                                     critSec        = lock_guard{fCriticalSection_};
-        size_t                                                      nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
+        SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH> outBuf (SmallStackBufferCommon::eUninitialized, _GetMinOutBufSize (end - start));
+        [[maybe_unused]] auto&&                             critSec        = lock_guard{fCriticalSection_};
+        size_t                                              nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
     }
@@ -332,8 +330,8 @@ namespace {
             Verify (::EVP_CIPHER_CTX_set_key_length (ctx, static_cast<int> (keyLen)) == 1);
         }
 
-        Memory::SmallStackBuffer<Byte> useKey{keyLen};
-        Memory::SmallStackBuffer<Byte> useIV{ivLen};
+        SmallStackBuffer<Byte> useKey{SmallStackBufferCommon::eUninitialized, keyLen};
+        SmallStackBuffer<Byte> useIV{SmallStackBufferCommon::eUninitialized, ivLen};
 
         (void)::memset (useKey.begin (), 0, keyLen);
         (void)::memset (useIV.begin (), 0, ivLen);

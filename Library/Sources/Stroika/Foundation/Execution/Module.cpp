@@ -90,7 +90,7 @@ SDKString Execution::GetEXEPathT ()
     Memory::SmallStackBuffer<Characters::SDKChar> buf (1024);
     ssize_t                                       n;
     while ((n = readlink ("/proc/self/exe", buf, buf.GetSize ())) == buf.GetSize ()) {
-        buf.GrowToSize (buf.GetSize () * 2);
+        buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
     if (n < 0) {
         errno_ErrorException::Throw (errno);
@@ -129,7 +129,7 @@ String Execution::GetEXEPath ([[maybe_unused]] pid_t processID)
     char                                          linkNameBuf[1024];
     (void)std::snprintf (linkNameBuf, sizeof (linkNameBuf), "/proc/%ld/exe", static_cast<long> (processID));
     while ((n = ::readlink (linkNameBuf, buf, buf.GetSize ())) == buf.GetSize ()) {
-        buf.GrowToSize (buf.GetSize () * 2);
+        buf.GrowToSize_uninitialized (buf.GetSize () * 2);
     }
     if (n < 0) {
         errno_ErrorException::Throw (errno);

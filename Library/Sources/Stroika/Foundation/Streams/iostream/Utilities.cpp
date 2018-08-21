@@ -38,7 +38,7 @@ wstring Streams::iostream::ReadTextStream (istream& in)
         Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
     }
     size_t                         bufLen = static_cast<size_t> (end - start);
-    Memory::SmallStackBuffer<Byte> buf (bufLen);
+    Memory::SmallStackBuffer<Byte> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<char*> (buf.begin ()), bufLen);
     size_t readLen = static_cast<size_t> (in.gcount ());
@@ -61,7 +61,7 @@ wstring Streams::iostream::ReadTextStream (wistream& in)
         Execution::Throw (Execution::StringException (String_Constant (L"stream too large")));
     }
     size_t                            bufLen = static_cast<size_t> (end - start);
-    Memory::SmallStackBuffer<wchar_t> buf (bufLen);
+    Memory::SmallStackBuffer<wchar_t> buf (Memory::SmallStackBufferCommon::eUninitialized, bufLen);
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<wchar_t*> (buf.begin ()), bufLen);
     size_t readLen = static_cast<size_t> (in.gcount ());
@@ -89,7 +89,7 @@ vector<Byte> Streams::iostream::ReadBytes (istream& in)
         Execution::Throw (StringException (String_Constant (L"stream too large")));
     }
     size_t                 len = static_cast<size_t> (end - start);
-    SmallStackBuffer<Byte> buf (len);
+    SmallStackBuffer<Byte> buf (Memory::SmallStackBufferCommon::eUninitialized, len);
     in.seekg (start, ios_base::beg);
     in.read (reinterpret_cast<char*> (buf.begin ()), len);
     size_t xxx = static_cast<size_t> (in.gcount ());

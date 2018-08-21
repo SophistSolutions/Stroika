@@ -54,6 +54,8 @@ using Characters::SDKChar;
 using Characters::String_Constant;
 using Characters::StringBuilder;
 using Memory::Byte;
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
 
 // Comment this in to turn on aggressive noisy DbgTrace in this module
 //#define   USE_NOISY_TRACE_IN_THIS_MODULE_       1
@@ -439,13 +441,13 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         LPFN_GLPI glpi = (LPFN_GLPI)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "GetLogicalProcessorInformation");
         DISABLE_COMPILER_MSC_WARNING_END (6387)
         AssertNotNull (glpi); // assume at least OS WinXP...
-        Memory::SmallStackBuffer<Byte> buffer (sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
-        DWORD                          returnLength = 0;
+        SmallStackBuffer<Byte> buffer (SmallStackBufferCommon::eUninitialized, sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
+        DWORD                  returnLength = 0;
         while (true) {
             DWORD rc = glpi (reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ()), &returnLength);
             if (FALSE == rc) {
                 if (GetLastError () == ERROR_INSUFFICIENT_BUFFER) {
-                    buffer.GrowToSize (returnLength);
+                    buffer.GrowToSize_uninitialized (returnLength);
                 }
                 else {
                     Execution::Platform::Windows::ThrowIfNot_NO_ERROR (rc);
@@ -1027,7 +1029,7 @@ SystemConfiguration::ComputerNames Configuration::GetSystemConfiguration_Compute
     constexpr COMPUTER_NAME_FORMAT kUseNameFormat_ = ComputerNameNetBIOS; // total WAG -- LGP 2014-10-10
     DWORD                          dwSize          = 0;
     (void)::GetComputerNameEx (kUseNameFormat_, nullptr, &dwSize);
-    Memory::SmallStackBuffer<SDKChar> buf (dwSize);
+    SmallStackBuffer<SDKChar> buf (SmallStackBufferCommon::eUninitialized, dwSize);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetComputerNameEx (kUseNameFormat_, buf, &dwSize));
     result.fHostname = String::FromSDKString (buf);
 #else

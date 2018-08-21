@@ -23,6 +23,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
 
 using Characters::String;
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
 
 /*
  ********************************************************************************
@@ -35,13 +37,13 @@ String Execution::GetCurrentUserName ([[maybe_unused]] UserNameFormat format)
     EXTENDED_NAME_FORMAT useFormat = NameDisplay;
     ULONG                sz        = 0;
     ::GetUserNameEx (useFormat, nullptr, &sz);
-    Memory::SmallStackBuffer<Characters::SDKChar> buf (sz + 1);
+    SmallStackBuffer<Characters::SDKChar> buf (SmallStackBufferCommon::eUninitialized, sz + 1);
     Execution::ThrowIfFalseGetLastError (::GetUserNameEx (useFormat, buf, &sz));
     return String::FromSDKString (buf);
 #elif qPlatform_Windows
     ULONG sz = 0;
     ::GetUserName (nullptr, &sz);
-    Memory::SmallStackBuffer<Characters::SDKChar> buf (sz + 1);
+    SmallStackBuffer<Characters::SDKChar> buf (SmallStackBufferCommon::eUninitialized, sz + 1);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetUserName (buf, &sz));
     return String::FromSDKString (buf);
 #elif qPlatform_POSIX

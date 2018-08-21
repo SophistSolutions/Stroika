@@ -35,7 +35,7 @@ using namespace Stroika::Foundation::Characters::CString;
 string Characters::CString::FormatV (const char* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<char, 10 * 1024> msgBuf (10 * 1024);
+    Memory::SmallStackBuffer<char, 10 * 1024> msgBuf (Memory::SmallStackBufferCommon::eUninitialized, 10 * 1024);
     // SUBTLE: va_list looks like it is passed by value, but its not really,
     // and vswprintf, at least on GCC munges it. So we must use va_copy() to do this safely
     // @see http://en.cppreference.com/w/cpp/utility/variadic/va_copy
@@ -44,13 +44,13 @@ string Characters::CString::FormatV (const char* format, va_list argsList)
 
 #if __STDC_WANT_SECURE_LIB__
     while (::vsnprintf_s (msgBuf, msgBuf.GetSize (), msgBuf.GetSize () - 1, format, argListCopy) < 0) {
-        msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+        msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }
 #else
     while (vsnprintf (msgBuf, msgBuf.GetSize (), format, argListCopy) < 0) {
-        msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+        msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }
@@ -73,7 +73,7 @@ DISABLE_COMPILER_MSC_WARNING_START (6262)
 wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (10 * 1024);
+    Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (Memory::SmallStackBufferCommon::eUninitialized, 10 * 1024);
     const wchar_t*                               useFormat = format;
     wchar_t                                      newFormat[5 * 1024];
     {
@@ -149,7 +149,7 @@ wstring Characters::CString::FormatV (const wchar_t* format, va_list argsList)
             continue;
         }
 #endif
-        msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+        msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }

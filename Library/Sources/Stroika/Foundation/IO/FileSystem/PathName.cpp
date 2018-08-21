@@ -14,6 +14,9 @@ using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
 using namespace Stroika::Foundation::IO::FileSystem;
 
+using Memory::SmallStackBuffer;
+using Memory::SmallStackBufferCommon;
+
 /*
  ********************************************************************************
  ************** FileSystem::AssureDirectoryPathSlashTerminated ******************
@@ -77,7 +80,7 @@ String FileSystem::AssureLongFileName (const String& fileName)
 #if qPlatform_Windows
     DWORD r = ::GetLongPathNameW (fileName.c_str (), nullptr, 0);
     if (r != 0) {
-        Memory::SmallStackBuffer<wchar_t> buf (r);
+        SmallStackBuffer<wchar_t> buf (SmallStackBufferCommon::eUninitialized, r);
         r = ::GetLongPathNameW (fileName.c_str (), buf, r);
         if (r != 0) {
             return static_cast<const wchar_t*> (buf);

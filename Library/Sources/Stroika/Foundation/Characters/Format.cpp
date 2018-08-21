@@ -32,7 +32,7 @@ DISABLE_COMPILER_MSC_WARNING_START (6262)
 String Characters::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (10 * 1024);
+    Memory::SmallStackBuffer<wchar_t, 10 * 1024> msgBuf (SmallStackBufferCommon::eUninitialized, 10 * 1024);
     const wchar_t*                               useFormat = format;
     wchar_t                                      newFormat[5 * 1024];
     {
@@ -88,7 +88,7 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
     // Assume only reason for failure is not enuf bytes, so allocate more.
     // If I'm wrong, we'll just runout of memory and throw out...
     while (::vswprintf (msgBuf, msgBuf.GetSize (), useFormat, argListCopy) < 0) {
-        msgBuf.GrowToSize (msgBuf.GetSize () * 2);
+        msgBuf.GrowToSize_uninitialized (msgBuf.GetSize () * 2);
         va_end (argListCopy);
         va_copy (argListCopy, argsList);
     }

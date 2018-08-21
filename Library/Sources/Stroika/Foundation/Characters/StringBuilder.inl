@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Characters {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         size_t                                             i      = fLength_;
         size_t                                             rhsLen = e - s;
-        fData_.GrowToSize (i + rhsLen);
+        fData_.GrowToSize_uninitialized (i + rhsLen);
         fLength_ = i + rhsLen;
         (void)::memcpy (fData_.begin () + i, s, sizeof (wchar_t) * rhsLen);
     }
@@ -203,7 +203,7 @@ namespace Stroika::Foundation::Characters {
     inline void StringBuilder::push_back (Character c)
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fData_.GrowToSize (fLength_ + 1);
+        fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = c.GetCharacterCode ();
         fLength_++;
     }
@@ -228,7 +228,7 @@ namespace Stroika::Foundation::Characters {
     inline const wchar_t* StringBuilder::c_str () const
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
-        fData_.GrowToSize (fLength_ + 1);
+        fData_.GrowToSize_uninitialized (fLength_ + 1);
         fData_[fLength_] = '\0';
         return fData_.begin ();
     }
