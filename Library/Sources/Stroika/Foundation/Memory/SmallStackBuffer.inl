@@ -160,12 +160,14 @@ namespace Stroika::Foundation::Memory {
         static_assert (is_trivially_default_constructible_v<T>);
         if (nElements > fSize_) {
             // Growing
-            if (nElements > capacity ()) {
-                /*
+            if (nElements > capacity ())
+                [[UNLIKELY_ATTR]]
+                {
+                    /*
                  *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
                  */
-                reserve (max (nElements, capacity () * 2));
-            }
+                    reserve (max (nElements, capacity () * 2));
+                }
             fSize_ = nElements;
         }
         else if (nElements < fSize_) {
