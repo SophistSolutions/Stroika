@@ -74,8 +74,8 @@ namespace Stroika::Foundation::Containers::DataStructures {
         size_t oldLength = _fLength - 1;
         if (index < oldLength) {
             /*
-                * Slide items down, and add our new entry
-                */
+             * Slide items down, and add our new entry
+             */
             Assert (_fLength >= 2);
             T*     lhs = &_fItems[_fLength - 1];
             T*     rhs = &_fItems[_fLength - 2];
@@ -516,16 +516,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
     inline bool Array<T>::_ArrayIteratorBase::More (T* current, bool advance)
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*_fData};
-        if (advance) {
-            this->_fSuppressMore = false;
-        }
-        Invariant ();
-        if (not Done ()) {
-            if (current != nullptr) {
-                *current = *_fCurrent;
+        if (advance)
+            [[LIKELY_ATTR]]
+            {
+                this->_fSuppressMore = false;
             }
-            return true;
-        }
+        Invariant ();
+        if (not Done ())
+            [[LIKELY_ATTR]]
+            {
+                if (current != nullptr)
+                    [[LIKELY_ATTR]]
+                    {
+                        *current = *_fCurrent;
+                    }
+                return true;
+            }
         return false;
     }
     template <typename T>
@@ -602,12 +608,16 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
-        if (advance) {
-            if (not this->_fSuppressMore and not this->Done ()) {
-                Assert (this->_fCurrent < this->_fEnd);
-                this->_fCurrent++;
+        if (advance)
+            [[LIKELY_ATTR]]
+            {
+                if (not this->_fSuppressMore and not this->Done ())
+                    [[LIKELY_ATTR]]
+                    {
+                        Assert (this->_fCurrent < this->_fEnd);
+                        this->_fCurrent++;
+                    }
             }
-        }
         return inherited::More (current, advance);
     }
     template <typename T>
@@ -615,17 +625,21 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
-        if (advance) {
-            if (this->_fSuppressMore) {
-                this->_fSuppressMore = false;
-            }
-            else {
-                if (not this->Done ()) {
-                    Assert (this->_fCurrent < this->_fEnd);
-                    this->_fCurrent++;
+        if (advance)
+            [[LIKELY_ATTR]]
+            {
+                if (this->_fSuppressMore)
+                    [[UNLIKELY_ATTR]]
+                    {
+                        this->_fSuppressMore = false;
+                    }
+                else {
+                    if (not this->Done ()) {
+                        Assert (this->_fCurrent < this->_fEnd);
+                        this->_fCurrent++;
+                    }
                 }
             }
-        }
         this->Invariant ();
         if (this->Done ()) {
             *result = nullopt;
@@ -663,18 +677,22 @@ namespace Stroika::Foundation::Containers::DataStructures {
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this->_fData};
         this->Invariant ();
-        if (advance) {
-            if (not this->_fSuppressMore and not this->Done ()) {
-                if (this->_fCurrent == this->_fStart) {
-                    this->_fCurrent = this->_fEnd; // magic to indicate done
-                    Ensure (this->Done ());
-                }
-                else {
-                    this->_fCurrent--;
-                    Ensure (not this->Done ());
-                }
+        if (advance)
+            [[LIKELY_ATTR]]
+            {
+                if (not this->_fSuppressMore and not this->Done ())
+                    [[LIKELY_ATTR]]
+                    {
+                        if (this->_fCurrent == this->_fStart) {
+                            this->_fCurrent = this->_fEnd; // magic to indicate done
+                            Ensure (this->Done ());
+                        }
+                        else {
+                            this->_fCurrent--;
+                            Ensure (not this->Done ());
+                        }
+                    }
             }
-        }
         return inherited::More (current, advance);
     }
     template <typename T>

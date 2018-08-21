@@ -11,22 +11,22 @@
 namespace Stroika::Foundation::Containers {
 
     /*
-        ********************************************************************************
-        ******************** Sequence<T>::TemporaryElementReference_ *******************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************** Sequence<T>::TemporaryElementReference_ *******************
+     ********************************************************************************
+     */
     /*
-        * TemporaryElementReference_ is a private implementation detail, so we can do:
-        *      Sequence<int> x;    // and initialize with several items, and then
-        *      x[3] = 4;
-        *
-        *  We need two templated variants - one inheriting and one not - to handle the fact that some people want to call a method
-        *  on T, as in:
-        *
-        *      Sequence<String> x;
-        *      size_t a = x[3].length ();      // wont work if we use aggregating variant of TemporaryElementReference_
-        *                                      // e.g: error: �struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_� has no member named �Trim�
-        */
+     * TemporaryElementReference_ is a private implementation detail, so we can do:
+     *      Sequence<int> x;    // and initialize with several items, and then
+     *      x[3] = 4;
+     *
+     *  We need two templated variants - one inheriting and one not - to handle the fact that some people want to call a method
+     *  on T, as in:
+     *
+     *      Sequence<String> x;
+     *      size_t a = x[3].length ();      // wont work if we use aggregating variant of TemporaryElementReference_
+     *                                      // e.g: error: �struct Stroika::Foundation::Containers::Sequence<Stroika::Foundation::Characters::String>::TemporaryElementReference_� has no member named �Trim�
+     */
     template <typename T>
     template <typename X, typename ENABLE>
     struct Sequence<T>::TemporaryElementReference_ { // for 'X' non-class (e.g == int which we cannot subclass from)
@@ -89,10 +89,10 @@ namespace Stroika::Foundation::Containers {
     };
 
     /*
-        ********************************************************************************
-        ******************************** Sequence<T> ***********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** Sequence<T> ***********************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Sequence<T>::Sequence ()
         : inherited (move (Factory::Sequence_Factory<T> () ()))
@@ -455,4 +455,5 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Containers_Sequence_inl_ */

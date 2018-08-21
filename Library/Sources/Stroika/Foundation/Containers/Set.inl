@@ -11,10 +11,10 @@
 namespace Stroika::Foundation::Containers {
 
     /*
-        ********************************************************************************
-        ************************************* Set<T> ***********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************************* Set<T> ***********************************
+     ********************************************************************************
+     */
     template <typename T>
     inline Set<T>::Set ()
         : Set (equal_to<T>{})
@@ -132,10 +132,10 @@ namespace Stroika::Foundation::Containers {
     inline bool Set<T>::AddIf (ArgByValueType<T> item)
     {
         /*
-            *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
-            *  if someone calls AddIf() - they dont know/care if this call or another at the same time is doing the
-            *  addition. Any 'race' would be in the logical of the calling code.
-            */
+         *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
+         *  if someone calls AddIf() - they dont know/care if this call or another at the same time is doing the
+         *  addition. Any 'race' would be in the logical of the calling code.
+         */
         if (Contains (item)) {
             return false;
         }
@@ -176,10 +176,10 @@ namespace Stroika::Foundation::Containers {
     inline bool Set<T>::RemoveIf (ArgByValueType<T> item)
     {
         /*
-            *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
-            *  if someone calls RemoveIf() - they dont know/care if this call or another at the same time is doing the
-            *  addition. Any 'race' would be in the logical of the calling code.
-            */
+         *  Note, this is an non-performance optimal implementation, but is not a race, because from the outside
+         *  if someone calls RemoveIf() - they dont know/care if this call or another at the same time is doing the
+         *  addition. Any 'race' would be in the logical of the calling code.
+         */
         if (Contains (item)) {
             Remove (item);
             return true;
@@ -230,9 +230,11 @@ namespace Stroika::Foundation::Containers {
     bool Set<T>::Intersects (const Iterable<T>& rhs) const
     {
         for (T i : rhs) {
-            if (Contains (i)) {
-                return true;
-            }
+            if (Contains (i))
+                [[UNLIKELY_ATTR]]
+                {
+                    return true;
+                }
         }
         return false;
     }
@@ -338,10 +340,10 @@ namespace Stroika::Foundation::Containers {
     }
 
     /*
-        ********************************************************************************
-        ******************************** Set<T>::_IRep *********************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************** Set<T>::_IRep *********************************
+     ********************************************************************************
+     */
     template <typename T>
     bool Set<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
     {
@@ -361,10 +363,10 @@ namespace Stroika::Foundation::Containers {
     }
 
     /*
-        ********************************************************************************
-        ******************************* Set<T> operators *******************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ******************************* Set<T> operators *******************************
+     ********************************************************************************
+     */
     template <typename T>
     inline bool operator== (const Set<T>& lhs, const Set<T>& rhs)
     {
@@ -422,4 +424,5 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Containers_Set_inl_ */

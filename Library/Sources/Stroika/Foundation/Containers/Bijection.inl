@@ -542,4 +542,5 @@ namespace Stroika::Foundation::Containers {
     }
 
 }
+
 #endif /* _Stroika_Foundation_Containers_Bijection_inl_ */

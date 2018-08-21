@@ -136,13 +136,17 @@ Traversal::Iterator<Character> String::_IRep::MakeIterator ([[maybe_unused]] Ite
         virtual void More (optional<Character>* result, bool advance) override
         {
             RequireNotNull (result);
-            if (advance) {
-                Require (fCurIdx <= fStr->_GetLength ());
-                fCurIdx++;
-            }
-            if (fCurIdx < fStr->_GetLength ()) {
-                *result = fStr->GetAt (fCurIdx);
-            }
+            if (advance)
+                [[LIKELY_ATTR]]
+                {
+                    Require (fCurIdx <= fStr->_GetLength ());
+                    fCurIdx++;
+                }
+            if (fCurIdx < fStr->_GetLength ())
+                [[LIKELY_ATTR]]
+                {
+                    *result = fStr->GetAt (fCurIdx);
+                }
             else {
                 *result = nullopt;
             }
@@ -395,9 +399,11 @@ String::_SharedPtrIRep String::mk_ (const wchar_t* start1, const wchar_t* end1, 
     Require (start2 <= end2);
     size_t len1 = end1 - start1;
     auto   sRep = MakeSmartPtr<String_BufferedArray_Rep_> (start1, end1, (end2 - start2));
-    if (start2 != end2) {
-        sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
-    }
+    if (start2 != end2)
+        [[LIKELY_ATTR]]
+        {
+            sRep->InsertAt (reinterpret_cast<const Character*> (start2), reinterpret_cast<const Character*> (end2), len1);
+        }
     return sRep;
 }
 

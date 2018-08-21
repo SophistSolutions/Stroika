@@ -199,15 +199,16 @@ namespace Stroika::Foundation::Traversal {
          */
         bool lDone = Done ();
         bool rDone = rhs.Done ();
-        if (lDone != rDone) {
-            return false;
-        }
+        if (lDone != rDone)
+            [[LIKELY_ATTR]]
+            {
+                return false;
+            }
         if (lDone) {
             Assert (rDone);
             return true;
         }
         Assert (not lDone and not rDone);
-        // assigning to local variables to ensure const version called
 #if qStroika_Foundation_Traversal_Iterator_UseSharedByValue
         const Iterator<T, ITERATOR_TRAITS>::IRep* lhsRep = fIterator_.cget ();
         const Iterator<T, ITERATOR_TRAITS>::IRep* rhsRep = rhs.fIterator_.cget ();

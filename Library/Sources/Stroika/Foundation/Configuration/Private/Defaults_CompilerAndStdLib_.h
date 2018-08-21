@@ -1290,6 +1290,34 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
 #define NO_UNIQUE_ADDRESS_ATTR
 #endif
 
+/*
+ * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
+ * https://en.cppreference.com/w/cpp/language/attributes/likely
+ */
+#if defined(__has_cpp_attribute)
+#if __has_cpp_attribute(likely)
+#define LIKELY_ATTR likely
+#else
+#define LIKELY_ATTR
+#endif
+#else
+#define LIKELY_ATTR
+#endif
+
+/*
+ * https://en.cppreference.com/w/User:D41D8CD98F/feature_testing_macros
+ * https://en.cppreference.com/w/cpp/language/attributes/likely
+ */
+#if defined(__has_cpp_attribute)
+#if __has_cpp_attribute(unlikely)
+#define UNLIKELY_ATTR unlikely
+#else
+#define UNLIKELY_ATTR
+#endif
+#else
+#define UNLIKELY_ATTR
+#endif
+
 /**
  *  \def Stroika_Foundation_Configuration_STRUCT_PACKED
  *

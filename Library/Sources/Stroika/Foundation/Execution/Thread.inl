@@ -150,17 +150,21 @@ namespace Stroika::Foundation::Execution {
     inline Thread::IDType Thread::Ptr::GetID () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr) {
-            return Thread::IDType{};
-        }
+        if (fRep_ == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                return Thread::IDType{};
+            }
         return fRep_->GetID ();
     }
     inline Thread::NativeHandleType Thread::Ptr::GetNativeHandle () const noexcept
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr) {
-            return Thread::NativeHandleType{};
-        }
+        if (fRep_ == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                return Thread::NativeHandleType{};
+            }
         return fRep_->GetNativeHandle ();
     }
     inline void Thread::Ptr::reset () noexcept
@@ -171,9 +175,11 @@ namespace Stroika::Foundation::Execution {
     inline Function<void()> Thread::Ptr::GetFunction () const
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr) {
-            return nullptr;
-        }
+        if (fRep_ == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                return nullptr;
+            }
         return fRep_->fRunnable_;
     }
     inline bool Thread::Ptr::operator< (const Ptr& rhs) const
@@ -211,9 +217,11 @@ namespace Stroika::Foundation::Execution {
     inline Thread::Status Thread::Ptr::GetStatus () const noexcept
     {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
-        if (fRep_ == nullptr) {
-            return Status::eNull;
-        }
+        if (fRep_ == nullptr)
+            [[UNLIKELY_ATTR]]
+            {
+                return Status::eNull;
+            }
         return GetStatus_ ();
     }
     inline void Thread::Ptr::WaitForDone (Time::DurationSecondsType timeout) const
@@ -298,9 +306,11 @@ namespace Stroika::Foundation::Execution {
     {
         // note that it is not important that this be protected/thread safe, since the value is just advisory/hint
         static unsigned int n = 0;
-        if (++n % kEveryNTimes == kEveryNTimes - 1) {
-            CheckForThreadInterruption ();
-        }
+        if (++n % kEveryNTimes == kEveryNTimes - 1)
+            [[UNLIKELY_ATTR]]
+            {
+                CheckForThreadInterruption ();
+            }
     }
 
 }
