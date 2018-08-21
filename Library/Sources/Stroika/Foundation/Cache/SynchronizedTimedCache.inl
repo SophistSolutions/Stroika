@@ -45,6 +45,7 @@ namespace Stroika::Foundation::Cache {
                 auto&& newRWLock = lock_guard{fMutex_};
                 VALUE  v         = cacheFiller (key);
                 this->Add (key, v);
+                return v;
             }
             else {
                 // Avoid needlessly blocking lookups (shared_lock above) until after we've filled the cache (typically slow)
@@ -52,8 +53,8 @@ namespace Stroika::Foundation::Cache {
                 VALUE  v         = cacheFiller (key);
                 auto&& newRWLock = lock_guard{fMutex_};
                 this->Add (key, v);
+                return v;
             }
-            return v;
         }
     }
     template <typename KEY, typename VALUE, typename TRAITS>
@@ -80,7 +81,6 @@ namespace Stroika::Foundation::Cache {
         auto&& lock = lock_guard{fMutex_};
         inherited::DoBookkeeping ();
     }
-
 }
 
 #endif /*_Stroika_Foundation_Cache_SynchronizedTimedCache_inl_*/

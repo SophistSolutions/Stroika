@@ -40,6 +40,12 @@ namespace Stroika::Foundation::Cache {
         using inherited = LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>;
 
     public:
+        using StatsType = typename inherited::StatsType;
+
+    public:
+        using KeyEqualsCompareFunctionType = typename inherited::KeyEqualsCompareFunctionType;
+
+    public:
         /**
          *  @see LRUCache constructor for examples
          */

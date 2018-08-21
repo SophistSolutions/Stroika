@@ -108,9 +108,10 @@ namespace Stroika::Foundation::Cache {
             else {
                 // Avoid needlessly blocking lookups (shared_lock above) until after we've filled the cache (typically slow)
                 // and keep it to minimum logically required (inherited add).
-                Add (key, valueFetcher (key));
+                VALUE v = valueFetcher (key);
+                Add (key, v);
+                return v;
             }
-            return v;
         }
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
@@ -125,7 +126,6 @@ namespace Stroika::Foundation::Cache {
         [[maybe_unused]] auto&& lock = shared_lock{fMutex_};
         return inherited::Elements ();
     }
-
 }
 
 #endif /*_Stroika_Foundation_Cache_SynchronizedLRUCache_inl_*/
