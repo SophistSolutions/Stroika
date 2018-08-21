@@ -22,7 +22,7 @@ PER_CONFIGURATION_BOOST_INTERMEDIATEFILES_DIR:=$(shell realpath --canonicalize-m
 
 export StroikaRoot=$(shell realpath ../..)/
 
-VERSION=1_67_0
+VERSION=1_68_0
 #VERSION=1_67_0_rc2
 #VERSION=1_66_0
 VERSION_WITH_DOTS=$(shell echo $(VERSION) | sed s/_/\./g)
