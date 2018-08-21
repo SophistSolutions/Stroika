@@ -222,8 +222,8 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Lookup (typename Configuration::ArgByValueType<KEY> key) const -> optional<VALUE>
     {
-        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-        optional<KeyValuePair_>*                                  v = LookupElement_ (key);
+        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        optional<KeyValuePair_>*                                   v = LookupElement_ (key);
         if (v == nullptr) {
             return optional<VALUE>{};
         }
@@ -251,8 +251,8 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::Elements () const -> Containers::Mapping<KEY, VALUE>
     {
-        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
-        Containers::Mapping<KEY, VALUE>                           result;
+        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        Containers::Mapping<KEY, VALUE>                            result;
         for (CacheIterator_ i = begin_ (); i != end_ (); ++i) {
             if (*i) {
                 result.Add ((*i)->fKey, (*i)->fValue);
@@ -285,7 +285,6 @@ namespace Stroika::Foundation::Cache {
         return CacheIterator_ (nullptr, nullptr);
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
-
     inline void LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::ShuffleToHead_ (size_t chainIdx, CacheElement_* b)
     {
         Require (chainIdx < fHashtableSize_);
@@ -349,6 +348,7 @@ namespace Stroika::Foundation::Cache {
         ShuffleToHead_ (chainIdx, fCachedElts_Last_[chainIdx]);
         return &fCachedElts_First_[chainIdx]->fElement;
     }
+
 }
 
 #endif /*_Stroika_Foundation_Cache_LRUCache_inl_*/
