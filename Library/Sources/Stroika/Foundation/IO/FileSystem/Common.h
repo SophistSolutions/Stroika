@@ -58,7 +58,6 @@ namespace Stroika::Foundation::IO::FileSystem {
      *  @todo MAYBNE MAKE UNSINGED???
      */
     using FileOffset_t = int64_t;
-
 }
 
 /*

@@ -163,6 +163,7 @@ namespace Stroika::Foundation::Cache {
      template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION , typename STATS_TYPE >
     SynchronizedLRUCache (pair<KEY, VALUE> ignored, size_t maxCacheSize, size_t hashTableSize, KEY_HASH_FUNCTION hashFunction = hash<KEY>{})->  SynchronizedLRUCache<KEY,VALUE,KEY_EQUALS_COMPARER,KEY_HASH_FUNCTION,Statistics::StatsType_DEFAULT>;
 #endif
+
 }
 
 /*

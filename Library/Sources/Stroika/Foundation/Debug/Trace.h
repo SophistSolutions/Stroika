@@ -76,9 +76,9 @@ namespace Stroika::Foundation::Debug {
     }
 
     /**
-             *  Emitter is not meant to be used directly - but can be. Mostly users are expected to
-             *  use DbgTrace () or TraceContextBumper.
-             */
+     *  Emitter is not meant to be used directly - but can be. Mostly users are expected to
+     *  use DbgTrace () or TraceContextBumper.
+     */
     class Emitter {
     private:
         Emitter ();
