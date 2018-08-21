@@ -72,12 +72,12 @@ protected:
          *
          *  Since number of wchar_ts filled always <= number of bytes read, we can read up to that # of bytes from upstream binary stream.
          */
-        SmallStackBuffer<wchar_t>                          outBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)};
+        SmallStackBuffer<wchar_t, 8 * 1024>                outBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)};
         wchar_t*                                           outCursor = begin (outBuf);
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         {
-            SmallStackBuffer<Byte> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
-            size_t                 inBytes = fSource_.Read (begin (inBuf), end (inBuf));
+            SmallStackBuffer<Byte, 8 * 1024> inBuf{SmallStackBufferCommon::eUninitialized, size_t (intoEnd - intoStart)}; // wag at size
+            size_t                           inBytes = fSource_.Read (begin (inBuf), end (inBuf));
         again:
             const char* firstB = reinterpret_cast<const char*> (begin (inBuf));
             const char* endB   = firstB + inBytes;
