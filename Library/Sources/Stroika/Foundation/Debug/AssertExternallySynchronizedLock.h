@@ -82,7 +82,9 @@ namespace Stroika::Foundation::Debug {
      *      };
      *      \endcode
      *
-     *  \note   Until Stroika v2.0a119, this was a non-recursive mutex, but it is now recursive.
+     *  \note   This is SUPER-RECURSIVE lock. It allows lock() when shared_lock held (by only this thread) - so upgradelock.
+     *          And it allows shared_lock when lock held by the same thread. Otherwise it asserts when a thread conflict is found,
+     *          not blocking.
      */
     class AssertExternallySynchronizedLock {
     public:
@@ -108,7 +110,7 @@ namespace Stroika::Foundation::Debug {
     public:
         /**
          *  Saves current thread, and increments lock count, and
-         *      \req    no pre-existing lock or shared locks on other threads
+         *      \req    already locked by this thread or no existing locks (either shared or exclusive)
          *
          *  \note   method const despite usual lockable rules, since we inherit from this, can use on const
          *          methods without casts.
