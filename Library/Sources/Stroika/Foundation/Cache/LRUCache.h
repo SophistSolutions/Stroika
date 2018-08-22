@@ -27,7 +27,11 @@
  *              Working with ONE T argument
  *              Add(elt2cache).
  *
- *              PROBABLY add overload of Add() with one argument, IF VALUETYPE == void?
+ *              PROBABLY add overload of Add() with one argument, IF VALUETYPE == KEYTYPE?
+ *
+ *              ADDED EXPERIMENTALLY in v2.1d6
+ *
+ *              But - REVIEW that usage to make sure it makes sense. Explain better here if/why it does.
  *
  *      @todo   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
  *              has first/last, or do our own storage managemnet with secondary array? - we do the mallocs/frees.
@@ -192,6 +196,13 @@ namespace Stroika::Foundation::Cache {
          *  Add the given value to the cache. This is rarely directly used.
          */
         nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key, typename Configuration::ArgByValueType<VALUE> value);
+
+        //Experimentally added in v2.1d6
+        template <typename K1 = KEY, typename V1 = VALUE, enable_if_t<is_same_v<K1, V1>>* = nullptr>
+        nonvirtual void Add (typename Configuration::ArgByValueType<KEY> key)
+        {
+            Add (key, key);
+        }
 
     public:
         /**
