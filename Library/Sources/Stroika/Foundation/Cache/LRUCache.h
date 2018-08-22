@@ -27,6 +27,8 @@
  *              Working with ONE T argument
  *              Add(elt2cache).
  *
+ *              PROBABLY add overload of Add() with one argument, IF VALUETYPE == void?
+ *
  *      @todo   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
  *              has first/last, or do our own storage managemnet with secondary array? - we do the mallocs/frees.
  *              To re-free, even though order distorted by shuffles, we can always figure out which was

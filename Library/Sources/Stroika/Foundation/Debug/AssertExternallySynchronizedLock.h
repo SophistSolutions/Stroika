@@ -36,9 +36,10 @@ namespace Stroika::Foundation::Debug {
      *  This class is a 'no op' in production builds, as a 'locker' for a class that needs
      *  no thread locking because its externally synchronized.
      *
-     *  This 'lock tester' is recursive (a recursive-mutex).
+     *  This 'lock tester' is recursive (a recursive-mutex) - or really super-recursive - because it allows
+     *  lock/shared_lock to be mixed logically (unlike stdc++ shared_mutex).
      *
-     *  Externally synchronized means that some external applicaiton control guarantees the seciton of code (or data)
+     *  Externally synchronized means that some external application control guarantees the seciton of code (or data)
      *  is only accessed by a single thread.
      *
      *  This can be used to guarantee the same level of thread safety as provided in the std c++ libraries:
@@ -82,6 +83,13 @@ namespace Stroika::Foundation::Debug {
      *      };
      *      \endcode
      *
+     *  \note   The use of explicit <AssertExternallySynchronizedLock> argument to lock_guard/shared_lock
+     *          as opposed to
+     *              auto&& critSec = shared_lock {*this};
+     *          because then the deduced type would be foo (not AssertExternallySynchronizedLock) - which then would have
+     *          a lock/unlock method, but they would be PRIVATE. You COULD avoid this by using public base class of Debug::AssertExternallySynchronizedLock
+     *          but that would make public an implementation detail that should remain private.
+     *          
      *  \note   This is SUPER-RECURSIVE lock. It allows lock() when shared_lock held (by only this thread) - so upgradelock.
      *          And it allows shared_lock when lock held by the same thread. Otherwise it asserts when a thread conflict is found,
      *          not blocking.
