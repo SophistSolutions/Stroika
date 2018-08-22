@@ -244,7 +244,7 @@ protected:
             Assert (fCache_.size () == static_cast<size_t> (origOffset));
             Assert (newCacheSize > fCache_.size ());
             Containers::ReserveSpeedTweekAddN (fCache_, n);
-            fCache_.resize (newCacheSize);
+            fCache_.resize_uninitialized (newCacheSize);
             for (size_t i = 0; i < n; ++i) {
                 fCache_[i + static_cast<size_t> (origOffset)] = intoStart[i].As<wchar_t> ();
             }
@@ -311,7 +311,7 @@ private:
     }
 
 private:
-    vector<wchar_t> fCache_;
+    SmallStackBuffer<wchar_t> fCache_; // Cache uses wchar_t instead of Character so can use resize_uninitialized () - requires is_trivially_constructible
 };
 
 class TextReader::IterableAdapterStreamRep_ : public InputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
