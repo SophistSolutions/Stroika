@@ -216,7 +216,7 @@ namespace {
     wstring mkWS_ (const Traversal::Iterable<Character>& src)
     {
         wstring r;
-        for (auto i : src) {
+        for (const auto&& i : src) {
             Containers::ReserveSpeedTweekAdd1 (r);
             r.push_back (i.As<wchar_t> ());
         }
@@ -831,7 +831,7 @@ String String::ReplaceAll (const String& string2SearchFor, const String& with, C
 String String::FilteredString (const Iterable<Character>& badCharacters, optional<Character> replacement) const
 {
     StringBuilder sb;
-    for (Character i : *this) {
+    for (const Character&& i : *this) {
         // @todo Slow impl - generate set from 'badCharacters'
         if (badCharacters.Contains (i)) {
             if (replacement) {
@@ -855,7 +855,7 @@ String String::FilteredString ([[maybe_unused]] const RegularExpression& badChar
 String String::FilteredString (const function<bool(Character)>& badCharacterP, optional<Character> replacement) const
 {
     StringBuilder sb;
-    for (Character i : *this) {
+    for (const Character&& i : *this) {
         if (badCharacterP (i)) {
             if (replacement) {
                 sb += *replacement;

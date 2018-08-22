@@ -154,7 +154,7 @@ namespace Stroika::Foundation::DataExchange {
     inline void ObjectVariantMapper::AddClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
     {
 #if qDebug
-        for (auto f : fieldDescriptions) {
+        for (const auto&& f : fieldDescriptions) {
             if (not f.fOverrideTypeMapper.has_value ()) {
                 (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
             }
@@ -166,7 +166,7 @@ namespace Stroika::Foundation::DataExchange {
     inline void ObjectVariantMapper::AddSubClass (const Traversal::Iterable<StructFieldInfo>& fieldDescriptions, function<void(VariantValue*)> preflightBeforeToObject)
     {
 #if qDebug
-        for (auto f : fieldDescriptions) {
+        for (const auto&& f : fieldDescriptions) {
             if (not f.fOverrideTypeMapper.has_value ()) {
                 (void)Lookup_ (f.fFieldMetaInfo.fTypeInfo); // for side-effect of internal Require
             }
@@ -238,7 +238,7 @@ namespace Stroika::Foundation::DataExchange {
             Sequence<VariantValue> s;
             if (not fromObjOfTypeT->empty ()) {
                 FromObjectMapperType<T> valueMapper{mapper.FromObjectMapper<T> ()};
-                for (auto i : *fromObjOfTypeT) {
+                for (const auto& i : *fromObjOfTypeT) {
                     s.Append (mapper.FromObject<T> (valueMapper, i));
                 }
             }
@@ -250,7 +250,7 @@ namespace Stroika::Foundation::DataExchange {
             if (not s.empty ()) {
                 ToObjectMapperType<T> valueMapper{mapper.ToObjectMapper<T> ()};
                 Assert (intoObjOfTypeT->empty ());
-                for (auto i : s) {
+                for (const auto& i : s) {
                     Containers::Adapters::Adder<ACTUAL_CONTAINER_TYPE>::Add (intoObjOfTypeT, mapper.ToObject<T> (valueMapper, i));
                 }
             }
@@ -275,7 +275,7 @@ namespace Stroika::Foundation::DataExchange {
             FromObjectMapperType<DOMAIN_TYPE> domainMapper{mapper.FromObjectMapper<DOMAIN_TYPE> ()};
             FromObjectMapperType<RANGE_TYPE>  rangeMapper{mapper.FromObjectMapper<RANGE_TYPE> ()};
             Sequence<VariantValue>            s;
-            for (auto i : *fromObjOfTypeT) {
+            for (const auto&& i : *fromObjOfTypeT) {
                 Sequence<VariantValue> encodedPair;
                 encodedPair.Append (mapper.FromObject<DOMAIN_TYPE> (domainMapper, i.first));
                 encodedPair.Append (mapper.FromObject<RANGE_TYPE> (rangeMapper, i.second));
@@ -289,7 +289,7 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<RANGE_TYPE>  rangeMapper{mapper.ToObjectMapper<RANGE_TYPE> ()};
             Sequence<VariantValue>          s = d.As<Sequence<VariantValue>> ();
             intoObjOfTypeT->clear ();
-            for (VariantValue encodedPair : s) {
+            for (const VariantValue&& encodedPair : s) {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2) {
                     DbgTrace (L"Bijection ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE>)).c_str (), static_cast<int> (p.size ()));
@@ -448,7 +448,7 @@ namespace Stroika::Foundation::DataExchange {
             }
             ToObjectMapperType<T> valueMapper{mapper.ToObjectMapper<T> ()}; // optimization if > 1 array elt, and anti-optimization array.size == 0
             size_t                idx = 0;
-            for (auto i : s) {
+            for (const auto&& i : s) {
                 actualMember[idx++] = mapper.ToObject<T> (valueMapper, i);
             }
             while (idx < SZ) {
@@ -466,7 +466,7 @@ namespace Stroika::Foundation::DataExchange {
             FromObjectMapperType<KEY_TYPE>   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
             FromObjectMapperType<VALUE_TYPE> valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
             Sequence<VariantValue>           s;
-            for (auto i : *fromObjOfTypeT) {
+            for (const auto&& i : *fromObjOfTypeT) {
                 Sequence<VariantValue> encodedPair;
                 encodedPair.Append (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey));
                 encodedPair.Append (mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
@@ -487,7 +487,7 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<VALUE_TYPE> valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
             Sequence<VariantValue>         s = d.As<Sequence<VariantValue>> ();
             intoObjOfTypeT->clear ();
-            for (VariantValue encodedPair : s) {
+            for (const VariantValue&& encodedPair : s) {
                 Sequence<VariantValue> p = encodedPair.As<Sequence<VariantValue>> ();
                 if (p.size () != 2) {
                     DbgTrace (L"Container with Key/Value pair ('%s') element with item count (%d) other than 2", Characters::ToString (typeid (ACTUAL_CONTAINER_TYPE)).c_str (), static_cast<int> (p.size ()));
@@ -568,7 +568,7 @@ namespace Stroika::Foundation::DataExchange {
             FromObjectMapperType<KEY_TYPE>   keyMapper{mapper.FromObjectMapper<KEY_TYPE> ()};
             FromObjectMapperType<VALUE_TYPE> valueMapper{mapper.FromObjectMapper<VALUE_TYPE> ()};
             Mapping<String, VariantValue>    m;
-            for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *fromObjOfTypeT) {
+            for (const Common::KeyValuePair<KEY_TYPE, VALUE_TYPE>&& i : *fromObjOfTypeT) {
                 m.Add (mapper.FromObject<KEY_TYPE> (keyMapper, i.fKey).template As<String> (), mapper.FromObject<VALUE_TYPE> (valueMapper, i.fValue));
             }
             return VariantValue (m);
@@ -579,7 +579,7 @@ namespace Stroika::Foundation::DataExchange {
             ToObjectMapperType<VALUE_TYPE> valueMapper{mapper.ToObjectMapper<VALUE_TYPE> ()};
             Mapping<String, VariantValue>  m{d.As<Mapping<String, VariantValue>> ()};
             intoObjOfTypeT->clear ();
-            for (Common::KeyValuePair<String, VariantValue> p : m) {
+            for (const Common::KeyValuePair<String, VariantValue>&& p : m) {
                 intoObjOfTypeT->Add (mapper.ToObject<KEY_TYPE> (keyMapper, p.fKey), mapper.ToObject<VALUE_TYPE> (valueMapper, p.fValue));
             }
         };
@@ -700,7 +700,7 @@ namespace Stroika::Foundation::DataExchange {
             Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromObjecttMapper");
 #endif
             Mapping<String, VariantValue> m;
-            for (auto i : fields) {
+            for (const auto&& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
@@ -722,7 +722,7 @@ namespace Stroika::Foundation::DataExchange {
                 preflightBeforeToObject (&v2Decode);
             }
             Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
-            for (auto i : fields) {
+            for (const auto&& i : fields) {
                 optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.has_value ());
@@ -777,7 +777,7 @@ namespace Stroika::Foundation::DataExchange {
             if (baseClassTypeInfo) {
                 m = mapper.Lookup_ (typeid (BASE_CLASS)).FromObjectMapper<BASE_CLASS> () (mapper, fromObjOfTypeT).template As<Mapping<String, VariantValue>> (); // so we can extend
             }
-            for (auto i : fields) {
+            for (const auto&& i : fields) {
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
@@ -802,7 +802,7 @@ namespace Stroika::Foundation::DataExchange {
                 mapper.Lookup_ (typeid (BASE_CLASS)).ToObjectMapper<BASE_CLASS> () (mapper, d, intoObjOfTypeT);
             }
             Mapping<String, VariantValue> m = v2Decode.As<Mapping<String, VariantValue>> ();
-            for (auto i : fields) {
+            for (const auto&& i : fields) {
                 optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
 #if Stroika_Foundation_DataExchange_ObjectVariantMapper_USE_NOISY_TRACE_IN_THIS_MODULE_
                 DbgTrace (L"fieldname = %s, offset=%d, present=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset, o.has_value ());
