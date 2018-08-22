@@ -114,9 +114,9 @@ namespace Stroika::Foundation::Cache {
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::LRUCache (const LRUCache& from)
-        : LRUCache (from.GetMaxCacheSize (), from.fKeyEqualsComparer_, from.fHashtableSize_, from.fHashFunction_)
+        : LRUCache (from.GetMaxCacheSize (), from.GetKeyEqualsCompareFunction (), from.GetHashTableSize (), from.GetKeyHashFunction ())
     {
-        lock_guard<const Debug::AssertExternallySynchronizedLock> fromCritSec{from}; // after above getMaxCacheSize to avoid recursive access
+        shared_lock<const Debug::AssertExternallySynchronizedLock> fromCritSec{from};
         for (CacheIterator_ i = from.begin_ (); i != from.end_ (); ++i) {
             if (*i) {
                 Add ((*i)->fKey, (*i)->fValue);
@@ -126,11 +126,11 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     auto LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::operator= (const LRUCache& rhs) -> const LRUCache&
     {
-        lock_guard<AssertExternallySynchronizedLock> critSec{*this}; // after above SetMaxCacheSize to avoid recursive access
+        lock_guard<AssertExternallySynchronizedLock> critSec{*this};
         if (this != &rhs) {
             SetMaxCacheSize (rhs.GetMaxCacheSize ());
             ClearCache_ ();
-            for (auto i : rhs) {
+            for (auto i : rhs.Elements ()) {
                 if (i.fKey) {
                     Add (*i.fKey, *i.fValue);
                 }
@@ -141,7 +141,7 @@ namespace Stroika::Foundation::Cache {
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
     inline size_t LRUCache<KEY, VALUE, KEY_EQUALS_COMPARER, KEY_HASH_FUNCTION, STATS_TYPE>::GetMaxCacheSize () const
     {
-        lock_guard<const Debug::AssertExternallySynchronizedLock> critSec{*this};
+        shared_lock<const Debug::AssertExternallySynchronizedLock> critSec{*this};
         return fHashtableSize_ * fCachedElts_BUF_[0].size ();
     }
     template <typename KEY, typename VALUE, typename KEY_EQUALS_COMPARER, typename KEY_HASH_FUNCTION, typename STATS_TYPE>
