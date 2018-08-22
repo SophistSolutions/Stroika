@@ -79,8 +79,16 @@ namespace Stroika::Foundation::Containers {
     inline size_t ReserveSpeedTweekAdjustCapacity (size_t targetCapacity, size_t minChunk)
     {
         size_t capacity{targetCapacity};
-        capacity *= 6;
-        capacity /= 5;
+        if (capacity <= 2 * minChunk) {
+            capacity *= 4;
+        }
+        else if (capacity <= 5 * minChunk) {
+            capacity *= 2;
+        }
+        else {
+            capacity *= 6;
+            capacity /= 5;
+        }
         capacity = Math::RoundUpTo (capacity, minChunk);
         return capacity;
     }
