@@ -17,6 +17,42 @@ History
 
 
 
+  
+<tr>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0b5">v2.0b5</a><br/>2018-08-22</td>
+<td>
+	<ul>
+		<li>https://github.com/SophistSolutions/Stroika/compare/v2.0b4...v2.0b5</li>
+		<li>Support latest msvc compiler - 15.8 - _MSC_VER_2k17_15Pt8_ 1915</li>
+		<li>Added bug define for new MSFT compiler - qCompilerAndStdLib_TemplateTemplateWithTypeAlias_Buggy - and workarounds</li>
+		<li>improved regression test for OptionsFile - so it doesn't do arithmatic on 'empty' date object (not clearly sensible)</li>
+		<li>HistoricalPerformanceRegressionTestResults/PerformanceDump-{Windows_VS2k17,Ubuntu1604_x86_64,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0b5.txt</li>
+		<li>Tested (passed regtests)
+			<ul>
+				<li>OUTPUT FILES: Tests/HistoricalRegressionTestResults/REGRESSION-TESTS-{Windows_VS2k17,Ubuntu1604_x86_64,,Ubuntu1804_x86_64,MacOS_XCode9.3}-2.0b5-OUT.txt</li>
+				<li>vc++2k17</li>
+				<li>MacOS, XCode 9.3 (apple clang 9.2)</li>
+				<li>gcc 5.4 (because used in Ubuntu 1604 - most recent LTS release)</li>
+				<li>gcc 6.4</li>
+				<li>gcc 7.2/7.3</li>
+				<li>gcc 8</li>
+				<li>clang++3.9.1 (ubuntu) {libstdc++};</li>
+				<li>clang++4.0.1 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++5.0.0 (ubuntu) {libstdc++ and libc++}</li>
+				<li>clang++6 (ubuntu) {libstdc++ and libc++}</li>
+				<li>cross-compile to raspberry-pi(3/jessie-testing): --sanitize address,undefined, gcc6, gcc7</li>
+				<li>valgrind Tests (memcheck and helgrind), helgrind some Samples</li>
+				<li>gcc with --sanitize address,undefined,thread and debug/release builds on tests</li>
+				<li>bug with regtest - https://stroika.atlassian.net/browse/STK-535 - some suppression/workaround 
+				    (qIterationOnCopiedContainer_ThreadSafety_Buggy) - and had to manually kill one memcheck valgrind cuz too slow</li>
+			</ul>
+		</li>
+	</ul>
+</td>
+</tr>
+
+
+
 
   
 <tr>
