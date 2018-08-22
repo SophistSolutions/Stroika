@@ -1056,7 +1056,6 @@ Compiling regtests for Median/OrderBy...
 
 #endif
 
-
 /***
 1>c:\sandbox\stroika\devroot-v2.0\library\sources\stroika\foundation\containers\concrete\mapping_linkedlist.inl(55): error C2146: syntax error: missing ';' before identifier '_APPLY_ARGTYPE' (compiling source file ..\..\Sources\Stroika\Foundation\DataExchange\Atom.cpp)
  */
