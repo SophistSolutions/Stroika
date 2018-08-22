@@ -172,6 +172,9 @@ namespace {
                 void Set (const MyData_& v)
                 {
                     fActualCurrentConfigData_ = v;
+                    if (fActualCurrentConfigData_.fLastSynchronizedAt.empty ()) {
+                        fActualCurrentConfigData_.fLastSynchronizedAt = DateTime::min (); // else doing arithmatic on it doesn't make sense
+                    }
                     fOptionsFile_.Write (v);
                 }
 
