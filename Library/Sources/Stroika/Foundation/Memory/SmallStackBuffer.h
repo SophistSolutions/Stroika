@@ -55,6 +55,8 @@ namespace Stroika::Foundation::Memory {
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      *
+     *  \note   @todo - CONSIDER RENAME to InlineStorage or InlineBuffer
+     *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
      *  \note   SmallStackBuffer<T> can roughly be used as a replacement for vector<> - behiing similarly, except that its optimized
