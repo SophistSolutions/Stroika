@@ -164,8 +164,8 @@ namespace Stroika::Foundation::Memory {
                 [[UNLIKELY_ATTR]]
                 {
                     /*
-                 *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
-                 */
+                     *   If we REALLY must grow, the double in size so unlikely we'll have to grow/malloc/copy again.
+                     */
                     reserve (max (nElements, capacity () * 2));
                 }
             fSize_ = nElements;
