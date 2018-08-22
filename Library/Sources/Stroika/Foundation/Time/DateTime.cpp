@@ -163,8 +163,6 @@ const DateTime DateTime::kMax = DateTime::max (); // deprecated
 const DateTime DateTime::kMin;
 const DateTime DateTime::kMax;
 #endif
-constexpr DateTime DateTime_kMin; // deprecated
-constexpr DateTime DateTime_kMax; // deprecated
 
 DateTime::DateTime (time_t unixEpochTime) noexcept
     : fTimezone_ (Timezone::UTC ())

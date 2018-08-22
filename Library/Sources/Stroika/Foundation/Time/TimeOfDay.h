@@ -334,7 +334,6 @@ namespace Stroika::Foundation::Time {
      *  operator indirects to TimeOfDay::Compare()
      */
     bool operator> (TimeOfDay lhs, TimeOfDay rhs);
-
 }
 
 /*

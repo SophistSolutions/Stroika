@@ -75,7 +75,7 @@ namespace {
         Require (minutes < 60);
         Require (seconds < 60);
 
-/*
+        /*
          * From Windows Vista Regional Settings control panel:
          *
          *      h = hour, m = minute, s = second
@@ -210,9 +210,6 @@ const TimeOfDay::FormatException TimeOfDay::FormatException::kThe;
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 const TimeOfDay TimeOfDay::kMin = TimeOfDay::min ();
 const TimeOfDay TimeOfDay::kMax = TimeOfDay::max ();
-#else
-constexpr TimeOfDay TimeOfDay::kMin;
-constexpr TimeOfDay TimeOfDay::kMax;
 #endif
 
 TimeOfDay TimeOfDay::Parse (const String& rep, ParseFormat pf)
