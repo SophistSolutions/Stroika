@@ -110,12 +110,13 @@ endif
 #	dso or engines, and you can always use --openssl=use-system
 #
 CONFIG_ARGS+=	-no-dso
-ifeq (Unix,$(ProjectPlatformSubdir))
-# for soone reason, no-engines not working on Ubuntu 1804 and 1.1.0g openssl - not worth debugging now...
-ifneq (1.1.0,$(findstring 1.1.0,$(VERSION)))
-CONFIG_ARGS+=	-no-engines
-endif
-endif
+#ifeq (Unix,$(ProjectPlatformSubdir))
+# for some reason, no-engines not working on Ubuntu 1804 and 1.1.0g openssl - not worth debugging now...
+### NOW no-engine breaking for 1.1.1-pre9, so just disable no-engines altogether. IF I ever need to support centos6 with this, and if it causes problems, revisit -- LGP 2018-08-21
+#ifneq (1.1.0,$(findstring 1.1.0,$(VERSION)))
+#CONFIG_ARGS+=	-no-engines
+#endif
+#endif
 
 
 
@@ -249,9 +250,16 @@ doBuilds_:
 	@
 	@../../ScriptsLib/PrintProgressLine.sh $(MAKE_INDENT_LEVEL) -n `$(StroikaRoot)ScriptsLib/SubstituteBackVariables.sh "Configuring (output to $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT) ..."` " "
 ifeq (Unix,$(ProjectPlatformSubdir))
-	@(export CC="$(CC)"; export AR="$(AR)"; export RANLIB=$(RANLIB); export MACHINE=$(ARCH); export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config -t) > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
-	@$(ECHO) "export CC=$(CC); export AR=$(AR); export RANLIB=$(RANLIB); export MACHINE=$(ARCH); cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@rm -f $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT && touch $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@$(ECHO) "CONFIG_ARGS: $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@$(ECHO) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@($(ECHO) "CONFIG -t output: "; export CC="$(CC)"; export AR="$(AR)"; export RANLIB=$(RANLIB); export MACHINE=$(ARCH); export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config -t) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	@$(ECHO) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@$(ECHO) "EXECUTE CONFIG LINE: export CC=$(CC); export AR=$(AR); export RANLIB=$(RANLIB); export MACHINE=$(ARCH); cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config $(CONFIG_ARGS)" >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@$(ECHO) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
 	@(export CC="$(CC)"; export AR="$(AR)"; export RANLIB=$(RANLIB); export MACHINE=$(ARCH); export MAKEFLAGS=; cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && ./config $(CONFIG_ARGS)) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
+	@$(ECHO) >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
+	@cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl configdata.pm --dump >> $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT
 endif
 ifeq (VisualStudio.Net,$(findstring VisualStudio.Net,$(ProjectPlatformSubdir)))
 	echo "MFLAGS= MAKEFLAGS= cd $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR) && perl $(StroikaRoot)ScriptsLib/RunArgumentsWithCommonBuildVars.pl $(CONFIGURATION) 'set PATH=$(StroikaRoot_ASWINPATH)ThirdPartyComponents\ActivePerl\CURRENT\bin;%PATH% && perl Configure $(USE_CONFIGURE_TARGET_NAME_) $(CONFIG_ARGS)'" > $(PER_CONFIGURATION_OPENSSL_INTERMEDIATEFILES_DIR)/CONFIG.OUT 2>&1
