@@ -141,13 +141,7 @@ Date::FormatException::FormatException ()
 #if qCompilerAndStdLib_static_constexpr_Of_Type_Being_Defined_Buggy
 const Date Date::kMin{Date::min ()};
 const Date Date::kMax{Date::max ()};
-#else
-constexpr Date Date::kMin;
-constexpr Date Date::kMax;
 #endif
-
-constexpr Date::JulianRepType Date::kMinJulianRep;
-constexpr Date::JulianRepType Date::kEmptyJulianRep;
 
 Date Date::Parse (const String& rep, ParseFormat pf)
 {
@@ -434,8 +428,14 @@ Date Date::AsDate_ (const tm& when)
 
 Date Date::AddDays (SignedJulianRepType dayCount) const
 {
-    // then assume was supposed to be relative to today
-    Date result = empty () ? DateTime::GetToday () : *this;
+    /*
+     * empty () calls to AddDays were interpretted as DateTime::GetToday () until Stroika v2.1d6;
+     *  surprising semantics - say what you mean - dont use empty for this
+     *  And it violates documented princple that 'empty' means like negative infinity, a little less than kMin.
+     *      WAS:
+     *          Date result = empty () ? DateTime::GetToday () : *this;
+     */
+    Date result = empty () ? Date::min () : *this;
     result.fJulianDateRep_ += dayCount;
     if (result.fJulianDateRep_ < Date::kMinJulianRep) {
         static const range_error kRangeErrror_{"Date::AddDays cannot add days to go before the first julian calandar day"};
@@ -539,7 +539,6 @@ void Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
  *************************** Date::DayDifference ********************************
  ********************************************************************************
  */
-
 Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
 {
     Require (not lhs.empty ());
@@ -577,7 +576,6 @@ Date::SignedJulianRepType Time::DayDifference (const Date& lhs, const Date& rhs)
  *************************** Date::YearDifference *******************************
  ********************************************************************************
  */
-
 int Time::YearDifference (const Date& lhs, const Date& rhs)
 {
     Require (not lhs.empty ()); // since meaning of diff wouldn't make much sense
@@ -624,6 +622,11 @@ String Time::GetFormattedAge (const Date& birthDate, const Date& deathDate)
     }
 }
 
+/*
+ ********************************************************************************
+ ************************** GetFormattedAgeWithUnit *****************************
+ ********************************************************************************
+ */
 String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate, bool abbrevUnit)
 {
     if (birthDate.empty ()) {
