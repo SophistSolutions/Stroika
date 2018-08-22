@@ -87,7 +87,7 @@ namespace {
         // @todo - note - this only appears to capture 'fixed disks' - not network mounts, and and virtual mount points like /dev/
         Collection<MountedFilesystemType> results{};
         static mutex                      sMutex_; // this API (getfsent) is NOT threadsafe, but we can at least make our use re-entrant
-        lock_guard<mutex>                 critSec (sMutex_);
+        [[maybe_unused]] auto&&           critSec = lock_guard{sMutex_};
         [[maybe_unused]] auto&&           cleanup = Execution::Finally ([&]() noexcept { ::endfsent (); });
         while (fstab* fs = ::getfsent ()) {
             results += MountedFilesystemType{String::FromNarrowSDKString (fs->fs_file), Containers::Set<String>{String::FromNarrowSDKString (fs->fs_spec)}, String::FromNarrowSDKString (fs->fs_vfstype)};

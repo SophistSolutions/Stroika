@@ -125,8 +125,8 @@ private:
         Assert (not qPlatform_POSIX); // this strategy not safe with POSIX signals
         fRecievedSig_.notify_one ();
         {
-            lock_guard<mutex> lk (fRecievedSig_NotSureWhatMutexFor_);
-            fWorkMaybeAvailable_ = true;
+            [[maybe_unused]] auto&& lk = lock_guard{fRecievedSig_NotSureWhatMutexFor_};
+            fWorkMaybeAvailable_       = true;
         }
         fRecievedSig_.notify_one ();
 #else

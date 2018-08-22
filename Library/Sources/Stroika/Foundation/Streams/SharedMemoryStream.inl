@@ -50,7 +50,7 @@ namespace Stroika::Foundation::Streams {
         }
         virtual void CloseWrite () override
         {
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenWrite ());
             fClosedForWrites_ = true;
             fMoreDataWaiter_.Set ();
@@ -82,7 +82,7 @@ namespace Stroika::Foundation::Streams {
             fMoreDataWaiter_.Wait ();
             //}
 
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
             size_t nAvail = fData_.end () - fReadCursor_;
             if (nAvail == 0 and not fClosedForWrites_) {
@@ -106,8 +106,8 @@ namespace Stroika::Foundation::Streams {
         {
             Require ((intoStart == nullptr and intoEnd == nullptr) or (intoEnd - intoStart) >= 1);
             Require (IsOpenRead ());
-            lock_guard<recursive_mutex> critSec{fMutex_};
-            size_t                      nDefinitelyAvail = fData_.end () - fReadCursor_;
+            [[maybe_unused]] auto&& critSec          = lock_guard{fMutex_};
+            size_t                  nDefinitelyAvail = fData_.end () - fReadCursor_;
             if (nDefinitelyAvail > 0) {
                 return this->_ReadNonBlocking_ReferenceImplementation_ForNonblockingUpstream (intoStart, intoEnd, nDefinitelyAvail);
             }
@@ -124,9 +124,9 @@ namespace Stroika::Foundation::Streams {
             Require (end != nullptr or start == end);
             Require (IsOpenWrite ());
             if (start != end) {
-                lock_guard<recursive_mutex> critSec{fMutex_};
-                size_t                      roomLeft     = fData_.end () - fWriteCursor_;
-                size_t                      roomRequired = end - start;
+                [[maybe_unused]] auto&& critSec      = lock_guard{fMutex_};
+                size_t                  roomLeft     = fData_.end () - fWriteCursor_;
+                size_t                  roomRequired = end - start;
                 fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
                 if (roomLeft < roomRequired) {
                     size_t       curReadOffset  = fReadCursor_ - fData_.begin ();
@@ -154,13 +154,13 @@ namespace Stroika::Foundation::Streams {
         }
         virtual SeekOffsetType GetReadOffset () const override
         {
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenRead ());
             return fReadCursor_ - fData_.begin ();
         }
         virtual SeekOffsetType SeekRead (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenRead ());
             fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
             switch (whence) {
@@ -203,13 +203,13 @@ namespace Stroika::Foundation::Streams {
         }
         virtual SeekOffsetType GetWriteOffset () const override
         {
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenWrite ());
             return fWriteCursor_ - fData_.begin ();
         }
         virtual SeekOffsetType SeekWrite (Whence whence, SignedSeekOffsetType offset) override
         {
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             Require (IsOpenWrite ());
             fMoreDataWaiter_.Set (); // just means MAY be more data - readers check
             switch (whence) {
@@ -249,12 +249,12 @@ namespace Stroika::Foundation::Streams {
         }
         vector<ElementType> AsVector () const
         {
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             return fData_;
         }
         string AsString () const
         {
-            lock_guard<recursive_mutex> critSec{fMutex_};
+            [[maybe_unused]] auto&& critSec = lock_guard{fMutex_};
             return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
         }
 

@@ -685,13 +685,13 @@ void Thread::Rep_::NotifyOfInterruptionFromAnyThread_ (bool aborting)
 
 Thread::IDType Thread::Rep_::GetID () const
 {
-    lock_guard<mutex> critSec{fAccessSTDThreadMutex_};
+    [[maybe_unused]] auto&& critSec = lock_guard{fAccessSTDThreadMutex_};
     return fThread_.get_id ();
 }
 
 Thread::NativeHandleType Thread::Rep_::GetNativeHandle ()
 {
-    lock_guard<mutex> critSec{fAccessSTDThreadMutex_};
+    [[maybe_unused]] auto&& critSec = lock_guard{fAccessSTDThreadMutex_};
     return fThread_.native_handle ();
 }
 
