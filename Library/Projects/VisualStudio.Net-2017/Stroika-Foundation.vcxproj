@@ -1156,9 +1156,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />

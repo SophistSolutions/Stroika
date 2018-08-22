@@ -11,9 +11,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Date.o\
-	$(ObjDir)DateRange.o\
 	$(ObjDir)DateTime.o\
-	$(ObjDir)DateTimeRange.o\
 	$(ObjDir)Duration.o\
 	$(ObjDir)DurationRange.o\
 	$(ObjDir)Realtime.o\
