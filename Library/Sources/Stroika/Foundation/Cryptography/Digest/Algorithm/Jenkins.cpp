@@ -18,7 +18,7 @@ namespace {
         RequireNotNull (hash2Update);
         uint32_t hash = (*hash2Update);
         for (const Byte* bi = from; bi != to; ++bi) {
-            hash += (*bi);
+            hash += to_integer<uint8_t> (*bi);
             hash += (hash << 10);
             hash ^= (hash >> 6);
         }

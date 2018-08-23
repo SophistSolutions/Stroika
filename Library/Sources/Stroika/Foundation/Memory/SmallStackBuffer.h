@@ -55,7 +55,7 @@ namespace Stroika::Foundation::Memory {
      *          (void)::memcpy (useKey.begin (), key.begin (), min (keyLen, key.size ()));
      *      \endcode
      *
-     *  \note   @todo - CONSIDER RENAME to InlineStorage or InlineBuffer
+     *  \note   @todo - CONSIDER RENAME to InlineStorage or InlineBuffer, or maybe SmallBuffer? Or InPlaceBuffer
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety">C++-Standard-Thread-Safety</a>
      *
@@ -229,25 +229,25 @@ namespace Stroika::Foundation::Memory {
 
 #if qDebug
     private:
-        static constexpr Byte kGuard1_[8] = {
-            0x45,
-            0x23,
-            0x12,
-            0x56,
-            0x99,
-            0x76,
-            0x12,
-            0x55,
+        static constexpr std::byte kGuard1_[8] = {
+            std::byte{0x45},
+            std::byte{0x23},
+            std::byte{0x12},
+            std::byte{0x56},
+            std::byte{0x99},
+            std::byte{0x76},
+            std::byte{0x12},
+            std::byte{0x55},
         };
-        static constexpr Byte kGuard2_[8] = {
-            0x15,
-            0x32,
-            0xa5,
-            0x16,
-            0x11,
-            0x7a,
-            0x90,
-            0x10,
+        static constexpr std::byte kGuard2_[8] = {
+            std::byte{0x15},
+            std::byte{0x32},
+            std::byte{0xa5},
+            std::byte{0x16},
+            std::byte{0x11},
+            std::byte{0x7a},
+            std::byte{0x90},
+            std::byte{0x10},
         };
 #endif
 

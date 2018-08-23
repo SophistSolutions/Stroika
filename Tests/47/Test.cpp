@@ -20,6 +20,7 @@ using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Streams::iostream;
 
 using Memory::Byte;
+using std::byte;
 
 namespace {
     namespace BasicBinaryInputStream_ {
@@ -36,10 +37,10 @@ namespace {
                 MemoryStream<Byte>::Ptr s       = MemoryStream<Byte>::New (reinterpret_cast<const Byte*> (std::begin (kData)), reinterpret_cast<const Byte*> (std::end (kData)));
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
-                Byte result[100] = {0};
+                byte result[100] = {byte{0}};
                 VerifyTestResult (s.Read (std::begin (result), std::end (result)) == 2);
-                VerifyTestResult (result[0] == '1');
-                VerifyTestResult (result[1] == '\0');
+                VerifyTestResult (to_integer<char> (result[0]) == '1');
+                VerifyTestResult (to_integer<char> (result[1]) == '\0');
             }
         }
 
@@ -65,7 +66,7 @@ namespace {
                 VerifyTestResult (s != nullptr);
                 VerifyTestResult (s.IsSeekable ());
 
-                const Byte kData_[] = {3, 53, 43, 23, 3};
+                constexpr byte kData_[] = {byte{3}, byte{53}, byte{43}, byte{23}, byte{3}};
                 s.Write (std::begin (kData_), std::end (kData_));
                 Memory::BLOB b = s.As<Memory::BLOB> ();
                 VerifyTestResult (b.size () == sizeof (kData_));
@@ -96,7 +97,7 @@ namespace {
                 MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
                 VerifyTestResult (s != nullptr);
 
-                const Byte kData_[] = {3, 53, 43, 23, 3};
+                const uint8_t kData_[] = {3, 53, 43, 23, 3};
                 s.Write (std::begin (kData_), std::end (kData_));
                 Memory::BLOB b = s.As<Memory::BLOB> ();
                 VerifyTestResult (b.size () == sizeof (kData_));
@@ -106,7 +107,7 @@ namespace {
                 MemoryStream<Byte>::Ptr s = MemoryStream<Byte>::New ();
                 VerifyTestResult (s.GetReadOffset () == 0);
                 VerifyTestResult (s.GetWriteOffset () == 0);
-                const Byte kData_[] = {3, 53, 43, 23, 3};
+                const uint8_t kData_[] = {3, 53, 43, 23, 3};
                 s.Write (std::begin (kData_), std::end (kData_));
                 VerifyTestResult (s.GetReadOffset () == 0);
                 VerifyTestResult (s.GetWriteOffset () == sizeof (kData_));

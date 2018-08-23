@@ -86,12 +86,14 @@ namespace Stroika::Foundation::Memory {
         BLOB ();
         BLOB (const BLOB& src) = default;
         BLOB (BLOB&& src);
-        template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte>>* = nullptr>
+        template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>* = nullptr>
         BLOB (const CONTAINER_OF_BYTE& data);
         BLOB (const Byte* start, const Byte* end);
+        BLOB (const uint8_t* start, const uint8_t* end);
         BLOB (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
         BLOB (const initializer_list<BLOB>& list2Concatenate);
         BLOB (const initializer_list<Byte>& bytes);
+        BLOB (const initializer_list<uint8_t>& bytes);
 
     public:
         /**
@@ -323,7 +325,11 @@ namespace Stroika::Foundation::Memory {
     template <>
     void BLOB::As (vector<Byte>* into) const;
     template <>
+    void BLOB::As (vector<uint8_t>* into) const;
+    template <>
     vector<Byte> BLOB::As () const;
+    template <>
+    vector<uint8_t> BLOB::As () const;
 
     /**
      * This abstract interface defines the behavior of a BLOB.

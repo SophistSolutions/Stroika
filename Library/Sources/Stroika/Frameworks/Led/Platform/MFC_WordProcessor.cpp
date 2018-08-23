@@ -19,6 +19,8 @@ using namespace Stroika::Frameworks::Led;
 using namespace Stroika::Frameworks::Led::Platform;
 using namespace Stroika::Frameworks::Led::StyledTextIO;
 
+using std::byte;
+
 #if qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(4 : 4786) //qQuiteAnnoyingDebugSymbolTruncationWarnings
 #pragma warning(4 : 4800) //qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings
@@ -111,9 +113,9 @@ struct MyOLEStream_input : OLESTREAM {
         return static_cast<DWORD> (bytesToRead);
     }
     MyOLEStream_input (const void* data, size_t nBytes)
-        : start ((BYTE*)data)
-        , end ((BYTE*)data + nBytes)
-        , cur ((BYTE*)data)
+        : start ((byte*)data)
+        , end ((byte*)data + nBytes)
+        , cur ((byte*)data)
     {
         lpstbl      = &theVTbl;
         theVTbl.Get = MyOLE1STREAMGetter;

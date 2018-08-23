@@ -731,8 +731,8 @@ namespace {
 
             // Throw if any errors except EINTR (which is ignored) or EAGAIN (would block)
             auto readALittleFromProcess = [&](int fd, const Streams::OutputStream<Byte>::Ptr& stream, bool write2StdErrCache, bool* eof = nullptr, bool* maybeMoreData = nullptr) {
-                Byte buf[10 * 1024];
-                int  nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
+                uint8_t buf[10 * 1024];
+                int     nBytesRead = 0; // int cuz we must allow for errno = EAGAIN error result = -1,
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
                 int skipedThisMany{};
 #endif

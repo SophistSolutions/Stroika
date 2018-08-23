@@ -31,7 +31,7 @@ uint16_t InternetProtocol::IP::ip_checksum (const void* packetStart, const void*
         size -= sizeof (uint16_t);
     }
     if (size) {
-        cksum += *(Byte*)buffer;
+        cksum += *reinterpret_cast<const uint8_t*> (buffer);
     }
 
     // Do a little shuffling

@@ -29,7 +29,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
          ********************** DestinationUnreachableException *************************
          ********************************************************************************
          */
-        inline unsigned int DestinationUnreachableException::GetCode () const
+        inline uint8_t DestinationUnreachableException::GetCode () const
         {
             return fCode_;
         }

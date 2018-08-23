@@ -27,6 +27,8 @@ using namespace Stroika::Foundation::DataExchange::Archive;
 using Memory::SmallStackBuffer;
 using Memory::SmallStackBufferCommon;
 
+using std::byte;
+
 #if qHasFeature_LZMA
 namespace {
     struct InitOnce_ {
@@ -65,7 +67,7 @@ private:
         static SRes Stream_Read_ (void* pp, void* buf, size_t* size)
         {
             MyISeekInStream* pThis = (MyISeekInStream*)pp;
-            size_t           sz    = pThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + *size);
+            size_t           sz    = pThis->fInStream_.Read (reinterpret_cast<byte*> (buf), reinterpret_cast<byte*> (buf) + *size);
             Assert (sz <= *size);
             *size = sz;
             return SZ_OK; // not sure on EOF/underflow?SZ_ERROR_READ

@@ -155,6 +155,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Archive;
 
+using std::byte;
+
 namespace {
     constexpr uint32_t MAXU32 = numeric_limits<uint32_t>::max ();
 }
@@ -2610,7 +2612,7 @@ private:
                 Require (opaque == stream); // our use is one stream per zlib_filefunc64_def object
                 MyISeekInStream* myThis = reinterpret_cast<MyISeekInStream*> (opaque);
                 Assert (myThis->fOpened_);
-                size_t sz = myThis->fInStream_.Read (reinterpret_cast<Byte*> (buf), reinterpret_cast<Byte*> (buf) + size);
+                size_t sz = myThis->fInStream_.Read (reinterpret_cast<byte*> (buf), reinterpret_cast<byte*> (buf) + size);
                 Assert (sz <= size);
                 return static_cast<uLong> (sz);
             };

@@ -29,16 +29,10 @@ namespace Stroika::Foundation::Memory {
         BasicRep_ (BYTE_ITERATOR start, BYTE_ITERATOR end)
             : fData (SmallStackBufferCommon::eUninitialized, end - start)
         {
-#if qSilenceAnnoyingCompilerWarnings && _MSC_VER
-            Memory::Private::VC_BWA_std_copy (start, end, fData.begin ());
-#else
-            copy (start, end, fData.begin ());
-#endif
-        }
-        BasicRep_ (const Byte* start, const Byte* end)
-            : fData (SmallStackBufferCommon::eUninitialized, end - start)
-        {
-            (void)::memcpy (fData.begin (), start, end - start);
+            // use memcpy instead of std::copy because std::copy doesn't work between uint8_t, and std::byte arrays.
+            static_assert (sizeof (*start) == 1);
+            static_assert (is_trivially_copyable_v<typename iterator_traits<BYTE_ITERATOR>::value_type>);
+            (void)::memcpy (fData.begin (), Traversal::Iterator2Pointer (start), end - start);
         }
 
         BasicRep_ (const initializer_list<pair<const Byte*, const Byte*>>& startEndPairs);
@@ -79,10 +73,10 @@ namespace Stroika::Foundation::Memory {
     };
 
     /*
-        ********************************************************************************
-        ************************************** BLOB ************************************
-        ********************************************************************************
-        */
+     ********************************************************************************
+     ************************************** BLOB ************************************
+     ********************************************************************************
+     */
     template <typename T, typename... ARGS_TYPE>
     inline BLOB::_SharedRepImpl<T> BLOB::_MakeSharedPtr (ARGS_TYPE&&... args)
     {
@@ -101,7 +95,7 @@ namespace Stroika::Foundation::Memory {
         : fRep_{move (src.fRep_)}
     {
     }
-    template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte>>*>
+    template <typename CONTAINER_OF_BYTE, enable_if_t<Configuration::IsIterable_v<CONTAINER_OF_BYTE> and (is_convertible_v<typename CONTAINER_OF_BYTE::value_type, Byte> or is_convertible_v<typename CONTAINER_OF_BYTE::value_type, uint8_t>)>*>
     inline BLOB::BLOB (const CONTAINER_OF_BYTE& data)
         : fRep_{move ((std::begin (data) == std::end (data)) ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (data.begin (), data.end ())))}
     {
@@ -110,7 +104,15 @@ namespace Stroika::Foundation::Memory {
         : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
     {
     }
-    inline BLOB::BLOB (const Byte* start, const Byte* end)
+    inline BLOB::BLOB (const initializer_list<uint8_t>& bytes)
+        : fRep_ (move (bytes.size () == 0 ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (bytes.begin (), bytes.end ()))))
+    {
+    }
+    inline BLOB::BLOB (const std::byte* start, const std::byte* end)
+        : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
+    {
+    }
+    inline BLOB::BLOB (const uint8_t* start, const uint8_t* end)
         : fRep_ (move (start == end ? move<_SharedIRep> (_MakeSharedPtr<ZeroRep_> ()) : move<_SharedIRep> (_MakeSharedPtr<BasicRep_> (start, end))))
     {
     }
@@ -190,15 +192,29 @@ namespace Stroika::Foundation::Memory {
         shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
         pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
         Assert (tmp.first <= tmp.second);
-        into->clear ();
-        into->insert (into->begin (), tmp.first, tmp.second);
+        into->assign (tmp.first, tmp.second);
+    }
+    template <>
+    inline void BLOB::As (vector<uint8_t>* into) const
+    {
+        RequireNotNull (into);
+        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        pair<const Byte*, const Byte*>                      tmp = fRep_->GetBounds ();
+        Assert (tmp.first <= tmp.second);
+        into->assign (reinterpret_cast<const uint8_t*> (tmp.first), reinterpret_cast<const uint8_t*> (tmp.second));
     }
     template <>
     inline vector<Byte> BLOB::As () const
     {
-        vector<Byte>                                        result;
-        shared_lock<const AssertExternallySynchronizedLock> critSec{*this};
+        vector<Byte> result;
         As<vector<Byte>> (&result);
+        return result;
+    }
+    template <>
+    inline vector<uint8_t> BLOB::As () const
+    {
+        vector<uint8_t> result;
+        As<vector<uint8_t>> (&result);
         return result;
     }
     template <>

@@ -12,6 +12,8 @@
 
 namespace Stroika::Foundation ::Cryptography {
 
+    using std::byte;
+
     namespace Private_ {
         string mkArrayFmt_ (const uint8_t* start, const uint8_t* end);
         string mkFmt_ (unsigned int n);
@@ -40,7 +42,7 @@ namespace Stroika::Foundation ::Cryptography {
         }
         inline string Format_ (const Memory::BLOB& b, const string*)
         {
-            return mkArrayFmt_ (b.begin (), b.end ());
+            return mkArrayFmt_ (reinterpret_cast<const uint8_t*> (b.begin ()), reinterpret_cast<const uint8_t*> (b.end ()));
         }
         template <typename CRYTO_RESULT_TO_FORMAT_TYPE>
         inline String Format_ (const CRYTO_RESULT_TO_FORMAT_TYPE& arr, const String*)

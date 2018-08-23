@@ -36,7 +36,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
         /*
          *  ICMP packet types - from https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol "Control messages" 
          */
-        enum class ICMP_PacketTypes : Byte {
+        enum class ICMP_PacketTypes : uint8_t {
             ICMP_ECHO_REPLY   = 0,
             ICMP_DEST_UNREACH = 3,
             ICMP_ECHO_REQUEST = 8,
@@ -54,7 +54,7 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
          */
         Stroika_Foundation_Configuration_STRUCT_PACKED (struct PacketHeader {
             ICMP_PacketTypes type; // ICMP packet type
-            Byte             code; // Type sub code
+            uint8_t          code; // Type sub code
             uint16_t         checksum;
             uint16_t         id;
             uint16_t         seq;
@@ -75,18 +75,18 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::ICMP {
         public:
             /**
              */
-            DestinationUnreachableException (unsigned short code, const InternetAddress& reachedIP);
+            DestinationUnreachableException (uint8_t code, const InternetAddress& reachedIP);
 
         public:
             /**
             */
-            nonvirtual unsigned int GetCode () const;
+            nonvirtual uint8_t GetCode () const;
 
         public:
             nonvirtual InternetAddress GetReachedIP () const;
 
         private:
-            unsigned int    fCode_;
+            uint8_t         fCode_;
             InternetAddress fReachedIP_;
         };
 

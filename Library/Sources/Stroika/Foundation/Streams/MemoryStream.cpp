@@ -35,7 +35,25 @@ Memory::BLOB MemoryStream<Byte>::Ptr::As () const
 
 template <>
 template <>
+Memory::BLOB MemoryStream<uint8_t>::Ptr::As () const
+{
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    return rep.AsVector ();
+}
+
+template <>
+template <>
 string MemoryStream<Byte>::Ptr::As () const
+{
+    AssertMember (&_GetRepConstRef (), Rep_);
+    const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());
+    return rep.AsString ();
+}
+
+template <>
+template <>
+string MemoryStream<uint8_t>::Ptr::As () const
 {
     AssertMember (&_GetRepConstRef (), Rep_);
     const Rep_& rep = *dynamic_cast<const Rep_*> (&_GetRepConstRef ());

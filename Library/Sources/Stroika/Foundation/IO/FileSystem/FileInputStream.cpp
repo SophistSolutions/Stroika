@@ -29,6 +29,8 @@
 
 #include "FileInputStream.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
@@ -49,7 +51,7 @@ using Execution::Platform::Windows::ThrowIfFalseGetLastError;
  **************************** FileSystem::FileInputStream ***********************
  ********************************************************************************
  */
-class FileInputStream::Rep_ : public InputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class FileInputStream::Rep_ : public InputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
@@ -121,7 +123,7 @@ public:
     {
         return fFD_ >= 0;
     }
-    virtual size_t Read (Byte* intoStart, Byte* intoEnd) override
+    virtual size_t Read (byte* intoStart, byte* intoEnd) override
     {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
@@ -278,15 +280,15 @@ auto FileInputStream::New (Execution::InternallySyncrhonized internallySyncrhoni
     }
 }
 
-InputStream<Byte>::Ptr FileInputStream::New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<byte>::Ptr FileInputStream::New (const String& fileName, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fileName: %s, seekable: %d, bufferFlag: %d", fileName.c_str (), seekable, bufferFlag);
 #endif
-    InputStream<Byte>::Ptr in = FileInputStream::New (fileName, seekable);
+    InputStream<byte>::Ptr in = FileInputStream::New (fileName, seekable);
     switch (bufferFlag) {
         case eBuffered:
-            return Streams::BufferedInputStream<Byte>::New (in);
+            return Streams::BufferedInputStream<byte>::New (in);
         case eUnbuffered:
             return in;
         default:
@@ -295,15 +297,15 @@ InputStream<Byte>::Ptr FileInputStream::New (const String& fileName, SeekableFla
     }
 }
 
-InputStream<Byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
+InputStream<byte>::Ptr FileInputStream::New (FileDescriptorType fd, AdoptFDPolicy adoptFDPolicy, SeekableFlag seekable, BufferFlag bufferFlag)
 {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
     Debug::TraceContextBumper ctx (L"FileInputStream::New", L"fd: %d, seekable: %d, bufferFlag: %d", fd, seekable, bufferFlag);
 #endif
-    InputStream<Byte>::Ptr in = FileInputStream::New (fd, adoptFDPolicy, seekable);
+    InputStream<byte>::Ptr in = FileInputStream::New (fd, adoptFDPolicy, seekable);
     switch (bufferFlag) {
         case eBuffered:
-            return Streams::BufferedInputStream<Byte>::New (in);
+            return Streams::BufferedInputStream<byte>::New (in);
         case eUnbuffered:
             return in;
         default:

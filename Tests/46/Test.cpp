@@ -271,13 +271,13 @@ namespace {
     void Test_7_BLOB_ ()
     {
         {
-            vector<Byte> b  = {1, 2, 3, 4, 5};
-            Memory::BLOB bl = b;
+            vector<uint8_t> b  = {1, 2, 3, 4, 5};
+            Memory::BLOB    bl = b;
             VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == b);
         }
         {
             Memory::BLOB bl{1, 2, 3, 4, 5};
-            VerifyTestResult (bl.size () == 5 and bl.As<vector<Byte>> () == (vector<Byte>{1, 2, 3, 4, 5}));
+            VerifyTestResult (bl.size () == 5 and bl.As<vector<uint8_t>> () == (vector<uint8_t>{1, 2, 3, 4, 5}));
         }
         {
             const char kSrc1_[] = "This is a very good test of a very good test";

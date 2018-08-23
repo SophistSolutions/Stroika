@@ -82,28 +82,28 @@ namespace Stroika::Foundation::IO::Network::InternetProtocol::IP {
         using PacketHeader = ::iphdr;
 #else
         Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_le_ {
-            Byte ihl : 4,      // Length of the header in dwords
+            uint8_t ihl : 4,   // Length of the header in dwords
                 version : 4;   // Version of IP
-            Byte     tos;      // Type of service
+            uint8_t  tos;      // Type of service
             uint16_t tot_len;  // Length of the packet in dwords
             uint16_t id;       // unique identifier
             uint16_t frag_off; // Flags and Frament Offset
-            Byte     ttl;      // Time to live
-            Byte     protocol; // Protocol number (TCP, UDP etc)
+            uint8_t  ttl;      // Time to live
+            uint8_t  protocol; // Protocol number (TCP, UDP etc)
             uint16_t check;    // IP checksum
             uint32_t saddr;
             uint32_t daddr;
         });
         Stroika_Foundation_Configuration_STRUCT_PACKED (struct iphdr_be_ {
-            Byte version : 4,  // Version of IP
-                ihl : 4;       // Length of the header in dwords
-            Byte     tos;      // Type of service
-            uint16_t tot_len;  // Length of the packet in dwords
-            uint16_t id;       // unique identifier
-            uint16_t frag_off; // Flags and Frament Offset
-            Byte     ttl;      // Time to live
-            Byte     protocol; // Protocol number (TCP, UDP etc)
-            uint16_t check;    // IP checksum
+            uint8_t version : 4, // Version of IP
+                ihl : 4;         // Length of the header in dwords
+            uint8_t  tos;        // Type of service
+            uint16_t tot_len;    // Length of the packet in dwords
+            uint16_t id;         // unique identifier
+            uint16_t frag_off;   // Flags and Frament Offset
+            uint8_t  ttl;        // Time to live
+            uint8_t  protocol;   // Protocol number (TCP, UDP etc)
+            uint16_t check;      // IP checksum
             uint32_t saddr;
             uint32_t daddr;
         });

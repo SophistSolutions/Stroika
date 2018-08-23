@@ -26,6 +26,8 @@ using namespace Stroika::Foundation::Cryptography::Encoding;
 using namespace Stroika::Foundation::Cryptography::Encoding::Algorithm;
 using namespace Stroika::Foundation::Memory;
 
+using std::byte;
+
 /**
  *  IMPLEMENTATION NOTES:
  *
@@ -53,11 +55,11 @@ namespace {
     };
     struct base64_decodestate_ {
         base64_decodestep_ step;
-        Byte               plainchar;
+        byte               plainchar;
 
         base64_decodestate_ ()
             : step (step_a)
-            , plainchar ('\0')
+            , plainchar{'\0'}
         {
         }
     };
@@ -93,7 +95,7 @@ namespace {
                         }
                         fragment = (signed char)base64_decode_value_ (*codechar++);
                     } while (fragment < 0);
-                    *plainchar = (fragment & 0x03f) << 2;
+                    *plainchar = byte ((fragment & 0x03f) << 2);
                 case step_b:
                     do {
                         if (codechar == code_in + length_in) {
@@ -103,8 +105,8 @@ namespace {
                         }
                         fragment = (signed char)base64_decode_value_ (*codechar++);
                     } while (fragment < 0);
-                    *plainchar++ |= (fragment & 0x030) >> 4;
-                    *plainchar = (fragment & 0x00f) << 4;
+                    *plainchar++ |= byte ((fragment & 0x030) >> 4);
+                    *plainchar = byte ((fragment & 0x00f) << 4);
                 case step_c:
                     do {
                         if (codechar == code_in + length_in) {
@@ -114,8 +116,8 @@ namespace {
                         }
                         fragment = (signed char)base64_decode_value_ (*codechar++);
                     } while (fragment < 0);
-                    *plainchar++ |= (fragment & 0x03c) >> 2;
-                    *plainchar = (fragment & 0x003) << 6;
+                    *plainchar++ |= byte ((fragment & 0x03c) >> 2);
+                    *plainchar = byte ((fragment & 0x003) << 6);
                 case step_d:
                     do {
                         if (codechar == code_in + length_in) {
@@ -125,7 +127,7 @@ namespace {
                         }
                         fragment = (signed char)base64_decode_value_ (*codechar++);
                     } while (fragment < 0);
-                    *plainchar++ |= (fragment & 0x03f);
+                    *plainchar++ |= byte (fragment & 0x03f);
             }
         }
         return plainchar - plaintext_out;
@@ -212,7 +214,7 @@ namespace {
                         state->step   = step_A;
                         return codechar - code_out;
                     }
-                    fragment    = *plainchar++;
+                    fragment    = to_integer<signed char> (*plainchar++);
                     result      = (fragment & 0x0fc) >> 2;
                     *codechar++ = base64_encode_value_ (result);
                     result      = (fragment & 0x003) << 4;
@@ -222,7 +224,7 @@ namespace {
                         state->step   = step_B;
                         return codechar - code_out;
                     }
-                    fragment = *plainchar++;
+                    fragment = to_integer<signed char> (*plainchar++);
                     result |= (fragment & 0x0f0) >> 4;
                     *codechar++ = base64_encode_value_ (result);
                     result      = (fragment & 0x00f) << 2;
@@ -232,7 +234,7 @@ namespace {
                         state->step   = step_C;
                         return codechar - code_out;
                     }
-                    fragment = *plainchar++;
+                    fragment = to_integer<signed char> (*plainchar++);
                     result |= (fragment & 0x0c0) >> 6;
                     *codechar++ = base64_encode_value_ (result);
                     result      = (fragment & 0x03f) >> 0;

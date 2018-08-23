@@ -64,6 +64,8 @@ using IO::FileSystem::FileInputStream;
 using Streams::TextReader;
 using Time::DurationSecondsType;
 
+using std::byte;
+
 // --LGP 2016-03-11
 // Sadly - though ALMOST working - not quite.
 // Produces bogus PIDs, and misses many, and thread counts sometimes right, and sometimes wrong (maybe due to WOW64?)
@@ -667,7 +669,7 @@ namespace {
             Streams::InputStream<Byte>::Ptr in = FileInputStream::New (fullPath, FileInputStream::eNotSeekable);
             StringBuilder                   sb;
             for (optional<Memory::Byte> b; (b = in.Read ()).has_value ();) {
-                if (*b == '\0') {
+                if ((*b) == byte{0}) {
                     results.Append (sb.As<String> ());
                     sb.clear ();
                 }
@@ -699,7 +701,7 @@ namespace {
                 StringBuilder sb;
                 bool          lastCharNullRemappedToSpace = false;
                 for (optional<Memory::Byte> b; (b = in.Read ()).has_value ();) {
-                    if (*b == '\0') {
+                    if (*b == byte{0}) {
                         sb.Append (' '); // frequently - especially for kernel processes - we see nul bytes that really SB spaces
                         lastCharNullRemappedToSpace = true;
                     }
@@ -904,7 +906,7 @@ namespace {
             if (nBytes == NEltsOf (data)) {
                 nBytes--; // ignore trailing byte so we can nul-terminate
             }
-            data[nBytes] = '\0'; // null-terminate so we can treat as c-string
+            data[nBytes] = byte{0}; // null-terminate so we can treat as c-string
 
             const char* S = reinterpret_cast<const char*> (data);
             {

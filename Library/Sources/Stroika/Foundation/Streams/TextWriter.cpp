@@ -18,6 +18,8 @@
 
 #include "TextWriter.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Streams;
@@ -28,12 +30,12 @@ namespace {
 
 class TextWriter::UnSeekable_UTF8_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
-    UnSeekable_UTF8_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
+    UnSeekable_UTF8_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : _fSource (src)
     {
-        constexpr Byte kBOM[] = {0xEF, 0xBB, 0xBF}; //  see http://en.wikipedia.org/wiki/Byte_order_mark
+        constexpr byte kBOM_[]{byte{0xEF}, byte{0xBB}, byte{0xBF}}; //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
-            _fSource.Write (std::begin (kBOM), std::end (kBOM));
+            _fSource.Write (std::begin (kBOM_), std::end (kBOM_));
         }
     }
 
@@ -79,7 +81,7 @@ protected:
         char*                         p = std::begin (outBuf);
         codecvt_utf8<wchar_t>::result r = kConverter_.out (fMBState_, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
         Assert (std::begin (outBuf) <= p and p <= std::end (outBuf));
-        _fSource.Write (reinterpret_cast<const Byte*> (std::begin (outBuf)), reinterpret_cast<const Byte*> (p));
+        _fSource.Write (reinterpret_cast<const byte*> (std::begin (outBuf)), reinterpret_cast<const byte*> (p));
         if (r == codecvt_utf8<wchar_t>::partial or pc < ec) {
             sc = pc;
             goto Again;
@@ -97,12 +99,12 @@ protected:
 
 protected:
     mbstate_t               fMBState_{};
-    OutputStream<Byte>::Ptr _fSource;
+    OutputStream<byte>::Ptr _fSource;
 };
 
 class TextWriter::UnSeekable_WCharT_Rep_ : public OutputStream<Character>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
-    UnSeekable_WCharT_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
+    UnSeekable_WCharT_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : _fSource (src)
     {
         constexpr Character kBOM = L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
@@ -143,7 +145,7 @@ protected:
     {
         lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
         Require (IsOpenWrite ());
-        _fSource.Write (reinterpret_cast<const Byte*> (start), reinterpret_cast<const Byte*> (end));
+        _fSource.Write (reinterpret_cast<const byte*> (start), reinterpret_cast<const byte*> (end));
     }
     virtual void Flush () override
     {
@@ -153,12 +155,12 @@ protected:
     }
 
 protected:
-    OutputStream<Byte>::Ptr _fSource;
+    OutputStream<byte>::Ptr _fSource;
 };
 
 class TextWriter::Seekable_UTF8_Rep_ : public UnSeekable_UTF8_Rep_ {
 public:
-    Seekable_UTF8_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
+    Seekable_UTF8_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : UnSeekable_UTF8_Rep_ (src, useBOM)
         , fOffset_ (0)
     {
@@ -197,7 +199,7 @@ private:
 
 class TextWriter::Seekable_WCharT_Rep_ : public UnSeekable_WCharT_Rep_ {
 public:
-    Seekable_WCharT_Rep_ (const OutputStream<Byte>::Ptr& src, bool useBOM)
+    Seekable_WCharT_Rep_ (const OutputStream<byte>::Ptr& src, bool useBOM)
         : UnSeekable_WCharT_Rep_ (src, useBOM)
         , fOffset_ (0)
     {
@@ -239,7 +241,7 @@ private:
  ****************************** Streams::TextWriter *****************************
  ********************************************************************************
  */
-auto TextWriter::New (const OutputStream<Byte>::Ptr& src, Format format) -> Ptr
+auto TextWriter::New (const OutputStream<byte>::Ptr& src, Format format) -> Ptr
 {
     return Ptr{mk_ (src, format)};
 }
@@ -258,7 +260,7 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
             return src;
     }
 }
-auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<Byte>::Ptr& src, Format format) -> Ptr
+auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, const OutputStream<byte>::Ptr& src, Format format) -> Ptr
 {
     switch (internallySyncrhonized) {
         case Execution::eInternallySynchronized:
@@ -273,7 +275,7 @@ auto TextWriter::New (Execution::InternallySyncrhonized internallySyncrhonized, 
     }
 }
 
-shared_ptr<OutputStream<Characters::Character>::_IRep> TextWriter::mk_ (const OutputStream<Byte>::Ptr& src, Format format)
+shared_ptr<OutputStream<Characters::Character>::_IRep> TextWriter::mk_ (const OutputStream<byte>::Ptr& src, Format format)
 {
     Require (src.IsOpen ());
     bool newOneSeekable = src.IsSeekable ();

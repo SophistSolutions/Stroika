@@ -133,13 +133,13 @@ namespace {
     Byte HexChar2Num_ (char c)
     {
         if ('0' <= c and c <= '9') {
-            return c - '0';
+            return Byte (c - '0');
         }
         if ('A' <= c and c <= 'F') {
-            return (c - 'A') + 10;
+            return Byte ((c - 'A') + 10);
         }
         if ('a' <= c and c <= 'f') {
-            return (c - 'a') + 10;
+            return Byte ((c - 'a') + 10);
         }
         Execution::Throw (Execution::StringException (L"Invalid HEX character in BLOB::Hex"));
     }
@@ -156,7 +156,7 @@ BLOB BLOB::Hex (const char* s, const char* e)
         if (i == e) {
             Execution::Throw (Execution::StringException (L"Invalid partial HEX character in BLOB::Hex"));
         }
-        b = (b << 4) + HexChar2Num_ (*i);
+        b = Byte (uint8_t (b << 4) + uint8_t (HexChar2Num_ (*i)));
         buf.push_back (b);
     }
     return BLOB (buf.begin (), buf.end ());

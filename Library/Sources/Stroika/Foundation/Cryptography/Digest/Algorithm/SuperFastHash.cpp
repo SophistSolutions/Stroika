@@ -34,7 +34,7 @@ namespace {
                 result = *reinterpret_cast<const uint16_t*> (p);
                 break;
             case Configuration::Endian::eBig:
-                result = (p[1] << 8) + p[0];
+                result = (to_integer<uint16_t> (p[1]) << 8) + to_integer<uint16_t> (p[0]);
                 break;
             default:
                 AssertNotReached ();

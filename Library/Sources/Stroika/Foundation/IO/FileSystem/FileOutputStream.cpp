@@ -24,6 +24,8 @@
 
 #include "FileOutputStream.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::IO;
@@ -38,7 +40,7 @@ using Execution::Platform::Windows::ThrowIfFalseGetLastError;
  ************************* FileSystem::FileOutputStream *************************
  ********************************************************************************
  */
-class FileOutputStream::Rep_ : public Streams::OutputStream<Byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
+class FileOutputStream::Rep_ : public Streams::OutputStream<byte>::_IRep, private Debug::AssertExternallySynchronizedLock {
 public:
     Rep_ ()            = delete;
     Rep_ (const Rep_&) = delete;
@@ -102,7 +104,7 @@ public:
     {
         return fFD_ >= 0;
     }
-    virtual void Write (const Byte* start, const Byte* end) override
+    virtual void Write (const byte* start, const byte* end) override
     {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
@@ -110,7 +112,7 @@ public:
         if (start != end) {
             lock_guard<const AssertExternallySynchronizedLock> critSec{*this};
 
-            const Byte* i = start;
+            const byte* i = start;
             while (i < end) {
                 try {
 #if qPlatform_Windows

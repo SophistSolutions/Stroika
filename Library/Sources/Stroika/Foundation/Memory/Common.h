@@ -29,8 +29,10 @@ namespace Stroika::Foundation::Memory {
      *
      *  Typically - programmers just use 'char' or 'unsigned char' for this, but this makes that
      *  intent more clear.
+     *
+     *  C++17 update - using std::byte; NOT the way I'd like it defined, but OK...
      */
-    using Byte = uint8_t;
+    using Byte = std::byte;
 
     /**
      *  \brief NEltsOf(X) returns the number of elements in array X

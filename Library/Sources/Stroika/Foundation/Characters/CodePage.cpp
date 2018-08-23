@@ -24,6 +24,8 @@ using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::Memory;
 
+using std::byte;
+
 #ifndef qBuildInTableDrivenCodePageBuilderProc
 #define qBuildInTableDrivenCodePageBuilderProc 0
 #endif
@@ -4000,14 +4002,14 @@ wstring Characters::MapUNICODETextWithMaybeBOMTowstring (const char* start, cons
  *********************** MapUNICODETextWithMaybeBOMTowstring ********************
  ********************************************************************************
  */
-vector<Byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
+vector<byte> Characters::MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP)
 {
     CodePageConverter      cpc (useCP, CodePageConverter::eHandleBOM);
     size_t                 outCharCount = cpc.MapFromUNICODE_QuickComputeOutBufSize (start, end - start);
     SmallStackBuffer<char> buf (SmallStackBufferCommon::eUninitialized, outCharCount);
     cpc.MapFromUNICODE (start, end - start, buf, &outCharCount);
-    const Byte* bs = reinterpret_cast<const Byte*> (static_cast<const char*> (buf));
-    return vector<Byte> (bs, bs + outCharCount);
+    const byte* bs = reinterpret_cast<const byte*> (static_cast<const char*> (buf));
+    return vector<byte> (bs, bs + outCharCount);
 }
 
 /*

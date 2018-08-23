@@ -200,7 +200,7 @@ RTFIO::FontTableEntry::FontTableEntry ()
     : fFontName ()
     , fFNum (-1)
     , fFamily (eNil)
-    , fCharSet (static_cast<Byte> (-1))
+    , fCharSet (static_cast<uint8_t> (-1))
     , fPitch (0)
     , fCodePage (0)
 {
@@ -3345,7 +3345,7 @@ ReadRest:
                     HandleBadlyFormattedInput ();
                 }
                 else {
-                    entry.fCharSet = static_cast<Byte> (cword.fValue);
+                    entry.fCharSet = static_cast<uint8_t> (cword.fValue);
                 }
             } break;
             case RTFIO::eControlAtom_fprq: {
@@ -4966,7 +4966,7 @@ void StyledTextIOWriter_RTF::WriteFontTablesEntry (const FontTableEntry& entry)
             break;
     }
 
-    if (entry.fCharSet != static_cast<Byte> (-1)) {
+    if (entry.fCharSet != static_cast<uint8_t> (-1)) {
         WriteTagNValue ("fcharset", entry.fCharSet);
     }
 

@@ -361,7 +361,7 @@ Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, Return
     Require (from == to or to != nullptr);
     MD5_CTX ctx{};
     MD5Init_ (&ctx);
-    MD5Update_ (&ctx, from, static_cast<unsigned int> (to - from));
+    MD5Update_ (&ctx, reinterpret_cast<const unsigned char*> (from), static_cast<unsigned int> (to - from));
     MD5Final_ (&ctx);
 
     // No idea why array<> type sucks like this...--LGP 2014-07-28

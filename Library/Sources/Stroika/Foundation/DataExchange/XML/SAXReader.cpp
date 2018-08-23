@@ -88,6 +88,8 @@ using namespace Stroika::Foundation::DataExchange::XML;
 using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 
+using std::byte;
+
 #if qHasFeature_Xerces
 namespace {
     String xercesString2String_ (const XMLCh* s, const XMLCh* e)
@@ -401,7 +403,7 @@ namespace {
             }
             virtual XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
             {
-                return fSource.Read (toFill, toFill + maxToRead);
+                return fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
             }
             virtual const XMLCh* getContentType () const override
             {
@@ -461,7 +463,7 @@ namespace {
 
                 //fSource.read (reinterpret_cast<char*> (toFill), maxToRead);
                 //XMLSize_t   result  =   static_cast<XMLSize_t> (fSource.gcount ()); // safe cast cuz read maxToRead bytes
-                XMLSize_t result = fSource.Read (toFill, toFill + maxToRead);
+                XMLSize_t result = fSource.Read (reinterpret_cast<byte*> (toFill), reinterpret_cast<byte*> (toFill) + maxToRead);
                 if (fTotalSize > 0) {
                     curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
                     //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;

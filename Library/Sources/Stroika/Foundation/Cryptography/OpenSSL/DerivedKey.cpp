@@ -165,7 +165,7 @@ namespace {
                 buf1[i] ^= passwordBytes[i];
             }
         }
-        unsigned char buf2[64];
+        Byte buf2[64];
         {
             std::fill_n (buf2, NEltsOf (buf2), static_cast<Byte> (0x5C));
             for (unsigned long i = 0; i < usePWDLen; ++i) {
@@ -173,9 +173,9 @@ namespace {
             }
         }
         Require (digestAlgorithm == DigestAlgorithm::eMD5); // else NYI
-        Byte md5OutputBuf[2 * MD5_DIGEST_LENGTH];
-        (void)::MD5 (buf1, NEltsOf (buf1), md5OutputBuf);
-        (void)::MD5 (buf2, NEltsOf (buf2), md5OutputBuf + MD5_DIGEST_LENGTH);
+        uint8_t md5OutputBuf[2 * MD5_DIGEST_LENGTH];
+        (void)::MD5 (reinterpret_cast<unsigned char*> (buf1), NEltsOf (buf1), md5OutputBuf);
+        (void)::MD5 (reinterpret_cast<unsigned char*> (buf2), NEltsOf (buf2), md5OutputBuf + MD5_DIGEST_LENGTH);
         Assert (keyLen <= NEltsOf (md5OutputBuf)); // NYI otherwise - but we could zero fill
         BLOB resultKey{begin (md5OutputBuf), begin (md5OutputBuf) + std::min (NEltsOf (md5OutputBuf), keyLen)};
         BLOB iv;
@@ -245,7 +245,15 @@ namespace {
             // Could truncate and fill to adapt to differnt sized salt...
             Execution::Throw (Execution::StringException (L"only 8-byte salt with EVP_BytesToKey"));
         }
-        int i = ::EVP_BytesToKey (FakeCryptoAlgo_ (keyLen, ivLen), Convert2OpenSSL (digestAlgorithm), salt ? ValueOrDefault (salt).begin () : nullptr, passwd.begin (), static_cast<int> (passwd.size ()), nRounds, useKey.begin (), useIV.begin ());
+        int i = ::EVP_BytesToKey (
+            FakeCryptoAlgo_ (keyLen, ivLen),
+            Convert2OpenSSL (digestAlgorithm),
+            reinterpret_cast<const unsigned char*> (salt ? ValueOrDefault (salt).begin () : nullptr),
+            reinterpret_cast<const unsigned char*> (passwd.begin ()),
+            static_cast<int> (passwd.size ()),
+            nRounds,
+            reinterpret_cast<unsigned char*> (useKey.begin ()),
+            reinterpret_cast<unsigned char*> (useIV.begin ()));
         if (i == 0) {
             Cryptography::OpenSSL::Exception::ThrowLastError ();
         }
@@ -272,12 +280,12 @@ namespace {
         int a = ::PKCS5_PBKDF2_HMAC (
             reinterpret_cast<const char*> (passwd.begin ()),
             static_cast<int> (passwd.length ()),
-            salt ? salt->begin () : nullptr,
+            reinterpret_cast<const unsigned char*> (salt ? salt->begin () : nullptr),
             static_cast<int> (salt ? salt->size () : 0),
             nRounds,
             Convert2OpenSSL (digestAlgorithm),
             static_cast<int> (keyLen + ivLen),
-            outBuf.begin ());
+            reinterpret_cast<unsigned char*> (outBuf.begin ()));
         if (a == 0) {
             Execution::Throw (Execution::StringException (L"PKCS5_PBKDF2_HMAC error"));
         }

@@ -37,6 +37,8 @@ using namespace Stroika::Foundation::Characters::Concrete;
 
 using Containers::Sequence;
 
+using std::byte;
+
 #define qPrintTimings 0
 
 /**
@@ -1260,8 +1262,8 @@ namespace {
         VerifyTestResult (ToString (String (L"abc")) == L"abc");
         VerifyTestResult (ToString (initializer_list<int>{3, 4, 5}) == L"[ 3, 4, 5 ]");
         {
-            const Byte   kSample_[] = {0x34, 0x55, 0x1f};
-            Memory::BLOB b{begin (kSample_), end (kSample_)};
+            constexpr byte kSample_[] = {byte{0x34}, byte{0x55}, byte{0x1f}};
+            Memory::BLOB   b{begin (kSample_), end (kSample_)};
             VerifyTestResult (b.ToString () == L"[3 bytes: 34551f]");
             VerifyTestResult (Characters::ToString (b) == L"[3 bytes: 34551f]");
         }

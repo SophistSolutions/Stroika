@@ -10,6 +10,8 @@
 
 #include "Writer.h"
 
+using std::byte;
+
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
@@ -26,14 +28,16 @@ namespace {
     }
 }
 namespace {
+    static const String kTrueLbl_ = String_Constant{ L"true" };
+    static const String kFalseLbl_ = String_Constant{ L"false" };
     void PrettyPrint_ (const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel);
     void PrettyPrint_ (bool v, const OutputStream<Character>::Ptr& out)
     {
         if (v) {
-            out.Write (String_Constant (L"true"));
+            out.Write (kTrueLbl_);
         }
         else {
-            out.Write (String_Constant (L"false"));
+            out.Write (kFalseLbl_);
         }
     }
     void PrettyPrint_ (long long int v, const OutputStream<Character>::Ptr& out)
@@ -152,7 +156,7 @@ public:
     {
         return String_Constant (L".xml");
     }
-    virtual void Write (const VariantValue& v, const Streams::OutputStream<Byte>::Ptr& out) override
+    virtual void Write (const VariantValue& v, const Streams::OutputStream<byte>::Ptr& out) override
     {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == VariantValue::eMap);

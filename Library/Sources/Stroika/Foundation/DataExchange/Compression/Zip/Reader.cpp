@@ -96,7 +96,7 @@ namespace {
                 if (fZStream_.avail_in == 0) {
                     Assert (NEltsOf (fInBuf_) < numeric_limits<uInt>::max ());
                     fZStream_.avail_in = static_cast<uInt> (fInStream_.Read (begin (fInBuf_), end (fInBuf_)));
-                    fZStream_.next_in  = begin (fInBuf_);
+                    fZStream_.next_in  = reinterpret_cast<Bytef*> (begin (fInBuf_));
                 }
                 return fZStream_.avail_in == 0;
             }
@@ -125,7 +125,7 @@ namespace {
                 int flush = isAtSrcEOF ? Z_FINISH : Z_NO_FLUSH;
 
                 fZStream_.avail_out = static_cast<uInt> (outBufSize);
-                fZStream_.next_out  = intoStart;
+                fZStream_.next_out  = reinterpret_cast<Bytef*> (intoStart);
                 int ret;
                 switch (ret = ::deflate (&fZStream_, flush)) {
                     case Z_OK:
@@ -234,7 +234,7 @@ namespace {
                 ptrdiff_t outBufSize = intoEnd - intoStart;
 
                 fZStream_.avail_out = static_cast<uInt> (outBufSize);
-                fZStream_.next_out  = intoStart;
+                fZStream_.next_out  = reinterpret_cast<Bytef*> (intoStart);
                 int ret;
                 switch (ret = ::inflate (&fZStream_, Z_NO_FLUSH)) {
                     case Z_OK:

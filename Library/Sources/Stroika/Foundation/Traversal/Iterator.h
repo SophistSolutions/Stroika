@@ -750,6 +750,8 @@ namespace Stroika::Foundation::Traversal {
      *  to a pointer. This is always legal for a short period (@todo reference to docs/why).
      *
      *  But the idiom is somewhat queer, and wrapping in this method makes it a bit more clear.
+     *
+     *  \note This returns a const pointer for a const_iterator, and a pointer for a regular (non-cost) iterator.
      */
     template <typename ITERATOR>
     typename iterator_traits<ITERATOR>::pointer Iterator2Pointer (ITERATOR i);

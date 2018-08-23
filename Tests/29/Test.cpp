@@ -61,7 +61,7 @@ namespace {
                 {
                     int                            dataSize1 = ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
                     Memory::SmallStackBuffer<Byte> buf1 (dataSize1);
-                    if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), buf1, &dataSize1)) {
+                    if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), reinterpret_cast<BYTE*> (buf1.begin ()), &dataSize1)) {
                         return vector<Byte> (buf1.begin (), buf1.begin () + dataSize1);
                     }
                     return vector<Byte> ();
@@ -73,7 +73,7 @@ namespace {
                         Memory::SmallStackBuffer<char> relBuf (0);
                         int                            relEncodedSize = ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
                         relBuf.GrowToSize (relEncodedSize);
-                        VerifyTestResult (ATL::Base64Encode (Containers::Start (b), static_cast<int> (totalSize), relBuf, &relEncodedSize));
+                        VerifyTestResult (ATL::Base64Encode (reinterpret_cast<const BYTE*> (Containers::Start (b)), static_cast<int> (totalSize), relBuf, &relEncodedSize));
                         relBuf[relEncodedSize] = '\0';
                         if (lb == LineBreak::eCRLF_LB) {
                             return (static_cast<const char*> (relBuf));

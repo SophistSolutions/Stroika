@@ -192,6 +192,8 @@ namespace Stroika::Foundation::Streams {
          *  \req IsOpen ()
          */
         nonvirtual void Write (const ElementType* start, const ElementType* end) const;
+        template <typename T = ELEMENT_TYPE, enable_if_t<is_same_v<std::byte, T>>* = nullptr>
+        nonvirtual void Write (const uint8_t* start, const uint8_t* end) const;
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>* = nullptr>
         nonvirtual void Write (const Memory::BLOB& blob) const;
         template <typename TEST_TYPE = ELEMENT_TYPE, enable_if_t<is_same_v<TEST_TYPE, Characters::Character>>* = nullptr>

@@ -72,6 +72,8 @@ using namespace Stroika::Foundation::Memory;
 using namespace Stroika::Foundation::Streams;
 using namespace Stroika::Foundation::Time;
 
+using std::byte;
+
 /*
  *  TODO:
  *
@@ -760,10 +762,10 @@ namespace {
 namespace {
     namespace Test_BLOB_Versus_Vector_Byte_DETAILS {
         //static  array<Byte,4*1024>    kArr_4k_ = { 0x1, 0x2, 0x3, };
-        static Byte kCArr_4k_[4 * 1024] = {
-            0x1,
-            0x2,
-            0x3,
+        static constexpr byte kCArr_4k_[4 * 1024] = {
+            byte{0x1},
+            byte{0x2},
+            byte{0x3},
         };
 
         template <typename BLOBISH_IMPL>
@@ -795,7 +797,7 @@ namespace {
 
 namespace {
     namespace Test_JSONReadWriteFile_ {
-        constexpr Byte kSAMPLE_FILE_[] =
+        constexpr uint8_t kSAMPLE_FILE_[] =
             "{\
     \"Aux-Data\" : {\
         \"C3\" : \"-0\",\

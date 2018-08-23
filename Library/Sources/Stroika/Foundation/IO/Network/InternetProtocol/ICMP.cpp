@@ -63,7 +63,7 @@ namespace {
  ***** InternetProtocol::ICMP::V4::DestinationUnreachableException **************
  ********************************************************************************
  */
-InternetProtocol::ICMP::V4::DestinationUnreachableException::DestinationUnreachableException (unsigned short code, const InternetAddress& reachedIP)
+InternetProtocol::ICMP::V4::DestinationUnreachableException::DestinationUnreachableException (uint8_t code, const InternetAddress& reachedIP)
     : inherited (mkMessage_ (code))
     , fCode_ (code)
     , fReachedIP_ (reachedIP)

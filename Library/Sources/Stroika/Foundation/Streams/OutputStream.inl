@@ -87,6 +87,12 @@ namespace Stroika::Foundation::Streams {
         }
     }
     template <typename ELEMENT_TYPE>
+    template <typename T, enable_if_t<is_same_v<std::byte, T>>*>
+    inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const uint8_t* start, const uint8_t* end) const
+    {
+        Write (reinterpret_cast<const std::byte*> (start), reinterpret_cast<const std::byte*> (end));
+    }
+    template <typename ELEMENT_TYPE>
     template <typename TEST_TYPE, enable_if_t<is_same_v<TEST_TYPE, Memory::Byte>>*>
     inline void OutputStream<ELEMENT_TYPE>::Ptr::Write (const Memory::BLOB& blob) const
     {

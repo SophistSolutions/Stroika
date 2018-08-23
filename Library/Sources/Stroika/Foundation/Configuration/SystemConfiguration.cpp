@@ -44,6 +44,8 @@
 #include "../Streams/iostream/FStreamSupport.h"
 #endif
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Configuration;
 using namespace Stroika::Foundation::Containers;
@@ -53,7 +55,6 @@ using namespace Stroika::Foundation::Time;
 using Characters::SDKChar;
 using Characters::String_Constant;
 using Characters::StringBuilder;
-using Memory::Byte;
 using Memory::SmallStackBuffer;
 using Memory::SmallStackBufferCommon;
 
@@ -441,7 +442,7 @@ SystemConfiguration::CPU Configuration::GetSystemConfiguration_CPU ()
         LPFN_GLPI glpi = (LPFN_GLPI)::GetProcAddress (::GetModuleHandle (TEXT ("kernel32")), "GetLogicalProcessorInformation");
         DISABLE_COMPILER_MSC_WARNING_END (6387)
         AssertNotNull (glpi); // assume at least OS WinXP...
-        SmallStackBuffer<Byte> buffer (SmallStackBufferCommon::eUninitialized, sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
+        SmallStackBuffer<byte> buffer (SmallStackBufferCommon::eUninitialized, sizeof (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION));
         DWORD                  returnLength = 0;
         while (true) {
             DWORD rc = glpi (reinterpret_cast<PSYSTEM_LOGICAL_PROCESSOR_INFORMATION> (buffer.begin ()), &returnLength);

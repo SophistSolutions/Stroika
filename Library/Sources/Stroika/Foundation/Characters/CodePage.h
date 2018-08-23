@@ -41,8 +41,6 @@ namespace Stroika::Foundation::Characters {
 
     class String;
 
-    using Memory::Byte;
-
     /*
      ********************************************************************************
      *********************************** Character **********************************
@@ -152,14 +150,14 @@ namespace Stroika::Foundation::Characters {
         bool fHandleBOM;
 
     public:
-        /*
-        @METHOD:        CodePageConverter::MapToUNICODE
-        @DESCRIPTION:   <p>Map the given multibyte chars in the fCodePage codepage into wide UNICODE
-            characters. Pass in a buffer 'outChars' of
-            size large enough to accomodate those characrters.</p>
-                <p>'outCharCnt' is the size of the output buffer coming in, and it contains the number
-            of UNICODE chars copied out on return.</p>
-        */
+        /** 
+         *  Map the given multibyte chars in the fCodePage codepage into wide UNICODE
+         *  characters. Pass in a buffer 'outChars' of
+         *  size large enough to accomodate those characrters.</p>
+         *   
+         *  'outCharCnt' is the size of the output buffer coming in, and it contains the number
+         *  of UNICODE chars copied out on return.</p>
+         */
         nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char16_t* outChars, size_t* outCharCnt) const;
         nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, char32_t* outChars, size_t* outCharCnt) const;
         nonvirtual void MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, wchar_t* outChars, size_t* outCharCnt) const;
@@ -334,8 +332,8 @@ namespace Stroika::Foundation::Characters {
     wstring ASCIIStringToWide (const string& s);
     string  WideStringToASCII (const wstring& s);
 
-    wstring      MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
-    vector<Byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
+    wstring           MapUNICODETextWithMaybeBOMTowstring (const char* start, const char* end);
+    vector<std::byte> MapUNICODETextToSerializedFormat (const wchar_t* start, const wchar_t* end, CodePage useCP = kCodePage_UTF8); // suitable for files
 
     /**
      *  Convert between CHAR_TYPE and multibyte charactersets.
