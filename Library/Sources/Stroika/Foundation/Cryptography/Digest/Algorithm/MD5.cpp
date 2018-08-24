@@ -10,6 +10,8 @@
 
 #include "MD5.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Digest;
@@ -348,14 +350,14 @@ namespace {
      */
 }
 
-Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Streams::InputStream<Byte>::Ptr& from)
+Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
 {
     // @todo - REIMPLMENET CALLING MD5 Update directly, on each read, as in CRC32 impl...
     Memory::BLOB b = from.ReadAll ();
     return Digester<Algorithm::MD5, ReturnType>::ComputeDigest (b.begin (), b.end ());
 }
 
-Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::MD5, ReturnType>::ReturnType Digester<Algorithm::MD5, ReturnType>::ComputeDigest (const byte* from, const byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

@@ -19,12 +19,13 @@
 
 #include "MallocGuard.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
-using Memory::Byte;
 
 #if qStroika_Foundation_Debug_MallocGuard
 namespace {
-    constexpr array<Byte, 16> kMallocGuardHeader_BASE_{
+    constexpr array<byte, 16> kMallocGuardHeader_BASE_{
         0xf3,
         0xfa,
         0x0b,
@@ -42,7 +43,7 @@ namespace {
         0xeb,
         0x23,
     };
-    constexpr array<Byte, 16> kMallocGuardFooter_BASE_{
+    constexpr array<byte, 16> kMallocGuardFooter_BASE_{
         0x07,
         0x41,
         0xa4,
@@ -61,7 +62,7 @@ namespace {
         0x80,
     };
 
-    using GuradBytes_ = array<Byte, qStroika_Foundation_Debug_MallocGuard_GuardSize>;
+    using GuradBytes_ = array<byte, qStroika_Foundation_Debug_MallocGuard_GuardSize>;
 #if qStroika_Foundation_Debug_MallocGuard_GuardSize == 16
     constexpr GuradBytes_ kMallocGuardHeader_{kMallocGuardHeader_BASE_};
     constexpr GuradBytes_ kMallocGuardFooter_{kMallocGuardFooter_BASE_};
@@ -86,7 +87,7 @@ namespace {
 }
 sDoInit_x_;
 #endif
-    constexpr Byte kDeadMansLand_[] = {
+    constexpr byte kDeadMansLand_[] = {
         0x1d,
         0xb6,
         0x20,
@@ -147,17 +148,17 @@ sDoInit_x_;
         return sizeof (Header_) + s + sizeof (Footer_);
     }
 
-    bool IsDeadMansLand_ (const Byte* s, const Byte* e)
+    bool IsDeadMansLand_ (const byte* s, const byte* e)
     {
         // NYI cuz not clear if/how/where to use...
         return false;
     }
-    void SetDeadMansLand_ (Byte* s, Byte* e)
+    void SetDeadMansLand_ (byte* s, byte* e)
     {
-        const Byte* pBadFillStart = begin (kDeadMansLand_);
-        const Byte* pBadFillEnd   = end (kDeadMansLand_);
-        const Byte* badFillI      = pBadFillStart;
-        for (Byte* oi = s; oi != e; ++oi) {
+        const byte* pBadFillStart = begin (kDeadMansLand_);
+        const byte* pBadFillEnd   = end (kDeadMansLand_);
+        const byte* badFillI      = pBadFillStart;
+        for (byte* oi = s; oi != e; ++oi) {
             *oi = *badFillI;
             badFillI++;
             if (badFillI == pBadFillEnd) {
@@ -168,7 +169,7 @@ sDoInit_x_;
     void SetDeadMansLand_ (void* p)
     {
         const Header_* hp = reinterpret_cast<const Header_*> (p);
-        SetDeadMansLand_ (reinterpret_cast<Byte*> (p), reinterpret_cast<Byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
+        SetDeadMansLand_ (reinterpret_cast<byte*> (p), reinterpret_cast<byte*> (p) + AdjustMallocSize_ (hp->fRequestedBlockSize));
     }
 
     /*
@@ -242,7 +243,7 @@ sDoInit_x_;
             OhShit_ ("Pointer already freed (recently)");
         }
         const Header_* hp = reinterpret_cast<const Header_*> (p);
-        const Footer_* fp = reinterpret_cast<const Footer_*> (reinterpret_cast<const Byte*> (hp + 1) + hp->fRequestedBlockSize);
+        const Footer_* fp = reinterpret_cast<const Footer_*> (reinterpret_cast<const byte*> (hp + 1) + hp->fRequestedBlockSize);
         Footer_        footer;                         //tmporary so aligned
         (void)::memcpy (&footer, fp, sizeof (footer)); // align access
         Validate_ (*hp, footer);
@@ -253,7 +254,7 @@ sDoInit_x_;
         Header_* hp = reinterpret_cast<Header_*> (p);
         (void)::memcpy (begin (hp->fGuard), begin (kMallocGuardHeader_), kMallocGuardHeader_.size ());
         hp->fRequestedBlockSize = requestedSize;
-        Footer_* fp             = reinterpret_cast<Footer_*> (reinterpret_cast<Byte*> (hp + 1) + hp->fRequestedBlockSize);
+        Footer_* fp             = reinterpret_cast<Footer_*> (reinterpret_cast<byte*> (hp + 1) + hp->fRequestedBlockSize);
         (void)::memcpy (begin (fp->fGuard), begin (kMallocGuardFooter_), kMallocGuardFooter_.size ());
         fp->fRequestedBlockSize = requestedSize;
     }

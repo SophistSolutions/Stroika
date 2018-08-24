@@ -121,7 +121,6 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
     using Containers::Mapping;
     using Containers::Sequence;
     using Containers::Set;
-    using Memory::Byte;
 
     /**
      */
@@ -641,14 +640,14 @@ namespace Stroika::Foundation::DataExchange::StructuredStreamEvents::ObjectReade
             ReaderFromVoidStarFactory        fReaderFactory;
             function<bool(const Name& name)> fReadsName = [](const Name& name) { return true; };
             function<bool()>                 fReadsText = []() { return true; };
-            function<Byte*(T*)>              fAddressOfSubElementFetcher;
+            function<std::byte*(T*)>         fAddressOfSubElementFetcher;
 
-            static const function<Byte*(T*)> kDefaultAddressOfSubElementFetcher;
+            static const function<std::byte*(T*)> kDefaultAddressOfSubElementFetcher;
 
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool()>& readsText, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
-            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<bool()>& readsText, const function<Byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
+            MixinEltTraits (const ReaderFromVoidStarFactory& readerFactory, const function<bool(const Name& name)>& readsName, const function<bool()>& readsText, const function<std::byte*(T*)>& addressOfSubEltFetcher = kDefaultAddressOfSubElementFetcher);
         };
 
     public:

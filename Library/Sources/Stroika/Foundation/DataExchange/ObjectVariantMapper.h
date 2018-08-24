@@ -74,7 +74,7 @@
  *                      return tmp;
  *                  }
  *
- *                  I THINK - if we redefined the to-mapper - to return a "T" instead of taking a Byte* array
+ *                  I THINK - if we redefined the to-mapper - to return a "T" instead of taking a byte* array
  *                  to fill in, we could avoid this issue. However, doing so is NOT possible for the
  *                  automated 'struct' mapper (key). This is its core strategy - to construct an object and
  *                  then fill in (possibly a subset) of its fields. We would need to somehow automate
@@ -92,7 +92,7 @@
  *                  and From/ToObjectMapper<T>.
  *
  *      @todo   NOTE and TODO
- *              The cast to Byte* loses some type safety (we may want to store the class size through template magic)
+ *              The cast to byte* loses some type safety (we may want to store the class size through template magic)
  *              in the struct type info record, so it can be validated against the offsets in the typeinfo (in debug builds).
  *
  *      @todo   [Long-Term] [Performance] The gist of this design / API is to map C++ objects from/to VariantValue
@@ -118,7 +118,6 @@ namespace Stroika::Foundation::DataExchange {
     using Containers::Mapping;
     using Containers::Sequence;
     using Containers::Set;
-    using Memory::Byte;
 
     /**
      *  \brief  ObjectVariantMapper can be used to map C++ types to and from variant-union types, which can be transparently mapped into and out of XML, JSON, etc.
@@ -158,7 +157,7 @@ namespace Stroika::Foundation::DataExchange {
      *      // at this point - we should have VariantValue object with "Enabled" field.
      *      // This can then be serialized using
      *
-     *      Streams::MemoryStream<Byte>   tmpStream;
+     *      Streams::MemoryStream<byte>   tmpStream;
      *      DataExchange::JSON::PrettyPrint (v, tmpStream);
      *
      *      // THEN deserialized, and mapped back to C++ object form
@@ -409,7 +408,7 @@ namespace Stroika::Foundation::DataExchange {
          *      tmp.fURL2_ = IO::Network::URL (L"localhost:1234", IO::Network::URL::eFlexiblyAsUI);
          *      VariantValue v = mapper.Serialize  (tmp);
          *
-         *      Streams::MemoryStream<Byte>   tmpStream;
+         *      Streams::MemoryStream<byte>   tmpStream;
          *      DataExchange::JSON::PrettyPrint (v, tmpStream);
          *
          *      // THEN deserialized, and mapped back to C++ object form

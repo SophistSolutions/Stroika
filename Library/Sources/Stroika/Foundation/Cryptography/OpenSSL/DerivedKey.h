@@ -30,7 +30,6 @@ namespace Stroika::Foundation::Cryptography::OpenSSL {
 
     using Characters::String;
     using Memory::BLOB;
-    using Memory::Byte;
 
 #if qHasFeature_OpenSSL
     /**

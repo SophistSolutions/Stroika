@@ -34,7 +34,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         return fRep_->GetDefaultFileSuffix ();
     }
-    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)
+    inline void Writer::Write (const VariantValue& v, const Streams::OutputStream<std::byte>::Ptr& out)
     {
         fRep_->Write (v, out);
     }

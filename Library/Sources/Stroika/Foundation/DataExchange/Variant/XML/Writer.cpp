@@ -28,10 +28,10 @@ namespace {
     }
 }
 namespace {
-    static const String kTrueLbl_ = String_Constant{ L"true" };
-    static const String kFalseLbl_ = String_Constant{ L"false" };
-    void PrettyPrint_ (const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel);
-    void PrettyPrint_ (bool v, const OutputStream<Character>::Ptr& out)
+    static const String kTrueLbl_  = String_Constant{L"true"};
+    static const String kFalseLbl_ = String_Constant{L"false"};
+    void                PrettyPrint_ (const VariantValue& v, const OutputStream<Character>::Ptr& out, int indentLevel);
+    void                PrettyPrint_ (bool v, const OutputStream<Character>::Ptr& out)
     {
         if (v) {
             out.Write (kTrueLbl_);

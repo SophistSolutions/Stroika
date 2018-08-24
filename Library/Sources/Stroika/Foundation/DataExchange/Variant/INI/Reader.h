@@ -87,7 +87,7 @@ namespace Stroika::Foundation::DataExchange::Variant::INI {
     public:
         /**
         */
-        nonvirtual Profile ReadProfile (const Streams::InputStream<Memory::Byte>::Ptr& in);
+        nonvirtual Profile ReadProfile (const Streams::InputStream<std::byte>::Ptr& in);
         nonvirtual Profile ReadProfile (const Streams::InputStream<Characters::Character>::Ptr& in);
         nonvirtual Profile ReadProfile (istream& in);
         nonvirtual Profile ReadProfile (wistream& in);

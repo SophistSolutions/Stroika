@@ -23,7 +23,6 @@
 namespace Stroika::Foundation::DataExchange::Compression {
 
     using Memory::BLOB;
-    using Memory::Byte;
     using Streams::InputStream;
 
     /**
@@ -43,11 +42,11 @@ namespace Stroika::Foundation::DataExchange::Compression {
         explicit Reader (const shared_ptr<_IRep>& rep);
 
     public:
-        nonvirtual InputStream<Byte>::Ptr Compress (const InputStream<Byte>::Ptr& src) const;
+        nonvirtual InputStream<std::byte>::Ptr Compress (const InputStream<std::byte>::Ptr& src) const;
         nonvirtual BLOB Compress (const BLOB& src) const;
 
     public:
-        nonvirtual InputStream<Byte>::Ptr Decompress (const InputStream<Byte>::Ptr& src) const;
+        nonvirtual InputStream<std::byte>::Ptr Decompress (const InputStream<std::byte>::Ptr& src) const;
         nonvirtual BLOB Decompress (const BLOB& src) const;
 
     protected:
@@ -65,10 +64,10 @@ namespace Stroika::Foundation::DataExchange::Compression {
         virtual ~_IRep () = default;
 
     public:
-        virtual InputStream<Byte>::Ptr Compress (const InputStream<Byte>::Ptr& src) const = 0;
+        virtual InputStream<std::byte>::Ptr Compress (const InputStream<std::byte>::Ptr& src) const = 0;
 
     public:
-        virtual InputStream<Byte>::Ptr Decompress (const InputStream<Byte>::Ptr& src) const = 0;
+        virtual InputStream<std::byte>::Ptr Decompress (const InputStream<std::byte>::Ptr& src) const = 0;
     };
 }
 

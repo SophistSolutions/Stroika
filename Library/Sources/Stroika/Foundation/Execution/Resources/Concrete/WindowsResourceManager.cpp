@@ -11,6 +11,8 @@
 
 #include "WindowsResourceManager.h"
 
+using std::byte;
+
 using namespace Stroika;
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Execution;
@@ -34,7 +36,7 @@ public:
             if (lglbl != nullptr) {
                 const void* lr = ::LockResource (lglbl);
                 AssertNotNull (lr);
-                const Byte* start = reinterpret_cast<const Byte*> (lr);
+                const byte* start = reinterpret_cast<const byte*> (lr);
                 return Manager::_mkAccessor (start, start + ::SizeofResource (fModule_, hres));
             }
         }

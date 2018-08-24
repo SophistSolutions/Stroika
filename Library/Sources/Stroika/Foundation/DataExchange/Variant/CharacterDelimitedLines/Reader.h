@@ -66,7 +66,7 @@ namespace Stroika::Foundation::DataExchange::Variant::CharacterDelimitedLines {
         Reader (const Set<Character>& columnDelimiters);
 
     public:
-        nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Memory::Byte>::Ptr& in) const;
+        nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<std::byte>::Ptr& in) const;
         nonvirtual Iterable<Sequence<String>> ReadMatrix (const Streams::InputStream<Character>::Ptr& in) const;
     };
 }

@@ -24,7 +24,7 @@ namespace Stroika::Foundation::DataExchange::Archive::_7z {
      */
     class Reader : public DataExchange::Archive::Reader {
     public:
-        Reader (const Streams::InputStream<Memory::Byte>::Ptr& in);
+        Reader (const Streams::InputStream<std::byte>::Ptr& in);
 
     private:
         class Rep_;

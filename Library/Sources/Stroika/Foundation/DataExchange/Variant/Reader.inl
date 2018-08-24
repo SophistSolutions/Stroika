@@ -34,7 +34,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
     {
         return fRep_->GetDefaultFileSuffix ();
     }
-    inline VariantValue Reader::Read (const Streams::InputStream<Memory::Byte>::Ptr& in)
+    inline VariantValue Reader::Read (const Streams::InputStream<std::byte>::Ptr& in)
     {
         return fRep_->Read (in);
     }

@@ -1327,8 +1327,8 @@ ces\stroika\foundation\debug\assertions.cpp' and 'c:\sandbox\stroika\devroot\sam
  *  \par Example Usage
  *      \code
  *      Stroika_Foundation_Configuration_STRUCT_PACKED (struct ICMPHeader {
- *          Byte     type; // ICMP packet type
- *          Byte     code; // Type sub code
+ *          byte     type; // ICMP packet type
+ *          byte     code; // Type sub code
  *          uint16_t checksum;
  *          uint16_t id;
  *          uint16_t seq;

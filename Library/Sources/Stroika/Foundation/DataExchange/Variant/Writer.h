@@ -59,7 +59,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
          *  @see WriteAsBLOB
          *  @see WriteAsString
          */
-        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out);
+        nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<std::byte>::Ptr& out);
         nonvirtual void Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out);
         nonvirtual void Write (const VariantValue& v, ostream& out);
         nonvirtual void Write (const VariantValue& v, wostream& out);
@@ -100,7 +100,7 @@ namespace Stroika::Foundation::DataExchange::Variant {
         virtual ~_IRep ()                                                                                                  = default;
         virtual _SharedPtrIRep Clone () const                                                                              = 0;
         virtual String         GetDefaultFileSuffix () const                                                               = 0;
-        virtual void           Write (const VariantValue& v, const Streams::OutputStream<Memory::Byte>::Ptr& out)          = 0;
+        virtual void           Write (const VariantValue& v, const Streams::OutputStream<std::byte>::Ptr& out)             = 0;
         virtual void           Write (const VariantValue& v, const Streams::OutputStream<Characters::Character>::Ptr& out) = 0;
     };
 

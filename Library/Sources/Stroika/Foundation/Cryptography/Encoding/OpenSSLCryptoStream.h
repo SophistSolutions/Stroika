@@ -47,7 +47,7 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
  *
  *              #if 0
  *                // DEBUG WHY THIS FAILS - I THINK WE NEED TO ENABLE PADDING FOR SOME CYPHERS!
- *               BLOB ((const Byte*)kSrc4_, (const Byte*)kSrc4_ + ::strlen(kSrc4_)),
+ *               BLOB ((const byte*)kSrc4_, (const byte*)kSrc4_ + ::strlen(kSrc4_)),
  *          #endif
  *
  *      @todo   Generate exceptions on errors
@@ -68,7 +68,6 @@ using EVP_CIPHER_CTX = struct evp_cipher_ctx_st;
 namespace Stroika::Foundation::Cryptography::Encoding {
 
     using Memory::BLOB;
-    using Memory::Byte;
 
     /**
      */
@@ -111,25 +110,25 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class OpenSSLInputStream : public Streams::InputStream<Byte> {
+    class OpenSSLInputStream : public Streams::InputStream<std::byte> {
     public:
         OpenSSLInputStream ()                          = delete;
         OpenSSLInputStream (const OpenSSLInputStream&) = delete;
 
     public:
-        using typename InputStream<Memory::Byte>::Ptr;
+        using typename InputStream<std::byte>::Ptr;
 
     public:
         /**
          */
-        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<Byte>::Ptr& realIn);
+        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::InputStream<std::byte>::Ptr& realIn);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<Memory::Byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedInputStream<std::byte, OpenSSLInputStream, OpenSSLInputStream::Rep_>;
     };
 
 #endif
@@ -151,25 +150,25 @@ namespace Stroika::Foundation::Cryptography::Encoding {
      *
      *  \note   \em Thread-Safety   <a href="thread_safety.html#C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter">C++-Standard-Thread-Safety-Plus-Must-Externally-Synchronize-Letter</a>
      */
-    class OpenSSLOutputStream : public Streams::OutputStream<Byte> {
+    class OpenSSLOutputStream : public Streams::OutputStream<std::byte> {
     public:
         OpenSSLOutputStream ()                           = delete;
         OpenSSLOutputStream (const OpenSSLOutputStream&) = delete;
 
     public:
-        using typename OutputStream<Memory::Byte>::Ptr;
+        using typename OutputStream<std::byte>::Ptr;
 
     public:
         /**
          */
-        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
-        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<Byte>::Ptr& realOut);
+        static Ptr New (const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
+        static Ptr New (Execution::InternallySyncrhonized internallySyncrhonized, const OpenSSLCryptoParams& cryptoParams, Direction direction, const Streams::OutputStream<std::byte>::Ptr& realOut);
 
     private:
         class Rep_;
 
     private:
-        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<Memory::Byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
+        using InternalSyncRep_ = Streams::InternallySyncrhonizedOutputStream<std::byte, OpenSSLOutputStream, OpenSSLOutputStream::Rep_>;
     };
 #endif
 

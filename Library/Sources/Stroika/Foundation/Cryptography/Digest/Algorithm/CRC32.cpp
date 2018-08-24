@@ -5,6 +5,8 @@
 
 #include "CRC32.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Digest;
@@ -62,16 +64,16 @@ namespace {
                                          0x54de5729, 0x23d967bf, 0xb3667a2e, 0xc4614ab8, 0x5d681b02, 0x2a6f2b94,
                                          0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d};
 
-    inline uint32_t UPDC32_ (Byte octet, uint32_t crc)
+    inline uint32_t UPDC32_ (byte octet, uint32_t crc)
     {
         Assert (NEltsOf (kcrc_32_tab_) == 256); // byte index always safe/cool
         return kcrc_32_tab_[(crc ^ to_integer<uint32_t> (octet)) & 0xff] ^ (crc >> 8);
     }
-    void DoMore_ (uint32_t* hash2Update, const Byte* from, const Byte* to)
+    void DoMore_ (uint32_t* hash2Update, const byte* from, const byte* to)
     {
         RequireNotNull (hash2Update);
         uint32_t hash = (*hash2Update);
-        for (const Byte* bi = from; bi != to; ++bi) {
+        for (const byte* bi = from; bi != to; ++bi) {
             hash = UPDC32_ (*bi, hash);
         }
         (*hash2Update) = hash;
@@ -83,11 +85,11 @@ namespace {
     }
 }
 
-Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>::Ptr& from)
+Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
 {
     uint32_t hash = 0xFFFFFFFF;
     while (true) {
-        Byte   buf[32 * 1024];
+        byte   buf[32 * 1024];
         size_t n = from.Read (std::begin (buf), std::end (buf));
         Assert (n <= sizeof (buf));
         if (n == 0) {
@@ -99,7 +101,7 @@ Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint
     return hash;
 }
 
-Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::CRC32, uint32_t>::ReturnType Digester<Algorithm::CRC32, uint32_t>::ComputeDigest (const byte* from, const byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

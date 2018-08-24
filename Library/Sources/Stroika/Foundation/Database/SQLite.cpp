@@ -9,6 +9,8 @@
 
 #include "SQLite.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 
 using namespace Characters;
@@ -117,7 +119,7 @@ auto Connection::Statement::GetNextRow () -> optional<RowType>
                     v = VariantValue (::sqlite3_column_double (fStatementObj_, i));
                 } break;
                 case SQLITE_BLOB: {
-                    const Byte* data      = reinterpret_cast<const Byte*> (::sqlite3_column_blob (fStatementObj_, i));
+                    const byte* data      = reinterpret_cast<const byte*> (::sqlite3_column_blob (fStatementObj_, i));
                     size_t      byteCount = static_cast<size_t> (::sqlite3_column_bytes (fStatementObj_, i));
                     v                     = VariantValue (Memory::BLOB (data, data + byteCount));
                 } break;

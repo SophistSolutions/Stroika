@@ -12,6 +12,8 @@
 
 #include "SuperFastHash.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Digest;
@@ -25,7 +27,7 @@ using namespace Stroika::Foundation::Cryptography::Digest;
 #endif
 
 namespace {
-    inline uint16_t get16bits (const Byte* p)
+    inline uint16_t get16bits (const byte* p)
     {
         RequireNotNull (p);
         uint16_t result;
@@ -55,13 +57,13 @@ namespace {
      */
 }
 
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>::Ptr& from)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
 {
     Memory::BLOB b = from.ReadAll ();
     return Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (b.begin (), b.end ());
 }
 
-Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::SuperFastHash, uint32_t>::ComputeDigest (const byte* from, const byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);
@@ -72,7 +74,7 @@ Digester<Algorithm::SuperFastHash, uint32_t>::ReturnType Digester<Algorithm::Sup
 
     size_t len = static_cast<size_t> (to - from);
 
-    const Byte* data = from;
+    const byte* data = from;
 
     /*
      *  Require() here cuz of following cast.

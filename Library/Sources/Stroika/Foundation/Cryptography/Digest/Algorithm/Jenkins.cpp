@@ -5,6 +5,8 @@
 
 #include "Jenkins.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Cryptography;
 using namespace Stroika::Foundation::Cryptography::Digest;
@@ -13,11 +15,11 @@ namespace {
     /*
      *  Implementation based on text from http://en.wikipedia.org/wiki/Jenkins_hash_function on 2013-05-30
      */
-    inline void DoMore_ (uint32_t* hash2Update, const Byte* from, const Byte* to)
+    inline void DoMore_ (uint32_t* hash2Update, const byte* from, const byte* to)
     {
         RequireNotNull (hash2Update);
         uint32_t hash = (*hash2Update);
-        for (const Byte* bi = from; bi != to; ++bi) {
+        for (const byte* bi = from; bi != to; ++bi) {
             hash += to_integer<uint8_t> (*bi);
             hash += (hash << 10);
             hash ^= (hash >> 6);
@@ -35,11 +37,11 @@ namespace {
     }
 }
 
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::InputStream<Byte>::Ptr& from)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Streams::InputStream<byte>::Ptr& from)
 {
     uint32_t hash = 0;
     while (true) {
-        Byte   buf[32 * 1024];
+        byte   buf[32 * 1024];
         size_t n = from.Read (std::begin (buf), std::end (buf));
         Assert (n <= sizeof (buf));
         if (n == 0) {
@@ -51,7 +53,7 @@ Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, 
     return hash;
 }
 
-Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const Byte* from, const Byte* to)
+Digester<Algorithm::Jenkins, uint32_t>::ReturnType Digester<Algorithm::Jenkins, uint32_t>::ComputeDigest (const byte* from, const byte* to)
 {
     Require (from == to or from != nullptr);
     Require (from == to or to != nullptr);

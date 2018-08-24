@@ -39,12 +39,12 @@ namespace Stroika::Foundation::IO::FileSystem {
     public:
         /**
          */
-        nonvirtual const Byte* begin () const;
+        nonvirtual const std::byte* begin () const;
 
     public:
         /**
          */
-        nonvirtual const Byte* end () const;
+        nonvirtual const std::byte* end () const;
 
     public:
         /**
@@ -52,8 +52,8 @@ namespace Stroika::Foundation::IO::FileSystem {
         nonvirtual size_t size () const;
 
     private:
-        const Byte* fFileDataStart_;
-        const Byte* fFileDataEnd_;
+        const std::byte* fFileDataStart_;
+        const std::byte* fFileDataEnd_;
 #if qPlatform_Windows
         HANDLE fFileHandle_;
         HANDLE fFileMapping_;

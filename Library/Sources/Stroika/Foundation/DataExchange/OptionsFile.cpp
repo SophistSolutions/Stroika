@@ -20,6 +20,8 @@
 
 #include "OptionsFile.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
@@ -205,7 +207,7 @@ optional<VariantValue> OptionsFile::Read ()
 {
     Debug::TraceContextBumper ctx ("OptionsFile::Read");
     try {
-        optional<VariantValue> r = fReader_.Read (MemoryStream<Byte>::New (ReadRaw ()));
+        optional<VariantValue> r = fReader_.Read (MemoryStream<byte>::New (ReadRaw ()));
         if (r.has_value ()) {
 #if USE_NOISY_TRACE_IN_THIS_MODULE_
             DbgTrace (L"present: upgrading module %s", fModuleName_.c_str ());

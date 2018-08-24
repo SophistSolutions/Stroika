@@ -16,7 +16,7 @@ namespace Stroika::Foundation::Execution::Resources {
      ************************************* Accessor *********************************
      ********************************************************************************
      */
-    inline Accessor::Accessor (const Byte* start, const Byte* end)
+    inline Accessor::Accessor (const std::byte* start, const std::byte* end)
         : fDataStart_ (start)
         , fDataEnd_ (end)
     {
@@ -24,11 +24,11 @@ namespace Stroika::Foundation::Execution::Resources {
         Require (end != nullptr or (start == end));
         Require (start <= end);
     }
-    inline const Byte* Accessor::begin () const
+    inline const std::byte* Accessor::begin () const
     {
         return fDataStart_;
     }
-    inline const Byte* Accessor::end () const
+    inline const std::byte* Accessor::end () const
     {
         return fDataEnd_;
     }
@@ -36,9 +36,9 @@ namespace Stroika::Foundation::Execution::Resources {
     {
         return fDataEnd_ - fDataStart_;
     }
-    inline vector<Byte> Accessor::GetData () const
+    inline vector<std::byte> Accessor::GetData () const
     {
-        return vector<Byte> (fDataStart_, fDataEnd_);
+        return vector<std::byte> (fDataStart_, fDataEnd_);
     }
 
 }

@@ -19,6 +19,8 @@
 #pragma comment(lib, "zlib.lib")
 #endif
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::DataExchange;
 using namespace Stroika::Foundation::DataExchange::Compression;
@@ -46,18 +48,17 @@ namespace {
         }
     }
 
-    using Memory::Byte;
-    struct MyCompressionStream_ : InputStream<Byte>::Ptr {
-        struct BaseRep_ : public InputStream<Byte>::_IRep {
+    struct MyCompressionStream_ : InputStream<byte>::Ptr {
+        struct BaseRep_ : public InputStream<byte>::_IRep {
         private:
             static constexpr size_t CHUNK_ = 16384;
 
         public:
-            Streams::InputStream<Memory::Byte>::Ptr fInStream_;
+            Streams::InputStream<Memory::byte>::Ptr fInStream_;
             z_stream                                fZStream_;
-            Byte                                    fInBuf_[CHUNK_];
+            byte                                    fInBuf_[CHUNK_];
             SeekOffsetType                          _fSeekOffset{};
-            BaseRep_ (const Streams::InputStream<Memory::Byte>::Ptr& in)
+            BaseRep_ (const Streams::InputStream<byte>::Ptr& in)
                 : fInStream_ (in)
                 , fZStream_{}
             {
@@ -102,7 +103,7 @@ namespace {
             }
         };
         struct DeflateRep_ : BaseRep_ {
-            DeflateRep_ (const Streams::InputStream<Memory::Byte>::Ptr& in)
+            DeflateRep_ (const Streams::InputStream<byte>::Ptr& in)
                 : BaseRep_ (in)
             {
                 int level = Z_DEFAULT_COMPRESSION;
@@ -213,7 +214,7 @@ namespace {
             }
         };
         struct InflateRep_ : BaseRep_ {
-            InflateRep_ (const Streams::InputStream<Memory::Byte>::Ptr& in)
+            InflateRep_ (const Streams::InputStream<byte>::Ptr& in)
                 : BaseRep_ (in)
             {
                 // see http://zlib.net/manual.html  for meaning of params and http://www.lemoda.net/c/zlib-open-read/ for example
@@ -265,12 +266,12 @@ namespace {
         };
         enum Compression { eCompression };
         enum DeCompression { eDeCompression };
-        MyCompressionStream_ (Compression, const Streams::InputStream<Memory::Byte>::Ptr& in)
-            : InputStream<Byte>::Ptr (make_shared<DeflateRep_> (in))
+        MyCompressionStream_ (Compression, const Streams::InputStream<byte>::Ptr& in)
+            : InputStream<byte>::Ptr (make_shared<DeflateRep_> (in))
         {
         }
-        MyCompressionStream_ (DeCompression, const Streams::InputStream<Memory::Byte>::Ptr& in)
-            : InputStream<Byte>::Ptr (make_shared<InflateRep_> (in))
+        MyCompressionStream_ (DeCompression, const Streams::InputStream<byte>::Ptr& in)
+            : InputStream<byte>::Ptr (make_shared<InflateRep_> (in))
         {
         }
     };
@@ -280,11 +281,11 @@ namespace {
 #if qHasFeature_ZLib
 class Zip::Reader::Rep_ : public Reader::_IRep {
 public:
-    virtual InputStream<Byte>::Ptr Compress (const InputStream<Byte>::Ptr& src) const override
+    virtual InputStream<byte>::Ptr Compress (const InputStream<byte>::Ptr& src) const override
     {
         return MyCompressionStream_ (MyCompressionStream_::eCompression, src);
     }
-    virtual InputStream<Byte>::Ptr Decompress (const InputStream<Byte>::Ptr& src) const override
+    virtual InputStream<byte>::Ptr Decompress (const InputStream<byte>::Ptr& src) const override
     {
         return MyCompressionStream_ (MyCompressionStream_::eDeCompression, src);
     }

@@ -51,7 +51,6 @@ namespace Stroika::Foundation::IO::FileSystem {
     // clang-format on
 
     using Characters::String;
-    using Memory::Byte;
     using Time::DateTime;
 
     /**

@@ -13,14 +13,14 @@ namespace Stroika::Foundation::IO::FileSystem {
 
     /*
      ********************************************************************************
-     ******************* FileSystem::MemoryMappedFileReader *************************
+     ******************* IO::FileSystem::MemoryMappedFileReader *********************
      ********************************************************************************
      */
-    inline const Byte* MemoryMappedFileReader::begin () const
+    inline const std::byte* MemoryMappedFileReader::begin () const
     {
         return fFileDataStart_;
     }
-    inline const Byte* MemoryMappedFileReader::end () const
+    inline const std::byte* MemoryMappedFileReader::end () const
     {
         return fFileDataEnd_;
     }

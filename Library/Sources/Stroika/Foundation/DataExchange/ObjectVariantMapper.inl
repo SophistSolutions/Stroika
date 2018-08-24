@@ -705,7 +705,7 @@ namespace Stroika::Foundation::DataExchange {
                 DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
                 FromGenericObjectMapperType toGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
-                VariantValue                vv                     = toGenericVariantMapper (mapper, reinterpret_cast<const Byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
+                VariantValue                vv                     = toGenericVariantMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                 if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::eIncludeNullFields or vv.GetType () != VariantValue::eNull) {
                     m.Add (i.fSerializedFieldName, vv);
                 }
@@ -729,7 +729,7 @@ namespace Stroika::Foundation::DataExchange {
 #endif
                 if (o) {
                     ToGenericObjectMapperType fromGenericVariantMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fToObjectMapper;
-                    fromGenericVariantMapper (mapper, *o, reinterpret_cast<Byte*> (intoObjOfTypeT) + i.fFieldMetaInfo.fOffset);
+                    fromGenericVariantMapper (mapper, *o, reinterpret_cast<std::byte*> (intoObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                 }
             }
         };
@@ -782,7 +782,7 @@ namespace Stroika::Foundation::DataExchange {
                 DbgTrace (L"fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fFieldMetaInfo.fOffset);
 #endif
                 FromGenericObjectMapperType fromGenericObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fFromObjecttMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fFromObjecttMapper;
-                VariantValue                vv                      = fromGenericObjectMapper (mapper, reinterpret_cast<const Byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
+                VariantValue                vv                      = fromGenericObjectMapper (mapper, reinterpret_cast<const std::byte*> (fromObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                 if (i.fNullFields == ObjectVariantMapper::StructFieldInfo::NullFieldHandling::eInclude or vv.GetType () != VariantValue::eNull) {
                     m.Add (i.fSerializedFieldName, vv);
                 }
@@ -809,7 +809,7 @@ namespace Stroika::Foundation::DataExchange {
 #endif
                 if (o) {
                     ToGenericObjectMapperType toGenericObjectMapper = i.fOverrideTypeMapper ? i.fOverrideTypeMapper->fToObjectMapper : mapper.Lookup_ (i.fFieldMetaInfo.fTypeInfo).fToObjectMapper;
-                    toGenericObjectMapper (mapper, *o, reinterpret_cast<Byte*> (intoObjOfTypeT) + i.fFieldMetaInfo.fOffset);
+                    toGenericObjectMapper (mapper, *o, reinterpret_cast<std::byte*> (intoObjOfTypeT) + i.fFieldMetaInfo.fOffset);
                 }
             }
         };

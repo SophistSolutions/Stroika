@@ -23,7 +23,6 @@
 namespace Stroika::Foundation::Cryptography::Digest {
 
     using Memory::BLOB;
-    using Memory::Byte;
 
     namespace Algorithm {
 
@@ -74,8 +73,8 @@ namespace Stroika::Foundation::Cryptography::Digest {
     struct Digester {
         using ReturnType = RETURN_TYPE;
 
-        static ReturnType ComputeDigest (const Streams::InputStream<Byte>::Ptr& from);
-        static ReturnType ComputeDigest (const Byte* from, const Byte* to);
+        static ReturnType ComputeDigest (const Streams::InputStream<std::byte>::Ptr& from);
+        static ReturnType ComputeDigest (const std::byte* from, const std::byte* to);
         static ReturnType ComputeDigest (const BLOB& from);
     };
 

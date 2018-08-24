@@ -22,6 +22,8 @@
 
 #include "../TestHarness/TestHarness.h"
 
+using std::byte;
+
 using namespace Stroika::Foundation;
 using namespace Stroika::Foundation::Characters;
 using namespace Stroika::Foundation::DataExchange;
@@ -1071,8 +1073,8 @@ namespace {
                                 {Name{L"Tuner", Name::eAttribute}, Stroika_Foundation_DataExchange_StructFieldMetaInfo (KVPType_, fKey)},
                             });
                         Sequence<MixinEltTraits> tmp;
-                        tmp += MixinEltTraits{kTunerReader_, [](const Name& name) { return name == Name{L"Tuner", Name::eAttribute}; }, [](KVPType_* kvp) { return reinterpret_cast<Byte*> (&kvp->fKey); }};
-                        tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_, [](const Name& name) { return name != Name{L"Tuner", Name::eAttribute}; }, [](KVPType_* kvp) { return reinterpret_cast<Byte*> (&kvp->fValue); }};
+                        tmp += MixinEltTraits{kTunerReader_, [](const Name& name) { return name == Name{L"Tuner", Name::eAttribute}; }, [](KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fKey); }};
+                        tmp += MixinEltTraits{k_PerTunerFactorySettingsType_ReaderFactory_, [](const Name& name) { return name != Name{L"Tuner", Name::eAttribute}; }, [](KVPType_* kvp) { return reinterpret_cast<byte*> (&kvp->fValue); }};
                         return tmp;
                     }
                     MyKVPReader_ (KeyValuePair<TunerNumberType_, PerTunerFactorySettingsType_>* v)

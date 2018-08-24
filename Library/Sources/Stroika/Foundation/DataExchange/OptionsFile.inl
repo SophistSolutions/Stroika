@@ -70,7 +70,7 @@ namespace Stroika::Foundation::DataExchange {
                         Memory::BLOB oldData = ReadRaw (); // @todo could have saved from previous Read<T>
                         Memory::BLOB newData;
                         {
-                            Streams::MemoryStream<Byte>::Ptr outStream = Streams::MemoryStream<Byte>::New ();
+                            Streams::MemoryStream<std::byte>::Ptr outStream = Streams::MemoryStream<std::byte>::New ();
                             fWriter_.Write (fMapper_.FromObject (*eltRead), outStream);
                             // not sure needed? outStream.Flush();
                             newData = outStream.As<Memory::BLOB> ();
